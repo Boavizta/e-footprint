@@ -1649,9 +1649,9 @@
 <p>Dictionary with UsagePattern as keys and 
                         hourly streaming occurrences in usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
-    first 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],<br />
-    last 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9], <br />
+id-5323ec-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
+    first 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],<br />
+    last 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -1691,7 +1691,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_60d7ee {
+             #mynetwork_cf99bb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1713,7 +1713,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_60d7ee" class="card-body"></div>
+            <div id="mynetwork_cf99bb" class="card-body"></div>
         </div>
 
 
@@ -1743,12 +1743,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_60d7ee');
+                  var container = document.getElementById('mynetwork_cf99bb');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26281 values from 2025-01-01 00:00:00 to 2028-01-01 00:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9] converted to UTC from Europe/Paris\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26281 values from 2025-01-01 00:00:00 to 2028-01-01 00:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6] converted to UTC from Europe/Paris\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly streaming occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -1819,9 +1819,9 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 <p>Dictionary with UsagePattern as keys and 
                         average hourly streaming occurrences in usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],<br />
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6], <br />
+id-5323ec-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
+    first 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],<br />
+    last 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -1862,7 +1862,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_daac42 {
+             #mynetwork_dee31e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1884,7 +1884,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_daac42" class="card-body"></div>
+            <div id="mynetwork_dee31e" class="card-body"></div>
         </div>
 
 
@@ -1914,12 +1914,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_daac42');
+                  var container = document.getElementById('mynetwork_dee31e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration to service in streaming\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9] hourly occurrences average 0.07 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],\nlast 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": -75.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 0.07 hour", "x": 75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration to service in streaming\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6] hourly occurrences average 0.07 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],\nlast 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": -75.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 0.07 hour", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming occurrences in usage pattern", "to": "Average hourly streaming occurrences in usage pattern"}, {"arrows": "to", "from": "Request duration to service in streaming", "to": "Average hourly streaming occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -1990,7 +1990,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 <p>Dictionary with UsagePattern as keys and 
                         hourly data upload for streaming in usage pattern as values, in terabyte.  </p>
 <p>Example value: {<br />
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:<br />
+id-5323ec-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
 }  </p>
@@ -2033,7 +2033,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_0f8e71 {
+             #mynetwork_590113 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2055,7 +2055,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0f8e71" class="card-body"></div>
+            <div id="mynetwork_590113" class="card-body"></div>
         </div>
 
 
@@ -2085,12 +2085,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0f8e71');
+                  var container = document.getElementById('mynetwork_590113');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": -112.5, "y": 450}, {"color": null, "id": "data upload per hour for job streaming in usage pattern", "label": "data upload per hour\nfor job streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "data upload per hour for job streaming in usage pattern\n=\nData upload of request streaming / streaming duration in full hours\n=\n0.05 megabyte / 1 dimensionless\n=\n0.05 megabyte", "x": 112.5, "y": 450}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.05 megabyte", "x": 0.0, "y": 300}, {"color": null, "id": "streaming duration in full hours", "label": "streaming duration\nin full hours", "shape": "dot", "size": 15, "title": "streaming duration in full hours = 1 dimensionless", "x": 150.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": -112.5, "y": 450}, {"color": null, "id": "data upload per hour for job streaming in usage pattern", "label": "data upload per hour\nfor job streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "data upload per hour for job streaming in usage pattern\n=\nData upload of request streaming / streaming duration in full hours\n=\n0.05 megabyte / 1 dimensionless\n=\n0.05 megabyte", "x": 112.5, "y": 450}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.05 megabyte", "x": 0.0, "y": 300}, {"color": null, "id": "streaming duration in full hours", "label": "streaming duration\nin full hours", "shape": "dot", "size": 15, "title": "streaming duration in full hours = 1 dimensionless", "x": 150.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming occurrences in usage pattern", "to": "Hourly data upload for streaming in usage pattern"}, {"arrows": "to", "from": "data upload per hour for job streaming in usage pattern", "to": "Hourly data upload for streaming in usage pattern"}, {"arrows": "to", "from": "Data upload of request streaming", "to": "data upload per hour for job streaming in usage pattern"}, {"arrows": "to", "from": "streaming duration in full hours", "to": "data upload per hour for job streaming in usage pattern"}]);
 
                   nodeColors = {};
@@ -2161,9 +2161,9 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 <p>Dictionary with UsagePattern as keys and 
                         hourly data download for streaming in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:<br />
-    first 10 vals [4800.0, 3200.0, 800.0, 4000.0, 2400.0, 3200.0, 6400.0, 800.0, 7200.0, 7200.0],<br />
-    last 10 vals [4000.0, 4000.0, 800.0, 7200.0, 4000.0, 3200.0, 1600.0, 4800.0, 3200.0, 7200.0], <br />
+id-5323ec-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:<br />
+    first 10 vals [4000.0, 5600.0, 4000.0, 6400.0, 7200.0, 3200.0, 800.0, 800.0, 6400.0, 2400.0],<br />
+    last 10 vals [4800.0, 1600.0, 6400.0, 6400.0, 1600.0, 4800.0, 800.0, 7200.0, 3200.0, 4800.0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -2204,7 +2204,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_542a2c {
+             #mynetwork_56e48a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2226,7 +2226,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_542a2c" class="card-body"></div>
+            <div id="mynetwork_56e48a" class="card-body"></div>
         </div>
 
 
@@ -2256,12 +2256,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_542a2c');
+                  var container = document.getElementById('mynetwork_56e48a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data download for streaming in usage pattern", "label": "Hourly data download\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data download for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data download\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])) * 800.0 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:\nfirst 10 vals [4800.0, 3200.0, 800.0, 4000.0, 2400.0, 3200.0, 6400.0, 800.0,\n7200.0, 7200.0],\nlast 10 vals [4000.0, 4000.0, 800.0, 7200.0, 4000.0, 3200.0, 1600.0, 4800.0,\n3200.0, 7200.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": -112.5, "y": 450}, {"color": null, "id": "data download per hour for job streaming in usage pattern", "label": "data download per\nhour for job\nstreaming in usage\npattern", "shape": "dot", "size": 15, "title": "data download per hour for job streaming in usage pattern\n=\nData download of request streaming / streaming duration in full hours\n=\n800 megabyte / 1 dimensionless\n=\n800.0 megabyte", "x": 112.5, "y": 450}, {"color": null, "id": "Data download of request streaming", "label": "Data download of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data download of request streaming = 800 megabyte", "x": 0.0, "y": 300}, {"color": null, "id": "streaming duration in full hours", "label": "streaming duration\nin full hours", "shape": "dot", "size": 15, "title": "streaming duration in full hours = 1 dimensionless", "x": 150.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data download for streaming in usage pattern", "label": "Hourly data download\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data download for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data download\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])) * 800.0 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:\nfirst 10 vals [4000.0, 5600.0, 4000.0, 6400.0, 7200.0, 3200.0, 800.0, 800.0,\n6400.0, 2400.0],\nlast 10 vals [4800.0, 1600.0, 6400.0, 6400.0, 1600.0, 4800.0, 800.0, 7200.0,\n3200.0, 4800.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": -112.5, "y": 450}, {"color": null, "id": "data download per hour for job streaming in usage pattern", "label": "data download per\nhour for job\nstreaming in usage\npattern", "shape": "dot", "size": 15, "title": "data download per hour for job streaming in usage pattern\n=\nData download of request streaming / streaming duration in full hours\n=\n800 megabyte / 1 dimensionless\n=\n800.0 megabyte", "x": 112.5, "y": 450}, {"color": null, "id": "Data download of request streaming", "label": "Data download of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data download of request streaming = 800 megabyte", "x": 0.0, "y": 300}, {"color": null, "id": "streaming duration in full hours", "label": "streaming duration\nin full hours", "shape": "dot", "size": 15, "title": "streaming duration in full hours = 1 dimensionless", "x": 150.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming occurrences in usage pattern", "to": "Hourly data download for streaming in usage pattern"}, {"arrows": "to", "from": "data download per hour for job streaming in usage pattern", "to": "Hourly data download for streaming in usage pattern"}, {"arrows": "to", "from": "Data download of request streaming", "to": "data download per hour for job streaming in usage pattern"}, {"arrows": "to", "from": "streaming duration in full hours", "to": "data download per hour for job streaming in usage pattern"}]);
 
                   nodeColors = {};
@@ -2331,8 +2331,8 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 <h3 id="hourly_occurrences_across_usage_patterns">hourly_occurrences_across_usage_patterns</h3>
 <p>hourly streaming occurrences across usage patterns in dimensionless.  </p>
 <p>Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
-    first 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],<br />
-    last 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]  </p>
+    first 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],<br />
+    last 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences_per_usage_pattern">Hourly streaming occurrences in usage pattern</a>  </li>
@@ -2371,7 +2371,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_89ae57 {
+             #mynetwork_0b85e1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2393,7 +2393,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_89ae57" class="card-body"></div>
+            <div id="mynetwork_0b85e1" class="card-body"></div>
         </div>
 
 
@@ -2423,12 +2423,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_89ae57');
+                  var container = document.getElementById('mynetwork_0b85e1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences across usage patterns", "label": "Hourly streaming\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences across usage patterns\n=\nHourly streaming occurrences in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences across usage patterns", "label": "Hourly streaming\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences across usage patterns\n=\nHourly streaming occurrences in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nshift by 0 of (usage pattern UTC)\n=\nshift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6]", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming occurrences in usage pattern", "to": "Hourly streaming occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -2498,8 +2498,8 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>hourly streaming average occurrences across usage patterns in dimensionless.  </p>
 <p>Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:<br />
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],<br />
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]  </p>
+    first 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],<br />
+    last 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly streaming occurrences in usage pattern</a>  </li>
@@ -2538,7 +2538,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_5eeef5 {
+             #mynetwork_023da9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2560,7 +2560,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5eeef5" class="card-body"></div>
+            <div id="mynetwork_023da9" class="card-body"></div>
         </div>
 
 
@@ -2590,12 +2590,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5eeef5');
+                  var container = document.getElementById('mynetwork_023da9');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],\nlast 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],\nlast 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration to service in streaming\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9] hourly occurrences average 0.07 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],\nlast 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],\nlast 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],\nlast 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration to service in streaming\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6] hourly occurrences average 0.07 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.33, 0.47, 0.33, 0.53, 0.6, 0.27, 0.07, 0.07, 0.53, 0.2],\nlast 10 vals [0.4, 0.13, 0.53, 0.53, 0.13, 0.4, 0.07, 0.6, 0.27, 0.4]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly streaming occurrences in usage pattern", "to": "Hourly streaming average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -2705,7 +2705,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         </center>
         <style type="text/css">
 
-             #mynetwork_750a8e {
+             #mynetwork_fb02a7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2727,7 +2727,7 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_750a8e" class="card-body"></div>
+            <div id="mynetwork_fb02a7" class="card-body"></div>
         </div>
 
 
@@ -2757,12 +2757,12 @@ id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_750a8e');
+                  var container = document.getElementById('mynetwork_fb02a7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data upload for streaming in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data upload for streaming in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [5, 7, 5, 8, 9, 4, 1, 1, 8, 3],\nlast 10 vals [6, 2, 8, 8, 2, 6, 1, 9, 4, 6])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data upload for streaming in usage pattern", "to": "Hourly streaming data upload across usage patterns"}]);
 
                   nodeColors = {};
