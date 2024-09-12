@@ -3371,7 +3371,7 @@ and this project adheres to <a href="http://semver.org/">Semantic Versioning</a>
 </ul>
 <h3 id="fixed_18">Fixed</h3>
 <ul>
-<li>Object link recomputation logic: the launch_attributes_computation_chain function in the <a href="https://github.com/publicissapient-france/e-footprint/tree/main/efootprint/abstract_modeling_classes/modeling_object.py">ModelingObject class</a> now allows for a breadth first exploration of the object link graph to recompute object attributes in the right order. </li>
+<li>Object link recomputation logic: the launch_attributes_computation_chain function in the <a href="https://github.com/Boavizta/e-footprint/tree/main/efootprint/abstract_modeling_classes/modeling_object.py">ModelingObject class</a> now allows for a breadth first exploration of the object link graph to recompute object attributes in the right order. </li>
 </ul>
 <h2 id="111-2023-11-03">[1.1.1] - 2023-11-03</h2>
 <h3 id="added_16">Added</h3>
@@ -3380,8 +3380,8 @@ and this project adheres to <a href="http://semver.org/">Semantic Versioning</a>
 <ul>
 <li>Possibility to have a null service as input for user journey steps (in cases when the user simply uses the device without any service call).</li>
 <li>UserJourney’s add_step method didn’t trigger setattr because of the use of the self.uj_steps.append(new_step) syntax, and hence didn’t trigger the appropriate recomputation logic. Fixed by replacing it with the self.uj_steps = self.uj_steps + [new_step] syntax.</li>
-<li><a href="https://github.com/publicissapient-france/e-footprint/tree/main/efootprint/utils/graph_tools.py">graph_tools</a> module doesn’t depend any more on special selenium screenshot functions that are only used during development. Such functions have been moved to the <a href="https://github.com/publicissapient-france/e-footprint/tree/main/efootprint/utils/dev_utils">dev_utils</a> package that only contains modules not used in the project because they are work in progress or dev helper functions.</li>
-<li>Fixed the <a href="https://github.com/publicissapient-france/e-footprint/tree/main/tests/abstract_modeling_classes/test_explainable_objects.py">convert_to_utc_test</a> that had broken because of time change  </li>
+<li><a href="https://github.com/Boavizta/e-footprint/tree/main/efootprint/utils/graph_tools.py">graph_tools</a> module doesn’t depend any more on special selenium screenshot functions that are only used during development. Such functions have been moved to the <a href="https://github.com/Boavizta/e-footprint/tree/main/efootprint/utils/dev_utils">dev_utils</a> package that only contains modules not used in the project because they are work in progress or dev helper functions.</li>
+<li>Fixed the <a href="https://github.com/Boavizta/e-footprint/tree/main/tests/abstract_modeling_classes/test_explainable_objects.py">convert_to_utc_test</a> that had broken because of time change  </li>
 </ul>
 <h2 id="110-2023-10-26">[1.1.0] - 2023-10-26</h2>
 <p>State of project at time of open sourcing.</p>
