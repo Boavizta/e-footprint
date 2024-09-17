@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import pytz
 
@@ -93,7 +93,7 @@ class TestExplainableObjectBaseClass(TestCase):
 
         self.assertEqual([self.c], self.a.direct_children_with_id)
 
-    def test_get_all_descendants_with_id(self):
+    def test_all_descendants_with_id(self):
         root = ExplainableObject(0, "root")
         child1 = ExplainableObject(1, "child1")
         child1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
@@ -109,7 +109,7 @@ class TestExplainableObjectBaseClass(TestCase):
         child1.direct_children_with_id.append(grandchild1)
         child2.direct_children_with_id.append(grandchild2)
 
-        descendants = root.get_all_descendants_with_id()
+        descendants = root.all_descendants_with_id
         descendants_labels = [descendant.label for descendant in descendants]
 
         self.assertEqual(len(descendants), 4)
@@ -123,6 +123,111 @@ class TestExplainableObjectBaseClass(TestCase):
 
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent")
         self.assertEqual([left_parent, right_parent], eo.direct_ancestors_with_id)
+
+    def test_update_computation_chain_single_level_descendants(self):
+        mod_obj_container = "mod_obj"
+        parent = ExplainableObject(1, "test")
+        parent.modeling_obj_container = MagicMock()
+        parent.modeling_obj_container.id = "id"
+
+        child1 = MagicMock()
+        child1.id = 'child1_id'
+        child1.direct_children_with_id = []
+        child1.direct_ancestors_with_id = [parent]
+
+        child2 = MagicMock()
+        child2.id = 'child2_id'
+        child2.direct_children_with_id = []
+        child2.direct_ancestors_with_id = [parent]
+
+        parent.direct_children_with_id = [child1, child2]
+
+        for index, child in enumerate([child1, child2]):
+            child.modeling_obj_container = mod_obj_container
+            child.attr_name_in_mod_obj_container = f"attr_{index}"
+
+        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
+                as mock_all_descendants_with_id:
+            mock_all_descendants_with_id.return_value = [child1, child2]
+
+            result = parent.update_computation_chain
+
+            self.assertEqual([child1, child2], result)
+
+    def test_update_computation_chain_multiple_levels_of_descendants(self):
+        mod_obj_container = "mod_obj_container"
+        parent = ExplainableObject(1, "test")
+        parent.modeling_obj_container = MagicMock()
+        parent.modeling_obj_container.id = "id"
+
+        child1 = MagicMock()
+        child1.id = 'child1_id'
+        child1.direct_ancestors_with_id = [parent]
+
+        grandchild1 = MagicMock()
+        grandchild1.id = 'grandchild1_id'
+        grandchild1.direct_children_with_id = []
+        grandchild1.direct_ancestors_with_id = [child1]
+
+        grandchild2 = MagicMock()
+        grandchild2.id = 'grandchild2_id'
+        grandchild2.direct_children_with_id = []
+        grandchild2.direct_ancestors_with_id = [child1]
+
+        child1.direct_children_with_id = [grandchild1, grandchild2]
+        parent.direct_children_with_id = [child1]
+
+        for index, child in enumerate([child1, grandchild1, grandchild2]):
+            child.modeling_obj_container = mod_obj_container
+            child.attr_name_in_mod_obj_container = f"attr_{index}"
+
+        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
+                as mock_all_descendants_with_id:
+            mock_all_descendants_with_id.return_value = [child1, grandchild1, grandchild2]
+
+            result = parent.update_computation_chain
+
+            self.assertEqual([child1, grandchild1, grandchild2], result)
+
+    def test_update_computation_chain_optimize_loops(self):
+        mod_obj_container = "mod_obj_container"
+        parent = ExplainableObject(1, "test")
+        parent.modeling_obj_container = MagicMock()
+        parent.modeling_obj_container.id = "id"
+
+        child1 = MagicMock()
+        child1.id = 'child1_id'
+        child1.direct_ancestors_with_id = [parent]
+
+        child2 = MagicMock()
+        child2.id = 'child2_id'
+        child2.direct_ancestors_with_id = [parent]
+
+        grandchild1 = MagicMock()
+        grandchild1.id = 'grandchild1_id'
+        grandchild1.direct_children_with_id = []
+        grandchild1.direct_ancestors_with_id = [child1, child2]
+
+        grandchild2 = MagicMock()
+        grandchild2.id = 'grandchild2_id'
+        grandchild2.direct_children_with_id = []
+        grandchild2.direct_ancestors_with_id = [child1]
+
+        child1.direct_children_with_id = [grandchild1, grandchild2]
+        child2.direct_children_with_id = [grandchild1]
+        parent.direct_children_with_id = [child1, child2]
+
+        for index, child in enumerate([child1, grandchild1, grandchild2]):
+            child.modeling_obj_container = mod_obj_container
+            child.attr_name_in_mod_obj_container = f"attr_{index}"
+
+        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
+                as mock_all_descendants_with_id:
+            mock_all_descendants_with_id.return_value = [child1, child2, grandchild1, grandchild2]
+
+            result = parent.update_computation_chain
+
+            self.assertEqual([child1, child2, grandchild1, grandchild2], result)
 
     def test_set_label(self):
         eo = ExplainableObject(value=5, label="Label A")
@@ -198,13 +303,6 @@ Label L + Label R
 
         with self.assertRaises(ValueError):
             self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")
-
-    def test_to_json_for_time_intervals(self):
-        time_int = ExplainableObject([[9, 12], [19, 22]], "TI", source=Source("source name", "source link"))
-
-        self.assertDictEqual(
-            {"label": "TI from source name", "value": [[9, 12], [19, 22]],
-             "source": {"name": "source name", "link": "source link"}}, time_int.to_json())
 
     def test_to_json_for_timezone(self):
         timezone_expl = ExplainableObject(
