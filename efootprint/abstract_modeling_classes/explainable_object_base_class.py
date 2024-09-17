@@ -59,6 +59,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return new_instance
 
+    def set_label(self, new_label):
+        if self.source is not None and f"from {self.source.name}" not in new_label:
+            self.label = f"{new_label} from {self.source.name}"
+        else:
+            self.label = new_label
+
+        return self
+
     @property
     def id(self):
         if self.modeling_obj_container is None:
@@ -108,15 +116,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if direct_child.id not in self.direct_child_ids:
             self.direct_children_with_id.append(direct_child)
 
-    def set_label(self, new_label):
-        if self.source is not None and f"from {self.source.name}" not in new_label:
-            self.label = f"{new_label} from {self.source.name}"
-        else:
-            self.label = new_label
-
-        return self
-
-    def get_all_descendants_with_id(self):
+    @property
+    def all_descendants_with_id(self):
         all_descendants = []
 
         def retrieve_descendants(expl_obj: ExplainableObject, descendants_list):
@@ -128,6 +129,42 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         retrieve_descendants(self, all_descendants)
 
         return all_descendants
+
+    @property
+    def update_computation_chain(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its update computation chain")
+        update_computation_chain = []
+        descendants = self.all_descendants_with_id
+        has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}
+
+        added_parents_with_children_to_add = [self]
+
+        while len(added_parents_with_children_to_add) > 0:
+            for added_parent in added_parents_with_children_to_add:
+                drop_added_parent_from_list = True
+                for child in added_parent.direct_children_with_id:
+                    if not has_been_added_to_chain_dict[child.id]:
+                        ancestors_that_belong_to_self_descendants = [
+                            ancestor for ancestor in child.direct_ancestors_with_id
+                            if ancestor.id in [ancestor.id for ancestor in descendants]]
+                        if all([has_been_added_to_chain_dict[ancestor.id]
+                                for ancestor in ancestors_that_belong_to_self_descendants]):
+                            update_computation_chain.append(child)
+                            has_been_added_to_chain_dict[child.id] = True
+                            if len(child.direct_children_with_id) > 0:
+                                added_parents_with_children_to_add.append(child)
+                        else:
+                            # Wait for next iteration
+                            drop_added_parent_from_list = False
+                if drop_added_parent_from_list:
+                    added_parents_with_children_to_add = [
+                        child for child in added_parents_with_children_to_add
+                        if child.id != added_parent.id]
+
+        return update_computation_chain
 
     def explain(self, pretty_print=True):
         element_value_to_print = str(self)

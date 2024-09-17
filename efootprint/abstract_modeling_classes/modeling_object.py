@@ -213,35 +213,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return update_func
 
     def handle_model_input_update(self, old_value_that_gets_updated: ExplainableObject):
-        descendants = old_value_that_gets_updated.get_all_descendants_with_id()
-        has_been_recomputed_dict = {descendant.id: False for descendant in descendants}
-        has_been_recomputed_dict[old_value_that_gets_updated.id] = True
-
-        computed_parents_with_children_to_recompute = [old_value_that_gets_updated]
-
-        while len(computed_parents_with_children_to_recompute) > 0:
-            for recomputed_parent in computed_parents_with_children_to_recompute:
-                drop_recomputed_parent_from_list = True
-                for child in recomputed_parent.direct_children_with_id:
-                    if not has_been_recomputed_dict[child.id]:
-                        ancestors_that_belong_to_old_value_descendants = [
-                            ancestor for ancestor in child.direct_ancestors_with_id
-                            if ancestor.id in [ancestor.id for ancestor in descendants]]
-                        if all([has_been_recomputed_dict[ancestor.id]
-                                for ancestor in ancestors_that_belong_to_old_value_descendants]):
-                            child_update_func = self.retrieve_update_function_from_attribute_name(
-                                child.modeling_obj_container, child.attr_name_in_mod_obj_container)
-                            child_update_func()
-                            has_been_recomputed_dict[child.id] = True
-                            if len(child.direct_children_with_id) > 0:
-                                computed_parents_with_children_to_recompute.append(child)
-                        else:
-                            # Wait for next iteration
-                            drop_recomputed_parent_from_list = False
-                if drop_recomputed_parent_from_list:
-                    computed_parents_with_children_to_recompute = [
-                        child for child in computed_parents_with_children_to_recompute
-                        if child.id != recomputed_parent.id]
+        for child_to_update in old_value_that_gets_updated.update_computation_chain:
+            child_update_func = self.retrieve_update_function_from_attribute_name(
+                child_to_update.modeling_obj_container, child_to_update.attr_name_in_mod_obj_container)
+            child_update_func()
 
     def handle_object_link_update(
             self, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):
