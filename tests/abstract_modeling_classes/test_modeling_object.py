@@ -68,11 +68,11 @@ class TestModelingObject(unittest.TestCase):
             modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
         self.modeling_object.attribute = old_value
-        self.modeling_object.handle_model_input_update = MagicMock()
+        handle_model_input_update = MagicMock()
 
         self.modeling_object.attribute = value
 
-        self.modeling_object.handle_model_input_update.assert_called_once_with(old_value)
+        handle_model_input_update.assert_called_once_with(old_value)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()

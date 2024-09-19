@@ -17,12 +17,28 @@ class TestSystem(TestCase):
     def setUp(self):
         self.usage_pattern = MagicMock()
         self.usage_pattern.name = "usage_pattern"
+        self.usage_pattern.systems = []
+        device = MagicMock()
+        self.usage_pattern.devices = [device]
+        device.systems = []
+        self.usage_pattern.country.systems = []
+        self.usage_pattern.user_journey.systems = []
+        uj_step = MagicMock()
+        self.usage_pattern.user_journey.uj_steps = [uj_step]
+        uj_step.systems = []
+        job = MagicMock()
+        uj_step.jobs = [job]
+        job.systems = []
+        self.usage_pattern.user_journey.systems = []
         self.server = MagicMock()
         self.server.name = "server"
+        self.server.systems = []
         self.storage = MagicMock()
         self.storage.name = "storage"
+        self.storage.systems = []
         self.network = MagicMock()
         self.network.name = "network"
+        self.network.systems = []
 
         self.usage_pattern.user_journey.servers = {self.server}
         self.usage_pattern.user_journey.storages = {self.storage}
@@ -57,6 +73,63 @@ class TestSystem(TestCase):
 
     def test_networks(self):
         self.assertEqual([self.network], self.system.networks)
+
+    def test_check_no_object_to_link_is_already_linked_to_another_system_pass_case(self):
+        obj1 = MagicMock()
+        mock_system = MagicMock()
+        mock_system.id = self.system.id
+        obj1.systems = [mock_system]
+
+        obj2 = MagicMock()
+        obj2.systems = []
+
+        usage_patterns = MagicMock()
+
+        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
+            as mock_get_objects_linked_to_usage_patterns:
+            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [obj1, obj2]
+            self.system.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+
+    def test_check_no_object_to_link_is_already_linked_to_another_system_fail_case(self):
+        obj1 = MagicMock()
+        mock_system = MagicMock()
+        mock_system.id = "other id"
+        obj1.systems = [mock_system]
+
+        obj2 = MagicMock()
+        obj2.systems = []
+
+        usage_patterns = MagicMock()
+
+        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
+            as mock_get_objects_linked_to_usage_patterns:
+            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [obj1, obj2]
+            with self.assertRaises(PermissionError):
+                self.system.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+
+    def test_an_object_cant_be_linked_to_several_systems(self):
+        new_server = MagicMock()
+        other_system = MagicMock()
+        other_system.id = "other id"
+        new_server.systems = [other_system]
+
+        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
+                as mock_get_objects_linked_to_usage_patterns:
+            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_server]
+            with self.assertRaises(PermissionError):
+                new_system = System("new system", usage_patterns=[self.usage_pattern])
+
+    def test_cant_update_usage_patterns_with_usage_patterns_already_linked_to_another_system(self):
+        new_up = MagicMock()
+        other_system = MagicMock()
+        other_system.id = "other id"
+        new_up.systems = [other_system]
+
+        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
+                as mock_get_objects_linked_to_usage_patterns:
+            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
+            with self.assertRaises(PermissionError):
+                self.system.usage_patterns = [new_up]
         
     def test_fabrication_footprints(self):
         expected_dict = {

@@ -63,6 +63,24 @@ def css_escape(input_string):
     return ''.join(escape_char(c) for c in input_string)
 
 
+def retrieve_update_function_from_attribute_name(mod_obj, attr_name):
+    update_func_name = f"update_{attr_name}"
+    update_func = getattr(mod_obj, update_func_name, None)
+
+    if update_func is None:
+        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}. "
+                             f"Please create it and checkout optimization.md")
+
+    return update_func
+
+
+def handle_model_input_update(old_value_that_gets_updated: ExplainableObject):
+    for child_to_update in old_value_that_gets_updated.update_computation_chain:
+        child_update_func = retrieve_update_function_from_attribute_name(
+            child_to_update.modeling_obj_container, child_to_update.attr_name_in_mod_obj_container)
+        child_update_func()
+
+
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.dont_handle_input_updates = False
@@ -88,7 +106,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
         for attr_name in self.calculated_attributes:
-            update_func = self.retrieve_update_function_from_attribute_name(self, attr_name)
+            update_func = retrieve_update_function_from_attribute_name(self, attr_name)
             update_func()
 
     @property
@@ -194,29 +212,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     self.register_footprint_values_in_systems_before_change(
                         f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
                     super().__setattr__(name, input_value)
-                    self.handle_model_input_update(old_value)
+                    handle_model_input_update(old_value)
 
         super().__setattr__(name, input_value)
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
-
-    @staticmethod
-    def retrieve_update_function_from_attribute_name(mod_obj, attr_name):
-        update_func_name = f"update_{attr_name}"
-        update_func = getattr(mod_obj, update_func_name, None)
-
-        if update_func is None:
-            raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}. "
-                                 f"Please create it and checkout optimization.md")
-
-        return update_func
-
-    def handle_model_input_update(self, old_value_that_gets_updated: ExplainableObject):
-        for child_to_update in old_value_that_gets_updated.update_computation_chain:
-            child_update_func = self.retrieve_update_function_from_attribute_name(
-                child_to_update.modeling_obj_container, child_to_update.attr_name_in_mod_obj_container)
-            child_update_func()
 
     def handle_object_link_update(
             self, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):

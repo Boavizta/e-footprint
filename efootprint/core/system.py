@@ -23,13 +23,41 @@ from efootprint.utils.tools import format_co2_amount, display_co2_amount
 class System(ModelingObject):
     def __init__(self, name: str, usage_patterns: List[UsagePattern]):
         super().__init__(name)
-        self.usage_patterns = usage_patterns
+        self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+        self._usage_patterns = usage_patterns
         self.previous_change = None
         self.previous_total_energy_footprints_sum_over_period = None
         self.previous_total_fabrication_footprints_sum_over_period = None
         self.all_changes = []
         self.initial_total_energy_footprints_sum_over_period = None
         self.initial_total_fabrication_footprints_sum_over_period = None
+
+    def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
+        for mod_obj in self.get_objects_linked_to_usage_patterns(usage_patterns):
+            mod_obj_systems = mod_obj.systems
+            if mod_obj_systems and mod_obj_systems[0].id != self.id:
+                raise PermissionError(f"{mod_obj.name} is already linked to {mod_obj_systems[0].name}, so it is "
+                                      f"impossible to link it to {self.name}")
+            if len(mod_obj_systems) > 1:
+                raise ValueError(f"{mod_obj.name} is linked to 2 systems, this should never happen, please report an"
+                                 f" e-footprint bug at https://github.com/Boavizta/e-footprint/issues")
+
+    @property
+    def usage_patterns(self):
+        if "usage_patterns" in self.__dict__.keys():
+            self._usage_patterns = self.__dict__["usage_patterns"]
+            self.__dict__ = {key: value for key, value in self.__dict__.items() if key != "usage_patterns"}
+
+        return self._usage_patterns
+
+    @usage_patterns.setter
+    def usage_patterns(self, usage_patterns: List[UsagePattern]):
+        self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+        self._usage_patterns = usage_patterns
+
+    @usage_patterns.deleter
+    def usage_patterns(self):
+        del self._usage_patterns
 
     @property
     def user_journeys(self) -> List[UserJourney]:
@@ -54,29 +82,57 @@ class System(ModelingObject):
         self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
 
+    def get_objects_linked_to_usage_patterns(self, usage_patterns: List[UsagePattern]):
+        output_list = self.servers_from_usage_patterns(usage_patterns) + \
+                      self.storages_from_usage_patterns(usage_patterns) + usage_patterns + \
+                      self.networks_from_usage_patterns(usage_patterns)
+        user_journeys = list(set([up.user_journey for up in usage_patterns]))
+        uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
+        jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
+        devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
+        countries = list(set([up.country for up in usage_patterns]))
+
+        return output_list + user_journeys + uj_steps + jobs + devices + countries
+
     @property
-    def servers(self) -> List[Server]:
+    def all_linked_objects(self):
+        return self.get_objects_linked_to_usage_patterns(self.usage_patterns)
+
+    @staticmethod
+    def servers_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Server]:
         output_set = set()
-        for usage_pattern in self.usage_patterns:
+        for usage_pattern in usage_patterns:
             output_set.update(usage_pattern.user_journey.servers)
 
         return list(output_set)
 
     @property
-    def storages(self) -> List[Storage]:
+    def servers(self) -> List[Server]:
+        return self.servers_from_usage_patterns(self.usage_patterns)
+
+    @staticmethod
+    def storages_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Storage]:
         output_set = set()
-        for usage_pattern in self.usage_patterns:
+        for usage_pattern in usage_patterns:
             output_set.update(usage_pattern.user_journey.storages)
 
         return list(output_set)
 
     @property
-    def networks(self) -> List[Network]:
+    def storages(self) -> List[Storage]:
+        return self.storages_from_usage_patterns(self.usage_patterns)
+
+    @staticmethod
+    def networks_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Network]:
         output_set = set()
-        for usage_pattern in self.usage_patterns:
+        for usage_pattern in usage_patterns:
             output_set.update({usage_pattern.network})
 
         return list(output_set)
+
+    @property
+    def networks(self) -> List[Network]:
+        return self.networks_from_usage_patterns(self.usage_patterns)
 
     def get_storage_by_name(self, storage_name) -> Storage:
         for storage in self.storages:

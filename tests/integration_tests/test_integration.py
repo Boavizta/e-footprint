@@ -103,6 +103,12 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
+    def test_all_objects_linked_to_system(self):
+        self.assertEqual(
+            {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
+             self.upload_step, self.streaming_job, self.upload_job, self.usage_pattern.devices[0],
+             self.usage_pattern.country}, set(self.system.all_linked_objects))
+
     def test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
         graph.show(

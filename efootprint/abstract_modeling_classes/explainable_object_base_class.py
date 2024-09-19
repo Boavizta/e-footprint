@@ -131,6 +131,20 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return all_descendants
 
     @property
+    def all_ancestors_with_id(self):
+        all_ancestors = []
+
+        def retrieve_ancestors(expl_obj: ExplainableObject, ancestors_list):
+            for parent in expl_obj.direct_ancestors_with_id:
+                if parent.id not in [elt.id for elt in ancestors_list]:
+                    ancestors_list.append(parent)
+                retrieve_ancestors(parent, ancestors_list)
+
+        retrieve_ancestors(self, all_ancestors)
+
+        return all_ancestors
+
+    @property
     def update_computation_chain(self):
         if self.modeling_obj_container is None:
             raise ValueError(

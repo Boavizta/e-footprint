@@ -3,7 +3,7 @@ from unittest import TestCase
 import os
 import json
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -60,21 +60,8 @@ class IntegrationTestBaseClass(TestCase):
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
 
-    @staticmethod
-    def retrieve_all_mod_obj_from_system(input_system: System):
-        output_list = [input_system] + list(input_system.servers) + list(input_system.storages) \
-                      + input_system.usage_patterns \
-                      + list(input_system.networks)
-        user_journeys = list(set([up.user_journey for up in input_system.usage_patterns]))
-        uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
-        jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
-        devices = list(set(sum([up.devices for up in input_system.usage_patterns], start=[])))
-        countries = list(set([up.country for up in input_system.usage_patterns]))
-
-        return output_list + user_journeys + uj_steps + jobs + devices + countries
-
     def run_system_to_json_test(self, input_system):
-        mod_obj_list = self.retrieve_all_mod_obj_from_system(input_system)
+        mod_obj_list = [input_system] + input_system.all_linked_objects
 
         old_ids = {}
         for mod_obj in mod_obj_list:
@@ -106,13 +93,13 @@ class IntegrationTestBaseClass(TestCase):
                     return obj
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-        repr(class_obj_dict)
 
-        initial_mod_objs = self.retrieve_all_mod_obj_from_system(input_system)
+        initial_mod_objs = input_system.all_linked_objects
         for obj_id, obj in flat_obj_dict.items():
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():
-                if isinstance(attr_value, ExplainableQuantity):
-                    self.assertEqual(getattr(corresponding_obj, attr_key).value, attr_value.value)
+                if isinstance(attr_value, ExplainableQuantity) or isinstance(attr_value, ExplainableHourlyQuantities):
+                    self.assertEqual(getattr(corresponding_obj, attr_key), attr_value)
                     self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label)
+
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")
