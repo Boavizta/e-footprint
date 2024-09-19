@@ -394,7 +394,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
                     f"Can only compare ExplainableHourlyUsages with values of same length. Here we are trying to "
                     f"compare {self.value} and {other.value}.")
 
-            return (self.value["value"] == other.value["value"]).all()
+            return self.value.equals(other.value)
         else:
             raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
 

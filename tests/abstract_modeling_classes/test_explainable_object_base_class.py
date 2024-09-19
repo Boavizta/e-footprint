@@ -115,6 +115,28 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual(len(descendants), 4)
         self.assertListEqual(descendants_labels, ['child1', 'grandchild1', 'child2', 'grandchild2'])
 
+    def test_all_ancestors_with_id(self):
+        descendant = ExplainableObject(0, "descendant")
+        parent1 = ExplainableObject(1, "parent1")
+        parent1.modeling_obj_container = MagicMock(id="parent1_mod_obj_container")
+        parent2 = ExplainableObject(2, "parent2")
+        parent2.modeling_obj_container = MagicMock(id="parent2_mod_obj_container")
+        grandparent1 = ExplainableObject(3, "grandparent1")
+        grandparent1.modeling_obj_container = MagicMock(id="grandparent1_mod_obj_container")
+        grandparent2 = ExplainableObject(4, "grandparent2")
+        grandparent2.modeling_obj_container = MagicMock(id="grandparent2_mod_obj_container")
+
+        descendant.direct_ancestors_with_id.append(parent1)
+        descendant.direct_ancestors_with_id.append(parent2)
+        parent1.direct_ancestors_with_id.append(grandparent1)
+        parent2.direct_ancestors_with_id.append(grandparent2)
+
+        ancestors = descendant.all_ancestors_with_id
+        ancestors_labels = [ancestor.label for ancestor in ancestors]
+
+        self.assertEqual(len(ancestors), 4)
+        self.assertListEqual(ancestors_labels, ['parent1', 'grandparent1', 'parent2', 'grandparent2'])
+
     def test_direct_children(self):
         left_parent = ExplainableObject(value=3, label="Label L")
         right_parent = ExplainableObject(value=4, label="Label R")

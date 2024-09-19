@@ -170,6 +170,15 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "complex_system"
 
+    def test_all_objects_linked_to_system(self):
+        expected_list = [
+            self.server2, self.server1, self.server3, self.storage, self.usage_pattern1, self.usage_pattern2,
+            self.network, self.uj, self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step,
+            self.streaming_job, self.upload_job, self.dailymotion_job, self.tiktok_job, self.tiktok_analytics_job,
+            self.usage_pattern1.devices[0], self.usage_pattern2.devices[0], self.usage_pattern1.country,
+            self.usage_pattern2.country]
+        self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
+
     def test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         logger.warning("Setting storage fixed_nb_of_instances to not empty")
         old_fixed_nb_of_instances = self.storage_1.fixed_nb_of_instances
