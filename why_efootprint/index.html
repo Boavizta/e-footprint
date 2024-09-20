@@ -998,27 +998,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Service/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Service
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../System/" class="md-nav__link">
         
   
@@ -1340,7 +1319,7 @@
 <p>First and foremost, digital services vary wildly in usage volumes. The biggest social networks have billions of daily visits while your company showcase website might have only a few hundreds. The same ecodesign action leading to a 10% energy consumption reduction will be vastly more impactful on the big system than on the small one, so <strong>usage volume input is critical</strong>.</p>
 <p>Then let’s look at the four key components of digital services: <strong>user devices, network, servers and storage</strong>. Different services make use of them in vastly different proportions, making each of them sometimes negligible, sometimes crucial. For example, streaming services make a heavy use of the network, gen AI services use a lot of computing power in servers, and social networks store huge amounts of data. All these different types of objects thus need to be represented in our model.</p>
 <p>Lastly, many ecodesign actions involve changing the way users interact with the service, so there needs to be a way to tell the model that users have changed the actions that they typically do. Hence, <strong>user journeys must be part of the model inputs</strong>.</p>
-<p>We now have a framework for thinking about the physicality of our digital service: <strong>digital services must at least be described in terms of user journeys (<a href="../UserJourney/">UserJourney</a>) with their usage information (<a href="../UsagePattern/">UsagePattern</a>). Each user journey is made of steps (<a href="../UserJourneyStep/">UserJourneyStep</a>) that make requests (<a href="../Job/">Job</a>) through a network (<a href="../Network/">Network</a>) to software (<a href="../Service/">Service</a>) installed on a server (<a href="../Autoscaling/">Server</a>), possibly saving data to storage (<a href="../Storage/">Storage</a>).</strong></p>
+<p>We now have a framework for thinking about the physicality of our digital service: <strong>digital services must at least be described in terms of user journeys (<a href="../UserJourney/">UserJourney</a>) with their usage information (<a href="../UsagePattern/">UsagePattern</a>). Each user journey is made of steps (<a href="../UserJourneyStep/">UserJourneyStep</a>) that make requests (<a href="../Job/">Job</a>) through a network (<a href="../Network/">Network</a>), on a server (<a href="../Autoscaling/">Server</a>), possibly saving data to storage (<a href="../Storage/">Storage</a>).</strong></p>
 <p>e-footprint was born from the above analysis and the observation that no other tool had taken a modeling approach bringing together all these objects. It started as an Excel modeling and then evolved towards a Python package to allow for greater flexibility in the combination of objects.</p>
 <p>Moreover, it is necessary to take a life cycle analysis approach to understand all aspects of environmental impact from cradle to grave. Here the orders of magnitude show that focusing on the fabrication and run phases of the service is a good first approximation, neglecting transport and end of life.</p>
 <h2 id="the-difference-between-the-model-and-the-modeling">The difference between the model and the modeling</h2>

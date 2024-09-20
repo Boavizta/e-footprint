@@ -920,27 +920,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../Service/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Service
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../System/" class="md-nav__link">
         
   
@@ -1801,7 +1780,7 @@ calculated_attributes:
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">on_premise_server_from_config</span><span class="p">(</span>
 </span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    <span class="s2">&quot;My server&quot;</span><span class="p">,</span> <span class="n">nb_of_cpu_units</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nb_of_cores_per_cpu_unit</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span><span class="n">nb_of_ram_units</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="n">ram_quantity_per_unit_in_gb</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">average_carbon_intensity</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">kWh</span><span class="p">)))</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="n">ram_quantity_per_unit_in_gb</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">average_carbon_intensity</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">kWh</span><span class="p">),</span><span class="n">base_ram_consumption</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">)))</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>OnPremise id-bacd56-My-server
 
@@ -1830,16 +1809,14 @@ calculated_attributes:
 </code></pre></div>
 <h2 id="job-builder-from-boaviztas-ecobenchmark-data">Job builder from Boavizta’s ecobenchmark data</h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder</span> <span class="kn">import</span> <span class="n">ecobenchmark_job</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="kn">from</span> <span class="nn">efootprint.core.service</span> <span class="kn">import</span> <span class="n">Service</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">server</span> <span class="o">=</span> <span class="n">default_autoscaling</span><span class="p">()</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">default_ssd</span><span class="p">()</span>
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">service</span> <span class="o">=</span> <span class="n">Service</span><span class="p">(</span><span class="s2">&quot;test service&quot;</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">base_ram_consumption</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">))</span>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="n">job</span> <span class="o">=</span> <span class="n">ecobenchmark_job</span><span class="p">(</span>
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>    <span class="s2">&quot;test job&quot;</span><span class="p">,</span> <span class="n">service</span><span class="p">,</span> <span class="n">data_upload</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">),</span> <span class="n">data_download</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">),</span>
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>    <span class="n">technology</span><span class="o">=</span><span class="s1">&#39;php-symfony&#39;</span><span class="p">)</span>
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="n">server</span> <span class="o">=</span> <span class="n">default_autoscaling</span><span class="p">()</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">default_ssd</span><span class="p">()</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="n">job</span> <span class="o">=</span> <span class="n">ecobenchmark_job</span><span class="p">(</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="s2">&quot;test job&quot;</span><span class="p">,</span> <span class="n">server</span><span class="p">,</span> <span class="n">storage</span><span class="p">,</span> <span class="n">data_upload</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">),</span> <span class="n">data_download</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB</span><span class="p">),</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="n">technology</span><span class="o">=</span><span class="s1">&#39;php-symfony&#39;</span><span class="p">)</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>2024-09-12 15:44:13,398 - INFO - File /ecobenchmark_results__raw.csv already exists, we do not overwrite it
 
