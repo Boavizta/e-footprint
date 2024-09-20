@@ -188,10 +188,10 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         logger.warning("Changing jobs server")
         self.streaming_job.server = new_server
+        self.footprint_has_changed([self.server])
         self.upload_job.server = new_server
         self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, self.server.energy_footprint.magnitude)
-        self.footprint_has_changed([self.server])
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial job server")
@@ -218,11 +218,11 @@ class IntegrationTest(IntegrationTestBaseClass):
         )
         logger.warning("Changing jobs storage")
         self.streaming_job.storage = new_storage
+        self.footprint_has_changed([self.storage])
         self.upload_job.storage = new_storage
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
-        self.footprint_has_changed([self.storage])
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial jobs storage")
@@ -235,11 +235,11 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.kB),
+        new_job = Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.MB),
                       data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
                       ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
 
-        self.streaming_step.jobs = [new_job]
+        self.streaming_step.jobs += [new_job]
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.usage_pattern])

@@ -37,15 +37,16 @@ class IntegrationTestBaseClass(TestCase):
                         f" to {str(new_footprint)}")
                 else:
                     logger.info(f"{obj.name} footprint has changed from "
-                                f"{initial_energy_footprint} to {obj.energy_footprint.value}")
+                                f"{initial_energy_footprint} to {obj.energy_footprint}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
 
         for prev_fp, initial_fp in zip(
-                (self.system.previous_total_energy_footprints, self.system.previous_total_fabrication_footprints),
+                (self.system.previous_total_energy_footprints_sum_over_period,
+                 self.system.previous_total_fabrication_footprints_sum_over_period),
                 (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
             for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(initial_fp[key], initial_fp[key])
+                self.assertEqual(initial_fp[key], prev_fp[key])
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:

@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [5.0.0] 2024-09-20
+- Supress Service object and transfer its functions to Server and Storage. Now jobs directly link to servers and storage. This change simplifies e-footprint’s object structure and removes the ambiguity surrounding the term Service.
+
 ## [4.0.0] 2024-09-11
 
 ### Changed

@@ -11,7 +11,7 @@ python -m pytest --cov=tests
 
 ## Update [README.md](README.md) if needed
 
-## Update [tutorial notebook](tutorial.ipynb) if needed, [builders notebook](docs_sources/doc_utils/builders.ipynb) if needed and update doc
+## Update [tutorial notebook](tutorial.ipynb) if needed, [builders notebook](builders.ipynb) if needed and update doc
 
 ```shell
 python docs_sources/doc_utils/main.py

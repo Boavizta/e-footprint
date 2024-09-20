@@ -14,6 +14,12 @@ def run_notebook(notebook_path):
     exec(python_code)
 
 
-class TestTutorial(unittest.TestCase):
+root_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+class TestNotebooks(unittest.TestCase):
     def test_tutorial(self):
-        run_notebook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tutorial.ipynb"))
+        run_notebook(os.path.join(root_dir, "..", "tutorial.ipynb"))
+
+    def test_builders(self):
+        run_notebook(os.path.join(root_dir, "..", "builders.ipynb"))

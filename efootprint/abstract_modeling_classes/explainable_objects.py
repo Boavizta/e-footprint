@@ -77,6 +77,9 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         else:
             raise ValueError
 
+    def __str__(self):
+        return "no calculated value"
+
 
 class ExplainableQuantity(ExplainableObject):
     def __init__(
@@ -275,7 +278,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return ExplainableQuantity(self.value["value"].sum(), left_parent=self, operator="sum")
 
     def mean(self):
-        return ExplainableQuantity(self.value["value"].mean() / 24, left_parent=self, operator="mean")
+        return ExplainableQuantity(self.value["value"].mean(), left_parent=self, operator="mean")
 
     def max(self):
         return ExplainableQuantity(self.value["value"].max(), left_parent=self, operator="max")

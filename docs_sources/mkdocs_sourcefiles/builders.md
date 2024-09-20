@@ -16,7 +16,7 @@ from efootprint.builders.hardware.devices_defaults import default_smartphone, de
 print(default_smartphone())
 ```
 
-    Hardware id-ded0ca-Default-smartphone
+    Hardware id-c10319-Default-smartphone
      
     carbon_footprint_fabrication: 30 kilogram
     power: 1 watt
@@ -30,7 +30,7 @@ print(default_smartphone())
 print(default_laptop())
 ```
 
-    Hardware id-251105-Default-laptop
+    Hardware id-e4ea74-Default-laptop
      
     carbon_footprint_fabrication: 156 kilogram
     power: 50 watt
@@ -44,7 +44,7 @@ print(default_laptop())
 print(default_box())
 ```
 
-    Hardware id-867598-Default-box
+    Hardware id-8da43a-Default-box
      
     carbon_footprint_fabrication: 78 kilogram
     power: 10 watt
@@ -58,7 +58,7 @@ print(default_box())
 print(default_screen())
 ```
 
-    Hardware id-626e61-Default-screen
+    Hardware id-161167-Default-screen
      
     carbon_footprint_fabrication: 222 kilogram
     power: 30 watt
@@ -79,7 +79,7 @@ from efootprint.builders.hardware.network_defaults import default_mobile_network
 print(default_mobile_network())
 ```
 
-    Network id-530c27-Default-mobile-network
+    Network id-5de703-Default-mobile-network
      
     bandwidth_energy_intensity: 0.12 kilowatt_hour / gigabyte
      
@@ -93,7 +93,7 @@ print(default_mobile_network())
 print(default_wifi_network())
 ```
 
-    Network id-e9d39c-Default-wifi-network
+    Network id-b6c5f4-Default-wifi-network
      
     bandwidth_energy_intensity: 0.05 kilowatt_hour / gigabyte
      
@@ -116,7 +116,7 @@ from efootprint.builders.hardware.servers_defaults import default_autoscaling, d
 print(default_autoscaling())
 ```
 
-    Autoscaling id-038a89-Default-autoscaling
+    Autoscaling id-0f892e-Default-autoscaling
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -128,7 +128,7 @@ print(default_autoscaling())
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
-    base_ram_consumption: 0 megabyte
+    base_ram_consumption: 0 gigabyte
     base_cpu_consumption: 0 core
      
     calculated_attributes:
@@ -149,7 +149,7 @@ print(default_autoscaling())
 print(default_serverless())
 ```
 
-    Serverless id-f84f11-Default-serverless
+    Serverless id-896ddd-Default-serverless
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -161,7 +161,7 @@ print(default_serverless())
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
-    base_ram_consumption: 0 megabyte
+    base_ram_consumption: 0 gigabyte
     base_cpu_consumption: 0 core
      
     calculated_attributes:
@@ -182,7 +182,7 @@ print(default_serverless())
 print(default_onpremise())
 ```
 
-    OnPremise id-0f7376-Default-on-premise
+    OnPremise id-f5b655-Default-on-premise
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -194,9 +194,9 @@ print(default_onpremise())
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
-    fixed_nb_of_instances: None
-    base_ram_consumption: 0 megabyte
+    base_ram_consumption: 0 gigabyte
     base_cpu_consumption: 0 core
+    fixed_nb_of_instances: None
      
     calculated_attributes:
       hour_by_hour_cpu_need: None
@@ -223,7 +223,7 @@ from efootprint.builders.hardware.storage_defaults import default_hdd, default_s
 print(default_hdd())
 ```
 
-    Storage id-1f077f-Default-HDD-storage
+    Storage id-1ce6b0-Default-HDD-storage
      
     carbon_footprint_fabrication: 20 kilogram
     power: 4.2 watt
@@ -244,8 +244,8 @@ print(default_hdd())
       storage_dumps: None
       storage_delta: None
       full_cumulative_storage_need: None
-      raw_nb_of_instances: None
       nb_of_active_instances: None
+      raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
       instances_energy: None
@@ -258,7 +258,7 @@ print(default_hdd())
 print(default_ssd())
 ```
 
-    Storage id-b64333-Default-SSD-storage
+    Storage id-377b2e-Default-SSD-storage
      
     carbon_footprint_fabrication: 160 kilogram
     power: 1.3 watt
@@ -300,7 +300,7 @@ from efootprint.constants.units import u
 print(default_ssd("My custom default SSD with higher carbon intensity", average_carbon_intensity=SourceValue(300 * u.g / u.kWh)))
 ```
 
-    Storage id-83e273-My-custom-default-SSD-with-higher-carbon-intensity
+    Storage id-44471b-My-custom-default-SSD-with-higher-carbon-intensity
      
     carbon_footprint_fabrication: 160 kilogram
     power: 1.3 watt
@@ -348,7 +348,7 @@ from efootprint.builders.hardware.servers_boaviztapi import get_cloud_server
 print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
 ```
 
-    Autoscaling id-0a04a7-aws-m52exlarge-instances
+    Autoscaling id-606d8b-aws-m52exlarge-instances
      
     carbon_footprint_fabrication: 48.0 kilogram
     power: 25.94 watt
@@ -360,12 +360,14 @@ print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
     ram: 384.0 gigabyte
     cpu_cores: 48.0 core
     power_usage_effectiveness: 1.2 dimensionless
-    base_ram_consumption: 0 megabyte
+    base_ram_consumption: 0 gigabyte
     base_cpu_consumption: 0 core
      
     calculated_attributes:
-      hour_by_hour_ram_need: None
       hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
+      available_ram_per_instance: None
+      available_cpu_per_instance: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -380,11 +382,10 @@ print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
 from efootprint.core.hardware.servers.serverless import Serverless
 
 print(get_cloud_server(
-    "aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh), base_efootprint_class=Serverless,
-    lifespan=SourceValue(7 * u.year), base_ram_consumption=SourceValue(1 * u.MB)))
+    "aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh), base_efootprint_class=Serverless, lifespan=SourceValue(7 * u.year)))
 ```
 
-    Serverless id-f7f713-aws-m52exlarge-instances
+    Serverless id-b5b05f-aws-m52exlarge-instances
      
     carbon_footprint_fabrication: 48.0 kilogram
     power: 25.94 watt
@@ -396,6 +397,8 @@ print(get_cloud_server(
     ram: 384.0 gigabyte
     cpu_cores: 48.0 core
     power_usage_effectiveness: 1.2 dimensionless
+    base_ram_consumption: 0 gigabyte
+    base_cpu_consumption: 0 core
      
     calculated_attributes:
       hour_by_hour_cpu_need: None
@@ -421,10 +424,10 @@ from efootprint.builders.hardware.servers_boaviztapi import on_premise_server_fr
 ```python
 print(on_premise_server_from_config(
     "My server", nb_of_cpu_units=2, nb_of_cores_per_cpu_unit=24,nb_of_ram_units=6,
-    ram_quantity_per_unit_in_gb=16, average_carbon_intensity=SourceValue(100 * u.g / u.kWh)))
+    ram_quantity_per_unit_in_gb=16, average_carbon_intensity=SourceValue(100 * u.g / u.kWh),base_ram_consumption=SourceValue(1 * u.MB)))
 ```
 
-    OnPremise id-bacd56-My-server
+    OnPremise id-cda6f6-My-server
      
     carbon_footprint_fabrication: 670.0 kilogram
     power: 520.99 watt
@@ -436,6 +439,8 @@ print(on_premise_server_from_config(
     ram: 96 gigabyte
     cpu_cores: 48 core
     power_usage_effectiveness: 1.4 dimensionless
+    base_ram_consumption: 1 megabyte
+    base_cpu_consumption: 0 core
     fixed_nb_of_instances: None
      
     calculated_attributes:
@@ -466,14 +471,14 @@ job = ecobenchmark_job(
 print(job)
 ```
 
-    2024-09-12 15:44:13,398 - INFO - File /ecobenchmark_results__raw.csv already exists, we do not overwrite it
+    2024-09-23 11:28:29,911 - INFO - File /ecobenchmark_results__raw.csv already exists, we do not overwrite it
 
 
-    Job id-38bded-test-job
+    Job id-714466-test-job
      
     job_type: undefined
-    server: id-038a89-Default-autoscaling
-    storage: id-b64333-Default-SSD-storage
+    server: id-a72192-Default-autoscaling
+    storage: id-a54813-Default-SSD-storage
     data_upload: 1 megabyte
     data_download: 1 megabyte
     request_duration: 1 second

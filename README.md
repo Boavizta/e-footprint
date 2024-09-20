@@ -6,6 +6,10 @@ The current perimeter is the carbon footprint associated with the fabrication an
 
 # Getting started
 
+## Installation
+
+Check out [INSTALL.md](INSTALL.md).
+
 ## Documentation
 
 Here is the link to the [e-footprint documentation](https://boavizta.github.io/e-footprint/). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
@@ -26,7 +30,7 @@ You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize 
 
 <figure>
     <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
-    <figcaption>Object relationships graph: usage pattern in purple, user journey and user journey steps in gold, hardware in red, and service in blue. Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.</figcaption>
+    <figcaption>Object relationships graph: user journey in deep blue, user journey steps in blue, jobs in gold, infra hardware and usage pattern (that includes devices impact) in red. Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.</figcaption>
 </figure>
 
 <figure>

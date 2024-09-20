@@ -5,8 +5,11 @@
 ### name
 A human readable description of the object.
 
-### service
-An instance of [Service](Service.md).
+### server
+An instance of [Autoscaling](Autoscaling.md).
+
+### storage
+An instance of [Storage](Storage.md).
 
 ### data_upload
 data upload of request streaming in megabyte.
@@ -15,7 +18,7 @@ data upload of request streaming in megabyte.
 data download of request streaming in megabyte.
 
 ### request_duration
-request duration to service in streaming in hour.
+request duration of streaming to server in hour.
 
 ### cpu_needed
 cpu needed on server server to process streaming in core.
@@ -42,9 +45,9 @@ Dictionary with UsagePattern as keys and
                         hourly streaming occurrences in usage pattern as values, in dimensionless.  
   
 Example value: {  
-id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],  
-    last 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1],   
+id-c19407-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [5, 4, 4, 9, 2, 7, 4, 7, 2, 5],  
+    last 10 vals [5, 1, 8, 4, 3, 4, 2, 4, 4, 9],   
 }  
   
 Depends directly on:  
@@ -62,15 +65,15 @@ Dictionary with UsagePattern as keys and
                         average hourly streaming occurrences in usage pattern as values, in dimensionless.  
   
 Example value: {  
-id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
-    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07],   
+id-c19407-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.33, 0.27, 0.27, 0.6, 0.13, 0.47, 0.27, 0.47, 0.13, 0.33],  
+    last 10 vals [0.33, 0.07, 0.53, 0.27, 0.2, 0.27, 0.13, 0.27, 0.27, 0.6],   
 }  
   
 Depends directly on:  
   
 - [Hourly streaming occurrences in usage pattern](Job.md#hourly_occurrences_per_usage_pattern)
-- [Request duration to service in streaming](Job.md#request_duration)  
+- [Request duration of streaming to server](Job.md#request_duration)  
 
 through the following calculations:  
 
@@ -80,12 +83,12 @@ You can also visit the <a href='../calculus_graphs/streaming_hourly_avg_occurren
 
 ### hourly_data_upload_per_usage_pattern  
 Dictionary with UsagePattern as keys and 
-                        hourly data upload for streaming in usage pattern as values, in terabyte.  
+                        hourly data upload for streaming in usage pattern as values, in megabyte.  
   
 Example value: {  
-id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],   
+id-c19407-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
+    first 10 vals [0.25, 0.2, 0.2, 0.45, 0.1, 0.35, 0.2, 0.35, 0.1, 0.25],  
+    last 10 vals [0.25, 0.05, 0.4, 0.2, 0.15, 0.2, 0.1, 0.2, 0.2, 0.45],   
 }  
   
 Depends directly on:  
@@ -104,9 +107,9 @@ Dictionary with UsagePattern as keys and
                         hourly data download for streaming in usage pattern as values, in megabyte.  
   
 Example value: {  
-id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
-    first 10 vals [1600.0, 4000.0, 7200.0, 800.0, 2400.0, 6400.0, 4800.0, 3200.0, 1600.0, 1600.0],  
-    last 10 vals [3200.0, 5600.0, 4000.0, 5600.0, 800.0, 2400.0, 5600.0, 3200.0, 2400.0, 800.0],   
+id-c19407-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
+    first 10 vals [4000.0, 3200.0, 3200.0, 7200.0, 1600.0, 5600.0, 3200.0, 5600.0, 1600.0, 4000.0],  
+    last 10 vals [4000.0, 800.0, 6400.0, 3200.0, 2400.0, 3200.0, 1600.0, 3200.0, 3200.0, 7200.0],   
 }  
   
 Depends directly on:  
@@ -124,8 +127,8 @@ You can also visit the <a href='../calculus_graphs/streaming_hourly_data_downloa
 hourly streaming occurrences across usage patterns in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],  
-    last 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1]  
+    first 10 vals [5, 4, 4, 9, 2, 7, 4, 7, 2, 5],  
+    last 10 vals [5, 1, 8, 4, 3, 4, 2, 4, 4, 9]  
   
 Depends directly on:  
   
@@ -141,8 +144,8 @@ You can also visit the <a href='../calculus_graphs/streaming_hourly_occurrences_
 hourly streaming average occurrences across usage patterns in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
-    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
+    first 10 vals [0.33, 0.27, 0.27, 0.6, 0.13, 0.47, 0.27, 0.47, 0.13, 0.33],  
+    last 10 vals [0.33, 0.07, 0.53, 0.27, 0.2, 0.27, 0.13, 0.27, 0.27, 0.6]  
   
 Depends directly on:  
   
@@ -155,11 +158,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/streaming_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly streaming average occurrences across usage patterns’s full calculation graph</a>.
 
 ### hourly_data_upload_across_usage_patterns  
-hourly streaming data upload across usage patterns in terabyte.  
+hourly streaming data upload across usage patterns in megabyte.  
   
-Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
+    first 10 vals [0.25, 0.2, 0.2, 0.45, 0.1, 0.35, 0.2, 0.35, 0.1, 0.25],  
+    last 10 vals [0.25, 0.05, 0.4, 0.2, 0.15, 0.2, 0.1, 0.2, 0.2, 0.45]  
   
 Depends directly on:  
   

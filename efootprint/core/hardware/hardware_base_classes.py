@@ -73,6 +73,10 @@ class InfraHardware(Hardware):
     def jobs(self):
         return self.modeling_obj_containers
 
+    @property
+    def systems(self) -> List:
+        return list(set(sum([job.systems for job in self.jobs], start=[])))
+
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = (
                 self.carbon_footprint_fabrication * self.nb_of_instances * ExplainableQuantity(1 * u.hour, "one hour")

@@ -52,6 +52,4 @@ class Network(ModelingObject):
 
             energy_footprint += up_network_consumption * up.country.average_carbon_intensity
 
-        energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
-
-        self.energy_footprint = energy_footprint
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

@@ -262,8 +262,8 @@ class TestSystem(TestCase):
             "Network": ExplainableQuantity(5 * u.kg, "network")
         }
 
-        with patch.object(self.system, "previous_total_energy_footprints", previous_energy_footprints),\
-            patch.object(self.system, "previous_total_fabrication_footprints", previous_fab_footprints), \
+        with patch.object(self.system, "previous_total_energy_footprints_sum_over_period", previous_energy_footprints),\
+            patch.object(self.system, "previous_total_fabrication_footprints_sum_over_period", previous_fab_footprints), \
             patch.object(System, "total_energy_footprint_sum_over_period", new_callable=PropertyMock) as eneg, \
             patch.object(System, "total_fabrication_footprint_sum_over_period", new_callable=PropertyMock) as fab, \
             patch.object(self.system, "previous_change", change_test):

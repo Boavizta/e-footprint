@@ -55,7 +55,7 @@ class Job(ModelingObject):
         self.data_download = data_download.set_label(f"Data download of request {self.name}")
         if not request_duration.value.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
-        self.request_duration = request_duration.set_label(f"Request duration to {self.name} in {self.name}")
+        self.request_duration = request_duration.set_label(f"Request duration of {self.name} to {server.name}")
         if not ram_needed.value.check("[]"):
             raise ValueError(
                 "Variable 'ram_needed' does not have the appropriate '[]' dimensionality")

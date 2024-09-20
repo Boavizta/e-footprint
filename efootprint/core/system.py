@@ -25,11 +25,11 @@ class System(ModelingObject):
         super().__init__(name)
         self.usage_patterns = usage_patterns
         self.previous_change = None
-        self.previous_total_energy_footprints = None
-        self.previous_total_fabrication_footprints = None
+        self.previous_total_energy_footprints_sum_over_period = None
+        self.previous_total_fabrication_footprints_sum_over_period = None
         self.all_changes = []
-        self.initial_total_energy_footprints = None
-        self.initial_total_fabrication_footprints = None
+        self.initial_total_energy_footprints_sum_over_period = None
+        self.initial_total_fabrication_footprints_sum_over_period = None
 
     @property
     def user_journeys(self) -> List[UserJourney]:
@@ -51,8 +51,8 @@ class System(ModelingObject):
         self.init_has_passed = True
         self.launch_attributes_computation_chain(self.attributes_computation_chain)
         logger.info(f"Finished computing {self.name} modeling")
-        self.initial_total_energy_footprints = self.total_energy_footprint_sum_over_period
-        self.initial_total_fabrication_footprints = self.total_fabrication_footprint_sum_over_period
+        self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
+        self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
 
     @property
     def servers(self) -> List[Server]:
@@ -279,10 +279,10 @@ class System(ModelingObject):
         if from_start and len(self.all_changes) > 1:
             changes_list = "\n- ".join([change.replace('changed', 'changing') for change in self.all_changes])
             print(f"Plotting the impact of:\n\n- {changes_list}")
-            emissions_dict__old = [self.initial_total_energy_footprints, self.initial_total_fabrication_footprints]
+            emissions_dict__old = [self.initial_total_energy_footprints_sum_over_period, self.initial_total_fabrication_footprints_sum_over_period]
         else:
             print(f"Plotting the impact of {self.previous_change.replace('changed', 'changing')}")
-            emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
+            emissions_dict__old = [self.previous_total_energy_footprints_sum_over_period, self.previous_total_fabrication_footprints_sum_over_period]
 
         emissions_dict__new = [self.total_energy_footprint_sum_over_period,
                                self.total_fabrication_footprint_sum_over_period]
