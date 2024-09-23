@@ -257,6 +257,15 @@
                     "link": null
                 }
             },
+            "data_stored": {
+                "label": "Data stored of request streaming from hypothesis",
+                "value": 50.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "request_duration": {
                 "label": "Request duration to Youtube in streaming from hypothesis",
                 "value": 0.06666666666666667,
@@ -305,6 +314,15 @@
                 "label": "Data download of request upload from hypothesis",
                 "value": 0.0,
                 "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored of request upload from hypothesis",
+                "value": 300.0,
+                "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -363,6 +381,15 @@
                     "link": null
                 }
             },
+            "data_stored": {
+                "label": "Data stored of request dailymotion from hypothesis",
+                "value": 300.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "request_duration": {
                 "label": "Request duration to Dailymotion in dailymotion from hypothesis",
                 "value": 0.0002777777777777778,
@@ -416,6 +443,15 @@
                     "link": null
                 }
             },
+            "data_stored": {
+                "label": "Data stored of request tiktok from hypothesis",
+                "value": 0.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "request_duration": {
                 "label": "Request duration to TikTok service in tiktok from hypothesis",
                 "value": 0.06666666666666667,
@@ -464,6 +500,15 @@
                 "label": "Data download of request tiktok analytics from hypothesis",
                 "value": 0.0,
                 "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored of request tiktok analytics from hypothesis",
+                "value": 50.0,
+                "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null

@@ -14,7 +14,7 @@ class TestJobEcobenchmarkBuilder(unittest.TestCase):
         server.base_ram_consumption = SourceValue(1 * u.MB)
         ecobenchmark_job(
             "test job", server, storage, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
-            technology='php-symfony')
+            data_stored=SourceValue(1 * u.MB),  technology='php-symfony')
 
     def test_ecobenchmark_job_raises_valueerror_if_technology_is_not_in_list(self):
         server = default_autoscaling()
@@ -24,4 +24,4 @@ class TestJobEcobenchmarkBuilder(unittest.TestCase):
         with self.assertRaises(ValueError):
             ecobenchmark_job(
                 "test job", server, storage, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
-                technology='unexisting-tech')
+                data_stored=SourceValue(1 * u.MB), technology='unexisting-tech')

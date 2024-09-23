@@ -1,62 +1,82 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.usage.job import Job
 from efootprint.constants.units import u
 
 
 class TestUserJourney(TestCase):
     def setUp(self):
-        self.storage = MagicMock()
-        self.server = MagicMock()
-
-        self.job = Job("Job", server=self.server, storage=self.storage, data_download=MagicMock(),
-                       data_upload=MagicMock(), request_duration=MagicMock(), cpu_needed=MagicMock(),
-                       ram_needed=MagicMock())
-        self.step1 = UserJourneyStep(
-            "test_uj_step1",
-            jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min))
-        self.job2 = MagicMock(
-            spec={"data_download": SourceValue(200 * u.MB), "data_upload": SourceValue(100 * u.MB)})
-        self.step2 = UserJourneyStep(
-            "test_uj_step2", jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min))
-        self.step3 = UserJourneyStep(
-            "test_uj_step3", jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min))
-        self.user_journey = UserJourney("test user journey", uj_steps=[self.step1])
+        self.user_journey = UserJourney("test user journey", uj_steps=[])
         self.user_journey.dont_handle_input_updates = True
-        self.usage_pattern = MagicMock()
-        self.user_journey.modeling_obj_containers = [self.usage_pattern]
-
-        for step in [self.step1, self.step2, self.step3]:
-            step.remove_obj_from_modeling_obj_containers = MagicMock()
-            step.add_obj_to_modeling_obj_containers = MagicMock()
-            step.launch_attributes_computation_chain = MagicMock()
 
     def test_servers(self):
-        self.assertEqual(self.user_journey.servers, [self.server])
+        server_1 = MagicMock()
+        server_2 = MagicMock()
+
+        job_1 = MagicMock()
+        job_2 = MagicMock()
+        job_3 = MagicMock()
+
+        job_1.server = server_1
+        job_2.server = server_2
+        job_3.server = server_1
+
+        with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
+            jobs_mock.return_value = [job_1, job_2, job_3]
+            self.assertEqual({server_1, server_2}, set(self.user_journey.servers))
 
     def test_storages(self):
-        self.assertEqual(self.user_journey.storages, [self.storage])
+        job_1 = MagicMock()
+        job_2 = MagicMock()
+        job_3 = MagicMock()
+
+        storage_1 = MagicMock()
+        storage_2 = MagicMock()
+
+        job_1.storage = storage_1
+        job_2.storage = storage_2
+        job_3.storage = storage_1
+
+        with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
+            jobs_mock.return_value = [job_1, job_2, job_3]
+            self.assertEqual({storage_1, storage_2}, set(self.user_journey.storages))
 
     def test_jobs(self):
-        self.assertEqual(self.user_journey.jobs, [self.job])
+        job1 = MagicMock()
+        job2 = MagicMock()
+
+        uj_step1 = MagicMock()
+        uj_step2 = MagicMock()
+
+        uj_step1.jobs = [job1]
+        uj_step2.jobs = [job2]
+
+        uj = UserJourney("test user journey", uj_steps=[uj_step1, uj_step2])
+
+        self.assertEqual({job1, job2}, set(uj.jobs))
+
+    def test_update_duration_no_step(self):
+        self.user_journey.update_duration()
+        expected_duration = EmptyExplainableObject()
+        self.assertEqual(self.user_journey.duration, expected_duration.value)
 
     def test_update_duration_with_multiple_steps(self):
-        self.user_journey.add_step(self.step1)
-        for step in self.user_journey.uj_steps:
-            step.user_time_spent = SourceValue(5 * u.min)
 
-        self.user_journey.update_duration()
-        expected_duration = SourceValue(10 * u.min)
+        uj_step1 = MagicMock()
+        uj_step1.user_time_spent = SourceValue(5 * u.min)
+        uj_step2 = MagicMock()
+        uj_step2.user_time_spent = SourceValue(3 * u.min)
+        uj = UserJourney("test user journey", uj_steps=[uj_step1, uj_step2])
 
-        self.assertEqual(self.user_journey.duration.value, expected_duration.value)
+        uj.update_duration()
+
+        expected_duration = SourceValue(8 * u.min)
+
+        self.assertEqual(uj.duration, expected_duration)
 
 
 if __name__ == "__main__":

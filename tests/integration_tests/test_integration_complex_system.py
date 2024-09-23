@@ -72,33 +72,40 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
 
         cls.streaming_job = Job("streaming", cls.server1, cls.storage, data_upload=SourceValue(50 * u.kB),
-                                data_download=SourceValue((2.5 / 3) * u.GB),
+                                data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
                                 request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
         cls.upload_job = Job("upload", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
-                             data_download=SourceValue(0 * u.GB), request_duration=SourceValue(0.4 * u.s),
-                             ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+                             data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.kB),
+                             request_duration=SourceValue(0.4 * u.s), ram_needed=SourceValue(100 * u.MB),
+                             cpu_needed=SourceValue(1 * u.core))
         cls.upload_step = UserJourneyStep(
             "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
             "dailymotion", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
-            data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
-            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+            data_download=SourceValue(3 * u.MB), data_stored=SourceValue(300 * u.kB),
+            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
+
         cls.dailymotion_step = UserJourneyStep(
             "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
             "tiktok", cls.server2, cls.storage, data_upload=SourceValue(0 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
+            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
+
         cls.tiktok_analytics_job = Job(
             "tiktok analytics", cls.server3, cls.storage, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue(0 * u.GB), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+            data_download=SourceValue(0 * u.GB), data_stored=SourceValue(50 * u.kB),
+            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
+
         cls.tiktok_step = UserJourneyStep(
             "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min),
             jobs=[cls.tiktok_job, cls.tiktok_analytics_job])
@@ -198,9 +205,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_add_new_job(self):
         logger.warning("Adding job")
         new_job = Job(
-                    "dailymotion", self.server1, self.storage, data_upload=SourceValue(300 * u.kB),
-                    data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
-                    ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+    "dailymotion", self.server1, self.storage, data_upload=SourceValue(300 * u.kB),
+            data_download=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
+            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
 
         new_uj = UserJourneyStep(
             "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
