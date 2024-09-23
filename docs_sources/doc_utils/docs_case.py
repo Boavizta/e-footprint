@@ -13,6 +13,7 @@ from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_random_hourly_usage_df
+from efootprint.logger import logger
 
 from time import time
 
@@ -86,6 +87,7 @@ streaming_step = UserJourneyStep(
             storage=storage,
             data_upload=SourceValue(0.05 * u.MB, source=None),
             data_download=SourceValue(800 * u.MB, source=None),
+            data_stored=SourceValue(0.05 * u.MB, source=None),
             request_duration=SourceValue(4 * u.min, source=None),
             cpu_needed=SourceValue(1 * u.core, source=None),
             ram_needed=SourceValue(50 * u.MB, source=None)
@@ -116,4 +118,4 @@ usage_pattern = UsagePattern(
 
 system = System("system", usage_patterns=[usage_pattern])
 
-print(f"computation took {(time() - start)} seconds")
+logger.info(f"computation took {round((time() - start), 3)} seconds")
