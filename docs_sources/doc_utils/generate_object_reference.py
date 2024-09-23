@@ -11,8 +11,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, user_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_server)
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
+from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
 
 def return_class_str(input_obj):
@@ -62,19 +61,25 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
                   f"  \n\nthrough the following calculations:  \n"
 
     containing_obj_str = calculation_graph_obj.modeling_obj_container.name.replace(" ", "_")
-    calculus_graph_path = os.path.join(
-        ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr_name}.html")
-    calculation_graph_obj.calculus_graph_to_file(calculus_graph_path)
-    calculus_graph_path_depth1 = os.path.join(
-        ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr_name}_depth1.html")
-    calculation_graph_obj.calculus_graph_to_file(calculus_graph_path_depth1, width="760px", height="300px", max_depth=1)
+    calculus_graph_path = os.path.join(generated_mkdocs_sourcefiles_path, "calculus_graphs")
+    if not os.path.exists(calculus_graph_path):
+        os.makedirs(calculus_graph_path)
+    calculus_graph_filepath = os.path.join(calculus_graph_path, f"{containing_obj_str}_{attr_name}.html")
+    calculation_graph_obj.calculus_graph_to_file(calculus_graph_filepath)
+    calculus_graph_path_depth1 = os.path.join(generated_mkdocs_sourcefiles_path, "calculus_graphs_depth1")
+    if not os.path.exists(calculus_graph_path_depth1):
+        os.makedirs(calculus_graph_path_depth1)
+    calculus_graph_depth1_filepath = os.path.join(
+        calculus_graph_path_depth1, f"{containing_obj_str}_{attr_name}_depth1.html")
+    calculation_graph_obj.calculus_graph_to_file(
+        calculus_graph_depth1_filepath, width="760px", height="300px", max_depth=1)
 
-    md_calculus_graph_link_depth1 = calculus_graph_path_depth1.replace(
-        os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "docs_sources/mkdocs_sourcefiles")
+    md_calculus_graph_link_depth1 = calculus_graph_depth1_filepath.replace(
+        os.path.join(generated_mkdocs_sourcefiles_path), "docs_sources/generated_mkdocs_sourcefiles")
     return_str += f'\n--8<-- "{md_calculus_graph_link_depth1}"\n'
 
     # The relative path starts with .. instead of . because it seems like mkdocs considers md files as html within a folder
-    md_calculus_graph_link = calculus_graph_path.replace(os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "..")
+    md_calculus_graph_link = calculus_graph_filepath.replace(os.path.join(generated_mkdocs_sourcefiles_path), "..")
     return_str += f"  \nYou can also visit the <a href='{md_calculus_graph_link}' target='_blank'>link " \
                   f"to {calculation_graph_obj.label}’s full calculation graph</a>."
 
@@ -98,12 +103,12 @@ def write_object_reference_file(mod_obj):
         calc_attr = getattr(mod_obj, attr)
         mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
 
-    with open(os.path.join(ROOT, 'obj_template.md'), 'r') as file:
+    with open(os.path.join(doc_utils_path, 'obj_template.md'), 'r') as file:
         template = Template(file.read(), trim_blocks=False)
     rendered_file = template.render(obj_dict=mod_obj_dict)
 
     filename = f"{mod_obj_dict['class']}.md"
-    with open(os.path.join(ROOT, "..", "mkdocs_sourcefiles", f"{mod_obj_dict['class']}.md"), "w") as file:
+    with open(os.path.join(generated_mkdocs_sourcefiles_path, f"{mod_obj_dict['class']}.md"), "w") as file:
         file.write(rendered_file)
 
     return filename
@@ -128,7 +133,7 @@ def generate_object_reference(automatically_update_yaml=False):
     if automatically_update_yaml:
         yaml = ruamel.yaml.YAML()
         # yaml.preserve_quotes = True
-        mkdocs_yml_filepath = os.path.join(ROOT, "..", "..", "mkdocs.yml")
+        mkdocs_yml_filepath = os.path.join(doc_utils_path, "..", "..", "mkdocs.yml")
         with open(mkdocs_yml_filepath, "r") as fp:
             data = yaml.load(fp)
         for filename in nav_items:

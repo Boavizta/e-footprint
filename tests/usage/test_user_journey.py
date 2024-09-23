@@ -27,6 +27,7 @@ class TestUserJourney(TestCase):
 
         with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
             jobs_mock.return_value = [job_1, job_2, job_3]
+            self.assertEqual(2, len(self.user_journey.servers))
             self.assertEqual({server_1, server_2}, set(self.user_journey.servers))
 
     def test_storages(self):
@@ -43,6 +44,7 @@ class TestUserJourney(TestCase):
 
         with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
             jobs_mock.return_value = [job_1, job_2, job_3]
+            self.assertEqual(2, len(self.user_journey.storages))
             self.assertEqual({storage_1, storage_2}, set(self.user_journey.storages))
 
     def test_jobs(self):
@@ -57,15 +59,16 @@ class TestUserJourney(TestCase):
 
         uj = UserJourney("test user journey", uj_steps=[uj_step1, uj_step2])
 
+        self.assertEqual(2, len(set(uj.jobs)))
         self.assertEqual({job1, job2}, set(uj.jobs))
 
     def test_update_duration_no_step(self):
         self.user_journey.update_duration()
         expected_duration = EmptyExplainableObject()
-        self.assertEqual(self.user_journey.duration, expected_duration.value)
+
+        self.assertEqual(self.user_journey.duration, expected_duration)
 
     def test_update_duration_with_multiple_steps(self):
-
         uj_step1 = MagicMock()
         uj_step1.user_time_spent = SourceValue(5 * u.min)
         uj_step2 = MagicMock()
@@ -74,9 +77,7 @@ class TestUserJourney(TestCase):
 
         uj.update_duration()
 
-        expected_duration = SourceValue(8 * u.min)
-
-        self.assertEqual(uj.duration, expected_duration)
+        self.assertEqual(SourceValue(8 * u.min), uj.duration)
 
 
 if __name__ == "__main__":

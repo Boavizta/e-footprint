@@ -13,7 +13,7 @@ markdown_extensions:
 - pymdownx.snippets
 - pymdownx.superfences
 
-docs_dir: docs_sources/mkdocs_sourcefiles
+docs_dir: docs_sources/generated_mkdocs_sourcefiles
 
 site_dir: docs
 
