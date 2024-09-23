@@ -120,11 +120,14 @@ class System(ModelingObject):
     @property
     def total_fabrication_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         fab_footprints = {
-            "Servers": sum(server.instances_fabrication_footprint for server in self.servers).to(u.kg),
-            "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages).to(u.kg),
+            "Servers": sum(server.instances_fabrication_footprint for server in self.servers).to(u.kg).set_label(
+                "Servers total fabrication footprint"),
+            "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages).to(u.kg).set_label(
+                "Storage total fabrication footprint"),
             "Network": EmptyExplainableObject(),
             "Devices": sum(usage_pattern.devices_fabrication_footprint
-                           for usage_pattern in self.usage_patterns).to(u.kg)
+                           for usage_pattern in self.usage_patterns).to(u.kg).set_label(
+                "Devices total fabrication footprint")
         }
 
         return fab_footprints
@@ -132,10 +135,14 @@ class System(ModelingObject):
     @property
     def total_energy_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         energy_footprints = {
-            "Servers": sum(server.energy_footprint for server in self.servers).to(u.kg),
-            "Storage": sum(storage.energy_footprint for storage in self.storages).to(u.kg),
-            "Network": sum(network.energy_footprint for network in self.networks).to(u.kg),
-            "Devices": sum(usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns).to(u.kg)
+            "Servers": sum(server.energy_footprint for server in self.servers).to(u.kg).set_label(
+                "Servers total energy footprint"),
+            "Storage": sum(storage.energy_footprint for storage in self.storages).to(u.kg).set_label(
+                "Storage total energy footprint"),
+            "Network": sum(network.energy_footprint for network in self.networks).to(u.kg).set_label(
+                "Network total energy footprint"),
+            "Devices": sum(usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns).to(u.kg).set_label(
+                "Devices total energy footprint")
         }
 
         return energy_footprints
@@ -151,10 +158,11 @@ class System(ModelingObject):
     @property
     def fabrication_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
         fab_footprints_sum = {}
-        for key, dict_value in self.fabrication_footprints.items():
-            fab_footprints_sum[key] = {
-                obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg)
-                for obj_key, obj_value in dict_value.items()
+        for category_key, category_dict in self.fabrication_footprints.items():
+            fab_footprints_sum[category_key] = {
+                obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
+                    f"{obj_key} fabrication footprints summed over modeling period")
+                for obj_key, obj_value in category_dict.items()
             }
 
         return fab_footprints_sum
@@ -164,7 +172,8 @@ class System(ModelingObject):
         energy_footprints_sum = {}
         for key, dict_value in self.energy_footprints.items():
             energy_footprints_sum[key] = {
-                obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg)
+                obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
+                    f"{obj_key} energy footprints summed over modeling period")
                 for obj_key, obj_value in dict_value.items()
             }
 
@@ -173,17 +182,21 @@ class System(ModelingObject):
     @property
     def total_fabrication_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
         fab_footprints = {
-            obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg)
-            for obj_key, obj_value in self.total_fabrication_footprints.items()
+            object_category: self.sum_and_remove_empty_explainable_object(category_value).to(u.kg).set_label(
+                f"{object_category} total fabrication footprints summed over modeling period")
+            for object_category, category_value in self.total_fabrication_footprints.items()
         }
+
         return fab_footprints
 
     @property
     def total_energy_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
         energy_footprints = {
-            obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg)
-            for obj_key, obj_value in self.total_energy_footprints.items()
+            object_category: self.sum_and_remove_empty_explainable_object(category_value).to(u.kg).set_label(
+                f"{object_category} total energy footprints summed over modeling period")
+            for object_category, category_value in self.total_energy_footprints.items()
         }
+
         return energy_footprints
 
     @property
