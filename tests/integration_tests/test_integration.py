@@ -56,14 +56,18 @@ class IntegrationTest(IntegrationTestBaseClass):
         )
 
         cls.streaming_job = Job("streaming", server=cls.server, storage=cls.storage, data_upload=SourceValue(50 * u.kB),
-                      data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
-                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
+            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
+
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
         cls.upload_job = Job("upload", server=cls.server, storage=cls.storage, data_upload=SourceValue(300 * u.MB),
-                      data_download=SourceValue(0 * u.GB), request_duration=SourceValue(40 * u.s),
-                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+            data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.MB),
+            request_duration=SourceValue(40 * u.s), ram_needed=SourceValue(100 * u.MB),
+            cpu_needed=SourceValue(1 * u.core))
+
         cls.upload_step = UserJourneyStep(
             "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
 
@@ -236,8 +240,9 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
         new_job = Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.MB),
-                      data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
-                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
+                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.MB),
+                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
+                      cpu_needed=SourceValue(1 * u.core))
 
         self.streaming_step.jobs += [new_job]
 
@@ -256,8 +261,9 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_step = UserJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
             jobs=[Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.kB),
-                      data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
-                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))]
+                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
+                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
+                      cpu_needed=SourceValue(1 * u.core))]
         )
         self.uj.uj_steps = [new_step]
 

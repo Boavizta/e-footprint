@@ -109,6 +109,15 @@
                     "link": null
                 }
             },
+            "data_stored": {
+                "label": "Data stored of request streaming from hypothesis",
+                "value": 50,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "request_duration": {
                 "label": "Request duration to Youtube in streaming from hypothesis",
                 "value": 0.06666666666666667,
@@ -157,6 +166,15 @@
                 "label": "Data download of request upload from hypothesis",
                 "value": 0,
                 "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored of request upload from hypothesis",
+                "value": 300,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null

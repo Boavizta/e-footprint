@@ -19,7 +19,7 @@ class TestJob(TestCase):
 
         self.job = Job(
             "test job", server=self.server, storage=self.storage, data_download=SourceValue(200 * u.MB),
-            data_upload=SourceValue(100 * u.MB),
+            data_upload=SourceValue(100 * u.MB), data_stored=SourceValue(300 * u.MB),
             ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
             request_duration=SourceValue(2 * u.min))
 
@@ -134,12 +134,12 @@ class TestJob(TestCase):
                          job_occurrences.value_as_float_list)
 
     def test_compute_job_hourly_data_exchange_simple_case(self):
-        data_exchange = "data_upload"
+        data_exchange = "data_stored"
         usage_pattern = MagicMock()
         hourly_occs_per_up = {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))}
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
-                patch.object(self.job, "data_upload", SourceValue(1 * u.GB)), \
+                patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
                 patch.object(Job, "duration_in_full_hours", new_callable=PropertyMock) as mock_full_hour_duration:
             mock_full_hour_duration.return_value = SourceValue(1 * u.dimensionless)
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
@@ -148,12 +148,12 @@ class TestJob(TestCase):
             self.assertEqual([1, 3, 5], job_hourly_data_exchange.value_as_float_list)
 
     def test_compute_job_hourly_data_exchange_complex_case(self):
-        data_exchange = "data_upload"
+        data_exchange = "data_stored"
         usage_pattern = MagicMock()
         hourly_occs_per_up = {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))}
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
-                patch.object(self.job, "data_upload", SourceValue(1 * u.GB)), \
+                patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
                 patch.object(Job, "duration_in_full_hours", new_callable=PropertyMock) as mock_full_hour_duration:
             mock_full_hour_duration.return_value = SourceValue(2 * u.dimensionless)
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(

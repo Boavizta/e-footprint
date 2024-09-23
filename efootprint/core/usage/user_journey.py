@@ -1,5 +1,6 @@
 from typing import List, Type
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
@@ -61,6 +62,7 @@ class UserJourney(ModelingObject):
         self.uj_steps = self.uj_steps + [step]
 
     def update_duration(self):
-        user_time_spent_sum = sum([uj_step.user_time_spent for uj_step in self.uj_steps])
+        user_time_spent_sum = sum(
+            [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())
 
         self.duration = user_time_spent_sum.set_label(f"Duration of {self.name}")

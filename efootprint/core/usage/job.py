@@ -34,25 +34,35 @@ class JobTypes:
 
 class Job(ModelingObject):
     def __init__(self, name: str, server: Server, storage: Storage, data_upload: SourceValue,
-                 data_download: SourceValue, request_duration: SourceValue, cpu_needed: SourceValue,
-                 ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED, description: str = ""):
+                 data_download: SourceValue, data_stored: SourceValue, request_duration: SourceValue,
+                 cpu_needed: SourceValue, ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED,
+                 description: str = ""):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_data_upload_per_usage_pattern = ExplainableObjectDict()
         self.hourly_data_download_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
         self.hourly_occurrences_across_usage_patterns = None
         self.hourly_avg_occurrences_across_usage_patterns = None
         self.hourly_data_upload_across_usage_patterns = None
+        self.hourly_data_stored_across_usage_patterns = None
         self.job_type = job_type
         self.server = server
         self.storage = storage
         if not data_upload.value.check("[]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+        elif data_upload.value.magnitude < 0:
+            raise ValueError(f"Variable 'data_upload' must be greater than 0, got {data_upload.value}")
         self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
         if not data_download.value.check("[]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+            raise ValueError("Variable 'data_download' does not have the appropriate '[]' dimensionality")
+        elif data_download.value.magnitude < 0:
+            raise ValueError(f"Variable 'data_download' must be greater than 0, got {data_download.value}")
         self.data_download = data_download.set_label(f"Data download of request {self.name}")
+        if not data_stored.value.check("[]"):
+            raise ValueError("Variable 'data_stored' does not have the appropriate '[]' dimensionality")
+        self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
         if not request_duration.value.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
         self.request_duration = request_duration.set_label(f"Request duration of {self.name} to {server.name}")
@@ -73,8 +83,9 @@ class Job(ModelingObject):
     def calculated_attributes(self) -> List[str]:
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
                 "hourly_data_upload_per_usage_pattern", "hourly_data_download_per_usage_pattern",
-                "hourly_occurrences_across_usage_patterns", "hourly_avg_occurrences_across_usage_patterns",
-                "hourly_data_upload_across_usage_patterns"]
+                "hourly_data_stored_per_usage_pattern", "hourly_occurrences_across_usage_patterns",
+                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_upload_across_usage_patterns"
+                , "hourly_data_stored_across_usage_patterns"]
 
     @property
     def duration_in_full_hours(self):
@@ -163,6 +174,12 @@ class Job(ModelingObject):
         for up in self.usage_patterns:
             self.hourly_data_download_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
                 up, "data_download")
+
+    def update_hourly_data_stored_per_usage_pattern(self):
+        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
+        for up in self.usage_patterns:
+            self.hourly_data_stored_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
+                up, "data_stored")
             
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):
@@ -184,3 +201,7 @@ class Job(ModelingObject):
     def update_hourly_data_upload_across_usage_patterns(self):
         self.hourly_data_upload_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_upload_per_usage_pattern", "data upload")
+
+    def update_hourly_data_stored_across_usage_patterns(self):
+        self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+            "hourly_data_stored_per_usage_pattern", "data upload")

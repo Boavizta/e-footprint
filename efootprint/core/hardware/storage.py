@@ -59,7 +59,7 @@ class Storage(InfraHardware):
         storage_needed = EmptyExplainableObject()
 
         for job in self.jobs:
-            storage_needed += job.hourly_data_upload_across_usage_patterns
+            storage_needed += job.hourly_data_stored_across_usage_patterns
 
         storage_needed *= self.data_replication_factor
 
