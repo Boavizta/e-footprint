@@ -6,6 +6,8 @@ from typing import Type
 import pandas as pd
 import pint_pandas
 import pytz
+from numpy.matlib import empty
+from numpy.random.mtrand import operator
 from pint import Quantity, Unit
 import numpy as np
 import matplotlib.pyplot as plt
@@ -79,6 +81,15 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
 
     def __str__(self):
         return "no calculated value"
+
+    def np_compared_with(self, compare_object, comparator):
+        if isinstance(compare_object, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        elif isinstance(compare_object, ExplainableHourlyQuantities):
+            return compare_object.np_compared_with(self, comparator)
+        else:
+            raise ValueError(f"Can only compare with another EmptyExplainableObject or ExplainableHourlyQuantities,"
+                             f" not {type(compare_object)}")
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -296,6 +307,72 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 {"value": pint_pandas.PintArray(np.ceil(self.value["value"].values.data), dtype=self.unit)},
                 index=self.value.index),
             left_parent=self, operator="ceil")
+
+    def __neg__(self):
+        negated_df = pd.DataFrame(
+            {"value": pint_pandas.PintArray(-self.value["value"].values.data, dtype=self.unit)},
+            index=self.value.index)
+        return ExplainableHourlyQuantities(negated_df, left_parent=self, operator="negate")
+
+    def np_compared_with(self, compare_object, comparator):
+        if comparator not in ["max", "min"]:
+            raise ValueError(f"Comparator {comparator} not implemented in np_compared_with method")
+
+        if isinstance(compare_object, EmptyExplainableObject):
+            new_list = []
+            min_value = self.value["value"].min().magnitude
+            max_value = self.value["value"].max().magnitude
+            result_label = f"{self.label} compared with an EmptyExplainableObject"
+            right_parent = None
+            if comparator == "max":
+                if min_value >= 0:
+                    return self
+                elif min_value < 0 and max_value <0:
+                    return EmptyExplainableObject()
+                else:
+                    for elt in self.value["value"].values.data:
+                        if elt >= 0:
+                            new_list += [elt]
+                        else:
+                            new_list += [0]
+            else:
+                if max_value <= 0:
+                    return self
+                elif min_value > 0 and max_value > 0:
+                    return EmptyExplainableObject()
+                else:
+                    for elt in self.value["value"].values.data:
+                        if elt <= 0:
+                            new_list += [elt]
+                        else:
+                            new_list += [0]
+
+            result_comparison_df = pd.DataFrame(
+                {"value": pint_pandas.PintArray(new_list, dtype=self.unit)},
+                index=self.value.index
+            )
+        else:
+            self_values = self.value["value"].values.data.to_numpy()
+            compare_values = compare_object.value["value"].values.data.to_numpy()
+            if comparator == "max":
+                result_comparison_np = np.maximum(self_values, compare_values)
+            elif comparator == "min":
+                result_comparison_np = np.minimum(self_values, compare_values)
+            result_comparison_df = pd.DataFrame(
+                {"value": pint_pandas.PintArray(result_comparison_np, dtype=self.unit)},
+                index=self.value.index
+            )
+            result_label = f"{self.label} compared with {compare_object.label}"
+            right_parent = compare_object
+
+        return ExplainableHourlyQuantities(
+            result_comparison_df,
+            result_label,
+            left_parent=self,
+            right_parent=right_parent,
+            operator=f"{comparator} compared with"
+        )
+
 
     def copy(self):
         return ExplainableHourlyQuantities(self.value.copy(), left_parent=self, operator="duplicate")

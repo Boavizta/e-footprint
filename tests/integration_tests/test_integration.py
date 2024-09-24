@@ -2,6 +2,7 @@ from copy import deepcopy
 import os
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.job import Job
@@ -52,7 +53,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(1 * u.TB)
+            base_storage_need=SourceValue(50 * u.TB)
         )
 
         cls.streaming_job = Job("streaming", server=cls.server, storage=cls.storage, data_upload=SourceValue(50 * u.kB),
@@ -218,12 +219,13 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(1 * u.TB)
+            base_storage_need=SourceValue(50 * u.TB)
         )
         logger.warning("Changing jobs storage")
-        self.streaming_job.storage = new_storage
-        self.footprint_has_changed([self.storage])
+
         self.upload_job.storage = new_storage
+        self.footprint_has_changed([self.storage])
+        self.streaming_job.storage = new_storage
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
@@ -358,3 +360,27 @@ class IntegrationTest(IntegrationTestBaseClass):
         print(self.uj)
         print(self.network)
         print(self.system)
+
+
+    def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+
+        initial_data_stored = self.upload_job.data_stored
+        initial_storage_need = self.storage.storage_needed
+        initial_storage_freed = self.storage.storage_freed
+        #data_stored is positive so storage_freed will be a emptyexplainableobject
+
+        self.upload_job.data_stored = SourceValue(-initial_data_stored.value)
+
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
+        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
+
+        self.footprint_has_changed([self.storage])
+
+        logger.warning("Changing back to previous datastored value")
+        self.upload_job.data_stored = initial_data_stored
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        self.assertEqual(initial_storage_need, self.storage.storage_needed)
+        self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)

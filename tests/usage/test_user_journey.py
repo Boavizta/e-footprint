@@ -66,7 +66,7 @@ class TestUserJourney(TestCase):
         self.user_journey.update_duration()
         expected_duration = EmptyExplainableObject()
 
-        self.assertEqual(self.user_journey.duration, expected_duration)
+        self.assertEqual(type(self.user_journey.duration), type(expected_duration))
 
     def test_update_duration_with_multiple_steps(self):
         uj_step1 = MagicMock()

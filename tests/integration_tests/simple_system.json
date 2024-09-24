@@ -420,7 +420,7 @@
             },
             "base_storage_need": {
                 "label": "Default SSD storage initial storage need from hypothesis",
-                "value": 1.0,
+                "value": 50.0,
                 "unit": "terabyte",
                 "source": {
                     "name": "hypothesis",

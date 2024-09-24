@@ -49,11 +49,6 @@ class InfraHardware(Hardware):
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
 
     @property
-    def calculated_attributes_defined_in_infra_hardware_class(self):
-        return ["raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
-                "energy_footprint"]
-
-    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
 
