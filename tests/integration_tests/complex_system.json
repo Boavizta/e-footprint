@@ -238,7 +238,6 @@
             "id": "uuid-streaming",
             "job_type": "undefined",
             "server": "uuid-Server-1",
-            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -300,7 +299,6 @@
             "id": "uuid-upload",
             "job_type": "undefined",
             "server": "uuid-Server-1",
-            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -362,7 +360,6 @@
             "id": "uuid-dailymotion",
             "job_type": "undefined",
             "server": "uuid-Server-1",
-            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
                 "value": 300.0,
@@ -424,7 +421,6 @@
             "id": "uuid-tiktok",
             "job_type": "undefined",
             "server": "uuid-Server-2",
-            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
                 "value": 0.0,
@@ -486,7 +482,6 @@
             "id": "uuid-tiktok-analytics",
             "job_type": "undefined",
             "server": "uuid-TikTok-Analytics-server",
-            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
                 "value": 50.0,
@@ -655,7 +650,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "storage": "uuid-Default-SSD-storage"
         },
         "uuid-TikTok-Analytics-server": {
             "name": "TikTok Analytics server",
@@ -767,7 +763,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "storage": "uuid-Default-SSD-storage"
         },
         "uuid-Server-2": {
             "name": "Server 2",
@@ -879,7 +876,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "storage": "uuid-Default-SSD-storage"
         }
     },
     "Storage": {

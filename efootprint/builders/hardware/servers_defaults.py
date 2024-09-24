@@ -4,6 +4,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.servers.on_premise import OnPremise
 from efootprint.core.hardware.servers.serverless import Serverless
+from efootprint.builders.hardware.storage_defaults import default_ssd
 
 
 def default_serverless(name="Default serverless", **kwargs):
@@ -18,7 +19,8 @@ def default_serverless(name="Default serverless", **kwargs):
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
         "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS),
+        "storage": default_ssd()
     }
 
     output_args.update(kwargs)
@@ -38,7 +40,8 @@ def default_autoscaling(name="Default autoscaling", **kwargs):
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
         "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS),
+        "storage": default_ssd()
     }
 
     output_args.update(kwargs)
@@ -58,7 +61,8 @@ def default_onpremise(name="Default on premise", **kwargs):
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
         "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS),
+        "storage": default_ssd()
     }
 
     output_args.update(kwargs)

@@ -31,16 +31,19 @@ class TestUserJourney(TestCase):
             self.assertEqual({server_1, server_2}, set(self.user_journey.servers))
 
     def test_storages(self):
+        storage_1 = MagicMock()
+        storage_2 = MagicMock()
+
+        server_1 = MagicMock(storage=storage_1)
+        server_2 = MagicMock(storage=storage_2)
+
         job_1 = MagicMock()
         job_2 = MagicMock()
         job_3 = MagicMock()
 
-        storage_1 = MagicMock()
-        storage_2 = MagicMock()
-
-        job_1.storage = storage_1
-        job_2.storage = storage_2
-        job_3.storage = storage_1
+        job_1.server = server_1
+        job_2.server = server_2
+        job_3.server = server_1
 
         with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
             jobs_mock.return_value = [job_1, job_2, job_3]

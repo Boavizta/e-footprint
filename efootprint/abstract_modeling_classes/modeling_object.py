@@ -151,7 +151,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
             if issubclass(type(input_value), ModelingObject):
                 input_value.add_obj_to_modeling_obj_containers(self)
-                if self.init_has_passed:
+                handle_link_update = True
+                if old_value == input_value:
+                    handle_link_update = False
+                    logger.warning(
+                        f"{name} is updated to itself and remains equal to {input_value.name}. "
+                        f"This is surprising, you might want to double check your action. "
+                        f"The link update logic will be skipped.")
+                if self.init_has_passed and handle_link_update:
                     self.register_footprint_values_in_systems_before_change(
                         f"{self.name}’s {name} changed from {old_value.name} to {input_value.name}")
                     super().__setattr__(name, input_value)
@@ -178,7 +185,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         self.handle_object_list_link_update(input_value, old_list_value)
                     super().__setattr__(old_list_value_attr_name, copy(input_value))
 
-            elif issubclass(type(input_value), ObjectLinkedToModelingObj):
+            elif isinstance(input_value, ObjectLinkedToModelingObj):
                 input_value.set_modeling_obj_container(self, name)
                 is_a_user_attribute_update = self.init_has_passed and (
                     name not in self.calculated_attributes and old_value is not None)

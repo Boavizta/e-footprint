@@ -30,9 +30,11 @@ class TestStorage(TestCase):
 
     def test_update_storage_needs_single_job(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
+        server1 = MagicMock()
+        job1.server = server1
         job1.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-
+        server1.storage = self.storage_base
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
             jobs_mock.return_value = [job1]
@@ -223,8 +225,6 @@ class TestStorage(TestCase):
         power_data = 100 * u.W
         power_idle_data = 50 * u.W
 
-        expected_energy=[150, 300, 450]
-
         all_instance = SourceHourlyValues(create_hourly_usage_df_from_list(all_instance_data, start_date))
         all_active = SourceHourlyValues(create_hourly_usage_df_from_list(all_active_data, start_date))
 
@@ -235,4 +235,5 @@ class TestStorage(TestCase):
             patch.object(self.storage_base, "power_usage_effectiveness", SourceValue(1 * u.dimensionless)):
             self.storage_base.update_instances_energy()
 
-            self.assertEqual(expected_energy, self.storage_base.instances_energy.value_as_float_list)
+            self.assertEqual(u.kWh, self.storage_base.instances_energy.unit)
+            self.assertEqual([0.15, 0.3, 0.45], self.storage_base.instances_energy.value_as_float_list)

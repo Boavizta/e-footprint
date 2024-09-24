@@ -109,6 +109,7 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+           "storage": "uuid-Default-SSD-storage"
         }
 }

@@ -16,7 +16,7 @@ ecobenchmark_source = Source(
 
 
 def ecobenchmark_job(
-        name: str, server: Server, storage: Storage, data_upload: SourceValue, data_download: SourceValue,
+        name: str, server: Server, data_upload: SourceValue, data_download: SourceValue,
         data_stored: SourceValue, technology: str, implementation_details: str = "default", job_type=JobTypes.UNDEFINED,
         description: str = ""):
     filter_df = ECOBENCHMARK_DF[
@@ -32,7 +32,7 @@ def ecobenchmark_job(
     ram_needed = SourceValue(tech_row['avg_ram_per_request_in_MB'] * u.MB, ecobenchmark_source)
 
     return Job(
-        name, server, storage, data_upload, data_download, data_stored, request_duration=default_request_duration(),
+        name, server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
         cpu_needed=cpu_needed, ram_needed=ram_needed, job_type=job_type, description=description)
 
 

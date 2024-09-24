@@ -18,7 +18,7 @@ class TestJob(TestCase):
         self.storage.name = "storage"
 
         self.job = Job(
-            "test job", server=self.server, storage=self.storage, data_download=SourceValue(200 * u.MB),
+            "test job", server=self.server, data_download=SourceValue(200 * u.MB),
             data_upload=SourceValue(100 * u.MB), data_stored=SourceValue(300 * u.MB),
             ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
             request_duration=SourceValue(2 * u.min))

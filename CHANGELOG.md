@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [7.0.0] 2024-10-7
+- Storage is now an attribute of server objects. This change simplifies the hardware part of the model and makes it more realistic.
+
 ## [6.0.2] 2024-10-02
 
 ### Fixed

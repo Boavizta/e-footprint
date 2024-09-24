@@ -1,4 +1,5 @@
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -18,6 +19,21 @@ from efootprint.logger import logger
 from time import time
 
 start = time()
+
+storage = Storage(
+    "storage",
+    carbon_footprint_fabrication=SourceValue(160 * u.kg, source=None),
+    power=SourceValue(1.3 * u.W, source=None),
+    lifespan=SourceValue(6 * u.years, source=None),
+    idle_power=SourceValue(0 * u.W, source=None),
+    storage_capacity=SourceValue(1 * u.TB, source=None),
+    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
+    average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
+    data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
+    data_storage_duration=SourceValue(2 * u.year, source=None),
+    base_storage_need=SourceValue(0 * u.TB, source=None)
+)
+
 autoscaling_server = Autoscaling(
     "server",
     carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
@@ -30,7 +46,8 @@ autoscaling_server = Autoscaling(
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     base_ram_consumption=SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption=SourceValue(2 * u.core, source=None)
+    base_cpu_consumption=SourceValue(2 * u.core, source=None),
+    storage=storage
 )
 
 serverless_server = Serverless(
@@ -45,7 +62,8 @@ serverless_server = Serverless(
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption = SourceValue(2 * u.core, source=None)
+    base_cpu_consumption = SourceValue(2 * u.core, source=None),
+    storage=default_ssd()
 )
 
 on_premise_server = OnPremise(
@@ -61,21 +79,9 @@ on_premise_server = OnPremise(
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     fixed_nb_of_instances=SourceValue(4000 * u.dimensionless, source=None),
     base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption = SourceValue(2 * u.core, source=None)
+    base_cpu_consumption = SourceValue(2 * u.core, source=None),
+    storage=default_ssd()
 )
-
-storage = Storage(
-    "storage",
-    carbon_footprint_fabrication=SourceValue(160 * u.kg, source=None),
-    power=SourceValue(1.3 * u.W, source=None),
-    lifespan=SourceValue(6 * u.years, source=None),
-    idle_power=SourceValue(0 * u.W, source=None),
-    storage_capacity=SourceValue(1 * u.TB, source=None),
-    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
-    average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
-    data_storage_duration=SourceValue(2 * u.year, source=None),
-    base_storage_need=SourceValue(0 * u.TB, source=None))
 
 streaming_step = UserJourneyStep(
     "20 min streaming",
@@ -84,7 +90,6 @@ streaming_step = UserJourneyStep(
         Job(
             "streaming",
             server=autoscaling_server,
-            storage=storage,
             data_upload=SourceValue(0.05 * u.MB, source=None),
             data_download=SourceValue(800 * u.MB, source=None),
             data_stored=SourceValue(0.05 * u.MB, source=None),

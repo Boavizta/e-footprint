@@ -6,7 +6,6 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.servers.server_base_class import Server
-from efootprint.core.hardware.storage import Storage
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
@@ -18,23 +17,23 @@ class JobTypes:
     DATA_WRITE = "data_write"
     DATA_LIST = "data_list"
     DATA_SIMPLE_ANALYTIC = "data_simple_analytic"
-    DATA_STREAM = "data_stream" #video, musique, data 
+    DATA_STREAM = "data_stream"  # video, musique, data
     TRANSACTION = "transaction"
     TRANSACTION_STRONG = "transaction_strong"
     NOTIFICATION = "notification"
     ANALYTIC_DATA_LOADING = "analytic_data_loading"
     ANALYTIC_READING_PREPARED = "analytic_reading_prepared"
     ANALYTIC_READING_ON_THE_FLY = "analytic_reading_on_the_fly"
-    ML_RECOMMENDATION ="ml_reco" #kvm
-    ML_LLM ="ml_llm"
-    ML_DEEPLEARNING ="ml_dl"
-    ML_REGRESSION = "ml_regression" #linear regression, polynomial regression, svm
-    ML_CLASSIFIER = "ml_classifier" #bayes, random forest
+    ML_RECOMMENDATION = "ml_reco"  # kvm
+    ML_LLM = "ml_llm"
+    ML_DEEPLEARNING = "ml_dl"
+    ML_REGRESSION = "ml_regression"  # linear regression, polynomial regression, svm
+    ML_CLASSIFIER = "ml_classifier"  # bayes, random forest
     UNDEFINED = "undefined"
 
 
 class Job(ModelingObject):
-    def __init__(self, name: str, server: Server, storage: Storage, data_upload: SourceValue,
+    def __init__(self, name: str, server: Server, data_upload: SourceValue,
                  data_download: SourceValue, data_stored: SourceValue, request_duration: SourceValue,
                  cpu_needed: SourceValue, ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED,
                  description: str = ""):
@@ -50,7 +49,6 @@ class Job(ModelingObject):
         self.hourly_data_stored_across_usage_patterns = None
         self.job_type = job_type
         self.server = server
-        self.storage = storage
         if not data_upload.value.check("[]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
         elif data_upload.value.magnitude < 0:
@@ -117,7 +115,7 @@ class Job(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server, self.storage] + self.networks
+        return [self.server] + self.networks
 
     def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
         job_occurrences = EmptyExplainableObject()

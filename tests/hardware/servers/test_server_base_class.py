@@ -7,6 +7,7 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.storage import Storage
 
 
 class TestServerBaseClass(TestCase):
@@ -16,11 +17,11 @@ class TestServerBaseClass(TestCase):
                          lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                          power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                          server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                         base_cpu_consumption: SourceValue):
+                         base_cpu_consumption: SourceValue, storage: Storage):
                 super().__init__(
                     name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores,
-                    power_usage_effectiveness,
-                    average_carbon_intensity, server_utilization_rate, base_ram_consumption, base_cpu_consumption)
+                    power_usage_effectiveness, average_carbon_intensity, server_utilization_rate, base_ram_consumption,
+                    base_cpu_consumption, storage)
 
             def update_nb_of_instances(self):
                 return SourceValue(10 * u.dimensionless)
@@ -38,7 +39,8 @@ class TestServerBaseClass(TestCase):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS)
+            base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            storage=MagicMock()
         )
         self.server_base.dont_handle_input_updates = True
 

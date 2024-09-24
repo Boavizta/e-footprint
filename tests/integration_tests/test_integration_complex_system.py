@@ -25,6 +25,19 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
+        cls.storage = Storage(
+            "Default SSD storage",
+            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
+            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
+            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+        )
         cls.server1 = Autoscaling(
             "Server 1",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -37,20 +50,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
-        )
-        cls.storage = Storage(
-            "Default SSD storage",
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            storage=cls.storage
         )
 
         cls.server2 = Autoscaling(
@@ -65,20 +66,21 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            storage=cls.storage
         )
-        cls.server3 = default_autoscaling("TikTok Analytics server")
+        cls.server3 = default_autoscaling("TikTok Analytics server",storage=cls.storage)
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
 
-        cls.streaming_job = Job("streaming", cls.server1, cls.storage, data_upload=SourceValue(50 * u.kB),
+        cls.streaming_job = Job("streaming", cls.server1, data_upload=SourceValue(50 * u.kB),
                                 data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
                                 request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
+        cls.upload_job = Job("upload", cls.server1, data_upload=SourceValue(300 * u.kB),
                              data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.kB),
                              request_duration=SourceValue(0.4 * u.s), ram_needed=SourceValue(100 * u.MB),
                              cpu_needed=SourceValue(1 * u.core))
@@ -86,7 +88,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
-            "dailymotion", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
+            "dailymotion", cls.server1, data_upload=SourceValue(300 * u.kB),
             data_download=SourceValue(3 * u.MB), data_stored=SourceValue(300 * u.kB),
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
@@ -95,13 +97,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
-            "tiktok", cls.server2, cls.storage, data_upload=SourceValue(0 * u.kB),
+            "tiktok", cls.server2, data_upload=SourceValue(0 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
 
         cls.tiktok_analytics_job = Job(
-            "tiktok analytics", cls.server3, cls.storage, data_upload=SourceValue(50 * u.kB),
+            "tiktok analytics", cls.server3, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue(0 * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
@@ -205,7 +207,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_add_new_job(self):
         logger.warning("Adding job")
         new_job = Job(
-    "dailymotion", self.server1, self.storage, data_upload=SourceValue(300 * u.kB),
+            "dailymotion", self.server1, data_upload=SourceValue(300 * u.kB),
             data_download=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))

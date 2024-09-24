@@ -30,7 +30,7 @@ class UserJourney(ModelingObject):
     def storages(self) -> List[Storage]:
         storages = set()
         for job in self.jobs:
-            storages = storages | {job.storage}
+            storages = storages | {job.server.storage}
 
         return list(storages)
 

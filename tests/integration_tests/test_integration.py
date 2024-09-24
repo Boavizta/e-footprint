@@ -28,20 +28,7 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 class IntegrationTest(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
-        cls.server = Autoscaling(
-            "Default server",
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(128 * u.GB, Sources.USER_DATA),
-            cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
-        )
+
         cls.storage = Storage(
             "Default SSD storage",
             carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -56,7 +43,23 @@ class IntegrationTest(IntegrationTestBaseClass):
             base_storage_need=SourceValue(50 * u.TB)
         )
 
-        cls.streaming_job = Job("streaming", server=cls.server, storage=cls.storage, data_upload=SourceValue(50 * u.kB),
+        cls.server = Autoscaling(
+            "Default server",
+            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
+            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(128 * u.GB, Sources.USER_DATA),
+            cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
+            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            storage=cls.storage
+        )
+
+        cls.streaming_job = Job("streaming", server=cls.server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
@@ -64,7 +67,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", server=cls.server, storage=cls.storage, data_upload=SourceValue(300 * u.MB),
+        cls.upload_job = Job("upload", server=cls.server, data_upload=SourceValue(300 * u.MB),
             data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.MB),
             request_duration=SourceValue(40 * u.s), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
@@ -188,7 +191,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            storage=self.storage
         )
 
         logger.warning("Changing jobs server")
@@ -223,17 +227,15 @@ class IntegrationTest(IntegrationTestBaseClass):
         )
         logger.warning("Changing jobs storage")
 
-        self.upload_job.storage = new_storage
+        self.server.storage = new_storage
         self.footprint_has_changed([self.storage])
-        self.streaming_job.storage = new_storage
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial jobs storage")
-        self.streaming_job.storage = self.storage
-        self.upload_job.storage = self.storage
+        self.server.storage = self.storage
         self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.storage])
@@ -241,7 +243,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.MB),
+        new_job = Job("new job", self.server, data_upload=SourceValue(5 * u.MB),
                       data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.MB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
                       cpu_needed=SourceValue(1 * u.core))
@@ -262,7 +264,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Modifying uj steps")
         new_step = UserJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
-            jobs=[Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.kB),
+            jobs=[Job("new job", self.server, data_upload=SourceValue(5 * u.kB),
                       data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
                       cpu_needed=SourceValue(1 * u.core))]

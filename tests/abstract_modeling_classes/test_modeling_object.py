@@ -1,8 +1,12 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
+    ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.constants.units import u
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
@@ -30,24 +34,46 @@ class TestModelingObject(unittest.TestCase):
         self.modeling_object = ModelingObjectForTesting("test_object")
 
     def test_setattr_sets_modeling_obj_container(self):
-        value = MagicMock(modeling_obj_container=None)
+        value = MagicMock(spec=ObjectLinkedToModelingObj, modeling_obj_container=None)
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: ExplainableObject):
-            self.modeling_object.attribute = value
+        self.modeling_object.attribute = value
 
         value.set_modeling_obj_container.assert_called_once_with(self.modeling_object, "attribute")
 
+    def test_setattr_already_assigned_value(self):
+        input_value = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.dimensionless))
+        child_obj = ModelingObjectForTesting("child_object", custom_input=input_value)
+        parent_obj = ModelingObjectForTesting("parent_object", custom_input=child_obj)
+
+        self.assertEqual(child_obj, parent_obj.custom_input)
+        self.assertIn(parent_obj, child_obj.modeling_obj_containers)
+
+        with patch.object(ModelingObjectForTesting, "handle_object_link_update", new_callable=PropertyMock) \
+                as mock_update:
+            parent_obj.custom_input = child_obj
+            # Test that the value is not changed when we re-assigned the same object to the same attribute
+            # and that the handle_object_link_update method is not called
+            mock_update.assert_not_called()
+            self.assertEqual(child_obj, parent_obj.custom_input)
+            self.assertIn(parent_obj, child_obj.modeling_obj_containers)
+
+        # Test that the value is changed when we change the attribute value
+        child_obj.custom_input = SourceHourlyValues(
+            create_hourly_usage_df_from_list([4, 5, 6], pint_unit=u.dimensionless))
+
+        self.assertEqual([4, 5, 6], parent_obj.custom_input.custom_input.value_as_float_list)
+
     def test_handle_model_input_update_triggers(self):
         value = MagicMock(
-            modeling_obj_container=None, left_parent=None, right_parent=None, mock_type=ExplainableObject)
-        old_value = MagicMock(mock_type=ExplainableObject)
+            modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
+        old_value = MagicMock(spec=ObjectLinkedToModelingObj)
         self.modeling_object.attribute = old_value
         self.modeling_object.handle_model_input_update = MagicMock()
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type):
-            self.modeling_object.attribute = value
+        self.modeling_object.attribute = value
 
-            self.modeling_object.handle_model_input_update.assert_called_once_with(old_value)
+        self.modeling_object.handle_model_input_update.assert_called_once_with(old_value)
 
     def test_handle_model_input_update_single_level_descendants(self):
         mod_obj_container = "mod_obj"

@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -6,9 +7,11 @@ import pint_pandas
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity, \
     EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.hardware.storage import Storage
 
 
 class Server(InfraHardware):
@@ -16,7 +19,7 @@ class Server(InfraHardware):
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                 base_cpu_consumption: SourceValue):
+                 base_cpu_consumption: SourceValue, storage: Storage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.hour_by_hour_cpu_need = None
         self.hour_by_hour_ram_need = None
@@ -36,6 +39,7 @@ class Server(InfraHardware):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
+        self.storage = storage
 
     @property
     def calculated_attributes(self):
@@ -50,6 +54,10 @@ class Server(InfraHardware):
     @property
     def jobs(self):
         return self.modeling_obj_containers
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.storage]
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])

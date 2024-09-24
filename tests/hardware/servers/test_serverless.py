@@ -25,7 +25,8 @@ class TestServerless(TestCase):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless),
             base_ram_consumption=SourceValue(0 * u.GB),
-            base_cpu_consumption=SourceValue(0 * u.core)
+            base_cpu_consumption=SourceValue(0 * u.core),
+            storage=MagicMock()
         )
 
         self.server_base.dont_handle_input_updates = True

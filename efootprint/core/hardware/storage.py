@@ -1,4 +1,5 @@
 import math
+from typing import List, Type
 
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
@@ -48,10 +49,11 @@ class Storage(InfraHardware):
             ["storage_delta", "full_cumulative_storage_need", "raw_nb_of_instances", "nb_of_instances",
              "nb_of_active_instances","instances_fabrication_footprint", "instances_energy","energy_footprint"])
 
-
     @property
-    def jobs(self):
-        return self.modeling_obj_containers
+    def jobs(self) -> List[Type["Job"]]:
+        return list(set(
+            job for serv in self.modeling_obj_containers for job in serv.jobs
+        ))
 
     # If storage_needed, storage_freed and automatic_storage_dumps_after_storage_duration had their update function
     # and were attributes of the storage class then the update of the data_stored attribute of a job from positive to
@@ -172,4 +174,4 @@ class Storage(InfraHardware):
 
         storage_energy = (active_storage_energy + idle_storage_energy)
 
-        self.instances_energy = storage_energy.set_label(f"Storage energy for {self.name}")
+        self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
