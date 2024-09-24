@@ -84,8 +84,8 @@ class Job(ModelingObject):
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
                 "hourly_data_upload_per_usage_pattern", "hourly_data_download_per_usage_pattern",
                 "hourly_data_stored_per_usage_pattern", "hourly_occurrences_across_usage_patterns",
-                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_upload_across_usage_patterns"
-                , "hourly_data_stored_across_usage_patterns"]
+                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_upload_across_usage_patterns",
+                "hourly_data_stored_across_usage_patterns"]
 
     @property
     def duration_in_full_hours(self):
