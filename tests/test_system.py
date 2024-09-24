@@ -64,9 +64,9 @@ class TestSystem(TestCase):
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
             "Storage": {"storage": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
+            "Network": {"networks": EmptyExplainableObject()},
             "Devices": {"usage_pattern": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"networks": EmptyExplainableObject()}
+                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
         }
         
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints)

@@ -40,7 +40,8 @@ class Server(InfraHardware):
     @property
     def calculated_attributes(self):
         return ["hour_by_hour_cpu_need", "hour_by_hour_ram_need", "available_ram_per_instance",
-                "available_cpu_per_instance"] + self.calculated_attributes_defined_in_infra_hardware_class
+                "available_cpu_per_instance", "raw_nb_of_instances", "nb_of_instances",
+                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
     def resources_unit_dict(self):
@@ -88,36 +89,19 @@ class Server(InfraHardware):
             f"Available CPU per {self.name} instance")
 
     def update_raw_nb_of_instances(self):
-        if isinstance(self.hour_by_hour_ram_need, EmptyExplainableObject) \
-                and isinstance(self.hour_by_hour_cpu_need, EmptyExplainableObject):
-            self.raw_nb_of_instances = EmptyExplainableObject()
-        else:
-            nb_of_servers_based_on_ram_alone = (
-                    self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.dimensionless).set_label(
-                f"Raw nb of {self.name} instances based on RAM alone")
-            nb_of_servers_based_on_cpu_alone = (
-                    self.hour_by_hour_cpu_need / self.available_cpu_per_instance).to(u.dimensionless).set_label(
-                f"Raw nb of {self.name} instances based on CPU alone")
+        nb_of_servers_based_on_ram_alone = (
+                self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.dimensionless).set_label(
+            f"Raw nb of {self.name} instances based on RAM alone")
+        nb_of_servers_based_on_cpu_alone = (
+                self.hour_by_hour_cpu_need / self.available_cpu_per_instance).to(u.dimensionless).set_label(
+            f"Raw nb of {self.name} instances based on CPU alone")
 
-            nb_of_servers_raw_np = np.maximum(
-                nb_of_servers_based_on_ram_alone.value["value"].values.data,
-                nb_of_servers_based_on_cpu_alone.value["value"].values.data
-            )
-            nb_of_servers_raw_df = pd.DataFrame(
-                {"value": pint_pandas.PintArray(nb_of_servers_raw_np, dtype=u.dimensionless)},
-                index=nb_of_servers_based_on_ram_alone.value.index)
+        nb_of_servers_raw = nb_of_servers_based_on_ram_alone.np_compared_with(nb_of_servers_based_on_cpu_alone, "max")
 
-            nb_of_servers_raw = ExplainableHourlyQuantities(
-                nb_of_servers_raw_df,
-                f"Raw nb of instances",
-                left_parent=nb_of_servers_based_on_ram_alone,
-                right_parent=nb_of_servers_based_on_cpu_alone,
-                operator="max compared with"
-            )
-            hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(
-                f"Hourly raw number of {self.name} instances")
+        hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(
+            f"Hourly raw number of {self.name} instances")
 
-            self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
+        self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
 
     def update_instances_energy(self):
         energy_spent_by_one_idle_instance_over_one_hour = (

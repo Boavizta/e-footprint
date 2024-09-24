@@ -15,8 +15,6 @@ class Storage(InfraHardware):
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
                  base_storage_need: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
-        self.storage_needed = None
-        self.storage_dumps = None
         self.storage_delta = None
         self.full_cumulative_storage_need = None
         self.long_term_storage_required = None
@@ -46,50 +44,73 @@ class Storage(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return ([
-            "storage_needed", "storage_dumps", "storage_delta",
-            "full_cumulative_storage_need", "nb_of_active_instances"]
-                + self.calculated_attributes_defined_in_infra_hardware_class)
+        return (
+            ["storage_delta", "full_cumulative_storage_need", "raw_nb_of_instances", "nb_of_instances",
+             "nb_of_active_instances","instances_fabrication_footprint", "instances_energy","energy_footprint"])
+
 
     @property
     def jobs(self):
         return self.modeling_obj_containers
 
-    def update_storage_needed(self):
+    # If storage_needed, storage_freed and automatic_storage_dumps_after_storage_duration had their update function
+    # and were attributes of the storage class then the update of the data_stored attribute of a job from positive to
+    # negative or negative to positive would cause problem with the re-computation of modeling attributes.
+    # For example if the data_stored attribute of a job went from negative to positive then the storage_freed would be
+    # recomputed but not the storage_needed nor the automatic_storage_dumps_after_storage_duration.
+    # By turning these three attributes into properties, we make all of them dependencies of the calculation of
+    # storage_delta and solve the problem.
+    @property
+    def storage_needed(self):
         storage_needed = EmptyExplainableObject()
 
         for job in self.jobs:
-            storage_needed += job.hourly_data_stored_across_usage_patterns
+            if job.data_stored.magnitude >= 0 :
+                storage_needed += job.hourly_data_stored_across_usage_patterns
 
         storage_needed *= self.data_replication_factor
 
-        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
+        return storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
 
-    def update_storage_dumps(self):
+    @property
+    def storage_freed(self):
+        storage_freed = EmptyExplainableObject()
+
+        for job in self.jobs:
+            if job.data_stored.magnitude < 0:
+                storage_freed += -job.hourly_data_stored_across_usage_patterns
+
+        storage_freed *= self.data_replication_factor
+
+        return storage_freed.to(u.TB).set_label(f"Hourly {self.name} storage freed")
+
+    @property
+    def automatic_storage_dumps_after_storage_duration(self):
         if isinstance(self.storage_needed, EmptyExplainableObject):
-            self.storage_dumps = EmptyExplainableObject()
+            return EmptyExplainableObject()
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-            storage_dumps_df = - self.storage_needed.value.copy().shift(
+            automatic_storage_dumps_after_storage_duration_df = - self.storage_needed.value.copy().shift(
                 periods=storage_duration_in_hours, freq='h')
-            storage_dumps_df = storage_dumps_df[
-                storage_dumps_df.index <= self.storage_needed.value.index.max()]
+            automatic_storage_dumps_after_storage_duration_df = automatic_storage_dumps_after_storage_duration_df[
+                automatic_storage_dumps_after_storage_duration_df.index <= self.storage_needed.value.index.max()]
 
-            if len(storage_dumps_df) == 0:
+            if len(automatic_storage_dumps_after_storage_duration_df) == 0:
                 storage_needs_start_date = self.storage_needed.value.index.min().to_timestamp()
                 storage_needs_end_date = self.storage_needed.value.index.max().to_timestamp()
                 storage_needs_nb_of_hours = int((storage_needs_end_date - storage_needs_start_date).seconds / 3600)
-                storage_dumps_df = create_hourly_usage_df_from_list(
+                automatic_storage_dumps_after_storage_duration_df = create_hourly_usage_df_from_list(
                     [0] * (storage_needs_nb_of_hours + 1), start_date=storage_needs_start_date)
 
-            self.storage_dumps = ExplainableHourlyQuantities(
-                storage_dumps_df, label=f"Storage dumps for {self.name}",
+            return ExplainableHourlyQuantities(
+                automatic_storage_dumps_after_storage_duration_df, label=f"Storage dumps for {self.name}",
                 left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
     def update_storage_delta(self):
-        storage_delta = self.storage_needed + self.storage_dumps
-        
+        storage_delta = (self.storage_needed + self.storage_freed
+                         + self.automatic_storage_dumps_after_storage_duration)
+
         self.storage_delta = storage_delta.set_label(f"Hourly storage delta for {self.name}")
 
     def update_full_cumulative_storage_need(self):
@@ -99,6 +120,17 @@ class Storage(InfraHardware):
             storage_delta_df = self.storage_delta.value.copy()
             storage_delta_df.iat[0, 0] += self.base_storage_need.value
             full_cumulative_storage_need = storage_delta_df.cumsum()
+
+            if full_cumulative_storage_need.value.min().magnitude < 0:
+                jobs_in_errors= [
+                    f"name : {job.name} - value : {job.data_stored}"
+                    for job in self.jobs if job.data_stored.magnitude < 0]
+                raise ValueError(
+                    f"In Storage object {self.name}, negative cumulative storage need detected : "
+                    f"{full_cumulative_storage_need.min().value}."
+                    f"Please verify your jobs that delete data: {jobs_in_errors}"
+                    f" or increase the base_storage_need value, currently set to {self.base_storage_need.value}"
+                )
 
             self.full_cumulative_storage_need = ExplainableHourlyQuantities(
                 full_cumulative_storage_need, label=f"Full cumulative storage need for {self.name}",
@@ -116,9 +148,11 @@ class Storage(InfraHardware):
         self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):
-        nb_of_active_instances = (
-                (self.storage_delta.abs() + self.storage_dumps.abs()) / self.storage_capacity
+        tmp_nb_of_active_instances = ((self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
+                        + self.automatic_storage_dumps_after_storage_duration.abs())
+                / self.storage_capacity
         ).to(u.dimensionless)
+        nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances.abs(), "min")
 
         self.nb_of_active_instances = nb_of_active_instances.set_label(
             f"Hourly number of active instances for {self.name}")
