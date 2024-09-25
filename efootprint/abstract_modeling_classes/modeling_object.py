@@ -8,10 +8,11 @@ import re
 
 from IPython.display import HTML
 
+from efootprint.abstract_modeling_classes.recomputation_utils import handle_model_input_update
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    ObjectLinkedToModelingObj
+    ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -63,24 +64,6 @@ def css_escape(input_string):
     return ''.join(escape_char(c) for c in input_string)
 
 
-def retrieve_update_function_from_attribute_name(mod_obj, attr_name):
-    update_func_name = f"update_{attr_name}"
-    update_func = getattr(mod_obj, update_func_name, None)
-
-    if update_func is None:
-        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}. "
-                             f"Please create it and checkout optimization.md")
-
-    return update_func
-
-
-def handle_model_input_update(old_value_that_gets_updated: ExplainableObject):
-    for child_to_update in old_value_that_gets_updated.update_computation_chain:
-        child_update_func = retrieve_update_function_from_attribute_name(
-            child_to_update.modeling_obj_container, child_to_update.attr_name_in_mod_obj_container)
-        child_update_func()
-
-
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.dont_handle_input_updates = False
@@ -106,7 +89,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
         for attr_name in self.calculated_attributes:
-            update_func = retrieve_update_function_from_attribute_name(self, attr_name)
+            update_func = retrieve_update_function_from_mod_obj_and_attr_name(self, attr_name)
             update_func()
 
     @property
