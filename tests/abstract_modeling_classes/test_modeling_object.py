@@ -42,12 +42,13 @@ class TestModelingObject(unittest.TestCase):
             modeling_obj_container=None, left_parent=None, right_parent=None, mock_type=ExplainableObject)
         old_value = MagicMock(mock_type=ExplainableObject)
         self.modeling_object.attribute = old_value
-        self.modeling_object.handle_model_input_update = MagicMock()
+        handle_model_input_update = MagicMock()
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type):
+        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type),\
+                patch(f"{MODELING_OBJ_CLASS_PATH}.handle_model_input_update", handle_model_input_update):
             self.modeling_object.attribute = value
 
-            self.modeling_object.handle_model_input_update.assert_called_once_with(old_value)
+            handle_model_input_update.assert_called_once_with(old_value)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
