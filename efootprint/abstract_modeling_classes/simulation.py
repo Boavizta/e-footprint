@@ -7,7 +7,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
     ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.abstract_modeling_classes.modeling_object import handle_model_input_update, ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.recomputation_utils import handle_model_input_update
 
 
 class Simulation:
