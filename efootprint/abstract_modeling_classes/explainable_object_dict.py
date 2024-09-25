@@ -8,9 +8,6 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 
 
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
-    # TODO: optimization opportunity: as such in the case of several values of an ExplainableObjectDict
-    # depending on the same SourceValue if the SourceValue is updated the ExplainableObjectDict will be recomputed as
-    # many times as it has values depending on the SourceValue.
     def __init__(self):
         super().__init__()
         self.modeling_obj_container = None

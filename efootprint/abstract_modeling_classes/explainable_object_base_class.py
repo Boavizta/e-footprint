@@ -27,6 +27,31 @@ class Source:
     link: Optional[str]
 
 
+def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, attr_name):
+    update_func_name = f"update_{attr_name}"
+    update_func = getattr(mod_obj, update_func_name, None)
+
+    if update_func is None:
+        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}, please create it.")
+
+    return update_func
+
+
+def optimize_update_computation_chain(update_computation_chain):
+    optimized_chain = []
+
+    for index in range(len(update_computation_chain)):
+        expl_obj = update_computation_chain[index]
+
+        update_functions_after_current_expl_obj = [
+            expl_obj.update_function for expl_obj in update_computation_chain[index + 1:]]
+        if expl_obj.update_function not in update_functions_after_current_expl_obj:
+            # Keep only last occurrence of each update function
+            optimized_chain.append(expl_obj)
+
+    return optimized_chain
+
+
 class ExplainableObject(ObjectLinkedToModelingObj):
     def __init__(
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
@@ -73,7 +98,19 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             raise ValueError(
                 f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its ancestors")
+
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+
+    @property
+    def update_function(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its update function")
+        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
+            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+        return update_func
 
     @property
     def has_parent(self):
@@ -178,7 +215,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                         child for child in added_parents_with_children_to_add
                         if child.id != added_parent.id]
 
-        return update_computation_chain
+        optimized_chain = optimize_update_computation_chain(update_computation_chain)
+
+        return optimized_chain
 
     def explain(self, pretty_print=True):
         element_value_to_print = str(self)
