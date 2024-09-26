@@ -42,7 +42,6 @@ class Simulation:
         for old_value, new_value in self.changes_list:
             if not issubclass(old_value, ObjectLinkedToModelingObj):
                 raise ValueError(f"Can only make changes on objects linked to a modeling object.")
-            # TODO: Create ListLinkedToModelingObj and rename DictLinkedToModelingObj into DictLinkedToModelingObj
             if type(old_value) != type(new_value):
                 raise ValueError(f"In simulations old and new values should have same type, got "
                                  f"{type(old_value)} and {type(new_value)}")

@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch, PropertyMock
 import unittest
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
@@ -15,6 +16,10 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 class TestSystem(TestCase):
     def setUp(self):
+        patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
+        self.mock_check_value_type = patcher.start()
+        self.addCleanup(patcher.stop)
+
         self.usage_pattern = MagicMock()
         self.usage_pattern.name = "usage_pattern"
         self.usage_pattern.systems = []

@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -10,6 +11,10 @@ from efootprint.constants.units import u
 
 class TestUsagePattern(unittest.TestCase):
     def setUp(self):
+        patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
+        self.mock_check_value_type = patcher.start()
+        self.addCleanup(patcher.stop)
+
         self.storage = MagicMock()
         self.server = MagicMock()
 
