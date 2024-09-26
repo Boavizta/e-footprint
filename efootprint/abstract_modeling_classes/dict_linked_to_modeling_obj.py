@@ -28,8 +28,7 @@ class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
                 f"DictLinkedToModelingObjs only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")
         super().__setitem__(key, value)
-        if value != 0:
-            value.set_modeling_obj_container(
+        value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
 
     def to_json(self, with_calculated_attributes_data=False):
