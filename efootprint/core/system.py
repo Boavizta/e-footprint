@@ -6,6 +6,7 @@ import pandas as pd
 from IPython.display import HTML
 from matplotlib import pyplot as plt
 
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
@@ -24,7 +25,7 @@ class System(ModelingObject):
     def __init__(self, name: str, usage_patterns: List[UsagePattern]):
         super().__init__(name)
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
-        self._usage_patterns = usage_patterns
+        self._usage_patterns = ListLinkedToModelingObj(usage_patterns)
         self.previous_change = None
         self.previous_total_energy_footprints_sum_over_period = None
         self.previous_total_fabrication_footprints_sum_over_period = None
@@ -53,7 +54,7 @@ class System(ModelingObject):
     @usage_patterns.setter
     def usage_patterns(self, usage_patterns: List[UsagePattern]):
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
-        self._usage_patterns = usage_patterns
+        self._usage_patterns = ListLinkedToModelingObj(usage_patterns)
 
     @usage_patterns.deleter
     def usage_patterns(self):

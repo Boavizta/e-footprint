@@ -8,16 +8,6 @@ def round_dict(my_dict, round_level):
     return my_dict
 
 
-def flatten_list(nested_list):
-    flattened_list = [item for sublist in nested_list
-                      for item in (flatten_list(sublist) if isinstance(sublist, list) else [sublist])]
-    for elt in flattened_list:
-        if type(elt) == set:
-            raise ValueError("flatten_list function is not supposed to handle set elements, please refactor it.")
-
-    return flattened_list
-
-
 def time_it(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -28,17 +18,6 @@ def time_it(func):
             print(f"Function {func.__name__} took {diff:.5f} seconds to execute.")
         return result
     return wrapper
-
-
-def convert_to_list(input_value):
-    if type(input_value) == list:
-        value_elts = flatten_list(input_value)
-    elif type(input_value) == set:
-        value_elts = flatten_list(list(input_value))
-    else:
-        value_elts = [input_value]
-
-    return value_elts
 
 
 def format_co2_amount(co2_amount_in_kg: int, rounding_value=1):

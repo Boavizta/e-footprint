@@ -10,11 +10,12 @@ from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import (
     ExplainableQuantity, ExplainableHourlyQuantities, EmptyExplainableObject)
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 
 
 class UsagePattern(ModelingObject):
-    def __init__(self, name: str, user_journey: UserJourney, devices: List[Hardware], network: Network,
-                 country: Country, hourly_user_journey_starts: ExplainableHourlyQuantities):
+    def __init__(self, name: str, user_journey: UserJourney, devices: List[Hardware],
+                 network: Network, country: Country, hourly_user_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
         self.utc_hourly_user_journey_starts = None
         self.nb_user_journeys_in_parallel = None
@@ -25,7 +26,7 @@ class UsagePattern(ModelingObject):
         self.instances_fabrication_footprint = None
         self.hourly_user_journey_starts = hourly_user_journey_starts.set_label(f"{self.name} hourly nb of visits")
         self.user_journey = user_journey
-        self.devices = devices
+        self.devices = ListLinkedToModelingObj(devices)
         self.network = network
         self.country = country
 
