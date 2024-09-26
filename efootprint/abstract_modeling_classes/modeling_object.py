@@ -1,7 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
-from copy import copy
 import os
 import json
 import re
@@ -16,7 +15,6 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.utils.tools import convert_to_list
 
 
 PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
@@ -166,26 +164,24 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     super().__setattr__(name, input_value)
                     self.handle_object_link_update(input_value, old_value)
 
-            elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers"]:
-                if len(input_value) > 0 and type(input_value[0]) == str and self.init_has_passed:
-                    raise ValueError(f"There shouldn’t be a str list update after init")
-                old_list_value_attr_name = f"{name}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"
-                if not (len(input_value) > 0 and type(input_value[0]) == str):
-                    for obj in input_value:
-                        obj.add_obj_to_modeling_obj_containers(self)
-                    # Necessary to handle syntax obj.list_attr += [new_attr_in_list] because lists are mutable objects
-                    # Otherwise if using old_value, it would already be equal to input_value
-                    old_list_value = getattr(self, old_list_value_attr_name, None)
-                    if self.init_has_passed and old_list_value is not None:
-                        oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
-                        newlist_ids = [mod_obj.name for mod_obj in input_value]
-                        # Reset list to old value before registering footprints
-                        super().__setattr__(name, old_list_value)
-                        self.register_footprint_values_in_systems_before_change(
-                            f"{self.name}’s {name} changed from {oldlist_ids} to {newlist_ids}")
-                        super().__setattr__(name, input_value)
-                        self.handle_object_list_link_update(input_value, old_list_value)
-                    super().__setattr__(old_list_value_attr_name, copy(input_value))
+            elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers", "all_changes"]:
+                from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+                if not isinstance(input_value, ListLinkedToModelingObj):
+                    input_value = ListLinkedToModelingObj(input_value)
+                input_value.set_modeling_obj_container(self, name)
+                # Necessary to handle syntax obj.list_attr += [new_attr_in_list] because lists are mutable objects
+                # Otherwise if using old_value, it would already be equal to input_value
+                old_list_value = getattr(old_value, "previous_values", None)
+                if self.init_has_passed and old_list_value is not None:
+                    oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
+                    newlist_ids = [mod_obj.name for mod_obj in input_value]
+                    # Reset list to old value before registering footprints
+                    super().__setattr__(name, old_list_value)
+                    self.register_footprint_values_in_systems_before_change(
+                        f"{self.name}’s {name} changed from {oldlist_ids} to {newlist_ids}")
+                    super().__setattr__(name, input_value)
+                    self.handle_object_list_link_update(input_value, old_list_value)
+                input_value.register_previous_values()
 
             elif isinstance(input_value, ObjectLinkedToModelingObj):
                 input_value.set_modeling_obj_container(self, name)
@@ -243,7 +239,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.launch_attributes_computation_chain(optimized_chain)
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
-        if new_obj not in self.modeling_obj_containers:
+        if new_obj not in self.modeling_obj_containers and new_obj is not None:
             if (len(self.modeling_obj_containers) > 0
                     and not isinstance(new_obj, type(self.modeling_obj_containers[0]))):
                 raise ValueError(
@@ -257,12 +253,13 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def mod_obj_attributes(self):
+        from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
         output_list = []
-        for attr_name, attr_value in vars(self).items():
-            values = convert_to_list(attr_value)
-            for value in values:
-                if isinstance(value, ModelingObject) and value not in self.modeling_obj_containers:
-                    output_list.append(value)
+        for value in vars(self).values():
+            if isinstance(value, ModelingObject) and value not in self.modeling_obj_containers:
+                output_list.append(value)
+            elif isinstance(value, ListLinkedToModelingObj):
+                output_list += list(value)
 
         return output_list
 

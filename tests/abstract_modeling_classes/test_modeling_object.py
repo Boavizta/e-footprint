@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
 
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
@@ -19,6 +20,7 @@ class ModelingObjectForTesting(ModelingObject):
     def compute_calculated_attributes(self):
         pass
 
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return []
 
@@ -30,6 +32,10 @@ class ModelingObjectForTesting(ModelingObject):
 class TestModelingObject(unittest.TestCase):
 
     def setUp(self):
+        patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
+        self.mock_check_value_type = patcher.start()
+        self.addCleanup(patcher.stop)
+
         self.modeling_object = ModelingObjectForTesting("test_object")
 
     def test_setattr_sets_modeling_obj_container(self):
@@ -82,15 +88,17 @@ class TestModelingObject(unittest.TestCase):
         dep2_sub1 = MagicMock()
         dep2_sub2 = MagicMock()
 
-        self.modeling_object.modeling_objects_whose_attributes_depend_directly_on_me = [dep1, dep2]
-        dep1.modeling_objects_whose_attributes_depend_directly_on_me = [dep1_sub1, dep1_sub2]
-        dep2.modeling_objects_whose_attributes_depend_directly_on_me = [dep2_sub1, dep2_sub2]
+        with patch.object(ModelingObjectForTesting, "modeling_objects_whose_attributes_depend_directly_on_me",
+                          new_callable=PropertyMock) as mock_modeling_objects_whose_attributes_depend_directly_on_me:
+            mock_modeling_objects_whose_attributes_depend_directly_on_me.return_value = [dep1, dep2]
+            dep1.modeling_objects_whose_attributes_depend_directly_on_me = [dep1_sub1, dep1_sub2]
+            dep2.modeling_objects_whose_attributes_depend_directly_on_me = [dep2_sub1, dep2_sub2]
 
-        for obj in [dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
-            obj.modeling_objects_whose_attributes_depend_directly_on_me = []
+            for obj in [dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
+                obj.modeling_objects_whose_attributes_depend_directly_on_me = []
 
-        self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
-                         self.modeling_object.attributes_computation_chain)
+            self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
+                             self.modeling_object.attributes_computation_chain)
 
     def test_list_attribute_update_works_with_classical_syntax(self):
         val1 = MagicMock()
@@ -111,12 +119,9 @@ class TestModelingObject(unittest.TestCase):
 
         mod_obj = ModelingObjectForTesting("test mod obj", custom_input=[val1, val2])
 
-        with patch(f'{MODELING_OBJ_CLASS_PATH}.ModelingObject.handle_object_list_link_update') \
-                as mock_list_obj_update_func:
-            assert mod_obj.custom_input__previous_list_value_set == [val1, val2]
-            mod_obj.custom_input += [val3]
-            assert mod_obj.custom_input__previous_list_value_set == [val1, val2, val3]
-            mock_list_obj_update_func.assert_called_once_with([val1, val2, val3], [val1, val2])
+        self.assertEqual(mod_obj.custom_input, [val1, val2])
+        mod_obj.custom_input += [val3]
+        self.assertEqual(mod_obj.custom_input.previous_values, [val1, val2, val3])
 
     def test_optimize_attributes_computation_chain_simple_case(self):
         mod_obj1 = MagicMock()
