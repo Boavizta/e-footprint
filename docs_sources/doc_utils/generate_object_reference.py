@@ -5,7 +5,7 @@ from jinja2 import Template
 import ruamel.yaml
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -49,7 +49,7 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
         return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
     elif isinstance(input_obj, ExplainableHourlyQuantities):
         return_str += f"""  \n{input_obj.label.lower()} in {input_obj.unit}."""
-    elif isinstance(input_obj, ExplainableObjectDict):
+    elif isinstance(input_obj, DictLinkedToModelingObj):
         dict_value = list(input_obj.values())[0]
         dict_key = list(input_obj.keys())[0]
         return_str += f"""  \nDictionary with {dict_key.class_as_simple_str} as keys and 

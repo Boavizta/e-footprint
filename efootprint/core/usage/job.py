@@ -2,7 +2,7 @@ import math
 from copy import copy
 from typing import List, Type
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.servers.server_base_class import Server
@@ -38,11 +38,11 @@ class Job(ModelingObject):
                  cpu_needed: SourceValue, ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED,
                  description: str = ""):
         super().__init__(name)
-        self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_upload_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_download_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_occurrences_per_usage_pattern = DictLinkedToModelingObj()
+        self.hourly_avg_occurrences_per_usage_pattern = DictLinkedToModelingObj()
+        self.hourly_data_upload_per_usage_pattern = DictLinkedToModelingObj()
+        self.hourly_data_download_per_usage_pattern = DictLinkedToModelingObj()
+        self.hourly_data_stored_per_usage_pattern = DictLinkedToModelingObj()
         self.hourly_occurrences_across_usage_patterns = None
         self.hourly_avg_occurrences_across_usage_patterns = None
         self.hourly_data_upload_across_usage_patterns = None
@@ -134,12 +134,12 @@ class Job(ModelingObject):
         return job_occurrences.set_label(f"Hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
-        self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_occurrences_per_usage_pattern = DictLinkedToModelingObj()
         for up in self.usage_patterns:
             self.hourly_occurrences_per_usage_pattern[up] = self.compute_hourly_occurrences_for_usage_pattern(up)
 
     def update_hourly_avg_occurrences_per_usage_pattern(self):
-        self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_avg_occurrences_per_usage_pattern = DictLinkedToModelingObj()
         for up in self.usage_patterns:
             hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
                 self.hourly_occurrences_per_usage_pattern[up], self.request_duration)
@@ -164,23 +164,23 @@ class Job(ModelingObject):
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
 
     def update_hourly_data_upload_per_usage_pattern(self):
-        self.hourly_data_upload_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_data_upload_per_usage_pattern = DictLinkedToModelingObj()
         for up in self.usage_patterns:
             self.hourly_data_upload_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
                 up, "data_upload")
 
     def update_hourly_data_download_per_usage_pattern(self):
-        self.hourly_data_download_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_data_download_per_usage_pattern = DictLinkedToModelingObj()
         for up in self.usage_patterns:
             self.hourly_data_download_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
                 up, "data_download")
 
     def update_hourly_data_stored_per_usage_pattern(self):
-        self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_data_stored_per_usage_pattern = DictLinkedToModelingObj()
         for up in self.usage_patterns:
             self.hourly_data_stored_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
                 up, "data_stored")
-            
+
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):
         hourly_calc_attr_summed_across_ups = EmptyExplainableObject()
