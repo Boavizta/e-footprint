@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
@@ -27,7 +27,6 @@ class ModelingObjectForTesting(ModelingObject):
 
 
 class TestModelingObject(unittest.TestCase):
-
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
         self.mock_check_value_type = patcher.start()
@@ -43,18 +42,20 @@ class TestModelingObject(unittest.TestCase):
 
         value.set_modeling_obj_container.assert_called_once_with(self.modeling_object, "attribute")
 
-    def test_handle_model_input_update_triggers(self):
+    def test_input_change_triggers_launch_attributes_computation_chain(self):
         value = MagicMock(
             modeling_obj_container=None, left_parent=None, right_parent=None, mock_type=ExplainableObject)
         old_value = MagicMock(mock_type=ExplainableObject)
+        old_value.update_computation_chain = MagicMock()
         self.modeling_object.attribute = old_value
-        handle_model_input_update = MagicMock()
+        launch_attributes_computation_chain = MagicMock()
 
         with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type),\
-                patch(f"{MODELING_OBJ_CLASS_PATH}.handle_model_input_update", handle_model_input_update):
+                patch(f"{MODELING_OBJ_CLASS_PATH}.launch_attributes_computation_chain",
+                      launch_attributes_computation_chain):
             self.modeling_object.attribute = value
 
-            handle_model_input_update.assert_called_once_with(old_value)
+            launch_attributes_computation_chain.assert_called_once_with(old_value.update_computation_chain)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
@@ -74,7 +75,7 @@ class TestModelingObject(unittest.TestCase):
                 obj.modeling_objects_whose_attributes_depend_directly_on_me = []
 
             self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
-                             self.modeling_object.attributes_computation_chain)
+                             self.modeling_object.mod_objs_computation_chain)
 
     def test_list_attribute_update_works_with_classical_syntax(self):
         val1 = MagicMock()
@@ -99,7 +100,7 @@ class TestModelingObject(unittest.TestCase):
         mod_obj.custom_input += [val3]
         self.assertEqual(mod_obj.custom_input.previous_values, [val1, val2, val3])
 
-    def test_optimize_attributes_computation_chain_simple_case(self):
+    def test_optimize_mod_objs_computation_chain_simple_case(self):
         mod_obj1 = MagicMock()
         mod_obj2 = MagicMock()
         mod_obj3 = MagicMock()
@@ -107,9 +108,9 @@ class TestModelingObject(unittest.TestCase):
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
 
         self.assertEqual([mod_obj1, mod_obj2, mod_obj3],
-                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
+                         optimize_mod_objs_computation_chain(attributes_computation_chain))
 
-    def test_optimize_attributes_computation_chain_complex_case(self):
+    def test_optimize_mod_objs_computation_chain_complex_case(self):
         mod_obj1 = MagicMock()
         mod_obj2 = MagicMock()
         mod_obj3 = MagicMock()
@@ -120,7 +121,7 @@ class TestModelingObject(unittest.TestCase):
             mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]
 
         self.assertEqual([mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3],
-                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
+                         optimize_mod_objs_computation_chain(attributes_computation_chain))
 
 
 if __name__ == "__main__":
