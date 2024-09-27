@@ -6,8 +6,6 @@ from typing import Type
 import pandas as pd
 import pint_pandas
 import pytz
-from numpy.matlib import empty
-from numpy.random.mtrand import operator
 from pint import Quantity, Unit
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,6 +17,10 @@ from efootprint.constants.units import u
 
 
 class EmptyExplainableObject(ObjectLinkedToModelingObj):
+    def __init__(self):
+        super().__init__()
+        self.label = "no value"
+
     def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
         self.modeling_obj_container = new_modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name
@@ -45,8 +47,12 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         return EmptyExplainableObject()
 
     @property
+    def iloc(self):
+        return [EmptyExplainableObject()]
+
+    @property
     def magnitude(self):
-        return self
+        return 0
 
     @property
     def value(self):
@@ -80,16 +86,16 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
             raise ValueError
 
     def __str__(self):
-        return "no calculated value"
+        return self.label
 
-    def np_compared_with(self, compare_object, comparator):
-        if isinstance(compare_object, EmptyExplainableObject):
+    def np_compared_with(self, compared_object, comparator):
+        if isinstance(compared_object, EmptyExplainableObject):
             return EmptyExplainableObject()
-        elif isinstance(compare_object, ExplainableHourlyQuantities):
-            return compare_object.np_compared_with(self, comparator)
+        elif isinstance(compared_object, ExplainableHourlyQuantities):
+            return compared_object.np_compared_with(self, comparator)
         else:
             raise ValueError(f"Can only compare with another EmptyExplainableObject or ExplainableHourlyQuantities,"
-                             f" not {type(compare_object)}")
+                             f" not {type(compared_object)}")
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -314,65 +320,38 @@ class ExplainableHourlyQuantities(ExplainableObject):
             index=self.value.index)
         return ExplainableHourlyQuantities(negated_df, left_parent=self, operator="negate")
 
-    def np_compared_with(self, compare_object, comparator):
+    def np_compared_with(self, compared_object, comparator):
         if comparator not in ["max", "min"]:
             raise ValueError(f"Comparator {comparator} not implemented in np_compared_with method")
 
-        if isinstance(compare_object, EmptyExplainableObject):
-            new_list = []
-            min_value = self.value["value"].min().magnitude
-            max_value = self.value["value"].max().magnitude
-            result_label = f"{self.label} compared with an EmptyExplainableObject"
+        if isinstance(compared_object, EmptyExplainableObject):
+            compared_values = np.full(len(self.value), fill_value=0)
             right_parent = None
-            if comparator == "max":
-                if min_value >= 0:
-                    return self
-                elif min_value < 0 and max_value <0:
-                    return EmptyExplainableObject()
-                else:
-                    for elt in self.value["value"].values.data:
-                        if elt >= 0:
-                            new_list += [elt]
-                        else:
-                            new_list += [0]
-            else:
-                if max_value <= 0:
-                    return self
-                elif min_value > 0 and max_value > 0:
-                    return EmptyExplainableObject()
-                else:
-                    for elt in self.value["value"].values.data:
-                        if elt <= 0:
-                            new_list += [elt]
-                        else:
-                            new_list += [0]
-
-            result_comparison_df = pd.DataFrame(
-                {"value": pint_pandas.PintArray(new_list, dtype=self.unit)},
-                index=self.value.index
-            )
+        elif isinstance(compared_object, ExplainableHourlyQuantities):
+            compared_values = compared_object.value["value"].values.data.to_numpy()
+            right_parent = compared_object
         else:
-            self_values = self.value["value"].values.data.to_numpy()
-            compare_values = compare_object.value["value"].values.data.to_numpy()
-            if comparator == "max":
-                result_comparison_np = np.maximum(self_values, compare_values)
-            elif comparator == "min":
-                result_comparison_np = np.minimum(self_values, compare_values)
-            result_comparison_df = pd.DataFrame(
-                {"value": pint_pandas.PintArray(result_comparison_np, dtype=self.unit)},
-                index=self.value.index
-            )
-            result_label = f"{self.label} compared with {compare_object.label}"
-            right_parent = compare_object
+            raise ValueError(f"Can only compare ExplainableHourlyQuantities with ExplainableHourlyQuantities or "
+                             f"EmptyExplainableObjects, not {type(compared_object)}")
+        
+        self_values = self.value["value"].values.data.to_numpy()
+
+        if comparator == "max":
+            result_comparison_np = np.maximum(self_values, compared_values)
+        elif comparator == "min":
+            result_comparison_np = np.minimum(self_values, compared_values)
+        result_comparison_df = pd.DataFrame(
+            {"value": pint_pandas.PintArray(result_comparison_np, dtype=self.unit)},
+            index=self.value.index
+        )
 
         return ExplainableHourlyQuantities(
             result_comparison_df,
-            result_label,
+            f"{self.label} compared with {compared_object.label}",
             left_parent=self,
             right_parent=right_parent,
             operator=f"{comparator} compared with"
         )
-
 
     def copy(self):
         return ExplainableHourlyQuantities(self.value.copy(), left_parent=self, operator="duplicate")

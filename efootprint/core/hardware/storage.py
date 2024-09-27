@@ -65,7 +65,7 @@ class Storage(InfraHardware):
         storage_needed = EmptyExplainableObject()
 
         for job in self.jobs:
-            if job.data_stored.magnitude >= 0 :
+            if job.data_stored.magnitude >= 0:
                 storage_needed += job.hourly_data_stored_across_usage_patterns
 
         storage_needed *= self.data_replication_factor
@@ -78,7 +78,7 @@ class Storage(InfraHardware):
 
         for job in self.jobs:
             if job.data_stored.magnitude < 0:
-                storage_freed += -job.hourly_data_stored_across_usage_patterns
+                storage_freed += job.hourly_data_stored_across_usage_patterns
 
         storage_freed *= self.data_replication_factor
 
@@ -122,11 +122,11 @@ class Storage(InfraHardware):
             full_cumulative_storage_need = storage_delta_df.cumsum()
 
             if full_cumulative_storage_need.value.min().magnitude < 0:
-                jobs_in_errors= [
-                    f"name : {job.name} - value : {job.data_stored}"
+                jobs_in_errors = [
+                    f"name: {job.name} - value: {job.data_stored}"
                     for job in self.jobs if job.data_stored.magnitude < 0]
                 raise ValueError(
-                    f"In Storage object {self.name}, negative cumulative storage need detected : "
+                    f"In Storage object {self.name}, negative cumulative storage need detected: "
                     f"{full_cumulative_storage_need.min().value}."
                     f"Please verify your jobs that delete data: {jobs_in_errors}"
                     f" or increase the base_storage_need value, currently set to {self.base_storage_need.value}"
@@ -148,8 +148,9 @@ class Storage(InfraHardware):
         self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):
-        tmp_nb_of_active_instances = ((self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
-                        + self.automatic_storage_dumps_after_storage_duration.abs())
+        tmp_nb_of_active_instances = (
+                (self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
+                 + self.automatic_storage_dumps_after_storage_duration.abs())
                 / self.storage_capacity
         ).to(u.dimensionless)
         nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances.abs(), "min")

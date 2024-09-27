@@ -361,15 +361,20 @@ class IntegrationTest(IntegrationTestBaseClass):
         print(self.network)
         print(self.system)
 
-
     def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
-
-        initial_data_stored = self.upload_job.data_stored
+        initial_upload_data_stored = self.upload_job.data_stored
         initial_storage_need = self.storage.storage_needed
         initial_storage_freed = self.storage.storage_freed
-        #data_stored is positive so storage_freed will be a emptyexplainableobject
+        self.assertGreaterEqual(self.storage.storage_needed.value.min().iloc[0].magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.value.max().iloc[0].magnitude, 0)
+        # data_stored is positive so storage_freed will be an EmptyExplainableObject
 
-        self.upload_job.data_stored = SourceValue(-initial_data_stored.value)
+        self.upload_job.data_stored = SourceValue(-initial_upload_data_stored.value)
+
+        self.assertNotEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
+        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
+        self.assertGreaterEqual(self.storage.storage_needed.value.min().iloc[0].magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.value.max().iloc[0].magnitude, 0)
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
@@ -378,7 +383,10 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_changed([self.storage])
 
         logger.warning("Changing back to previous datastored value")
-        self.upload_job.data_stored = initial_data_stored
+        self.upload_job.data_stored = initial_upload_data_stored
+
+        self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
+        self.assertEqual(initial_storage_freed, self.storage.storage_freed)
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])

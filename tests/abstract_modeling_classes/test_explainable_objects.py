@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime, timedelta
 
 import pytz
-from numpy.matlib import empty
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -269,27 +268,26 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
     def test_np_compared_only_with_only_empty_explainable_object(self):
         usage_to_compare_a = EmptyExplainableObject()
         usage_to_compare_b = EmptyExplainableObject()
-        self.assertIsInstance(usage_to_compare_a.np_compared_with(usage_to_compare_b, "max"),EmptyExplainableObject)
+        self.assertEqual(usage_to_compare_a.np_compared_with(usage_to_compare_b, "max"), EmptyExplainableObject())
 
-    def test_np_compared_max_with_an_empty_explainable_object_and_usage_positif(self):
+    def test_np_compared_max_with_an_empty_explainable_object_and_positive_usage(self):
         usage_to_compare = EmptyExplainableObject()
-        expected_data =ExplainableHourlyQuantities(
+        expected_data = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list([1] * 24, self.start_date, pint_unit=u.W), "Usage 1")
         self.assertEqual(expected_data.value_as_float_list,
                          self.hourly_usage1.np_compared_with(usage_to_compare, "max").value_as_float_list)
 
-    def test_np_compared_max_with_an_empty_explainable_object_and_usage_negatif(self):
+    def test_np_compared_max_with_an_empty_explainable_object_and_negative_usage(self):
         usage_base = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list([-1] * 24, self.start_date, pint_unit=u.W), "Usage 1")
         usage_to_compare = EmptyExplainableObject()
-        self.assertIsInstance(usage_base.np_compared_with(usage_to_compare, "max"),EmptyExplainableObject)
+        self.assertEqual(usage_base.np_compared_with(usage_to_compare, "max").value_as_float_list, [0]*24)
 
-    def test_np_compared_min_with_an_empty_explainable_object_and_usage_positif(self):
+    def test_np_compared_min_with_an_empty_explainable_object_and_positive_usage(self):
         usage_base = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list([1] * 24, self.start_date, pint_unit=u.W), "Usage 1")
-        expected_data = EmptyExplainableObject()
         usage_to_compare = EmptyExplainableObject()
-        self.assertIsInstance(usage_base.np_compared_with(usage_to_compare, "min"),EmptyExplainableObject)
+        self.assertEqual(usage_base.np_compared_with(usage_to_compare, "min").value_as_float_list, [0]*24)
 
     def test_np_compared_min_with_an_empty_explainable_object_and_usage_negatif(self):
         usage_base = ExplainableHourlyQuantities(
@@ -317,7 +315,6 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         usage_to_compare = EmptyExplainableObject()
         self.assertEqual(expected_data.value_as_float_list,
                          usage_base.np_compared_with(usage_to_compare, "max").value_as_float_list)
-
 
     def test_copy_with_changes_on_source(self):
         usage_data = [1.5] * 24
