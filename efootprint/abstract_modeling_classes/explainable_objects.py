@@ -6,8 +6,6 @@ from typing import Type
 import pandas as pd
 import pint_pandas
 import pytz
-from numpy.matlib import empty
-from numpy.random.mtrand import operator
 from pint import Quantity, Unit
 import numpy as np
 import matplotlib.pyplot as plt

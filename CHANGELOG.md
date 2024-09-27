@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [6.0.0] 2024-09-24
+## [6.0.0] 2024-09-27
 - Introduce in job Object the attribute "data_stored". This attribute is the amount of data stored by the job in the storage. It can be negative if the job deletes data from the storage.
 
 ## [5.0.0] 2024-09-20
