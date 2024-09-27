@@ -20,9 +20,9 @@ class Storage(InfraHardware):
                  base_storage_need: SourceValue,
                  fixed_nb_of_instances: SourceValue | EmptyExplainableObject = EmptyExplainableObject()):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.storage_delta = None
-        self.full_cumulative_storage_need = None
-        self.nb_of_active_instances = None
+        self.storage_delta = EmptyExplainableObject()
+        self.full_cumulative_storage_need = EmptyExplainableObject()
+        self.nb_of_active_instances = EmptyExplainableObject()
         if not idle_power.value.check("[power]"):
             raise ValueError("Value of variable 'idle_power' does not have appropriate power dimensionality")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")

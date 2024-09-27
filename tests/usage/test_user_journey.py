@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.constants.units import u
@@ -10,6 +11,9 @@ from efootprint.constants.units import u
 
 class TestUserJourney(TestCase):
     def setUp(self):
+        patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
+        self.mock_check_value_type = patcher.start()
+        self.addCleanup(patcher.stop)
         self.user_journey = UserJourney("test user journey", uj_steps=[])
         self.user_journey.dont_handle_input_updates = True
 

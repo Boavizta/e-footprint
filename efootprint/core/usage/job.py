@@ -43,10 +43,10 @@ class Job(ModelingObject):
         self.hourly_data_upload_per_usage_pattern = DictLinkedToModelingObj()
         self.hourly_data_download_per_usage_pattern = DictLinkedToModelingObj()
         self.hourly_data_stored_per_usage_pattern = DictLinkedToModelingObj()
-        self.hourly_occurrences_across_usage_patterns = None
-        self.hourly_avg_occurrences_across_usage_patterns = None
-        self.hourly_data_upload_across_usage_patterns = None
-        self.hourly_data_stored_across_usage_patterns = None
+        self.hourly_occurrences_across_usage_patterns = EmptyExplainableObject()
+        self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
+        self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
+        self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
         self.job_type = job_type
         self.server = server
         if not data_upload.value.check("[]"):

@@ -1,8 +1,6 @@
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from typing import List, Callable
 
 
-def handle_model_input_update(old_value_that_gets_updated: ExplainableObject):
-    for child_to_update in old_value_that_gets_updated.update_computation_chain:
-        child_update_func = child_to_update.update_function
-
-        child_update_func()
+def launch_update_function_chain(update_function_chain: List[Callable]):
+    for update_function in update_function_chain:
+        update_function()

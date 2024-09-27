@@ -17,13 +17,13 @@ class UsagePattern(ModelingObject):
     def __init__(self, name: str, user_journey: UserJourney, devices: List[Hardware],
                  network: Network, country: Country, hourly_user_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
-        self.utc_hourly_user_journey_starts = None
-        self.nb_user_journeys_in_parallel = None
-        self.devices_energy = None
-        self.devices_energy_footprint = None
-        self.devices_fabrication_footprint = None
-        self.energy_footprint = None
-        self.instances_fabrication_footprint = None
+        self.utc_hourly_user_journey_starts = EmptyExplainableObject()
+        self.nb_user_journeys_in_parallel = EmptyExplainableObject()
+        self.devices_energy = EmptyExplainableObject()
+        self.devices_energy_footprint = EmptyExplainableObject()
+        self.devices_fabrication_footprint = EmptyExplainableObject()
+        self.energy_footprint = EmptyExplainableObject()
+        self.instances_fabrication_footprint = EmptyExplainableObject()
         self.hourly_user_journey_starts = hourly_user_journey_starts.set_label(f"{self.name} hourly nb of visits")
         self.user_journey = user_journey
         self.devices = ListLinkedToModelingObj(devices)

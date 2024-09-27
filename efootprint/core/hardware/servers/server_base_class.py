@@ -16,13 +16,13 @@ class Server(InfraHardware):
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue, storage: Storage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.hour_by_hour_cpu_need = None
-        self.hour_by_hour_ram_need = None
-        self.available_cpu_per_instance = None
-        self.available_ram_per_instance = None
-        self.server_utilization_rate = None
-        self.raw_nb_of_instances = None
-        self.nb_of_instances = None
+        self.hour_by_hour_cpu_need = EmptyExplainableObject()
+        self.hour_by_hour_ram_need = EmptyExplainableObject()
+        self.available_cpu_per_instance = EmptyExplainableObject()
+        self.available_ram_per_instance = EmptyExplainableObject()
+        self.server_utilization_rate = EmptyExplainableObject()
+        self.raw_nb_of_instances = EmptyExplainableObject()
+        self.nb_of_instances = EmptyExplainableObject()
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")

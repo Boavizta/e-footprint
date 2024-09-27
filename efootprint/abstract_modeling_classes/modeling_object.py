@@ -7,8 +7,7 @@ import re
 
 from IPython.display import HTML
 
-from efootprint.abstract_modeling_classes.recomputation_utils import handle_model_input_update
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
@@ -62,6 +61,26 @@ def css_escape(input_string):
     return ''.join(escape_char(c) for c in input_string)
 
 
+def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
+    initial_chain_len = len(mod_objs_computation_chain)
+    # Keep only last occurrence of each mod_obj
+    optimized_chain = []
+
+    for index in range(len(mod_objs_computation_chain)):
+        mod_obj = mod_objs_computation_chain[index]
+
+        if mod_obj not in mod_objs_computation_chain[index + 1:]:
+            optimized_chain.append(mod_obj)
+
+    optimized_chain_len = len(optimized_chain)
+
+    if optimized_chain_len != initial_chain_len:
+        logger.info(f"Optimized modeling object computation chain from {initial_chain_len} to {optimized_chain_len}"
+                    f" modeling object calculated attributes recomputations.")
+
+    return optimized_chain
+
+
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.dont_handle_input_updates = False
@@ -91,38 +110,25 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             update_func()
 
     @property
-    def attributes_computation_chain(self):
-        attributes_computation_chain = [self]
+    def mod_objs_computation_chain(self):
+        mod_objs_computation_chain = [self]
 
         mod_objs_with_attributes_to_compute = self.modeling_objects_whose_attributes_depend_directly_on_me
 
         while len(mod_objs_with_attributes_to_compute) > 0:
             current_mod_obj_to_update = mod_objs_with_attributes_to_compute[0]
-            attributes_computation_chain.append(current_mod_obj_to_update)
+            mod_objs_computation_chain.append(current_mod_obj_to_update)
             mod_objs_with_attributes_to_compute = mod_objs_with_attributes_to_compute[1:]
 
             for mod_obj in current_mod_obj_to_update.modeling_objects_whose_attributes_depend_directly_on_me:
                 if mod_obj not in mod_objs_with_attributes_to_compute:
                     mod_objs_with_attributes_to_compute.append(mod_obj)
 
-        return attributes_computation_chain
+        return mod_objs_computation_chain
 
     @staticmethod
-    def optimize_attributes_computation_chain(attributes_computation_chain):
-        # Keep only last occurrence of each mod_obj
-        optimized_chain = []
-
-        for index in range(len(attributes_computation_chain)):
-            mod_obj = attributes_computation_chain[index]
-
-            if mod_obj not in attributes_computation_chain[index + 1:]:
-                optimized_chain.append(mod_obj)
-
-        return optimized_chain
-
-    @staticmethod
-    def launch_attributes_computation_chain(attributes_computation_chain):
-        for mod_obj in attributes_computation_chain:
+    def launch_mod_objs_computation_chain(mod_objs_computation_chain):
+        for mod_obj in mod_objs_computation_chain:
             mod_obj.compute_calculated_attributes()
 
     def after_init(self):
@@ -191,52 +197,70 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     self.register_footprint_values_in_systems_before_change(
                         f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
                     super().__setattr__(name, input_value)
-                    handle_model_input_update(old_value)
+                    launch_update_function_chain(old_value.update_function_chain)
 
         super().__setattr__(name, input_value)
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
 
+    def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
+            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"]):
+        if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
+                old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
+            raise AssertionError(
+                f"There is a circular recalculation dependency between {self.id} and {old_value.id}")
+
+        mod_objs_computation_chain = []
+        if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
+            mod_objs_computation_chain += self.mod_objs_computation_chain
+        else:
+            mod_objs_computation_chain += input_value.mod_objs_computation_chain
+            mod_objs_computation_chain += old_value.mod_objs_computation_chain
+
+        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+
+        return optimized_chain
+
     def handle_object_link_update(
             self, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):
         if old_value is None:
             raise ValueError(f"A link update is trying to replace an null object")
-        if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
-            old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
-            raise AssertionError(
-                f"There is a circular recalculation dependency between {self.id} and {old_value.id}")
 
         old_value.remove_obj_from_modeling_obj_containers(self)
+        mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
+            old_value, input_value)
 
-        attributes_computation_chain = []
-        if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
-            attributes_computation_chain += self.attributes_computation_chain
-        else:
-            attributes_computation_chain += input_value.attributes_computation_chain
-            attributes_computation_chain += old_value.attributes_computation_chain
+        self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
-        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
-        self.launch_attributes_computation_chain(optimized_chain)
-
-    def handle_object_list_link_update(self, input_value: List[Type["ModelingObject"]],
-                                       old_value: List[Type["ModelingObject"]]):
+    def compute_mod_objs_computation_chain_from_old_and_new_lists(
+            self, input_value: List[Type["ModelingObject"]],
+            old_value: List[Type["ModelingObject"]]):
         removed_objs = [obj for obj in old_value if obj not in input_value]
         added_objs = [obj for obj in input_value if obj not in old_value]
 
-        for obj in removed_objs:
-            obj.remove_obj_from_modeling_obj_containers(self)
-
-        attributes_computation_chain = []
+        mod_objs_computation_chain = []
 
         for obj in removed_objs + added_objs:
             if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
-                attributes_computation_chain += obj.attributes_computation_chain
+                mod_objs_computation_chain += obj.mod_objs_computation_chain
 
-        attributes_computation_chain += self.attributes_computation_chain
+        mod_objs_computation_chain += self.mod_objs_computation_chain
 
-        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
-        self.launch_attributes_computation_chain(optimized_chain)
+        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+
+        return optimized_chain
+
+    def handle_object_list_link_update(
+            self, input_value: List[Type["ModelingObject"]], old_value: List[Type["ModelingObject"]]):
+        removed_objs = [obj for obj in old_value if obj not in input_value]
+        for obj in removed_objs:
+            obj.remove_obj_from_modeling_obj_containers(self)
+
+        mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_lists(
+            old_value, input_value)
+
+        self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers and new_obj is not None:
@@ -287,13 +311,13 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        attributes_computation_chain = []
+        mod_objs_computation_chain = []
         for attr in self.mod_obj_attributes:
             attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
-            attributes_computation_chain += attr.attributes_computation_chain
+            mod_objs_computation_chain += attr.mod_objs_computation_chain
 
-        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
-        self.launch_attributes_computation_chain(optimized_chain)
+        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        self.launch_mod_objs_computation_chain(optimized_chain)
 
         del self
 

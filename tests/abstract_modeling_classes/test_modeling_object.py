@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -30,7 +30,6 @@ class ModelingObjectForTesting(ModelingObject):
 
 
 class TestModelingObject(unittest.TestCase):
-
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
         self.mock_check_value_type = patcher.start()
@@ -69,16 +68,17 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([4, 5, 6], parent_obj.custom_input.custom_input.value_as_float_list)
 
-    def test_handle_model_input_update_triggers(self):
+    def test_input_change_triggers_launch_update_function_chain(self):
         value = MagicMock(
             modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
+        old_value.update_function_chain = MagicMock()
         self.modeling_object.attribute = old_value
-        handle_model_input_update = MagicMock()
+        launch_update_function_chain = MagicMock()
 
         self.modeling_object.attribute = value
 
-        handle_model_input_update.assert_called_once_with(old_value)
+        launch_update_function_chain.assert_called_once_with(old_value.update_function_chain)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
@@ -98,7 +98,7 @@ class TestModelingObject(unittest.TestCase):
                 obj.modeling_objects_whose_attributes_depend_directly_on_me = []
 
             self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
-                             self.modeling_object.attributes_computation_chain)
+                             self.modeling_object.mod_objs_computation_chain)
 
     def test_list_attribute_update_works_with_classical_syntax(self):
         val1 = MagicMock()
@@ -123,7 +123,7 @@ class TestModelingObject(unittest.TestCase):
         mod_obj.custom_input += [val3]
         self.assertEqual(mod_obj.custom_input.previous_values, [val1, val2, val3])
 
-    def test_optimize_attributes_computation_chain_simple_case(self):
+    def test_optimize_mod_objs_computation_chain_simple_case(self):
         mod_obj1 = MagicMock()
         mod_obj2 = MagicMock()
         mod_obj3 = MagicMock()
@@ -131,9 +131,9 @@ class TestModelingObject(unittest.TestCase):
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
 
         self.assertEqual([mod_obj1, mod_obj2, mod_obj3],
-                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
+                         optimize_mod_objs_computation_chain(attributes_computation_chain))
 
-    def test_optimize_attributes_computation_chain_complex_case(self):
+    def test_optimize_mod_objs_computation_chain_complex_case(self):
         mod_obj1 = MagicMock()
         mod_obj2 = MagicMock()
         mod_obj3 = MagicMock()
@@ -144,7 +144,7 @@ class TestModelingObject(unittest.TestCase):
             mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]
 
         self.assertEqual([mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3],
-                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
+                         optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_mod_obj_attributes(self):
         mod_obj = ModelingObjectForTesting("test mod obj")

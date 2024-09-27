@@ -37,17 +37,21 @@ def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, attr_name):
     return update_func
 
 
-def optimize_update_computation_chain(update_computation_chain):
+def optimize_update_function_chain(update_function_chain):
+    initial_chain_len = len(update_function_chain)
     optimized_chain = []
 
-    for index in range(len(update_computation_chain)):
-        expl_obj = update_computation_chain[index]
+    for index in range(len(update_function_chain)):
+        update_function = update_function_chain[index]
 
-        update_functions_after_current_expl_obj = [
-            expl_obj.update_function for expl_obj in update_computation_chain[index + 1:]]
-        if expl_obj.update_function not in update_functions_after_current_expl_obj:
+        if update_function not in update_function_chain[index + 1:]:
             # Keep only last occurrence of each update function
-            optimized_chain.append(expl_obj)
+            optimized_chain.append(update_function)
+
+    optimized_chain_len = len(optimized_chain)
+
+    if optimized_chain_len != initial_chain_len:
+        logger.info(f"Optimized update function chain from {initial_chain_len} to {optimized_chain_len} calculations")
 
     return optimized_chain
 
@@ -182,12 +186,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return all_ancestors
 
     @property
-    def update_computation_chain(self):
+    def update_function_chain(self):
         if self.modeling_obj_container is None:
             raise ValueError(
                 f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its update computation chain")
-        update_computation_chain = []
+        update_function_chain = []
         descendants = self.all_descendants_with_id
         has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}
 
@@ -203,7 +207,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             if ancestor.id in [ancestor.id for ancestor in descendants]]
                         if all([has_been_added_to_chain_dict[ancestor.id]
                                 for ancestor in ancestors_that_belong_to_self_descendants]):
-                            update_computation_chain.append(child)
+                            update_function_chain.append(child.update_function)
                             has_been_added_to_chain_dict[child.id] = True
                             if len(child.direct_children_with_id) > 0:
                                 added_parents_with_children_to_add.append(child)
@@ -215,7 +219,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                         child for child in added_parents_with_children_to_add
                         if child.id != added_parent.id]
 
-        optimized_chain = optimize_update_computation_chain(update_computation_chain)
+        optimized_chain = optimize_update_function_chain(update_function_chain)
 
         return optimized_chain
 
