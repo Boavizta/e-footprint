@@ -34,8 +34,8 @@ class TestJob(TestCase):
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
                 patch.object(self.server, "modeling_obj_containers", [self.job]), \
                 patch.object(self.storage, "modeling_obj_containers", [self.job]), \
-                patch.object(self.storage, "attributes_computation_chain", [self.storage]), \
-                patch.object(self.server, "attributes_computation_chain", [self.server]):
+                patch.object(self.storage, "mod_objs_computation_chain", [self.storage]), \
+                patch.object(self.server, "mod_objs_computation_chain", [self.server]):
             mock_mod_obj_attributes.return_value = [self.server, self.storage]
 
             self.job.self_delete()
