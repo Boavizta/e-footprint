@@ -40,6 +40,8 @@ class Simulation:
             self, simulation_date: datetime,
             changes_list: List[Tuple[ExplainableObject | ModelingObject | List[ModelingObject],
             ExplainableObject | ModelingObject | List[ModelingObject]]]):
+        self.system = changes_list[0][0].systems[0]
+        self.system.simulation = self
         self.simulation_date = simulation_date
         self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
         self.changes_list = changes_list

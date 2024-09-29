@@ -349,5 +349,6 @@ class TestSystem(TestCase):
             fab.return_value = fab_footprints
             self.system.plot_emission_diffs(filepath=os.path.join(root_dir, "test_system_diff_plot.png"))
 
+
 if __name__ == '__main__':
     unittest.main()
