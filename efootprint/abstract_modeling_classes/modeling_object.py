@@ -7,7 +7,7 @@ import re
 
 from IPython.display import HTML
 
-from efootprint.abstract_modeling_classes.recomputation_utils import launch_attributes_computation_chain
+from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
@@ -183,7 +183,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     self.register_footprint_values_in_systems_before_change(
                         f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
                     super().__setattr__(name, input_value)
-                    launch_attributes_computation_chain(old_value.update_computation_chain)
+                    launch_update_function_chain(old_value.update_function_chain)
 
         super().__setattr__(name, input_value)
 
