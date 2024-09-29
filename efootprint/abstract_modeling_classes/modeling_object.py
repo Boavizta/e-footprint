@@ -7,6 +7,7 @@ import re
 
 from IPython.display import HTML
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -21,7 +22,7 @@ PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
 
 def get_subclass_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
-            if issubclass(type(attr_value), target_class)}
+            if isinstance(attr_value, target_class)}
 
 
 def check_type_homogeneity_within_list_or_set(input_list_or_set):
@@ -39,11 +40,16 @@ class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
         instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
         instance.after_init()
+
         return instance
 
 
 class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
-    pass
+    def __instancecheck__(cls, instance):
+        # Allow an instance of ContextualModelingObjectAttribute to be considered as an instance of ModelingObject
+        if isinstance(instance, ContextualModelingObjectAttribute):
+            return True
+        return super().__instancecheck__(instance)
 
 
 def css_escape(input_string):
@@ -138,7 +144,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return hash(self.id)
 
     def __eq__(self, other):
-        if issubclass(type(other), ModelingObject):
+        if isinstance(other, ModelingObject):
             return self.id == other.id
         return False
 
@@ -155,7 +161,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         old_value = self.__dict__.get(name, None)
 
         if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
-            if issubclass(type(input_value), ModelingObject):
+            if isinstance(input_value, ModelingObject):
+                input_value = ContextualModelingObjectAttribute(input_value, self, name)
                 input_value.add_obj_to_modeling_obj_containers(self)
                 handle_link_update = True
                 if old_value == input_value:
@@ -170,7 +177,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     super().__setattr__(name, input_value)
                     self.handle_object_link_update(input_value, old_value)
 
-            elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers", "all_changes"]:
+            elif isinstance(input_value, List) and name not in ["modeling_obj_containers", "all_changes"]:
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 if not isinstance(input_value, ListLinkedToModelingObj):
                     input_value = ListLinkedToModelingObj(input_value)
@@ -345,11 +352,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 else:
                     if type(value[0]) == str:
                         output_dict[key] = value
-                    elif issubclass(type(value[0]), ModelingObject):
+                    elif isinstance(value[0], ModelingObject):
                         output_dict[key] = [elt.id for elt in value]
-            elif issubclass(type(value), ExplainableObject):
+            elif isinstance(value, ExplainableObject):
                 output_dict[key] = value.to_json(save_calculated_attributes)
-            elif issubclass(type(value), ModelingObject):
+            elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
             elif issubclass(type(value), ExplainableObjectDict):
                 output_dict[key] = value.to_json(save_calculated_attributes)
@@ -379,12 +386,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 else:
                     if type(input_value[0]) == str:
                         key_value_str = f"{input_key}: {input_value}"
-                    elif issubclass(type(input_value[0]), ModelingObject) and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
+                    elif isinstance(input_value[0], ModelingObject) and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
-            elif issubclass(type(input_value), ExplainableObject):
+            elif isinstance(input_value, ExplainableObject):
                 key_value_str = f"{input_key}: {input_value}\n"
-            elif issubclass(type(input_value), ModelingObject):
+            elif isinstance(input_value, ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"
 
             return key_value_str

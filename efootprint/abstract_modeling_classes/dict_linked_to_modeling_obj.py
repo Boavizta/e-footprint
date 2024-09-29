@@ -23,7 +23,7 @@ class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
         self.attr_name_in_mod_obj_container = attr_name
 
     def __setitem__(self, key, value: ExplainableObject):
-        if not issubclass(type(value), ExplainableObject) and not isinstance(value, EmptyExplainableObject):
+        if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):
             raise ValueError(
                 f"DictLinkedToModelingObjs only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")

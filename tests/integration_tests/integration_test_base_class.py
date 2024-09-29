@@ -27,7 +27,7 @@ class IntegrationTestBaseClass(TestCase):
             try:
                 initial_energy_footprint = self.initial_energy_footprints[obj]
                 self.assertFalse(initial_energy_footprint.value.equals(obj.energy_footprint.value))
-                if type(obj) != Network:
+                if obj.class_as_simple_str != "Network":
                     initial_fab_footprint = self.initial_fab_footprints[obj]
                     new_footprint = obj.instances_fabrication_footprint + obj.energy_footprint
                     self.assertFalse(
@@ -52,7 +52,7 @@ class IntegrationTestBaseClass(TestCase):
         for obj in objects_to_test:
             try:
                 initial_energy_footprint = self.initial_energy_footprints[obj].value
-                if type(obj) != Network:
+                if obj.class_as_simple_str != "Network":
                     initial_fab_footprint = self.initial_fab_footprints[obj].value
                     self.assertTrue(initial_fab_footprint.equals(obj.instances_fabrication_footprint.value))
                 self.assertTrue(initial_energy_footprint.equals(obj.energy_footprint.value))

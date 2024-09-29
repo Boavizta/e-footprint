@@ -63,7 +63,7 @@ class EmptyExplainableObject(ExplainableObject):
     def __add__(self, other):
         if isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="+")
-        if issubclass(type(other), ExplainableObject):
+        if isinstance(other, ExplainableObject):
             return other.__add__(self)
         elif other == 0:
             return self
@@ -140,7 +140,7 @@ class ExplainableQuantity(ExplainableObject):
         return self.value.magnitude
 
     def compare_with_and_return_max(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             if self.value >= other.value:
                 return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="max")
             else:
@@ -153,7 +153,7 @@ class ExplainableQuantity(ExplainableObject):
         return self
 
     def __gt__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             return self.value > other.value
         elif isinstance(other, EmptyExplainableObject):
             return self.value > 0
@@ -161,7 +161,7 @@ class ExplainableQuantity(ExplainableObject):
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __lt__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             return self.value < other.value
         elif isinstance(other, EmptyExplainableObject):
             return self.value < 0
@@ -169,7 +169,7 @@ class ExplainableQuantity(ExplainableObject):
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __eq__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             return self.value == other.value
         elif isinstance(other, EmptyExplainableObject):
             return self.value == 0
@@ -177,42 +177,42 @@ class ExplainableQuantity(ExplainableObject):
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __add__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
             return ExplainableQuantity(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self)
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __sub__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return ExplainableQuantity(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self)
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __mul__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value * other.value, "", self, other, "*")
-        elif issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableHourlyQuantities):
             return other.__mul__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __truediv__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value / other.value, "", self, other, "/")
-        elif issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableHourlyQuantities):
             return other.__rtruediv__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -221,7 +221,7 @@ class ExplainableQuantity(ExplainableObject):
         return self.__add__(other)
 
     def __rsub__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
+        if isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(other.value - self.value, "", other, self, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -230,13 +230,13 @@ class ExplainableQuantity(ExplainableObject):
         return self.__mul__(other)
 
     def __rtruediv__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=other, right_parent=self, operator="/")
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(other.value / self.value, "", other, self, "/")
-        elif issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableHourlyQuantities):
             return other.__truediv__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -384,11 +384,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return ExplainableHourlyQuantities(self.value.copy(), left_parent=self, operator="duplicate")
 
     def __eq__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return False
         elif isinstance(other, EmptyExplainableObject):
             return False
-        if issubclass(type(other), ExplainableHourlyQuantities):
+        if isinstance(other, ExplainableHourlyQuantities):
             if len(self.value) != len(other.value):
                 raise ValueError(
                     f"Can only compare ExplainableHourlyUsages with values of same length. Here we are trying to "
@@ -402,12 +402,12 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return len(self.value)
 
     def __add__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
             return ExplainableHourlyQuantities(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self)
-        elif issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableHourlyQuantities):
             df_sum = self.value.add(other.value, fill_value=0 * self.unit)
             return ExplainableHourlyQuantities(df_sum, "", self, other, "+")
         else:
@@ -417,27 +417,27 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return self.__add__(other)
 
     def __sub__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return ExplainableHourlyQuantities(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self)
-        elif issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value - other.value, "", self, other, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
 
     def __rsub__(self, other):
-        if issubclass(type(other), ExplainableHourlyQuantities):
+        if isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(other.value - self.value, "", other, self, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
 
     def __mul__(self, other):
-        if issubclass(type(other), numbers.Number) and other == 0:
+        if isinstance(other, numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        elif issubclass(type(other), ExplainableQuantity) or issubclass(type(other), ExplainableHourlyQuantities):
+        elif isinstance(other, ExplainableQuantity) or isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value.mul(other.value, fill_value=0), "", self, other, "*")
         else:
             raise ValueError(
@@ -448,9 +448,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return self.__mul__(other)
 
     def __truediv__(self, other):
-        if issubclass(type(other), ExplainableHourlyQuantities):
+        if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableHourlyQuantities(self.value / other.value, "", self, other, "/")
         else:
             raise ValueError(
@@ -458,9 +458,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 f"not with {type(other)}")
 
     def __rtruediv__(self, other):
-        if issubclass(type(other), ExplainableHourlyQuantities):
+        if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
-        elif issubclass(type(other), ExplainableQuantity):
+        elif isinstance(other, ExplainableQuantity):
             return ExplainableHourlyQuantities(other.value / self.value, "", other, self, "/")
         else:
             raise ValueError(

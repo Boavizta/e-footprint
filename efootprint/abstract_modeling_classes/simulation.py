@@ -73,7 +73,7 @@ class Simulation:
             if type(old_value) != type(new_value):
                 raise ValueError(f"In simulations old and new values should have same type, got "
                                  f"{type(old_value)} and {type(new_value)}")
-            if issubclass(type(old_value), ExplainableObject):
+            if isinstance(old_value, ExplainableObject):
                 if new_value.modeling_obj_container is not None:
                     raise ValueError(
                         f"Can’t use {new_value} as simulation input because it already belongs to "
@@ -92,7 +92,7 @@ class Simulation:
     def compute_update_function_chains_from_mod_obj_links_updates(self):
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
             mod_obj_container = old_value.modeling_obj_container
-            if issubclass(type(old_value), ModelingObject):
+            if isinstance(old_value, ModelingObject):
                 update_function_chain = update_function_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
                         old_value, new_value))
@@ -107,7 +107,7 @@ class Simulation:
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
             mod_obj_container = old_value.modeling_obj_container
             attr_name_in_mod_obj_container = old_value.attr_name_in_mod_obj_container
-            if issubclass(type(old_value), ModelingObject):
+            if isinstance(old_value, ModelingObject):
                 new_value.add_obj_to_modeling_obj_containers(mod_obj_container)
             elif isinstance(old_value, ListLinkedToModelingObj):
                 new_value.set_modeling_obj_container(mod_obj_container, attr_name_in_mod_obj_container)
