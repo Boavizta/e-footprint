@@ -258,7 +258,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return left_explanation, self.operator, right_explanation
 
     def print_tuple_element(self, tuple_element: object, print_values_instead_of_labels: bool):
-        if issubclass(type(tuple_element), ExplainableObject):
+        if isinstance(tuple_element, ExplainableObject):
             if print_values_instead_of_labels:
                 return str(tuple_element)
             else:

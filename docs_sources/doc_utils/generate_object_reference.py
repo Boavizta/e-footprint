@@ -22,13 +22,13 @@ def return_class_str(input_obj):
 def obj_to_md(input_obj, attr_name):
     if attr_name == "name":
         return f"""### name\nA human readable description of the object."""
-    elif issubclass(type(input_obj), ModelingObject):
+    elif isinstance(input_obj, ModelingObject):
         obj_class = return_class_str(input_obj)
         return f"### {attr_name}\nAn instance of [{obj_class}]({obj_class}.md)."
-    elif issubclass(type(input_obj), ExplainableQuantity):
+    elif isinstance(input_obj, ExplainableQuantity):
         return f"### {attr_name}\n{input_obj.label.lower()} in {input_obj.value.units}."
     elif type(input_obj) == list:
-        if issubclass(type(input_obj[0]), ModelingObject):
+        if isinstance(input_obj[0], ModelingObject):
             obj_class = return_class_str(input_obj[0])
             return f"### {attr_name}\nA list of [{obj_class}s]({obj_class}.md)."
         else:
