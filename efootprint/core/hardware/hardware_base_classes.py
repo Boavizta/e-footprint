@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -34,11 +34,11 @@ class InfraHardware(Hardware):
                  average_carbon_intensity: SourceValue):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
-        self.raw_nb_of_instances = None
-        self.nb_of_instances = None
-        self.instances_energy = None
-        self.energy_footprint = None
-        self.instances_fabrication_footprint = None
+        self.raw_nb_of_instances = EmptyExplainableObject()
+        self.nb_of_instances = EmptyExplainableObject()
+        self.instances_energy = EmptyExplainableObject()
+        self.energy_footprint = EmptyExplainableObject()
+        self.instances_fabrication_footprint = EmptyExplainableObject()
         if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
             raise ValueError(
                 "Variable 'average_carbon_intensity' does not have mass over energy "

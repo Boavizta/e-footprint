@@ -11,7 +11,7 @@ from efootprint.core.usage.job import Job
 class UserJourney(ModelingObject):
     def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
         super().__init__(name)
-        self.duration = None
+        self.duration = EmptyExplainableObject()
         self.uj_steps = uj_steps
 
     @property

@@ -15,11 +15,11 @@ class Storage(InfraHardware):
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
                  base_storage_need: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
-        self.storage_delta = None
-        self.full_cumulative_storage_need = None
-        self.long_term_storage_required = None
-        self.nb_of_active_instances = None
-        self.instances_power = None
+        self.storage_delta = EmptyExplainableObject()
+        self.full_cumulative_storage_need = EmptyExplainableObject()
+        self.long_term_storage_required = EmptyExplainableObject()
+        self.nb_of_active_instances = EmptyExplainableObject()
+        self.instances_power = EmptyExplainableObject()
         if not idle_power.value.check("[power]"):
             raise ValueError("Value of variable 'idle_power' does not have appropriate power dimensionality")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
