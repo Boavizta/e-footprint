@@ -62,6 +62,7 @@ def css_escape(input_string):
 
 
 def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
+    initial_chain_len = len(mod_objs_computation_chain)
     # Keep only last occurrence of each mod_obj
     optimized_chain = []
 
@@ -70,6 +71,12 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
         if mod_obj not in mod_objs_computation_chain[index + 1:]:
             optimized_chain.append(mod_obj)
+
+    optimized_chain_len = len(optimized_chain)
+
+    if optimized_chain_len != initial_chain_len:
+        logger.info(f"Optimized modeling object computation chain from {initial_chain_len} to {optimized_chain_len}"
+                    f" modeling object calculated attributes recomputations.")
 
     return optimized_chain
 

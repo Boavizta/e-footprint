@@ -62,6 +62,8 @@ class Simulation:
         self.filtered_hourly_quantities = []
         self.recompute_attributes()
 
+        self.reset_pre_simulation_values()
+
     def compute_new_and_old_source_values_and_mod_obj_link_lists(self):
         for old_value, new_value in self.changes_list:
             if isinstance(new_value, list):
@@ -104,7 +106,7 @@ class Simulation:
             mod_obj_container = old_value.modeling_obj_container
             attr_name_in_mod_obj_container = old_value.attr_name_in_mod_obj_container
             if issubclass(type(old_value), ModelingObject):
-                new_value.add_obj_to_modeling_obj_containers(self)
+                new_value.add_obj_to_modeling_obj_containers(mod_obj_container)
             elif isinstance(old_value, ListLinkedToModelingObj):
                 new_value.set_modeling_obj_container(mod_obj_container, attr_name_in_mod_obj_container)
                 new_value.register_previous_values()
@@ -125,8 +127,11 @@ class Simulation:
         update_function_chain_from_attributes_updates = sum(
             [old_value.update_function_chain for old_value in self.old_sourcevalues], start=[])
 
+        update_function_chain_from_mod_obj_links_updates = sum(
+            self.update_function_chains_from_mod_obj_links_updates, start=[])
+
         optimized_chain = optimize_update_function_chain(
-            update_function_chain_from_attributes_updates + self.update_function_chains_from_mod_obj_links_updates)
+            update_function_chain_from_attributes_updates + update_function_chain_from_mod_obj_links_updates)
 
         self.update_function_chain = optimized_chain
 
@@ -164,9 +169,8 @@ class Simulation:
 
         if not (global_min_date <= self.simulation_date_as_hourly_freq <= global_max_date):
             raise ValueError(
-                f"Can’t start a simulation on the {self.simulation_date} of {self.old_value.label} changing from "
-                f"{self.old_value.value} to {self.new_value.value} because {self.simulation_date} doesn’t belong to "
-                f"the existing modeling period {global_min_date} to {global_max_date}")
+                f"Can’t start a simulation on the {self.simulation_date} because {self.simulation_date}"
+                f" doesn’t belong to the existing modeling period {global_min_date} to {global_max_date}")
 
         self.hourly_quantities_to_filter = hourly_quantities_to_filter
 
@@ -196,3 +200,8 @@ class Simulation:
         for expl_obj in self.values_to_recompute:
             self.recomputed_values.append(
                 getattr(expl_obj.modeling_obj_container, expl_obj.attr_name_in_mod_obj_container))
+
+    def reset_pre_simulation_values(self):
+        for previous_value in self.old_sourcevalues + self.values_to_recompute + self.hourly_quantities_to_filter:
+            previous_value.modeling_obj_container.__dict__[
+                previous_value.attr_name_in_mod_obj_container] = previous_value
