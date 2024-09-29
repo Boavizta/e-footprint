@@ -42,20 +42,20 @@ class TestModelingObject(unittest.TestCase):
 
         value.set_modeling_obj_container.assert_called_once_with(self.modeling_object, "attribute")
 
-    def test_input_change_triggers_launch_attributes_computation_chain(self):
+    def test_input_change_triggers_launch_update_function_chain(self):
         value = MagicMock(
             modeling_obj_container=None, left_parent=None, right_parent=None, mock_type=ExplainableObject)
         old_value = MagicMock(mock_type=ExplainableObject)
-        old_value.update_computation_chain = MagicMock()
+        old_value.update_function_chain = MagicMock()
         self.modeling_object.attribute = old_value
-        launch_attributes_computation_chain = MagicMock()
+        launch_update_function_chain = MagicMock()
 
         with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type),\
-                patch(f"{MODELING_OBJ_CLASS_PATH}.launch_attributes_computation_chain",
-                      launch_attributes_computation_chain):
+                patch(f"{MODELING_OBJ_CLASS_PATH}.launch_update_function_chain",
+                      launch_update_function_chain):
             self.modeling_object.attribute = value
 
-            launch_attributes_computation_chain.assert_called_once_with(old_value.update_computation_chain)
+            launch_update_function_chain.assert_called_once_with(old_value.update_function_chain)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
