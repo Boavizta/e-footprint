@@ -1,15 +1,36 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_update_computation_chain
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
+    optimize_update_function_chain, retrieve_update_function_from_mod_obj_and_attr_name
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.recomputation_utils import launch_attributes_computation_chain
+from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
+
+
+def update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
+    update_functions_chain = []
+    for mod_obj in mod_objs_computation_chain:
+        for calculated_attribute in mod_obj.calculated_attributes:
+            update_functions_chain.append(
+                retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, calculated_attribute))
+
+    return update_functions_chain
+
+
+def get_explainable_objects_from_update_function_chain(update_function_chain: List[Callable]):
+    explainable_objects_list = []
+    for update_function in update_function_chain:
+        expl_obj_attr_name = update_function.__name__.replace("update_", "")
+        modeling_obj_container = update_function.__self__
+        expl_obj = getattr(modeling_obj_container, expl_obj_attr_name, None)
+        if expl_obj is not None:
+            explainable_objects_list.append(expl_obj)
+
+    return explainable_objects_list
 
 
 class Simulation:
@@ -27,19 +48,20 @@ class Simulation:
 
         self.compute_new_and_old_source_values_and_mod_obj_link_lists()
 
+        self.update_function_chains_from_mod_obj_links_updates = []
+        self.compute_update_function_chains_from_mod_obj_links_updates()
         self.create_new_mod_obj_links()
 
-        self.attributes_computation_chain = []
+        self.update_function_chain = []
         self.hourly_quantities_ancestors_not_in_computation_chain = []
         self.hourly_quantities_to_filter = []
         self.recomputed_values = []
         self.recompute_attributes()
 
-        self.mod_obj_computation_chain = []
-        self.recompute_modeling_objects()
-
     def compute_new_and_old_source_values_and_mod_obj_link_lists(self):
         for old_value, new_value in self.changes_list:
+            if isinstance(new_value, list):
+                new_value = ListLinkedToModelingObj(new_value)
             if type(old_value) != type(new_value):
                 raise ValueError(f"In simulations old and new values should have same type, got "
                                  f"{type(old_value)} and {type(new_value)}")
@@ -59,30 +81,55 @@ class Simulation:
                 self.old_mod_obj_links.append(old_value)
                 self.new_mod_obj_links.append(new_value)
 
+    def compute_update_function_chains_from_mod_obj_links_updates(self):
+        for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
+            mod_obj_container = old_value.modeling_obj_container
+            if issubclass(type(old_value), ModelingObject):
+                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                    mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
+                        old_value, new_value))
+            elif isinstance(old_value, ListLinkedToModelingObj):
+                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                    mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
+                        old_value, new_value))
+
+            self.update_function_chains_from_mod_obj_links_updates.append(update_function_chain)
+
     def create_new_mod_obj_links(self):
-        raise NotImplementedError
+        for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
+            mod_obj_container = old_value.modeling_obj_container
+            attr_name_in_mod_obj_container = old_value.attr_name_in_mod_obj_container
+            if issubclass(type(old_value), ModelingObject):
+                new_value.add_obj_to_modeling_obj_containers(self)
+            elif isinstance(old_value, ListLinkedToModelingObj):
+                new_value.set_modeling_obj_container(mod_obj_container, attr_name_in_mod_obj_container)
+                new_value.register_previous_values()
+
+            mod_obj_container.__dict__[attr_name_in_mod_obj_container] = new_value
                 
     def recompute_attributes(self):
-        self.generate_optimized_attributes_computation_chain()
+        self.generate_optimized_update_function_chain()
         self.compute_hourly_quantities_ancestors_not_in_computation_chain()
         self.compute_hourly_quantities_to_filter()
         self.filter_hourly_quantities_to_filter()
-        launch_attributes_computation_chain(self.attributes_computation_chain)
-        self.save_recomputed_values(self.attributes_computation_chain)
+        self.change_input_values()
+        launch_update_function_chain(self.update_function_chain)
+        self.save_recomputed_values(self.update_function_chain)
 
-    def generate_optimized_attributes_computation_chain(self):
-        raise NotImplementedError("Must get attr chain from mod obj chain")
-        full_attributes_computation_chain = sum(
-            [old_value.update_computation_chain for old_value in self.old_sourcevalues], start=[])
+    def generate_optimized_update_function_chain(self):
+        update_function_chain_from_attributes_updates = sum(
+            [old_value.update_function_chain for old_value in self.old_sourcevalues], start=[])
 
-        optimized_chain = optimize_update_computation_chain(full_attributes_computation_chain)
+        optimized_chain = optimize_update_function_chain(
+            update_function_chain_from_attributes_updates + self.update_function_chains_from_mod_obj_links_updates)
 
-        self.attributes_computation_chain = optimized_chain
+        self.update_function_chain = optimized_chain
 
     def compute_hourly_quantities_ancestors_not_in_computation_chain(self):
+        values_to_recompute = get_explainable_objects_from_update_function_chain(self.update_function_chain)
         all_ancestors_of_values_to_recompute = set(sum(
-            [value.all_ancestors_with_id for value in self.attributes_computation_chain], start=[]))
-        old_value_computation_chain_ids = [elt.id for elt in self.attributes_computation_chain]
+            [value.all_ancestors_with_id for value in values_to_recompute], start=[]))
+        old_value_computation_chain_ids = [elt.id for elt in values_to_recompute]
         ancestors_not_in_computation_chain = [
             ancestor for ancestor in all_ancestors_of_values_to_recompute
             if ancestor.id not in old_value_computation_chain_ids]
@@ -94,20 +141,28 @@ class Simulation:
         self.hourly_quantities_ancestors_not_in_computation_chain = hourly_quantities_ancestors_not_in_computation_chain
 
     def compute_hourly_quantities_to_filter(self):
-        happens_during_a_simulation_period = False
         hourly_quantities_to_filter = []
 
-        for ancestor in self.hourly_quantities_ancestors_not_in_computation_chain:
-            if self.simulation_date_as_hourly_freq in ancestor.value.index:
-                hourly_quantities_to_filter.append(ancestor)
-                if isinstance(ancestor.modeling_obj_container, UsagePattern):
-                    happens_during_a_simulation_period = True
+        global_min_date = None
+        global_max_date = None
 
-        if not happens_during_a_simulation_period:
+        for ancestor in self.hourly_quantities_ancestors_not_in_computation_chain:
+            min_date = ancestor.value.index.min().to_timestamp()
+            max_date = ancestor.value.index.max().to_timestamp()
+            if global_min_date is None:
+                global_min_date = min_date
+            if global_max_date is None:
+                global_max_date = max_date
+            global_min_date = min(min_date, global_min_date)
+            global_max_date = max(max_date, global_max_date)
+            if self.simulation_date_as_hourly_freq <= max_date:
+                hourly_quantities_to_filter.append(ancestor)
+
+        if not (global_min_date <= self.simulation_date_as_hourly_freq <= global_max_date):
             raise ValueError(
                 f"Can’t start a simulation on the {self.simulation_date} of {self.old_value.label} changing from "
-                f"{self.old_value.value} to {self.new_value.value} because {self.simulation_date} doesn’t belong to an "
-                f"existing modeling period")
+                f"{self.old_value.value} to {self.new_value.value} because {self.simulation_date} doesn’t belong to "
+                f"the existing modeling period {global_min_date} to {global_max_date}")
 
         self.hourly_quantities_to_filter = hourly_quantities_to_filter
 
@@ -120,10 +175,16 @@ class Simulation:
                 hourly_quantities.label, hourly_quantities.left_parent, hourly_quantities.right_parent,
                 hourly_quantities.operator, hourly_quantities.source
             )
+            if len(new_value) == 0:
+                new_value = EmptyExplainableObject()
             mod_obj_container.__dict__[attr_name] = new_value
             new_value.set_modeling_obj_container(mod_obj_container, attr_name)
 
+    def change_input_values(self):
+        raise NotImplementedError
+
     def save_recomputed_values(self, computation_chain):
+        raise NotImplementedError
         for expl_obj in computation_chain:
             self.recomputed_values.append(
                 getattr(expl_obj.modeling_obj_container, expl_obj.attr_name_in_mod_obj_container))

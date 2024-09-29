@@ -68,17 +68,17 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([4, 5, 6], parent_obj.custom_input.custom_input.value_as_float_list)
 
-    def test_input_change_triggers_launch_attributes_computation_chain(self):
+    def test_input_change_triggers_launch_update_function_chain(self):
         value = MagicMock(
             modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
-        old_value.update_computation_chain = MagicMock()
+        old_value.update_function_chain = MagicMock()
         self.modeling_object.attribute = old_value
-        launch_attributes_computation_chain = MagicMock()
+        launch_update_function_chain = MagicMock()
 
         self.modeling_object.attribute = value
 
-        launch_attributes_computation_chain.assert_called_once_with(old_value.update_computation_chain)
+        launch_update_function_chain.assert_called_once_with(old_value.update_function_chain)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
