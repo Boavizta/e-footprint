@@ -3,7 +3,8 @@ from unittest.mock import patch, MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
+    ObjectLinkedToModelingObj
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
@@ -37,7 +38,7 @@ class TestModelingObject(unittest.TestCase):
     def test_setattr_sets_modeling_obj_container(self):
         value = MagicMock(modeling_obj_container=None)
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: ExplainableObject):
+        with patch(f"{MODELING_OBJ_CLASS_PATH}.isinstance", lambda x, y: y == ObjectLinkedToModelingObj):
             self.modeling_object.attribute = value
 
         value.set_modeling_obj_container.assert_called_once_with(self.modeling_object, "attribute")
@@ -50,7 +51,7 @@ class TestModelingObject(unittest.TestCase):
         self.modeling_object.attribute = old_value
         launch_update_function_chain = MagicMock()
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type),\
+        with patch(f"{MODELING_OBJ_CLASS_PATH}.isinstance", lambda x, y: y == ObjectLinkedToModelingObj),\
                 patch(f"{MODELING_OBJ_CLASS_PATH}.launch_update_function_chain",
                       launch_update_function_chain):
             self.modeling_object.attribute = value

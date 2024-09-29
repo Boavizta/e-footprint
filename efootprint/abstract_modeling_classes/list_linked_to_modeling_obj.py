@@ -16,7 +16,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list):
     
     @staticmethod
     def check_value_type(value):
-        if not issubclass(type(value), ModelingObject):
+        if not isinstance(value, ModelingObject):
             raise ValueError(
                 f"ListLinkedToModelingObjs only accept ModelingObjects as values, received {type(value)}")
 
