@@ -38,6 +38,7 @@ def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, attr_name):
 
 
 def optimize_update_function_chain(update_function_chain):
+    initial_chain_len = len(update_function_chain)
     optimized_chain = []
 
     for index in range(len(update_function_chain)):
@@ -46,6 +47,11 @@ def optimize_update_function_chain(update_function_chain):
         if update_function not in update_function_chain[index + 1:]:
             # Keep only last occurrence of each update function
             optimized_chain.append(update_function)
+
+    optimized_chain_len = len(optimized_chain)
+
+    if optimized_chain_len != initial_chain_len:
+        logger.info(f"Optimized update function chain from {initial_chain_len} to {optimized_chain_len} calculations")
 
     return optimized_chain
 
