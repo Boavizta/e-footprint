@@ -9,7 +9,7 @@ from efootprint.constants.units import u
 class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
         super().__init__(name)
-        self.energy_footprint = None
+        self.energy_footprint = EmptyExplainableObject()
         if not bandwidth_energy_intensity.value.check("[energy]/[]"):
             raise ValueError(
                 "Value of variable 'storage_need_from_previous_year' does not have the appropriate "

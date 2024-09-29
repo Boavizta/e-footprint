@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pint_pandas
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
