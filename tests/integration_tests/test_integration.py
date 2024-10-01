@@ -1,8 +1,10 @@
 from copy import deepcopy
 import os
+from datetime import datetime, timedelta
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.simulation import Simulation
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.job import Job
@@ -77,9 +79,11 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
+        cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern = UsagePattern(
             "Youtube usage in France", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
-            SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]])))
+            SourceHourlyValues(create_hourly_usage_df_from_list(
+                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
         cls.system = System("system 1", [cls.usage_pattern])
 
@@ -424,3 +428,9 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
+
+    def test_simulation_input_change(self):
+        simulation = Simulation(self.start_date + timedelta(hours=1),
+                                [(self.upload_step.user_time_spent, SourceValue(25 * u.min))])
+
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))

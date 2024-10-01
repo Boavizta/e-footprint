@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, \
+    EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SOURCE_VALUE_DEFAULT_NAME

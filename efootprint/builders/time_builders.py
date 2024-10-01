@@ -34,6 +34,14 @@ def create_hourly_usage_df_from_list(
     return df
 
 
+def create_source_hourly_values_from_list(
+    input_list: List[float], start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
+        pint_unit: pint.Unit = u.dimensionless):
+    df = create_hourly_usage_df_from_list(input_list, start_date, pint_unit)
+
+    return SourceHourlyValues(df)
+
+
 def linear_growth_hourly_values(
         timespan: pint.Quantity, start_value: int, end_value: int,
         start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),

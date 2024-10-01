@@ -9,9 +9,10 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 
 
-def update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
+def compute_update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
     update_functions_chain = []
     for mod_obj in mod_objs_computation_chain:
         for calculated_attribute in mod_obj.calculated_attributes:
@@ -38,9 +39,13 @@ def get_explainable_objects_from_update_function_chain(update_function_chain: Li
 class Simulation:
     def __init__(
             self, simulation_date: datetime,
-            changes_list: List[Tuple[ExplainableObject | ModelingObject | List[ModelingObject],
-            ExplainableObject | ModelingObject | List[ModelingObject]]]):
-        self.system = changes_list[0][0].systems[0]
+            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject],
+            SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject]]]):
+        first_changed_val = changes_list[0][0]
+        if isinstance(first_changed_val, ModelingObject):
+            self.system = first_changed_val.systems[0]
+        elif isinstance(first_changed_val, ExplainableObject):
+            self.system = first_changed_val.modeling_obj_container.systems[0]
         self.system.simulation = self
         self.simulation_date = simulation_date
         self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
@@ -93,11 +98,11 @@ class Simulation:
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
             mod_obj_container = old_value.modeling_obj_container
             if isinstance(old_value, ModelingObject):
-                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
                         old_value, new_value))
             elif isinstance(old_value, ListLinkedToModelingObj):
-                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
                         old_value, new_value))
 
@@ -138,8 +143,12 @@ class Simulation:
         self.update_function_chain = optimized_chain
 
     def compute_hourly_quantities_ancestors_not_in_computation_chain(self):
-        all_ancestors_of_values_to_recompute = set(sum(
-            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[]))
+        all_ancestors_of_values_to_recompute = sum(
+            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[])
+        deduplicated_all_ancestors_of_values_to_recompute = []
+        for ancestor in all_ancestors_of_values_to_recompute:
+            if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
+                deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
         old_value_computation_chain_ids = [elt.id for elt in self.values_to_recompute]
         ancestors_not_in_computation_chain = [
             ancestor for ancestor in all_ancestors_of_values_to_recompute
@@ -158,8 +167,8 @@ class Simulation:
         global_max_date = None
 
         for ancestor in self.hourly_quantities_ancestors_not_in_computation_chain:
-            min_date = ancestor.value.index.min().to_timestamp()
-            max_date = ancestor.value.index.max().to_timestamp()
+            min_date = ancestor.value.index.min()
+            max_date = ancestor.value.index.max()
             if global_min_date is None:
                 global_min_date = min_date
             if global_max_date is None:
@@ -171,8 +180,9 @@ class Simulation:
 
         if not (global_min_date <= self.simulation_date_as_hourly_freq <= global_max_date):
             raise ValueError(
-                f"Can’t start a simulation on the {self.simulation_date} because {self.simulation_date}"
-                f" doesn’t belong to the existing modeling period {global_min_date} to {global_max_date}")
+                f"Can’t start a simulation on the {self.simulation_date_as_hourly_freq} because "
+                f"{self.simulation_date_as_hourly_freq}doesn’t belong to the existing modeling period "
+                f"{global_min_date} to {global_max_date}")
 
         self.hourly_quantities_to_filter = hourly_quantities_to_filter
 
