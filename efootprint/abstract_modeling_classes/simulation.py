@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 
 
-def update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
+def compute_update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
     update_functions_chain = []
     for mod_obj in mod_objs_computation_chain:
         for calculated_attribute in mod_obj.calculated_attributes:
@@ -93,11 +93,11 @@ class Simulation:
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
             mod_obj_container = old_value.modeling_obj_container
             if isinstance(old_value, ModelingObject):
-                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
                         old_value, new_value))
             elif isinstance(old_value, ListLinkedToModelingObj):
-                update_function_chain = update_function_chain_from_mod_obj_computation_chain(
+                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
                         old_value, new_value))
 
