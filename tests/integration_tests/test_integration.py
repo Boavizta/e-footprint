@@ -435,4 +435,4 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
-        self.usage_pattern.devices_energy_footprint.plot(plt_show=True)
+        self.usage_pattern.devices_energy_footprint.plot(plt_show=False)
