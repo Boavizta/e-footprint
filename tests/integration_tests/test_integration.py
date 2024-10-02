@@ -434,3 +434,5 @@ class IntegrationTest(IntegrationTestBaseClass):
                                 [(self.upload_step.user_time_spent, SourceValue(25 * u.min))])
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.simulation, simulation)
+        self.usage_pattern.devices_energy_footprint.plot(plt_show=True)
