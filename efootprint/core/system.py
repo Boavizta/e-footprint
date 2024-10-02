@@ -24,6 +24,7 @@ from efootprint.utils.tools import format_co2_amount, display_co2_amount
 class System(ModelingObject):
     def __init__(self, name: str, usage_patterns: List[UsagePattern]):
         super().__init__(name)
+        self.total_footprint = EmptyExplainableObject()
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
         self._usage_patterns = ListLinkedToModelingObj(usage_patterns)
         self.previous_change = None
@@ -32,6 +33,10 @@ class System(ModelingObject):
         self.all_changes = []
         self.initial_total_energy_footprints_sum_over_period = None
         self.initial_total_fabrication_footprints_sum_over_period = None
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return ["total_footprint"]
 
     def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
         for mod_obj in self.get_objects_linked_to_usage_patterns(usage_patterns):
@@ -46,8 +51,8 @@ class System(ModelingObject):
     @property
     def usage_patterns(self):
         if "usage_patterns" in self.__dict__.keys():
-            self._usage_patterns = self.__dict__["usage_patterns"]
-            self.__dict__ = {key: value for key, value in self.__dict__.items() if key != "usage_patterns"}
+            self.__dict__["_usage_patterns"] = self.__dict__["usage_patterns"]
+            del self.__dict__["usage_patterns"]
 
         return self._usage_patterns
 
@@ -58,7 +63,7 @@ class System(ModelingObject):
 
     @usage_patterns.deleter
     def usage_patterns(self):
-        del self._usage_patterns
+        del self.__dict__["_usage_patterns"]
 
     @property
     def user_journeys(self) -> List[UserJourney]:
@@ -78,7 +83,9 @@ class System(ModelingObject):
 
     def after_init(self):
         self.init_has_passed = True
-        self.launch_mod_objs_computation_chain(self.mod_objs_computation_chain)
+        mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
+        self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
+        self.compute_calculated_attributes()
         logger.info(f"Finished computing {self.name} modeling")
         self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
@@ -256,14 +263,15 @@ class System(ModelingObject):
 
         return energy_footprints
 
-    @property
-    def total_footprint(self):
-        return (
+    def update_total_footprint(self):
+        total_footprint = (
             sum(
                 sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
                 for key in self.fabrication_footprints.keys()
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
+
+        self.total_footprint = total_footprint
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
         fab_footprints = self.fabrication_footprint_sum_over_period

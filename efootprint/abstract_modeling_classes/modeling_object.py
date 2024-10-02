@@ -226,6 +226,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             mod_objs_computation_chain += old_value.mod_objs_computation_chain
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        for mod_obj in optimized_chain:
+            if mod_obj.systems:
+                optimized_chain.append(mod_obj.systems[0])
+                logger.info("Added system to optimized chain")
+            break
 
         return optimized_chain
 
@@ -255,6 +260,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         mod_objs_computation_chain += self.mod_objs_computation_chain
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        for mod_obj in optimized_chain:
+            if mod_obj.systems:
+                optimized_chain.append(mod_obj.systems[0])
+                logger.info("Added system to optimized chain")
+            break
 
         return optimized_chain
 
