@@ -79,7 +79,7 @@ class System(ModelingObject):
 
     @property
     def systems(self) -> List:
-        return []
+        return [self]
 
     def after_init(self):
         self.init_has_passed = True
