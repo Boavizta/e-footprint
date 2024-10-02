@@ -51,8 +51,8 @@ class System(ModelingObject):
     @property
     def usage_patterns(self):
         if "usage_patterns" in self.__dict__.keys():
-            self._usage_patterns = self.__dict__["usage_patterns"]
-            self.__dict__ = {key: value for key, value in self.__dict__.items() if key != "usage_patterns"}
+            self.__dict__["_usage_patterns"] = self.__dict__["usage_patterns"]
+            del self.__dict__["usage_patterns"]
 
         return self._usage_patterns
 
@@ -63,7 +63,7 @@ class System(ModelingObject):
 
     @usage_patterns.deleter
     def usage_patterns(self):
-        del self._usage_patterns
+        del self.__dict__["_usage_patterns"]
 
     @property
     def user_journeys(self) -> List[UserJourney]:

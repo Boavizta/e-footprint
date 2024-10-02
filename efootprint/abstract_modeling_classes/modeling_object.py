@@ -158,7 +158,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
-        old_value = getattr(self, name, None)
+        old_value = self.__dict__.get(name, None)
 
         if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
             if isinstance(input_value, ModelingObject):
