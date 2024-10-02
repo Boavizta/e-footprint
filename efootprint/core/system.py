@@ -349,10 +349,12 @@ class System(ModelingObject):
         if from_start and len(self.all_changes) > 1:
             changes_list = "\n- ".join([change.replace('changed', 'changing') for change in self.all_changes])
             print(f"Plotting the impact of:\n\n- {changes_list}")
-            emissions_dict__old = [self.initial_total_energy_footprints_sum_over_period, self.initial_total_fabrication_footprints_sum_over_period]
+            emissions_dict__old = [self.initial_total_energy_footprints_sum_over_period,
+                                   self.initial_total_fabrication_footprints_sum_over_period]
         else:
             print(f"Plotting the impact of {self.previous_change.replace('changed', 'changing')}")
-            emissions_dict__old = [self.previous_total_energy_footprints_sum_over_period, self.previous_total_fabrication_footprints_sum_over_period]
+            emissions_dict__old = [self.previous_total_energy_footprints_sum_over_period,
+                                   self.previous_total_fabrication_footprints_sum_over_period]
 
         emissions_dict__new = [self.total_energy_footprint_sum_over_period,
                                self.total_fabrication_footprint_sum_over_period]
