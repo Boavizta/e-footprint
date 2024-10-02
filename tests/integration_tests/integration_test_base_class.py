@@ -94,7 +94,7 @@ class IntegrationTestBaseClass(TestCase):
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
-        initial_mod_objs = input_system.all_linked_objects
+        initial_mod_objs = input_system.all_linked_objects + [input_system]
         for obj_id, obj in flat_obj_dict.items():
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():

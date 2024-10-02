@@ -158,9 +158,18 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
-        old_value = self.__dict__.get(name, None)
+        old_value_from_dict = self.__dict__.get(name, None)
+        trigger_recomputing_logic = True
+        hidden_value_from_getattr = getattr(self, "_" + name, None)
+        if hidden_value_from_getattr is not None and old_value_from_dict is None:
+            # The value is a property and has a hidden attribute associated to it, in which case we don’t want to
+            # trigger the recomputing logic because the logic will be triggered by the property setter when the hidden 
+            # attribute is updated
+            logger.debug(f"Impeded recomputing logic for {name} in {self.name} because it is a property")
+            trigger_recomputing_logic = False
 
-        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
+        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates \
+                and trigger_recomputing_logic:
             if isinstance(input_value, ModelingObject):
                 input_value = ContextualModelingObjectAttribute(input_value, self, name)
                 input_value.add_obj_to_modeling_obj_containers(self)
@@ -173,9 +182,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         f"The link update logic will be skipped.")
                 if self.init_has_passed and handle_link_update:
                     self.register_footprint_values_in_systems_before_change(
-                        f"{self.name}’s {name} changed from {old_value.name} to {input_value.name}")
+                        f"{self.name}’s {name} changed from {old_value_from_dict.name} to {input_value.name}")
                     super().__setattr__(name, input_value)
-                    self.handle_object_link_update(input_value, old_value)
+                    self.handle_object_link_update(input_value, old_value_from_dict)
 
             elif isinstance(input_value, List) and name not in ["modeling_obj_containers", "all_changes"]:
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -184,7 +193,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 input_value.set_modeling_obj_container(self, name)
                 # Necessary to handle syntax obj.list_attr += [new_attr_in_list] because lists are mutable objects
                 # Otherwise if using old_value, it would already be equal to input_value
-                old_list_value = getattr(old_value, "previous_values", None)
+                old_list_value = getattr(old_value_from_dict, "previous_values", None)
                 if self.init_has_passed and old_list_value is not None:
                     oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
                     newlist_ids = [mod_obj.name for mod_obj in input_value]
@@ -199,12 +208,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             elif isinstance(input_value, ObjectLinkedToModelingObj):
                 input_value.set_modeling_obj_container(self, name)
                 is_a_user_attribute_update = self.init_has_passed and (
-                    name not in self.calculated_attributes and old_value is not None)
+                    name not in self.calculated_attributes and old_value_from_dict is not None)
                 if is_a_user_attribute_update:
                     self.register_footprint_values_in_systems_before_change(
-                        f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
+                        f"{self.name}’s {name} changed from {str(old_value_from_dict)} to {str(input_value)}")
                     super().__setattr__(name, input_value)
-                    launch_update_function_chain(old_value.update_function_chain)
+                    launch_update_function_chain(old_value_from_dict.update_function_chain)
 
         super().__setattr__(name, input_value)
 
@@ -230,7 +239,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if mod_obj.systems:
                 optimized_chain.append(mod_obj.systems[0])
                 logger.info("Added system to optimized chain")
-            break
+                break
 
         return optimized_chain
 
@@ -264,7 +273,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if mod_obj.systems:
                 optimized_chain.append(mod_obj.systems[0])
                 logger.info("Added system to optimized chain")
-            break
+                break
 
         return optimized_chain
 
@@ -275,7 +284,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             obj.remove_obj_from_modeling_obj_containers(self)
 
         mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_lists(
-            old_value, input_value)
+            input_value, old_value)
 
         self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
@@ -334,6 +343,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             mod_objs_computation_chain += attr.mod_objs_computation_chain
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        for mod_obj in optimized_chain:
+            if mod_obj.systems:
+                optimized_chain.append(mod_obj.systems[0])
+                logger.info("Added system to optimized chain")
+                break
+
         self.launch_mod_objs_computation_chain(optimized_chain)
 
         del self

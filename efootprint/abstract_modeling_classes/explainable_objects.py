@@ -528,8 +528,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
         simulation = None
 
-        if self.modeling_obj_container and self.modeling_obj_container.systems \
-                and self.modeling_obj_container.systems[0].simulation:
+        if (self.modeling_obj_container and self.modeling_obj_container.systems
+                and self.modeling_obj_container.systems[0].simulation):
             simulation = self.modeling_obj_container.systems[0].simulation
 
         simulated_value_df = None
