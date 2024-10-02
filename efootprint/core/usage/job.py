@@ -1,4 +1,5 @@
 import math
+from copy import copy
 from typing import List, Type
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -89,8 +90,9 @@ class Job(ModelingObject):
 
     @property
     def duration_in_full_hours(self):
+        # Use copy not to convert self.request_duration in place
         return ExplainableQuantity(
-                math.ceil(self.request_duration.to(u.hour).magnitude) * u.dimensionless,
+                math.ceil(copy(self.request_duration.value).to(u.hour).magnitude) * u.dimensionless,
                 f"{self.name} duration in full hours")
 
     @property

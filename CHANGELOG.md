@@ -4,13 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [6.0.2] 2024-10-02
+
+### Fixed
+- Make copies of event duration values before converting them to hour to use them in calculations, not to convert the original value in place.
+
+## [6.0.1] 2024-09-27
+
+### Fixed
+- Label has been added in System class to display its calculations in the graph.
+
 ## [6.0.0] 2024-09-27
 
 ### Added
 - Introduce in job Object the attribute "data_stored". This attribute is the amount of data stored by the job in the storage. It can be negative if the job deletes data from the storage.
-
-### Fixed
-- Label has been added in System class to display its calculations in the graph.
 
 ## [5.0.0] 2024-09-20
 

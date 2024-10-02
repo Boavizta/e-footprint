@@ -1,4 +1,5 @@
 import math
+from copy import copy
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -11,7 +12,8 @@ def compute_nb_avg_hourly_occurrences(
         return EmptyExplainableObject()
 
     nb_avg_hourly_occurrences_in_parallel = None
-    event_duration_in_nb_of_hours = event_duration.to(u.hour).magnitude
+    # Use copy not to convert event_duration in place
+    event_duration_in_nb_of_hours = copy(event_duration.value).to(u.hour).magnitude
     nb_of_full_hours_in_event_duration = math.floor(event_duration_in_nb_of_hours)
 
     for hour_shift in range(0, nb_of_full_hours_in_event_duration):
