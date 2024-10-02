@@ -158,7 +158,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
-        old_value = self.__dict__.get(name, None)
+        old_value = getattr(self, name, None)
 
         if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
             if isinstance(input_value, ModelingObject):
@@ -221,7 +221,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
         for mod_obj in optimized_chain:
             if mod_obj.systems:
-                optimized_chain.append(self.systems[0])
+                optimized_chain.append(mod_obj.systems[0])
+                logger.info("Added system to optimized chain")
             break
 
         return optimized_chain
@@ -254,7 +255,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
         for mod_obj in optimized_chain:
             if mod_obj.systems:
-                optimized_chain.append(self.systems[0])
+                optimized_chain.append(mod_obj.systems[0])
+                logger.info("Added system to optimized chain")
             break
 
         return optimized_chain
