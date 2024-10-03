@@ -509,12 +509,19 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return f"{nb_of_values} values from {self.value.index.min().to_timestamp()} " \
                f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
 
-    def plot_on_ax(self, ax, simulated_value_df):
-        ax.plot(self.value.index.to_timestamp().values, self.value["value"].cumsum().values.data, label="baseline")
+    def plot_on_ax(self, ax, simulated_value_df, cumsum=False):
+        if cumsum:
+            ax.plot(self.value.index.to_timestamp().values, self.value["value"].cumsum().values.data, label="baseline")
+        else:
+            ax.plot(self.value.index.to_timestamp().values, self.value["value"].values.data, label="baseline")
         if simulated_value_df is not None:
-            ax.plot(simulated_value_df.index.to_timestamp().values,
-                    simulated_value_df["value"].cumsum().values.data
-                    + self.value["value"].cumsum().at[simulated_value_df.index[0]].magnitude, label="simulated")
+            if cumsum:
+                ax.plot(simulated_value_df.index.to_timestamp().values,
+                        simulated_value_df["value"].cumsum().values.data
+                        + self.value["value"].cumsum().at[simulated_value_df.index[0]].magnitude, label="simulated")
+            else:
+                ax.plot(simulated_value_df.index.to_timestamp().values, simulated_value_df["value"].values.data,
+                        label="simulated")
             ax.legend()
         plt.ylabel(f"{self.unit:~}")
 
@@ -523,7 +530,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         ax.xaxis.set_major_locator(locator)
         ax.xaxis.set_major_formatter(formatter)
 
-    def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None):
+    def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
         simulation = None
@@ -553,10 +560,13 @@ class ExplainableHourlyQuantities(ExplainableObject):
             offset = (max_val - min_val) * 0.1
             ax.set_ylim([min_val - offset, max_val + offset])
 
-        self.plot_on_ax(ax, simulated_value_df)
+        self.plot_on_ax(ax, simulated_value_df, cumsum)
 
         if self.label:
-            ax.set_title(self.label)
+            if not cumsum:
+                ax.set_title(self.label)
+            else:
+                ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
 
         if filepath is not None:
             plt.savefig(filepath, bbox_inches='tight')
