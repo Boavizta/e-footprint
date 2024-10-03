@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.1.0] 2024-10-03
+
+### Added
+- Possibility to make simulations. Not stable yet so not included in tutorial.
+
 ## [8.0.1] 2024-11-12
 
 ### Fixed
