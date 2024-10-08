@@ -3,6 +3,7 @@ import os.path
 from copy import copy
 
 from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -25,19 +26,30 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
-        cls.storage = Storage(
-            "Default SSD storage",
+        cls.storage_1 = Storage(
+            "Default SSD storage 1",
             carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
             base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
+
+        cls.storage_2 = Storage(
+            "Default SSD storage 2",
+            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
+            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+        )
+
         cls.server1 = Autoscaling(
             "Server 1",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -51,7 +63,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
-            storage=cls.storage
+            storage=cls.storage_1
         )
 
         cls.server2 = Autoscaling(
@@ -67,9 +79,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
-            storage=cls.storage
+            storage=cls.storage_2
         )
-        cls.server3 = default_autoscaling("TikTok Analytics server",storage=cls.storage)
+        cls.server3 = default_autoscaling(
+            "TikTok Analytics server",storage=default_ssd("TikTok Analytics storage"))
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
 
@@ -128,7 +141,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
-            cls.storage: cls.storage.instances_fabrication_footprint,
+            cls.storage_1: cls.storage_1.instances_fabrication_footprint,
             cls.server1: cls.server1.instances_fabrication_footprint,
             cls.server2: cls.server2.instances_fabrication_footprint,
             cls.server3: cls.server3.instances_fabrication_footprint,
@@ -136,7 +149,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cls.usage_pattern2: cls.usage_pattern2.instances_fabrication_footprint,
         }
         cls.initial_energy_footprints = {
-            cls.storage: cls.storage.energy_footprint,
+            cls.storage_1: cls.storage_1.energy_footprint,
             cls.server1: cls.server1.energy_footprint,
             cls.server2: cls.server2.energy_footprint,
             cls.server3: cls.server3.energy_footprint,
@@ -154,54 +167,54 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         logger.warning("Removing Dailymotion and TikTok uj step")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
-        self.footprint_has_changed([self.server1, self.server2, self.storage])
+        self.footprint_has_changed([self.server1, self.server2])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion and TikTok uj step back")
         self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
 
-        self.footprint_has_not_changed([self.server1, self.server2, self.storage])
+        self.footprint_has_not_changed([self.server1, self.server2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_dailymotion_single_job(self):
         logger.warning("Removing Dailymotion job")
         self.dailymotion_step.jobs = []
 
-        self.footprint_has_changed([self.server1, self.storage])
+        self.footprint_has_changed([self.server1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion job back")
         self.dailymotion_step.jobs = [self.dailymotion_job]
 
-        self.footprint_has_not_changed([self.server1, self.storage])
+        self.footprint_has_not_changed([self.server1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_one_tiktok_job(self):
         logger.warning("Removing one TikTok job")
         self.tiktok_step.jobs = [self.tiktok_job]
 
-        self.footprint_has_changed([self.server3, self.storage])
+        self.footprint_has_changed([self.server3])
         self.footprint_has_not_changed([self.server2])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting TikTok job back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
-        self.footprint_has_not_changed([self.server3, self.server2, self.storage])
+        self.footprint_has_not_changed([self.server3, self.server2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_all_tiktok_jobs(self):
         logger.warning("Removing all TikTok jobs")
         self.tiktok_step.jobs = []
 
-        self.footprint_has_changed([self.server2, self.server3, self.storage])
+        self.footprint_has_changed([self.server2, self.server3])
         self.footprint_has_not_changed([self.server1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint))
 
         logger.warning("Putting TikTok jobs back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
-        self.footprint_has_not_changed([self.server3, self.server2, self.storage])
+        self.footprint_has_not_changed([self.server3, self.server2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_new_job(self):
@@ -216,7 +229,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
         self.uj.uj_steps += [new_uj]
 
-        self.footprint_has_changed([self.server1, self.storage])
+        self.footprint_has_changed([self.server1, self.storage_1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Removing new job")
@@ -225,7 +238,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         new_uj.self_delete()
         job.self_delete()
 
-        self.footprint_has_not_changed([self.server1, self.storage])
+        self.footprint_has_not_changed([self.server1, self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_new_usage_pattern(self):

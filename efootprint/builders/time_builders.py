@@ -78,3 +78,57 @@ def daily_fluct_hourly_values(nb_of_hours: int, fluct_scale: float, hour_of_day_
     df = create_hourly_usage_df_from_list(daily_fluctuation, start_date, pint_unit)
 
     return SourceHourlyValues(df)
+
+def create_hourly_usage_from_volume_and_list_of_hour(input_volume: float, start_date: datetime, pint_unit: pint.Unit,
+                                                     list_hour: List[int], duration: int):
+    if start_date is None:
+        start_date = datetime.datetime.strptime("2025-01-01", "%Y-%m-%d")
+    if pint_unit is None:
+        pint_unit = pint.Unit(u.dimensionless)
+    if duration is None:
+        duration = 365*24
+
+    volume_per_hour = round(input_volume / len(set(list_hour)),0)
+
+    date_range = pd.period_range(start=start_date, periods=duration, freq='h')
+    df = pd.DataFrame(0, index=date_range, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+
+    for index_hour in range(0, duration):
+        current_hour = start_date + datetime.timedelta(hours=index_hour)
+        if current_hour.hour in list_hour:
+            df.at[current_hour, 'value'] = volume_per_hour
+    return SourceHourlyValues(df, label="Hourly usage")
+
+
+def create_hourly_usage_from_frequency(input_volume: float, start_date: datetime, pint_unit: pint.Unit,
+                                                     frequency: int, type_frequency: str, duration: int):
+    if start_date is None:
+        start_date = datetime.datetime.strptime("2025-01-01", "%Y-%m-%d")
+    if pint_unit is None:
+        pint_unit = pint.Unit(u.dimensionless)
+    if frequency is None:
+        frequency = 1
+    if type_frequency is None:
+        type_frequency = "day"
+    if duration is None:
+        duration = 365*24
+
+    date_range = pd.period_range(start=start_date, periods=duration, freq='h')
+    df = pd.DataFrame(0, index=date_range, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+
+    interval_hour = 0
+    if type_frequency == 'hourly':
+        interval_hour = frequency
+    elif type_frequency == 'daily':
+        interval_hour = round(24 / frequency)
+    elif type_frequency == 'weekly':
+        interval_hour = round((24 * 7) / frequency)
+    elif type_frequency == 'monthly':
+        interval_hour = round((24 * 30) * frequency)
+
+    for index_hour in range(0, duration):
+        current_hour = start_date + datetime.timedelta(hours=index_hour)
+        if index_hour % interval_hour == 0:
+            df.at[current_hour, 'value'] = input_volume
+
+    return SourceHourlyValues(df, label="Hourly usage")

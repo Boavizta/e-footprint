@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.0.0] 2024-11-04
+- A Storage object is linked to only one Server object and some attributes of the Storage object are shared by this Server. This change simplifies the hardware part of the model and makes it more realistic
+- Storage has now an attribute "fixed_nb_of_instances" to specify the number of instances of a storage object like it's already implemented for servers.
+- New time builders has been added
+- Boavizta builders has been enriched (mainly the Storage part)
+
+
 ## [7.0.1] 2024-10-28
 
 ### Fixed

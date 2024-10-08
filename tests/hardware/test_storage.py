@@ -2,11 +2,12 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 from datetime import datetime, timedelta
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
+from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 
 
@@ -19,14 +20,22 @@ class TestStorage(TestCase):
             lifespan=SourceValue(0 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(0 * u.years, Sources.HYPOTHESIS),
             base_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS)
         )
 
         self.storage_base.dont_handle_input_updates = True
+
+    def test_init_storage_with_two_servers(self):
+        storage = self.storage_base
+        server1 = MagicMock()
+        server2 = MagicMock()
+        storage.add_obj_to_modeling_obj_containers(server1)
+        with self.assertRaises(ValueError) as context:
+            storage.add_obj_to_modeling_obj_containers(server2)
+            self.assertRaises(ValueError)
+            self.assertEqual(str(context.exception), "Storage object can only be associated with one server object")
 
     def test_update_storage_needs_single_job(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
@@ -218,22 +227,65 @@ class TestStorage(TestCase):
             self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
             self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
 
+    def test_nb_of_instances_with_fixed_nb_of_instances(self):
+        raw_nb_of_instances = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        expected_data = [5, 5, 5]
+        fixed_nb_of_instances = SourceValue(5 * u.dimensionless, Sources.HYPOTHESIS)
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+            patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
+            self.storage_base.update_nb_of_instances()
+            self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
+            self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
+
+    def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
+        raw_nb_of_instances = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+            patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
+            with self.assertRaises(ValueError):
+                self.storage_base.update_nb_of_instances()
+
     def test_update_instances_energy(self):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         all_instance_data = [2, 4, 6]
         all_active_data = [1, 2, 3]
         power_data = 100 * u.W
         power_idle_data = 50 * u.W
+        server_mock = MagicMock(spec=Server)
+        server_mock.storage = self.storage_base
+        server_mock.power_usage_effectiveness = SourceValue(1 * u.dimensionless)
 
         all_instance = SourceHourlyValues(create_hourly_usage_df_from_list(all_instance_data, start_date))
         all_active = SourceHourlyValues(create_hourly_usage_df_from_list(all_active_data, start_date))
 
-        with patch.object(self.storage_base, "nb_of_instances", all_instance), \
+        with (
+            patch.object(self.storage_base, "modeling_obj_containers", new=[server_mock]), \
+            patch.object(self.storage_base, "nb_of_instances", all_instance), \
             patch.object(self.storage_base, "nb_of_active_instances", all_active), \
             patch.object(self.storage_base, "power", SourceValue(power_data)), \
-            patch.object(self.storage_base, "idle_power", SourceValue(power_idle_data)), \
-            patch.object(self.storage_base, "power_usage_effectiveness", SourceValue(1 * u.dimensionless)):
+            patch.object(self.storage_base, "idle_power", SourceValue(power_idle_data))):
             self.storage_base.update_instances_energy()
 
             self.assertEqual(u.kWh, self.storage_base.instances_energy.unit)
             self.assertEqual([0.15, 0.3, 0.45], self.storage_base.instances_energy.value_as_float_list)
+
+    def test_update_energy_footprint(self):
+        instance_energy = SourceHourlyValues(
+            create_hourly_usage_df_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh))
+        server_mock = MagicMock(spec=Server)
+        server_mock.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        server_mock.storage = self.storage_base
+        self.storage_base.modeling_obj_containers = [server_mock]
+
+        expected_footprint = [0.09, 0.18, 0.27]  # in kg
+
+        with patch.object(self.storage_base, "instances_energy", new=instance_energy), \
+                patch.object(Storage, "server", new_callable=PropertyMock) as mock_property:
+            mock_property.return_value = server_mock
+            self.storage_base.update_energy_footprint()
+            self.assertEqual(expected_footprint, self.storage_base.energy_footprint.value_as_float_list)
+            self.assertEqual(u.kg, self.storage_base.energy_footprint.unit)

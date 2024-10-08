@@ -23,9 +23,6 @@ class TestInfraHardware(TestCase):
             def update_nb_of_instances(self):
                 self.nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([2, 3]))
 
-            def update_instances_energy(self):
-                self.instances_energy = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4], pint_unit=u.kWh))
-
         self.test_infra_hardware = InfraHardwareTestClass(
             "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
@@ -61,10 +58,3 @@ class TestInfraHardware(TestCase):
         self.assertEqual(
             [round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
             self.test_infra_hardware_single_job.instances_fabrication_footprint.round(3).value_as_float_list)
-
-    def test_energy_footprints(self):
-        self.test_infra_hardware_single_job.update_instances_energy()
-        self.test_infra_hardware_single_job.update_energy_footprint()
-        self.assertEqual(u.kg, self.test_infra_hardware_single_job.energy_footprint.unit)
-        self.assertEqual([0.2, 0.4],
-                         self.test_infra_hardware_single_job.energy_footprint.value_as_float_list)

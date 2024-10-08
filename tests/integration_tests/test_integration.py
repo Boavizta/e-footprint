@@ -36,8 +36,6 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB)
@@ -179,6 +177,18 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_server(self):
+        new_storage = Storage(
+            "new SSD storage, identical in specs to default one",
+            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            data_replication_factor=SourceValue(3 * u.dimensionless),
+            data_storage_duration=SourceValue(3 * u.hours),
+            base_storage_need=SourceValue(50 * u.TB)
+        )
+
         new_server = Autoscaling(
             "New server, identical in specs to default one",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -192,7 +202,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
-            storage=self.storage
+            storage=new_storage
         )
 
         logger.warning("Changing jobs server")
@@ -219,11 +229,9 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB)
+            base_storage_need=SourceValue(50 * u.TB),
         )
         logger.warning("Changing jobs storage")
 

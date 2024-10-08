@@ -2,9 +2,8 @@ import unittest
 from unittest.mock import patch, MagicMock, PropertyMock
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    ObjectLinkedToModelingObj
-from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 
@@ -226,6 +225,45 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
 
+    def test_to_json_correct_export_with_child(self):
+        child_obj = ModelingObjectForTesting(name="child_object", custom_input="child_value")
+        parent_obj = ModelingObjectForTesting(name="parent_object",custom_input=child_obj)
+
+        parent_obj.string_attr = "test_string"
+        parent_obj.int_attr = 42
+        parent_obj.none_attr = None
+        parent_obj.empty_list_attr = []
+        parent_obj.source_value_attr = SourceValue(1* u.dimensionless, source=None)
+
+        expected_json = {'name': 'parent_object',
+             'id': parent_obj.id,
+             'custom_input': child_obj.id,
+             'string_attr': 'test_string',
+             'int_attr': 42,
+             'none_attr': None,
+             'empty_list_attr': [],
+             'source_value_attr': {'label': 'unnamed source',
+              'value': 1.0,
+              'unit': 'dimensionless'}
+         }
+        json_output = parent_obj.to_json()
+        self.assertEqual(expected_json, json_output)
+
+
+    def test_to_json_invalid_type_error(self):
+        child_obj = ModelingObjectForTesting(name="child_object", custom_input="child_value")
+        parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=child_obj)
+
+        parent_obj.string_attr = "test_string"
+        parent_obj.int_attr = 42
+        parent_obj.none_attr = None
+        parent_obj.empty_list_attr = []
+        parent_obj.source_value_attr = SourceValue(1 * u.dimensionless, source=None)
+        parent_obj.bool_attr = True
+
+        with self.assertRaises(ValueError) as context:
+            parent_obj.to_json()
+            self.assertIn("is not handled in to_json", str(context.exception))
 
 if __name__ == "__main__":
     unittest.main()

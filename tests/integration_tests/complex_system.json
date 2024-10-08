@@ -651,7 +651,7 @@
                     "link": null
                 }
             },
-            "storage": "uuid-Default-SSD-storage"
+            "storage": "uuid-Default-SSD-storage-1"
         },
         "uuid-TikTok-Analytics-server": {
             "name": "TikTok Analytics server",
@@ -764,7 +764,7 @@
                     "link": null
                 }
             },
-            "storage": "uuid-Default-SSD-storage"
+            "storage": "uuid-TikTok-Analytics-storage"
         },
         "uuid-Server-2": {
             "name": "Server 2",
@@ -877,15 +877,15 @@
                     "link": null
                 }
             },
-            "storage": "uuid-Default-SSD-storage"
+            "storage": "uuid-Default-SSD-storage-2"
         }
     },
     "Storage": {
-        "uuid-Default-SSD-storage": {
-            "name": "Default SSD storage",
-            "id": "uuid-Default-SSD-storage",
+        "uuid-Default-SSD-storage-1": {
+            "name": "Default SSD storage 1",
+            "id": "uuid-Default-SSD-storage-1",
             "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Carbon footprint fabrication of Default SSD storage 1 from Dirty secret of SSDs: embodied carbon",
                 "value": 160.0,
                 "unit": "kilogram",
                 "source": {
@@ -894,7 +894,7 @@
                 }
             },
             "power": {
-                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Power of Default SSD storage 1 from Dirty secret of SSDs: embodied carbon",
                 "value": 1.3,
                 "unit": "watt",
                 "source": {
@@ -903,7 +903,7 @@
                 }
             },
             "lifespan": {
-                "label": "Lifespan of Default SSD storage from hypothesis",
+                "label": "Lifespan of Default SSD storage 1 from hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
@@ -912,7 +912,7 @@
                 }
             },
             "fraction_of_usage_time": {
-                "label": "Default SSD storage fraction of usage time from hypothesis",
+                "label": "Default SSD storage 1 fraction of usage time from hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
@@ -920,17 +920,11 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
+            "average_carbon_intensity": null,
+            "long_term_storage_required": null,
+            "instances_power": null,
             "idle_power": {
-                "label": "Idle power of Default SSD storage from hypothesis",
+                "label": "Idle power of Default SSD storage 1 from hypothesis",
                 "value": 0.1,
                 "unit": "watt",
                 "source": {
@@ -939,7 +933,7 @@
                 }
             },
             "storage_capacity": {
-                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Storage capacity of Default SSD storage 1 from Dirty secret of SSDs: embodied carbon",
                 "value": 1.0,
                 "unit": "terabyte",
                 "source": {
@@ -947,17 +941,8 @@
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
-            "power_usage_effectiveness": {
-                "label": "PUE of Default SSD storage from hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "data_replication_factor": {
-                "label": "Data replication factor of Default SSD storage from hypothesis",
+                "label": "Data replication factor of Default SSD storage 1 from hypothesis",
                 "value": 3.0,
                 "unit": "dimensionless",
                 "source": {
@@ -966,7 +951,7 @@
                 }
             },
             "data_storage_duration": {
-                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "label": "Data storage duration of Default SSD storage 1 from hypothesis",
                 "value": 4.0,
                 "unit": "hour",
                 "source": {
@@ -975,14 +960,193 @@
                 }
             },
             "base_storage_need": {
-                "label": "Default SSD storage initial storage need from hypothesis",
+                "label": "Default SSD storage 1 initial storage need from hypothesis",
                 "value": 100.0,
                 "unit": "terabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "fixed_nb_of_instances": null
+        },
+        "uuid-Default-SSD-storage-2": {
+            "name": "Default SSD storage 2",
+            "id": "uuid-Default-SSD-storage-2",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Default SSD storage 2 from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power": {
+                "label": "Power of Default SSD storage 2 from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Default SSD storage 2 from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default SSD storage 2 fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": null,
+            "long_term_storage_required": null,
+            "instances_power": null,
+            "idle_power": {
+                "label": "Idle power of Default SSD storage 2 from hypothesis",
+                "value": 0.1,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Default SSD storage 2 from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Default SSD storage 2 from hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage 2 from hypothesis",
+                "value": 4.0,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Default SSD storage 2 initial storage need from hypothesis",
+                "value": 100.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": null
+        },
+        "uuid-TikTok-Analytics-storage": {
+            "name": "TikTok Analytics storage",
+            "id": "uuid-TikTok-Analytics-storage",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power": {
+                "label": "Power of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of TikTok Analytics storage from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "TikTok Analytics storage fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": null,
+            "long_term_storage_required": null,
+            "instances_power": null,
+            "idle_power": {
+                "label": "Idle power of TikTok Analytics storage from hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of TikTok Analytics storage from hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of TikTok Analytics storage from hypothesis",
+                "value": 43830.0,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "TikTok Analytics storage initial storage need from hypothesis",
+                "value": 0.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": null
         }
     }
 }
