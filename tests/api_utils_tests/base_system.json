@@ -425,7 +425,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "fixed_nb_of_instances": null
         }
     },
     "Hardware": {
