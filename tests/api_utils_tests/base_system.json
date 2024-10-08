@@ -425,7 +425,112 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "fixed_nb_of_instances": null
+        },
+        "uuid-Default-SSD-storage-bis": {
+            "name": "Default SSD storage bis",
+            "id": "uuid-Default-SSD-storage-bis",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 160,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power": {
+                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Default SSD storage from hypothesis",
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default SSD storage fraction of usage time from hypothesis",
+                "value": 1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Default SSD storage from hypothesis",
+                "value": 0.1,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of Default SSD storage from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Default SSD storage from hypothesis",
+                "value": 3,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "value": 3,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Default SSD storage initial storage need from hypothesis",
+                "value": 1,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": null
         }
     },
     "Hardware": {

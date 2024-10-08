@@ -1,20 +1,25 @@
 import math
 from typing import List, Type
 
+import numpy as np
+import pandas as pd
+import pint_pandas
+
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.logger import logger
 
 
 class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
-                 power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
-                 base_storage_need: SourceValue):
+                 base_storage_need: SourceValue, fixed_nb_of_instances: SourceValue = None):
+        average_carbon_intensity = None
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.storage_delta = None
         self.full_cumulative_storage_need = None
@@ -27,10 +32,6 @@ class Storage(InfraHardware):
         if not storage_capacity.value.check("[]"):
             raise ValueError("Value of variable 'storage_capacity' does not have appropriate [] dimensionality")
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
-        if not power_usage_effectiveness.value.check("[]"):
-            raise ValueError(
-                "Value of variable 'power_usage_effectiveness' does not have appropriate [] dimensionality")
-        self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
         if not data_replication_factor.value.check("[]"):
             raise ValueError("Value of variable 'data_replication_factor' does not have appropriate [] dimensionality")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor of {self.name}")
@@ -42,6 +43,22 @@ class Storage(InfraHardware):
                 "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
                 " '[]' dimensionality")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
+        self.fixed_nb_of_instances = None
+        if fixed_nb_of_instances:
+            if not fixed_nb_of_instances.value.check("[]"):
+                raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
+            self.fixed_nb_of_instances = fixed_nb_of_instances.set_label(
+                f"User defined number of {self.name} instances").to(u.dimensionless)
+
+    def add_obj_to_modeling_obj_containers(self, server):
+        if len(self.modeling_obj_containers) == 1:
+            raise ValueError("Storage object can only be associated with one server object")
+        else:
+            super().add_obj_to_modeling_obj_containers(server)
+
+    @property
+    def server(self) -> Type["Server"]:
+        return self.modeling_obj_containers[0]
 
     @property
     def calculated_attributes(self):
@@ -147,7 +164,28 @@ class Storage(InfraHardware):
     def update_nb_of_instances(self):
         nb_of_instances = self.raw_nb_of_instances.ceil()
 
-        self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
+        if self.fixed_nb_of_instances:
+            max_nb_of_instances = nb_of_instances.max()
+            if max_nb_of_instances.value > self.fixed_nb_of_instances.value:
+                raise ValueError(
+                    f"The number of {self.name} instances computed from its resources need is superior to the number of"
+                    f" instances specified by the user/server ({max_nb_of_instances} > {self.fixed_nb_of_instances})")
+            else:
+                fixed_nb_of_instances_df = pd.DataFrame(
+                    {"value": pint_pandas.PintArray(
+                        np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.value), dtype=u.dimensionless
+                    )},
+                    index=self.raw_nb_of_instances.value.index
+                )
+                fixed_nb_of_instances = ExplainableHourlyQuantities(
+                    fixed_nb_of_instances_df,
+                    "Nb of instances",
+                    left_parent=self.raw_nb_of_instances,
+                    right_parent=self.fixed_nb_of_instances
+                )
+            self.nb_of_instances = fixed_nb_of_instances.set_label(f"Hourly fixed number of instances for {self.name}")
+        else:
+            self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):
         tmp_nb_of_active_instances = (
@@ -161,17 +199,30 @@ class Storage(InfraHardware):
             f"Hourly number of active instances for {self.name}")
 
     def update_instances_energy(self):
-        nb_of_idle_instances = (self.nb_of_instances - self.nb_of_active_instances).set_label(
-            f"Hourly number of idle instances for {self.name}")
-        active_storage_energy = (
-                self.nb_of_active_instances * self.power * ExplainableQuantity(
-            1 * u.hour, "one hour") * self.power_usage_effectiveness
-        ).set_label(f"Hourly active instances energy for {self.name}")
-        idle_storage_energy = (
-                nb_of_idle_instances * self.idle_power * ExplainableQuantity(
-            1 * u.hour, "one hour") * self.power_usage_effectiveness
-        ).set_label(f"Hourly idle instances energy for {self.name}")
+        if self.modeling_obj_containers == []:
+            logger.warning(f"Storage {self.name} is not associated with any server")
+            storage_energy = EmptyExplainableObject()
+        else:
+            nb_of_idle_instances = (self.nb_of_instances - self.nb_of_active_instances).set_label(
+                f"Hourly number of idle instances for {self.name}")
+            active_storage_energy = (
+                    self.nb_of_active_instances * self.power * ExplainableQuantity(
+                1 * u.hour, "one hour") * self.server.power_usage_effectiveness
+            ).set_label(f"Hourly active instances energy for {self.name}")
+            idle_storage_energy = (
+                    nb_of_idle_instances * self.idle_power * ExplainableQuantity(
+                1 * u.hour, "one hour") * self.server.power_usage_effectiveness
+            ).set_label(f"Hourly idle instances energy for {self.name}")
 
-        storage_energy = (active_storage_energy + idle_storage_energy)
+            storage_energy = (active_storage_energy + idle_storage_energy)
 
         self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
+
+    def update_energy_footprint(self):
+        if self.modeling_obj_containers == []:
+            logger.warning(f"Storage {self.name} is not associated with any server")
+            energy_footprint = EmptyExplainableObject()
+        else :
+            energy_footprint = (self.instances_energy * self.server.average_carbon_intensity)
+
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

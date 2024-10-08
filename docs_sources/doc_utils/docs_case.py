@@ -27,8 +27,6 @@ storage = Storage(
     lifespan=SourceValue(6 * u.years, source=None),
     idle_power=SourceValue(0 * u.W, source=None),
     storage_capacity=SourceValue(1 * u.TB, source=None),
-    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
-    average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
     data_storage_duration=SourceValue(2 * u.year, source=None),
     base_storage_need=SourceValue(0 * u.TB, source=None)

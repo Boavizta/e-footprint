@@ -168,3 +168,18 @@ class TestServerBaseClass(TestCase):
             self.server_base.update_instances_energy()
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
             self.assertEqual([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.value_as_float_list)
+
+    def test_energy_footprints(self):
+        instance_energy = SourceHourlyValues(
+            create_hourly_usage_df_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh))
+        average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+
+        with patch.object(self.server_base, "instances_energy", new=instance_energy), \
+                patch.object(self.server_base, "average_carbon_intensity", new=average_carbon_intensity):
+            self.server_base.update_energy_footprint()
+
+            expected_footprint = [0.09, 0.18, 0.27]  # in kg
+            self.assertEqual(expected_footprint, self.server_base.energy_footprint.value_as_float_list)
+            self.assertEqual(u.kg, self.server_base.energy_footprint.unit)
+
+

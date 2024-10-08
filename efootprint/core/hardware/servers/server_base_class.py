@@ -20,6 +20,10 @@ class Server(InfraHardware):
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue, storage: Storage):
+        if power_usage_effectiveness is None:
+            raise ValueError("power_usage_effectiveness cannot be None in Server instance")
+        if average_carbon_intensity is None:
+            raise ValueError("average_carbon_intensity cannot be None in Server instance")
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.hour_by_hour_cpu_need = None
         self.hour_by_hour_ram_need = None
@@ -128,3 +132,8 @@ class Server(InfraHardware):
     @abstractmethod
     def update_nb_of_instances(self):
         pass
+
+    def update_energy_footprint(self):
+        energy_footprint = (self.instances_energy * self.average_carbon_intensity)
+
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

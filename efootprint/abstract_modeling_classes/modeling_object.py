@@ -8,6 +8,7 @@ import re
 
 from IPython.display import HTML
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj
@@ -346,16 +347,19 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers"]
+                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates"]
                     or key.startswith("previous")
                     or key.startswith("initial")
+                    or PREVIOUS_LIST_VALUE_SET_SUFFIX in key
             ):
                 continue
-            if type(value) == str:
+            if value is None:
+                output_dict[key] = value
+            elif type(value) == str:
                 output_dict[key] = value
             elif type(value) == int:
                 output_dict[key] = value
-            elif type(value) == list and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
+            elif type(value) == list:
                 if len(value) == 0:
                     output_dict[key] = value
                 else:
@@ -367,6 +371,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             elif issubclass(type(value), ModelingObject):
                 output_dict[key] = value.id
+            elif issubclass(type(value), ExplainableObjectDict):
+                output_dict[key] = value.to_json(save_calculated_attributes)
+            else:
+                raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")
 
         return output_dict
 

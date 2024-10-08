@@ -39,14 +39,17 @@ class InfraHardware(Hardware):
         self.instances_energy = None
         self.energy_footprint = None
         self.instances_fabrication_footprint = None
-        if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
-            raise ValueError(
-                "Variable 'average_carbon_intensity' does not have mass over energy "
-                "('[time]**2 / [length]**2') dimensionality"
-            )
-        self.average_carbon_intensity = average_carbon_intensity
-        if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
-            self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
+        if average_carbon_intensity is not None:
+            if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
+                raise ValueError(
+                    "Variable 'average_carbon_intensity' does not have mass over energy "
+                    "('[time]**2 / [length]**2') dimensionality"
+                )
+            self.average_carbon_intensity = average_carbon_intensity
+            if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
+                self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
+        else:
+            self.average_carbon_intensity = None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -58,10 +61,6 @@ class InfraHardware(Hardware):
 
     @abstractmethod
     def update_nb_of_instances(self):
-        pass
-
-    @abstractmethod
-    def update_instances_energy(self):
         pass
 
     @property
@@ -79,8 +78,3 @@ class InfraHardware(Hardware):
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
                 f"Hourly {self.name} instances fabrication footprint")
-
-    def update_energy_footprint(self):
-        energy_footprint = (self.instances_energy * self.average_carbon_intensity)
-
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
