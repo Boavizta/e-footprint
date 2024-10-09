@@ -262,5 +262,6 @@ class TestModelingObject(unittest.TestCase):
         # Vérifier le message d'erreur
         self.assertRaises(ValueError)
 
+
 if __name__ == "__main__":
     unittest.main()

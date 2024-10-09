@@ -107,7 +107,16 @@ def get_cloud_server(
     if base_cpu_consumption is None:
         base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
     if storage is None:
-        storage = default_ssd(storage_capacity=SourceValue(32 * u.GB, source=Sources.HYPOTHESIS))
+        reference_storage_capacity = SourceValue(1 * u.TB, source=Sources.HYPOTHESIS)
+        cloud_storage_capacity = SourceValue(32 * u.GB, source=Sources.HYPOTHESIS)
+        ratio = (cloud_storage_capacity / reference_storage_capacity).to(u.dimensionless).set_label(
+            "Ration of cloud server storage capacity to reference storage capacity")
+        storage = default_ssd(
+            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+            average_carbon_intensity=average_carbon_intensity,
+            power_usage_effectiveness=power_usage_effectiveness,
+            storage_capacity=SourceValue(32 * u.GB, source=Sources.HYPOTHESIS))
 
     impact_url = "https://api.boavizta.org/v1/cloud/instance"
     params = {"provider": provider, "instance_type": instance_type}
@@ -162,14 +171,13 @@ def on_premise_server_from_config(
     ram_spec = impact_data["verbose"]["RAM-1"]
 
     storage_type = None
+    storage_spec = None
     if "SSD-1" in impact_data["verbose"].keys():
         storage_type = "SSD"
         storage_spec = impact_data["verbose"]["SSD-1"]
     elif "HDD-1" in impact_data["verbose"].keys():
         storage_type = "HDD"
         storage_spec = impact_data["verbose"]["HDD-1"]
-    else:
-        storage_spec = None
 
     if lifespan is None:
         lifespan = SourceValue(6 * u.year, Sources.HYPOTHESIS)

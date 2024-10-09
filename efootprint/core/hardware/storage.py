@@ -157,13 +157,12 @@ class Storage(InfraHardware):
     def update_nb_of_instances(self):
         nb_of_instances = self.raw_nb_of_instances.ceil()
 
-        max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
-
         if self.fixed_nb_of_instances:
+            max_nb_of_instances = nb_of_instances.max()
             if max_nb_of_instances.value > self.fixed_nb_of_instances.value:
                 raise ValueError(
                     f"The number of {self.name} instances computed from its resources need is superior to the number of"
-                    f" instances specified by the user/server ({nb_of_instances.max().value} > {self.fixed_nb_of_instances})")
+                    f" instances specified by the user/server ({max_nb_of_instances} > {self.fixed_nb_of_instances})")
             else:
                 fixed_nb_of_instances_df = pd.DataFrame(
                     {"value": pint_pandas.PintArray(
@@ -171,13 +170,13 @@ class Storage(InfraHardware):
                     )},
                     index=self.raw_nb_of_instances.value.index
                 )
-                nb_of_instances_re_calculate = ExplainableHourlyQuantities(
+                fixed_nb_of_instances = ExplainableHourlyQuantities(
                     fixed_nb_of_instances_df,
                     "Nb of instances",
                     left_parent=self.raw_nb_of_instances,
                     right_parent=self.fixed_nb_of_instances
                 )
-            self.nb_of_instances = nb_of_instances_re_calculate.set_label(f"Hourly fixed number of instances for {self.name}")
+            self.nb_of_instances = fixed_nb_of_instances.set_label(f"Hourly fixed number of instances for {self.name}")
         else:
             self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
