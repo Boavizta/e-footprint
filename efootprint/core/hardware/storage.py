@@ -58,7 +58,10 @@ class Storage(InfraHardware):
 
     @property
     def server(self) -> Type["Server"]:
-        return self.modeling_obj_containers[0]
+        if self.modeling_obj_containers:
+            return self.modeling_obj_containers[0]
+        else:
+            return None
 
     @property
     def calculated_attributes(self):
@@ -199,7 +202,7 @@ class Storage(InfraHardware):
             f"Hourly number of active instances for {self.name}")
 
     def update_instances_energy(self):
-        if self.modeling_obj_containers == []:
+        if self.server is None:
             logger.warning(f"Storage {self.name} is not associated with any server")
             storage_energy = EmptyExplainableObject()
         else:
@@ -219,10 +222,10 @@ class Storage(InfraHardware):
         self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
 
     def update_energy_footprint(self):
-        if self.modeling_obj_containers == []:
+        if self.server is None:
             logger.warning(f"Storage {self.name} is not associated with any server")
             energy_footprint = EmptyExplainableObject()
-        else :
+        else:
             energy_footprint = (self.instances_energy * self.server.average_carbon_intensity)
 
         self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
