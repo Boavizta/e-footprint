@@ -23,9 +23,7 @@ class Storage(InfraHardware):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.storage_delta = None
         self.full_cumulative_storage_need = None
-        self.long_term_storage_required = None
         self.nb_of_active_instances = None
-        self.instances_power = None
         if not idle_power.value.check("[power]"):
             raise ValueError("Value of variable 'idle_power' does not have appropriate power dimensionality")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
@@ -58,7 +56,10 @@ class Storage(InfraHardware):
 
     @property
     def server(self) -> Type["Server"]:
-        return self.modeling_obj_containers[0]
+        if self.modeling_obj_containers:
+            return self.modeling_obj_containers[0]
+        else:
+            return None
 
     @property
     def calculated_attributes(self):
@@ -199,7 +200,7 @@ class Storage(InfraHardware):
             f"Hourly number of active instances for {self.name}")
 
     def update_instances_energy(self):
-        if self.modeling_obj_containers == []:
+        if self.server is None:
             logger.warning(f"Storage {self.name} is not associated with any server")
             storage_energy = EmptyExplainableObject()
         else:
@@ -219,10 +220,10 @@ class Storage(InfraHardware):
         self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
 
     def update_energy_footprint(self):
-        if self.modeling_obj_containers == []:
+        if self.server is None:
             logger.warning(f"Storage {self.name} is not associated with any server")
             energy_footprint = EmptyExplainableObject()
-        else :
+        else:
             energy_footprint = (self.instances_energy * self.server.average_carbon_intensity)
 
         self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

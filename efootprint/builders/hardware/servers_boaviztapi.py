@@ -107,14 +107,15 @@ def get_cloud_server(
     if base_cpu_consumption is None:
         base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
     if storage is None:
-        reference_storage_capacity = SourceValue(1 * u.TB, source=Sources.HYPOTHESIS)
+        tmp_default_ssd = default_ssd()
+        reference_storage_capacity = tmp_default_ssd.storage_capacity
         cloud_storage_capacity = SourceValue(32 * u.GB, source=Sources.HYPOTHESIS)
         ratio = (cloud_storage_capacity / reference_storage_capacity).to(u.dimensionless).set_label(
-            "Ration of cloud server storage capacity to reference storage capacity")
+            "Ration of cloud server storage capacity to default storage capacity")
         storage = default_ssd(
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
-            storage_capacity=SourceValue(32 * u.GB, source=Sources.HYPOTHESIS))
+            carbon_footprint_fabrication=tmp_default_ssd.carbon_footprint_fabrication * ratio,
+            power=tmp_default_ssd.power * ratio,
+            storage_capacity=cloud_storage_capacity)
 
     impact_url = "https://api.boavizta.org/v1/cloud/instance"
     params = {"provider": provider, "instance_type": instance_type}
@@ -189,39 +190,39 @@ def on_premise_server_from_config(
         base_ram_consumption = SourceValue(0 * u.GB, Sources.HYPOTHESIS)
     if base_cpu_consumption is None:
         base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
+
+    full_storage_carbon_footprint_fabrication = SourceValue(
+        storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, source=impact_source,
+        label=f"Total {name} fabrication footprint")
     if storage is None:
         storage_unit = getattr(u, storage_spec["capacity"]["unit"])
-        reference_storage_capacity = SourceValue(1 * u.TB, source=Sources.HYPOTHESIS)
-        cloud_storage_capacity = SourceValue(
-                    storage_spec["capacity"]["value"] * storage_unit,
-                    source=impact_source
-                )
-        ratio = (cloud_storage_capacity / reference_storage_capacity).to(u.dimensionless).set_label(
-            "Ration of cloud server storage capacity to reference storage capacity")
-        nb_unit = SourceValue(storage_spec["units"]["value"] * u.dimensionless, impact_source)
+        storage_capacity_from_api = SourceValue(
+                    storage_spec["capacity"]["value"] * storage_unit, source=impact_source)
+        nb_units = SourceValue(
+            storage_spec["units"]["value"] * u.dimensionless, impact_source, f"Number of {name} storage instances")
+        carbon_footprint_fabrication = (full_storage_carbon_footprint_fabrication / nb_units).set_label(
+            f"Fabrication footprint of one {name} storage instance")
         if storage_type == 'SSD':
+            reference_storage_capacity = default_ssd().storage_capacity
+            ratio = (storage_capacity_from_api / reference_storage_capacity).to(u.dimensionless).set_label(
+                "Ratio of on premise server storage capacity to default SSD storage capacity")
             storage = default_ssd(
-                storage_capacity=cloud_storage_capacity,
-                fixed_nb_of_instances=SourceValue(
-                    storage_spec["units"]["value"] * u.dimensionless, source=impact_source
-                ),
-                carbon_footprint_fabrication=SourceValue(
-                    storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, source=impact_source
-                ) / nb_unit * ratio,
-                power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+                f"{name} SSD storage",
+                storage_capacity=storage_capacity_from_api,
+                fixed_nb_of_instances=nb_units,
+                carbon_footprint_fabrication=carbon_footprint_fabrication,
+                power=default_ssd().power * ratio,
             )
         elif storage_type == 'HDD':
+            reference_storage_capacity = default_hdd().storage_capacity
+            ratio = (storage_capacity_from_api / reference_storage_capacity).to(u.dimensionless).set_label(
+                "Ration of on premise server storage capacity to default HDD storage capacity")
             storage = default_hdd(
-                storage_capacity=cloud_storage_capacity,
-                fixed_nb_of_instances=SourceValue(
-                    storage_spec["units"]["value"] * u.dimensionless, source=impact_source
-                ),
-                carbon_footprint_fabrication=SourceValue(
-                    storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, source=impact_source
-                ) / nb_unit * ratio,
-                average_carbon_intensity=average_carbon_intensity,
-                power_usage_effectiveness=power_usage_effectiveness,
-                power=SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+                f"{name} HDD storage",
+                storage_capacity=storage_capacity_from_api,
+                fixed_nb_of_instances=nb_units,
+                carbon_footprint_fabrication=carbon_footprint_fabrication,
+                power=default_hdd().power * ratio,
             )
         else:
             raise ValueError(f"Storage type {storage_type} not yet implemented")
@@ -233,11 +234,15 @@ def on_premise_server_from_config(
     assert average_power_unit == "W"
     assert float(use_time_ratio) == 1
 
+    total_fabrication_footprint_storage_included = SourceValue(
+        impacts["gwp"]["embedded"]["value"] * u.kg, impact_source,
+        f"Total {name} fabrication footprint storage included")
+    total_fabrication_footprint_storage_excluded = (
+            total_fabrication_footprint_storage_included - full_storage_carbon_footprint_fabrication)
+
     return OnPremise(
         name,
-        carbon_footprint_fabrication=SourceValue(
-            (impacts["gwp"]["embedded"]["value"] * u.kg-storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg)
-            , impact_source),
+        carbon_footprint_fabrication=total_fabrication_footprint_storage_excluded,
         # TODO: document and challenge power calculation
         power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,

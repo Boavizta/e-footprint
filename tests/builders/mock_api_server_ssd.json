@@ -1,0 +1,88 @@
+{
+  "impacts": {
+    "gwp": {
+      "unit": "kgCO2eq",
+      "description": "Total climate change",
+      "embedded": {
+        "value": 1200,
+        "min": 741.7,
+        "max": 2255,
+        "warnings": [
+          "End of life is not included in the calculation"
+        ]
+      },
+      "use": {
+        "value": 8000,
+        "min": 457.9,
+        "max": 30040
+      }
+    }
+  },
+  "verbose": {
+    "CPU-1": {
+      "units": {
+        "value": 2,
+        "status": "INPUT"
+      },
+      "core_units": {
+        "value": 24,
+        "status": "INPUT"
+      }
+    },
+    "RAM-1": {
+      "units": {
+        "value": 12,
+        "status": "INPUT"
+      },
+      "capacity": {
+        "value": 32,
+        "status": "INPUT",
+        "unit": "GB"
+      }
+    },
+    "SSD-1": {
+      "impacts": {
+        "gwp": {
+          "unit": "kgCO2eq",
+          "description": "Total climate change",
+          "embedded": {
+            "value": 50,
+            "min": 23.53,
+            "max": 281,
+            "warnings": [
+              "End of life is not included in the calculation"
+            ]
+          },
+          "use": "not implemented"
+        }
+      },
+      "units": {
+        "value": 1,
+        "status": "ARCHETYPE",
+        "min": 1,
+        "max": 2
+      },
+      "capacity": {
+        "value": 500,
+        "status": "ARCHETYPE",
+        "unit": "GB",
+        "min": 500,
+        "max": 500
+      }
+    },
+    "avg_power": {
+      "value": 629.7762799999999,
+      "status": "COMPLETED",
+      "unit": "W",
+      "min": 568.2191999999999,
+      "max": 757.6256
+    },
+    "use_time_ratio": {
+      "value": 1,
+      "status": "ARCHETYPE",
+      "unit": "/1",
+      "min": 1,
+      "max": 1
+    }
+  }
+}

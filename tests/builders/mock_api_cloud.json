@@ -1,0 +1,67 @@
+{
+  "impacts": {
+    "gwp": {
+      "unit": "kgCO2eq",
+      "description": "Total climate change",
+      "embedded": {
+        "value": 460,
+        "min": 260.5,
+        "max": 635.6,
+        "warnings": [
+          "End of life is not included in the calculation"
+        ]
+      },
+      "use": {
+        "value": 700,
+        "min": 37.73,
+        "max": 2475
+      }
+    }
+  },
+  "verbose": {
+    "CPU-1": {
+      "units": {
+        "value": 1,
+        "status": "ARCHETYPE",
+        "min": 1,
+        "max": 1
+      },
+      "core_units": {
+        "value": 16,
+        "status": "COMPLETED",
+        "source": "Completed from name name based on https://docs.google.com/spreadsheets/d/1DqYgQnEDLQVQm5acMAhLgHLD8xXCG9BIrk-_Nv6jF3k/edit#gid=224728652.",
+        "min": 16,
+        "max": 16
+      }
+    },
+    "RAM-1": {
+      "units": {
+        "value": 2,
+        "status": "ARCHETYPE",
+        "min": 2,
+        "max": 2
+      },
+      "capacity": {
+        "value": 16,
+        "status": "ARCHETYPE",
+        "unit": "GB",
+        "min": 16,
+        "max": 16
+      }
+    },
+    "avg_power": {
+      "value": 51.889950000000006,
+      "status": "COMPLETED",
+      "unit": "W",
+      "min": 46.818,
+      "max": 62.42400000000001
+    },
+    "use_time_ratio": {
+      "value": 1,
+      "status": "ARCHETYPE",
+      "unit": "/1",
+      "min": 1,
+      "max": 1
+    }
+  }
+}

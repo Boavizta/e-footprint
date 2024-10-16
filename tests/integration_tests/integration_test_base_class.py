@@ -87,7 +87,7 @@ class IntegrationTestBaseClass(TestCase):
         for mod_obj in mod_obj_list:
             mod_obj.id = old_ids[mod_obj.name]
 
-        with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json"), 'r') as ref_file,
+        with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), 'r') as ref_file,
               open(tmp_filepath, 'r') as tmp_file):
             ref_file_content = ref_file.read()
             tmp_file_content = tmp_file.read()
@@ -114,4 +114,5 @@ class IntegrationTestBaseClass(TestCase):
             for attr_key, attr_value in obj.__dict__.items():
                 if isinstance(attr_value, ExplainableQuantity):
                     self.assertEqual(getattr(corresponding_obj, attr_key).value, attr_value.value)
+                    self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label)
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")

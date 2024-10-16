@@ -109,7 +109,7 @@
                 }
             },
             "data_stored": {
-                "label": "Data stored of request streaming from hypothesis",
+                "label": "Data stored by request streaming from hypothesis",
                 "value": 50.0,
                 "unit": "kilobyte",
                 "source": {
@@ -118,9 +118,9 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration to Youtube in streaming from hypothesis",
-                "value": 0.06666666666666667,
-                "unit": "hour",
+                "label": "Request duration of streaming to Default server from hypothesis",
+                "value": 4.0,
+                "unit": "minute",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -169,19 +169,19 @@
                     "link": null
                 }
             },
-            "request_duration": {
-                "label": "Request duration to Youtube in upload from hypothesis",
-                "value": 0.011111111111111112,
-                "unit": "hour",
+            "data_stored": {
+                "label": "Data stored by request upload from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
-            "data_stored": {
-                "label": "Data stored of request upload from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
+            "request_duration": {
+                "label": "Request duration of upload to Default server from hypothesis",
+                "value": 40.0,
+                "unit": "second",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -303,7 +303,7 @@
                 }
             },
             "base_ram_consumption": {
-                "label": "Base RAM consumption of Youtube from hypothesis",
+                "label": "Base RAM consumption of Default server from hypothesis",
                 "value": 300.0,
                 "unit": "megabyte",
                 "source": {
@@ -312,7 +312,7 @@
                 }
             },
             "base_cpu_consumption": {
-                "label": "Base CPU consumption of Youtube from hypothesis",
+                "label": "Base CPU consumption of Default server from hypothesis",
                 "value": 2.0,
                 "unit": "core",
                 "source": {
@@ -363,6 +363,7 @@
                     "link": null
                 }
             },
+            "average_carbon_intensity": null,
             "idle_power": {
                 "label": "Idle power of Default SSD storage from hypothesis",
                 "value": 0.1,
