@@ -85,6 +85,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "TikTok Analytics server",storage=default_ssd("TikTok Analytics storage"))
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
+        cls.storage_3 = cls.server3.storage
 
         cls.streaming_job = Job("streaming", cls.server1, data_upload=SourceValue(50 * u.kB),
                                 data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
@@ -142,6 +143,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
             cls.storage_1: cls.storage_1.instances_fabrication_footprint,
+            cls.storage_2: cls.storage_2.instances_fabrication_footprint,
+            cls.storage_3: cls.storage_3.instances_fabrication_footprint,
             cls.server1: cls.server1.instances_fabrication_footprint,
             cls.server2: cls.server2.instances_fabrication_footprint,
             cls.server3: cls.server3.instances_fabrication_footprint,
@@ -150,6 +153,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         }
         cls.initial_energy_footprints = {
             cls.storage_1: cls.storage_1.energy_footprint,
+            cls.storage_2: cls.storage_2.energy_footprint,
+            cls.storage_3: cls.storage_3.energy_footprint,
             cls.server1: cls.server1.energy_footprint,
             cls.server2: cls.server2.energy_footprint,
             cls.server3: cls.server3.energy_footprint,
@@ -167,54 +172,54 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         logger.warning("Removing Dailymotion and TikTok uj step")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
-        self.footprint_has_changed([self.server1, self.server2])
+        self.footprint_has_changed([self.server1, self.server2, self.storage_1, self.storage_2])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion and TikTok uj step back")
         self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
 
-        self.footprint_has_not_changed([self.server1, self.server2])
+        self.footprint_has_not_changed([self.server1, self.server2, self.storage_1, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_dailymotion_single_job(self):
         logger.warning("Removing Dailymotion job")
         self.dailymotion_step.jobs = []
 
-        self.footprint_has_changed([self.server1])
+        self.footprint_has_changed([self.server1, self.storage_1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion job back")
         self.dailymotion_step.jobs = [self.dailymotion_job]
 
-        self.footprint_has_not_changed([self.server1])
+        self.footprint_has_not_changed([self.server1, self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_one_tiktok_job(self):
         logger.warning("Removing one TikTok job")
         self.tiktok_step.jobs = [self.tiktok_job]
 
-        self.footprint_has_changed([self.server3])
-        self.footprint_has_not_changed([self.server2])
+        self.footprint_has_changed([self.server3, self.storage_3])
+        self.footprint_has_not_changed([self.server2, self.storage_2])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting TikTok job back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
-        self.footprint_has_not_changed([self.server3, self.server2])
+        self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_all_tiktok_jobs(self):
         logger.warning("Removing all TikTok jobs")
         self.tiktok_step.jobs = []
 
-        self.footprint_has_changed([self.server2, self.server3])
+        self.footprint_has_changed([self.server2, self.storage_2, self.server3, self.storage_3])
         self.footprint_has_not_changed([self.server1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint))
 
         logger.warning("Putting TikTok jobs back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
-        self.footprint_has_not_changed([self.server3, self.server2])
+        self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_new_job(self):
