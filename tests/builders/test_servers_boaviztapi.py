@@ -10,10 +10,22 @@ from efootprint.constants.units import u
 class TestBoaviztapiBuilders(unittest.TestCase):
     def test_get_cloud_server(self):
         aws_server = get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
+        self.assertIsNotNone(aws_server)
+        self.assertIsNotNone(aws_server.storage)
+
 
     def test_on_premise_server_from_config(self):
         on_prem_server = on_premise_server_from_config(
-            "My server", 2, 24, 6, 16, SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
+            "My server",
+            2,
+            24,
+            6,
+            16,
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS)
+        )
+        self.assertIsNotNone(on_prem_server)
+        self.assertIsNotNone(on_prem_server.storage)
+
 
     def test_print_archetypes_and_their_configs(self):
         # Too long and not very important so pass for now
