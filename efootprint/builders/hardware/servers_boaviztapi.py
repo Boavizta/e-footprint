@@ -211,7 +211,7 @@ def on_premise_server_from_config(
                 storage_capacity=storage_capacity_from_api,
                 fixed_nb_of_instances=nb_units,
                 carbon_footprint_fabrication=carbon_footprint_fabrication,
-                power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+                power=default_ssd().power * ratio,
             )
         elif storage_type == 'HDD':
             reference_storage_capacity = default_hdd().storage_capacity
@@ -222,7 +222,7 @@ def on_premise_server_from_config(
                 storage_capacity=storage_capacity_from_api,
                 fixed_nb_of_instances=nb_units,
                 carbon_footprint_fabrication=carbon_footprint_fabrication,
-                power=SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY) * ratio,
+                power=default_hdd().power * ratio,
             )
         else:
             raise ValueError(f"Storage type {storage_type} not yet implemented")
