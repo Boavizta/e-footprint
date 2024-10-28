@@ -301,7 +301,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for attr_name, attr_value in vars(self).items():
             values = convert_to_list(attr_value)
             for value in values:
-                if isinstance(value, ModelingObject):
+                if isinstance(value, ModelingObject) and value not in self.modeling_obj_containers:
                     output_list.append(value)
 
         return output_list

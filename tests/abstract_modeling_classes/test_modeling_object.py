@@ -214,6 +214,18 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual([mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3],
                          self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
 
+    def test_mod_obj_attributes(self):
+        mod_obj = ModelingObjectForTesting("test mod obj")
+        attr1 = MagicMock(spec=ModelingObject)
+        attr2 = MagicMock(spec=ModelingObject)
+        mod_obj.attribute = attr1
+        mod_obj.attribute2 = attr2
+
+        mod_obj_container = MagicMock(spec=ModelingObject)
+        mod_obj.modeling_obj_containers = [mod_obj_container]
+
+        self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
+
 
 if __name__ == "__main__":
     unittest.main()

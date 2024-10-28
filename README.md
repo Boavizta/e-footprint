@@ -29,8 +29,8 @@ Checkout our open source [e-footprint modeling use cases](https://github.com/pub
 You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 
 <figure>
-    <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
-    <figcaption>Object relationships graph: user journey in deep blue, user journey steps in blue, jobs in gold, infra hardware and usage pattern (that includes devices impact) in red. Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.</figcaption>
+    <img src="images/obj_relationships_graph_example.png" width="400" alt="object relationships graph">
+    <figcaption>Object relationships graph: usage patterns in deep blue, user journey in blue, user journey steps in pale blue, jobs in gold, infra hardware in red. Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.</figcaption>
 </figure>
 
 <figure>

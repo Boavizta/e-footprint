@@ -10,6 +10,8 @@ def run_notebook(notebook_path):
 
     # Execute the notebook and collect the output
     python_code, _ = exporter.from_notebook_node(notebook)
+    # exec can’t execute get_ipython so we need to remove the one call to this method that installs efootprint
+    python_code = python_code.replace("get_ipython().system('pip install efootprint')", "# Removed for testing")
 
     exec(python_code)
 
