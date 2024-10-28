@@ -375,7 +375,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return str(self.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
 
     def __repr__(self):
-        return json.dumps(self.to_json(save_calculated_attributes=True), indent=4)
+        return str(self)
 
     def __str__(self):
         output_str = ""
