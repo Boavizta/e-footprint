@@ -21,15 +21,12 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
         'print("placeholder")\n```\n\n    placeholder',
         '```\n--8<-- "docs_sources/generated_mkdocs_sourcefiles/System footprints.html"')
 
-    tutorial_reformated = tutorial_reformated.replace(
-        '    object_relationships_graph.html',
-        '--8<-- "docs_sources/generated_mkdocs_sourcefiles/object_relationships_graph.html"'
-    )
-
-    tutorial_reformated = tutorial_reformated.replace(
-        '    device_population_fab_footprint_calculus_graph.html',
-        '--8<-- "docs_sources/generated_mkdocs_sourcefiles/device_population_fab_footprint_calculus_graph.html"'
-    )
+    for html_file in ["object_relationships_graph.html", "object_relationships_graph_with_jobs.html",
+                      "device_population_fab_footprint_calculus_graph.html"]:
+        tutorial_reformated = tutorial_reformated.replace(
+            f'    {html_file}',
+            f'--8<-- "docs_sources/generated_mkdocs_sourcefiles/{html_file}"'
+        )
 
     tutorial_reformated = tutorial_reformated.replace("\n\n    202", "    202").replace("```    202", "```\n\n    202")
 

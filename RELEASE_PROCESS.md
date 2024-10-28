@@ -17,6 +17,12 @@ python -m pytest --cov=tests
 python docs_sources/doc_utils/main.py
 ```
 
+## Check locally that new doc version is correct (changelog has been updated, tutorial and builders notebooks have been updated, etc.)
+
+```shell
+mkdocs serve
+```
+
 ## Release new version of doc
 
 ```shell
