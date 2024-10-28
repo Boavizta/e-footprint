@@ -119,6 +119,23 @@ class TestBoaviztapiBuilders(unittest.TestCase):
         self.assertNotEqual(on_prem_server_ssd.storage.power.value,
                             on_prem_server_hdd.storage.power.value)
 
+    @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')
+    def test_on_premise_server_hybrid_storage(self, mock_call_api):
+        with open(os.path.join(BUILDER_TEST_DIR, "mock_api_server_hybrid.json"), "rb") as file:
+            full_dict = json.load(file)
+        mock_call_api.return_value = full_dict
+
+        with self.assertRaises(ValueError) as context:
+            on_prem_server_hybrid = on_premise_server_from_config(
+                "My server", 2, 24, 12, 32,
+                average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS)
+            )
+        self.assertIn(
+            "Both SSD and HDD storage found in the server impact data ,this is not implemented yet",
+            str(context.exception)
+        )
+
+
     def test_print_archetypes_and_their_configs(self):
         # Too long and not very important so pass for now
         # print_archetypes_and_their_configs()

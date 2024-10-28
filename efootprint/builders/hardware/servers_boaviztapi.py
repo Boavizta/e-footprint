@@ -136,7 +136,6 @@ def get_cloud_server(
     return base_efootprint_class(
         f"{provider} {instance_type} instances",
         carbon_footprint_fabrication=SourceValue(impacts["gwp"]["embedded"]["value"] * u.kg, impact_source),
-        # TODO: document and challenge power calculation
         power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,
         idle_power=idle_power,
@@ -165,19 +164,6 @@ def on_premise_server_from_config(
                            link=f"{impact_url}?{'&'.join([key + '=' + str(params[key]) for key in params.keys()])}")
     impact_data = call_boaviztapi(url=impact_url, params=params, json=data, method="POST")
 
-    impacts = impact_data["impacts"]
-    cpu_spec = impact_data["verbose"]["CPU-1"]
-    ram_spec = impact_data["verbose"]["RAM-1"]
-
-    storage_type = None
-    storage_spec = None
-    if "SSD-1" in impact_data["verbose"].keys():
-        storage_type = "SSD"
-        storage_spec = impact_data["verbose"]["SSD-1"]
-    elif "HDD-1" in impact_data["verbose"].keys():
-        storage_type = "HDD"
-        storage_spec = impact_data["verbose"]["HDD-1"]
-
     if lifespan is None:
         lifespan = SourceValue(6 * u.year, Sources.HYPOTHESIS)
     if idle_power is None:
@@ -190,6 +176,17 @@ def on_premise_server_from_config(
         base_ram_consumption = SourceValue(0 * u.GB, Sources.HYPOTHESIS)
     if base_cpu_consumption is None:
         base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
+
+    storage_type = None
+    storage_spec = None
+    if "SSD-1" in impact_data["verbose"].keys() and "HDD-1" in impact_data["verbose"].keys():
+        raise ValueError("Both SSD and HDD storage found in the server impact data ,this is not implemented yet")
+    elif "SSD-1" in impact_data["verbose"].keys():
+        storage_type = "SSD"
+        storage_spec = impact_data["verbose"]["SSD-1"]
+    elif "HDD-1" in impact_data["verbose"].keys():
+        storage_type = "HDD"
+        storage_spec = impact_data["verbose"]["HDD-1"]
 
     full_storage_carbon_footprint_fabrication = SourceValue(
         storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, source=impact_source,
@@ -234,6 +231,10 @@ def on_premise_server_from_config(
     assert average_power_unit == "W"
     assert float(use_time_ratio) == 1
 
+    impacts = impact_data["impacts"]
+    cpu_spec = impact_data["verbose"]["CPU-1"]
+    ram_spec = impact_data["verbose"]["RAM-1"]
+
     total_fabrication_footprint_storage_included = SourceValue(
         impacts["gwp"]["embedded"]["value"] * u.kg, impact_source,
         f"Total {name} fabrication footprint storage included")
@@ -243,7 +244,6 @@ def on_premise_server_from_config(
     return OnPremise(
         name,
         carbon_footprint_fabrication=total_fabrication_footprint_storage_excluded,
-        # TODO: document and challenge power calculation
         power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,
         idle_power=idle_power,

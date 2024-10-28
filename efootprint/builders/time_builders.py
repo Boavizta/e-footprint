@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 import pint
+from dateutil.relativedelta import relativedelta
 
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
@@ -82,7 +83,7 @@ def daily_fluct_hourly_values(nb_of_hours: int, fluct_scale: float, hour_of_day_
 def create_hourly_usage_from_volume_and_list_of_hour(input_volume: float, start_date: datetime, pint_unit: pint.Unit,
                                                      list_hour: List[int], duration: int):
     if start_date is None:
-        start_date = datetime.datetime.strptime("2025-01-01", "%Y-%m-%d")
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
     if pint_unit is None:
         pint_unit = pint.Unit(u.dimensionless)
     if duration is None:
@@ -94,41 +95,71 @@ def create_hourly_usage_from_volume_and_list_of_hour(input_volume: float, start_
     df = pd.DataFrame(0, index=date_range, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
 
     for index_hour in range(0, duration):
-        current_hour = start_date + datetime.timedelta(hours=index_hour)
+        current_hour = start_date + timedelta(hours=index_hour)
         if current_hour.hour in list_hour:
             df.at[current_hour, 'value'] = volume_per_hour
     return SourceHourlyValues(df, label="Hourly usage")
 
 
-def create_hourly_usage_from_frequency(input_volume: float, start_date: datetime, pint_unit: pint.Unit,
-                                                     frequency: int, type_frequency: str, duration: int):
+def create_hourly_usage_from_frequency(
+        input_volume: float, start_date: datetime, pint_unit: pint.Unit, type_frequency: str,
+        duration, only_work_days: bool, time_list:list = None, launch_hour_list: list = None):
+
     if start_date is None:
-        start_date = datetime.datetime.strptime("2025-01-01", "%Y-%m-%d")
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
     if pint_unit is None:
         pint_unit = pint.Unit(u.dimensionless)
-    if frequency is None:
-        frequency = 1
-    if type_frequency is None:
-        type_frequency = "day"
-    if duration is None:
-        duration = 365*24
+    if type_frequency not in ['daily', 'weekly', 'monthly', 'yearly']:
+        raise ValueError("type_frequency must be one of 'daily', 'weekly', 'monthly', or 'yearly'.")
 
-    date_range = pd.period_range(start=start_date, periods=duration, freq='h')
-    df = pd.DataFrame(0, index=date_range, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+    if isinstance(duration, pint.Quantity):
+        if duration.units == u.day:
+            end_date = start_date + timedelta(days=duration.magnitude - 1)
+        elif duration.units == u.week:
+            end_date = start_date + timedelta(weeks=duration.magnitude) - timedelta(days=1)
+        elif duration.units == u.month:
+            end_date = start_date + relativedelta(months=duration.magnitude) - timedelta(days=1)
+        elif duration.units == u.year:
+            end_date = start_date + relativedelta(years=duration.magnitude) - timedelta(days=1)
+        else:
+            raise ValueError("Unsupported unit for duration. Use days, weeks, months, or years.")
+        end_date = end_date.replace(hour=23)
+    else:
+        raise TypeError("duration must be a pint.Quantity with time units like days, weeks, months, or years (e.g., 2*u.month).")
 
-    interval_hour = 0
-    if type_frequency == 'hourly':
-        interval_hour = frequency
-    elif type_frequency == 'daily':
-        interval_hour = round(24 / frequency)
-    elif type_frequency == 'weekly':
-        interval_hour = round((24 * 7) / frequency)
-    elif type_frequency == 'monthly':
-        interval_hour = round((24 * 30) * frequency)
+    if time_list is None:
+        if type_frequency == 'daily':
+            time_list = [0]  # default to midnight
+        elif type_frequency == 'weekly':
+            time_list = [1]  # default to Monday
+        elif type_frequency == 'monthly':
+            time_list = [1]  # default to the first day of the month
+        elif type_frequency == 'yearly':
+            time_list = [1]  # default to the first day of the year
+        if launch_hour_list is None:
+            launch_hour_list = [0]  # default to midnight
 
-    for index_hour in range(0, duration):
-        current_hour = start_date + datetime.timedelta(hours=index_hour)
-        if index_hour % interval_hour == 0:
-            df.at[current_hour, 'value'] = input_volume
+    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
+    df = pd.DataFrame(0, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+
+    for current_hour in df.index:
+        hour_of_day = current_hour.hour
+        day_of_week = current_hour.to_timestamp().weekday()
+        day_of_month = current_hour.day
+        day_of_year = current_hour.to_timestamp().timetuple().tm_yday  # Day of the year, 1 to 365/366
+        if type_frequency == 'daily':
+            if hour_of_day in time_list and (not only_work_days or day_of_week < 5):
+                df.at[current_hour, 'value'] = input_volume
+        elif type_frequency == 'weekly':
+            if day_of_week in time_list and hour_of_day in launch_hour_list:
+                df.at[current_hour, 'value'] = input_volume
+        elif type_frequency == 'monthly':
+            if day_of_month in time_list and hour_of_day in launch_hour_list:
+                df.at[current_hour, 'value'] = input_volume
+        elif type_frequency == 'yearly':
+            if day_of_year in time_list and hour_of_day in launch_hour_list:
+                df.at[current_hour, 'value'] = input_volume
 
     return SourceHourlyValues(df, label="Hourly usage")
+
+

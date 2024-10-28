@@ -1,10 +1,12 @@
 import unittest
 from datetime import datetime, timedelta
 
+import pint
+
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
 from efootprint.builders.time_builders import (
     create_random_hourly_usage_df, create_hourly_usage_df_from_list, linear_growth_hourly_values,
-    sinusoidal_fluct_hourly_values, daily_fluct_hourly_values)
+    sinusoidal_fluct_hourly_values, daily_fluct_hourly_values, create_hourly_usage_from_frequency)
 from efootprint.constants.units import u
 
 
@@ -70,3 +72,57 @@ class TestTimeBuilders(unittest.TestCase):
         self.assertEqual(1-fluct_scale, result.value["value"].iloc[hour_of_min].magnitude)
         self.assertEqual(len(result.value), nb_of_hours)
         self.assertEqual(result.value['value'].pint.units, u.dimensionless)
+
+    def test_create_hourly_usage_from_frequency_case_1(self):
+        input_volume = 100
+        start_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
+        pint_unit = pint.Unit(u.dimensionless)
+        type_frequency = "daily"
+        duration = 14 * u.day
+        only_word_days = True
+        time_list = [9, 11]
+        result = create_hourly_usage_from_frequency(input_volume, start_date, pint_unit, type_frequency, duration,
+                                                    only_word_days, time_list)
+
+        expected_index_populated = [9, 11, 33, 35, 57, 59, 81, 83, 105, 107, 177, 179, 201, 203, 225, 227,
+                            249, 251, 273, 275]
+
+        expected_max_date = datetime.strptime("2024-01-14 23:00", "%Y-%m-%d %H:%M")
+
+        self.assertTrue(isinstance(result, SourceHourlyValues))
+        self.assertEqual(result.unit, pint_unit)
+        for index in range(0, len(result.value)):
+            if index in expected_index_populated:
+                self.assertEqual(result.value['value'].iloc[index], input_volume)
+            else:
+                self.assertEqual(result.value['value'].iloc[index], 0)
+        self.assertEqual(max(result.value.index), expected_max_date)
+
+
+
+    def test_create_hourly_usage_from_frequency_case_3(self):
+        input_volume = 100
+        start_date = datetime.strptime("2024-01-01", "%Y-%m-%d")
+        pint_unit = pint.Unit(u.dimensionless)
+        type_frequency = "monthly"
+        duration = 2 * u.month
+        only_word_days = True
+        time_list = [1, 6, 11, 16, 21, 26]
+        launch_hours_list = [9, 11]
+        result = create_hourly_usage_from_frequency(input_volume, start_date, pint_unit, type_frequency, duration,
+                                                    only_word_days, time_list,  launch_hours_list)
+
+        expected_index_populated = [9, 11, 129, 131, 249, 251, 369, 371, 489, 491, 609, 611 ,753, 755 ,873, 875 ,993,
+                                    995 ,1113, 1115, 1233, 1235 ,1353, 1355]
+
+        expected_max_date = datetime.strptime("2024-02-29 23:00", "%Y-%m-%d %H:%M")
+
+        self.assertTrue(isinstance(result, SourceHourlyValues))
+        self.assertEqual(result.unit, pint_unit)
+        self.assertEqual(max(result.value.index), expected_max_date)
+        for index in range(0, len(result.value)):
+            if index in expected_index_populated:
+                self.assertEqual(result.value['value'].iloc[index], input_volume)
+            else:
+                self.assertEqual(result.value['value'].iloc[index], 0)
+        self.assertEqual(max(result.value.index), expected_max_date)
