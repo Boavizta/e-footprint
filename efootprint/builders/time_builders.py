@@ -107,10 +107,10 @@ def create_hourly_usage_from_frequency(
         launch_hours: list = None, start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
         pint_unit: pint.Unit = u.dimensionless):
     if frequency not in ['daily', 'weekly', 'monthly', 'yearly']:
-        raise ValueError("type_frequency must be one of 'daily', 'weekly', 'monthly', or 'yearly'.")
+        raise ValueError(f"frequency must be one of 'daily', 'weekly', 'monthly', or 'yearly', got {frequency}.")
 
     if frequency == 'daily' and active_days is not None:
-        raise ValueError("active_days must be None for daily frequency.")
+        raise ValueError(f"active_days must be None for daily frequency, got {active_days}.")
 
     end_date = start_date + timedelta(days=duration.to(u.day).magnitude)
 
@@ -124,24 +124,26 @@ def create_hourly_usage_from_frequency(
         launch_hours = [0]  # default to midnight
 
     period_index = pd.period_range(start=start_date, end=end_date, freq='h')
-    df = pd.DataFrame(0, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+    values = np.full(shape=len(period_index), fill_value=0)
 
-    for period in df.index:
+    for i, period in enumerate(period_index):
         hour_of_day = period.hour  # Hour of the day, 0 to 23
-        day_of_week = period.to_timestamp().weekday()  # Day of the week, 0 to 6
+        day_of_week = period.day_of_week  # Day of the week, 0 to 6
         day_of_month = period.day  # Day of the month, 1 to 31
-        day_of_year = period.to_timestamp().timetuple().tm_yday  # Day of the year, 1 to 365/366
+        day_of_year = period.day_of_year  # Day of the year, 1 to 365/366
         if frequency == 'daily':
             if hour_of_day in launch_hours:
-                df.at[period, 'value'] = input_volume
+                values[i] = input_volume
         elif frequency == 'weekly':
             if day_of_week in active_days and hour_of_day in launch_hours:
-                df.at[period, 'value'] = input_volume
+                values[i] = input_volume
         elif frequency == 'monthly':
             if day_of_month in active_days and hour_of_day in launch_hours:
-                df.at[period, 'value'] = input_volume
+                values[i] = input_volume
         elif frequency == 'yearly':
             if day_of_year in active_days and hour_of_day in launch_hours:
-                df.at[period, 'value'] = input_volume
+                values[i] = input_volume
+
+    df = pd.DataFrame(values, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
 
     return SourceHourlyValues(df, label="Hourly usage")
