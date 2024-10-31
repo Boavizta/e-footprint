@@ -1,0 +1,3 @@
+- Attribute
+    - Exclusive Attribute: can be associated to only one parent object. Concerns: storage, lists… If you change it locally, no impact on any other object.
+- 
