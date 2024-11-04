@@ -181,5 +181,3 @@ class TestServerBaseClass(TestCase):
             expected_footprint = [0.09, 0.18, 0.27]  # in kg
             self.assertEqual(expected_footprint, self.server_base.energy_footprint.value_as_float_list)
             self.assertEqual(u.kg, self.server_base.energy_footprint.unit)
-
-

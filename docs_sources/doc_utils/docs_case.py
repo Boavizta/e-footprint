@@ -117,7 +117,7 @@ usage_pattern = UsagePattern(
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None),
             2022, tz('Europe/Paris'))(),
-    hourly_user_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(nb_days=365*3)))
+    hourly_user_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year)))
 
 system = System("system", usage_patterns=[usage_pattern])
 
