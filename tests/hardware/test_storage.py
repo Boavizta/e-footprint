@@ -31,11 +31,12 @@ class TestStorage(TestCase):
         storage = self.storage_base
         server1 = MagicMock()
         server2 = MagicMock()
-        storage.add_obj_to_modeling_obj_containers(server1)
-        with self.assertRaises(ValueError) as context:
-            storage.add_obj_to_modeling_obj_containers(server2)
-            self.assertRaises(ValueError)
-            self.assertEqual(str(context.exception), "Storage object can only be associated with one server object")
+        with patch.object(storage, "modeling_obj_containers", new=[server1]):
+            with self.assertRaises(ValueError) as context:
+                storage.add_obj_to_modeling_obj_containers(server2)
+                self.assertRaises(ValueError)
+                self.assertEqual(
+                    str(context.exception), "Storage object can only be associated with one server object")
 
     def test_update_storage_needs_single_job(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
