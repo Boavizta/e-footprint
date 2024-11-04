@@ -85,6 +85,19 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         else:
             raise ValueError
 
+    def __mul__(self, other):
+        if issubclass(type(other), ExplainableObject):
+            return other.__mul__(self)
+        elif isinstance(other, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        elif other == 0:
+            return self
+        else:
+            raise ValueError
+
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def __str__(self):
         return self.label
 

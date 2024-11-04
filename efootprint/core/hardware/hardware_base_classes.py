@@ -3,7 +3,7 @@ from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
+from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -30,8 +30,7 @@ class Hardware(ModelingObject):
 
 
 class InfraHardware(Hardware):
-    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue, lifespan: SourceValue,
-                 average_carbon_intensity: SourceValue):
+    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue, lifespan: SourceValue):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
         self.raw_nb_of_instances = None
@@ -39,17 +38,6 @@ class InfraHardware(Hardware):
         self.instances_energy = None
         self.energy_footprint = None
         self.instances_fabrication_footprint = None
-        if average_carbon_intensity is not None:
-            if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
-                raise ValueError(
-                    "Variable 'average_carbon_intensity' does not have mass over energy "
-                    "('[time]**2 / [length]**2') dimensionality"
-                )
-            self.average_carbon_intensity = average_carbon_intensity
-            if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
-                self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
-        else:
-            self.average_carbon_intensity = None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -61,6 +49,10 @@ class InfraHardware(Hardware):
 
     @abstractmethod
     def update_nb_of_instances(self):
+        pass
+
+    @abstractmethod
+    def update_instances_energy(self):
         pass
 
     @property
@@ -78,3 +70,12 @@ class InfraHardware(Hardware):
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
                 f"Hourly {self.name} instances fabrication footprint")
+
+    def update_energy_footprint(self):
+        if getattr(self, "average_carbon_intensity", None) is None:
+            raise ValueError(
+                f"Variable 'average_carbon_intensity' is not defined in object {self.name}."
+                f" This shouldn’t happen as server objects have it as input parameter and Storage as property")
+        energy_footprint = (self.instances_energy * self.average_carbon_intensity)
+
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

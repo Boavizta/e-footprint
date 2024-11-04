@@ -248,15 +248,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from user data",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            },
             "server_utilization_rate": {
                 "label": "Default server utilization rate from hypothesis",
                 "value": 0.9,
@@ -297,6 +288,15 @@
                 "label": "PUE of Default server from user data",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from user data",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
                 "source": {
                     "name": "user data",
                     "link": null
@@ -363,7 +363,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": null,
             "idle_power": {
                 "label": "Idle power of Default SSD storage from hypothesis",
                 "value": 0.1,

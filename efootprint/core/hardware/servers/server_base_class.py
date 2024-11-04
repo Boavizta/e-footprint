@@ -1,15 +1,10 @@
 from abc import abstractmethod
 from typing import List
 
-import numpy as np
-import pandas as pd
-import pint_pandas
-
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity, \
-    EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 
@@ -20,11 +15,7 @@ class Server(InfraHardware):
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue, storage: Storage):
-        if power_usage_effectiveness is None:
-            raise ValueError("power_usage_effectiveness cannot be None in Server instance")
-        if average_carbon_intensity is None:
-            raise ValueError("average_carbon_intensity cannot be None in Server instance")
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
+        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.hour_by_hour_cpu_need = None
         self.hour_by_hour_ram_need = None
         self.available_cpu_per_instance = None
@@ -35,7 +26,18 @@ class Server(InfraHardware):
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")
+        if not power_usage_effectiveness.value.check("[]"):
+            raise ValueError(
+                "Value of variable 'power_usage_effectiveness' does not have appropriate [] dimensionality")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
+        if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
+            raise ValueError(
+                "Variable 'average_carbon_intensity' does not have mass over energy "
+                "('[time]**2 / [length]**2') dimensionality"
+            )
+        self.average_carbon_intensity = average_carbon_intensity
+        if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
+            self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
         self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
         if not base_ram_consumption.value.check("[]"):
             raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
@@ -132,8 +134,3 @@ class Server(InfraHardware):
     @abstractmethod
     def update_nb_of_instances(self):
         pass
-
-    def update_energy_footprint(self):
-        energy_footprint = (self.instances_energy * self.average_carbon_intensity)
-
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

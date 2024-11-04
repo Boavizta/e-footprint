@@ -11,16 +11,14 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.logger import logger
 
 
 class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
-                 base_storage_need: SourceValue, fixed_nb_of_instances: SourceValue = None):
-        average_carbon_intensity = None
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
+                 base_storage_need: SourceValue, fixed_nb_of_instances: SourceValue | None = None):
+        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.storage_delta = None
         self.full_cumulative_storage_need = None
         self.nb_of_active_instances = None
@@ -65,13 +63,27 @@ class Storage(InfraHardware):
     def calculated_attributes(self):
         return (
             ["storage_delta", "full_cumulative_storage_need", "raw_nb_of_instances", "nb_of_instances",
-             "nb_of_active_instances","instances_fabrication_footprint", "instances_energy","energy_footprint"])
+             "nb_of_active_instances", "instances_fabrication_footprint", "instances_energy", "energy_footprint"])
 
     @property
     def jobs(self) -> List[Type["Job"]]:
         return list(set(
             job for serv in self.modeling_obj_containers for job in serv.jobs
         ))
+
+    @property
+    def power_usage_effectiveness(self):
+        if self.server is not None:
+            return self.server.power_usage_effectiveness
+        else:
+            return EmptyExplainableObject()
+
+    @property
+    def average_carbon_intensity(self):
+        if self.server is not None:
+            return self.server.average_carbon_intensity
+        else:
+            return EmptyExplainableObject()
 
     # If storage_needed, storage_freed and automatic_storage_dumps_after_storage_duration had their update function
     # and were attributes of the storage class then the update of the data_stored attribute of a job from positive to
@@ -200,30 +212,17 @@ class Storage(InfraHardware):
             f"Hourly number of active instances for {self.name}")
 
     def update_instances_energy(self):
-        if self.server is None:
-            logger.warning(f"Storage {self.name} is not associated with any server")
-            storage_energy = EmptyExplainableObject()
-        else:
-            nb_of_idle_instances = (self.nb_of_instances - self.nb_of_active_instances).set_label(
-                f"Hourly number of idle instances for {self.name}")
-            active_storage_energy = (
-                    self.nb_of_active_instances * self.power * ExplainableQuantity(
-                1 * u.hour, "one hour") * self.server.power_usage_effectiveness
-            ).set_label(f"Hourly active instances energy for {self.name}")
-            idle_storage_energy = (
-                    nb_of_idle_instances * self.idle_power * ExplainableQuantity(
-                1 * u.hour, "one hour") * self.server.power_usage_effectiveness
-            ).set_label(f"Hourly idle instances energy for {self.name}")
+        nb_of_idle_instances = (self.nb_of_instances - self.nb_of_active_instances).set_label(
+            f"Hourly number of idle instances for {self.name}")
+        active_storage_energy = (
+                self.nb_of_active_instances * self.power * ExplainableQuantity(
+            1 * u.hour, "one hour") * self.power_usage_effectiveness
+        ).set_label(f"Hourly active instances energy for {self.name}")
+        idle_storage_energy = (
+                nb_of_idle_instances * self.idle_power * ExplainableQuantity(
+            1 * u.hour, "one hour") * self.power_usage_effectiveness
+        ).set_label(f"Hourly idle instances energy for {self.name}")
 
-            storage_energy = (active_storage_energy + idle_storage_energy)
+        storage_energy = (active_storage_energy + idle_storage_energy)
 
         self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
-
-    def update_energy_footprint(self):
-        if self.server is None:
-            logger.warning(f"Storage {self.name} is not associated with any server")
-            energy_footprint = EmptyExplainableObject()
-        else:
-            energy_footprint = (self.instances_energy * self.server.average_carbon_intensity)
-
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

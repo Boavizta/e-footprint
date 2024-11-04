@@ -579,15 +579,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_utilization_rate": {
                 "label": "Server 1 utilization rate from hypothesis",
                 "value": 0.9,
@@ -628,6 +619,15 @@
                 "label": "PUE of Server 1 from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -692,15 +692,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_utilization_rate": {
                 "label": "Server 2 utilization rate from hypothesis",
                 "value": 0.9,
@@ -741,6 +732,15 @@
                 "label": "PUE of Server 2 from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -805,15 +805,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_utilization_rate": {
                 "label": "TikTok Analytics server utilization rate from hypothesis",
                 "value": 0.9,
@@ -854,6 +845,15 @@
                 "label": "PUE of TikTok Analytics server from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -920,7 +920,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": null,
             "idle_power": {
                 "label": "Idle power of Default SSD storage 1 from hypothesis",
                 "value": 0.1,
@@ -1007,7 +1006,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": null,
             "idle_power": {
                 "label": "Idle power of Default SSD storage 2 from hypothesis",
                 "value": 0.1,
@@ -1094,7 +1092,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": null,
             "idle_power": {
                 "label": "Idle power of TikTok Analytics storage from hypothesis",
                 "value": 0.0,
