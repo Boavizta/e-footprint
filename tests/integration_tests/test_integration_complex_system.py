@@ -7,6 +7,7 @@ from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.core.hardware.servers.on_premise import OnPremise
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -19,7 +20,7 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.builders.hardware.devices_defaults import default_laptop
-from efootprint.builders.hardware.servers_defaults import default_autoscaling
+from efootprint.builders.hardware.servers_defaults import default_serverless
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -66,7 +67,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             storage=cls.storage_1
         )
 
-        cls.server2 = Autoscaling(
+        cls.server2 = OnPremise(
             "Server 2",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
@@ -81,7 +82,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
             storage=cls.storage_2
         )
-        cls.server3 = default_autoscaling(
+        cls.server3 = default_serverless(
             "TikTok Analytics server",storage=default_ssd("TikTok Analytics storage"))
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)

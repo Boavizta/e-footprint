@@ -652,232 +652,6 @@
                 }
             },
             "storage": "uuid-Default-SSD-storage-1"
-        },
-        "uuid-Server-2": {
-            "name": "Server 2",
-            "id": "uuid-Server-2",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Server 2 from Base ADEME_V19",
-                "value": 600.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
-            },
-            "power": {
-                "label": "Power of Server 2 from hypothesis",
-                "value": 300.0,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "lifespan": {
-                "label": "Lifespan of Server 2 from hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "Server 2 fraction of usage time from hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "server_utilization_rate": {
-                "label": "Server 2 utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "idle_power": {
-                "label": "Idle power of Server 2 from hypothesis",
-                "value": 50.0,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "ram": {
-                "label": "RAM of Server 2 from hypothesis",
-                "value": 12.0,
-                "unit": "gigabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_cores": {
-                "label": "Nb cpus cores of Server 2 from hypothesis",
-                "value": 6.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "power_usage_effectiveness": {
-                "label": "PUE of Server 2 from hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of Server 2 from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Server 2 from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "storage": "uuid-Default-SSD-storage-2"
-        },
-        "uuid-TikTok-Analytics-server": {
-            "name": "TikTok Analytics server",
-            "id": "uuid-TikTok-Analytics-server",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
-                "value": 600.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
-            },
-            "power": {
-                "label": "Power of TikTok Analytics server from hypothesis",
-                "value": 300.0,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "lifespan": {
-                "label": "Lifespan of TikTok Analytics server from hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "TikTok Analytics server fraction of usage time from hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "server_utilization_rate": {
-                "label": "TikTok Analytics server utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "idle_power": {
-                "label": "Idle power of TikTok Analytics server from hypothesis",
-                "value": 50.0,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "ram": {
-                "label": "RAM of TikTok Analytics server from hypothesis",
-                "value": 128.0,
-                "unit": "gigabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_cores": {
-                "label": "Nb cpus cores of TikTok Analytics server from hypothesis",
-                "value": 24.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "power_usage_effectiveness": {
-                "label": "PUE of TikTok Analytics server from hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_ram_consumption": {
-                "label": "unnamed source from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "unnamed source from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "storage": "uuid-TikTok-Analytics-storage"
         }
     },
     "Storage": {
@@ -1138,6 +912,237 @@
                 }
             },
             "fixed_nb_of_instances": null
+        }
+    },
+    "OnPremise": {
+        "uuid-Server-2": {
+            "name": "Server 2",
+            "id": "uuid-Server-2",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Server 2 from Base ADEME_V19",
+                "value": 600.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of Server 2 from hypothesis",
+                "value": 300.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Server 2 from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Server 2 fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "Server 2 utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Server 2 from hypothesis",
+                "value": 50.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram": {
+                "label": "RAM of Server 2 from hypothesis",
+                "value": 12.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_cores": {
+                "label": "Nb cpus cores of Server 2 from hypothesis",
+                "value": 6.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of Server 2 from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of Server 2 from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of Server 2 from hypothesis",
+                "value": 2.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage": "uuid-Default-SSD-storage-2",
+            "fixed_nb_of_instances": null
+        }
+    },
+    "Serverless": {
+        "uuid-TikTok-Analytics-server": {
+            "name": "TikTok Analytics server",
+            "id": "uuid-TikTok-Analytics-server",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
+                "value": 600.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of TikTok Analytics server from hypothesis",
+                "value": 300.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of TikTok Analytics server from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "TikTok Analytics server fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "TikTok Analytics server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of TikTok Analytics server from hypothesis",
+                "value": 50.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram": {
+                "label": "RAM of TikTok Analytics server from hypothesis",
+                "value": 128.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_cores": {
+                "label": "Nb cpus cores of TikTok Analytics server from hypothesis",
+                "value": 24.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of TikTok Analytics server from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "unnamed source from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "unnamed source from hypothesis",
+                "value": 2.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage": "uuid-TikTok-Analytics-storage"
         }
     }
 }
