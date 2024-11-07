@@ -1,6 +1,7 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -75,3 +76,8 @@ class TestOnPremise(TestCase):
         with patch.object(self.server_with_fixed_nb_of_instances, "raw_nb_of_instances", new=hourly_raw_data):
             with self.assertRaises(ValueError):
                 self.server_with_fixed_nb_of_instances.update_nb_of_instances()
+
+    def test_nb_of_instances_returns_emptyexplainableobject_if_raw_nb_of_instances_is_emptyexplainableobject(self):
+        with patch.object(self.server_base, "raw_nb_of_instances", new=EmptyExplainableObject()):
+            self.server_base.update_nb_of_instances()
+            self.assertIsInstance(self.server_base.nb_of_instances, EmptyExplainableObject)

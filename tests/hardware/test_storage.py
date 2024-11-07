@@ -250,6 +250,15 @@ class TestStorage(TestCase):
             with self.assertRaises(ValueError):
                 self.storage_base.update_nb_of_instances()
 
+    def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
+        raw_nb_of_instances = EmptyExplainableObject()
+        fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+                patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
+            self.storage_base.update_nb_of_instances()
+            self.assertIsInstance(self.storage_base.nb_of_instances, EmptyExplainableObject)
+
     def test_update_instances_energy(self):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         all_instance_data = [2, 4, 6]

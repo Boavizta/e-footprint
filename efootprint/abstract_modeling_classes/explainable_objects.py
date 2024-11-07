@@ -147,18 +147,24 @@ class ExplainableQuantity(ExplainableObject):
     def __gt__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return self.value > other.value
+        elif isinstance(other, EmptyExplainableObject):
+            return self.value > 0
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __lt__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return self.value < other.value
+        elif isinstance(other, EmptyExplainableObject):
+            return self.value < 0
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __eq__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return self.value == other.value
+        elif isinstance(other, EmptyExplainableObject):
+            return self.value == 0
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 

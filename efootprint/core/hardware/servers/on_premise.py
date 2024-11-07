@@ -45,7 +45,7 @@ class OnPremise(Server):
             )
 
             if self.fixed_nb_of_instances:
-                if max_nb_of_instances.value > self.fixed_nb_of_instances.value:
+                if max_nb_of_instances > self.fixed_nb_of_instances:
                     raise ValueError(
                         f"The number of {self.name} instances computed from its resources need is superior to the "
                         f"number of instances specified by the user "
