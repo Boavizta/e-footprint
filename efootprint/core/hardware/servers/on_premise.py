@@ -14,7 +14,8 @@ class OnPremise(Server):
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                 base_cpu_consumption: SourceValue, storage: Storage, fixed_nb_of_instances: SourceValue = None):
+                 base_cpu_consumption: SourceValue, storage: Storage,
+                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = EmptyExplainableObject()):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores, power_usage_effectiveness,
             average_carbon_intensity, server_utilization_rate, base_ram_consumption, base_cpu_consumption, storage)
@@ -27,7 +28,7 @@ class OnPremise(Server):
 
     def update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
-            self.nb_of_instances = EmptyExplainableObject()
+            self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
         else:
             max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
 
@@ -37,14 +38,7 @@ class OnPremise(Server):
                 index=self.raw_nb_of_instances.value.index
             )
 
-            nb_of_instances = ExplainableHourlyQuantities(
-                nb_of_instances_df,
-                "Nb of instances",
-                left_parent=self.raw_nb_of_instances,
-                right_parent=None
-            )
-
-            if self.fixed_nb_of_instances:
+            if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 if max_nb_of_instances > self.fixed_nb_of_instances:
                     raise ValueError(
                         f"The number of {self.name} instances computed from its resources need is superior to the "
@@ -67,4 +61,10 @@ class OnPremise(Server):
                     self.nb_of_instances = nb_of_instances_re_calculate.set_label(
                         f"Fixed number of {self.name} instances")
             else:
-                self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of {self.name} instances")
+                self.nb_of_instances = ExplainableHourlyQuantities(
+                    nb_of_instances_df,
+                    f"Hourly number of {self.name} instances",
+                    left_parent=self.raw_nb_of_instances,
+                    right_parent=self.fixed_nb_of_instances,
+                    operator="depending on not being empty"
+                )

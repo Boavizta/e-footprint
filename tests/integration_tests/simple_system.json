@@ -408,7 +408,15 @@
                     "link": null
                 }
             },
-            "fixed_nb_of_instances": null
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Default SSD storage instances from hypothesis",
+                "value": 10000.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
         }
     },
     "Hardware": {

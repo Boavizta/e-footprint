@@ -38,7 +38,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB)
+            base_storage_need=SourceValue(50 * u.TB),
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
         cls.server = Autoscaling(
@@ -114,6 +115,17 @@ class IntegrationTest(IntegrationTestBaseClass):
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
 
     def test_variations_on_inputs(self):
+        def test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name):
+            expl_attr_new_value.label = expl_attr.label
+            logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to"
+                        f" {expl_attr_new_value.value}")
+            input_object.__setattr__(expl_attr_name, expl_attr_new_value)
+            new_footprint = self.system.total_footprint
+            logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
+            self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
+            input_object.__setattr__(expl_attr_name, expl_attr)
+            self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+
         def test_variations_on_obj_inputs(input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
             if attrs_to_skip is None:
                 attrs_to_skip = []
@@ -121,21 +133,14 @@ class IntegrationTest(IntegrationTestBaseClass):
             for expl_attr_name, expl_attr in get_subclass_attributes(input_object, ExplainableObject).items():
                 if expl_attr.left_parent is None and expl_attr.right_parent is None \
                         and expl_attr_name not in attrs_to_skip:
-                    old_value = expl_attr.value
+
                     expl_attr_new_value = deepcopy(expl_attr)
                     if special_mult and expl_attr_name in special_mult.keys():
                         expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
                     else:
                         expl_attr_new_value.value *= 100 * u.dimensionless
-                    expl_attr_new_value.label = expl_attr.label
-                    logger.info(f"{expl_attr_new_value.label} changing from {old_value} to"
-                                f" {expl_attr_new_value.value}")
-                    input_object.__setattr__(expl_attr_name, expl_attr_new_value)
-                    new_footprint = self.system.total_footprint
-                    logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
-                    self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
-                    input_object.__setattr__(expl_attr_name, expl_attr)
-                    self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+                    test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
+
 
         test_variations_on_obj_inputs(self.streaming_step)
         test_variations_on_obj_inputs(
@@ -146,7 +151,16 @@ class IntegrationTest(IntegrationTestBaseClass):
                 "base_cpu_consumption": 10
             })
         test_variations_on_obj_inputs(
-            self.storage, attrs_to_skip=["fraction_of_usage_time"])
+            self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
+        test_input_change(self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
+        self.storage.fixed_nb_of_instances = EmptyExplainableObject()
+        old_initial_footprint = self.initial_footprint
+        self.initial_footprint = self.system.total_footprint
+        test_input_change(
+            self.storage.base_storage_need, SourceValue(5000 * u.TB), self.storage, "base_storage_need")
+        self.storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+        self.assertEqual(old_initial_footprint, self.system.total_footprint)
+        self.initial_footprint = old_initial_footprint
         test_variations_on_obj_inputs(self.uj)
         test_variations_on_obj_inputs(self.network)
         test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
@@ -186,7 +200,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB)
+            base_storage_need=SourceValue(50 * u.TB),
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
         new_server = Autoscaling(
@@ -232,6 +247,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB),
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
         logger.warning("Changing jobs storage")
 

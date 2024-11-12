@@ -6,7 +6,8 @@ import ruamel.yaml
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
+    EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, user_journey, network, streaming_step, autoscaling_server, storage,
@@ -32,6 +33,11 @@ def obj_to_md(input_obj, attr_name):
             return f"### {attr_name}\nA list of [{obj_class}s]({obj_class}.md)."
         else:
             return "this shouldn’t happen"
+    elif isinstance(input_obj, EmptyExplainableObject):
+        return (f"### {attr_name}\n{input_obj.label.lower()}. "
+                f"Can be an EmptyExplainableObject in which case the optimum number of instances will be computed,"
+                f" or an ExplainableQuantity with a dimensionless value, in which case e-footprint will raise an error "
+                f"if the object needs more instances than available.")
 
     return f"### {attr_name}\ndescription to be done"
 

@@ -4,12 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.0.1] 2024-11-12
+
+### Fixed
+- When the fixed_nb_of_instances attribute of an OnPremise server or a Storage object was set to None, the calculation graph wouldn’t be tracked and so no uptstream recomputation was triggered if the fixed_nb_of_instances attribute was updated. Now, the fixed_nb_of_instances attribute is set to EmptyExplainableObject by default, which allows to build the calculation graph and recompute attributes that depend of the fixed_nb_of_instances logic, when the fixed_nb_of_instances attribute is updated.
+- OnPremise and Storage’s update_nb_of_instances used to break when raw_nb_of_instances was EmptyExplainableObject. Now fixed.
+
 ## [8.0.0] 2024-11-04
 
-## Changed
+### Changed
 - A Storage object can now be linked to only one Server object and gets its average_carbon_intensity and power_usage_effectiveness attributes from its server. This change simplifies the hardware part of the model and makes it more realistic.
 
-## Added
+### Added
 - Storage has now an attribute "fixed_nb_of_instances" to specify the number of instances of a storage object like it's already implemented for servers.
 - New time builders have been added
 - Boavizta builders have been enriched (mainly the Storage part).

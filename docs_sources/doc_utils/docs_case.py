@@ -1,3 +1,4 @@
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.core.hardware.hardware_base_classes import Hardware
@@ -75,7 +76,7 @@ on_premise_server = OnPremise(
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
-    fixed_nb_of_instances=SourceValue(4000 * u.dimensionless, source=None),
+    fixed_nb_of_instances=EmptyExplainableObject(),
     base_ram_consumption = SourceValue(300 * u.MB, source=None),
     base_cpu_consumption = SourceValue(2 * u.core, source=None),
     storage=default_ssd()

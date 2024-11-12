@@ -2,6 +2,7 @@ import json
 import os.path
 from copy import copy
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -168,6 +169,34 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
 
         cls.ref_json_filename = "complex_system"
+
+    def test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        logger.warning("Setting storage fixed_nb_of_instances to not empty")
+        old_fixed_nb_of_instances = self.storage_1.fixed_nb_of_instances
+        self.storage_1.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+
+        self.footprint_has_changed([self.storage_1])
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+
+        logger.warning("Setting fixed_nb_of_instances back to empty")
+        self.storage_1.fixed_nb_of_instances = old_fixed_nb_of_instances
+
+        self.footprint_has_not_changed([self.storage_1])
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+
+    def test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        logger.warning("Setting on premise fixed_nb_of_instances to not empty")
+        old_fixed_nb_of_instances = self.server2.fixed_nb_of_instances
+        self.server2.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+
+        self.footprint_has_changed([self.server2])
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+
+        logger.warning("Setting fixed_nb_of_instances back to empty")
+        self.server2.fixed_nb_of_instances = old_fixed_nb_of_instances
+
+        self.footprint_has_not_changed([self.server2])
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_dailymotion_and_tiktok_uj_step(self):
         logger.warning("Removing Dailymotion and TikTok uj step")

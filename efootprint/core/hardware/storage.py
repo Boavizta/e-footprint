@@ -17,7 +17,8 @@ class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
-                 base_storage_need: SourceValue, fixed_nb_of_instances: SourceValue | None = None):
+                 base_storage_need: SourceValue,
+                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = EmptyExplainableObject()):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.storage_delta = None
         self.full_cumulative_storage_need = None
@@ -119,7 +120,7 @@ class Storage(InfraHardware):
     @property
     def automatic_storage_dumps_after_storage_duration(self):
         if isinstance(self.storage_needed, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=self.storage_needed)
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
             automatic_storage_dumps_after_storage_duration_df = - self.storage_needed.value.copy().shift(
@@ -147,7 +148,7 @@ class Storage(InfraHardware):
 
     def update_full_cumulative_storage_need(self):
         if isinstance(self.storage_delta, EmptyExplainableObject):
-            self.full_cumulative_storage_need = EmptyExplainableObject()
+            self.full_cumulative_storage_need = EmptyExplainableObject(left_parent=self.storage_delta)
         else:
             storage_delta_df = self.storage_delta.value.copy()
             storage_delta_df.iat[0, 0] += self.base_storage_need.value
@@ -176,11 +177,11 @@ class Storage(InfraHardware):
 
     def update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
-            self.nb_of_instances = EmptyExplainableObject()
+            self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
         else:
             nb_of_instances = self.raw_nb_of_instances.ceil()
 
-            if self.fixed_nb_of_instances:
+            if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 max_nb_of_instances = nb_of_instances.max()
                 if max_nb_of_instances > self.fixed_nb_of_instances:
                     raise ValueError(
@@ -204,6 +205,9 @@ class Storage(InfraHardware):
                 self.nb_of_instances = fixed_nb_of_instances.set_label(
                     f"Hourly fixed number of instances for {self.name}")
             else:
+                nb_of_instances = ExplainableHourlyQuantities(
+                    nb_of_instances.value, left_parent=nb_of_instances,
+                    right_parent=self.fixed_nb_of_instances, operator="depending on being empty")
                 self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):

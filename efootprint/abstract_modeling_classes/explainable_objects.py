@@ -12,51 +12,45 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    ExplainableObject, Source, ObjectLinkedToModelingObj)
+    ExplainableObject, Source)
 from efootprint.constants.units import u
 
 
-class EmptyExplainableObject(ObjectLinkedToModelingObj):
-    def __init__(self):
-        super().__init__()
-        self.label = "no value"
-
-    def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
-        self.modeling_obj_container = new_modeling_obj_container
-        self.attr_name_in_mod_obj_container = attr_name
+class EmptyExplainableObject(ExplainableObject):
+    def __init__(self, label="no value", left_parent: ExplainableObject = None, right_parent: ExplainableObject = None,
+                 operator: str = None):
+        super().__init__(
+            value=None, label=label, left_parent=left_parent, right_parent=right_parent, operator=operator)
+        self.value = self
 
     def to(self, unit):
         return self
 
-    def set_label(self, label):
-        return self
+    def check(self, str_unit):
+        return True
 
     def ceil(self):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=self, operator="ceil")
 
     def max(self):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=self, operator="max")
 
     def abs(self):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=self, operator="abs")
 
     def sum(self):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=self, operator="sum")
 
     def copy(self):
         return EmptyExplainableObject()
 
     @property
     def iloc(self):
-        return [EmptyExplainableObject()]
+        return [EmptyExplainableObject(left_parent=self, operator="iloc")]
 
     @property
     def magnitude(self):
         return 0
-
-    @property
-    def value(self):
-        return self
 
     def __eq__(self, other):
         if isinstance(other, EmptyExplainableObject):
@@ -67,10 +61,10 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         return False
 
     def __add__(self, other):
+        if isinstance(other, EmptyExplainableObject):
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="+")
         if issubclass(type(other), ExplainableObject):
             return other.__add__(self)
-        elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
         elif other == 0:
             return self
         else:
@@ -81,15 +75,15 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
 
     def __sub__(self, other):
         if isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="-")
         else:
             raise ValueError
 
     def __mul__(self, other):
+        if isinstance(other, EmptyExplainableObject):
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
         if issubclass(type(other), ExplainableObject):
             return other.__mul__(self)
-        elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
         elif other == 0:
             return self
         else:
@@ -99,16 +93,30 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         return self.__mul__(other)
 
     def __str__(self):
-        return self.label
+        return "no value"
+
+    def __deepcopy__(self, memo):
+        return EmptyExplainableObject(label=self.label)
 
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=self, right_parent=compared_object,
+                                          operator=f"{comparator} compared with")
         elif isinstance(compared_object, ExplainableHourlyQuantities):
             return compared_object.np_compared_with(self, comparator)
         else:
             raise ValueError(f"Can only compare with another EmptyExplainableObject or ExplainableHourlyQuantities,"
                              f" not {type(compared_object)}")
+
+    def to_json(self, with_calculated_attributes_data=False):
+        output_dict = {"label": self.label, "value": None}
+
+        if with_calculated_attributes_data:
+            output_dict["id"] = self.id
+            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
+            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+
+        return output_dict
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -193,7 +201,7 @@ class ExplainableQuantity(ExplainableObject):
         if issubclass(type(other), numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value * other.value, "", self, other, "*")
         elif issubclass(type(other), ExplainableHourlyQuantities):
@@ -225,7 +233,7 @@ class ExplainableQuantity(ExplainableObject):
         if issubclass(type(other), numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=other, right_parent=self, operator="/")
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(other.value / self.value, "", other, self, "/")
         elif issubclass(type(other), ExplainableHourlyQuantities):
@@ -428,7 +436,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if issubclass(type(other), numbers.Number) and other == 0:
             return 0
         elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject()
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
         elif issubclass(type(other), ExplainableQuantity) or issubclass(type(other), ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value.mul(other.value, fill_value=0), "", self, other, "*")
         else:

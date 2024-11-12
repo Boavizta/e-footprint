@@ -426,7 +426,10 @@
                     "link": null
                 }
             },
-            "fixed_nb_of_instances": null
+            "fixed_nb_of_instances": {
+                "label": "no value",
+                "value": null
+            }
         },
         "uuid-Default-SSD-storage-bis": {
             "name": "Default SSD storage bis",
@@ -530,7 +533,10 @@
                     "link": null
                 }
             },
-            "fixed_nb_of_instances": null
+            "fixed_nb_of_instances":  {
+                "label": "no value",
+                "value": null
+            }
         }
     },
     "Hardware": {

@@ -9,7 +9,7 @@ from efootprint.constants.units import u
 def compute_nb_avg_hourly_occurrences(
         hourly_occurrences_starts: ExplainableHourlyQuantities, event_duration: ExplainableQuantity):
     if isinstance(hourly_occurrences_starts, EmptyExplainableObject):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=hourly_occurrences_starts)
 
     nb_avg_hourly_occurrences_in_parallel = None
     # Use copy not to convert event_duration in place

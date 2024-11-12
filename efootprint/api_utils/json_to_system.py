@@ -16,7 +16,8 @@ from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.network import Network
 from efootprint.constants.countries import Country
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
+    EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
@@ -42,6 +43,8 @@ def json_to_explainable_object(input_dict):
                 start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
             ),
             label=input_dict["label"], source=source)
+    elif "value" in input_dict.keys() and input_dict["value"] is None:
+        output = EmptyExplainableObject(label=input_dict["label"])
     elif "zone" in input_dict.keys():
         output = SourceObject(
             pytz.timezone(input_dict["zone"]), source, input_dict["label"])
