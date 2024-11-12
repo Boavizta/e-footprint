@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f66ad3 {
+             #mynetwork_a50e59 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f66ad3" class="card-body"></div>
+            <div id="mynetwork_a50e59" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f66ad3');
+                  var container = document.getElementById('mynetwork_a50e59');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data stored for streaming in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.35, 0.35, 0.45, 0.15, 0.45, 0.1, 0.2, 0.3, 0.15, 0.35],\nlast 10 vals [0.05, 0.25, 0.4, 0.4, 0.4, 0.15, 0.4, 0.1, 0.3, 0.15]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.35, 0.35, 0.45, 0.15, 0.45, 0.1, 0.2, 0.3, 0.15, 0.35],\nlast 10 vals [0.05, 0.25, 0.4, 0.4, 0.4, 0.15, 0.4, 0.1, 0.3, 0.15]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data stored for streaming in usage pattern", "label": "Hourly data stored\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data stored\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [7, 7, 9, 3, 9, 2, 4, 6, 3, 7],\nlast 10 vals [1, 5, 8, 8, 8, 3, 8, 2, 6, 3])) * 0.05 megabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.35, 0.35, 0.45, 0.15, 0.45, 0.1, 0.2, 0.3, 0.15, 0.35],\nlast 10 vals [0.05, 0.25, 0.4, 0.4, 0.4, 0.15, 0.4, 0.1, 0.3, 0.15]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data stored for streaming in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.45, 0.05, 0.2, 0.3, 0.4, 0.35, 0.45, 0.1, 0.25, 0.25],\nlast 10 vals [0.45, 0.2, 0.2, 0.4, 0.4, 0.45, 0.3, 0.1, 0.45, 0.1]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.45, 0.05, 0.2, 0.3, 0.4, 0.35, 0.45, 0.1, 0.25, 0.25],\nlast 10 vals [0.45, 0.2, 0.2, 0.4, 0.4, 0.45, 0.3, 0.1, 0.45, 0.1]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data stored for streaming in usage pattern", "label": "Hourly data stored\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data stored\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [9, 1, 4, 6, 8, 7, 9, 2, 5, 5],\nlast 10 vals [9, 4, 4, 8, 8, 9, 6, 2, 9, 2])) * 0.05 megabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.45, 0.05, 0.2, 0.3, 0.4, 0.35, 0.45, 0.1, 0.25, 0.25],\nlast 10 vals [0.45, 0.2, 0.2, 0.4, 0.4, 0.45, 0.3, 0.1, 0.45, 0.1]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for streaming in usage pattern", "to": "Hourly streaming data upload across usage patterns"}]);
 
                   nodeColors = {};
