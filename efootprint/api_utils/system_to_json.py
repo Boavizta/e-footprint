@@ -9,10 +9,12 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
         output_dict[mod_obj_class] = {}
     if mod_obj.id not in output_dict[mod_obj_class].keys():
         output_dict[mod_obj_class][mod_obj.id] = mod_obj.to_json(save_calculated_attributes)
+        if mod_obj.class_as_simple_str == "UserJourney":
+            a = 1
         for key, value in mod_obj.__dict__.items():
             if isinstance(value, ModelingObject):
                 recursively_write_json_dict(output_dict, value, save_calculated_attributes)
-            elif type(value) == list and len(value) > 0 and isinstance(value[0], ModelingObject):
+            elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], ModelingObject):
                 for mod_obj_elt in value:
                     recursively_write_json_dict(output_dict, mod_obj_elt, save_calculated_attributes)
 
