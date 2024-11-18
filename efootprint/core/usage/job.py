@@ -120,16 +120,13 @@ class Job(ModelingObject):
     def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
         job_occurrences = EmptyExplainableObject()
         delay_between_uj_start_and_job_evt = EmptyExplainableObject()
-        delay_in_hours_between_uj_start_and_job_evt = 0
         for uj_step in usage_pattern.user_journey.uj_steps:
             for uj_step_job in uj_step.jobs:
                 if uj_step_job == self:
                     job_occurrences += usage_pattern.utc_hourly_user_journey_starts.return_shifted_hourly_quantities(
-                        delay_in_hours_between_uj_start_and_job_evt)
+                        delay_between_uj_start_and_job_evt)
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent
-            delay_in_hours_between_uj_start_and_job_evt = math.floor(
-                delay_between_uj_start_and_job_evt.to(u.hour).magnitude)
 
         return job_occurrences.set_label(f"Hourly {self.name} occurrences in {usage_pattern.name}")
 
@@ -156,9 +153,12 @@ class Job(ModelingObject):
 
         for hour_shift in range(0, self.duration_in_full_hours.magnitude):
             if not isinstance(self.hourly_occurrences_per_usage_pattern[usage_pattern], EmptyExplainableObject):
+                explainable_hour_shift = ExplainableQuantity(
+                    hour_shift * u.hour, f"hour nb {hour_shift} within {self.duration_in_full_hours}",
+                    left_parent=self.duration_in_full_hours)
                 hourly_data_exchange += (
                         self.hourly_occurrences_per_usage_pattern[usage_pattern].return_shifted_hourly_quantities(
-                            hour_shift) * data_exchange_per_hour)
+                            explainable_hour_shift) * data_exchange_per_hour)
 
         return hourly_data_exchange.set_label(
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")

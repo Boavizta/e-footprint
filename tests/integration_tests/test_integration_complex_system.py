@@ -2,7 +2,6 @@ import json
 import os.path
 from copy import copy
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -67,7 +66,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
             storage=cls.storage_1
         )
-
+        cores_per_cpu_units = SourceValue(2 * u.core, Sources.HYPOTHESIS)
+        nb_cpu_units = SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
         cls.server2 = OnPremise(
             "Server 2",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -75,7 +75,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(12 * u.GB, Sources.HYPOTHESIS),
-            cpu_cores=SourceValue(6 * u.core, Sources.HYPOTHESIS),
+            cpu_cores=cores_per_cpu_units * nb_cpu_units,
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
@@ -172,7 +172,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_all_objects_linked_to_system(self):
         expected_list = [
-            self.server2, self.server1, self.server3, self.storage, self.usage_pattern1, self.usage_pattern2,
+            self.server2, self.server1, self.server3, self.storage_1, self.storage_2, self.storage_3,
+            self.usage_pattern1, self.usage_pattern2,
             self.network, self.uj, self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step,
             self.streaming_job, self.upload_job, self.dailymotion_job, self.tiktok_job, self.tiktok_analytics_job,
             self.usage_pattern1.devices[0], self.usage_pattern2.devices[0], self.usage_pattern1.country,
@@ -354,3 +355,6 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             50 * u.kB, label="Data upload of request streaming")
 
         self.assertTrue(os.path.isfile(file))
+
+    def test_simulation_changes_calculated_input(self):
+        raise NotImplementedError

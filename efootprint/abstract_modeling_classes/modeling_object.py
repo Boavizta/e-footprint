@@ -2,12 +2,13 @@ import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
 import os
-import json
 import re
 
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -171,10 +172,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates \
                 and trigger_recomputing_logic:
             if isinstance(input_value, ModelingObject):
-                input_value = ContextualModelingObjectAttribute(input_value, self, name)
+                input_value =  ContextualModelingObjectAttribute(input_value, self, name)
                 input_value.add_obj_to_modeling_obj_containers(self)
                 handle_link_update = True
-                if old_value == input_value:
+                if old_value_from_dict == input_value:
                     handle_link_update = False
                     logger.warning(
                         f"{name} is updated to itself and remains equal to {input_value.name}. "
@@ -354,12 +355,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         del self
 
     def to_json(self, save_calculated_attributes=False):
+        from efootprint.abstract_modeling_classes.simulation import Simulation
         output_dict = {}
 
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates"]
+                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates",
+                               "simulation"]
                     or key.startswith("previous")
                     or key.startswith("initial")
                     or PREVIOUS_LIST_VALUE_SET_SUFFIX in key
@@ -371,7 +374,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value
             elif type(value) == int:
                 output_dict[key] = value
-            elif type(value) == list:
+            elif isinstance(value, list):
                 if len(value) == 0:
                     output_dict[key] = value
                 else:
@@ -383,8 +386,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
-            elif issubclass(type(value), ExplainableObjectDict):
+            elif isinstance(value, DictLinkedToModelingObj):
                 output_dict[key] = value.to_json(save_calculated_attributes)
+            elif isinstance(value, Simulation):
+                continue
             else:
                 raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")
 

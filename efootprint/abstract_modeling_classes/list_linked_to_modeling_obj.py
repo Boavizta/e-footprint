@@ -1,7 +1,7 @@
 from typing import Type
 import json
 
-from efootprint.abstract_modeling_classes.explainable_objects import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 

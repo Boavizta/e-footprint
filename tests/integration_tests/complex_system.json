@@ -3,7 +3,7 @@
         "uuid-system-1": {
             "name": "system 1",
             "id": "uuid-system-1",
-            "usage_patterns": [
+            "_usage_patterns": [
                 "uuid-Video-watching-in-France-in-the-morning",
                 "uuid-Video-watching-in-France-in-the-evening"
             ]
@@ -991,13 +991,9 @@
                 }
             },
             "cpu_cores": {
-                "label": "Nb cpus cores of Server 2 from hypothesis",
+                "label": "Nb cpus cores of Server 2",
                 "value": 6.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
+                "unit": "core"
             },
             "power_usage_effectiveness": {
                 "label": "PUE of Server 2 from hypothesis",

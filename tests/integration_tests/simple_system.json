@@ -3,7 +3,7 @@
         "uuid-system-1": {
             "name": "system 1",
             "id": "uuid-system-1",
-            "usage_patterns": [
+            "_usage_patterns": [
                 "uuid-Youtube-usage-in-France"
             ]
         }

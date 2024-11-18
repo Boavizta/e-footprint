@@ -1,10 +1,11 @@
+from copy import copy
 from datetime import datetime
 from typing import List, Tuple, Callable
 
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_update_function_chain, retrieve_update_function_from_mod_obj_and_attr_name
+    optimize_update_function_chain, retrieve_update_function_from_mod_obj_and_attr_name, ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -39,13 +40,16 @@ def get_explainable_objects_from_update_function_chain(update_function_chain: Li
 class Simulation:
     def __init__(
             self, simulation_date: datetime,
-            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject],
-            SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject]]]):
+            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj,
+            SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj]]):
         first_changed_val = changes_list[0][0]
         if isinstance(first_changed_val, ModelingObject):
             self.system = first_changed_val.systems[0]
-        elif isinstance(first_changed_val, ExplainableObject):
+        elif isinstance(first_changed_val, ObjectLinkedToModelingObj):
             self.system = first_changed_val.modeling_obj_container.systems[0]
+        else:
+            raise ValueError(
+                f"First changed value {first_changed_val} is neither a ModelingObject nor ObjectLinkedToModelingObj")
         self.system.simulation = self
         self.simulation_date = simulation_date
         self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
@@ -64,9 +68,11 @@ class Simulation:
         self.update_function_chain = []
         self.values_to_recompute = []
         self.recomputed_values = []
-        self.hourly_quantities_ancestors_not_in_computation_chain = []
+        self.ancestors_not_in_computation_chain = []
         self.hourly_quantities_to_filter = []
         self.filtered_hourly_quantities = []
+        self.ancestors_to_replace_by_copies = []
+        self.replaced_ancestors_copies = []
         self.recompute_attributes()
 
         self.reset_pre_simulation_values()
@@ -121,52 +127,56 @@ class Simulation:
             mod_obj_container.__dict__[attr_name_in_mod_obj_container] = new_value
                 
     def recompute_attributes(self):
-        self.generate_optimized_update_function_chain()
+        self.update_function_chain = self.generate_optimized_update_function_chain()
         self.values_to_recompute = get_explainable_objects_from_update_function_chain(self.update_function_chain)
-        self.compute_hourly_quantities_ancestors_not_in_computation_chain()
-        self.compute_hourly_quantities_to_filter()
+        self.ancestors_not_in_computation_chain = self.compute_all_ancestors_not_in_computation_chain()
+        self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
         self.filter_hourly_quantities_to_filter()
+        self.ancestors_to_replace_by_copies = [
+            ancestor for ancestor in self.ancestors_not_in_computation_chain
+            if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
+        self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
         self.change_input_values()
         launch_update_function_chain(self.update_function_chain)
         self.save_recomputed_values()
 
     def generate_optimized_update_function_chain(self):
-        update_function_chain_from_attributes_updates = sum(
-            [old_value.update_function_chain for old_value in self.old_sourcevalues], start=[])
-
         update_function_chain_from_mod_obj_links_updates = sum(
             self.update_function_chains_from_mod_obj_links_updates, start=[])
 
+        update_function_chain_from_attributes_updates = sum(
+            [old_value.update_function_chain for old_value in self.old_sourcevalues], start=[])
+
         optimized_chain = optimize_update_function_chain(
-            update_function_chain_from_attributes_updates + update_function_chain_from_mod_obj_links_updates)
+            update_function_chain_from_mod_obj_links_updates + update_function_chain_from_attributes_updates)
 
-        self.update_function_chain = optimized_chain
+        return optimized_chain
 
-    def compute_hourly_quantities_ancestors_not_in_computation_chain(self):
+    def compute_all_ancestors_not_in_computation_chain(self):
         all_ancestors_of_values_to_recompute = sum(
-            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[])
+            [value.all_ancestors_with_id for value in self.values_to_recompute
+             if isinstance(value, ExplainableObject)], start=[])
         deduplicated_all_ancestors_of_values_to_recompute = []
         for ancestor in all_ancestors_of_values_to_recompute:
             if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
                 deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
-        old_value_computation_chain_ids = [elt.id for elt in self.values_to_recompute]
+        values_to_recompute_ids = [elt.id for elt in self.values_to_recompute]
         ancestors_not_in_computation_chain = [
-            ancestor for ancestor in all_ancestors_of_values_to_recompute
-            if ancestor.id not in old_value_computation_chain_ids]
+            ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
+            if ancestor.id not in values_to_recompute_ids]
 
-        hourly_quantities_ancestors_not_in_computation_chain = [
-            ancestor for ancestor in ancestors_not_in_computation_chain
-            if isinstance(ancestor, ExplainableHourlyQuantities)]
-
-        self.hourly_quantities_ancestors_not_in_computation_chain = hourly_quantities_ancestors_not_in_computation_chain
+        return ancestors_not_in_computation_chain
 
     def compute_hourly_quantities_to_filter(self):
+        hourly_quantities_ancestors_not_in_computation_chain = [
+            ancestor for ancestor in self.ancestors_not_in_computation_chain
+            if isinstance(ancestor, ExplainableHourlyQuantities)]
         hourly_quantities_to_filter = []
 
         global_min_date = None
         global_max_date = None
 
-        for ancestor in self.hourly_quantities_ancestors_not_in_computation_chain:
+        for ancestor in hourly_quantities_ancestors_not_in_computation_chain:
             min_date = ancestor.value.index.min()
             max_date = ancestor.value.index.max()
             if global_min_date is None:
@@ -184,7 +194,7 @@ class Simulation:
                 f"{self.simulation_date_as_hourly_freq}doesn’t belong to the existing modeling period "
                 f"{global_min_date} to {global_max_date}")
 
-        self.hourly_quantities_to_filter = hourly_quantities_to_filter
+        return hourly_quantities_to_filter
 
     def filter_hourly_quantities_to_filter(self):
         for hourly_quantities in self.hourly_quantities_to_filter:
@@ -197,9 +207,26 @@ class Simulation:
             )
             if len(new_value) == 0:
                 new_value = EmptyExplainableObject()
-            mod_obj_container.__dict__[attr_name] = new_value
+            if not hourly_quantities.belongs_to_dict:
+                mod_obj_container.__dict__[attr_name] = new_value
+            else:
+                mod_obj_container.__dict__[attr_name][hourly_quantities.key_in_dict] = new_value
             new_value.set_modeling_obj_container(mod_obj_container, attr_name)
             self.filtered_hourly_quantities.append(new_value)
+
+    def replace_ancestors_not_in_computation_chain_by_copies(self):
+        copies = []
+        for ancestor_to_replace_by_copy in self.ancestors_to_replace_by_copies:
+            # Replace all ancestors not in computation chain by their copy so that the original calculation graph
+            # will remain unchanged when the simulation is over
+            mod_obj_container = ancestor_to_replace_by_copy.modeling_obj_container
+            attr_name = ancestor_to_replace_by_copy.attr_name_in_mod_obj_container
+            ancestor_copy = copy(ancestor_to_replace_by_copy)
+            mod_obj_container.__dict__[attr_name] = ancestor_copy
+            ancestor_copy.set_modeling_obj_container(mod_obj_container, attr_name)
+            copies.append(ancestor_copy)
+
+        return copies
 
     def change_input_values(self):
         for old_value, new_value in zip(self.old_sourcevalues, self.new_sourcevalues):
@@ -214,6 +241,14 @@ class Simulation:
                 getattr(expl_obj.modeling_obj_container, expl_obj.attr_name_in_mod_obj_container))
 
     def reset_pre_simulation_values(self):
-        for previous_value in self.old_sourcevalues + self.values_to_recompute + self.hourly_quantities_to_filter:
+        for previous_value in (
+                self.old_sourcevalues + self.values_to_recompute + self.hourly_quantities_to_filter +
+                self.ancestors_to_replace_by_copies + self.old_mod_obj_links):
             previous_value.modeling_obj_container.__dict__[
                 previous_value.attr_name_in_mod_obj_container] = previous_value
+
+    def set_simulation_values(self):
+        for new_value in (
+                self.new_sourcevalues + self.recomputed_values + self.filtered_hourly_quantities +
+                self.replaced_ancestors_copies + self.new_mod_obj_links):
+            new_value.modeling_obj_container.__dict__[new_value.attr_name_in_mod_obj_container] = new_value

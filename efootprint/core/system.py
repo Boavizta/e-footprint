@@ -33,6 +33,7 @@ class System(ModelingObject):
         self.all_changes = []
         self.initial_total_energy_footprints_sum_over_period = None
         self.initial_total_fabrication_footprints_sum_over_period = None
+        self.simulation = None
 
     @property
     def calculated_attributes(self) -> List[str]:

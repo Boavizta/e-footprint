@@ -10,6 +10,12 @@ class ContextualModelingObjectAttribute:
     def __getattr__(self, attr):
         return getattr(self._value, attr)  # Use `getattr` instead of `__getattr__`
 
+    def __getattribute__(self, name):
+        if name == "__dict__":
+            # Redirect `__dict__` access to the wrapped object's `__dict__`
+            return self._value.__dict__
+        return super().__getattribute__(name)
+
     def __setattr__(self, name, input_value):
         if name in ['_value', 'modeling_obj_container', 'attr_name_in_mod_obj_container']:
             # If setting a class attribute, use the superclass's __setattr__

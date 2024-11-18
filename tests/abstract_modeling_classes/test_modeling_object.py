@@ -12,10 +12,12 @@ MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
 class ModelingObjectForTesting(ModelingObject):
-    def __init__(self, name, custom_input=None):
+    def __init__(self, name, custom_input=None, custom_input2=None):
         super().__init__(name)
         if custom_input is not None:
             self.custom_input = custom_input
+        if custom_input2 is not None:
+            self.custom_input2 = custom_input2
 
     def compute_calculated_attributes(self):
         pass
@@ -68,17 +70,17 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([4, 5, 6], parent_obj.custom_input.custom_input.value_as_float_list)
 
-    def test_input_change_triggers_launch_update_function_chain(self):
+    @patch("efootprint.abstract_modeling_classes.modeling_object.launch_update_function_chain")
+    def test_input_change_triggers_launch_update_function_chain(self, mock_launch_update_function_chain):
         value = MagicMock(
             modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
         old_value.update_function_chain = MagicMock()
         self.modeling_object.attribute = old_value
-        launch_update_function_chain = MagicMock()
 
         self.modeling_object.attribute = value
 
-        launch_update_function_chain.assert_called_once_with(old_value.update_function_chain)
+        mock_launch_update_function_chain.assert_called_once_with(old_value.update_function_chain)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
@@ -147,14 +149,9 @@ class TestModelingObject(unittest.TestCase):
                          optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_mod_obj_attributes(self):
-        mod_obj = ModelingObjectForTesting("test mod obj")
         attr1 = MagicMock(spec=ModelingObject)
         attr2 = MagicMock(spec=ModelingObject)
-        mod_obj.attribute = attr1
-        mod_obj.attribute2 = attr2
-
-        mod_obj_container = MagicMock(spec=ModelingObject)
-        mod_obj.modeling_obj_containers = [mod_obj_container]
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=attr1, custom_input2=attr2)
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
 

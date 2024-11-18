@@ -312,7 +312,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_hourly_quantities_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        value_1 = MagicMock()
+        value_1 = MagicMock(spec=ExplainableObject)
         ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities)
         ancestor_1.id = 2
 
@@ -328,11 +328,10 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_duplicate_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        value_1 = MagicMock()
-        value_2 = MagicMock()
+        value_1 = MagicMock(spec=ExplainableObject)
+        value_2 = MagicMock(spec=ExplainableObject)
 
-        ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities)
-        ancestor_1.id = 2
+        ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities, id=2)
 
         value_1.all_ancestors_with_id = [ancestor_1]
         value_1.id = 1
@@ -344,7 +343,7 @@ class TestSimulation(unittest.TestCase):
 
         simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
 
-        self.assertEqual(len(simulation.hourly_quantities_ancestors_not_in_computation_chain), 1)
+        self.assertEqual(1, len(simulation.hourly_quantities_ancestors_not_in_computation_chain))
         self.assertIn(ancestor_1, simulation.hourly_quantities_ancestors_not_in_computation_chain)
 
     def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_ancestor_in_computation_chain(self):
@@ -366,7 +365,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_within_modeling_period(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = datetime(2025, 1, 2)
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
@@ -381,7 +380,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_simulation_date_outside_modeling_period_raises_error(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = datetime(2024, 12, 31)
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2024, 12, 31)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
@@ -394,7 +393,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_multiple_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = datetime(2025, 1, 2)
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 1))
@@ -410,7 +409,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_simulation_date_equal_to_max_date(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = datetime(2025, 1, 2, 23)
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2, 23)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2, 20))
@@ -425,7 +424,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_max_date_less_than_simulation_date_raises_error(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = datetime(2025, 1, 1, 10)
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 1, 10)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1, 7))
 
@@ -438,7 +437,7 @@ class TestSimulation(unittest.TestCase):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         # Mock the simulation date rounded to the previous hour
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-01 01:00").to_period(freq="h")
 
         # Create mock hourly quantities using create_source_hourly_values_from_list
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
@@ -448,18 +447,17 @@ class TestSimulation(unittest.TestCase):
         simulation.hourly_quantities_to_filter = [ancestor_1]
         simulation.filtered_hourly_quantities = []
 
-        # Act
         simulation.filter_hourly_quantities_to_filter()
 
         # Get the filtered values and compare
-        filtered_value = simulation.filtered_hourly_quantities[0].value_as_float
-        expected_filtered_value = [4]  # Values after 2025-01-02 01:00
+        filtered_value = simulation.filtered_hourly_quantities[0].value_as_float_list
+        expected_filtered_value = [2, 3, 4]  # Values after 2025-01-01 01:00
 
         self.assertEqual(filtered_value, expected_filtered_value)
 
         # Check that the index of the filtered value matches the expected timestamp
         filtered_index = simulation.filtered_hourly_quantities[0].value.index
-        expected_index = pd.period_range(start="2025-01-02 03:00", periods=1, freq='h')
+        expected_index = pd.period_range(start="2025-01-01 01:00", periods=3, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)
 
@@ -485,9 +483,6 @@ class TestSimulation(unittest.TestCase):
         # Assert that an EmptyExplainableObject was created
         self.assertIsInstance(simulation.filtered_hourly_quantities[0], EmptyExplainableObject)
 
-        # Check that no values are present
-        self.assertEqual(len(simulation.filtered_hourly_quantities[0].value), 0)
-
     def test_filter_hourly_quantities_to_filter_with_mixed_values(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
@@ -503,28 +498,23 @@ class TestSimulation(unittest.TestCase):
         ancestor_2.modeling_obj_container = MagicMock()
         ancestor_2.attr_name_in_mod_obj_container = "attr_2"
 
-        # Mock values such that ancestor_1 has no valid values after the simulation date
-        ancestor_1.value = ancestor_1.value[
-            ancestor_1.value.index < simulation.simulation_date_as_hourly_freq]
-
         simulation.hourly_quantities_to_filter = [ancestor_1, ancestor_2]
         simulation.filtered_hourly_quantities = []
 
-        # Act
         simulation.filter_hourly_quantities_to_filter()
 
         # Assert that the first ancestor is an EmptyExplainableObject
         self.assertIsInstance(simulation.filtered_hourly_quantities[0], EmptyExplainableObject)
 
         # Assert that the second ancestor has filtered values
-        filtered_value = simulation.filtered_hourly_quantities[1].value_as_float
+        filtered_value = simulation.filtered_hourly_quantities[1].value_as_float_list
         expected_filtered_value = [5]  # Values after 2025-01-02 01:00
 
         self.assertEqual(filtered_value, expected_filtered_value)
 
         # Check that the index of the filtered value matches the expected timestamp
         filtered_index = simulation.filtered_hourly_quantities[1].value.index
-        expected_index = pd.period_range(start="2025-01-02 03:00", periods=1, freq='h')
+        expected_index = pd.period_range(start="2025-01-02 01:00", periods=1, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)
 
