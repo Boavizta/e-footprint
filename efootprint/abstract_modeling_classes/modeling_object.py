@@ -361,7 +361,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates"]
+                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates",
+                               "simulation"]
                     or key.startswith("previous")
                     or key.startswith("initial")
                     or PREVIOUS_LIST_VALUE_SET_SUFFIX in key

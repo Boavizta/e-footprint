@@ -39,8 +39,8 @@ def get_explainable_objects_from_update_function_chain(update_function_chain: Li
 class Simulation:
     def __init__(
             self, simulation_date: datetime,
-            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject],
-            SourceValue | SourceHourlyValues | ModelingObject | List[ModelingObject]]]):
+            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj,
+            SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj]]):
         first_changed_val = changes_list[0][0]
         if isinstance(first_changed_val, ModelingObject):
             self.system = first_changed_val.systems[0]
