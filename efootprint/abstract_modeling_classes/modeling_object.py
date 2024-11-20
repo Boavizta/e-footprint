@@ -209,8 +209,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             elif isinstance(input_value, ObjectLinkedToModelingObj):
                 input_value.set_modeling_obj_container(self, name)
                 is_a_user_attribute_update = self.init_has_passed and (
-                    name not in self.calculated_attributes and old_value_from_dict is not None
-                    and not isinstance(old_value_from_dict, EmptyExplainableObject))
+                    name not in self.calculated_attributes and old_value_from_dict is not None)
                 if is_a_user_attribute_update:
                     self.register_footprint_values_in_systems_before_change(
                         f"{self.name}’s {name} changed from {str(old_value_from_dict)} to {str(input_value)}")

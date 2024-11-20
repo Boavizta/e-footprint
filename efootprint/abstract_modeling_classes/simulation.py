@@ -151,7 +151,7 @@ class Simulation:
                 deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
         old_value_computation_chain_ids = [elt.id for elt in self.values_to_recompute]
         ancestors_not_in_computation_chain = [
-            ancestor for ancestor in all_ancestors_of_values_to_recompute
+            ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
             if ancestor.id not in old_value_computation_chain_ids]
 
         hourly_quantities_ancestors_not_in_computation_chain = [

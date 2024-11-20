@@ -191,7 +191,8 @@ class Storage(InfraHardware):
                 else:
                     fixed_nb_of_instances_df = pd.DataFrame(
                         {"value": pint_pandas.PintArray(
-                            np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.value),
+                            np.full(len(self.raw_nb_of_instances),
+                                    self.fixed_nb_of_instances.to(u.dimensionless).magnitude),
                             dtype=u.dimensionless
                         )},
                         index=self.raw_nb_of_instances.value.index

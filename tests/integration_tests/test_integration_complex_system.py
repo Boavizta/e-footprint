@@ -2,7 +2,6 @@ import json
 import os.path
 from copy import copy
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -172,7 +171,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_all_objects_linked_to_system(self):
         expected_list = [
-            self.server2, self.server1, self.server3, self.storage, self.usage_pattern1, self.usage_pattern2,
+            self.server2, self.server1, self.server3, self.storage_1, self.storage_2, self.storage_3,
+            self.usage_pattern1, self.usage_pattern2,
             self.network, self.uj, self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step,
             self.streaming_job, self.upload_job, self.dailymotion_job, self.tiktok_job, self.tiktok_analytics_job,
             self.usage_pattern1.devices[0], self.usage_pattern2.devices[0], self.usage_pattern1.country,

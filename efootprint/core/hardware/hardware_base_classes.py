@@ -43,6 +43,12 @@ class InfraHardware(Hardware):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
 
+    @property
+    def calculated_attributes(self):
+        return (
+            ["raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
+             "energy_footprint"])
+
     @abstractmethod
     def update_raw_nb_of_instances(self):
         pass
