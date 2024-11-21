@@ -144,15 +144,16 @@ class Simulation:
 
     def compute_hourly_quantities_ancestors_not_in_computation_chain(self):
         all_ancestors_of_values_to_recompute = sum(
-            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[])
+            [value.all_ancestors_with_id for value in self.values_to_recompute
+             if isinstance(value, ExplainableObject)], start=[])
         deduplicated_all_ancestors_of_values_to_recompute = []
         for ancestor in all_ancestors_of_values_to_recompute:
             if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
                 deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
-        old_value_computation_chain_ids = [elt.id for elt in self.values_to_recompute]
+        values_to_recompute_ids = [elt.id for elt in self.values_to_recompute]
         ancestors_not_in_computation_chain = [
             ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
-            if ancestor.id not in old_value_computation_chain_ids]
+            if ancestor.id not in values_to_recompute_ids]
 
         hourly_quantities_ancestors_not_in_computation_chain = [
             ancestor for ancestor in ancestors_not_in_computation_chain
@@ -197,6 +198,7 @@ class Simulation:
             )
             if len(new_value) == 0:
                 new_value = EmptyExplainableObject()
+            raise ValueError("Debug to do here in case new_value belongs to a DictLinkedToModelingObj")
             mod_obj_container.__dict__[attr_name] = new_value
             new_value.set_modeling_obj_container(mod_obj_container, attr_name)
             self.filtered_hourly_quantities.append(new_value)

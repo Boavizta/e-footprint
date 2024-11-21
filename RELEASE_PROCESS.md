@@ -23,12 +23,6 @@ python docs_sources/doc_utils/main.py
 mkdocs serve
 ```
 
-## Release new version of doc
-
-```shell
-mkdocs gh-deploy
-```
-
 ## Update e-footprint version in [pyproject.toml](pyproject.toml)
 
 ## Update poetry dependencies
@@ -46,8 +40,16 @@ poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt
 
 ## Make new version commit, starting with [Vx.y.z]
 
+## Make PR and wait for CI to pass and review
+
 ## Merge main with new version commit, and publish package
 
 ```shell
 poetry publish --build
+```
+
+## Release new version of doc
+
+```shell
+mkdocs gh-deploy
 ```

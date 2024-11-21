@@ -66,7 +66,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
             storage=cls.storage_1
         )
-
+        cores_per_cpu_units = SourceValue(2 * u.core, Sources.HYPOTHESIS)
+        nb_cpu_units = SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
         cls.server2 = OnPremise(
             "Server 2",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -74,7 +75,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(12 * u.GB, Sources.HYPOTHESIS),
-            cpu_cores=SourceValue(6 * u.core, Sources.HYPOTHESIS),
+            cpu_cores=cores_per_cpu_units * nb_cpu_units,
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
@@ -354,3 +355,6 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             50 * u.kB, label="Data upload of request streaming")
 
         self.assertTrue(os.path.isfile(file))
+
+    def test_simulation_changes_calculated_input(self):
+        raise NotImplementedError

@@ -1,4 +1,5 @@
 import json
+import math
 import numbers
 from datetime import datetime
 from typing import Type
@@ -296,9 +297,12 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
         return self
 
-    def return_shifted_hourly_quantities(self, hours: int):
+    def return_shifted_hourly_quantities(self, shift_duration: ExplainableQuantity):
+        shift_duration_in_hours =  math.floor(shift_duration.to(u.hour).magnitude)
+
         return ExplainableHourlyQuantities(
-            self.value.shift(hours, freq="h"), left_parent=self, operator=f"shift by {hours}")
+            self.value.shift(shift_duration_in_hours, freq="h"), left_parent=self, right_parent=shift_duration,
+            operator=f"shifted by")
 
     @property
     def unit(self):

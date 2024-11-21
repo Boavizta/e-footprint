@@ -20,6 +20,15 @@ class ObjectLinkedToModelingObj(ABC):
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
         pass
 
+    @property
+    def id(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its ancestors")
+
+        return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+
 
 @dataclass
 class Source:
@@ -95,15 +104,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self.label = new_label
 
         return self
-
-    @property
-    def id(self):
-        if self.modeling_obj_container is None:
-            raise ValueError(
-                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its ancestors")
-
-        return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
 
     @property
     def update_function(self):
