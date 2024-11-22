@@ -198,8 +198,10 @@ class Simulation:
             )
             if len(new_value) == 0:
                 new_value = EmptyExplainableObject()
-            raise ValueError("Debug to do here in case new_value belongs to a DictLinkedToModelingObj")
-            mod_obj_container.__dict__[attr_name] = new_value
+            if not hourly_quantities.belongs_to_dict:
+                mod_obj_container.__dict__[attr_name] = new_value
+            else:
+                mod_obj_container.__dict__[attr_name][hourly_quantities.key_in_dict] = new_value
             new_value.set_modeling_obj_container(mod_obj_container, attr_name)
             self.filtered_hourly_quantities.append(new_value)
 

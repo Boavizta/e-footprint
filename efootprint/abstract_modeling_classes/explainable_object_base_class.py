@@ -70,6 +70,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
             right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
         super().__init__()
+        self.belongs_to_dict = False
+        self.key_in_dict = None
         self.value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")

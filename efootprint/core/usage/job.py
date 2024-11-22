@@ -3,8 +3,7 @@ from copy import copy
 from typing import List, Type
 
 from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject, \
-    ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -169,8 +168,6 @@ class Job(ModelingObject):
         for up in self.usage_patterns:
             self.hourly_data_upload_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
                 up, "data_upload")
-        if isinstance(self.hourly_data_upload_per_usage_pattern, ExplainableHourlyQuantities):
-            a = 1
 
     def update_hourly_data_download_per_usage_pattern(self):
         self.hourly_data_download_per_usage_pattern = DictLinkedToModelingObj()

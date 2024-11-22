@@ -439,7 +439,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.usage_pattern.devices_energy_footprint.plot(plt_show=False, cumsum=True)
         self.system.total_footprint.plot(plt_show=False, cumsum=False)
         self.system.total_footprint.plot(plt_show=False, cumsum=True)
-        self.assertEqual(simulation.old_sourcevalues, [self.upload_step.user_time_spent])
+        self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent])
         self.assertEqual(simulation.new_sourcevalues, [SourceValue(25 * u.min)])
         self.assertEqual([], simulation.old_mod_obj_links)
         self.assertEqual([], simulation.new_mod_obj_links)
