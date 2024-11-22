@@ -312,7 +312,7 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_hourly_quantities_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        value_1 = MagicMock()
+        value_1 = MagicMock(spec=ExplainableObject)
         ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities)
         ancestor_1.id = 2
 
@@ -328,8 +328,8 @@ class TestSimulation(unittest.TestCase):
     def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_duplicate_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
-        value_1 = MagicMock()
-        value_2 = MagicMock()
+        value_1 = MagicMock(spec=ExplainableObject)
+        value_2 = MagicMock(spec=ExplainableObject)
 
         ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities, id=2)
 
