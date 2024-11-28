@@ -1,3 +1,9 @@
 - Attribute
     - Exclusive Attribute: can be associated to only one parent object. Concerns: storage, lists… If you change it locally, no impact on any other object.
-- 
+- Helper: helps to create a server
+- Service
+    - available for a server, installed on a server;
+    - a service has one or more job types 
+- Job
+    - A job is created by / uses a service ; according to a job type…
+    - 
