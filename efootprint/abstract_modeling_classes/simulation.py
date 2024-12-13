@@ -129,13 +129,16 @@ class Simulation:
     def recompute_attributes(self):
         self.update_function_chain = self.generate_optimized_update_function_chain()
         self.values_to_recompute = get_explainable_objects_from_update_function_chain(self.update_function_chain)
-        self.ancestors_not_in_computation_chain = self.compute_all_ancestors_not_in_computation_chain()
+        self.ancestors_not_in_computation_chain = self.compute_ancestors_not_in_computation_chain()
         self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
         self.filter_hourly_quantities_to_filter()
-        self.ancestors_to_replace_by_copies = [
-            ancestor for ancestor in self.ancestors_not_in_computation_chain
-            if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
-        self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
+        if self.old_mod_obj_links:
+            # The simulation will change the calculation graph, so we need to replace all ancestors not in computation
+            # chain by their copies to keep the original calculation graph unchanged
+            self.ancestors_to_replace_by_copies = [
+                ancestor for ancestor in self.ancestors_not_in_computation_chain
+                if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
+            self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
         self.change_input_values()
         launch_update_function_chain(self.update_function_chain)
         self.save_recomputed_values()
@@ -152,7 +155,7 @@ class Simulation:
 
         return optimized_chain
 
-    def compute_all_ancestors_not_in_computation_chain(self):
+    def compute_ancestors_not_in_computation_chain(self):
         all_ancestors_of_values_to_recompute = sum(
             [value.all_ancestors_with_id for value in self.values_to_recompute
              if isinstance(value, ExplainableObject)], start=[])
@@ -198,8 +201,7 @@ class Simulation:
 
     def filter_hourly_quantities_to_filter(self):
         for hourly_quantities in self.hourly_quantities_to_filter:
-            mod_obj_container = hourly_quantities.modeling_obj_container
-            attr_name = hourly_quantities.attr_name_in_mod_obj_container
+
             new_value = ExplainableHourlyQuantities(
                 hourly_quantities.value[hourly_quantities.value.index >= self.simulation_date_as_hourly_freq],
                 hourly_quantities.label, hourly_quantities.left_parent, hourly_quantities.right_parent,
@@ -207,11 +209,7 @@ class Simulation:
             )
             if len(new_value) == 0:
                 new_value = EmptyExplainableObject()
-            if not hourly_quantities.belongs_to_dict:
-                mod_obj_container.__dict__[attr_name] = new_value
-            else:
-                mod_obj_container.__dict__[attr_name][hourly_quantities.key_in_dict] = new_value
-            new_value.set_modeling_obj_container(mod_obj_container, attr_name)
+            hourly_quantities.replace_by_new_value_in_mod_obj_container(new_value)
             self.filtered_hourly_quantities.append(new_value)
 
     def replace_ancestors_not_in_computation_chain_by_copies(self):
@@ -219,21 +217,15 @@ class Simulation:
         for ancestor_to_replace_by_copy in self.ancestors_to_replace_by_copies:
             # Replace all ancestors not in computation chain by their copy so that the original calculation graph
             # will remain unchanged when the simulation is over
-            mod_obj_container = ancestor_to_replace_by_copy.modeling_obj_container
-            attr_name = ancestor_to_replace_by_copy.attr_name_in_mod_obj_container
             ancestor_copy = copy(ancestor_to_replace_by_copy)
-            mod_obj_container.__dict__[attr_name] = ancestor_copy
-            ancestor_copy.set_modeling_obj_container(mod_obj_container, attr_name)
+            ancestor_to_replace_by_copy.replace_by_new_value_in_mod_obj_container(ancestor_copy)
             copies.append(ancestor_copy)
 
         return copies
 
     def change_input_values(self):
         for old_value, new_value in zip(self.old_sourcevalues, self.new_sourcevalues):
-            mod_obj_container = old_value.modeling_obj_container
-            attr_name_in_mod_obj_container = old_value.attr_name_in_mod_obj_container
-            mod_obj_container.__dict__[attr_name_in_mod_obj_container] = new_value
-            new_value.set_modeling_obj_container(mod_obj_container, attr_name_in_mod_obj_container)
+            old_value.replace_by_new_value_in_mod_obj_container(new_value)
 
     def save_recomputed_values(self):
         for expl_obj in self.values_to_recompute:
@@ -244,11 +236,10 @@ class Simulation:
         for previous_value in (
                 self.old_sourcevalues + self.values_to_recompute + self.hourly_quantities_to_filter +
                 self.ancestors_to_replace_by_copies + self.old_mod_obj_links):
-            previous_value.modeling_obj_container.__dict__[
-                previous_value.attr_name_in_mod_obj_container] = previous_value
+            previous_value.replace_by_new_value_in_mod_obj_container(previous_value)
 
     def set_simulation_values(self):
         for new_value in (
                 self.new_sourcevalues + self.recomputed_values + self.filtered_hourly_quantities +
                 self.replaced_ancestors_copies + self.new_mod_obj_links):
-            new_value.modeling_obj_container.__dict__[new_value.attr_name_in_mod_obj_container] = new_value
+            new_value.replace_by_new_value_in_mod_obj_container(new_value)

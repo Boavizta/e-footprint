@@ -15,6 +15,8 @@ class ObjectLinkedToModelingObj(ABC):
     def __init__(self):
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
+        self.belongs_to_dict = False
+        self.key_in_dict = None
 
     @abstractmethod
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
@@ -28,6 +30,20 @@ class ObjectLinkedToModelingObj(ABC):
                 f"to look for its ancestors")
 
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+
+    def replace_by_new_value_in_mod_obj_container(self, new_value):
+        mod_obj_container = self.modeling_obj_container
+        attr_name = self.attr_name_in_mod_obj_container
+        if not self.belongs_to_dict:
+            mod_obj_container.__dict__[attr_name] = new_value
+        else:
+            if self.key_in_dict not in mod_obj_container.__dict__[attr_name]:
+                raise KeyError(f"{self.key_in_dict} not in {mod_obj_container.__dict__[attr_name]} when trying to "
+                               f"replace {self} by {new_value}. This should not happen.")
+            mod_obj_container.__dict__[attr_name][self.key_in_dict] = new_value
+            new_value.belongs_to_dict = True
+            new_value.key_in_dict = self.key_in_dict
+        new_value.set_modeling_obj_container(mod_obj_container, attr_name)
 
 
 @dataclass
@@ -70,8 +86,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
             right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
         super().__init__()
-        self.belongs_to_dict = False
-        self.key_in_dict = None
         self.value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")
@@ -92,7 +106,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
 
-    def __deepcopy__(self, memo):
+    def __copy__(self):
         cls = self.__class__
         new_instance = cls.__new__(cls)
         new_instance.__init__(value=self.value, label=self.label, source=getattr(self, "source", None))

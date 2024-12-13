@@ -272,15 +272,13 @@ class TestSimulation(unittest.TestCase):
         new_value_2.register_previous_values.assert_called_once()
         self.assertEqual(mod_obj_container_2.__dict__["attr_2"], new_value_2)
 
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_no_values_to_recompute(self):
+    def test_compute_ancestors_not_in_computation_chain_with_no_values_to_recompute(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
         simulation.values_to_recompute = []
 
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
+        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
 
-        self.assertEqual(simulation.hourly_quantities_ancestors_not_in_computation_chain, [])
-
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_no_ancestors(self):
+    def test_compute_ancestors_not_in_computation_chain_with_no_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         value_1 = MagicMock()
@@ -289,78 +287,29 @@ class TestSimulation(unittest.TestCase):
 
         simulation.values_to_recompute = [value_1]
 
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
+        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
 
-        self.assertEqual(simulation.hourly_quantities_ancestors_not_in_computation_chain, [])
-
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_non_hourly_quantities_ancestors(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
-
-        value_1 = MagicMock()
-        ancestor_1 = MagicMock(spec=ExplainableObject) # Not an ExplainableHourlyQuantities instance
-        ancestor_1.id = 2
-
-        value_1.all_ancestors_with_id = [ancestor_1]
-        value_1.id = 1
-
-        simulation.values_to_recompute = [value_1]
-
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
-
-        self.assertEqual(simulation.hourly_quantities_ancestors_not_in_computation_chain, [])
-
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_hourly_quantities_ancestors(self):
+    def test_compute_ancestors_not_in_computation_chain_with_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         value_1 = MagicMock(spec=ExplainableObject)
-        ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities)
-        ancestor_1.id = 2
-
-        value_1.all_ancestors_with_id = [ancestor_1]
         value_1.id = 1
-
-        simulation.values_to_recompute = [value_1]
-
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
-
-        self.assertEqual([ancestor_1], simulation.hourly_quantities_ancestors_not_in_computation_chain)
-
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_duplicate_ancestors(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
-
-        value_1 = MagicMock(spec=ExplainableObject)
         value_2 = MagicMock(spec=ExplainableObject)
+        value_2.id = 2
+        value_3 = MagicMock(spec=ExplainableObject)
+        value_3.id = 3
+        value_4 = MagicMock(spec=ExplainableHourlyQuantities)
+        value_4.id = 4
 
-        ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities, id=2)
+        value_1.all_ancestors_with_id = [value_2, value_3, value_4]
 
-        value_1.all_ancestors_with_id = [ancestor_1]
-        value_1.id = 1
 
-        value_2.all_ancestors_with_id = [ancestor_1]  # Duplicate ancestor
-        value_2.id = 3
+        value_2.all_ancestors_with_id = [value_1, value_4]
+
 
         simulation.values_to_recompute = [value_1, value_2]
 
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
-
-        self.assertEqual(1, len(simulation.hourly_quantities_ancestors_not_in_computation_chain))
-        self.assertIn(ancestor_1, simulation.hourly_quantities_ancestors_not_in_computation_chain)
-
-    def test_compute_hourly_quantities_ancestors_not_in_computation_chain_with_ancestor_in_computation_chain(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
-
-        value_1 = MagicMock()
-        ancestor_1 = MagicMock(spec=ExplainableHourlyQuantities)
-        ancestor_1.id = 1  # Same ID as value_1, should be ignored
-
-        value_1.all_ancestors_with_id = [ancestor_1]
-        value_1.id = 1
-
-        simulation.values_to_recompute = [value_1]
-
-        simulation.compute_hourly_quantities_ancestors_not_in_computation_chain()
-
-        self.assertEqual(simulation.hourly_quantities_ancestors_not_in_computation_chain, [])
+        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [value_3, value_4])
 
     def test_compute_hourly_quantities_to_filter_within_modeling_period(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
@@ -370,9 +319,9 @@ class TestSimulation(unittest.TestCase):
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
 
-        simulation.hourly_quantities_ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
-        simulation.compute_hourly_quantities_to_filter()
+        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
         self.assertIn(ancestor_2, simulation.hourly_quantities_to_filter)
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
@@ -385,10 +334,10 @@ class TestSimulation(unittest.TestCase):
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
 
-        simulation.hourly_quantities_ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
         with self.assertRaises(ValueError):
-            simulation.compute_hourly_quantities_to_filter()
+            simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
     def test_compute_hourly_quantities_to_filter_with_multiple_ancestors(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
@@ -399,9 +348,9 @@ class TestSimulation(unittest.TestCase):
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 1))
         ancestor_3 = create_source_hourly_values_from_list([9, 10, 11, 12], start_date=datetime(2025, 1, 2))
 
-        simulation.hourly_quantities_ancestors_not_in_computation_chain = [ancestor_1, ancestor_2, ancestor_3]
+        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2, ancestor_3]
 
-        simulation.compute_hourly_quantities_to_filter()
+        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
         self.assertIn(ancestor_3, simulation.hourly_quantities_to_filter)
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_3])
@@ -414,9 +363,9 @@ class TestSimulation(unittest.TestCase):
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2, 20))
 
-        simulation.hourly_quantities_ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
-        simulation.compute_hourly_quantities_to_filter()
+        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
         self.assertIn(ancestor_2, simulation.hourly_quantities_to_filter)
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
@@ -428,10 +377,10 @@ class TestSimulation(unittest.TestCase):
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1, 7))
 
-        simulation.hourly_quantities_ancestors_not_in_computation_chain = [ancestor_1]
+        simulation.ancestors_not_in_computation_chain = [ancestor_1]
 
         with self.assertRaises(ValueError):
-            simulation.compute_hourly_quantities_to_filter()
+            simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
     def test_filter_hourly_quantities_to_filter_with_non_empty_values(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__

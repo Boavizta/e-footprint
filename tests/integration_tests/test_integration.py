@@ -1,4 +1,4 @@
-from copy import deepcopy, copy
+from copy import copy
 import os
 from datetime import datetime, timedelta
 
@@ -145,7 +145,7 @@ class IntegrationTest(IntegrationTestBaseClass):
                 if expl_attr.left_parent is None and expl_attr.right_parent is None \
                         and expl_attr_name not in attrs_to_skip:
 
-                    expl_attr_new_value = deepcopy(expl_attr)
+                    expl_attr_new_value = copy(expl_attr)
                     if special_mult and expl_attr_name in special_mult.keys():
                         expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
                     else:
