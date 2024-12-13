@@ -1,4 +1,3 @@
-import json
 import math
 import numbers
 from datetime import datetime
@@ -10,11 +9,11 @@ import pytz
 from pint import Quantity, Unit
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
 from efootprint.constants.units import u
+from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs
 
 
 class EmptyExplainableObject(ExplainableObject):
@@ -121,6 +120,41 @@ class EmptyExplainableObject(ExplainableObject):
             output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
 
         return output_dict
+
+    def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
+        baseline_df = None
+        simulated_values_df = None
+        if (self.modeling_obj_container and self.modeling_obj_container.systems
+                and self.modeling_obj_container.systems[0].simulation):
+            simulation = self.modeling_obj_container.systems[0].simulation
+            for index, value_to_recompute_id in enumerate([value.id for value in simulation.values_to_recompute]):
+                if value_to_recompute_id == self.id:
+                    simulated_values_df = simulation.recomputed_values[index].value
+            if not isinstance(simulated_values_df, EmptyExplainableObject):
+                baseline_df = pd.DataFrame(
+                    {"value": pint_pandas.PintArray(
+                        np.zeros(len(simulated_values_df.index)),
+                        dtype=simulated_values_df.dtypes.value.units)},
+                    index=simulated_values_df.index)
+            if cumsum:
+                simulated_values_df = simulated_values_df.cumsum()
+
+        if simulated_values_df is not None and baseline_df is not None:
+            ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
+
+            if self.label:
+                if not cumsum:
+                    ax.set_title(self.label)
+                else:
+                    ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
+
+            if filepath is not None:
+                plt.savefig(filepath, bbox_inches='tight')
+
+            if plt_show:
+                plt.show()
+        else:
+            raise ValueError("No simulation data found for this EmplyExplainableObject so nothing to plot")
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -516,62 +550,29 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return f"{nb_of_values} values from {self.value.index.min().to_timestamp()} " \
                f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
 
-    def plot_on_ax(self, ax, simulated_value_df, cumsum=False):
-        if cumsum:
-            ax.plot(self.value.index.to_timestamp().values, self.value["value"].cumsum().values.data, label="baseline")
-        else:
-            ax.plot(self.value.index.to_timestamp().values, self.value["value"].values.data, label="baseline")
-        if simulated_value_df is not None:
-            if cumsum:
-                ax.plot(simulated_value_df.index.to_timestamp().values,
-                        simulated_value_df["value"].cumsum().values.data
-                        + self.value["value"].cumsum().at[simulated_value_df.index[0]].magnitude, label="simulated")
-            else:
-                ax.plot(simulated_value_df.index.to_timestamp().values, simulated_value_df["value"].values.data,
-                        label="simulated")
-            ax.legend()
-        plt.ylabel(f"{self.unit:~}")
-
-        locator = mdates.AutoDateLocator(minticks=3, maxticks=12)
-        formatter = mdates.ConciseDateFormatter(locator)
-        ax.xaxis.set_major_locator(locator)
-        ax.xaxis.set_major_formatter(formatter)
-
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
-        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
-
-        simulation = None
-
+        baseline_df = self.value
+        if cumsum:
+            baseline_df = self.value.cumsum()
+            
+        simulated_values_df = None
         if (self.modeling_obj_container and self.modeling_obj_container.systems
                 and self.modeling_obj_container.systems[0].simulation):
             simulation = self.modeling_obj_container.systems[0].simulation
-
-        simulated_value_df = None
-        if simulation is not None:
             for index, value_to_recompute_id in enumerate([value.id for value in simulation.values_to_recompute]):
                 if value_to_recompute_id == self.id:
-                    simulated_value_df = simulation.recomputed_values[index].value
-            if isinstance(simulated_value_df, EmptyExplainableObject):
+                    simulated_values_df = simulation.recomputed_values[index].value
+            if isinstance(simulated_values_df, EmptyExplainableObject):
                 period_index = pd.period_range(start=simulation.simulation_date_as_hourly_freq,
                                              end=self.value.index.max(), freq='h')
-                simulated_value_df = pd.DataFrame({'value': 0}, index=period_index)
+                simulated_values_df = pd.DataFrame(
+                    {"value": pint_pandas.PintArray(
+                        np.zeros(len(period_index)), dtype=self.unit)}, index=period_index)
+            if cumsum:
+                simulated_values_df = simulated_values_df.cumsum()
+                simulated_values_df["value"] += baseline_df["value"].at[simulated_values_df.index[0]]
 
-        if xlims is not None:
-            start, end = xlims
-            filtered_df = self.value[(self.value.index.to_timestamp() >= start)
-                                     & (self.value.index.to_timestamp() <= end)]
-            ax.set_xlim(xlims)
-            max_val = filtered_df["value"].max().magnitude
-            min_val = filtered_df["value"].min().magnitude
-            if simulated_value_df is not None:
-                simulated_filtered_df = simulated_value_df[(simulated_value_df.index.to_timestamp() >= start)
-                                         & (simulated_value_df.index.to_timestamp() <= end)]
-                max_val = max(max_val, simulated_filtered_df["value"].max().magnitude)
-                min_val = min(min_val, simulated_filtered_df["value"].min().magnitude)
-            offset = (max_val - min_val) * 0.1
-            ax.set_ylim([min_val - offset, max_val + offset])
-
-        self.plot_on_ax(ax, simulated_value_df, cumsum)
+        ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
 
         if self.label:
             if not cumsum:

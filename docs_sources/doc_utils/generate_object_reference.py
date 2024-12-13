@@ -4,6 +4,7 @@ from inspect import signature
 from jinja2 import Template
 import ruamel.yaml
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
@@ -16,7 +17,10 @@ from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
 
 def return_class_str(input_obj):
-    return str(input_obj.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
+    obj_to_compute_class_on = input_obj
+    if isinstance(input_obj, ContextualModelingObjectAttribute):
+        obj_to_compute_class_on = input_obj._value
+    return str(obj_to_compute_class_on.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
 
 
 def obj_to_md(input_obj, attr_name):
@@ -93,6 +97,8 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
 
 
 def write_object_reference_file(mod_obj):
+    if isinstance(mod_obj, ContextualModelingObjectAttribute):
+        mod_obj = mod_obj._value
     mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
         set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
 

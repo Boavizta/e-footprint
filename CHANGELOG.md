@@ -4,10 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [8.1.0] 2024-10-03
+## [8.1.0] 2024-12-20
 
 ### Added
-- Possibility to make simulations. Not stable yet so not included in tutorial.
+- Possibility to make simulations of changes in the future. A simulation is a date in the future and the list of changes that will happen at this date. The changes can be the addition of a new object, the deletion of an object, the modification of an object attribute, the addition of a new link between objects, the deletion of a link between objects, the modification of a link between objects. The simulation can be run on a system to see the impact of the changes on the system's carbon footprint.
 
 ## [8.0.1] 2024-11-12
 
