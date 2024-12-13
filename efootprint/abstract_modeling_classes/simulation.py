@@ -1,11 +1,11 @@
 from copy import copy
 from datetime import datetime
-from typing import List, Tuple, Callable
+from typing import List, Tuple
 
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_update_function_chain, retrieve_update_function_from_mod_obj_and_attr_name, ObjectLinkedToModelingObj
+    optimize_attr_updates_chain, ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -13,28 +13,13 @@ from efootprint.abstract_modeling_classes.recomputation_utils import launch_upda
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 
 
-def compute_update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
-    update_functions_chain = []
+def compute_attr_updates_chain_from_mod_obj_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
+    attr_updates_chain = []
     for mod_obj in mod_objs_computation_chain:
         for calculated_attribute in mod_obj.calculated_attributes:
-            update_functions_chain.append(
-                retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, calculated_attribute))
+            attr_updates_chain.append(getattr(mod_obj, calculated_attribute))
 
-    return update_functions_chain
-
-
-def get_explainable_objects_from_update_function_chain(update_function_chain: List[Callable]):
-    explainable_objects_list = []
-    for update_function in update_function_chain:
-        expl_obj_attr_name = update_function.__name__.replace("update_", "")
-        modeling_obj_container = update_function.__self__
-        expl_obj = getattr(modeling_obj_container, expl_obj_attr_name, None)
-        if expl_obj is None:
-            raise ValueError(f"{expl_obj_attr_name} in {modeling_obj_container.name} shouldn’t be None")
-
-        explainable_objects_list.append(expl_obj)
-
-    return explainable_objects_list
+    return attr_updates_chain
 
 
 class Simulation:
@@ -61,11 +46,10 @@ class Simulation:
 
         self.compute_new_and_old_source_values_and_mod_obj_link_lists()
 
-        self.update_function_chains_from_mod_obj_links_updates = []
-        self.compute_update_function_chains_from_mod_obj_links_updates()
+        self.attr_updates_chain_from_mod_obj_links_updates = []
+        self.compute_attr_updates_chain_from_mod_obj_links_updates()
         self.create_new_mod_obj_links()
 
-        self.update_function_chain = []
         self.values_to_recompute = []
         self.recomputed_values = []
         self.ancestors_not_in_computation_chain = []
@@ -100,19 +84,19 @@ class Simulation:
                 self.old_mod_obj_links.append(old_value)
                 self.new_mod_obj_links.append(new_value)
 
-    def compute_update_function_chains_from_mod_obj_links_updates(self):
+    def compute_attr_updates_chain_from_mod_obj_links_updates(self):
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
             mod_obj_container = old_value.modeling_obj_container
             if isinstance(old_value, ModelingObject):
-                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
+                attr_updates_chain = compute_attr_updates_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
                         old_value, new_value))
             elif isinstance(old_value, ListLinkedToModelingObj):
-                update_function_chain = compute_update_function_chain_from_mod_obj_computation_chain(
+                attr_updates_chain = compute_attr_updates_chain_from_mod_obj_computation_chain(
                     mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
                         old_value, new_value))
 
-            self.update_function_chains_from_mod_obj_links_updates.append(update_function_chain)
+            self.attr_updates_chain_from_mod_obj_links_updates.append(attr_updates_chain)
 
     def create_new_mod_obj_links(self):
         for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
@@ -127,8 +111,7 @@ class Simulation:
             mod_obj_container.__dict__[attr_name_in_mod_obj_container] = new_value
                 
     def recompute_attributes(self):
-        self.update_function_chain = self.generate_optimized_update_function_chain()
-        self.values_to_recompute = get_explainable_objects_from_update_function_chain(self.update_function_chain)
+        self.values_to_recompute = self.generate_optimized_attr_updates_chain()
         self.ancestors_not_in_computation_chain = self.compute_ancestors_not_in_computation_chain()
         self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
         self.filter_hourly_quantities_to_filter()
@@ -140,18 +123,18 @@ class Simulation:
                 if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
             self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
         self.change_input_values()
-        launch_update_function_chain(self.update_function_chain)
+        launch_update_function_chain([value.update_function for value in self.values_to_recompute])
         self.save_recomputed_values()
 
-    def generate_optimized_update_function_chain(self):
-        update_function_chain_from_mod_obj_links_updates = sum(
-            self.update_function_chains_from_mod_obj_links_updates, start=[])
+    def generate_optimized_attr_updates_chain(self):
+        attr_updates_chain_from_mod_obj_links_updates = sum(
+            self.attr_updates_chain_from_mod_obj_links_updates, start=[])
 
-        update_function_chain_from_attributes_updates = sum(
-            [old_value.update_function_chain for old_value in self.old_sourcevalues], start=[])
+        attr_updates_chain_from_attributes_updates = sum(
+            [old_value.attr_updates_chain for old_value in self.old_sourcevalues], start=[])
 
-        optimized_chain = optimize_update_function_chain(
-            update_function_chain_from_mod_obj_links_updates + update_function_chain_from_attributes_updates)
+        optimized_chain = optimize_attr_updates_chain(
+            attr_updates_chain_from_mod_obj_links_updates + attr_updates_chain_from_attributes_updates)
 
         return optimized_chain
 

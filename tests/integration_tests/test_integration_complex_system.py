@@ -271,7 +271,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_add_new_job(self):
         logger.warning("Adding job")
         new_job = Job(
-            "dailymotion", self.server1, data_upload=SourceValue(300 * u.kB),
+            "new job", self.server1, data_upload=SourceValue(300 * u.kB),
             data_download=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))

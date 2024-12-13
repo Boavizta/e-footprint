@@ -15,7 +15,7 @@ class ObjectLinkedToModelingObj(ABC):
     def __init__(self):
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
-        self.belongs_to_dict = False
+        self.dict_container = None
         self.key_in_dict = None
 
     @abstractmethod
@@ -31,17 +31,29 @@ class ObjectLinkedToModelingObj(ABC):
 
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
 
+    @property
+    def update_function(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its update function")
+        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
+            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+        return update_func
+
     def replace_by_new_value_in_mod_obj_container(self, new_value):
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
-        if not self.belongs_to_dict:
+        if self.dict_container is None:
             mod_obj_container.__dict__[attr_name] = new_value
         else:
-            if self.key_in_dict not in mod_obj_container.__dict__[attr_name]:
-                raise KeyError(f"{self.key_in_dict} not in {mod_obj_container.__dict__[attr_name]} when trying to "
-                               f"replace {self} by {new_value}. This should not happen.")
-            mod_obj_container.__dict__[attr_name][self.key_in_dict] = new_value
-            new_value.belongs_to_dict = True
+            if self.key_in_dict not in self.dict_container.keys():
+                raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
+                               f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
+                               f"This should not happen.")
+            self.dict_container[self.key_in_dict] = new_value
+            new_value.dict_container = self.dict_container
             new_value.key_in_dict = self.key_in_dict
         new_value.set_modeling_obj_container(mod_obj_container, attr_name)
 
@@ -62,16 +74,17 @@ def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, attr_name):
     return update_func
 
 
-def optimize_update_function_chain(update_function_chain):
-    initial_chain_len = len(update_function_chain)
+def optimize_attr_updates_chain(attr_updates_chain):
+    initial_chain_len = len(attr_updates_chain)
+    attr_to_update_ids = [attr.id for attr in attr_updates_chain]
     optimized_chain = []
 
-    for index in range(len(update_function_chain)):
-        update_function = update_function_chain[index]
+    for index in range(len(attr_updates_chain)):
+        attr_to_update = attr_updates_chain[index]
 
-        if update_function not in update_function_chain[index + 1:]:
+        if attr_to_update.id not in attr_to_update_ids[index + 1:]:
             # Keep only last occurrence of each update function
-            optimized_chain.append(update_function)
+            optimized_chain.append(attr_to_update)
 
     optimized_chain_len = len(optimized_chain)
 
@@ -120,17 +133,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self.label = new_label
 
         return self
-
-    @property
-    def update_function(self):
-        if self.modeling_obj_container is None:
-            raise ValueError(
-                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its update function")
-        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
-            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-
-        return update_func
 
     @property
     def has_parent(self):
@@ -202,12 +204,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return all_ancestors
 
     @property
-    def update_function_chain(self):
+    def attr_updates_chain(self):
         if self.modeling_obj_container is None:
             raise ValueError(
                 f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its update computation chain")
-        update_function_chain = []
+        attr_updates_chain = []
         descendants = self.all_descendants_with_id
         has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}
 
@@ -223,7 +225,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             if ancestor.id in [ancestor.id for ancestor in descendants]]
                         if all([has_been_added_to_chain_dict[ancestor.id]
                                 for ancestor in ancestors_that_belong_to_self_descendants]):
-                            update_function_chain.append(child.update_function)
+                            attr_updates_chain.append(child)
                             has_been_added_to_chain_dict[child.id] = True
                             if len(child.direct_children_with_id) > 0:
                                 added_parents_with_children_to_add.append(child)
@@ -235,9 +237,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                         child for child in added_parents_with_children_to_add
                         if child.id != added_parent.id]
 
-        optimized_chain = optimize_update_function_chain(update_function_chain)
+        optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
 
         return optimized_chain
+
+    @property
+    def update_function_chain(self):
+        return [attribute.update_function for attribute in self.attr_updates_chain]
 
     def explain(self, pretty_print=True):
         element_value_to_print = str(self)

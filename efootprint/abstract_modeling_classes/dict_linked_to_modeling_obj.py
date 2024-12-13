@@ -30,7 +30,7 @@ class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
-        value.belongs_to_dict = True
+        value.dict_container = self
         value.key_in_dict = key
 
     def to_json(self, with_calculated_attributes_data=False):

@@ -264,7 +264,7 @@ class ExplainableQuantity(ExplainableObject):
         return output_dict
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return str(self)
 
     def __str__(self):
         if isinstance(self.value, Quantity):
@@ -551,6 +551,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
             for index, value_to_recompute_id in enumerate([value.id for value in simulation.values_to_recompute]):
                 if value_to_recompute_id == self.id:
                     simulated_value_df = simulation.recomputed_values[index].value
+            if isinstance(simulated_value_df, EmptyExplainableObject):
+                period_index = pd.period_range(start=simulation.simulation_date_as_hourly_freq,
+                                             end=self.value.index.max(), freq='h')
+                simulated_value_df = pd.DataFrame({'value': 0}, index=period_index)
 
         if xlims is not None:
             start, end = xlims
