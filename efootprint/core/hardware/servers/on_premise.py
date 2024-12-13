@@ -15,16 +15,18 @@ class OnPremise(Server):
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue, storage: Storage,
-                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = EmptyExplainableObject()):
+                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores, power_usage_effectiveness,
             average_carbon_intensity, server_utilization_rate, base_ram_consumption, base_cpu_consumption, storage)
-        self.fixed_nb_of_instances = None
-        if fixed_nb_of_instances:
+        self.fixed_nb_of_instances = fixed_nb_of_instances
+        if self.fixed_nb_of_instances is not None:
             if not fixed_nb_of_instances.value.check("[]"):
                 raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
-            self.fixed_nb_of_instances = fixed_nb_of_instances.set_label(
-                f"User defined number of {self.name} instances").to(u.dimensionless)
+        else:
+            self.fixed_nb_of_instances = EmptyExplainableObject()
+        self.fixed_nb_of_instances.set_label(
+            f"User defined number of {self.name} instances").to(u.dimensionless)
 
     def update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
