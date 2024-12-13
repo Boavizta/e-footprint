@@ -257,33 +257,6 @@ class TestExplainableObjectBaseClass(TestCase):
                 [child1.update_function, child2.update_function, grandchild1.update_function,
                  grandchild2.update_function], result)
 
-    def test_update_function_chain_optimizes_recomputation_when_children_have_same_update_function(self):
-        mod_obj_container = "mod_obj_container"
-        parent = ExplainableObject(1, "test")
-        parent.modeling_obj_container = MagicMock()
-        parent.modeling_obj_container.id = "id"
-
-        child1 = MagicMock()
-        child2 = MagicMock()
-        same_update_function = MagicMock()
-
-        for index, child in enumerate([child1, child2]):
-            child.id = f'child{index}_id'
-            child.modeling_obj_container = mod_obj_container
-            child.attr_name_in_mod_obj_container = f"attr_{index}"
-            child.direct_ancestors_with_id = [parent]
-            child.update_function = same_update_function
-
-        parent.direct_children_with_id = [child1, child2]
-
-        with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
-                as mock_all_descendants_with_id:
-            mock_all_descendants_with_id.return_value = [child1, child2]
-
-            result = parent.update_function_chain
-
-            self.assertEqual([child2.update_function], result)
-
     def test_set_label(self):
         eo = ExplainableObject(value=5, label="Label A")
         eo.set_label("Intermediate A")

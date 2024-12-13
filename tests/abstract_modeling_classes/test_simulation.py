@@ -9,65 +9,26 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
 from efootprint.abstract_modeling_classes.simulation import (
-    compute_update_function_chain_from_mod_obj_computation_chain,
-    get_explainable_objects_from_update_function_chain, Simulation
-)
+    compute_attr_updates_chain_from_mod_obj_computation_chain, Simulation)
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from tests.abstract_modeling_classes.test_modeling_object import ModelingObjectForTesting
 
 
 class TestSimulationFunctions(unittest.TestCase):
-    @patch('efootprint.abstract_modeling_classes.simulation.retrieve_update_function_from_mod_obj_and_attr_name')
-    def test_compute_update_function_chain_from_mod_obj_computation_chain(self, mock_retrieve_update_function):
+    def test_compute_attr_updates_chain_from_mod_obj_computation_chain(self):
         mod_obj_1 = MagicMock()
         mod_obj_2 = MagicMock()
 
         mod_obj_1.calculated_attributes = ['attr_1', 'attr_2']
+        mod_obj_1.attr_1 = "attr_1_value"
+        mod_obj_1.attr_2 = "attr_2_value"
         mod_obj_2.calculated_attributes = ['attr_3']
-
-        mock_retrieve_update_function.side_effect = ['func_1', 'func_2', 'func_3']
+        mod_obj_2.attr_3 = "attr_3_value"
 
         mod_objs_computation_chain = [mod_obj_1, mod_obj_2]
-        result = compute_update_function_chain_from_mod_obj_computation_chain(mod_objs_computation_chain)
+        result = compute_attr_updates_chain_from_mod_obj_computation_chain(mod_objs_computation_chain)
 
-        self.assertEqual(result, ['func_1', 'func_2', 'func_3'])
-        self.assertEqual(mock_retrieve_update_function.call_count, 3)
-
-    def test_get_explainable_objects_from_update_function_chain(self):
-        update_func_1 = MagicMock()
-        update_func_2 = MagicMock()
-
-        update_func_1.__name__ = 'update_expl_obj_1'
-        update_func_2.__name__ = 'update_expl_obj_2'
-
-        modeling_obj_container_1 = MagicMock()
-        modeling_obj_container_2 = MagicMock()
-
-        modeling_obj_container_1.expl_obj_1 = 'ExplObj1'
-        modeling_obj_container_2.expl_obj_2 = 'ExplObj2'
-
-        update_func_1.__self__ = modeling_obj_container_1
-        update_func_2.__self__ = modeling_obj_container_2
-
-        update_function_chain = [update_func_1, update_func_2]
-
-        result = get_explainable_objects_from_update_function_chain(update_function_chain)
-
-        self.assertEqual(result, ['ExplObj1', 'ExplObj2'])
-
-    def test_get_explainable_objects_from_update_function_chain_raises_error(self):
-        update_func_1 = MagicMock()
-        update_func_1.__name__ = 'update_expl_obj_1'
-
-        modeling_obj_container_1 = MagicMock()
-        modeling_obj_container_1.expl_obj_1 = None  # Simulate missing explainable object
-
-        update_func_1.__self__ = modeling_obj_container_1
-
-        update_function_chain = [update_func_1]
-
-        with self.assertRaises(ValueError):
-            get_explainable_objects_from_update_function_chain(update_function_chain)
+        self.assertEqual(["attr_1_value", "attr_2_value", "attr_3_value"], result)
 
 
 class TestSimulation(unittest.TestCase):
@@ -133,7 +94,7 @@ class TestSimulation(unittest.TestCase):
         with self.assertRaises(ValueError):
             simulation.compute_new_and_old_source_values_and_mod_obj_link_lists()
 
-    def test_compute_update_function_chains_from_mod_obj_links_updates_case_modeling_object(self):
+    def test_compute_compute_attr_updates_chain_from_mod_obj_links_updatess_case_modeling_object(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         old_value = MagicMock(type="ModelingObject")
@@ -150,26 +111,26 @@ class TestSimulation(unittest.TestCase):
 
         simulation.old_mod_obj_links = [old_value]
         simulation.new_mod_obj_links = [new_value]
-        simulation.update_function_chains_from_mod_obj_links_updates = []
+        simulation.attr_updates_chain_from_mod_obj_links_updates = []
         from efootprint.abstract_modeling_classes import simulation as simulation_module
         with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock,\
-                patch.object(simulation_module, "compute_update_function_chain_from_mod_obj_computation_chain",
+                patch.object(simulation_module, "compute_attr_updates_chain_from_mod_obj_computation_chain",
                              new_callable=PropertyMock) as compute_update_func_chain_mock:
             instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
             compute_update_func_chain_mock.return_value = update_function_chain_mock
-            simulation.compute_update_function_chains_from_mod_obj_links_updates()
+            simulation.compute_attr_updates_chain_from_mod_obj_links_updates()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.assert_called_once_with(
             old_value, new_value)
         compute_update_func_chain_mock.assert_called_once_with(computation_chain_mock)
 
-        self.assertIn(update_function_chain_mock, simulation.update_function_chains_from_mod_obj_links_updates)
+        self.assertIn(update_function_chain_mock, simulation.attr_updates_chain_from_mod_obj_links_updates)
 
     @patch(
-        "efootprint.abstract_modeling_classes.simulation.compute_update_function_chain_from_mod_obj_computation_chain")
-    def test_compute_update_function_chains_from_mod_obj_links_updates_case_list(self, compute_update_func_chain_mock):
-        update_function_chain_mock = MagicMock()
-        compute_update_func_chain_mock.return_value = update_function_chain_mock
+        "efootprint.abstract_modeling_classes.simulation.compute_attr_updates_chain_from_mod_obj_computation_chain")
+    def test_compute_attr_updates_chains_from_mod_obj_links_updates_case_list(self, compute_attr_updates_chain_mock):
+        attr_updates_chain_mock = MagicMock()
+        compute_attr_updates_chain_mock.return_value = attr_updates_chain_mock
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         old_value = MagicMock(spec=ListLinkedToModelingObj)
@@ -184,23 +145,23 @@ class TestSimulation(unittest.TestCase):
 
         simulation.old_mod_obj_links = [old_value]
         simulation.new_mod_obj_links = [new_value]
-        simulation.update_function_chains_from_mod_obj_links_updates = []
+        simulation.attr_updates_chain_from_mod_obj_links_updates = []
 
-        simulation.compute_update_function_chains_from_mod_obj_links_updates()
+        simulation.compute_attr_updates_chain_from_mod_obj_links_updates()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists.assert_called_once_with(
             old_value, new_value)
-        compute_update_func_chain_mock.assert_called_once_with(computation_chain_mock)
+        compute_attr_updates_chain_mock.assert_called_once_with(computation_chain_mock)
 
-        self.assertIn(update_function_chain_mock, simulation.update_function_chains_from_mod_obj_links_updates)
+        self.assertIn(attr_updates_chain_mock, simulation.attr_updates_chain_from_mod_obj_links_updates)
 
     @patch(
-        "efootprint.abstract_modeling_classes.simulation.compute_update_function_chain_from_mod_obj_computation_chain")
-    def test_compute_update_function_chains_from_mod_obj_links_updates_with_mixed_objects(
-            self, compute_update_func_chain_mock):
-        update_function_chain_mock_1 = MagicMock()
-        update_function_chain_mock_2 = MagicMock()
-        compute_update_func_chain_mock.side_effect = [update_function_chain_mock_1, update_function_chain_mock_2]
+        "efootprint.abstract_modeling_classes.simulation.compute_attr_updates_chain_from_mod_obj_computation_chain")
+    def test_compute_attr_updates_from_mod_obj_computation_chain_with_mixed_objects(
+            self, compute_attr_updates_chain_mock):
+        attr_updates_chain_mock_1 = MagicMock()
+        attr_updates_chain_mock_2 = MagicMock()
+        compute_attr_updates_chain_mock.side_effect = [attr_updates_chain_mock_1, attr_updates_chain_mock_2]
         simulation = Simulation.__new__(Simulation)  # Bypass __init__
 
         # First item: ModelingObject
@@ -226,20 +187,20 @@ class TestSimulation(unittest.TestCase):
 
         simulation.old_mod_obj_links = [old_value_1, old_value_2]
         simulation.new_mod_obj_links = [new_value_1, new_value_2]
-        simulation.update_function_chains_from_mod_obj_links_updates = []
+        simulation.attr_updates_chain_from_mod_obj_links_updates = []
 
-        simulation.compute_update_function_chains_from_mod_obj_links_updates()
+        simulation.compute_attr_updates_chain_from_mod_obj_links_updates()
 
         mod_obj_container_1.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.assert_called_once_with(
             old_value_1, new_value_1)
         mod_obj_container_2.compute_mod_objs_computation_chain_from_old_and_new_lists.assert_called_once_with(
             old_value_2, new_value_2)
 
-        compute_update_func_chain_mock.assert_any_call(computation_chain_mock_1)
-        compute_update_func_chain_mock.assert_any_call(computation_chain_mock_2)
+        compute_attr_updates_chain_mock.assert_any_call(computation_chain_mock_1)
+        compute_attr_updates_chain_mock.assert_any_call(computation_chain_mock_2)
 
-        self.assertIn(update_function_chain_mock_1, simulation.update_function_chains_from_mod_obj_links_updates)
-        self.assertIn(update_function_chain_mock_2, simulation.update_function_chains_from_mod_obj_links_updates)
+        self.assertIn(attr_updates_chain_mock_1, simulation.attr_updates_chain_from_mod_obj_links_updates)
+        self.assertIn(attr_updates_chain_mock_2, simulation.attr_updates_chain_from_mod_obj_links_updates)
 
     def test_create_new_mod_obj_links_with_mixed_objects(self):
         simulation = Simulation.__new__(Simulation)  # Bypass __init__

@@ -1,8 +1,9 @@
 import random
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
+import pandas as pd
 import pytz
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
@@ -354,6 +355,33 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             create_hourly_usage_df_from_list(usage_data, start_date=start_date, pint_unit=u.GB, ), "test")
 
         self.assertEqual(expected_data, (-hourly_usage_data).value_as_float_list)
+
+    @patch("efootprint.abstract_modeling_classes.explainable_objects.ExplainableHourlyQuantities.id",
+           new_callable=PropertyMock)
+    def test_plot_with_simulation(self, mock_id):
+        modeling_obj_container = MagicMock()
+        system = MagicMock()
+        modeling_obj_container.systems = [system]
+        simulation = MagicMock()
+        system.simulation = simulation
+
+        value_id = "recomputed_value_id"
+        recomputed_value = MagicMock()
+        recomputed_value.value = Mock(spec=EmptyExplainableObject)
+        recomputed_value.id = value_id
+        mock_id.return_value = value_id
+
+        simulation.values_to_recompute = [MagicMock(id=value_id)]
+        simulation.recomputed_values = [recomputed_value]
+        simulation.simulation_date_as_hourly_freq = pd.Timestamp(
+            self.start_date + timedelta(hours=3)).to_period(freq="h")
+
+        ehq = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(self.usage1, self.start_date, pint_unit=u.W), "Usage 1")
+
+        ehq.modeling_obj_container = modeling_obj_container
+
+        ehq.plot(cumsum=True)
 
 
 if __name__ == "__main__":

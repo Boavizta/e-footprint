@@ -21,7 +21,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
     def test_replace_when_not_in_dict(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
         self.obj.attr_name_in_mod_obj_container = "test_attr"
-        self.obj.belongs_to_dict = False
+        self.obj.dict_container = None
 
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
         new_value.set_modeling_obj_container = MagicMock()
@@ -34,20 +34,22 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
     def test_replace_when_in_dict(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
         self.obj.attr_name_in_mod_obj_container = "test_dict"
-        self.obj.belongs_to_dict = True
-        self.obj.key_in_dict = "test_key"
+        key = "test_key"
+        test_dict =  {key: "old_value"}
+        self.obj.dict_container = test_dict
+        self.obj.key_in_dict = key
 
-        self.mock_modeling_object.__dict__["test_dict"] = {"test_key": "old_value"}
+        self.mock_modeling_object.test_dict = test_dict
 
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
         new_value.set_modeling_obj_container = MagicMock()
 
         self.obj.replace_by_new_value_in_mod_obj_container(new_value)
 
-        self.assertEqual(self.mock_modeling_object.__dict__["test_dict"]["test_key"], new_value)
+        self.assertEqual(self.mock_modeling_object.test_dict[key], new_value)
         new_value.set_modeling_obj_container.assert_called_once_with(self.mock_modeling_object, "test_dict")
-        self.assertEqual(new_value.belongs_to_dict, True)
-        self.assertEqual(new_value.key_in_dict, "test_key")
+        self.assertDictEqual(new_value.dict_container, test_dict)
+        self.assertEqual(new_value.key_in_dict, key)
 
     def test_replace_with_no_modeling_obj_container(self):
         self.obj.modeling_obj_container = None
@@ -59,7 +61,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
     def test_replace_with_invalid_new_value(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
         self.obj.attr_name_in_mod_obj_container = "test_attr"
-        self.obj.belongs_to_dict = False
+        self.obj.dict_container = False
 
         new_value = object()  # Invalid, not an ObjectLinkedToModelingObj instance
 
@@ -69,11 +71,13 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
     def test_replace_when_key_not_in_dict(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
         self.obj.attr_name_in_mod_obj_container = "test_dict"
-        self.obj.belongs_to_dict = True
-        self.obj.key_in_dict = "missing_key"
+        key_in_dict = MagicMock(id="test_id")
+        test_dict = {}
+        self.obj.dict_container = test_dict
+        self.obj.key_in_dict = key_in_dict
 
         # Simulate dictionary attribute without the key
-        self.mock_modeling_object.__dict__["test_dict"] = {}
+        self.mock_modeling_object.test_dict = test_dict
 
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
 
