@@ -18,7 +18,7 @@ class Storage(InfraHardware):
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
                  base_storage_need: SourceValue,
-                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = EmptyExplainableObject()):
+                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.storage_delta = EmptyExplainableObject()
         self.full_cumulative_storage_need = EmptyExplainableObject()
@@ -40,12 +40,14 @@ class Storage(InfraHardware):
                 "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
                 " '[]' dimensionality")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
-        self.fixed_nb_of_instances = None
-        if fixed_nb_of_instances:
+        self.fixed_nb_of_instances = fixed_nb_of_instances
+        if self.fixed_nb_of_instances is not None:
             if not fixed_nb_of_instances.value.check("[]"):
                 raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
-            self.fixed_nb_of_instances = fixed_nb_of_instances.set_label(
-                f"User defined number of {self.name} instances").to(u.dimensionless)
+        else:
+            self.fixed_nb_of_instances = EmptyExplainableObject()
+        self.fixed_nb_of_instances.set_label(
+            f"User defined number of {self.name} instances").to(u.dimensionless)
 
     def add_obj_to_modeling_obj_containers(self, server):
         if len(self.modeling_obj_containers) == 1:

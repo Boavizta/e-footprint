@@ -53,6 +53,9 @@ class EmptyExplainableObject(ExplainableObject):
     def magnitude(self):
         return 0
 
+    def __copy__(self):
+        return EmptyExplainableObject(label=self.label)
+
     def __eq__(self, other):
         if isinstance(other, EmptyExplainableObject):
             return True

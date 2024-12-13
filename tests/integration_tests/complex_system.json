@@ -740,7 +740,7 @@
                 }
             },
             "fixed_nb_of_instances": {
-                "label": "User defined number of Default SSD storage instances",
+                "label": "User defined number of Default SSD storage 1 instances",
                 "value": null
             }
         },
@@ -829,7 +829,7 @@
                 }
             },
             "fixed_nb_of_instances": {
-                "label": "User defined number of Default SSD storage instances",
+                "label": "User defined number of Default SSD storage 2 instances",
                 "value": null
             }
         },
@@ -918,7 +918,7 @@
                 }
             },
             "fixed_nb_of_instances": {
-                "label": "User defined number of Default SSD storage instances",
+                "label": "User defined number of TikTok Analytics storage instances",
                 "value": null
             }
         }

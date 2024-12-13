@@ -389,14 +389,14 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.run_json_to_system_test(self.system)
 
     def test_modeling_object_prints(self):
-        print(self.usage_pattern)
-        print(self.usage_pattern)
-        print(self.server)
-        print(self.storage)
-        print(self.upload_step)
-        print(self.uj)
-        print(self.network)
-        print(self.system)
+        str(self.usage_pattern)
+        str(self.usage_pattern)
+        str(self.server)
+        str(self.storage)
+        str(self.upload_step)
+        str(self.uj)
+        str(self.network)
+        str(self.system)
 
     def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
         initial_upload_data_stored = self.upload_job.data_stored

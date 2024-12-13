@@ -1,5 +1,7 @@
 import requests
+from urllib3.exceptions import RequestError
 
+from efootprint.logger import logger
 from efootprint.builders.hardware.storage_defaults import default_ssd, default_hdd
 from efootprint.constants.sources import Source, Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -11,6 +13,7 @@ from efootprint.core.hardware.storage import Storage
 
 def call_boaviztapi(url, method="GET", **kwargs):
     headers = {'accept': 'application/json'}
+    response = None
     if method == "GET":
         response = requests.get(url, headers=headers, **kwargs)
     elif method == "POST":
@@ -20,7 +23,8 @@ def call_boaviztapi(url, method="GET", **kwargs):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"{method} request to {url} with params {kwargs} failed with status code {response.status_code}")
+        raise RequestError(
+            f"{method} request to {url} with params {kwargs} failed with status code {response.status_code}")
 
 
 def get_archetypes_and_their_configs_and_impacts():
@@ -31,7 +35,7 @@ def get_archetypes_and_their_configs_and_impacts():
         impact = call_boaviztapi(
             url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
         if impact is None:
-            print(f"No impact for archetype {archetype}")
+            logger.info(f"No impact for archetype {archetype}")
         else:
             output_dict[archetype] = {}
             output_dict[archetype]["config"] = configuration
