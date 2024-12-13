@@ -41,11 +41,11 @@ class TestExplainableObjectBaseClass(TestCase):
         self.modeling_obj_container_mock.id = 1
         self.modeling_obj_container_mock.name = "Model1"
 
-    def test_deepcopy_should_set_modeling_object_to_none(self):
+    def test_copy_should_set_modeling_obj_container_to_none(self):
         a = ExplainableObject(1, "a")
         a.modeling_obj_container = "obj"
-        from copy import deepcopy
-        b = deepcopy(a)
+        from copy import copy
+        b = copy(a)
 
         self.assertEqual("a", b.label)
         self.assertEqual(1, b.value)

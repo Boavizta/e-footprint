@@ -8,7 +8,6 @@ from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -410,7 +409,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
             if type(input_value) in (str, int) or input_value is None:
                 key_value_str = f"{input_key}: {input_value}\n"
-            elif type(input_value) == list:
+            elif isinstance(input_value, list):
                 if len(input_value) == 0:
                     key_value_str = f"{input_key}: {input_value}\n"
                 else:
@@ -419,7 +418,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     elif isinstance(input_value[0], ModelingObject) and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
-            elif isinstance(input_value, ExplainableObject):
+            elif isinstance(input_value, ObjectLinkedToModelingObj):
                 key_value_str = f"{input_key}: {input_value}\n"
             elif isinstance(input_value, ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"
