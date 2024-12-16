@@ -17,10 +17,22 @@ class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
         if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
             raise ValueError(
                 f"A DictLinkedToModelingObj can’t be attributed to more than one ModelingObject. Here "
-                f"{self.label} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
+                f"{self} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
                 f"{self.modeling_obj_container.name}.")
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
+
+    @property
+    def all_ancestors_with_id(self):
+        all_ancestors_with_id = []
+
+        for value in self.values():
+            all_ancestor_ids = [ancestor.id for ancestor in all_ancestors_with_id]
+            for ancestor in value.all_ancestors_with_id:
+                if ancestor.id not in all_ancestor_ids:
+                    all_ancestors_with_id.append(ancestor)
+
+        return all_ancestors_with_id
 
     def __setitem__(self, key, value: ExplainableObject):
         if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):
