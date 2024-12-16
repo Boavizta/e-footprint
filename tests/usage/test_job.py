@@ -11,11 +11,9 @@ from efootprint.constants.units import u
 
 class TestJob(TestCase):
     def setUp(self):
-        self.server = MagicMock()
+        self.server = MagicMock(id="server")
+        self.server.class_as_simple_str = "Autoscaling"
         self.server.name = "server"
-
-        self.storage = MagicMock()
-        self.storage.name = "storage"
 
         self.job = Job(
             "test job", server=self.server, data_download=SourceValue(200 * u.MB),
@@ -30,19 +28,18 @@ class TestJob(TestCase):
         with self.assertRaises(PermissionError):
             self.job.self_delete()
 
-    def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
+    def test_self_delete_removes_backward_links_and_recomputes_server_and_network(self):
+        network = MagicMock(id="network")
+        network.class_as_simple_str = "Network"
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
                 patch.object(self.server, "modeling_obj_containers", [self.job]), \
-                patch.object(self.storage, "modeling_obj_containers", [self.job]), \
-                patch.object(self.storage, "mod_objs_computation_chain", [self.storage]), \
-                patch.object(self.server, "mod_objs_computation_chain", [self.server]):
-            mock_mod_obj_attributes.return_value = [self.server, self.storage]
+                patch.object(self.server, "mod_objs_computation_chain", [self.server, network]):
+            mock_mod_obj_attributes.return_value = [self.server]
 
             self.job.self_delete()
             self.assertEqual([], self.server.modeling_obj_containers)
-            self.assertEqual([], self.storage.modeling_obj_containers)
             self.server.compute_calculated_attributes.assert_called_once()
-            self.storage.compute_calculated_attributes.assert_called_once()
+            network.compute_calculated_attributes.assert_called_once()
 
     def test_duration_in_full_hours(self):
         self.assertEqual(1 * u.dimensionless, self.job.duration_in_full_hours.value)
