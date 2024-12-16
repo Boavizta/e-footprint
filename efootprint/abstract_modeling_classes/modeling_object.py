@@ -18,6 +18,9 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
 
 
 PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
+CANONICAL_CLASS_COMPUTATION_ORDER = [
+    "UserJourneyStep", "UserJourney", "Hardware", "Country", "UsagePattern", "Job", "Network", "Autoscaling",
+    "Serverless", "OnPremise", "Storage", "System"]
 
 
 def get_subclass_attributes(obj, target_class):
@@ -84,7 +87,29 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
         logger.info(f"Optimized modeling object computation chain from {initial_chain_len} to {optimized_chain_len}"
                     f" modeling object calculated attributes recomputations.")
 
-    return optimized_chain
+    ordered_chain = []
+    for class_name in CANONICAL_CLASS_COMPUTATION_ORDER:
+        for mod_obj in optimized_chain:
+            if mod_obj.class_as_simple_str == class_name:
+                ordered_chain.append(mod_obj)
+
+    ordered_chain_ids = [elt.id for elt in ordered_chain]
+    optimized_chain_ids = [elt.id for elt in optimized_chain]
+
+    if len(optimized_chain) != len(ordered_chain):
+        in_ordered_not_in_optimized = [elt_id for elt_id in ordered_chain_ids if elt_id not in optimized_chain_ids]
+        in_optimized_not_in_ordered = [elt_id for elt_id in optimized_chain_ids if elt_id not in ordered_chain_ids]
+        raise AssertionError(
+            f"Ordered modeling object computation chain \n{ordered_chain_ids} doesn’t have the same length as "
+            f"\n{optimized_chain_ids}. This should never happen.\n"
+            f"In ordered not in optimized: {in_ordered_not_in_optimized}\n"
+            f"In optimized not in ordered: {in_optimized_not_in_ordered}")
+
+    if ordered_chain_ids != optimized_chain_ids:
+        logger.info(f"Reordered modeling object computation chain from \n{ordered_chain_ids} to "
+                    f"\n{optimized_chain_ids}")
+
+    return ordered_chain
 
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
@@ -255,8 +280,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
-            self, input_value: List[Type["ModelingObject"]],
-            old_value: List[Type["ModelingObject"]]):
+            self, input_value: List[Type["ModelingObject"]], old_value: List[Type["ModelingObject"]]):
         removed_objs = [obj for obj in old_value if obj not in input_value]
         added_objs = [obj for obj in input_value if obj not in old_value]
 

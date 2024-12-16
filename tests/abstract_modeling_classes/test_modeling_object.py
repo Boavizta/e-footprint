@@ -126,9 +126,13 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(mod_obj.custom_input.previous_values, [val1, val2, val3])
 
     def test_optimize_mod_objs_computation_chain_simple_case(self):
-        mod_obj1 = MagicMock()
-        mod_obj2 = MagicMock()
-        mod_obj3 = MagicMock()
+        mod_obj1 = MagicMock(id=1)
+        mod_obj2 = MagicMock(id=2)
+        mod_obj3 = MagicMock(id=3)
+
+        mod_obj1.class_as_simple_str = "UserJourney"
+        mod_obj2.class_as_simple_str = "UsagePattern"
+        mod_obj3.class_as_simple_str = "Job"
 
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
 
@@ -136,11 +140,17 @@ class TestModelingObject(unittest.TestCase):
                          optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_optimize_mod_objs_computation_chain_complex_case(self):
-        mod_obj1 = MagicMock()
-        mod_obj2 = MagicMock()
-        mod_obj3 = MagicMock()
-        mod_obj4 = MagicMock()
-        mod_obj5 = MagicMock()
+        mod_obj1 = MagicMock(id=1)
+        mod_obj2 = MagicMock(id=2)
+        mod_obj3 = MagicMock(id=3)
+        mod_obj4 = MagicMock(id=4)
+        mod_obj5 = MagicMock(id=5)
+
+        mod_obj5.class_as_simple_str = "UserJourney"
+        mod_obj1.class_as_simple_str = "UsagePattern"
+        mod_obj2.class_as_simple_str = "Job"
+        mod_obj4.class_as_simple_str = "Autoscaling"
+        mod_obj3.class_as_simple_str = "Storage"
 
         attributes_computation_chain = [
             mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]

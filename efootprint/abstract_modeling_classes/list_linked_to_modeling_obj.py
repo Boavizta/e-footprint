@@ -54,7 +54,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list):
         return output_list
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return str(self.to_json())
 
     def __str__(self):
         return_str = "[\n"

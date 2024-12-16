@@ -493,7 +493,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return output_dict
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return str(self.to_json())
 
     def __str__(self):
         def _round_series_values(input_series):
