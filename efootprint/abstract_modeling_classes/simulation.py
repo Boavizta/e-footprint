@@ -140,8 +140,7 @@ class Simulation:
 
     def compute_ancestors_not_in_computation_chain(self):
         all_ancestors_of_values_to_recompute = sum(
-            [value.all_ancestors_with_id for value in self.values_to_recompute
-             if isinstance(value, ExplainableObject)], start=[])
+            [value.all_ancestors_with_id for value in self.values_to_recompute], start=[])
         deduplicated_all_ancestors_of_values_to_recompute = []
         for ancestor in all_ancestors_of_values_to_recompute:
             if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
