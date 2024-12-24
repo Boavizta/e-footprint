@@ -1,13 +1,13 @@
 from typing import List, Type
 
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ModelingObjectMix
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.usage.job import Job
 
 
 class UserJourneyStep(ModelingObject):
-    def __init__(self, name: str, user_time_spent: SourceValue, jobs: List[Job]):
+    def __init__(self, name: str, user_time_spent: SourceValue, job_mix: ModelingObjectMix):
         super().__init__(name)
 
         if not user_time_spent.value.check("[time]"):
@@ -15,7 +15,7 @@ class UserJourneyStep(ModelingObject):
                 "Variable 'user_time_spent' does not have the appropriate '[time]' dimensionality")
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_label(f"Time spent on step {self.name}")
-        self.jobs = ListLinkedToModelingObj(jobs)
+        self.job_mix = job_mix
 
     @property
     def user_journeys(self) -> List[Type["UserJourney"]]:

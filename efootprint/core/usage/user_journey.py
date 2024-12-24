@@ -1,7 +1,7 @@
 from typing import List, Type
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ModelingObjectMix
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -9,10 +9,10 @@ from efootprint.core.usage.job import Job
 
 
 class UserJourney(ModelingObject):
-    def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
+    def __init__(self, name: str, user_journey_step_mix: ModelingObjectMix):
         super().__init__(name)
         self.duration = EmptyExplainableObject()
-        self.uj_steps = uj_steps
+        self.user_journey_step_mix = user_journey_step_mix
 
     @property
     def calculated_attributes(self):
@@ -52,17 +52,17 @@ class UserJourney(ModelingObject):
     @property
     def jobs(self) -> List[Job]:
         output_list = []
-        for uj_step in self.uj_steps:
+        for uj_step in self.user_journey_step_mix:
             output_list += uj_step.jobs
 
         return output_list
 
     def add_step(self, step: UserJourneyStep) -> None:
         step.add_obj_to_modeling_obj_containers(self)
-        self.uj_steps = self.uj_steps + [step]
+        self.user_journey_step_mix = self.user_journey_step_mix + [step]
 
     def update_duration(self):
         user_time_spent_sum = sum(
-            [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())
+            [uj_step.user_time_spent for uj_step in self.user_journey_step_mix], start=EmptyExplainableObject())
 
         self.duration = user_time_spent_sum.set_label(f"Duration of {self.name}")

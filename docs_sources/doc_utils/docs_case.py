@@ -108,7 +108,7 @@ network = Network(
 usage_pattern = UsagePattern(
     "usage pattern",
     user_journey=user_journey,
-    devices=[
+    device_mix=[
         Hardware(name="device on which the user journey is made",
                  carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
                  power=SourceValue(50 * u.W, source=None),

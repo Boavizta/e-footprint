@@ -8,7 +8,10 @@ from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
@@ -463,3 +466,38 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_str += "  " + key_value_to_str(key, getattr(self, key))
 
         return output_str
+
+
+class ModelingObjectMix:
+    def __init__(self, modeling_object_mix):
+        weight_sum = EmptyExplainableObject()
+        if len(modeling_object_mix) > 0:
+            assert isinstance(modeling_object_mix[0][0], ModelingObject)
+            self.object_type = type(modeling_object_mix[0][0])
+            for mix_element in modeling_object_mix:
+                assert isinstance(mix_element, list)
+                assert len(mix_element) == 2
+                assert type(mix_element[0]) == self.object_type
+                assert isinstance(mix_element[1], float)
+                mix_element[1] = SourceValue(mix_element[1] * u.dimensionless)
+                weight_sum += mix_element[1]
+
+        self.modeling_object_mix = modeling_object_mix
+        self.weight_sum = weight_sum
+
+    # TODO: modeling obj container logic
+
+    def __iter__(self):
+        for item in self.modeling_object_mix:
+            yield item
+
+    def compute_attr_weighted_mean(self, attr_name):
+        weighted_attr_sum = EmptyExplainableObject()
+        weights_sum = EmptyExplainableObject()
+        for modeling_object, weight in self.modeling_object_mix:
+            weighted_attr_sum += getattr(modeling_object, attr_name) * weight
+            weights_sum += weight
+
+        return weighted_attr_sum / weights_sum
+
+

@@ -124,7 +124,7 @@ class Job(ModelingObject):
             for uj_step_job in uj_step.jobs:
                 if uj_step_job == self:
                     job_occurrences += usage_pattern.utc_hourly_user_journey_starts.return_shifted_hourly_quantities(
-                        delay_between_uj_start_and_job_evt)
+                        delay_between_uj_start_and_job_evt) * uj_step_job.weight_in(usage_pattern.user_journey) * uj_step_job.weight_in(uj_step)
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent
 

@@ -42,8 +42,9 @@ class Network(ModelingObject):
         for job in self.jobs:
             job_ups_in_network_ups = [up for up in job.usage_patterns if up in self.usage_patterns]
             for up in job_ups_in_network_ups:
-                hourly_data_transferred_per_up[up] += job.hourly_data_upload_per_usage_pattern[up]
-                hourly_data_transferred_per_up[up] += job.hourly_data_download_per_usage_pattern[up]
+                share_in_up = up.networks.get(self).share
+                hourly_data_transferred_per_up[up] += job.hourly_data_upload_per_usage_pattern[up] * share_in_up
+                hourly_data_transferred_per_up[up] += job.hourly_data_download_per_usage_pattern[up] * share_in_up
 
         energy_footprint = EmptyExplainableObject()
         for up in self.usage_patterns:
@@ -51,6 +52,6 @@ class Network(ModelingObject):
                         self.bandwidth_energy_intensity * hourly_data_transferred_per_up[up]).to(u.kWh).set_label(
                 f"{up.name} network energy consumption")
 
-            energy_footprint += up_network_consumption * up.country.average_carbon_intensity
+            energy_footprint += up_network_consumption * up.average_carbon_intensity
 
         self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
