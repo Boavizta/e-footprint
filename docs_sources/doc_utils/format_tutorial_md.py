@@ -1,4 +1,5 @@
 import os
+import re
 import subprocess
 import shutil
 
@@ -14,6 +15,11 @@ generated_mkdocs_sourcefiles_path = os.path.join(doc_utils_path, "..", "generate
 def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
     with open(tutorial_doc_path.replace("ipynb", "md"), "r") as file:
         tutorial = file.read()
+
+    # Suppress pip install output cell
+    pattern = r"!pip install efootprint\n```.*?```python"  # Match the desired section
+    replacement = "!pip install efootprint\n```\n\n  *pip install logs...*\n\n```python"  # Replace with this string
+    tutorial = re.sub(pattern, replacement, tutorial, flags=re.DOTALL)
 
     tutorial_reformated = tutorial.replace("```python\n\n```", "")
 
@@ -40,7 +46,7 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
     for image in os.listdir(images_path):
         shutil.copy(os.path.join(images_path, image), os.path.join(tutorial_images_dir, image))
 
-    tutorial_reformated = tutorial_reformated.replace("docs_tutorial.nbconvert_files", tutorial_image_dirname)
+    tutorial_reformated = tutorial_reformated.replace("docs_tutorial_files", tutorial_image_dirname)
 
     with open(os.path.join(generated_mkdocs_sourcefiles_path, "tutorial.md"), "w") as file:
         file.write(tutorial_reformated)
@@ -59,7 +65,7 @@ def efootprint_tutorial_to_md():
         file.write(tutorial_content)
 
     try:
-        subprocess.run(["jupyter", "nbconvert", "--to", "notebook", "--execute", docs_tutorial_path], check=True)
+        subprocess.run(["jupyter", "nbconvert", "--to", "markdown", docs_tutorial_path], check=True)
     except subprocess.CalledProcessError:
         raise ProcessLookupError(
             "Couldn’t run the tutorial notebook, possibly because the kernel name saved in the ipynb file doesn’t match"
@@ -73,12 +79,7 @@ def efootprint_tutorial_to_md():
             logger.debug(f"deleting {file}")
             os.remove(os.path.join(doc_utils_path, file))
 
-    docs_tutorial_nbconvert_path = docs_tutorial_path.replace(".ipynb", ".nbconvert.ipynb")
-
-    subprocess.run(
-        ["jupyter", "nbconvert", "--to", "markdown", docs_tutorial_nbconvert_path], check=True)
-
-    return docs_tutorial_nbconvert_path
+    return docs_tutorial_path
 
 
 if __name__ == "__main__":
