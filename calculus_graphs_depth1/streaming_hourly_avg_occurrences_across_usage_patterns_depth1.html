@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dca3a0 {
+             #mynetwork_fe49f0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_dca3a0" class="card-body"></div>
+            <div id="mynetwork_fe49f0" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dca3a0');
+                  var container = document.getElementById('mynetwork_fe49f0');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.6, 0.07, 0.27, 0.4, 0.53, 0.47, 0.6, 0.13, 0.33, 0.33],\nlast 10 vals [0.6, 0.27, 0.27, 0.53, 0.53, 0.6, 0.4, 0.13, 0.6, 0.13]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.6, 0.07, 0.27, 0.4, 0.53, 0.47, 0.6, 0.13, 0.33, 0.33],\nlast 10 vals [0.6, 0.27, 0.27, 0.53, 0.53, 0.6, 0.4, 0.13, 0.6, 0.13]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration of streaming to server\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [9, 1, 4, 6, 8, 7, 9, 2, 5, 5],\nlast 10 vals [9, 4, 4, 8, 8, 9, 6, 2, 9, 2] hourly occurrences average 4 minute\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.6, 0.07, 0.27, 0.4, 0.53, 0.47, 0.6, 0.13, 0.33, 0.33],\nlast 10 vals [0.6, 0.27, 0.27, 0.53, 0.53, 0.6, 0.4, 0.13, 0.6, 0.13]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly streaming occurrences in usage pattern", "label": "Average hourly\nstreaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly streaming occurrences in usage pattern\n=\nHourly streaming occurrences in usage pattern hourly occurrences average Request\nduration of streaming to server\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 4, 2, 9, 8, 2, 2, 9, 3, 2],\nlast 10 vals [4, 2, 6, 3, 8, 4, 3, 7, 2, 2] hourly occurrences average 4 minute\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly streaming occurrences in usage pattern", "to": "Hourly streaming average occurrences across usage patterns"}]);
 
                   nodeColors = {};
