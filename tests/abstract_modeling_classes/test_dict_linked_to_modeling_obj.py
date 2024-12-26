@@ -2,11 +2,11 @@ import unittest
 from unittest.mock import MagicMock
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 
 
-class TestDictLinkedToModelingObj(unittest.TestCase):
+class TestExplainableObjectDict(unittest.TestCase):
 
     def setUp(self):
         self.mock_modeling_obj = MagicMock()
@@ -20,7 +20,7 @@ class TestDictLinkedToModelingObj(unittest.TestCase):
         self.mock_empty_obj = MagicMock(spec=EmptyExplainableObject)
         self.mock_empty_obj.id = "empty_obj_id"
 
-        self.dict_obj = DictLinkedToModelingObj()
+        self.dict_obj = ExplainableObjectDict()
 
     def test_initialization(self):
         self.assertIsNone(self.dict_obj.modeling_obj_container)

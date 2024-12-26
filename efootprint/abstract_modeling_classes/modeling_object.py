@@ -7,7 +7,7 @@ import re
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.dict_linked_to_modeling_obj import DictLinkedToModelingObj
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -409,7 +409,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
-            elif isinstance(value, DictLinkedToModelingObj):
+            elif isinstance(value, ExplainableObjectDict):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, Simulation):
                 continue

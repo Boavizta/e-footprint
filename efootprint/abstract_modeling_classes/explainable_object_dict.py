@@ -7,16 +7,14 @@ import json
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 
 
-class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
+class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
     def __init__(self):
         super().__init__()
-        self.modeling_obj_container = None
-        self.attr_name_in_mod_obj_container = None
 
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
         if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
             raise ValueError(
-                f"A DictLinkedToModelingObj can’t be attributed to more than one ModelingObject. Here "
+                f"A ExplainableObjectDict can’t be attributed to more than one ModelingObject. Here "
                 f"{self} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
                 f"{self.modeling_obj_container.name}.")
         self.modeling_obj_container = new_parent_modeling_object
@@ -37,7 +35,7 @@ class DictLinkedToModelingObj(ObjectLinkedToModelingObj, dict):
     def __setitem__(self, key, value: ExplainableObject):
         if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):
             raise ValueError(
-                f"DictLinkedToModelingObjs only accept ExplainableObjects or EmptyExplainableObject as values, "
+                f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
