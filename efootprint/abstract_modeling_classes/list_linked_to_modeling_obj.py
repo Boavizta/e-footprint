@@ -21,13 +21,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list):
                 f"ListLinkedToModelingObjs only accept ModelingObjects as values, received {type(value)}")
 
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
-        if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
-            raise ValueError(
-                f"A ListLinkedToModelingObj can’t be attributed to more than one ModelingObject. Here "
-                f"{self.label} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
-                f"{self.modeling_obj_container.name}.")
-        self.modeling_obj_container = new_parent_modeling_object
-        self.attr_name_in_mod_obj_container = attr_name
+        super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
 
         for value in self:
             value.add_obj_to_modeling_obj_containers(new_obj=self.modeling_obj_container)

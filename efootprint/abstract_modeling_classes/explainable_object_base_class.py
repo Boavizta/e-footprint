@@ -1,8 +1,6 @@
 from typing import Type, Optional
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import os
-import json
 
 from IPython.display import HTML
 
@@ -11,16 +9,21 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
 
 
-class ObjectLinkedToModelingObj(ABC):
+class ObjectLinkedToModelingObj:
     def __init__(self):
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
         self.dict_container = None
         self.key_in_dict = None
 
-    @abstractmethod
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
-        pass
+        if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
+            raise ValueError(
+                f"A {self.__class__.__name__} can’t be attributed to more than one ModelingObject. Here "
+                f"{self} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
+                f"{self.modeling_obj_container.name}.")
+        self.modeling_obj_container = new_parent_modeling_object
+        self.attr_name_in_mod_obj_container = attr_name
 
     @property
     def id(self):
@@ -162,6 +165,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     f" example) has been set as default value in one of the classes.")
         self.modeling_obj_container = new_modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name
+        if new_modeling_obj_container is None:
+            self.dict_container = None
+            self.key_in_dict = None
         for direct_ancestor_with_id in self.direct_ancestors_with_id:
             direct_ancestor_with_id.update_direct_children_with_id(direct_child=self)
 

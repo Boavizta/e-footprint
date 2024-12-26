@@ -9,14 +9,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
     def setUp(self):
         self.mock_modeling_object = MagicMock()
         self.mock_modeling_object.id = "mock_model"
-
-        # Create a concrete subclass of ObjectLinkedToModelingObj for testing
-        class ConcreteObjectLinkedToModelingObj(ObjectLinkedToModelingObj):
-            def set_modeling_obj_container(self, new_parent_modeling_object, attr_name):
-                self.modeling_obj_container = new_parent_modeling_object
-                self.attr_name_in_mod_obj_container = attr_name
-
-        self.obj = ConcreteObjectLinkedToModelingObj()
+        self.obj = ObjectLinkedToModelingObj()
 
     def test_replace_when_not_in_dict(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
