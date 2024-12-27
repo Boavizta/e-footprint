@@ -280,7 +280,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
-            self, input_value: List[Type["ModelingObject"]], old_value: List[Type["ModelingObject"]]):
+            self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]]):
         removed_objs = [obj for obj in old_value if obj not in input_value]
         added_objs = [obj for obj in input_value if obj not in old_value]
 
@@ -308,7 +308,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             obj.remove_obj_from_modeling_obj_containers(self)
 
         mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_lists(
-            input_value, old_value)
+            old_value, input_value)
 
         self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
@@ -420,7 +420,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def class_as_simple_str(self):
-        return str(self.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
+        return self.__class__.__name__
 
     def __repr__(self):
         return str(self)

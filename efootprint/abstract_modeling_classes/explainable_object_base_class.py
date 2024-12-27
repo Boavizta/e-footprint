@@ -59,6 +59,7 @@ class ObjectLinkedToModelingObj:
             new_value.dict_container = self.dict_container
             new_value.key_in_dict = self.key_in_dict
         new_value.set_modeling_obj_container(mod_obj_container, attr_name)
+        self.set_modeling_obj_container(None, None)
 
 
 @dataclass

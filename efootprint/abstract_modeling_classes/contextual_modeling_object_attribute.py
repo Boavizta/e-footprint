@@ -1,11 +1,24 @@
-class ContextualModelingObjectAttribute:
+from typing import Type
+
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
+
+
+class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
     def __init__(self, value, modeling_obj_container, attr_name_in_mod_obj_container):
+        super().__init__()
         if isinstance(value, ContextualModelingObjectAttribute):
             self._value = value._value
         else:
             self._value = value
         self.modeling_obj_container = modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name_in_mod_obj_container
+
+    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
+        if self.modeling_obj_container is not None and new_parent_modeling_object is None:
+            self._value.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
+        super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
+        if new_parent_modeling_object is not None:
+            self._value.add_obj_to_modeling_obj_containers(new_parent_modeling_object)
 
     def __getattr__(self, attr):
         return getattr(self._value, attr)  # Use `getattr` instead of `__getattr__`
