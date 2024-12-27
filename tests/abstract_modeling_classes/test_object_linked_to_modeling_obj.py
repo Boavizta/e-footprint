@@ -19,7 +19,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
         new_value.set_modeling_obj_container = MagicMock()
 
-        self.obj.replace_by_new_value_in_mod_obj_container(new_value)
+        self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
         self.assertEqual(new_value, getattr(self.mock_modeling_object, "test_attr"))
         new_value.set_modeling_obj_container.assert_called_once_with(self.mock_modeling_object, "test_attr")
@@ -37,7 +37,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
         new_value.set_modeling_obj_container = MagicMock()
 
-        self.obj.replace_by_new_value_in_mod_obj_container(new_value)
+        self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
         self.assertEqual(self.mock_modeling_object.test_dict[key], new_value)
         new_value.set_modeling_obj_container.assert_called_once_with(self.mock_modeling_object, "test_dict")
@@ -49,7 +49,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
 
         with self.assertRaises(AttributeError):
-            self.obj.replace_by_new_value_in_mod_obj_container(new_value)
+            self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
     def test_replace_with_invalid_new_value(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
@@ -59,7 +59,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         new_value = object()  # Invalid, not an ObjectLinkedToModelingObj instance
 
         with self.assertRaises(AttributeError):
-            self.obj.replace_by_new_value_in_mod_obj_container(new_value)
+            self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
     def test_replace_when_key_not_in_dict(self):
         self.obj.modeling_obj_container = self.mock_modeling_object
@@ -75,7 +75,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
 
         with self.assertRaises(KeyError):
-            self.obj.replace_by_new_value_in_mod_obj_container(new_value)
+            self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
     def test_id_property_when_no_container(self):
         with self.assertRaises(ValueError) as context:

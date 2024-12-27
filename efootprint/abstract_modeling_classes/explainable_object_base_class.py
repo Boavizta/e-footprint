@@ -45,7 +45,7 @@ class ObjectLinkedToModelingObj:
 
         return update_func
 
-    def replace_by_new_value_in_mod_obj_container(self, new_value):
+    def replace_in_mod_obj_container_without_recomputation(self, new_value):
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
         if self.dict_container is None:

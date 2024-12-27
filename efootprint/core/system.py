@@ -26,7 +26,7 @@ class System(ModelingObject):
         super().__init__(name)
         self.total_footprint = EmptyExplainableObject()
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
-        self._usage_patterns = ListLinkedToModelingObj(usage_patterns)
+        self.usage_patterns = ListLinkedToModelingObj(usage_patterns)
         self.previous_change = None
         self.previous_total_energy_footprints_sum_over_period = None
         self.previous_total_fabrication_footprints_sum_over_period = None
@@ -37,6 +37,8 @@ class System(ModelingObject):
 
     @property
     def calculated_attributes(self) -> List[str]:
+        self.check_no_object_to_link_is_already_linked_to_another_system(self.usage_patterns)
+
         return ["total_footprint"]
 
     def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
@@ -48,23 +50,6 @@ class System(ModelingObject):
             if len(mod_obj_systems) > 1:
                 raise ValueError(f"{mod_obj.name} is linked to 2 systems, this should never happen, please report an"
                                  f" e-footprint bug at https://github.com/Boavizta/e-footprint/issues")
-
-    @property
-    def usage_patterns(self):
-        if "usage_patterns" in self.__dict__.keys():
-            self.__dict__["_usage_patterns"] = self.__dict__["usage_patterns"]
-            del self.__dict__["usage_patterns"]
-
-        return self._usage_patterns
-
-    @usage_patterns.setter
-    def usage_patterns(self, usage_patterns: List[UsagePattern]):
-        self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
-        self._usage_patterns = ListLinkedToModelingObj(usage_patterns)
-
-    @usage_patterns.deleter
-    def usage_patterns(self):
-        del self.__dict__["_usage_patterns"]
 
     @property
     def user_journeys(self) -> List[UserJourney]:

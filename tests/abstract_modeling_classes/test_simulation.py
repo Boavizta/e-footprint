@@ -222,7 +222,7 @@ class TestSimulation(unittest.TestCase):
         simulation.old_mod_obj_links = [old_value_1, old_value_2]
         simulation.new_mod_obj_links = [new_value_1, new_value_2]
 
-        simulation.create_new_mod_obj_and_dict_links()
+        simulation.update_links()
 
         # Assertions for ModelingObject
         new_value_1.add_obj_to_modeling_obj_containers.assert_called_once_with(mod_obj_container_1)

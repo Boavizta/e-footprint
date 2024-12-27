@@ -184,17 +184,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def __setattr__(self, name, input_value):
         old_value_from_dict = self.__dict__.get(name, None)
-        trigger_recomputing_logic = True
-        hidden_value_from_getattr = getattr(self, "_" + name, None)
-        if hidden_value_from_getattr is not None and old_value_from_dict is None:
-            # The value is a property and has a hidden attribute associated to it, in which case we don’t want to
-            # trigger the recomputing logic because the logic will be triggered by the property setter when the hidden 
-            # attribute is updated
-            logger.debug(f"Impeded recomputing logic for {name} in {self.name} because it is a property")
-            trigger_recomputing_logic = False
 
-        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates \
-                and trigger_recomputing_logic:
+        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
             if isinstance(input_value, ModelingObject):
                 input_value =  ContextualModelingObjectAttribute(input_value, self, name)
                 input_value.add_obj_to_modeling_obj_containers(self)
