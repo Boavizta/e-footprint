@@ -27,7 +27,7 @@ class TestAutoscaling(TestCase):
             storage=MagicMock()
         )
 
-        self.server_base.dont_handle_input_updates = True
+        self.server_base.dont_trigger_modeling_updates = True
 
     def test_nb_of_instances_autoscaling_simple_case(self):
         raw_data = [0.5, 1, 1.5, 1.5, 5]

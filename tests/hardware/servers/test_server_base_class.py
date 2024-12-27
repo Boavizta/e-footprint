@@ -42,7 +42,7 @@ class TestServerBaseClass(TestCase):
             base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             storage=MagicMock()
         )
-        self.server_base.dont_handle_input_updates = True
+        self.server_base.dont_trigger_modeling_updates = True
 
     def test_update_hour_by_hour_cpu_need(self):
         job1 = MagicMock()

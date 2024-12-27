@@ -10,8 +10,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.abstract_modeling_classes.weighted_modeling_objects_dict import WeightedModelingObjectsDict
+from efootprint.logger import logger
 
 
 def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computation_chain: List[ModelingObject]):
@@ -26,8 +25,7 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
 class ModelingUpdate:
     def __init__(
             self, 
-            changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj | dict,
-            SourceValue | SourceHourlyValues | ModelingObject | list | dict]],
+            changes_list: List[Tuple[ObjectLinkedToModelingObj, ObjectLinkedToModelingObj | list | dict]],
             simulation_date: datetime = None):
         first_changed_val = changes_list[0][0]
         if isinstance(first_changed_val, ObjectLinkedToModelingObj):
@@ -77,32 +75,34 @@ class ModelingUpdate:
 
     def compute_new_and_old_lists(self):
         for old_value, new_value in self.changes_list:
-            if type(old_value) != type(new_value):
-                raise ValueError(f"In simulations old and new values should have same type, got "
-                                 f"{type(old_value)} and {type(new_value)}")
-            if isinstance(new_value, ObjectLinkedToModelingObj) and new_value.modeling_obj_container is not None:
-                raise ValueError(
-                    f"Can’t use {new_value} as simulation input because it already belongs to "
-                    f"{new_value.modeling_obj_container.name}")
-            if isinstance(old_value, ExplainableObject):
-                self.old_sourcevalues.append(old_value)
-                self.new_sourcevalues.append(new_value)
-            elif isinstance(new_value, ModelingObject):
-                self.old_mod_obj_links.append(old_value)
-                self.new_mod_obj_links.append(new_value)
-            elif isinstance(new_value, list):
-                new_value = ListLinkedToModelingObj(new_value)
-                self.old_mod_obj_list_links.append(old_value)
-                self.new_mod_obj_list_links.append(new_value)
-            elif isinstance(new_value, dict):
-                new_value = WeightedModelingObjectsDict(new_value)
-                self.old_mod_obj_dicts.append(old_value)
-                self.new_mod_obj_dicts.append(new_value)
+            assert isinstance(old_value, ObjectLinkedToModelingObj)
+            if new_value is None:
+                assert isinstance(old_value, ExplainableObject)
+                new_value = EmptyExplainableObject()
+
+            if id(old_value) == id(new_value):
+                logger.warning(
+                    f"{old_value.name} is updated to itself. "
+                    f"This is surprising, you might want to double check your action. "
+                    f"The link update logic will be skipped.")
             else:
-                raise ValueError(
-                    f"New e-footprint attributes should be ExplainableObjects, weighted dicts of ModelingObject "
-                    f"or ModelingObjects, got {old_value} of type {type(old_value)} trying to be set to an object "
-                    f"of type {type(new_value)}")
+                if isinstance(old_value, ExplainableObject):
+                    self.old_sourcevalues.append(old_value)
+                    self.new_sourcevalues.append(new_value)
+                elif isinstance(new_value, ModelingObject):
+                    self.old_mod_obj_links.append(old_value)
+                    self.new_mod_obj_links.append(new_value)
+                elif isinstance(new_value, list):
+                    self.old_mod_obj_list_links.append(old_value)
+                    self.new_mod_obj_list_links.append(new_value)
+                elif isinstance(new_value, dict):
+                    self.old_mod_obj_dicts.append(old_value)
+                    self.new_mod_obj_dicts.append(new_value)
+                else:
+                    raise ValueError(
+                        f"New e-footprint attributes should be ExplainableObjects, weighted dicts of ModelingObject "
+                        f"or ModelingObjects, got {old_value} of type {type(old_value)} trying to be set to an object "
+                        f"of type {type(new_value)}")
             
     def compute_mod_objs_computation_chain(self):
         mod_objs_computation_chain = []

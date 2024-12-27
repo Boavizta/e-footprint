@@ -4,6 +4,7 @@ import os
 
 from IPython.display import HTML
 
+from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
@@ -46,6 +47,7 @@ class ObjectLinkedToModelingObj:
         return update_func
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
+        assert type(new_value) == type(self), f"Trying to replace {self} by {new_value} which is of different type."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
         if self.dict_container is None:
@@ -58,8 +60,8 @@ class ObjectLinkedToModelingObj:
             self.dict_container[self.key_in_dict] = new_value
             new_value.dict_container = self.dict_container
             new_value.key_in_dict = self.key_in_dict
-        new_value.set_modeling_obj_container(mod_obj_container, attr_name)
         self.set_modeling_obj_container(None, None)
+        new_value.set_modeling_obj_container(mod_obj_container, attr_name)
 
 
 @dataclass
@@ -149,6 +151,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @property
     def direct_child_ids(self):
         return [attr.id for attr in self.direct_children_with_id]
+
+    def replace_in_mod_obj_container_without_recomputation(self, new_value):
+        value_to_set = new_value
+        if isinstance(value_to_set, float) and self.dict_container is not None:
+            from efootprint.abstract_modeling_classes.source_objects import SourceValue
+            value_to_set = SourceValue(value_to_set * u.dimensionless)
+
+        super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
     def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
         if not self.label:

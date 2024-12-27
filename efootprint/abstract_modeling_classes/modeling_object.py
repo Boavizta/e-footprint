@@ -8,7 +8,10 @@ from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
@@ -114,7 +117,7 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
-        self.dont_handle_input_updates = False
+        self.dont_trigger_modeling_updates = False
         self.init_has_passed = False
         self.name = name
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
@@ -183,55 +186,21 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
-        old_value_from_dict = self.__dict__.get(name, None)
-
-        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
-            if isinstance(input_value, ModelingObject):
-                input_value =  ContextualModelingObjectAttribute(input_value, self, name)
-                input_value.add_obj_to_modeling_obj_containers(self)
-                handle_link_update = True
-                if old_value_from_dict == input_value:
-                    handle_link_update = False
-                    logger.warning(
-                        f"{name} is updated to itself and remains equal to {input_value.name}. "
-                        f"This is surprising, you might want to double check your action. "
-                        f"The link update logic will be skipped.")
-                if self.init_has_passed and handle_link_update:
-                    self.register_footprint_values_in_systems_before_change(
-                        f"{self.name}’s {name} changed from {old_value_from_dict.name} to {input_value.name}")
-                    super().__setattr__(name, input_value)
-                    self.handle_object_link_update(input_value, old_value_from_dict)
-
-            elif isinstance(input_value, List) and name not in ["modeling_obj_containers", "all_changes"]:
-                from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-                if not isinstance(input_value, ListLinkedToModelingObj):
-                    input_value = ListLinkedToModelingObj(input_value)
-                input_value.set_modeling_obj_container(self, name)
-                # Necessary to handle syntax obj.list_attr += [new_attr_in_list] because lists are mutable objects
-                # Otherwise if using old_value, it would already be equal to input_value
-                old_list_value = getattr(old_value_from_dict, "previous_values", None)
-                if self.init_has_passed and old_list_value is not None:
-                    oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
-                    newlist_ids = [mod_obj.name for mod_obj in input_value]
-                    # Reset list to old value before registering footprints
-                    super().__setattr__(name, old_list_value)
-                    self.register_footprint_values_in_systems_before_change(
-                        f"{self.name}’s {name} changed from {oldlist_ids} to {newlist_ids}")
-                    super().__setattr__(name, input_value)
-                    self.handle_object_list_link_update(input_value, old_list_value)
-                input_value.register_previous_values()
-
-            elif isinstance(input_value, ObjectLinkedToModelingObj):
-                input_value.set_modeling_obj_container(self, name)
-                is_a_user_attribute_update = self.init_has_passed and (
-                    name not in self.calculated_attributes and old_value_from_dict is not None)
-                if is_a_user_attribute_update:
-                    self.register_footprint_values_in_systems_before_change(
-                        f"{self.name}’s {name} changed from {str(old_value_from_dict)} to {str(input_value)}")
-                    super().__setattr__(name, input_value)
-                    launch_update_function_chain(old_value_from_dict.update_function_chain)
-
-        super().__setattr__(name, input_value)
+        if (name in ["dont_trigger_modeling_updates", "init_has_passed", "modeling_obj_containers", "all_changes",
+                        "simulation", "name", "id"]
+                or name in self.calculated_attributes or self.dont_trigger_modeling_updates):
+            super().__setattr__(name, input_value)
+        elif not self.init_has_passed:
+            value_to_set = input_value
+            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None
+            if isinstance(value_to_set, ModelingObject):
+                value_to_set = ContextualModelingObjectAttribute(value_to_set, self, name)
+            super().__setattr__(name, value_to_set)
+            if isinstance(value_to_set, ObjectLinkedToModelingObj):
+                value_to_set.set_modeling_obj_container(self, name)
+        else:
+            old_value_from_dict = self.__dict__[name]
+            ModelingUpdate([(old_value_from_dict, input_value)])
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
@@ -259,17 +228,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return optimized_chain
 
-    def handle_object_link_update(
-            self, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):
-        if old_value is None:
-            raise ValueError(f"A link update is trying to replace an null object")
-
-        old_value.remove_obj_from_modeling_obj_containers(self)
-        mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-            old_value, input_value)
-
-        self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
-
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
             self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]]):
         removed_objs = [obj for obj in old_value if obj not in input_value]
@@ -291,17 +249,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 break
 
         return optimized_chain
-
-    def handle_object_list_link_update(
-            self, input_value: List[Type["ModelingObject"]], old_value: List[Type["ModelingObject"]]):
-        removed_objs = [obj for obj in old_value if obj not in input_value]
-        for obj in removed_objs:
-            obj.remove_obj_from_modeling_obj_containers(self)
-
-        mod_objs_computation_chain = self.compute_mod_objs_computation_chain_from_old_and_new_lists(
-            old_value, input_value)
-
-        self.launch_mod_objs_computation_chain(mod_objs_computation_chain)
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers and new_obj is not None:
@@ -375,7 +322,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_handle_input_updates",
+                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_trigger_modeling_updates",
                                "simulation"]
                     or key.startswith("previous")
                     or key.startswith("initial")

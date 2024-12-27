@@ -25,7 +25,7 @@ class TestStorage(TestCase):
             base_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS)
         )
 
-        self.storage_base.dont_handle_input_updates = True
+        self.storage_base.dont_trigger_modeling_updates = True
 
     def test_init_storage_with_two_servers(self):
         storage = self.storage_base
