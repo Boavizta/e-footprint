@@ -369,7 +369,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         del self
 
     def to_json(self, save_calculated_attributes=False):
-        from efootprint.abstract_modeling_classes.simulation import Simulation
+        from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
         output_dict = {}
 
         for key, value in self.__dict__.items():
@@ -402,7 +402,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value.id
             elif isinstance(value, ExplainableObjectDict):
                 output_dict[key] = value.to_json(save_calculated_attributes)
-            elif isinstance(value, Simulation):
+            elif isinstance(value, ModelingUpdate):
                 continue
             else:
                 raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")

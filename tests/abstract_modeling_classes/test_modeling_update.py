@@ -8,8 +8,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
-from efootprint.abstract_modeling_classes.simulation import (
-    compute_attr_updates_chain_from_mod_obj_computation_chain, Simulation)
+from efootprint.abstract_modeling_classes.modeling_update import (
+    compute_attr_updates_chain_from_mod_obj_computation_chain, ModelingUpdate)
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from tests.abstract_modeling_classes.test_modeling_object import ModelingObjectForTesting
 
@@ -33,7 +33,7 @@ class TestSimulationFunctions(unittest.TestCase):
 
 class TestSimulation(unittest.TestCase):
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_same_type_explainable_object(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ExplainableObject(1, "a")
         new_value = ExplainableObject(2, "b")
         new_value.modeling_obj_container = None
@@ -48,7 +48,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(new_value, simulation.new_sourcevalues)
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_different_types_raises_value_error(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ExplainableObject(1, "a")
         new_value = EmptyExplainableObject()
 
@@ -59,7 +59,7 @@ class TestSimulation(unittest.TestCase):
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_new_value_has_mod_obj_container_raises_error(
             self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ExplainableObject(1, "a")
         new_value = ExplainableObject(2, "b")
         new_value.modeling_obj_container = MagicMock()
@@ -70,7 +70,7 @@ class TestSimulation(unittest.TestCase):
             simulation.compute_new_and_old_lists()
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_list_linked_to_modeling_obj(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ListLinkedToModelingObj([ModelingObjectForTesting("old value")])
         new_value = [ModelingObjectForTesting("new value 1"), ModelingObjectForTesting("new value 2")]
 
@@ -85,7 +85,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(new_value, simulation.new_mod_obj_links)
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_wrong_input_types_raises_value_error(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = 0
         new_value = 1
 
@@ -95,7 +95,7 @@ class TestSimulation(unittest.TestCase):
             simulation.compute_new_and_old_lists()
 
     def test_compute_compute_attr_updates_chain_from_mod_obj_links_updatess_case_modeling_object(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         old_value = MagicMock(type="ModelingObject")
         new_value = MagicMock()
@@ -127,11 +127,11 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(update_function_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
 
     @patch(
-        "efootprint.abstract_modeling_classes.simulation.compute_attr_updates_chain_from_mod_obj_computation_chain")
+        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_obj_computation_chain")
     def test_compute_attr_updates_chains_from_mod_obj_links_updates_case_list(self, compute_attr_updates_chain_mock):
         attr_updates_chain_mock = MagicMock()
         compute_attr_updates_chain_mock.return_value = attr_updates_chain_mock
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         old_value = MagicMock(spec=ListLinkedToModelingObj)
         new_value = MagicMock()
@@ -156,13 +156,13 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(attr_updates_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
 
     @patch(
-        "efootprint.abstract_modeling_classes.simulation.compute_attr_updates_chain_from_mod_obj_computation_chain")
+        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_obj_computation_chain")
     def test_compute_attr_updates_from_mod_obj_computation_chain_with_mixed_objects(
             self, compute_attr_updates_chain_mock):
         attr_updates_chain_mock_1 = MagicMock()
         attr_updates_chain_mock_2 = MagicMock()
         compute_attr_updates_chain_mock.side_effect = [attr_updates_chain_mock_1, attr_updates_chain_mock_2]
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # First item: ModelingObject
         old_value_1 = MagicMock(spec=ModelingObject)
@@ -203,7 +203,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(attr_updates_chain_mock_2, simulation.attr_updates_chain_from_mod_objs_computation_chains)
 
     def test_create_new_mod_obj_links_with_mixed_objects(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # First item: ModelingObject
         old_value_1 = MagicMock(spec=ModelingObject)
@@ -234,13 +234,13 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(mod_obj_container_2.__dict__["attr_2"], new_value_2)
 
     def test_compute_ancestors_not_in_computation_chain_with_no_values_to_recompute(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         simulation.values_to_recompute = []
 
         self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
 
     def test_compute_ancestors_not_in_computation_chain_with_no_ancestors(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         value_1 = MagicMock()
         value_1.all_ancestors_with_id = []
@@ -251,7 +251,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
 
     def test_compute_ancestors_not_in_computation_chain_with_ancestors(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         value_1 = MagicMock(spec=ExplainableObject)
         value_1.id = 1
@@ -273,7 +273,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [value_3, value_4])
 
     def test_compute_hourly_quantities_to_filter_within_modeling_period(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
@@ -288,7 +288,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
 
     def test_compute_hourly_quantities_to_filter_simulation_date_outside_modeling_period_raises_error(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2024, 12, 31)).to_period(freq="h")
 
@@ -301,7 +301,7 @@ class TestSimulation(unittest.TestCase):
             simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
     def test_compute_hourly_quantities_to_filter_with_multiple_ancestors(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
@@ -317,7 +317,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_3])
 
     def test_compute_hourly_quantities_to_filter_with_simulation_date_equal_to_max_date(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2, 23)).to_period(freq="h")
 
@@ -332,7 +332,7 @@ class TestSimulation(unittest.TestCase):
         self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
 
     def test_compute_hourly_quantities_to_filter_with_max_date_less_than_simulation_date_raises_error(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 1, 10)).to_period(freq="h")
 
@@ -344,7 +344,7 @@ class TestSimulation(unittest.TestCase):
             simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
 
     def test_filter_hourly_quantities_to_filter_with_non_empty_values(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the simulation date rounded to the previous hour
         simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-01 01:00").to_period(freq="h")
@@ -372,7 +372,7 @@ class TestSimulation(unittest.TestCase):
         pd.testing.assert_index_equal(filtered_index, expected_index)
 
     def test_filter_hourly_quantities_to_filter_with_empty_values(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the simulation date rounded to the previous hour
         simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
@@ -394,7 +394,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIsInstance(simulation.filtered_hourly_quantities[0], EmptyExplainableObject)
 
     def test_filter_hourly_quantities_to_filter_with_mixed_values(self):
-        simulation = Simulation.__new__(Simulation)  # Bypass __init__
+        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the simulation date rounded to the previous hour
         simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")

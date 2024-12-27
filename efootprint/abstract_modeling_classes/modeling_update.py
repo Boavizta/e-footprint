@@ -23,7 +23,7 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
     return attr_updates_chain
 
 
-class Simulation:
+class ModelingUpdate:
     def __init__(
             self, 
             changes_list: List[Tuple[SourceValue | SourceHourlyValues | ModelingObject | ListLinkedToModelingObj | dict,

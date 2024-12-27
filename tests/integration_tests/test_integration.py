@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.simulation import Simulation
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.hardware.servers_defaults import default_onpremise
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -431,8 +431,8 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
 
     def test_simulation_input_change(self):
-        simulation = Simulation(self.start_date + timedelta(hours=1),
-                                [(self.streaming_step.user_time_spent, SourceValue(25 * u.min))])
+        simulation = ModelingUpdate(self.start_date + timedelta(hours=1),
+                                    [(self.streaming_step.user_time_spent, SourceValue(25 * u.min))])
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -451,7 +451,7 @@ class IntegrationTest(IntegrationTestBaseClass):
                       [elt.id for elt in simulation.values_to_recompute])
 
     def test_simulation_multiple_input_changes(self):
-        simulation = Simulation(
+        simulation = ModelingUpdate(
             self.start_date + timedelta(hours=1),[
                 (self.streaming_step.user_time_spent, SourceValue(25 * u.min)),
                 (self.server.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA))])
@@ -476,7 +476,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             cpu_needed=SourceValue(1 * u.core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
-        simulation = Simulation(
+        simulation = ModelingUpdate(
             self.start_date + timedelta(hours=1), [
                 (self.upload_step.jobs, self.upload_step.jobs + [new_job])])
 
@@ -495,7 +495,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         simulation.reset_pre_simulation_values()
 
     def test_simulation_add_existing_object(self):
-        simulation = Simulation(
+        simulation = ModelingUpdate(
             self.start_date + timedelta(hours=1), [
                 (self.upload_step.jobs, self.upload_step.jobs + [self.upload_job])])
 
@@ -527,7 +527,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             cpu_needed=SourceValue(1 * u.core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
-        simulation = Simulation(
+        simulation = ModelingUpdate(
             self.start_date + timedelta(hours=1), [
                 (self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job])])
 
@@ -558,7 +558,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
 
-        simulation = Simulation(
+        simulation = ModelingUpdate(
             self.start_date + timedelta(hours=1), [
                 (self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]),
                 (self.streaming_step.user_time_spent, SourceValue(25 * u.min)),
