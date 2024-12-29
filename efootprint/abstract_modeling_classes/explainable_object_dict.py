@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, retrieve_update_function_from_mod_obj_and_attr_name)
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
@@ -8,6 +9,11 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
     def __init__(self):
         super().__init__()
+
+    def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
+        super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
+        for value in self.values():
+            value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
 
     @property
     def all_ancestors_with_id(self):
@@ -40,8 +46,6 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
-        value.dict_container = self
-        value.key_in_dict = key
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {}

@@ -110,22 +110,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
         if not self.label:
             raise ValueError(f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
-        if self.modeling_obj_container is not None and new_modeling_obj_container.id != self.modeling_obj_container.id:
-            logger.warning(
-                f"Linking {self.label} to {new_modeling_obj_container.name}, erasing its existing link to "
-                f"{self.modeling_obj_container.name}.")
-            if self.left_parent is not None or self.right_parent is not None:
-                raise ValueError(
-                    f"An ExplainableObject with parent can’t be attributed to more than one ModelingObject. Here "
-                    f"{self.label} is trying to be linked to {new_modeling_obj_container.name} but is already linked to"
-                    f" {self.modeling_obj_container.name}."
-                    f" A common reason why this error could happen is that a mutable object (SourceValue for"
-                    f" example) has been set as default value in one of the classes.")
-        self.modeling_obj_container = new_modeling_obj_container
-        self.attr_name_in_mod_obj_container = attr_name
-        if new_modeling_obj_container is None:
-            self.dict_container = None
-            self.key_in_dict = None
+        super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
         for direct_ancestor_with_id in self.direct_ancestors_with_id:
             direct_ancestor_with_id.update_direct_children_with_id(direct_child=self)
 

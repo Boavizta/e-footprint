@@ -35,13 +35,15 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
+        if self.modeling_obj_container is not None and new_parent_modeling_object is None:
+            for key in self.keys():
+                key.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
+
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
 
         for key, value in self.items():
-            key.set_modeling_obj_container(new_parent_modeling_object, attr_name)
+            key.add_obj_to_modeling_obj_containers(new_parent_modeling_object)
             value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
-            value.dict_container = self
-            value.key_in_dict = key
 
     def __setitem__(self, key, value: SourceValue):
         assert isinstance(key, ModelingObject)
@@ -63,8 +65,6 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             super().__setitem__(contextual_modeling_object_attribute_key, value_to_set)
             value_to_set.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
-            value_to_set.dict_container = self
-            value_to_set.key_in_dict = key
         else:
             if key in self.keys():
                 ModelingUpdate([(self[key], value_to_set)])

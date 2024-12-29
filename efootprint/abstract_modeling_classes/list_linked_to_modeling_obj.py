@@ -1,5 +1,3 @@
-from typing import Type
-
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
@@ -25,9 +23,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=ABCAfte
             raise ValueError(
                 f"ListLinkedToModelingObjs only accept ModelingObjects as values, received {type(value)}")
 
-    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
+    def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
+        if self.modeling_obj_container is not None and new_parent_modeling_object is None:
+            for value in self:
+                value.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
-
         for value in self:
             value.add_obj_to_modeling_obj_containers(new_obj=self.modeling_obj_container)
 
