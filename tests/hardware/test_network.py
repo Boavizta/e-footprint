@@ -11,7 +11,7 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 class TestNetwork(TestCase):
     def setUp(self):
         self.network = Network("Wifi network", SourceValue(0 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
-        self.network.dont_trigger_modeling_updates = True
+        self.network.trigger_modeling_updates = False
 
     def test_update_energy_footprint_simple_case(self):
         usage_pattern = MagicMock()

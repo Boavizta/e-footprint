@@ -90,8 +90,7 @@ def json_to_system(system_dict):
                             flat_obj_dict[elt].add_obj_to_modeling_obj_containers(mod_obj)
                     mod_obj.__dict__[attr_key] = output_val
                     mod_obj.__dict__[f"{attr_key}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"] = copy(output_val)
-            mod_obj.__dict__["dont_trigger_modeling_updates"] = False
-            mod_obj.__dict__["init_has_passed"] = True
+            mod_obj.__dict__["trigger_modeling_updates"] = True
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":

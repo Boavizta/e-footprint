@@ -44,7 +44,7 @@ class TestUsagePattern(unittest.TestCase):
             "usage_pattern", user_journey, [self.device1, self.device2], network, country,
             hourly_user_journey_starts=SourceHourlyValues(create_random_hourly_usage_df())
         )
-        self.usage_pattern.dont_trigger_modeling_updates = True
+        self.usage_pattern.trigger_modeling_updates = False
 
     def test_jobs(self):
         self.assertEqual([self.job1, self.job2], self.usage_pattern.jobs)

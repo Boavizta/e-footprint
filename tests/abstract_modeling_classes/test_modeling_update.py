@@ -9,13 +9,13 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import (
-    compute_attr_updates_chain_from_mod_obj_computation_chain, ModelingUpdate)
+    compute_attr_updates_chain_from_mod_objs_computation_chain, ModelingUpdate)
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from tests.abstract_modeling_classes.test_modeling_object import ModelingObjectForTesting
 
 
 class TestSimulationFunctions(unittest.TestCase):
-    def test_compute_attr_updates_chain_from_mod_obj_computation_chain(self):
+    def test_compute_attr_updates_chain_from_mod_objs_computation_chain(self):
         mod_obj_1 = MagicMock()
         mod_obj_2 = MagicMock()
 
@@ -26,7 +26,7 @@ class TestSimulationFunctions(unittest.TestCase):
         mod_obj_2.attr_3 = "attr_3_value"
 
         mod_objs_computation_chain = [mod_obj_1, mod_obj_2]
-        result = compute_attr_updates_chain_from_mod_obj_computation_chain(mod_objs_computation_chain)
+        result = compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computation_chain)
 
         self.assertEqual(["attr_1_value", "attr_2_value", "attr_3_value"], result)
 
@@ -114,7 +114,7 @@ class TestSimulation(unittest.TestCase):
         simulation.attr_updates_chain_from_mod_objs_computation_chains = []
         from efootprint.abstract_modeling_classes import simulation as simulation_module
         with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock,\
-                patch.object(simulation_module, "compute_attr_updates_chain_from_mod_obj_computation_chain",
+                patch.object(simulation_module, "compute_attr_updates_chain_from_mod_objs_computation_chain",
                              new_callable=PropertyMock) as compute_update_func_chain_mock:
             instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
             compute_update_func_chain_mock.return_value = update_function_chain_mock
@@ -127,7 +127,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(update_function_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
 
     @patch(
-        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_obj_computation_chain")
+        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_objs_computation_chain")
     def test_compute_attr_updates_chains_from_mod_obj_links_updates_case_list(self, compute_attr_updates_chain_mock):
         attr_updates_chain_mock = MagicMock()
         compute_attr_updates_chain_mock.return_value = attr_updates_chain_mock
@@ -156,7 +156,7 @@ class TestSimulation(unittest.TestCase):
         self.assertIn(attr_updates_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
 
     @patch(
-        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_obj_computation_chain")
+        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_objs_computation_chain")
     def test_compute_attr_updates_from_mod_obj_computation_chain_with_mixed_objects(
             self, compute_attr_updates_chain_mock):
         attr_updates_chain_mock_1 = MagicMock()

@@ -8,10 +8,6 @@ from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     ObjectLinkedToModelingObj, retrieve_update_function_from_mod_obj_and_attr_name
@@ -117,8 +113,7 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
-        self.dont_trigger_modeling_updates = False
-        self.init_has_passed = False
+        self.trigger_modeling_updates = False
         self.name = name
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.modeling_obj_containers = []
@@ -166,7 +161,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             mod_obj.compute_calculated_attributes()
 
     def after_init(self):
-        self.init_has_passed = True
+        self.trigger_modeling_updates = True
 
     def __hash__(self):
         return hash(self.id)
@@ -186,19 +181,19 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
-        if (name in ["dont_trigger_modeling_updates", "init_has_passed", "modeling_obj_containers", "all_changes",
-                        "simulation", "name", "id"]
-                or name in self.calculated_attributes or self.dont_trigger_modeling_updates):
+        if name in ["trigger_modeling_updates", "modeling_obj_containers", "all_changes",
+                     "simulation", "name", "id"]:
             super().__setattr__(name, input_value)
-        elif not self.init_has_passed:
+        elif name in self.calculated_attributes or not self.trigger_modeling_updates:
             value_to_set = input_value
-            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None
             if isinstance(value_to_set, ModelingObject):
                 value_to_set = ContextualModelingObjectAttribute(value_to_set, self, name)
+            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None
             super().__setattr__(name, value_to_set)
             if isinstance(value_to_set, ObjectLinkedToModelingObj):
                 value_to_set.set_modeling_obj_container(self, name)
         else:
+            from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             old_value_from_dict = self.__dict__[name]
             ModelingUpdate([(old_value_from_dict, input_value)])
 
@@ -322,8 +317,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers", "init_has_passed", "dont_trigger_modeling_updates",
-                               "simulation"]
+                    or key in ["all_changes", "modeling_obj_containers", "trigger_modeling_updates", "simulation"]
                     or key.startswith("previous")
                     or key.startswith("initial")
                     or PREVIOUS_LIST_VALUE_SET_SUFFIX in key

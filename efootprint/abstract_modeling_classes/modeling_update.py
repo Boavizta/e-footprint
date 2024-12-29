@@ -7,7 +7,6 @@ import pandas as pd
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     optimize_attr_updates_chain, ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
-from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger

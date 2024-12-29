@@ -27,7 +27,7 @@ class TestOnPremise(TestCase):
             base_cpu_consumption=SourceValue(0 * u.core),
             storage=MagicMock()
         )
-        self.server_base.dont_trigger_modeling_updates = True
+        self.server_base.trigger_modeling_updates = False
 
         self.server_with_fixed_nb_of_instances = OnPremise(
             "On premise",
@@ -45,7 +45,7 @@ class TestOnPremise(TestCase):
             base_cpu_consumption=SourceValue(0 * u.core),
             storage=MagicMock()
         )
-        self.server_with_fixed_nb_of_instances.dont_trigger_modeling_updates = True
+        self.server_with_fixed_nb_of_instances.trigger_modeling_updates = False
 
     def test_nb_of_instances_on_premise_rounds_up_to_next_integer(self):
         raw_data = [0.5, 1, 1.5, 1.5, 5.5]

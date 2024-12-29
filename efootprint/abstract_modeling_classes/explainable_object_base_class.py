@@ -18,7 +18,8 @@ class ObjectLinkedToModelingObj:
         self.key_in_dict = None
 
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
-        if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
+        if (self.modeling_obj_container is not None and new_parent_modeling_object is not None and
+                new_parent_modeling_object.id != self.modeling_obj_container.id):
             raise ValueError(
                 f"A {self.__class__.__name__} can’t be attributed to more than one ModelingObject. Here "
                 f"{self} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "

@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import patch, PropertyMock, MagicMock
+from unittest.mock import MagicMock, Mock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
@@ -10,6 +11,9 @@ class ModelingObjectForTesting(ModelingObject):
         super().__init__(name)
         if custom_input is not None:
             self.custom_input = custom_input
+
+    def after_init(self):
+        self.trigger_modeling_updates = False
 
     def compute_calculated_attributes(self):
         pass
@@ -25,29 +29,77 @@ class ModelingObjectForTesting(ModelingObject):
 
 class TestContextualModObjAttribute(unittest.TestCase):
     def test_contextual_modeling_object_attribute(self):
-        modeling_obj = ModelingObjectForTesting(name="TestObject", custom_input=42)
+        custom_input = MagicMock(spec=ObjectLinkedToModelingObj)
+        modeling_obj = ModelingObjectForTesting(name="TestObject", custom_input=custom_input)
         modeling_obj_container = ModelingObjectForTesting(name="container")
 
         contextual_attribute = ContextualModelingObjectAttribute(
             value=modeling_obj, modeling_obj_container=modeling_obj_container, attr_name_in_mod_obj_container="attr")
 
         self.assertTrue(isinstance(contextual_attribute, ModelingObject))
-        self.assertEqual(42, contextual_attribute.custom_input)
+        self.assertEqual(custom_input, contextual_attribute.custom_input)
         self.assertEqual([], contextual_attribute.systems)
 
     def test_works_when_setting_attr_to_variable(self):
-        custom_input = MagicMock(name="custom_input")
+        custom_input = MagicMock(name="custom_input", spec=ObjectLinkedToModelingObj)
         modeling_obj = ModelingObjectForTesting(name="test", custom_input=custom_input)
         other_modeling_obj = ModelingObjectForTesting(name="other")
 
-        with patch.object(ModelingObject, "register_footprint_values_in_systems_before_change",
-                          new_callable=PropertyMock) as mock1, \
-            patch.object(ModelingObject, "handle_object_link_update", new_callable=PropertyMock) as mock2:
-            mock1.return_value = lambda x: True
-            mock2.return_value = lambda x, y: True
-            modeling_obj.custom_input = other_modeling_obj
+        modeling_obj.custom_input = other_modeling_obj
 
-            test = modeling_obj.custom_input
+        self.assertTrue(isinstance(modeling_obj.custom_input, ContextualModelingObjectAttribute))
+        self.assertEqual(modeling_obj.custom_input.modeling_obj_container, modeling_obj)
 
-            self.assertTrue(isinstance(test, ContextualModelingObjectAttribute))
-            self.assertEqual(test.modeling_obj_container, modeling_obj)
+    def test_set_modeling_obj_container_with_new_parent(self):
+        mock_value = Mock()
+        mock_value.remove_obj_from_modeling_obj_containers = Mock()
+        mock_value.add_obj_to_modeling_obj_containers = Mock()
+
+        attr = ContextualModelingObjectAttribute(
+            value=mock_value,
+            modeling_obj_container=None,
+            attr_name_in_mod_obj_container=None
+        )
+
+        new_mock_modeling_object = Mock()
+        attr.set_modeling_obj_container(new_mock_modeling_object, "new_attr")
+
+        mock_value.remove_obj_from_modeling_obj_containers.assert_not_called()
+        mock_value.add_obj_to_modeling_obj_containers.assert_called_once_with(new_mock_modeling_object)
+        self.assertEqual(attr.modeling_obj_container, new_mock_modeling_object)
+
+    def test_set_modeling_obj_container_with_none_parent(self):
+        mock_modeling_object = Mock()
+        mock_value = Mock()
+        mock_value.remove_obj_from_modeling_obj_containers = Mock()
+        mock_value.add_obj_to_modeling_obj_containers = Mock()
+
+        attr = ContextualModelingObjectAttribute(
+            value=mock_value,
+            modeling_obj_container=mock_modeling_object,
+            attr_name_in_mod_obj_container="mock_attr"
+        )
+
+        attr.set_modeling_obj_container(None, "new_attr")
+
+        mock_value.remove_obj_from_modeling_obj_containers.assert_called_once_with(mock_modeling_object)
+        mock_value.add_obj_to_modeling_obj_containers.assert_not_called()
+        self.assertIsNone(attr.modeling_obj_container)
+
+    def test_set_modeling_obj_container_with_same_parent(self):
+        mock_modeling_object = Mock()
+        mock_value = Mock()
+        mock_value.remove_obj_from_modeling_obj_containers = Mock()
+        mock_value.add_obj_to_modeling_obj_containers = Mock()
+
+        attr = ContextualModelingObjectAttribute(
+            value=mock_value,
+            modeling_obj_container=mock_modeling_object,
+            attr_name_in_mod_obj_container="mock_attr"
+        )
+
+        attr.set_modeling_obj_container(mock_modeling_object, "same_attr")
+
+        mock_value.remove_obj_from_modeling_obj_containers.assert_not_called()
+        mock_value.add_obj_to_modeling_obj_containers.assert_called_once_with(mock_modeling_object)
+        self.assertEqual(attr.modeling_obj_container, mock_modeling_object)

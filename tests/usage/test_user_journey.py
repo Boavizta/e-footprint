@@ -15,7 +15,7 @@ class TestUserJourney(TestCase):
         self.mock_check_value_type = patcher.start()
         self.addCleanup(patcher.stop)
         self.user_journey = UserJourney("test user journey", uj_steps=[])
-        self.user_journey.dont_trigger_modeling_updates = True
+        self.user_journey.trigger_modeling_updates = False
 
     def test_servers(self):
         server_1 = MagicMock()
