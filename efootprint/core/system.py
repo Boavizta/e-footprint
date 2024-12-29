@@ -6,6 +6,7 @@ import pandas as pd
 from IPython.display import HTML
 from matplotlib import pyplot as plt
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
@@ -28,17 +29,19 @@ class System(ModelingObject):
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
         self.usage_patterns = ListLinkedToModelingObj(usage_patterns)
         self.previous_change = None
-        self.previous_total_energy_footprints_sum_over_period = None
-        self.previous_total_fabrication_footprints_sum_over_period = None
+        self.previous_total_energy_footprints_sum_over_period = ExplainableObjectDict()
+        self.previous_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
         self.all_changes = []
-        self.initial_total_energy_footprints_sum_over_period = None
-        self.initial_total_fabrication_footprints_sum_over_period = None
+        self.initial_total_energy_footprints_sum_over_period = ExplainableObjectDict()
+        self.initial_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
         self.simulation = None
+
+    def compute_calculated_attributes(self):
+        self.check_no_object_to_link_is_already_linked_to_another_system(self.usage_patterns)
+        super().compute_calculated_attributes()
 
     @property
     def calculated_attributes(self) -> List[str]:
-        self.check_no_object_to_link_is_already_linked_to_another_system(self.usage_patterns)
-
         return ["total_footprint"]
 
     def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
@@ -68,13 +71,13 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
-        self.trigger_modeling_updates = True
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
         self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
         self.compute_calculated_attributes()
         logger.info(f"Finished computing {self.name} modeling")
         self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
+        self.trigger_modeling_updates = True
 
     def get_objects_linked_to_usage_patterns(self, usage_patterns: List[UsagePattern]):
         output_list = self.servers_from_usage_patterns(usage_patterns) + \
@@ -237,7 +240,7 @@ class System(ModelingObject):
             for object_category, category_value in self.total_fabrication_footprints.items()
         }
 
-        return fab_footprints
+        return ExplainableObjectDict(fab_footprints)
 
     @property
     def total_energy_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
@@ -247,7 +250,7 @@ class System(ModelingObject):
             for object_category, category_value in self.total_energy_footprints.items()
         }
 
-        return energy_footprints
+        return ExplainableObjectDict(energy_footprints)
 
     def update_total_footprint(self):
         total_footprint = (

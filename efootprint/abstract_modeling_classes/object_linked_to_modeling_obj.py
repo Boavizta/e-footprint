@@ -54,7 +54,14 @@ class ObjectLinkedToModelingObj:
         return output_key
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
-        assert isinstance(new_value, self.__class__), f"Trying to replace {self} by {new_value} which is of different type."
+        from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+
+        assert isinstance(new_value, ObjectLinkedToModelingObj), (
+            f"Trying to replace {self} by {new_value} which is not an instance of "
+            f"ObjectLinkedToModelingObj.")
+        if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
+            assert isinstance(new_value, self.__class__) or isinstance(self, new_value.__class__), \
+                f"Trying to replace {self} by {new_value} which is of different type."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
         if self.dict_container is None:

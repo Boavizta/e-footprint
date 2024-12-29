@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock, Mock
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
 
@@ -122,6 +123,50 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
 
         with self.assertRaises(AssertionError):
             self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
+
+    @patch.object(ObjectLinkedToModelingObj, "dict_container", new_callable=PropertyMock)
+    def test_replace_with_object_of_non_related_class_raises_error(self, mock_dict_container):
+        class ObjectLinkedToModelingObjChild(ObjectLinkedToModelingObj):
+            pass
+        class ObjectLinkedToModelingObjChild2(ObjectLinkedToModelingObj):
+            pass
+        obj = ObjectLinkedToModelingObjChild()
+        obj.modeling_obj_container = self.mock_modeling_object
+        obj.attr_name_in_mod_obj_container = "test_attr"
+        mock_dict_container.return_value = None
+
+        new_value = ObjectLinkedToModelingObjChild2()
+
+        with self.assertRaises(AssertionError):
+            obj.replace_in_mod_obj_container_without_recomputation(new_value)
+
+    @patch.object(ObjectLinkedToModelingObj, "dict_container", new_callable=PropertyMock)
+    def test_replace_with_object_of_related_class_works(self, mock_dict_container):
+        class ObjectLinkedToModelingObjChild(ObjectLinkedToModelingObj):
+            pass
+
+        class ObjectLinkedToModelingObjChild2(ObjectLinkedToModelingObjChild):
+            pass
+
+        obj = ObjectLinkedToModelingObjChild()
+        obj.modeling_obj_container = self.mock_modeling_object
+        obj.attr_name_in_mod_obj_container = "test_attr"
+        mock_dict_container.return_value = None
+
+        new_value = ObjectLinkedToModelingObjChild2()
+
+        obj.replace_in_mod_obj_container_without_recomputation(new_value)
+
+    @patch.object(ObjectLinkedToModelingObj, "dict_container", new_callable=PropertyMock)
+    def test_replace_with_emptyexplainableobject_works(self, mock_dict_container):
+        obj = ObjectLinkedToModelingObj()
+        obj.modeling_obj_container = self.mock_modeling_object
+        obj.attr_name_in_mod_obj_container = "test_attr"
+        mock_dict_container.return_value = None
+
+        new_value = EmptyExplainableObject()
+
+        obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
     @patch.object(ObjectLinkedToModelingObj, "dict_container", new_callable=PropertyMock)
     @patch.object(ObjectLinkedToModelingObj, "key_in_dict", new_callable=PropertyMock)

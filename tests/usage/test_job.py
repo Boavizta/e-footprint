@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.usage.job import Job
@@ -20,6 +21,7 @@ class TestJob(TestCase):
             data_upload=SourceValue(100 * u.MB), data_stored=SourceValue(300 * u.MB),
             ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
             request_duration=SourceValue(2 * u.min))
+        self.job.trigger_modeling_updates = False
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj_step(self):
         uj_step = MagicMock()
@@ -133,7 +135,8 @@ class TestJob(TestCase):
     def test_compute_job_hourly_data_exchange_simple_case(self):
         data_exchange = "data_stored"
         usage_pattern = MagicMock()
-        hourly_occs_per_up = {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))}
+        hourly_occs_per_up = ExplainableObjectDict(
+            {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))})
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
                 patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
@@ -147,7 +150,8 @@ class TestJob(TestCase):
     def test_compute_job_hourly_data_exchange_complex_case(self):
         data_exchange = "data_stored"
         usage_pattern = MagicMock()
-        hourly_occs_per_up = {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))}
+        hourly_occs_per_up = ExplainableObjectDict(
+            {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))})
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
                 patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
@@ -161,9 +165,9 @@ class TestJob(TestCase):
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
         usage_pattern1 = MagicMock()
         usage_pattern2 = MagicMock()
-        hourly_calc_attr_per_up = {
+        hourly_calc_attr_per_up = ExplainableObjectDict({
             usage_pattern1: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5])),
-            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([3, 2, 4]))}
+            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([3, 2, 4]))})
         self.job.hourly_calc_attr_per_up = hourly_calc_attr_per_up
 
         with patch.object(Job, "usage_patterns", new_callable=PropertyMock) as mock_ups:

@@ -108,11 +108,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
     def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
+        if self.modeling_obj_container is not None:
+            for direct_ancestor_with_id in self.direct_ancestors_with_id:
+                direct_ancestor_with_id.remove_child_from_direct_children_with_id(direct_child=self)
         if not self.label:
             raise ValueError(f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
         super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
-        for direct_ancestor_with_id in self.direct_ancestors_with_id:
-            direct_ancestor_with_id.update_direct_children_with_id(direct_child=self)
+        if new_modeling_obj_container is not None:
+            for direct_ancestor_with_id in self.direct_ancestors_with_id:
+                direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
 
     def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:
@@ -120,9 +124,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         else:
             return self.direct_ancestors_with_id
 
-    def update_direct_children_with_id(self, direct_child):
+    def add_child_to_direct_children_with_id(self, direct_child):
         if direct_child.id not in self.direct_child_ids:
             self.direct_children_with_id.append(direct_child)
+
+    def remove_child_from_direct_children_with_id(self, direct_child):
+        if direct_child.id in self.direct_child_ids:
+            self.direct_children_with_id = [
+                child for child in self.direct_children_with_id if child.id != direct_child.id]
 
     @property
     def all_descendants_with_id(self):
@@ -155,9 +164,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @property
     def attr_updates_chain(self):
         if self.modeling_obj_container is None:
-            raise ValueError(
+            logger.warning(
                 f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its update computation chain")
+                f"to look for its update computation chain. Returning empty list.")
+            return []
         attr_updates_chain = []
         descendants = self.all_descendants_with_id
         has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}

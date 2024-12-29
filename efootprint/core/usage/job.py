@@ -2,6 +2,7 @@ import math
 from copy import copy
 from typing import List, Type
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -48,7 +49,7 @@ class Job(ModelingObject):
         self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
         self.job_type = job_type
-        self.server = server
+        self.server = ContextualModelingObjectAttribute(server)
         if not data_upload.value.check("[]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
         elif data_upload.value.magnitude < 0:

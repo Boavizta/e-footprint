@@ -25,6 +25,9 @@ class TestInfraHardware(TestCase):
             def update_instances_energy(self):
                 self.instances_energy = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4], pint_unit=u.kWh))
 
+            def after_init(self):
+                self.trigger_modeling_updates = False
+
         self.test_infra_hardware = InfraHardwareTestClass(
             "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS))

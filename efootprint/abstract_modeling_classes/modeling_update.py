@@ -28,8 +28,10 @@ class ModelingUpdate:
             changes_list: List[Tuple[ObjectLinkedToModelingObj, ObjectLinkedToModelingObj | list | dict]],
             simulation_date: datetime = None):
         first_changed_val = changes_list[0][0]
+        self.system = None
         if isinstance(first_changed_val, ObjectLinkedToModelingObj):
-            self.system = first_changed_val.modeling_obj_container.systems[0]
+            if first_changed_val.modeling_obj_container.systems:
+                self.system = first_changed_val.modeling_obj_container.systems[0]
         else:
             raise ValueError(
                 f"First changed value {first_changed_val} is not an ObjectLinkedToModelingObj")
@@ -37,7 +39,7 @@ class ModelingUpdate:
 
         self.simulation_date = simulation_date
         self.simulation_date_as_hourly_freq = None
-        if simulation_date is not None:
+        if simulation_date is not None and self.system is not None:
             self.system.simulation = self
             self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
 

@@ -1,18 +1,19 @@
+from copy import copy
+
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, AfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 
 
-class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=ABCAfterInitMeta):
+class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterInitMeta):
     def __init__(self, values=None):
         super().__init__()
         self.trigger_modeling_updates = False
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
-        self.previous_values = None
         if values is not None:
-            self.extend([value for value in values])
+            self.extend(values)
 
     def after_init(self):
         self.trigger_modeling_updates = True
@@ -29,7 +30,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=ABCAfte
                 value.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         for value in self:
-            value.add_obj_to_modeling_obj_containers(new_obj=self.modeling_obj_container)
+            value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
         value_to_set = new_value
@@ -39,23 +40,23 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=ABCAfte
 
     def __setitem__(self, index: int, value: ModelingObject):
         self.check_value_type(value)
-        if not self.trigger_modeling_updates:
-            super().__setitem__(index, value)
-            value.add_obj_to_modeling_obj_containers(new_obj=self.modeling_obj_container)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list[index] = value
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        super().__setitem__(index, value)
+        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
 
     def append(self, value: ModelingObject):
         self.check_value_type(value)
-        if not self.trigger_modeling_updates:
-            super().append(value)
-            value.add_obj_to_modeling_obj_containers(new_obj=self.modeling_obj_container)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.append(value)
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        super().append(value)
+        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_list = []
@@ -80,75 +81,89 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=ABCAfte
 
     def insert(self, index: int, value: ModelingObject):
         self.check_value_type(value)
-        if not self.trigger_modeling_updates:
-            super().insert(index, value)
-            value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.insert(index, value)
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        super().insert(index, value)
+        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
 
     def extend(self, values) -> None:
-        if not self.trigger_modeling_updates:
-            for value in values:
-                self.append(value)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.extend(values)
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
+        self.trigger_modeling_updates = False
+        for value in values:
+            self.append(value)
+        self.trigger_modeling_updates = initial_trigger_modeling_updates
 
     def pop(self, index: int = -1):
-        if not self.trigger_modeling_updates:
-            value = super().pop(index)
-            value.set_modeling_obj_container(None, None)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
-            value = copied_list.pop(index)
-            ModelingUpdate([(self, copied_list)])
+            _ = copied_list.pop(index)
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        value = super().pop(index)
+        value.set_modeling_obj_container(None, None)
 
         return value
 
     def remove(self, value: ContextualModelingObjectAttribute):
-        if not self.trigger_modeling_updates:
-            super().remove(value)
-            value.set_modeling_obj_container(None, None)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.remove(value)
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        super().remove(value)
+        value.set_modeling_obj_container(None, None)
 
     def clear(self):
-        if not self.trigger_modeling_updates:
-            for item in self:
-                item.set_modeling_obj_container(None, None)
-            super().clear()
-        else:
-            ModelingUpdate([(self, [])])
+        if self.trigger_modeling_updates:
+            ModelingUpdate([(self.return_copy_with_same_attributes(), [])])
+
+        for item in self:
+            item.set_modeling_obj_container(None, None)
+        super().clear()
 
     def __delitem__(self, index: int):
-        if not self.trigger_modeling_updates:
-            value = self[index]
-            value.set_modeling_obj_container(None, None)
-            super().__delitem__(index)
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             del copied_list[index]
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        value = self[index]
+        value.set_modeling_obj_container(None, None)
+        super().__delitem__(index)
 
     def __iadd__(self, values):
         self.extend(values)
         return self
 
     def __imul__(self, n: int):
-        if not self.trigger_modeling_updates:
-            for _ in range(n - 1):
-                self.extend(self.copy())
-        else:
+        if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list *= n
-            ModelingUpdate([(self, copied_list)])
+            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+
+        initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
+        self.trigger_modeling_updates = False
+        for _ in range(n - 1):
+            self.extend(self.copy())
+        self.trigger_modeling_updates = initial_trigger_modeling_updates
 
         return self
 
     def __copy__(self):
         return ListLinkedToModelingObj([value for value in self])
+
+    def return_copy_with_same_attributes(self):
+        copied_list = ListLinkedToModelingObj(self)
+        copied_list.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        copied_list.trigger_modeling_updates = self.trigger_modeling_updates
+        
+        return copied_list
+    

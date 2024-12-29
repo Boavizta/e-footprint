@@ -122,15 +122,15 @@ class TestServerBaseClass(TestCase):
         start_date_b = datetime.strptime("2025-01-02", "%Y-%m-%d")
 
         ram_need_a = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_a, pint_unit=u.GB))
+            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_a, pint_unit=u.GB), label="ram_need_a")
         ram_need_b = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_b, pint_unit=u.GB))
+            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_b, pint_unit=u.GB), label="ram_need_b")
         cpu_need_a = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.core))
+            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.core), label="cpu_need_a")
         cpu_need_b = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.core))
-        all_ram_need = ram_need_a + ram_need_b
-        all_cpu_need = cpu_need_a + cpu_need_b
+            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.core), label="cpu_need_b")
+        all_ram_need = (ram_need_a + ram_need_b).set_label("all_ram_need")
+        all_cpu_need = (cpu_need_a + cpu_need_b).set_label("all_cpu_need")
 
         expected_data = [0.5, 1, 1.5, 1.5, 5, 0.5, 1, 1.5, 1.5, 5]
         expected_max_date = start_date_b + timedelta(hours=(len(ram_need_b)-1))

@@ -7,8 +7,11 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 
 
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
-    def __init__(self):
+    def __init__(self, input_dict=None):
         super().__init__()
+        if input_dict is not None:
+            for key, value in input_dict.items():
+                self[key] = value
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)

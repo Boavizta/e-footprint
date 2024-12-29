@@ -9,7 +9,7 @@ from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
-
+from efootprint.core.usage.usage_pattern import UsagePattern
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -69,6 +69,7 @@ class TestSystem(TestCase):
             "Non cloud system",
             usage_patterns=[self.usage_pattern]
         )
+        self.system.trigger_modeling_updates = False
 
     def test_servers(self):
         self.assertEqual([self.server], self.system.servers)
@@ -124,10 +125,12 @@ class TestSystem(TestCase):
             with self.assertRaises(PermissionError):
                 new_system = System("new system", usage_patterns=[self.usage_pattern])
 
-    def test_cant_update_usage_patterns_with_usage_patterns_already_linked_to_another_system(self):
-        new_up = MagicMock()
-        other_system = MagicMock()
+    def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(self):
+        new_up = MagicMock(spec=UsagePattern)
+        new_up.name = "new up"
+        other_system = MagicMock(spec=System)
         other_system.id = "other id"
+        other_system.name = "other system"
         new_up.systems = [other_system]
 
         with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
@@ -135,6 +138,7 @@ class TestSystem(TestCase):
             mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
             with self.assertRaises(PermissionError):
                 self.system.usage_patterns = [new_up]
+                self.system.compute_calculated_attributes()
         
     def test_fabrication_footprints(self):
         expected_dict = {
@@ -309,7 +313,6 @@ class TestSystem(TestCase):
                 filename=os.path.join(root_dir, "footprints by category and object unit test.html"))
 
     def test_plot_emission_diffs(self):
-
         change_test = "changed energy footprint value"
 
         previous_fab_footprints = {

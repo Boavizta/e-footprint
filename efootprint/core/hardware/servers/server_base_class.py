@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -46,7 +47,7 @@ class Server(InfraHardware):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
-        self.storage = storage
+        self.storage = ContextualModelingObjectAttribute(storage)
 
     @property
     def calculated_attributes(self):

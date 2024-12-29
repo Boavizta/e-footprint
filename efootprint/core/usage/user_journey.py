@@ -1,6 +1,7 @@
 from typing import List, Type
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
@@ -12,7 +13,7 @@ class UserJourney(ModelingObject):
     def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
         super().__init__(name)
         self.duration = EmptyExplainableObject()
-        self.uj_steps = uj_steps
+        self.uj_steps = ListLinkedToModelingObj(uj_steps)
 
     @property
     def calculated_attributes(self):

@@ -80,16 +80,16 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual(self.a.modeling_obj_container, self.modeling_obj_container_mock)
         self.assertEqual(self.a.attr_name_in_mod_obj_container, "attr1")
 
-    def test_set_modeling_obj_container_should_trigger_update_direct_children_with_id(self):
+    def test_set_modeling_obj_container_should_trigger_add_child_to_direct_children_with_id(self):
         ancestor = MagicMock()
         self.a.direct_ancestors_with_id = [ancestor]
         self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
-        ancestor.update_direct_children_with_id.assert_called_once_with(direct_child=self.a)
+        ancestor.add_child_to_direct_children_with_id.assert_called_once_with(direct_child=self.a)
 
-    def test_update_direct_children_with_id_shouldnt_update_list_if_child_already_in_list(self):
+    def test_add_child_to_direct_children_with_id_shouldnt_update_list_if_child_already_in_list(self):
         self.a.direct_children_with_id = [self.c]
         self.c.modeling_obj_container = self.modeling_obj_container_mock
-        self.a.update_direct_children_with_id(self.c)
+        self.a.add_child_to_direct_children_with_id(self.c)
 
         self.assertEqual([self.c], self.a.direct_children_with_id)
 

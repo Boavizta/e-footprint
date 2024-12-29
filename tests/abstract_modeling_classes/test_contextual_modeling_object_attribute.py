@@ -80,7 +80,7 @@ class TestContextualModObjAttribute(unittest.TestCase):
             attr_name_in_mod_obj_container="mock_attr"
         )
 
-        attr.set_modeling_obj_container(None, "new_attr")
+        attr.set_modeling_obj_container(None, None)
 
         mock_value.remove_obj_from_modeling_obj_containers.assert_called_once_with(mock_modeling_object)
         mock_value.add_obj_to_modeling_obj_containers.assert_not_called()

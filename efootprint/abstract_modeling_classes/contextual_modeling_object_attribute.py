@@ -4,7 +4,7 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 
 
 class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
-    def __init__(self, value, modeling_obj_container, attr_name_in_mod_obj_container):
+    def __init__(self, value, modeling_obj_container=None, attr_name_in_mod_obj_container=None):
         super().__init__()
         if isinstance(value, ContextualModelingObjectAttribute):
             self._value = value._value
@@ -13,12 +13,22 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
         self.modeling_obj_container = modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name_in_mod_obj_container
 
+    @property
+    def id(self):
+        return self._value.id
+
     def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
         if self.modeling_obj_container is not None and new_parent_modeling_object is None:
             self._value.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         if new_parent_modeling_object is not None:
             self._value.add_obj_to_modeling_obj_containers(new_parent_modeling_object)
+
+    def replace_in_mod_obj_container_without_recomputation(self, new_value):
+        value_to_set = new_value
+        if not isinstance(value_to_set, ContextualModelingObjectAttribute):
+            value_to_set = ContextualModelingObjectAttribute(value_to_set, None,None)
+        super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
     def __getattr__(self, attr):
         return getattr(self._value, attr)  # Use `getattr` instead of `__getattr__`

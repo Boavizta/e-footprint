@@ -4,17 +4,19 @@ from unittest.mock import MagicMock, patch, PropertyMock
 
 import pandas as pd
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import (
     compute_attr_updates_chain_from_mod_objs_computation_chain, ModelingUpdate)
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from tests.abstract_modeling_classes.test_modeling_object import ModelingObjectForTesting
 
 
-class TestSimulationFunctions(unittest.TestCase):
+class TestModelingUpdateFunctions(unittest.TestCase):
     def test_compute_attr_updates_chain_from_mod_objs_computation_chain(self):
         mod_obj_1 = MagicMock()
         mod_obj_2 = MagicMock()
@@ -31,227 +33,153 @@ class TestSimulationFunctions(unittest.TestCase):
         self.assertEqual(["attr_1_value", "attr_2_value", "attr_3_value"], result)
 
 
-class TestSimulation(unittest.TestCase):
+class TestModelingUpdate(unittest.TestCase):
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_same_type_explainable_object(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ExplainableObject(1, "a")
         new_value = ExplainableObject(2, "b")
         new_value.modeling_obj_container = None
 
-        simulation.changes_list = [(old_value, new_value)]
-        simulation.old_sourcevalues = []
-        simulation.new_sourcevalues = []
+        modeling_update.changes_list = [(old_value, new_value)]
+        modeling_update.old_sourcevalues = []
+        modeling_update.new_sourcevalues = []
 
-        simulation.compute_new_and_old_lists()
+        modeling_update.compute_new_and_old_lists()
 
-        self.assertIn(old_value, simulation.old_sourcevalues)
-        self.assertIn(new_value, simulation.new_sourcevalues)
-
-    def test_compute_new_and_old_source_values_and_mod_obj_link_lists_different_types_raises_value_error(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        old_value = ExplainableObject(1, "a")
-        new_value = EmptyExplainableObject()
-
-        simulation.changes_list = [(old_value, new_value)]
-
-        with self.assertRaises(ValueError):
-            simulation.compute_new_and_old_lists()
-
-    def test_compute_new_and_old_source_values_and_mod_obj_link_lists_new_value_has_mod_obj_container_raises_error(
-            self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        old_value = ExplainableObject(1, "a")
-        new_value = ExplainableObject(2, "b")
-        new_value.modeling_obj_container = MagicMock()
-
-        simulation.changes_list = [(old_value, new_value)]
-
-        with self.assertRaises(ValueError):
-            simulation.compute_new_and_old_lists()
+        self.assertIn(old_value, modeling_update.old_sourcevalues)
+        self.assertIn(new_value, modeling_update.new_sourcevalues)
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_list_linked_to_modeling_obj(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = ListLinkedToModelingObj([ModelingObjectForTesting("old value")])
         new_value = [ModelingObjectForTesting("new value 1"), ModelingObjectForTesting("new value 2")]
 
-        simulation.changes_list = [(old_value, new_value)]
-        simulation.old_mod_obj_links = []
-        simulation.new_mod_obj_links = []
+        modeling_update.changes_list = [(old_value, new_value)]
+        modeling_update.old_mod_obj_list_links = []
+        modeling_update.new_mod_obj_list_links = []
 
-        simulation.compute_new_and_old_lists()
+        modeling_update.compute_new_and_old_lists()
 
-        self.assertIn(old_value, simulation.old_mod_obj_links)
-        self.assertIsInstance(simulation.new_mod_obj_links[0], ListLinkedToModelingObj)
-        self.assertIn(new_value, simulation.new_mod_obj_links)
+        self.assertIn(old_value, modeling_update.old_mod_obj_list_links)
+        self.assertIsInstance(modeling_update.new_mod_obj_list_links[0], list)
+        self.assertIn(new_value, modeling_update.new_mod_obj_list_links)
 
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_wrong_input_types_raises_value_error(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        old_value = 0
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        old_value = MagicMock(spec=ObjectLinkedToModelingObj)
         new_value = 1
 
-        simulation.changes_list = [(old_value, new_value)]
+        modeling_update.changes_list = [(old_value, new_value)]
 
         with self.assertRaises(ValueError):
-            simulation.compute_new_and_old_lists()
+            modeling_update.compute_new_and_old_lists()
 
-    def test_compute_compute_attr_updates_chain_from_mod_obj_links_updatess_case_modeling_object(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+    @patch("efootprint.abstract_modeling_classes.modeling_update.optimize_mod_objs_computation_chain")
+    def test_compute_compute_mod_objs_computation_chain_case_modeling_object(
+            self, mock_optimize_mod_objs_computation_chain):
+        mock_optimize_mod_objs_computation_chain.side_effect = lambda x: x
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        old_value = MagicMock(type="ModelingObject")
+        old_value = MagicMock()
         new_value = MagicMock()
         mod_obj_container = MagicMock()
         old_value.modeling_obj_container = mod_obj_container
 
-        # Mocking the returned computation chain and update function chain
-        computation_chain_mock = MagicMock()
-        update_function_chain_mock = MagicMock()
+        computation_chain_mock_content = MagicMock()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.return_value = \
-            computation_chain_mock
+            [computation_chain_mock_content]
 
-        simulation.old_mod_obj_links = [old_value]
-        simulation.new_mod_obj_links = [new_value]
-        simulation.attr_updates_chain_from_mod_objs_computation_chains = []
-        from efootprint.abstract_modeling_classes import simulation as simulation_module
-        with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock,\
-                patch.object(simulation_module, "compute_attr_updates_chain_from_mod_objs_computation_chain",
-                             new_callable=PropertyMock) as compute_update_func_chain_mock:
+        modeling_update.old_mod_obj_links = [old_value]
+        modeling_update.new_mod_obj_links = [new_value]
+        modeling_update.old_mod_obj_list_links = []
+        modeling_update.new_mod_obj_list_links = []
+        modeling_update.old_mod_obj_dicts = []
+        modeling_update.new_mod_obj_dicts = []
+        with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock:
             instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
-            compute_update_func_chain_mock.return_value = update_function_chain_mock
-            simulation.compute_attr_updates_chains_from_mod_obj_links_updates()
+            mod_objs_computation_chain = modeling_update.compute_mod_objs_computation_chain()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.assert_called_once_with(
             old_value, new_value)
-        compute_update_func_chain_mock.assert_called_once_with(computation_chain_mock)
+        self.assertEqual([computation_chain_mock_content], mod_objs_computation_chain)
 
-        self.assertIn(update_function_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
+    @patch("efootprint.abstract_modeling_classes.modeling_update.optimize_mod_objs_computation_chain")
+    def test_compute_compute_mod_objs_computation_chain_case_list(
+            self, mock_optimize_mod_objs_computation_chain):
+        mock_optimize_mod_objs_computation_chain.side_effect = lambda x: x
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-    @patch(
-        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_objs_computation_chain")
-    def test_compute_attr_updates_chains_from_mod_obj_links_updates_case_list(self, compute_attr_updates_chain_mock):
-        attr_updates_chain_mock = MagicMock()
-        compute_attr_updates_chain_mock.return_value = attr_updates_chain_mock
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-
-        old_value = MagicMock(spec=ListLinkedToModelingObj)
+        old_value = MagicMock()
         new_value = MagicMock()
         mod_obj_container = MagicMock()
         old_value.modeling_obj_container = mod_obj_container
 
-        computation_chain_mock = MagicMock()
+        computation_chain_mock_content = MagicMock()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists.return_value = \
-            computation_chain_mock
+            [computation_chain_mock_content]
 
-        simulation.old_mod_obj_links = [old_value]
-        simulation.new_mod_obj_links = [new_value]
-        simulation.attr_updates_chain_from_mod_objs_computation_chains = []
-
-        simulation.compute_attr_updates_chains_from_mod_obj_links_updates()
+        modeling_update.old_mod_obj_links = []
+        modeling_update.new_mod_obj_links = []
+        modeling_update.old_mod_obj_list_links = [old_value]
+        modeling_update.new_mod_obj_list_links = [new_value]
+        modeling_update.old_mod_obj_dicts = []
+        modeling_update.new_mod_obj_dicts = []
+        with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock:
+            instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
+            mod_objs_computation_chain = modeling_update.compute_mod_objs_computation_chain()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists.assert_called_once_with(
             old_value, new_value)
-        compute_attr_updates_chain_mock.assert_called_once_with(computation_chain_mock)
+        self.assertEqual([computation_chain_mock_content], mod_objs_computation_chain)
 
-        self.assertIn(attr_updates_chain_mock, simulation.attr_updates_chain_from_mod_objs_computation_chains)
+    def test_update_links_with_mixed_objects(self):
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-    @patch(
-        "efootprint.abstract_modeling_classes.modeling_update.compute_attr_updates_chain_from_mod_objs_computation_chain")
-    def test_compute_attr_updates_from_mod_obj_computation_chain_with_mixed_objects(
-            self, compute_attr_updates_chain_mock):
-        attr_updates_chain_mock_1 = MagicMock()
-        attr_updates_chain_mock_2 = MagicMock()
-        compute_attr_updates_chain_mock.side_effect = [attr_updates_chain_mock_1, attr_updates_chain_mock_2]
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-
-        # First item: ModelingObject
-        old_value_1 = MagicMock(spec=ModelingObject)
-        new_value_1 = MagicMock(spec=ModelingObject)
-        mod_obj_container_1 = MagicMock()
-        old_value_1.modeling_obj_container = mod_obj_container_1
-
-        # Second item: ListLinkedToModelingObj
-        old_value_2 = MagicMock(spec=ListLinkedToModelingObj)
-        new_value_2 = MagicMock(spec=ListLinkedToModelingObj)
-        mod_obj_container_2 = MagicMock()
-        old_value_2.modeling_obj_container = mod_obj_container_2
-
-        # Mocking the returned computation chains and update function chains
-        computation_chain_mock_1 = MagicMock()
-        computation_chain_mock_2 = MagicMock()
-
-        mod_obj_container_1.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.return_value = \
-            computation_chain_mock_1
-        mod_obj_container_2.compute_mod_objs_computation_chain_from_old_and_new_lists.return_value = \
-            computation_chain_mock_2
-
-        simulation.old_mod_obj_links = [old_value_1, old_value_2]
-        simulation.new_mod_obj_links = [new_value_1, new_value_2]
-        simulation.attr_updates_chain_from_mod_objs_computation_chains = []
-
-        simulation.compute_attr_updates_chains_from_mod_obj_links_updates()
-
-        mod_obj_container_1.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.assert_called_once_with(
-            old_value_1, new_value_1)
-        mod_obj_container_2.compute_mod_objs_computation_chain_from_old_and_new_lists.assert_called_once_with(
-            old_value_2, new_value_2)
-
-        compute_attr_updates_chain_mock.assert_any_call(computation_chain_mock_1)
-        compute_attr_updates_chain_mock.assert_any_call(computation_chain_mock_2)
-
-        self.assertIn(attr_updates_chain_mock_1, simulation.attr_updates_chain_from_mod_objs_computation_chains)
-        self.assertIn(attr_updates_chain_mock_2, simulation.attr_updates_chain_from_mod_objs_computation_chains)
-
-    def test_create_new_mod_obj_links_with_mixed_objects(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-
-        # First item: ModelingObject
-        old_value_1 = MagicMock(spec=ModelingObject)
+        old_value_1 = MagicMock(spec=ContextualModelingObjectAttribute)
         new_value_1 = MagicMock(spec=ModelingObject)
         mod_obj_container_1 = MagicMock()
         old_value_1.modeling_obj_container = mod_obj_container_1
         old_value_1.attr_name_in_mod_obj_container = "attr_1"
 
-        # Second item: ListLinkedToModelingObj
         old_value_2 = MagicMock(spec=ListLinkedToModelingObj)
         new_value_2 = MagicMock(spec=ListLinkedToModelingObj)
         mod_obj_container_2 = MagicMock()
         old_value_2.modeling_obj_container = mod_obj_container_2
         old_value_2.attr_name_in_mod_obj_container = "attr_2"
 
-        simulation.old_mod_obj_links = [old_value_1, old_value_2]
-        simulation.new_mod_obj_links = [new_value_1, new_value_2]
+        modeling_update.old_mod_obj_links = [old_value_1]
+        modeling_update.new_mod_obj_links = [new_value_1]
+        modeling_update.old_mod_obj_list_links = [old_value_2]
+        modeling_update.new_mod_obj_list_links = [new_value_2]
+        modeling_update.old_mod_obj_dicts = []
+        modeling_update.new_mod_obj_dicts = []
 
-        simulation.update_links()
+        modeling_update.update_links()
 
-        # Assertions for ModelingObject
-        new_value_1.add_obj_to_modeling_obj_containers.assert_called_once_with(mod_obj_container_1)
-        self.assertEqual(mod_obj_container_1.__dict__["attr_1"], new_value_1)
-
-        # Assertions for ListLinkedToModelingObj
-        new_value_2.set_modeling_obj_container.assert_called_once_with(mod_obj_container_2, "attr_2")
-        new_value_2.register_previous_values.assert_called_once()
-        self.assertEqual(mod_obj_container_2.__dict__["attr_2"], new_value_2)
+        old_value_1.replace_in_mod_obj_container_without_recomputation.assert_called_once_with(new_value_1)
+        old_value_2.replace_in_mod_obj_container_without_recomputation.assert_called_once_with(new_value_2)
 
     def test_compute_ancestors_not_in_computation_chain_with_no_values_to_recompute(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        simulation.values_to_recompute = []
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update.values_to_recompute = []
 
-        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
+        self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [])
 
     def test_compute_ancestors_not_in_computation_chain_with_no_ancestors(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         value_1 = MagicMock()
         value_1.all_ancestors_with_id = []
         value_1.id = 1
 
-        simulation.values_to_recompute = [value_1]
+        modeling_update.values_to_recompute = [value_1]
 
-        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [])
+        self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [])
 
     def test_compute_ancestors_not_in_computation_chain_with_ancestors(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         value_1 = MagicMock(spec=ExplainableObject)
         value_1.id = 1
@@ -268,138 +196,138 @@ class TestSimulation(unittest.TestCase):
         value_2.all_ancestors_with_id = [value_1, value_4]
 
 
-        simulation.values_to_recompute = [value_1, value_2]
+        modeling_update.values_to_recompute = [value_1, value_2]
 
-        self.assertEqual(simulation.compute_ancestors_not_in_computation_chain(), [value_3, value_4])
+        self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [value_3, value_4])
 
     def test_compute_hourly_quantities_to_filter_within_modeling_period(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
 
-        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
-        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
+        modeling_update.hourly_quantities_to_filter = modeling_update.compute_hourly_quantities_to_filter()
 
-        self.assertIn(ancestor_2, simulation.hourly_quantities_to_filter)
-        self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
+        self.assertIn(ancestor_2, modeling_update.hourly_quantities_to_filter)
+        self.assertEqual(modeling_update.hourly_quantities_to_filter, [ancestor_2])
 
     def test_compute_hourly_quantities_to_filter_simulation_date_outside_modeling_period_raises_error(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2024, 12, 31)).to_period(freq="h")
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2024, 12, 31)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
 
-        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
         with self.assertRaises(ValueError):
-            simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
+            modeling_update.hourly_quantities_to_filter = modeling_update.compute_hourly_quantities_to_filter()
 
     def test_compute_hourly_quantities_to_filter_with_multiple_ancestors(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 1))
         ancestor_3 = create_source_hourly_values_from_list([9, 10, 11, 12], start_date=datetime(2025, 1, 2))
 
-        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2, ancestor_3]
+        modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2, ancestor_3]
 
-        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
+        modeling_update.hourly_quantities_to_filter = modeling_update.compute_hourly_quantities_to_filter()
 
-        self.assertIn(ancestor_3, simulation.hourly_quantities_to_filter)
-        self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_3])
+        self.assertIn(ancestor_3, modeling_update.hourly_quantities_to_filter)
+        self.assertEqual(modeling_update.hourly_quantities_to_filter, [ancestor_3])
 
     def test_compute_hourly_quantities_to_filter_with_simulation_date_equal_to_max_date(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2, 23)).to_period(freq="h")
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2, 23)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2, 20))
 
-        simulation.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
+        modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
-        simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
+        modeling_update.hourly_quantities_to_filter = modeling_update.compute_hourly_quantities_to_filter()
 
-        self.assertIn(ancestor_2, simulation.hourly_quantities_to_filter)
-        self.assertEqual(simulation.hourly_quantities_to_filter, [ancestor_2])
+        self.assertIn(ancestor_2, modeling_update.hourly_quantities_to_filter)
+        self.assertEqual(modeling_update.hourly_quantities_to_filter, [ancestor_2])
 
     def test_compute_hourly_quantities_to_filter_with_max_date_less_than_simulation_date_raises_error(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 1, 10)).to_period(freq="h")
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 1, 10)).to_period(freq="h")
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1, 7))
 
-        simulation.ancestors_not_in_computation_chain = [ancestor_1]
+        modeling_update.ancestors_not_in_computation_chain = [ancestor_1]
 
         with self.assertRaises(ValueError):
-            simulation.hourly_quantities_to_filter = simulation.compute_hourly_quantities_to_filter()
+            modeling_update.hourly_quantities_to_filter = modeling_update.compute_hourly_quantities_to_filter()
 
     def test_filter_hourly_quantities_to_filter_with_non_empty_values(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        # Mock the simulation date rounded to the previous hour
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-01 01:00").to_period(freq="h")
+        # Mock the modeling_update date rounded to the previous hour
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-01 01:00").to_period(freq="h")
 
         # Create mock hourly quantities using create_source_hourly_values_from_list
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_1.modeling_obj_container = MagicMock()
         ancestor_1.attr_name_in_mod_obj_container = "attr_1"
 
-        simulation.hourly_quantities_to_filter = [ancestor_1]
-        simulation.filtered_hourly_quantities = []
+        modeling_update.hourly_quantities_to_filter = [ancestor_1]
+        modeling_update.filtered_hourly_quantities = []
 
-        simulation.filter_hourly_quantities_to_filter()
+        modeling_update.filter_hourly_quantities_to_filter()
 
         # Get the filtered values and compare
-        filtered_value = simulation.filtered_hourly_quantities[0].value_as_float_list
+        filtered_value = modeling_update.filtered_hourly_quantities[0].value_as_float_list
         expected_filtered_value = [2, 3, 4]  # Values after 2025-01-01 01:00
 
         self.assertEqual(filtered_value, expected_filtered_value)
 
         # Check that the index of the filtered value matches the expected timestamp
-        filtered_index = simulation.filtered_hourly_quantities[0].value.index
+        filtered_index = modeling_update.filtered_hourly_quantities[0].value.index
         expected_index = pd.period_range(start="2025-01-01 01:00", periods=3, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)
 
     def test_filter_hourly_quantities_to_filter_with_empty_values(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        # Mock the simulation date rounded to the previous hour
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
+        # Mock the modeling_update date rounded to the previous hour
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
 
-        # Create mock hourly quantities with no values after the simulation date
+        # Create mock hourly quantities with no values after the modeling_update date
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1))
         ancestor_1.modeling_obj_container = MagicMock()
         ancestor_1.attr_name_in_mod_obj_container = "attr_1"
         ancestor_1.value = ancestor_1.value[
-            ancestor_1.value.index < simulation.simulation_date_as_hourly_freq]
+            ancestor_1.value.index < modeling_update.simulation_date_as_hourly_freq]
 
-        simulation.hourly_quantities_to_filter = [ancestor_1]
-        simulation.filtered_hourly_quantities = []
+        modeling_update.hourly_quantities_to_filter = [ancestor_1]
+        modeling_update.filtered_hourly_quantities = []
 
         # Act
-        simulation.filter_hourly_quantities_to_filter()
+        modeling_update.filter_hourly_quantities_to_filter()
 
         # Assert that an EmptyExplainableObject was created
-        self.assertIsInstance(simulation.filtered_hourly_quantities[0], EmptyExplainableObject)
+        self.assertIsInstance(modeling_update.filtered_hourly_quantities[0], EmptyExplainableObject)
 
     def test_filter_hourly_quantities_to_filter_with_mixed_values(self):
-        simulation = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        # Mock the simulation date rounded to the previous hour
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
+        # Mock the modeling_update date rounded to the previous hour
+        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
 
-        # Create mock hourly quantities with some having values after the simulation date and some not
+        # Create mock hourly quantities with some having values after the modeling_update date and some not
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1))
         ancestor_1.modeling_obj_container = MagicMock()
         ancestor_1.attr_name_in_mod_obj_container = "attr_1"
@@ -408,22 +336,22 @@ class TestSimulation(unittest.TestCase):
         ancestor_2.modeling_obj_container = MagicMock()
         ancestor_2.attr_name_in_mod_obj_container = "attr_2"
 
-        simulation.hourly_quantities_to_filter = [ancestor_1, ancestor_2]
-        simulation.filtered_hourly_quantities = []
+        modeling_update.hourly_quantities_to_filter = [ancestor_1, ancestor_2]
+        modeling_update.filtered_hourly_quantities = []
 
-        simulation.filter_hourly_quantities_to_filter()
+        modeling_update.filter_hourly_quantities_to_filter()
 
         # Assert that the first ancestor is an EmptyExplainableObject
-        self.assertIsInstance(simulation.filtered_hourly_quantities[0], EmptyExplainableObject)
+        self.assertIsInstance(modeling_update.filtered_hourly_quantities[0], EmptyExplainableObject)
 
         # Assert that the second ancestor has filtered values
-        filtered_value = simulation.filtered_hourly_quantities[1].value_as_float_list
+        filtered_value = modeling_update.filtered_hourly_quantities[1].value_as_float_list
         expected_filtered_value = [5]  # Values after 2025-01-02 01:00
 
         self.assertEqual(filtered_value, expected_filtered_value)
 
         # Check that the index of the filtered value matches the expected timestamp
-        filtered_index = simulation.filtered_hourly_quantities[1].value.index
+        filtered_index = modeling_update.filtered_hourly_quantities[1].value.index
         expected_index = pd.period_range(start="2025-01-02 01:00", periods=1, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)

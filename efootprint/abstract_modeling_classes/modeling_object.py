@@ -7,7 +7,6 @@ import re
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     retrieve_update_function_from_mod_obj_and_attr_name
@@ -168,8 +167,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return hash(self.id)
 
     def __eq__(self, other):
-        if isinstance(other, ModelingObject):
+        if isinstance(other, ContextualModelingObjectAttribute):
+            return self.id == other._value.id
+        elif isinstance(other, ModelingObject):
             return self.id == other.id
+
         return False
 
     def register_footprint_values_in_systems_before_change(self, change: str):
@@ -189,14 +191,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):
                 value_to_set = ContextualModelingObjectAttribute(value_to_set, self, name)
-            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None
+            elif type(value_to_set) == list:
+                from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+                value_to_set = ListLinkedToModelingObj(value_to_set)
+            elif type(value_to_set) == dict:
+                old_value = getattr(self, name)
+                value_to_set = old_value.__class__(value_to_set)
+            assert (isinstance(value_to_set, ObjectLinkedToModelingObj) or isinstance(value_to_set, str )
+                    or value_to_set is None)
             super().__setattr__(name, value_to_set)
             if isinstance(value_to_set, ObjectLinkedToModelingObj):
                 value_to_set.set_modeling_obj_container(self, name)
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-            old_value_from_dict = self.__dict__[name]
-            ModelingUpdate([(old_value_from_dict, input_value)])
+            ModelingUpdate([(getattr(self, name), input_value)])
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
@@ -313,6 +321,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def to_json(self, save_calculated_attributes=False):
         from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         output_dict = {}
 
         for key, value in self.__dict__.items():
@@ -326,18 +335,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 continue
             if value is None:
                 output_dict[key] = value
-            elif type(value) == str:
-                output_dict[key] = value
-            elif type(value) == int:
+            elif isinstance(value, str):
                 output_dict[key] = value
             elif isinstance(value, list):
-                if len(value) == 0:
-                    output_dict[key] = value
-                else:
-                    if type(value[0]) == str:
-                        output_dict[key] = value
-                    elif isinstance(value[0], ModelingObject):
-                        output_dict[key] = [elt.id for elt in value]
+                assert len(value) == 0 or isinstance(value[0], ModelingObject)
+                output_dict[key] = [elt.id for elt in value]
             elif isinstance(value, ExplainableObject):
                 output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, ModelingObject):
