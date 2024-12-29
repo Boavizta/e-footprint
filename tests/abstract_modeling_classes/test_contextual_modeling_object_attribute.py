@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import MagicMock, Mock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 

@@ -1,6 +1,6 @@
 from typing import Type
 
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
 
 class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
