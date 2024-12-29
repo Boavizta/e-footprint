@@ -1,5 +1,5 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    ExplainableObject)
+    ExplainableObject, retrieve_update_function_from_mod_obj_and_attr_name)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
@@ -20,6 +20,17 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
                     all_ancestors_with_id.append(ancestor)
 
         return all_ancestors_with_id
+
+    @property
+    def update_function(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its update function")
+        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
+            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+        return update_func
 
     def __setitem__(self, key, value: ExplainableObject):
         if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):

@@ -1,8 +1,5 @@
 from typing import Type
 
-from efootprint.abstract_modeling_classes.explainable_object_base_class import \
-    retrieve_update_function_from_mod_obj_and_attr_name
-
 
 class ObjectLinkedToModelingObj:
     def __init__(self):
@@ -29,17 +26,6 @@ class ObjectLinkedToModelingObj:
                 f"to look for its ancestors")
 
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
-
-    @property
-    def update_function(self):
-        if self.modeling_obj_container is None:
-            raise ValueError(
-                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its update function")
-        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
-            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-
-        return update_func
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
         assert type(new_value) == type(self), f"Trying to replace {self} by {new_value} which is of different type."

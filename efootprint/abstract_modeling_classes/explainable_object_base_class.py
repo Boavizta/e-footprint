@@ -206,6 +206,17 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return optimized_chain
 
     @property
+    def update_function(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its update function")
+        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
+            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+        return update_func
+
+    @property
     def update_function_chain(self):
         return [attribute.update_function for attribute in self.attr_updates_chain]
 
