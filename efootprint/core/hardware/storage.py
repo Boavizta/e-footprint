@@ -37,7 +37,7 @@ class Storage(InfraHardware):
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration of {self.name}")
         if not base_storage_need.value.check("[]"):
             raise ValueError(
-                "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
+                "Value of variable 'base_storage_need' does not have the appropriate"
                 " '[]' dimensionality")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.fixed_nb_of_instances = fixed_nb_of_instances

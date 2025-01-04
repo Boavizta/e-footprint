@@ -363,15 +363,12 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertTrue(os.path.isfile(file))
 
     def test_simulation_input_change(self):
-        simulation = ModelingUpdate(self.start_date + timedelta(hours=1),
-                                    [(self.streaming_step.user_time_spent, SourceValue(25 * u.min))])
+        simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
+                                    self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent])
-        self.assertEqual(simulation.new_sourcevalues, [SourceValue(25 * u.min)])
-        self.assertEqual([], simulation.old_mod_obj_links)
-        self.assertEqual([], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         # Depending job occurrences should have been recomputed since a changing user_time_spent might shift jobs
         # distribution across time
@@ -379,18 +376,14 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
                       [elt.id for elt in simulation.values_to_recompute])
 
     def test_simulation_multiple_input_changes(self):
-        simulation = ModelingUpdate(
-            self.start_date + timedelta(hours=1), [
-                (self.streaming_step.user_time_spent, SourceValue(25 * u.min)),
-                (self.server1.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA))])
+        simulation = ModelingUpdate([
+                [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
+                [self.server1.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA)]],
+                self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server1.cpu_cores])
-        self.assertEqual(simulation.new_sourcevalues,
-                         [SourceValue(25 * u.min), SourceValue(42 * u.core, Sources.USER_DATA)])
-        self.assertEqual([], simulation.old_mod_obj_links)
-        self.assertEqual([], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
@@ -405,42 +398,36 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
-            self.start_date + timedelta(hours=1), [
-                (self.upload_step.jobs, self.upload_step.jobs + [new_job])])
+            [[self.upload_step.jobs, self.upload_step.jobs + [new_job]]],
+            self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [])
-        self.assertEqual(simulation.new_sourcevalues, [])
-        self.assertEqual([[self.upload_job]], simulation.old_mod_obj_links)
-        self.assertEqual([[self.upload_job, new_job]], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
         self.assertEqual(initial_upload_step_jobs, self.upload_step.jobs)
-        simulation.set_simulation_values()
+        simulation.set_updated_values()
         self.assertEqual(initial_upload_step_jobs + [new_job], self.upload_step.jobs)
-        simulation.reset_pre_simulation_values()
+        simulation.reset_values()
 
     def test_simulation_add_existing_object(self):
         simulation = ModelingUpdate(
-            self.start_date + timedelta(hours=1), [
-                (self.upload_step.jobs, self.upload_step.jobs + [self.upload_job])])
+            [[self.upload_step.jobs, self.upload_step.jobs + [self.upload_job]]],
+            self.start_date + timedelta(hours=1))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [])
-        self.assertEqual(simulation.new_sourcevalues, [])
-        self.assertEqual([[self.upload_job]], simulation.old_mod_obj_links)
-        self.assertEqual([[self.upload_job, self.upload_job]], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.upload_job.server.hour_by_hour_cpu_need.id, recomputed_elements_ids)
         self.assertEqual(initial_upload_step_jobs, self.upload_step.jobs)
-        simulation.set_simulation_values()
+        simulation.set_updated_values()
         self.assertEqual(initial_upload_step_jobs + [self.upload_job], self.upload_step.jobs)
-        simulation.reset_pre_simulation_values()
+        simulation.reset_values()
 
     def test_simulation_add_multiple_objects(self):
         new_server = default_onpremise()
@@ -456,23 +443,20 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
-            self.start_date + timedelta(hours=1), [
-                (self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job])])
+            [[self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]]],
+            self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [])
-        self.assertEqual(simulation.new_sourcevalues, [])
-        self.assertEqual([[self.upload_job]], simulation.old_mod_obj_links)
-        self.assertEqual([[self.upload_job, new_job, new_job2, self.streaming_job]], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.streaming_job]:
             self.assertIn(job.server.hour_by_hour_cpu_need.id, recomputed_elements_ids)
         self.assertEqual(initial_upload_step_jobs, self.upload_step.jobs)
-        simulation.set_simulation_values()
+        simulation.set_updated_values()
         self.assertEqual(initial_upload_step_jobs + [new_job, new_job2, self.streaming_job], self.upload_step.jobs)
-        simulation.reset_pre_simulation_values()
+        simulation.reset_values()
 
     def test_simulation_add_objects_and_make_input_changes(self):
         new_server = default_onpremise()
@@ -487,18 +471,15 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
                        cpu_needed=SourceValue(1 * u.core))
 
         simulation = ModelingUpdate(
-            self.start_date + timedelta(hours=1), [
-                (self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]),
-                (self.streaming_step.user_time_spent, SourceValue(25 * u.min)),
-                (self.server1.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA))])
+            [
+                [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]],
+                [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
+                [self.server1.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA)]],
+        self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server1.cpu_cores])
-        self.assertEqual(simulation.new_sourcevalues,
-                         [SourceValue(25 * u.min), SourceValue(42 * u.core, Sources.USER_DATA)])
-        self.assertEqual([[self.upload_job]], simulation.old_mod_obj_links)
-        self.assertEqual([[self.upload_job, new_job, new_job2, self.streaming_job]], simulation.new_mod_obj_links)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.streaming_job]:

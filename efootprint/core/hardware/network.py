@@ -12,7 +12,7 @@ class Network(ModelingObject):
         self.energy_footprint = EmptyExplainableObject()
         if not bandwidth_energy_intensity.value.check("[energy]/[]"):
             raise ValueError(
-                "Value of variable 'storage_need_from_previous_year' does not have the appropriate "
+                "Value of variable 'bandwidth_energy_intensity' does not have the appropriate "
                 "'energy/data transfer' dimensionality")
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
             f"bandwith energy intensity of {self.name}")

@@ -64,15 +64,15 @@ class TestExplainableObjectBaseClass(TestCase):
 
     def test_set_modeling_obj_container_without_label(self):
         self.a.label = None
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PermissionError):
             self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
 
-    def test_set_modeling_obj_container_with_different_modeling_object_for_non_input_should_raise_ValueError(self):
+    def test_set_modeling_obj_container_with_different_modeling_object_should_raise_PermissionError(self):
         self.a.left_parent = MagicMock()
         self.a.modeling_obj_container = MagicMock()
         self.a.modeling_obj_container.id = 2
         self.a.modeling_obj_container.name = "Model2"
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PermissionError):
             self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
 
     def test_set_modeling_obj_container_success(self):
@@ -86,12 +86,36 @@ class TestExplainableObjectBaseClass(TestCase):
         self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
         ancestor.add_child_to_direct_children_with_id.assert_called_once_with(direct_child=self.a)
 
+    def test_set_modeling_obj_container_should_trigger_remove_child_from_direct_children_with_id(self):
+        ancestor = MagicMock()
+        self.a.direct_ancestors_with_id = [ancestor]
+        self.a.direct_ancestors_with_id = [ancestor]
+        self.a.modeling_obj_container = MagicMock()
+        self.a.modeling_obj_container.id = 2
+        self.a.modeling_obj_container.name = "Model2"
+        self.a.set_modeling_obj_container(None, None)
+        ancestor.remove_child_from_direct_children_with_id.assert_called_once_with(direct_child=self.a)
+
     def test_add_child_to_direct_children_with_id_shouldnt_update_list_if_child_already_in_list(self):
         self.a.direct_children_with_id = [self.c]
         self.c.modeling_obj_container = self.modeling_obj_container_mock
         self.a.add_child_to_direct_children_with_id(self.c)
 
         self.assertEqual([self.c], self.a.direct_children_with_id)
+
+    def test_remove_child_from_direct_children_with_id_shouldnt_update_list_if_child_not_in_list(self):
+        direct_child = MagicMock(id="1")
+        self.a.direct_children_with_id = [direct_child]
+        self.a.remove_child_from_direct_children_with_id(MagicMock(id="2"))
+
+        self.assertEqual([direct_child], self.a.direct_children_with_id)
+
+    def test_remove_child_from_direct_children_with_id_should_update_list_if_child_in_list(self):
+        direct_child = MagicMock(id="1")
+        self.a.direct_children_with_id = [direct_child]
+        self.a.remove_child_from_direct_children_with_id(direct_child)
+
+        self.assertEqual([], self.a.direct_children_with_id)
 
     def test_all_descendants_with_id(self):
         root = ExplainableObject(0, "root")
@@ -167,6 +191,7 @@ class TestExplainableObjectBaseClass(TestCase):
         for index, child in enumerate([child1, child2]):
             child.modeling_obj_container = mod_obj_container
             child.attr_name_in_mod_obj_container = f"attr_{index}"
+            child.dict_container = None
             child.update_function = MagicMock()
 
         with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
@@ -203,6 +228,7 @@ class TestExplainableObjectBaseClass(TestCase):
         for index, child in enumerate([child1, grandchild1, grandchild2]):
             child.modeling_obj_container = mod_obj_container
             child.attr_name_in_mod_obj_container = f"attr_{index}"
+            child.dict_container = None
             child.update_function = MagicMock()
 
         with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
@@ -226,6 +252,7 @@ class TestExplainableObjectBaseClass(TestCase):
         child2 = MagicMock()
         child2.id = 'child2_id'
         child2.direct_ancestors_with_id = [parent]
+        child2.dict_container = None
         child2.update_function = MagicMock()
 
         grandchild1 = MagicMock()
@@ -245,6 +272,7 @@ class TestExplainableObjectBaseClass(TestCase):
         for index, child in enumerate([child1, grandchild1, grandchild2]):
             child.modeling_obj_container = mod_obj_container
             child.attr_name_in_mod_obj_container = f"attr_{index}"
+            child.dict_container = None
             child.update_function = MagicMock()
 
         with patch.object(ExplainableObject, "all_descendants_with_id", new_callable=PropertyMock) \
@@ -329,7 +357,7 @@ Label L + Label R
         new_parent_mod_obj = MagicMock(id="another obj id")
         self.a.left_parent = "non null left child"
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PermissionError):
             self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")
 
     def test_to_json_for_timezone(self):

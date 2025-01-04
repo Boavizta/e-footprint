@@ -105,8 +105,14 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
             f"In optimized not in ordered: {in_optimized_not_in_ordered}")
 
     if ordered_chain_ids != optimized_chain_ids:
-        logger.info(f"Reordered modeling object computation chain from \n{ordered_chain_ids} to "
+        logger.debug(f"Reordered modeling object computation chain from \n{ordered_chain_ids} to "
                     f"\n{optimized_chain_ids}")
+
+    for mod_obj in ordered_chain:
+        if mod_obj.systems:
+            ordered_chain.append(mod_obj.systems[0])
+            logger.debug("Added system to optimized chain")
+            break
 
     return ordered_chain
 
@@ -174,18 +180,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return False
 
-    def register_footprint_values_in_systems_before_change(self, change: str):
-        logger.debug(change)
-        for system in self.systems:
-            system.previous_total_energy_footprints_sum_over_period = system.total_energy_footprint_sum_over_period
-            system.previous_total_fabrication_footprints_sum_over_period = \
-                system.total_fabrication_footprint_sum_over_period
-            system.previous_change = change
-            system.all_changes.append(change)
-
     def __setattr__(self, name, input_value):
-        if name in ["trigger_modeling_updates", "modeling_obj_containers", "all_changes",
-                     "simulation", "name", "id"]:
+        current_attr = getattr(self, name, None)
+        if name in ["name", "id", "trigger_modeling_updates", "modeling_obj_containers", "all_changes",
+                    "previous_change", "previous_total_energy_footprints_sum_over_period",
+                    "previous_total_fabrication_footprints_sum_over_period", "simulation"]:
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
             value_to_set = input_value
@@ -195,45 +194,39 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 value_to_set = ListLinkedToModelingObj(value_to_set)
             elif type(value_to_set) == dict:
-                old_value = getattr(self, name)
-                value_to_set = old_value.__class__(value_to_set)
+                value_to_set = current_attr.__class__(value_to_set)
             assert (isinstance(value_to_set, ObjectLinkedToModelingObj) or isinstance(value_to_set, str )
                     or value_to_set is None)
             super().__setattr__(name, value_to_set)
+            if isinstance(current_attr, ObjectLinkedToModelingObj):
+                current_attr.set_modeling_obj_container(None, None)
             if isinstance(value_to_set, ObjectLinkedToModelingObj):
                 value_to_set.set_modeling_obj_container(self, name)
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-            ModelingUpdate([(getattr(self, name), input_value)])
+            ModelingUpdate([[current_attr, input_value]])
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
 
     def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"]):
+            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"], optimize_chain=True):
         if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
                 old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
             raise AssertionError(
                 f"There is a circular recalculation dependency between {self.id} and {old_value.id}")
 
-        mod_objs_computation_chain = []
-        if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
-            mod_objs_computation_chain += self.mod_objs_computation_chain
+        mod_objs_computation_chain = input_value.mod_objs_computation_chain + old_value.mod_objs_computation_chain
+
+        if optimize_chain:
+            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+            return optimized_chain
         else:
-            mod_objs_computation_chain += input_value.mod_objs_computation_chain
-            mod_objs_computation_chain += old_value.mod_objs_computation_chain
-
-        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-        for mod_obj in optimized_chain:
-            if mod_obj.systems:
-                optimized_chain.append(mod_obj.systems[0])
-                logger.info("Added system to optimized chain")
-                break
-
-        return optimized_chain
+            return mod_objs_computation_chain
 
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
-            self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]]):
+            self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]],
+            optimize_chain=True):
         removed_objs = [obj for obj in old_value if obj not in input_value]
         added_objs = [obj for obj in input_value if obj not in old_value]
 
@@ -245,14 +238,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         mod_objs_computation_chain += self.mod_objs_computation_chain
 
-        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-        for mod_obj in optimized_chain:
-            if mod_obj.systems:
-                optimized_chain.append(mod_obj.systems[0])
-                logger.info("Added system to optimized chain")
-                break
-
-        return optimized_chain
+        if optimize_chain:
+            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+            return optimized_chain
+        else:
+            return mod_objs_computation_chain
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers and new_obj is not None:
@@ -309,11 +299,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             mod_objs_computation_chain += attr.mod_objs_computation_chain
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-        for mod_obj in optimized_chain:
-            if mod_obj.systems:
-                optimized_chain.append(mod_obj.systems[0])
-                logger.info("Added system to optimized chain")
-                break
 
         self.launch_mod_objs_computation_chain(optimized_chain)
 

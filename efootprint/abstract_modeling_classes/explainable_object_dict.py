@@ -54,18 +54,29 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         output_dict = {}
 
         for key, value in self.items():
-            output_dict[key.id] = value.to_json(with_calculated_attributes_data)
+            if isinstance(key, ModelingObject):
+                output_dict[key.id] = value.to_json(with_calculated_attributes_data)
+            elif isinstance(key, str):
+                output_dict[key] = value.to_json(with_calculated_attributes_data)
+            else:
+                raise ValueError(f"Key {key} is not a ModelingObject or a string")
+
 
         return output_dict
 
     def __repr__(self):
-        return str(self.to_json())
+        return str(self)
 
     def __str__(self):
         return_str = "{\n"
 
         for key, value in self.items():
-            return_str += f"{key.id}: {value}, \n"
+            if isinstance(key, ModelingObject):
+                return_str += f"{key.id}: {value}, \n"
+            elif isinstance(key, str):
+                return_str += f"{key}: {value}, \n"
+            else:
+                raise ValueError(f"Key {key} is not a ModelingObject or a string")
 
         return_str = return_str + "}"
 

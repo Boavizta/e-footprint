@@ -6,7 +6,8 @@ class ObjectLinkedToModelingObj:
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
 
-    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
+    def set_modeling_obj_container(
+            self, new_parent_modeling_object: Type["ModelingObject"] | None, attr_name: str | None):
         if new_parent_modeling_object is None or attr_name is None:
             assert new_parent_modeling_object == attr_name, (
                 f"Both new_parent_modeling_object and attr_name should be None or not None. "
@@ -32,8 +33,11 @@ class ObjectLinkedToModelingObj:
     @property
     def dict_container(self):
         output = None
-        if (self.modeling_obj_container is not None and
-                isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), dict)):
+        if (
+                self.modeling_obj_container is not None
+                and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), dict)
+                and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
+        ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
         return output
@@ -54,11 +58,12 @@ class ObjectLinkedToModelingObj:
         return output_key
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
-        from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-
+        assert self.modeling_obj_container is not None, f"{self} is not linked to a ModelingObject."
         assert isinstance(new_value, ObjectLinkedToModelingObj), (
             f"Trying to replace {self} by {new_value} which is not an instance of "
             f"ObjectLinkedToModelingObj.")
+        from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+
         if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
             assert isinstance(new_value, self.__class__) or isinstance(self, new_value.__class__), \
                 f"Trying to replace {self} by {new_value} which is of different type."

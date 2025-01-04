@@ -32,18 +32,12 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         for value in self:
             value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
 
-    def replace_in_mod_obj_container_without_recomputation(self, new_value):
-        value_to_set = new_value
-        if not isinstance(value_to_set, ListLinkedToModelingObj):
-            value_to_set = ListLinkedToModelingObj(value_to_set)
-        super().replace_in_mod_obj_container_without_recomputation(value_to_set)
-
     def __setitem__(self, index: int, value: ModelingObject):
         self.check_value_type(value)
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list[index] = value
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         super().__setitem__(index, value)
         value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
@@ -53,7 +47,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.append(value)
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         super().append(value)
         value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
@@ -84,7 +78,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.insert(index, value)
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         super().insert(index, value)
         value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
@@ -93,7 +87,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.extend(values)
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
         self.trigger_modeling_updates = False
@@ -105,7 +99,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             _ = copied_list.pop(index)
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         value = super().pop(index)
         value.set_modeling_obj_container(None, None)
@@ -116,14 +110,14 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.remove(value)
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         super().remove(value)
         value.set_modeling_obj_container(None, None)
 
     def clear(self):
         if self.trigger_modeling_updates:
-            ModelingUpdate([(self.return_copy_with_same_attributes(), [])])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), []]])
 
         for item in self:
             item.set_modeling_obj_container(None, None)
@@ -133,7 +127,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             del copied_list[index]
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         value = self[index]
         value.set_modeling_obj_container(None, None)
@@ -147,7 +141,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list *= n
-            ModelingUpdate([(self.return_copy_with_same_attributes(), copied_list)])
+            ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
 
         initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
         self.trigger_modeling_updates = False

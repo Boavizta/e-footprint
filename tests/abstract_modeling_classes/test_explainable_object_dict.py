@@ -4,12 +4,13 @@ from unittest.mock import MagicMock
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class TestExplainableObjectDict(unittest.TestCase):
 
     def setUp(self):
-        self.mock_modeling_obj = MagicMock()
+        self.mock_modeling_obj = MagicMock(spec=ModelingObject)
         self.mock_modeling_obj.id = "mock_id"
         self.mock_modeling_obj.name = "mock_modeling_obj"
 
@@ -67,20 +68,21 @@ class TestExplainableObjectDict(unittest.TestCase):
             self.dict_obj["key"] = "Invalid value"
 
     def test_to_json(self):
-        self.dict_obj[self.mock_explainable_obj] = self.mock_explainable_obj
+        self.dict_obj[self.mock_modeling_obj] = self.mock_explainable_obj
         json_output = self.dict_obj.to_json()
-        self.assertEqual(json_output, {"mock_explainable_id": {"key": "value"}})
+        self.assertEqual(json_output, {"mock_id": {"key": "value"}})
 
     def test_repr(self):
-        self.dict_obj[self.mock_explainable_obj] = self.mock_explainable_obj
+        self.dict_obj[self.mock_modeling_obj] = self.mock_explainable_obj
         repr_output = repr(self.dict_obj)
-        self.assertTrue("mock_explainable_id" in repr_output)
-        self.assertTrue("key" in repr_output)
+        self.assertTrue("mock_id" in repr_output)
 
     def test_str(self):
-        self.dict_obj[self.mock_explainable_obj] = self.mock_explainable_obj
+        mock_modeling_obj = MagicMock(spec=ModelingObject)
+        mock_modeling_obj.id = "mock_modeling_obj_id"
+        self.dict_obj[mock_modeling_obj] = self.mock_explainable_obj
         str_output = str(self.dict_obj)
-        self.assertTrue("mock_explainable_id" in str_output)
+        self.assertTrue("mock_modeling_obj_id" in str_output)
 
 if __name__ == "__main__":
     unittest.main()

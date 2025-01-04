@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.2.0] 2025-01-06
+
+### Changed
+- Simulation object changed into ModelingUpdate. This change allows the use of the ModelingUpdate object anywhere the optimized recomputation logic needs to be called + it allows for the possibility to make optimized batch changes on the baseline model. This change will allow greater flexibility in the evolution of e-footprint’s input data structure by removing the need to duplicate the recomputation logic for each input data structure.
+
 ## [8.1.0] 2024-12-20
 
 ### Added

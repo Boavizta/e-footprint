@@ -1,15 +1,15 @@
 from copy import copy
 from datetime import datetime
-from typing import List, Tuple
+from typing import List
 
 import pandas as pd
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     optimize_attr_updates_chain
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
-from efootprint.abstract_modeling_classes.recomputation_utils import launch_update_function_chain
 from efootprint.logger import logger
 
 
@@ -24,9 +24,8 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
 
 class ModelingUpdate:
     def __init__(
-            self, 
-            changes_list: List[Tuple[ObjectLinkedToModelingObj, ObjectLinkedToModelingObj | list | dict]],
-            simulation_date: datetime = None):
+            self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None):
+        self.updated_values_set = False
         first_changed_val = changes_list[0][0]
         self.system = None
         if isinstance(first_changed_val, ObjectLinkedToModelingObj):
@@ -36,119 +35,131 @@ class ModelingUpdate:
             raise ValueError(
                 f"First changed value {first_changed_val} is not an ObjectLinkedToModelingObj")
         self.changes_list = changes_list
+        self.parse_changes_list()
+        if self.changes_list and self.system:
+            self.system.previous_total_energy_footprints_sum_over_period = (
+                self.system.total_energy_footprint_sum_over_period)
+            self.system.previous_total_fabrication_footprints_sum_over_period = \
+                self.system.total_fabrication_footprint_sum_over_period
+            self.system.previous_change = changes_list
+            self.system.all_changes += changes_list
 
         self.simulation_date = simulation_date
         self.simulation_date_as_hourly_freq = None
         if simulation_date is not None and self.system is not None:
             self.system.simulation = self
             self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
-
-        self.old_sourcevalues = []
-        self.new_sourcevalues = []
-        self.old_mod_obj_links = []
-        self.new_mod_obj_links = []
-        self.old_mod_obj_list_links = []
-        self.new_mod_obj_list_links = []
-        self.old_mod_obj_dicts = []
-        self.new_mod_obj_dicts = []
-        self.compute_new_and_old_lists()
         
         self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
         self.attr_updates_chain_from_mod_objs_computation_chains = (
             compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
+        self.values_to_recompute = self.generate_optimized_attr_updates_chain()
 
-        self.update_links()
-        self.change_input_values()
-
+        self.ancestors_not_in_computation_chain = []
+        self.hourly_quantities_to_filter = []
+        self.filtered_hourly_quantities = []
+        self.ancestors_to_replace_by_copies = []
+        self.replaced_ancestors_copies = []
         if self.simulation_date is not None:
-            self.ancestors_not_in_computation_chain = []
-            self.hourly_quantities_to_filter = []
-            self.filtered_hourly_quantities = []
-            self.ancestors_to_replace_by_copies = []
-            self.replaced_ancestors_copies = []
             self.make_simulation_specific_operations()
 
-        self.values_to_recompute = []
-        self.recomputed_values = []
-        self.recompute_attributes()
-        
-        if simulation_date is not None:
-            self.reset_pre_simulation_values()
+        self.apply_changes()
+        self.recomputed_values = self.recompute_attributes()
+        self.updated_values_set = True
 
-    def compute_new_and_old_lists(self):
-        for old_value, new_value in self.changes_list:
+        if self.simulation_date is not None:
+            self.link_simulated_and_baseline_twins()
+
+        self.all_previous_obj_linked_to_mod_obj = (
+                [change[0] for change in self.changes_list] + self.hourly_quantities_to_filter
+                + self.ancestors_to_replace_by_copies + self.values_to_recompute)
+        self.all_new_obj_linked_to_mod_obj = (
+                [change[1] for change in self.changes_list] + self.filtered_hourly_quantities
+                + self.replaced_ancestors_copies + self.recomputed_values)
+
+        if simulation_date is not None:
+            self.reset_values()
+
+    def parse_changes_list(self):
+        indexes_to_skip = []
+        for index in range(len(self.changes_list)):
+            old_value, new_value = self.changes_list[index]
             assert isinstance(old_value, ObjectLinkedToModelingObj)
             if new_value is None:
                 assert isinstance(old_value, ExplainableObject)
-                new_value = EmptyExplainableObject()
+                self.changes_list[index][1] = EmptyExplainableObject()
 
-            if id(old_value) == id(new_value):
+            if isinstance(new_value, list):
+                from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+                self.changes_list[index][1] = ListLinkedToModelingObj(new_value)
+            if isinstance(new_value, ModelingObject) and not isinstance(new_value, ContextualModelingObjectAttribute):
+                self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
+
+            if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObj):
+                raise ValueError(
+                    f"New e-footprint attributes should be ObjectLinkedToModelingObj,"
+                    f" got {old_value} of type {type(old_value)} trying to be set to an object "
+                    f"of type {type(new_value)}")
+
+            if old_value == new_value:
                 logger.warning(
-                    f"{old_value.name} is updated to itself. "
-                    f"This is surprising, you might want to double check your action. "
+                    f"{old_value.id} is updated to itself. "
+                    f"It happens when using my_mod_obj.list_attribute += other list syntax. "
+                    f"Otherwise This is surprising, you might want to double check your action. "
                     f"The link update logic will be skipped.")
-            else:
-                if isinstance(old_value, ExplainableObject):
-                    self.old_sourcevalues.append(old_value)
-                    self.new_sourcevalues.append(new_value)
-                elif isinstance(new_value, ModelingObject):
-                    self.old_mod_obj_links.append(old_value)
-                    self.new_mod_obj_links.append(new_value)
-                elif isinstance(new_value, list):
-                    self.old_mod_obj_list_links.append(old_value)
-                    self.new_mod_obj_list_links.append(new_value)
-                elif isinstance(new_value, dict):
-                    self.old_mod_obj_dicts.append(old_value)
-                    self.new_mod_obj_dicts.append(new_value)
-                else:
-                    raise ValueError(
-                        f"New e-footprint attributes should be ExplainableObjects, weighted dicts of ModelingObject "
-                        f"or ModelingObjects, got {old_value} of type {type(old_value)} trying to be set to an object "
-                        f"of type {type(new_value)}")
-            
+                indexes_to_skip.append(index)
+
+        for index in sorted(indexes_to_skip, reverse=True):
+            del self.changes_list[index]
+
     def compute_mod_objs_computation_chain(self):
+        from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
         mod_objs_computation_chain = []
-        for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
-            mod_objs_computation_chain += (
-                old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-                    old_value, new_value))
-        for old_value, new_value in zip(self.old_mod_obj_list_links, self.new_mod_obj_list_links):
-            mod_objs_computation_chain += (
-                old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
-                    old_value, new_value))
-        for old_dict, new_dict in zip(self.old_mod_obj_dicts, self.new_mod_obj_dicts):
-            mod_objs_computation_chain += (
-                old_dict.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
-                    old_dict.keys(), new_dict.keys()))
+        for old_value, new_value in self.changes_list:
+            if isinstance(old_value, ContextualModelingObjectAttribute):
+                mod_objs_computation_chain += (
+                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
+                        old_value, new_value, optimize_chain=False))
+            elif isinstance(old_value, ListLinkedToModelingObj):
+                mod_objs_computation_chain += (
+                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
+                        old_value, new_value, optimize_chain=False))
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
 
         return optimized_chain
 
-    def update_links(self):
-        for old_value, new_value in zip(self.old_mod_obj_links, self.new_mod_obj_links):
+    def apply_changes(self):
+        for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
-        for old_value, new_value in zip(self.old_mod_obj_list_links, self.new_mod_obj_list_links):
-            old_value.replace_in_mod_obj_container_without_recomputation(new_value)
-        for old_dict, new_dict in zip(self.old_mod_obj_dicts, self.new_mod_obj_dicts):
-            old_dict.replace_in_mod_obj_container_without_recomputation(new_dict)
 
     def make_simulation_specific_operations(self):
+        assert self.simulation_date is not None
         self.ancestors_not_in_computation_chain = self.compute_ancestors_not_in_computation_chain()
         self.hourly_quantities_to_filter = self.compute_hourly_quantities_to_filter()
-        self.filter_hourly_quantities_to_filter()
-        if self.old_mod_obj_links or self.old_mod_obj_dicts:
+        if self.mod_objs_computation_chain:
             # The simulation will change the calculation graph, so we need to replace all ancestors not in
             # computation chain by their copies to keep the original calculation graph unchanged
             self.ancestors_to_replace_by_copies = [
                 ancestor for ancestor in self.ancestors_not_in_computation_chain
                 if ancestor.id not in [value.id for value in self.hourly_quantities_to_filter]]
             self.replaced_ancestors_copies = self.replace_ancestors_not_in_computation_chain_by_copies()
+        self.filter_hourly_quantities_to_filter()
 
     def recompute_attributes(self):
-        self.values_to_recompute = self.generate_optimized_attr_updates_chain()
-        launch_update_function_chain([value.update_function for value in self.values_to_recompute])
-        self.save_recomputed_values()
+        recomputed_values = []
+        for value_to_recompute in self.values_to_recompute:
+            attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
+            modeling_obj_container = value_to_recompute.modeling_obj_container
+            value_to_recompute.update_function()
+            recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)
+            recomputed_values.append(recomputed_value)
+
+        return recomputed_values
+
+    @property
+    def old_sourcevalues(self):
+        return [old_value for old_value, new_value in self.changes_list if isinstance(old_value, ExplainableObject)]
 
     def generate_optimized_attr_updates_chain(self):
         attr_updates_chain_from_attributes_updates = sum(
@@ -157,7 +168,11 @@ class ModelingUpdate:
         optimized_chain = optimize_attr_updates_chain(
             self.attr_updates_chain_from_mod_objs_computation_chains + attr_updates_chain_from_attributes_updates)
 
-        return optimized_chain
+        optimized_chain_without_previous_nor_initial_values = [
+            attr for attr in optimized_chain if not attr.attr_name_in_mod_obj_container.startswith("previous_")
+                                                and not attr.attr_name_in_mod_obj_container.startswith("initial_")]
+
+        return optimized_chain_without_previous_nor_initial_values
 
     def compute_ancestors_not_in_computation_chain(self):
         all_ancestors_of_values_to_recompute = sum(
@@ -167,9 +182,10 @@ class ModelingUpdate:
             if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
                 deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
         values_to_recompute_ids = [elt.id for elt in self.values_to_recompute]
+        old_sourcevalues_ids = [old_value.id for old_value in self.old_sourcevalues]
         ancestors_not_in_computation_chain = [
             ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
-            if ancestor.id not in values_to_recompute_ids]
+            if ancestor.id not in values_to_recompute_ids + old_sourcevalues_ids]
 
         return ancestors_not_in_computation_chain
 
@@ -226,23 +242,24 @@ class ModelingUpdate:
 
         return copies
 
-    def change_input_values(self):
-        for old_value, new_value in zip(self.old_sourcevalues, self.new_sourcevalues):
-            old_value.replace_in_mod_obj_container_without_recomputation(new_value)
+    def reset_values(self):
+        if self.updated_values_set:
+            for new_value, previous_value in zip(
+                    self.all_new_obj_linked_to_mod_obj, self.all_previous_obj_linked_to_mod_obj):
+                new_value.replace_in_mod_obj_container_without_recomputation(previous_value)
+            self.updated_values_set = False
 
-    def save_recomputed_values(self):
-        for expl_obj in self.values_to_recompute:
-            self.recomputed_values.append(
-                getattr(expl_obj.modeling_obj_container, expl_obj.attr_name_in_mod_obj_container))
+    def set_updated_values(self):
+        if not self.updated_values_set:
+            for new_value, previous_value in zip(
+                    self.all_new_obj_linked_to_mod_obj, self.all_previous_obj_linked_to_mod_obj):
+                previous_value.replace_in_mod_obj_container_without_recomputation(new_value)
+            self.updated_values_set = True
 
-    def reset_pre_simulation_values(self):
-        for previous_value in (
-                self.old_sourcevalues + self.values_to_recompute + self.hourly_quantities_to_filter +
-                self.ancestors_to_replace_by_copies + self.old_mod_obj_links):
-            previous_value.replace_in_mod_obj_container_without_recomputation(previous_value)
-
-    def set_simulation_values(self):
-        for new_value in (
-                self.new_sourcevalues + self.recomputed_values + self.filtered_hourly_quantities +
-                self.replaced_ancestors_copies + self.new_mod_obj_links):
-            new_value.replace_in_mod_obj_container_without_recomputation(new_value)
+    def link_simulated_and_baseline_twins(self):
+        assert self.simulation_date is not None
+        for value_to_recompute, recomputed_value in zip(self.values_to_recompute, self.recomputed_values):
+            value_to_recompute.simulation_twin = recomputed_value
+            recomputed_value.baseline_twin = value_to_recompute
+            value_to_recompute.simulation = self
+            recomputed_value.simulation = self

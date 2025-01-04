@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock, Mock
 
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
@@ -110,7 +112,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         self.obj.modeling_obj_container = None
         new_value = MagicMock(spec=ObjectLinkedToModelingObj)
 
-        with self.assertRaises(AttributeError):
+        with self.assertRaises(AssertionError):
             self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
     @patch.object(ObjectLinkedToModelingObj, "dict_container", new_callable=PropertyMock)
@@ -195,6 +197,28 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         self.obj.modeling_obj_container = self.mock_modeling_object
         self.obj.attr_name_in_mod_obj_container = "test_attr"
         self.assertEqual(self.obj.id, "test_attr-in-mock_model")
+
+    def test_dict_container_returns_none_when_non_dict_object_isnt_contained_in_dict(self):
+        self.obj.modeling_obj_container = self.mock_modeling_object
+        self.obj.attr_name_in_mod_obj_container = "test_attr"
+        self.mock_modeling_object.test_attr = self.obj
+
+        self.assertEqual(self.obj.dict_container, None)
+
+    def test_dict_container_returns_dict_when_object_is_contained_in_dict(self):
+        self.obj.modeling_obj_container = self.mock_modeling_object
+        self.obj.attr_name_in_mod_obj_container = "test_attr"
+        self.mock_modeling_object.test_attr = {"test_key": self.obj}
+
+        self.assertEqual(self.obj.dict_container, {"test_key": self.obj})
+
+    def test_dict_container_returns_non_when_object_is_dict(self):
+        dict_obj = ExplainableObjectDict({"test": MagicMock(spec=ExplainableObject)})
+        dict_obj.modeling_obj_container = self.mock_modeling_object
+        dict_obj.attr_name_in_mod_obj_container = "test_attr"
+        self.mock_modeling_object.test_attr = dict_obj
+
+        self.assertEqual(dict_obj.dict_container, None)
 
 
 if __name__ == "__main__":

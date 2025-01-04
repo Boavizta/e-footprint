@@ -34,36 +34,6 @@ class TestModelingUpdateFunctions(unittest.TestCase):
 
 
 class TestModelingUpdate(unittest.TestCase):
-    def test_compute_new_and_old_source_values_and_mod_obj_link_lists_same_type_explainable_object(self):
-        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        old_value = ExplainableObject(1, "a")
-        new_value = ExplainableObject(2, "b")
-        new_value.modeling_obj_container = None
-
-        modeling_update.changes_list = [(old_value, new_value)]
-        modeling_update.old_sourcevalues = []
-        modeling_update.new_sourcevalues = []
-
-        modeling_update.compute_new_and_old_lists()
-
-        self.assertIn(old_value, modeling_update.old_sourcevalues)
-        self.assertIn(new_value, modeling_update.new_sourcevalues)
-
-    def test_compute_new_and_old_source_values_and_mod_obj_link_lists_list_linked_to_modeling_obj(self):
-        modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
-        old_value = ListLinkedToModelingObj([ModelingObjectForTesting("old value")])
-        new_value = [ModelingObjectForTesting("new value 1"), ModelingObjectForTesting("new value 2")]
-
-        modeling_update.changes_list = [(old_value, new_value)]
-        modeling_update.old_mod_obj_list_links = []
-        modeling_update.new_mod_obj_list_links = []
-
-        modeling_update.compute_new_and_old_lists()
-
-        self.assertIn(old_value, modeling_update.old_mod_obj_list_links)
-        self.assertIsInstance(modeling_update.new_mod_obj_list_links[0], list)
-        self.assertIn(new_value, modeling_update.new_mod_obj_list_links)
-
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_wrong_input_types_raises_value_error(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
@@ -72,7 +42,7 @@ class TestModelingUpdate(unittest.TestCase):
         modeling_update.changes_list = [(old_value, new_value)]
 
         with self.assertRaises(ValueError):
-            modeling_update.compute_new_and_old_lists()
+            modeling_update.parse_changes_list()
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.optimize_mod_objs_computation_chain")
     def test_compute_compute_mod_objs_computation_chain_case_modeling_object(
@@ -80,8 +50,8 @@ class TestModelingUpdate(unittest.TestCase):
         mock_optimize_mod_objs_computation_chain.side_effect = lambda x: x
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        old_value = MagicMock()
-        new_value = MagicMock()
+        old_value = MagicMock(spec=ContextualModelingObjectAttribute)
+        new_value = MagicMock(spec=ContextualModelingObjectAttribute)
         mod_obj_container = MagicMock()
         old_value.modeling_obj_container = mod_obj_container
 
@@ -90,18 +60,13 @@ class TestModelingUpdate(unittest.TestCase):
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.return_value = \
             [computation_chain_mock_content]
 
-        modeling_update.old_mod_obj_links = [old_value]
-        modeling_update.new_mod_obj_links = [new_value]
-        modeling_update.old_mod_obj_list_links = []
-        modeling_update.new_mod_obj_list_links = []
-        modeling_update.old_mod_obj_dicts = []
-        modeling_update.new_mod_obj_dicts = []
+        modeling_update.changes_list = [[old_value, new_value]]
         with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock:
             instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
             mod_objs_computation_chain = modeling_update.compute_mod_objs_computation_chain()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_modeling_objs.assert_called_once_with(
-            old_value, new_value)
+            old_value, new_value, optimize_chain=False)
         self.assertEqual([computation_chain_mock_content], mod_objs_computation_chain)
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.optimize_mod_objs_computation_chain")
@@ -110,8 +75,8 @@ class TestModelingUpdate(unittest.TestCase):
         mock_optimize_mod_objs_computation_chain.side_effect = lambda x: x
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        old_value = MagicMock()
-        new_value = MagicMock()
+        old_value = MagicMock(spec=ListLinkedToModelingObj)
+        new_value = MagicMock(spec=ListLinkedToModelingObj)
         mod_obj_container = MagicMock()
         old_value.modeling_obj_container = mod_obj_container
 
@@ -120,21 +85,16 @@ class TestModelingUpdate(unittest.TestCase):
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists.return_value = \
             [computation_chain_mock_content]
 
-        modeling_update.old_mod_obj_links = []
-        modeling_update.new_mod_obj_links = []
-        modeling_update.old_mod_obj_list_links = [old_value]
-        modeling_update.new_mod_obj_list_links = [new_value]
-        modeling_update.old_mod_obj_dicts = []
-        modeling_update.new_mod_obj_dicts = []
+        modeling_update.changes_list = [[old_value, new_value]]
         with patch.object(ABCAfterInitMeta, "__instancecheck__", new_callable=PropertyMock) as instancecheck_mock:
             instancecheck_mock.return_value = lambda x: x.type == "ModelingObject"
             mod_objs_computation_chain = modeling_update.compute_mod_objs_computation_chain()
 
         mod_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists.assert_called_once_with(
-            old_value, new_value)
+            old_value, new_value, optimize_chain=False)
         self.assertEqual([computation_chain_mock_content], mod_objs_computation_chain)
 
-    def test_update_links_with_mixed_objects(self):
+    def test_apply_changes_with_mixed_objects(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         old_value_1 = MagicMock(spec=ContextualModelingObjectAttribute)
@@ -149,26 +109,25 @@ class TestModelingUpdate(unittest.TestCase):
         old_value_2.modeling_obj_container = mod_obj_container_2
         old_value_2.attr_name_in_mod_obj_container = "attr_2"
 
-        modeling_update.old_mod_obj_links = [old_value_1]
-        modeling_update.new_mod_obj_links = [new_value_1]
-        modeling_update.old_mod_obj_list_links = [old_value_2]
-        modeling_update.new_mod_obj_list_links = [new_value_2]
-        modeling_update.old_mod_obj_dicts = []
-        modeling_update.new_mod_obj_dicts = []
+        modeling_update.changes_list = [[old_value_1, new_value_1], [old_value_2, new_value_2]]
 
-        modeling_update.update_links()
+        modeling_update.apply_changes()
 
         old_value_1.replace_in_mod_obj_container_without_recomputation.assert_called_once_with(new_value_1)
         old_value_2.replace_in_mod_obj_container_without_recomputation.assert_called_once_with(new_value_2)
 
-    def test_compute_ancestors_not_in_computation_chain_with_no_values_to_recompute(self):
+    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate.old_sourcevalues")
+    def test_compute_ancestors_not_in_computation_chain_with_no_values_to_recompute(self, mock_old_sourcevalues):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        mock_old_sourcevalues.return_value = []
         modeling_update.values_to_recompute = []
 
         self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [])
 
-    def test_compute_ancestors_not_in_computation_chain_with_no_ancestors(self):
+    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate.old_sourcevalues")
+    def test_compute_ancestors_not_in_computation_chain_with_no_ancestors(self, mock_old_sourcevalues):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        mock_old_sourcevalues.return_value = []
 
         value_1 = MagicMock()
         value_1.all_ancestors_with_id = []
@@ -178,8 +137,10 @@ class TestModelingUpdate(unittest.TestCase):
 
         self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [])
 
-    def test_compute_ancestors_not_in_computation_chain_with_ancestors(self):
+    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate.old_sourcevalues")
+    def test_compute_ancestors_not_in_computation_chain_with_ancestors(self, mock_old_sourcevalues):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
+        mock_old_sourcevalues.return_value = []
 
         value_1 = MagicMock(spec=ExplainableObject)
         value_1.id = 1

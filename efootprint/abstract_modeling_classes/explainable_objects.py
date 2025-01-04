@@ -58,6 +58,8 @@ class EmptyExplainableObject(ExplainableObject):
     def __eq__(self, other):
         if isinstance(other, EmptyExplainableObject):
             return True
+        elif isinstance(other, ExplainableObject):
+            return other.__eq__(self)
         elif other == 0:
             return True
 
@@ -122,39 +124,34 @@ class EmptyExplainableObject(ExplainableObject):
         return output_dict
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
-        baseline_df = None
-        simulated_values_df = None
-        if (self.modeling_obj_container and self.modeling_obj_container.systems
-                and self.modeling_obj_container.systems[0].simulation):
-            simulation = self.modeling_obj_container.systems[0].simulation
-            for index, value_to_recompute_id in enumerate([value.id for value in simulation.values_to_recompute]):
-                if value_to_recompute_id == self.id:
-                    simulated_values_df = simulation.recomputed_values[index].value
-            if not isinstance(simulated_values_df, EmptyExplainableObject):
-                baseline_df = pd.DataFrame(
-                    {"value": pint_pandas.PintArray(
-                        np.zeros(len(simulated_values_df.index)),
-                        dtype=simulated_values_df.dtypes.value.units)},
-                    index=simulated_values_df.index)
-            if cumsum:
-                simulated_values_df = simulated_values_df.cumsum()
+        assert self.simulation_twin is not None, "Cannot plot EmptyExplainableObject if simulation twin is None"
+        simulated_values_df = self.simulation_twin.value
+        assert not isinstance(simulated_values_df, EmptyExplainableObject), \
+            "Cannot plot EmptyExplainableObject if simulation twin is EmptyExplainableObject"
 
-        if simulated_values_df is not None and baseline_df is not None:
-            ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
+        baseline_df = pd.DataFrame(
+            {"value": pint_pandas.PintArray(
+                np.zeros(len(simulated_values_df.index)),
+                dtype=simulated_values_df.dtypes.value.units)},
+            index=simulated_values_df.index)
 
-            if self.label:
-                if not cumsum:
-                    ax.set_title(self.label)
-                else:
-                    ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
+        if cumsum:
+            simulated_values_df = simulated_values_df.cumsum()
 
-            if filepath is not None:
-                plt.savefig(filepath, bbox_inches='tight')
+        ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
 
-            if plt_show:
-                plt.show()
-        else:
-            raise ValueError("No simulation data found for this EmplyExplainableObject so nothing to plot")
+        if self.label:
+            if not cumsum:
+                ax.set_title(self.label)
+            else:
+                ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
+
+        if filepath is not None:
+            plt.savefig(filepath, bbox_inches='tight')
+
+        if plt_show:
+            plt.show()
+
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -305,6 +302,10 @@ class ExplainableQuantity(ExplainableObject):
             return f"{round(self.value, 2)}"
         else:
             return str(self.value)
+
+    def __copy__(self):
+        return ExplainableQuantity(
+            self.value, label=self.label, source=self.source, left_parent=self, operator="duplicate")
 
 
 class ExplainableHourlyQuantities(ExplainableObject):
@@ -527,7 +528,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return output_dict
 
     def __repr__(self):
-        return str(self.to_json())
+        return str(self)
 
     def __str__(self):
         def _round_series_values(input_series):
@@ -551,19 +552,24 @@ class ExplainableHourlyQuantities(ExplainableObject):
                f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
-        baseline_df = self.value
+        if self.baseline_twin is None and self.simulation_twin is None:
+            baseline_df = self.value
+            simulated_values_df = None
+        elif self.baseline_twin is not None and self.simulation_twin is None:
+            baseline_df = self.baseline_twin.value
+            simulated_values_df = self.value
+        elif self.simulation_twin is not None and self.baseline_twin is None:
+            baseline_df = self.value
+            simulated_values_df = self.simulation_twin.value
+        else:
+            raise ValueError("Both baseline and simulation twins are not None, this should not happen")
+
         if cumsum:
-            baseline_df = self.value.cumsum()
-            
-        simulated_values_df = None
-        if (self.modeling_obj_container and self.modeling_obj_container.systems
-                and self.modeling_obj_container.systems[0].simulation):
-            simulation = self.modeling_obj_container.systems[0].simulation
-            for index, value_to_recompute_id in enumerate([value.id for value in simulation.values_to_recompute]):
-                if value_to_recompute_id == self.id:
-                    simulated_values_df = simulation.recomputed_values[index].value
+            baseline_df = baseline_df.cumsum()
+
+        if simulated_values_df is not None:
             if isinstance(simulated_values_df, EmptyExplainableObject):
-                period_index = pd.period_range(start=simulation.simulation_date_as_hourly_freq,
+                period_index = pd.period_range(start=self.simulation.simulation_date_as_hourly_freq,
                                              end=self.value.index.max(), freq='h')
                 simulated_values_df = pd.DataFrame(
                     {"value": pint_pandas.PintArray(

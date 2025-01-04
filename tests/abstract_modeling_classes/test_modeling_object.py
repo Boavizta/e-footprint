@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock, PropertyMock, call
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -72,7 +72,18 @@ class TestModelingObject(unittest.TestCase):
             modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
         mod_obj.custom_input = value
 
-        mock_modeling_update.assert_called_once_with([(old_value, value)])
+        mock_modeling_update.assert_called_once_with([[old_value, value]])
+
+    def test_input_change_sets_modeling_obj_containers(self):
+        custom_input = MagicMock(spec=ExplainableObject)
+        parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=custom_input)
+        parent_obj.trigger_modeling_updates = False
+        new_input = MagicMock(spec=ExplainableObject)
+
+        parent_obj.custom_input = new_input
+
+        new_input.set_modeling_obj_container.assert_called_once_with(parent_obj, "custom_input")
+        custom_input.set_modeling_obj_container.assert_has_calls([call(parent_obj, "custom_input"), call(None, None)])
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()
@@ -103,7 +114,7 @@ class TestModelingObject(unittest.TestCase):
         mod_obj = ModelingObjectForTesting("test mod obj", custom_input=ListLinkedToModelingObj([val1, val2]))
 
         mod_obj.custom_input = ListLinkedToModelingObj([val1, val2, val3])
-        mock_modeling_update.assert_called_once_with([([val1, val2], [val1, val2, val3])])
+        mock_modeling_update.assert_called_once_with([[[val1, val2], [val1, val2, val3]]])
 
     @patch("efootprint.abstract_modeling_classes.list_linked_to_modeling_obj.ModelingUpdate")
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
@@ -117,7 +128,7 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual(mod_obj.custom_input, [val1, val2])
         mod_obj.custom_input += [val3]
-        mock_modeling_update_list.assert_called_once_with([([val1, val2], [val1, val2, val3])])
+        mock_modeling_update_list.assert_called_once_with([[[val1, val2], [val1, val2, val3]]])
 
     def test_list_attribute_update_works_with_list_condensed_addition_syntax__no_mocking(
             self):
@@ -136,13 +147,19 @@ class TestModelingObject(unittest.TestCase):
         mod_obj2 = MagicMock(id=2)
         mod_obj3 = MagicMock(id=3)
 
+        for mod_obj in [mod_obj1, mod_obj3]:
+            mod_obj.systems = None
+
+        magic_system = MagicMock()
+        mod_obj2.systems = [magic_system]
+
         mod_obj1.class_as_simple_str = "UserJourney"
         mod_obj2.class_as_simple_str = "UsagePattern"
         mod_obj3.class_as_simple_str = "Job"
 
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
 
-        self.assertEqual([mod_obj1, mod_obj2, mod_obj3],
+        self.assertEqual([mod_obj1, mod_obj2, mod_obj3, magic_system],
                          optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_optimize_mod_objs_computation_chain_complex_case(self):
@@ -151,6 +168,9 @@ class TestModelingObject(unittest.TestCase):
         mod_obj3 = MagicMock(id=3)
         mod_obj4 = MagicMock(id=4)
         mod_obj5 = MagicMock(id=5)
+
+        for mod_obj in [mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5]:
+            mod_obj.systems = None
 
         mod_obj5.class_as_simple_str = "UserJourney"
         mod_obj1.class_as_simple_str = "UsagePattern"

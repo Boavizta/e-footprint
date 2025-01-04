@@ -24,12 +24,6 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
         if new_parent_modeling_object is not None:
             self._value.add_obj_to_modeling_obj_containers(new_parent_modeling_object)
 
-    def replace_in_mod_obj_container_without_recomputation(self, new_value):
-        value_to_set = new_value
-        if not isinstance(value_to_set, ContextualModelingObjectAttribute):
-            value_to_set = ContextualModelingObjectAttribute(value_to_set, None,None)
-        super().replace_in_mod_obj_container_without_recomputation(value_to_set)
-
     def __getattr__(self, attr):
         return getattr(self._value, attr)  # Use `getattr` instead of `__getattr__`
 

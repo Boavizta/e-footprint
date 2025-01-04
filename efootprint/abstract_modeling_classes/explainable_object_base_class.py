@@ -52,11 +52,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
             right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
         super().__init__()
+        self.simulation_twin = None
+        self.baseline_twin = None
+        self.simulation = None
+        self.initial_modeling_obj_container = None
         self.value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")
-        if source is not None and (left_parent is not None or right_parent is not None):
-            raise ValueError(f"An ExplainableObject with a source shouldn’t have any parent")
         self.source = source
         self.label = None
         self.set_label(label)
@@ -107,14 +109,26 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
-    def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
+    def set_modeling_obj_container(
+            self, new_modeling_obj_container: Type["ModelingObject"] | None, attr_name: str | None):
+        if not self.label:
+            raise PermissionError(
+                f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
+        elif self.modeling_obj_container is not None and new_modeling_obj_container is not None\
+                and self.modeling_obj_container != new_modeling_obj_container:
+            raise PermissionError(
+                f"{self} is already linked to {self.modeling_obj_container.id} and is trying to be linked to "
+                f"{new_modeling_obj_container.id}.")
+
         if self.modeling_obj_container is not None:
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.remove_child_from_direct_children_with_id(direct_child=self)
-        if not self.label:
-            raise ValueError(f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
+
         super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
+
         if new_modeling_obj_container is not None:
+            if self.initial_modeling_obj_container is None:
+                self.initial_modeling_obj_container = new_modeling_obj_container
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
 
@@ -122,16 +136,16 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if self.modeling_obj_container is not None:
             return [self]
         else:
-            return self.direct_ancestors_with_id
+            return [ancestor for ancestor in self.direct_ancestors_with_id
+                    if ancestor.modeling_obj_container is not None]
 
     def add_child_to_direct_children_with_id(self, direct_child):
         if direct_child.id not in self.direct_child_ids:
             self.direct_children_with_id.append(direct_child)
 
     def remove_child_from_direct_children_with_id(self, direct_child):
-        if direct_child.id in self.direct_child_ids:
-            self.direct_children_with_id = [
-                child for child in self.direct_children_with_id if child.id != direct_child.id]
+        self.direct_children_with_id = [
+            child for child in self.direct_children_with_id if child.id != direct_child.id]
 
     @property
     def all_descendants_with_id(self):
@@ -163,11 +177,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     @property
     def attr_updates_chain(self):
-        if self.modeling_obj_container is None:
-            logger.warning(
-                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its update computation chain. Returning empty list.")
-            return []
         attr_updates_chain = []
         descendants = self.all_descendants_with_id
         has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}
@@ -184,7 +193,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             if ancestor.id in [ancestor.id for ancestor in descendants]]
                         if all([has_been_added_to_chain_dict[ancestor.id]
                                 for ancestor in ancestors_that_belong_to_self_descendants]):
-                            attr_updates_chain.append(child)
+                            if not child.dict_container:
+                                attr_updates_chain.append(child)
+                            else:
+                                attr_updates_chain.append(child.dict_container)
                             has_been_added_to_chain_dict[child.id] = True
                             if len(child.direct_children_with_id) > 0:
                                 added_parents_with_children_to_add.append(child)

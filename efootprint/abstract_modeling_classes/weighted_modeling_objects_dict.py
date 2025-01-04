@@ -27,12 +27,6 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
 
         return weighted_sum.set_label(
             f"Weighted sum of {attr_name} over {[modeling_obj.id for modeling_obj in self.keys()]}")
-    
-    def replace_in_mod_obj_container_without_recomputation(self, new_value):
-        value_to_set = new_value
-        if not isinstance(value_to_set, WeightedModelingObjectsDict):
-            value_to_set = WeightedModelingObjectsDict(value_to_set)
-        super().replace_in_mod_obj_container_without_recomputation(value_to_set)
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
         if self.modeling_obj_container is not None and new_parent_modeling_object is None:
@@ -67,11 +61,11 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
         else:
             if key in self.keys():
-                ModelingUpdate([(self[key], value_to_set)])
+                ModelingUpdate([[self[key], value_to_set]])
             else:
                 copied_dict = dict(self)
                 copied_dict[contextual_modeling_object_attribute_key] = value_to_set
-                ModelingUpdate([(self, copied_dict)])
+                ModelingUpdate([[self, copied_dict]])
                 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {}
@@ -99,7 +93,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         if self.trigger_modeling_updates:
             copied_dict = dict(self)
             copied_dict.__delitem__(key)
-            ModelingUpdate([(self, copied_dict)])
+            ModelingUpdate([[self, copied_dict]])
         else:
             super().__delitem__(key)
 
@@ -107,7 +101,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         if self.trigger_modeling_updates:
             copied_dict = dict(self)
             value = copied_dict.pop(key)
-            ModelingUpdate([(self, copied_dict)])
+            ModelingUpdate([[self, copied_dict]])
         else:
             value = super().pop(key)
 
@@ -119,7 +113,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         if self.trigger_modeling_updates:
             copied_dict = dict(self)
             key, value = copied_dict.popitem()
-            ModelingUpdate([(self, copied_dict)])
+            ModelingUpdate([[self, copied_dict]])
         else:
             key, value = super().popitem()
 
@@ -132,7 +126,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             value.set_modeling_obj_container(None, None)
         
         if self.trigger_modeling_updates:
-            ModelingUpdate([(self, {})])
+            ModelingUpdate([[self, {}]])
         else:
             super().clear()
         

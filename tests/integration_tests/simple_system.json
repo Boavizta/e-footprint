@@ -3,7 +3,7 @@
         "uuid-system-1": {
             "name": "system 1",
             "id": "uuid-system-1",
-            "_usage_patterns": [
+            "usage_patterns": [
                 "uuid-Youtube-usage-in-France"
             ]
         }
@@ -490,7 +490,6 @@
                     "link": "https://ourworldindata.org/energy#country-profiles"
                 }
             },
-            "year": 2022,
             "timezone": {
                 "label": "France timezone from user data",
                 "zone": "Europe/Paris",
