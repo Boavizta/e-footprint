@@ -1467,7 +1467,7 @@
 <p>e-footprint builders are higher-level functions that allows for the creation of e-footprint objects from fewer parameters than the raw model requires.</p>
 <h2 id="default-builders">Default builders</h2>
 <h3 id="devices">Devices</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.devices_defaults</span> <span class="kn">import</span> <span class="n">default_smartphone</span><span class="p">,</span> <span class="n">default_laptop</span><span class="p">,</span> <span class="n">default_box</span><span class="p">,</span> <span class="n">default_screen</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.devices_defaults</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_smartphone</span><span class="p">,</span> <span class="n">default_laptop</span><span class="p">,</span> <span class="n">default_box</span><span class="p">,</span> <span class="n">default_screen</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">default_smartphone</span><span class="p">())</span>
 </span></code></pre></div>
@@ -1506,7 +1506,7 @@ lifespan: 6 year
 fraction_of_usage_time: 7.0 hour / day
 </code></pre></div>
 <h3 id="network">Network</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.network_defaults</span> <span class="kn">import</span> <span class="n">default_mobile_network</span><span class="p">,</span> <span class="n">default_wifi_network</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.network_defaults</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_mobile_network</span><span class="p">,</span> <span class="n">default_wifi_network</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">default_mobile_network</span><span class="p">())</span>
 </span></code></pre></div>
@@ -1528,7 +1528,7 @@ calculated_attributes:
 </code></pre></div>
 <h3 id="servers">Servers</h3>
 <p>Different server types have same default attributes but their calculated attributes logic will be different.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.servers_defaults</span> <span class="kn">import</span> <span class="n">default_autoscaling</span><span class="p">,</span> <span class="n">default_serverless</span><span class="p">,</span> <span class="n">default_onpremise</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.servers_defaults</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_autoscaling</span><span class="p">,</span> <span class="n">default_serverless</span><span class="p">,</span> <span class="n">default_onpremise</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">default_autoscaling</span><span class="p">())</span>
 </span></code></pre></div>
@@ -1619,7 +1619,7 @@ calculated_attributes:
   energy_footprint: None
 </code></pre></div>
 <h3 id="storage">Storage</h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.storage_defaults</span> <span class="kn">import</span> <span class="n">default_hdd</span><span class="p">,</span> <span class="n">default_ssd</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.storage_defaults</span><span class="w"> </span><span class="kn">import</span> <span class="n">default_hdd</span><span class="p">,</span> <span class="n">default_ssd</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">default_hdd</span><span class="p">())</span>
 </span></code></pre></div>
@@ -1679,8 +1679,8 @@ calculated_attributes:
 </code></pre></div>
 <h2 id="overwriting-default-builders-attributes">Overwriting default builders attributes</h2>
 <p>Any default builder attribute can be overwritten, for example:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span> <span class="nn">efootprint.abstract_modeling_classes.source_objects</span> <span class="kn">import</span> <span class="n">SourceValue</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span> <span class="nn">efootprint.constants.units</span> <span class="kn">import</span> <span class="n">u</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.abstract_modeling_classes.source_objects</span><span class="w"> </span><span class="kn">import</span> <span class="n">SourceValue</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.constants.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">u</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">default_ssd</span><span class="p">(</span><span class="s2">&quot;My custom default SSD with higher lifespan&quot;</span><span class="p">,</span> <span class="n">lifespan</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">10</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">year</span><span class="p">)))</span>
 </span></code></pre></div>
@@ -1714,7 +1714,7 @@ calculated_attributes:
 <p>These builders make use of <a href="https://github.com/Boavizta/boaviztapi">Boavizta’s API</a> to create objects with their full technical characteristics from fewer information like server name and cloud provider.</p>
 <h3 id="boaviztapi-server-builders">BoaviztAPI server builders</h3>
 <h4 id="cloud-server-from-cloud-provider-and-server-name">Cloud server from cloud provider and server name</h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.servers_boaviztapi</span> <span class="kn">import</span> <span class="n">get_cloud_server</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.servers_boaviztapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cloud_server</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">get_cloud_server</span><span class="p">(</span><span class="s2">&quot;aws&quot;</span><span class="p">,</span> <span class="s2">&quot;m5.xlarge&quot;</span><span class="p">,</span> <span class="n">SourceValue</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">kWh</span><span class="p">)))</span>
 </span></code></pre></div>
@@ -1746,7 +1746,7 @@ calculated_attributes:
   energy_footprint: None
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># The server type can be changed, as well as lifespan, idle_power, power_usage_effectiveness and server_utilization_rate</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">from</span> <span class="nn">efootprint.core.hardware.servers.serverless</span> <span class="kn">import</span> <span class="n">Serverless</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.core.hardware.servers.serverless</span><span class="w"> </span><span class="kn">import</span> <span class="n">Serverless</span>
 </span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
 </span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">get_cloud_server</span><span class="p">(</span>
 </span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="s2">&quot;aws&quot;</span><span class="p">,</span> <span class="s2">&quot;m5.xlarge&quot;</span><span class="p">,</span> <span class="n">SourceValue</span><span class="p">(</span><span class="mi">100</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="n">u</span><span class="o">.</span><span class="n">kWh</span><span class="p">),</span> <span class="n">base_efootprint_class</span><span class="o">=</span><span class="n">Serverless</span><span class="p">,</span> <span class="n">lifespan</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">7</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">year</span><span class="p">)))</span>
@@ -1779,7 +1779,7 @@ calculated_attributes:
   energy_footprint: None
 </code></pre></div>
 <h4 id="on-premise-server-from-config">On premise server from config</h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.hardware.servers_boaviztapi</span> <span class="kn">import</span> <span class="n">on_premise_server_from_config</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.hardware.servers_boaviztapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">on_premise_server_from_config</span>
 </span></code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">on_premise_server_from_config</span><span class="p">(</span>
 </span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    <span class="s2">&quot;My server&quot;</span><span class="p">,</span> <span class="n">nb_of_cpu_units</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">nb_of_cores_per_cpu_unit</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span><span class="n">nb_of_ram_units</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
@@ -1814,7 +1814,7 @@ calculated_attributes:
   energy_footprint: None
 </code></pre></div>
 <h2 id="job-builder-from-boaviztas-ecobenchmark-data">Job builder from Boavizta’s ecobenchmark data</h2>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span> <span class="nn">efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder</span> <span class="kn">import</span> <span class="n">ecobenchmark_job</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">ecobenchmark_job</span>
 </span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
 </span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="n">server</span> <span class="o">=</span> <span class="n">default_autoscaling</span><span class="p">()</span>
 </span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="n">storage</span> <span class="o">=</span> <span class="n">default_ssd</span><span class="p">()</span>
@@ -1846,7 +1846,7 @@ calculated_attributes:
   hourly_data_stored_across_usage_patterns: None
 </code></pre></div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># List of available technologies</span>
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="kn">from</span> <span class="nn">efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder</span> <span class="kn">import</span> <span class="n">get_ecobenchmark_technologies</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ecobenchmark_technologies</span>
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="nb">print</span><span class="p">(</span><span class="n">get_ecobenchmark_technologies</span><span class="p">())</span>
 </span></code></pre></div>
 <div class="language-text highlight"><pre><span></span><code>[&#39;go-pgx&#39;, &#39;jvm-kotlin-spring&#39;, &#39;node-express-sequelize&#39;, &#39;php-symfony&#39;, &#39;rust-actix-sqlx&#39;]

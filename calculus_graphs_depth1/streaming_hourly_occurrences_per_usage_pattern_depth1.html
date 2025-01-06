@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6e1c66 {
+             #mynetwork_84520a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6e1c66" class="card-body"></div>
+            <div id="mynetwork_84520a" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6e1c66');
+                  var container = document.getElementById('mynetwork_84520a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nusage pattern UTC shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 4, 2, 9, 8, 2, 2, 9, 3, 2],\nlast 10 vals [4, 2, 6, 3, 8, 4, 3, 7, 2, 2] shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 4, 2, 9, 8, 2, 2, 9, 3, 2],\nlast 10 vals [4, 2, 6, 3, 8, 4, 3, 7, 2, 2]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26299 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [2, 4, 2, 9, 8, 2, 2, 9, 3, 2],\nlast 10 vals [4, 2, 6, 3, 8, 4, 3, 7, 2, 2] converted to UTC from Europe/Paris\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 4, 2, 9, 8, 2, 2, 9, 3, 2],\nlast 10 vals [4, 2, 6, 3, 8, 4, 3, 7, 2, 2]", "x": -75.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming occurrences in usage pattern", "label": "Hourly streaming\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly streaming occurrences in usage pattern\n=\nusage pattern UTC shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [6, 5, 9, 9, 7, 1, 4, 4, 5, 9],\nlast 10 vals [1, 9, 1, 8, 8, 4, 2, 4, 2, 6] shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [6, 5, 9, 9, 7, 1, 4, 4, 5, 9],\nlast 10 vals [1, 9, 1, 8, 8, 4, 2, 4, 2, 6]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26299 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [6, 5, 9, 9, 7, 1, 4, 4, 5, 9],\nlast 10 vals [1, 9, 1, 8, 8, 4, 2, 4, 2, 6] converted to UTC from Europe/Paris\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [6, 5, 9, 9, 7, 1, 4, 4, 5, 9],\nlast 10 vals [1, 9, 1, 8, 8, 4, 2, 4, 2, 6]", "x": -75.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly streaming occurrences in usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly streaming occurrences in usage pattern"}]);
 
                   nodeColors = {};

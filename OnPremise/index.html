@@ -1765,8 +1765,8 @@
 <h3 id="hour_by_hour_cpu_need">hour_by_hour_cpu_need</h3>
 <p>on premise server hour by hour cpu need in core.  </p>
 <p>Example value: 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:<br />
-    first 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],<br />
-    last 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]  </p>
+    first 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],<br />
+    last 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../Job/#hourly_avg_occurrences_across_usage_patterns">Hourly streaming average occurrences across usage patterns</a></li>
@@ -1806,7 +1806,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1e5288 {
+             #mynetwork_4ea800 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1828,7 +1828,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1e5288" class="card-body"></div>
+            <div id="mynetwork_4ea800" class="card-body"></div>
         </div>
 
 
@@ -1858,12 +1858,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1e5288');
+                  var container = document.getElementById('mynetwork_4ea800');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "on premise server hour by hour cpu need", "label": "on premise server\nhour by hour cpu\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour cpu need\n=\nHourly streaming average occurrences across usage patterns * CPU needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13] * 1 core\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": -75.0, "y": 750}, {"color": null, "id": "CPU needed on server server to process streaming", "label": "CPU needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "CPU needed on server server to process streaming = 1 core", "x": 75.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise server hour by hour cpu need", "label": "on premise server\nhour by hour cpu\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour cpu need\n=\nHourly streaming average occurrences across usage patterns * CPU needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4] * 1 core\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]", "x": -75.0, "y": 750}, {"color": null, "id": "CPU needed on server server to process streaming", "label": "CPU needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "CPU needed on server server to process streaming = 1 core", "x": 75.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming average occurrences across usage patterns", "to": "on premise server hour by hour cpu need"}, {"arrows": "to", "from": "CPU needed on server server to process streaming", "to": "on premise server hour by hour cpu need"}]);
 
                   nodeColors = {};
@@ -1933,8 +1933,8 @@
 <h3 id="hour_by_hour_ram_need">hour_by_hour_ram_need</h3>
 <p>on premise server hour by hour ram need in gigabyte.  </p>
 <p>Example value: 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:<br />
-    first 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],<br />
-    last 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]  </p>
+    first 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],<br />
+    last 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../Job/#hourly_avg_occurrences_across_usage_patterns">Hourly streaming average occurrences across usage patterns</a></li>
@@ -1974,7 +1974,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b20b2e {
+             #mynetwork_cfb6db {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1996,7 +1996,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b20b2e" class="card-body"></div>
+            <div id="mynetwork_cfb6db" class="card-body"></div>
         </div>
 
 
@@ -2026,12 +2026,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b20b2e');
+                  var container = document.getElementById('mynetwork_cfb6db');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "on premise server hour by hour ram need", "label": "on premise server\nhour by hour ram\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour ram need\n=\nHourly streaming average occurrences across usage patterns * RAM needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13] * 50\nmegabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": -75.0, "y": 750}, {"color": null, "id": "RAM needed on server server to process streaming", "label": "RAM needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "RAM needed on server server to process streaming = 50 megabyte", "x": 75.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise server hour by hour ram need", "label": "on premise server\nhour by hour ram\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour ram need\n=\nHourly streaming average occurrences across usage patterns * RAM needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4] * 50\nmegabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly streaming average occurrences across usage patterns", "label": "Hourly streaming\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly streaming average occurrences across usage patterns\n=\nAverage hourly streaming occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]", "x": -75.0, "y": 750}, {"color": null, "id": "RAM needed on server server to process streaming", "label": "RAM needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "RAM needed on server server to process streaming = 50 megabyte", "x": 75.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming average occurrences across usage patterns", "to": "on premise server hour by hour ram need"}, {"arrows": "to", "from": "RAM needed on server server to process streaming", "to": "on premise server hour by hour ram need"}]);
 
                   nodeColors = {};
@@ -2141,7 +2141,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7c3aa3 {
+             #mynetwork_bc8314 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2163,7 +2163,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7c3aa3" class="card-body"></div>
+            <div id="mynetwork_bc8314" class="card-body"></div>
         </div>
 
 
@@ -2193,7 +2193,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7c3aa3');
+                  var container = document.getElementById('mynetwork_bc8314');
 
 
 
@@ -2308,7 +2308,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f2aa62 {
+             #mynetwork_d1a9d0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2330,7 +2330,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f2aa62" class="card-body"></div>
+            <div id="mynetwork_d1a9d0" class="card-body"></div>
         </div>
 
 
@@ -2360,7 +2360,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f2aa62');
+                  var container = document.getElementById('mynetwork_d1a9d0');
 
 
 
@@ -2435,8 +2435,8 @@
 <h3 id="raw_nb_of_instances">raw_nb_of_instances</h3>
 <p>hourly raw number of on premise server instances in dimensionless.  </p>
 <p>Example value: 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:<br />
-    first 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],<br />
-    last 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]  </p>
+    first 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],<br />
+    last 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hour_by_hour_ram_need">on premise server hour by hour ram need</a></li>
@@ -2478,7 +2478,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7ec383 {
+             #mynetwork_7845a9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2500,7 +2500,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7ec383" class="card-body"></div>
+            <div id="mynetwork_7845a9" class="card-body"></div>
         </div>
 
 
@@ -2530,12 +2530,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7ec383');
+                  var container = document.getElementById('mynetwork_7845a9');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": 0.0, "y": 1200}, {"color": null, "id": "Raw nb of on premise server instances based on RAM alone", "label": "Raw nb of on premise\nserver instances\nbased on RAM alone", "shape": "dot", "size": 15, "title": "Raw nb of on premise server instances based on RAM alone\n=\non premise server hour by hour ram need / Available RAM per on premise server\ninstance\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01] /\n114.9 gigabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 1050}, {"color": null, "id": "on premise server hour by hour ram need", "label": "on premise server\nhour by hour ram\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour ram need\n=\nHourly streaming average occurrences across usage patterns * RAM needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13] * 50\nmegabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": -450.0, "y": 900}, {"color": null, "id": "Available RAM per on premise server instance", "label": "Available RAM per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise server instance\n=\nRAM of on premise server * on premise server utilization rate - Base RAM\nconsumption of on premise server\n=\n128 gigabyte * 0.9 dimensionless - 300 megabyte\n=\n114.9 gigabyte", "x": -150.0, "y": 900}, {"color": null, "id": "Raw nb of on premise server instances based on CPU alone", "label": "Raw nb of on premise\nserver instances\nbased on CPU alone", "shape": "dot", "size": 15, "title": "Raw nb of on premise server instances based on CPU alone\n=\non premise server hour by hour cpu need / Available CPU per on premise server\ninstance\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13] / 19.6\ncore\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": 300.0, "y": 1050}, {"color": null, "id": "on premise server hour by hour cpu need", "label": "on premise server\nhour by hour cpu\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour cpu need\n=\nHourly streaming average occurrences across usage patterns * CPU needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13] * 1 core\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.13, 0.27, 0.13, 0.6, 0.53, 0.13, 0.13, 0.6, 0.2, 0.13],\nlast 10 vals [0.27, 0.13, 0.4, 0.2, 0.53, 0.27, 0.2, 0.47, 0.13, 0.13]", "x": 150.0, "y": 900}, {"color": null, "id": "Available CPU per on premise server instance", "label": "Available CPU per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per on premise server instance\n=\nNb cpus cores of on premise server * on premise server utilization rate - Base\nCPU consumption of on premise server\n=\n24 core * 0.9 dimensionless - 2 core\n=\n19.6 core", "x": 450.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": 0.0, "y": 1200}, {"color": null, "id": "Raw nb of on premise server instances based on RAM alone", "label": "Raw nb of on premise\nserver instances\nbased on RAM alone", "shape": "dot", "size": 15, "title": "Raw nb of on premise server instances based on RAM alone\n=\non premise server hour by hour ram need / Available RAM per on premise server\ninstance\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02] / 114.9\ngigabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 1050}, {"color": null, "id": "on premise server hour by hour ram need", "label": "on premise server\nhour by hour ram\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour ram need\n=\nHourly streaming average occurrences across usage patterns * RAM needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4] * 50\nmegabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": -450.0, "y": 900}, {"color": null, "id": "Available RAM per on premise server instance", "label": "Available RAM per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise server instance\n=\nRAM of on premise server * on premise server utilization rate - Base RAM\nconsumption of on premise server\n=\n128 gigabyte * 0.9 dimensionless - 300 megabyte\n=\n114.9 gigabyte", "x": -150.0, "y": 900}, {"color": null, "id": "Raw nb of on premise server instances based on CPU alone", "label": "Raw nb of on premise\nserver instances\nbased on CPU alone", "shape": "dot", "size": 15, "title": "Raw nb of on premise server instances based on CPU alone\n=\non premise server hour by hour cpu need / Available CPU per on premise server\ninstance\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4] / 19.6\ncore\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": 300.0, "y": 1050}, {"color": null, "id": "on premise server hour by hour cpu need", "label": "on premise server\nhour by hour cpu\nneed", "shape": "dot", "size": 15, "title": "on premise server hour by hour cpu need\n=\nHourly streaming average occurrences across usage patterns * CPU needed on\nserver server to process streaming\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4] * 1 core\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in core:\nfirst 10 vals [0.4, 0.33, 0.6, 0.6, 0.47, 0.07, 0.27, 0.27, 0.33, 0.6],\nlast 10 vals [0.07, 0.6, 0.07, 0.53, 0.53, 0.27, 0.13, 0.27, 0.13, 0.4]", "x": 150.0, "y": 900}, {"color": null, "id": "Available CPU per on premise server instance", "label": "Available CPU per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per on premise server instance\n=\nNb cpus cores of on premise server * on premise server utilization rate - Base\nCPU consumption of on premise server\n=\n24 core * 0.9 dimensionless - 2 core\n=\n19.6 core", "x": 450.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Raw nb of on premise server instances based on RAM alone", "to": "Hourly raw number of on premise server instances"}, {"arrows": "to", "from": "on premise server hour by hour ram need", "to": "Raw nb of on premise server instances based on RAM alone"}, {"arrows": "to", "from": "Available RAM per on premise server instance", "to": "Raw nb of on premise server instances based on RAM alone"}, {"arrows": "to", "from": "Raw nb of on premise server instances based on CPU alone", "to": "Hourly raw number of on premise server instances"}, {"arrows": "to", "from": "on premise server hour by hour cpu need", "to": "Raw nb of on premise server instances based on CPU alone"}, {"arrows": "to", "from": "Available CPU per on premise server instance", "to": "Raw nb of on premise server instances based on CPU alone"}]);
 
                   nodeColors = {};
@@ -2646,7 +2646,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9375e4 {
+             #mynetwork_86b76f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2668,7 +2668,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9375e4" class="card-body"></div>
+            <div id="mynetwork_86b76f" class="card-body"></div>
         </div>
 
 
@@ -2698,12 +2698,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9375e4');
+                  var container = document.getElementById('mynetwork_86b76f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": -300.0, "y": 1200}, {"color": null, "id": "User defined number of on premise server instances", "label": "User defined number\nof on premise server\ninstances", "shape": "dot", "size": 15, "title": "User defined number of on premise server instances = no value", "x": 300.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": -300.0, "y": 1200}, {"color": null, "id": "User defined number of on premise server instances", "label": "User defined number\nof on premise server\ninstances", "shape": "dot", "size": 15, "title": "User defined number of on premise server instances = no value", "x": 300.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of on premise server instances", "to": "Hourly number of on premise server instances"}, {"arrows": "to", "from": "User defined number of on premise server instances", "to": "Hourly number of on premise server instances"}]);
 
                   nodeColors = {};
@@ -2815,7 +2815,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_eb8163 {
+             #mynetwork_42955a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2837,7 +2837,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_eb8163" class="card-body"></div>
+            <div id="mynetwork_42955a" class="card-body"></div>
         </div>
 
 
@@ -2867,12 +2867,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_eb8163');
+                  var container = document.getElementById('mynetwork_42955a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server instances fabrication footprint", "label": "Hourly on premise\nserver instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server instances fabrication footprint\n=\nHourly number of on premise server instances * Carbon footprint fabrication of\non premise server * one hour / Lifespan of on premise server\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 600 kilogram *\n1 hour / 6 year\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -450.0, "y": 1350}, {"color": null, "id": "Carbon footprint fabrication of on premise server", "label": "Carbon footprint\nfabrication of on\npremise server", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of on premise server = 600 kilogram", "x": -150.0, "y": 1350}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 150.0, "y": 1350}, {"color": null, "id": "Lifespan of on premise server", "label": "Lifespan of on\npremise server", "shape": "dot", "size": 15, "title": "Lifespan of on premise server = 6 year", "x": 450.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server instances fabrication footprint", "label": "Hourly on premise\nserver instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server instances fabrication footprint\n=\nHourly number of on premise server instances * Carbon footprint fabrication of\non premise server * one hour / Lifespan of on premise server\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 600 kilogram *\n1 hour / 6 year\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -450.0, "y": 1350}, {"color": null, "id": "Carbon footprint fabrication of on premise server", "label": "Carbon footprint\nfabrication of on\npremise server", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of on premise server = 600 kilogram", "x": -150.0, "y": 1350}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 150.0, "y": 1350}, {"color": null, "id": "Lifespan of on premise server", "label": "Lifespan of on\npremise server", "shape": "dot", "size": 15, "title": "Lifespan of on premise server = 6 year", "x": 450.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of on premise server instances", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of on premise server", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of on premise server", "to": "Hourly on premise server instances fabrication footprint"}]);
 
                   nodeColors = {};
@@ -2942,8 +2942,8 @@
 <h3 id="instances_energy">instances_energy</h3>
 <p>hourly energy consumed by on premise server instances in kilowatt_hour.  </p>
 <p>Example value: 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:<br />
-    first 10 vals [0.06, 0.06, 0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06],<br />
-    last 10 vals [0.06, 0.06, 0.07, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06]  </p>
+    first 10 vals [0.07, 0.07, 0.07, 0.07, 0.07, 0.06, 0.06, 0.06, 0.07, 0.07],<br />
+    last 10 vals [0.06, 0.07, 0.06, 0.07, 0.07, 0.06, 0.06, 0.06, 0.06, 0.07]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#nb_of_instances">Hourly number of on premise server instances</a></li>
@@ -2986,7 +2986,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_550ab4 {
+             #mynetwork_b2a968 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3008,7 +3008,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_550ab4" class="card-body"></div>
+            <div id="mynetwork_b2a968" class="card-body"></div>
         </div>
 
 
@@ -3038,12 +3038,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_550ab4');
+                  var container = document.getElementById('mynetwork_b2a968');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by on premise server instances", "label": "Hourly energy\nconsumed by on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise server instances\n=\nHourly number of on premise server instances * Idle power of on premise server *\nPUE of on premise server * one hour + Hourly raw number of on premise server\ninstances * (Power of on premise server - Idle power of on premise server) * PUE\nof on premise server * one hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 50 watt * 1.2\ndimensionless * 1 hour + 26299 values from 2024-12-31 23:00:00 to 2028-01-01\n17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.06, 0.06, 0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06],\nlast 10 vals [0.06, 0.06, 0.07, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -750.0, "y": 1350}, {"color": null, "id": "Idle power of on premise server", "label": "Idle power of on\npremise server", "shape": "dot", "size": 15, "title": "Idle power of on premise server = 50 watt", "x": -450.0, "y": 1350}, {"color": null, "id": "PUE of on premise server", "label": "PUE of on premise\nserver", "shape": "dot", "size": 15, "title": "PUE of on premise server = 1.2 dimensionless", "x": -150.0, "y": 1350}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 150.0, "y": 1350}, {"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01]", "x": -675.0, "y": 1200}, {"color": null, "id": "Power of on premise server", "label": "Power of on premise\nserver", "shape": "dot", "size": 15, "title": "Power of on premise server = 300 watt", "x": 750.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by on premise server instances", "label": "Hourly energy\nconsumed by on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise server instances\n=\nHourly number of on premise server instances * Idle power of on premise server *\nPUE of on premise server * one hour + Hourly raw number of on premise server\ninstances * (Power of on premise server - Idle power of on premise server) * PUE\nof on premise server * one hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 50 watt * 1.2\ndimensionless * 1 hour + 26299 values from 2024-12-31 23:00:00 to 2028-01-01\n17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.07, 0.07, 0.07, 0.07, 0.07, 0.06, 0.06, 0.06, 0.07, 0.07],\nlast 10 vals [0.06, 0.07, 0.06, 0.07, 0.07, 0.06, 0.06, 0.06, 0.06, 0.07]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly number of on premise server instances", "label": "Hourly number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of on premise server instances\n=\nHourly raw number of on premise server instances depending on not being empty\nUser defined number of on premise server instances\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\ndepending on not being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -750.0, "y": 1350}, {"color": null, "id": "Idle power of on premise server", "label": "Idle power of on\npremise server", "shape": "dot", "size": 15, "title": "Idle power of on premise server = 50 watt", "x": -450.0, "y": 1350}, {"color": null, "id": "PUE of on premise server", "label": "PUE of on premise\nserver", "shape": "dot", "size": 15, "title": "PUE of on premise server = 1.2 dimensionless", "x": -150.0, "y": 1350}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 150.0, "y": 1350}, {"color": null, "id": "Hourly raw number of on premise server instances", "label": "Hourly raw number of\non premise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of on premise server instances\n=\nRaw nb of on premise server instances based on RAM alone max compared with Raw\nnb of on premise server instances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02]", "x": -675.0, "y": 1200}, {"color": null, "id": "Power of on premise server", "label": "Power of on premise\nserver", "shape": "dot", "size": 15, "title": "Power of on premise server = 300 watt", "x": 750.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of on premise server instances", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "Idle power of on premise server", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "PUE of on premise server", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "one hour", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "Hourly raw number of on premise server instances", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "Power of on premise server", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "Idle power of on premise server", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "PUE of on premise server", "to": "Hourly energy consumed by on premise server instances"}, {"arrows": "to", "from": "one hour", "to": "Hourly energy consumed by on premise server instances"}]);
 
                   nodeColors = {};
@@ -3154,7 +3154,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_09e38e {
+             #mynetwork_443010 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3176,7 +3176,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_09e38e" class="card-body"></div>
+            <div id="mynetwork_443010" class="card-body"></div>
         </div>
 
 
@@ -3206,12 +3206,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_09e38e');
+                  var container = document.getElementById('mynetwork_443010');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server energy footprint", "label": "Hourly on premise\nserver energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server energy footprint\n=\nHourly energy consumed by on premise server instances * Average carbon intensity\nof on premise server electricity\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.06, 0.06, 0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06],\nlast 10 vals [0.06, 0.06, 0.07, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06] *\n100.0 gram / kilowatt_hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly energy consumed by on premise server instances", "label": "Hourly energy\nconsumed by on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise server instances\n=\nHourly number of on premise server instances * Idle power of on premise server *\nPUE of on premise server * one hour + Hourly raw number of on premise server\ninstances * (Power of on premise server - Idle power of on premise server) * PUE\nof on premise server * one hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 50 watt * 1.2\ndimensionless * 1 hour + 26299 values from 2024-12-31 23:00:00 to 2028-01-01\n17:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.01, 0.01, 0.03, 0.03, 0.01, 0.01, 0.03, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.02, 0.01, 0.03, 0.01, 0.01, 0.02, 0.01, 0.01] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.06, 0.06, 0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06],\nlast 10 vals [0.06, 0.06, 0.07, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06]", "x": -450.0, "y": 1500}, {"color": null, "id": "Average carbon intensity of on premise server electricity", "label": "Average carbon\nintensity of on\npremise server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise server electricity = 100.0 gram /\nkilowatt_hour", "x": 450.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server energy footprint", "label": "Hourly on premise\nserver energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server energy footprint\n=\nHourly energy consumed by on premise server instances * Average carbon intensity\nof on premise server electricity\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.07, 0.07, 0.07, 0.07, 0.07, 0.06, 0.06, 0.06, 0.07, 0.07],\nlast 10 vals [0.06, 0.07, 0.06, 0.07, 0.07, 0.06, 0.06, 0.06, 0.06, 0.07] *\n100.0 gram / kilowatt_hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly energy consumed by on premise server instances", "label": "Hourly energy\nconsumed by on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise server instances\n=\nHourly number of on premise server instances * Idle power of on premise server *\nPUE of on premise server * one hour + Hourly raw number of on premise server\ninstances * (Power of on premise server - Idle power of on premise server) * PUE\nof on premise server * one hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 50 watt * 1.2\ndimensionless * 1 hour + 26299 values from 2024-12-31 23:00:00 to 2028-01-01\n17:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.02, 0.03, 0.03, 0.02, 0.0, 0.01, 0.01, 0.02, 0.03],\nlast 10 vals [0.0, 0.03, 0.0, 0.03, 0.03, 0.01, 0.01, 0.01, 0.01, 0.02] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kWh:\nfirst 10 vals [0.07, 0.07, 0.07, 0.07, 0.07, 0.06, 0.06, 0.06, 0.07, 0.07],\nlast 10 vals [0.06, 0.07, 0.06, 0.07, 0.07, 0.06, 0.06, 0.06, 0.06, 0.07]", "x": -450.0, "y": 1500}, {"color": null, "id": "Average carbon intensity of on premise server electricity", "label": "Average carbon\nintensity of on\npremise server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise server electricity = 100.0 gram /\nkilowatt_hour", "x": 450.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by on premise server instances", "to": "Hourly on premise server energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of on premise server electricity", "to": "Hourly on premise server energy footprint"}]);
 
                   nodeColors = {};
