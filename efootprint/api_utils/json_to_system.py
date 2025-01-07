@@ -3,6 +3,8 @@ from datetime import datetime
 import pytz
 from copy import copy
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.system import System
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
@@ -18,7 +20,6 @@ from efootprint.constants.countries import Country
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -80,16 +81,15 @@ def json_to_system(system_dict):
         for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
             for attr_key, attr_value in list(mod_obj.__dict__.items()):
                 if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
-                    mod_obj.__dict__[attr_key] = flat_obj_dict[attr_value]
-                    flat_obj_dict[attr_value].add_obj_to_modeling_obj_containers(mod_obj)
+                    mod_obj.__dict__[attr_key] = ContextualModelingObjectAttribute(flat_obj_dict[attr_value])
+                    mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
                 elif type(attr_value) == list and attr_key != "modeling_obj_containers":
                     output_val = []
                     for elt in attr_value:
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
-                            flat_obj_dict[elt].add_obj_to_modeling_obj_containers(mod_obj)
-                    mod_obj.__dict__[attr_key] = output_val
-                    mod_obj.__dict__[f"{attr_key}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"] = copy(output_val)
+                    mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
+                    mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
             mod_obj.__dict__["trigger_modeling_updates"] = True
 
     for obj_type in class_obj_dict.keys():

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [8.2.1] 2025-01-07
+
+### Fixed
+- Wrap ModelingObjects into ContextualModelingObjectAttribute and lists into ListLinkedToModelingObj in json_to_system function so that all ModelingObject attributes inherit from ObjectLinkedToModelingObj class. This change fixes recomputation of ModelingObject or list attributes when the system is loaded from a json file.
+
 ## [8.2.0] 2025-01-06
 
 ### Changed

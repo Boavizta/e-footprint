@@ -146,7 +146,15 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=cls.start_date)))
 
+        # Normalize usage pattern ids before computation is made because it is used as dictionary key in intermediary calculations
+        cls.usage_pattern1.id = "uuid" + cls.usage_pattern1.id[9:]
+        cls.usage_pattern2.id = "uuid" + cls.usage_pattern2.id[9:]
+
         cls.system = System("system 1", [cls.usage_pattern1, cls.usage_pattern2])
+        mod_obj_list = [cls.system] + cls.system.all_linked_objects
+        for mod_obj in mod_obj_list:
+            if mod_obj not in [cls.usage_pattern1, cls.usage_pattern2]:
+                mod_obj.id = "uuid" + mod_obj.id[9:]
 
         cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
@@ -244,7 +252,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         logger.warning("Removing one TikTok job")
         self.tiktok_step.jobs = [self.tiktok_job]
 
-        self.footprint_has_changed([self.server3, self.storage_3])
+        self.footprint_has_changed([self.server3, self.storage_3], system=self.system)
         self.footprint_has_not_changed([self.server2, self.storage_2])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
@@ -258,7 +266,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         logger.warning("Removing all TikTok jobs")
         self.tiktok_step.jobs = []
 
-        self.footprint_has_changed([self.server2, self.storage_2, self.server3, self.storage_3])
+        self.footprint_has_changed([self.server2, self.storage_2, self.server3, self.storage_3],
+                                   system=self.system)
         self.footprint_has_not_changed([self.server1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint))
 

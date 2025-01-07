@@ -1,3 +1,4 @@
+import json
 from copy import copy
 import os
 from datetime import datetime, timedelta
@@ -5,6 +6,7 @@ from datetime import datetime, timedelta
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.servers_defaults import default_onpremise
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -25,7 +27,7 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop, default_screen
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
 class IntegrationTest(IntegrationTestBaseClass):
@@ -86,7 +88,14 @@ class IntegrationTest(IntegrationTestBaseClass):
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
+        # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary calculations
+        cls.usage_pattern.id = "uuid" + cls.usage_pattern.id[9:]
+
         cls.system = System("system 1", [cls.usage_pattern])
+        mod_obj_list = [cls.system] + cls.system.all_linked_objects
+        for mod_obj in mod_obj_list:
+            if mod_obj != cls.usage_pattern:
+                mod_obj.id = "uuid" + mod_obj.id[9:]
 
         cls.initial_footprint = cls.system.total_footprint
 
@@ -125,57 +134,57 @@ class IntegrationTest(IntegrationTestBaseClass):
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
 
+    def _test_input_change(self, expl_attr, expl_attr_new_value, input_object, expl_attr_name):
+        expl_attr_new_value.label = expl_attr.label
+        logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to"
+                    f" {expl_attr_new_value.value}")
+        system = input_object.systems[0]
+        input_object.__setattr__(expl_attr_name, expl_attr_new_value)
+        new_footprint = system.total_footprint
+        logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
+        self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
+        input_object.__setattr__(expl_attr_name, expl_attr)
+        self.assertTrue(system.total_footprint.value.equals(self.initial_footprint.value))
+
+    def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
+        if attrs_to_skip is None:
+            attrs_to_skip = []
+        logger.warning(f"Testing input variations on {input_object.name}")
+        for expl_attr_name, expl_attr in get_subclass_attributes(input_object, ExplainableObject).items():
+            if expl_attr.left_parent is None and expl_attr.right_parent is None \
+                    and expl_attr_name not in attrs_to_skip:
+
+                expl_attr_new_value = copy(expl_attr)
+                if special_mult and expl_attr_name in special_mult.keys():
+                    expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
+                else:
+                    expl_attr_new_value.value *= 100 * u.dimensionless
+                self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
+
     def test_variations_on_inputs(self):
-        def test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name):
-            expl_attr_new_value.label = expl_attr.label
-            logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to"
-                        f" {expl_attr_new_value.value}")
-            input_object.__setattr__(expl_attr_name, expl_attr_new_value)
-            new_footprint = self.system.total_footprint
-            logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
-            self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
-            input_object.__setattr__(expl_attr_name, expl_attr)
-            self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
-
-        def test_variations_on_obj_inputs(input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
-            if attrs_to_skip is None:
-                attrs_to_skip = []
-            logger.warning(f"Testing input variations on {input_object.name}")
-            for expl_attr_name, expl_attr in get_subclass_attributes(input_object, ExplainableObject).items():
-                if expl_attr.left_parent is None and expl_attr.right_parent is None \
-                        and expl_attr_name not in attrs_to_skip:
-
-                    expl_attr_new_value = copy(expl_attr)
-                    if special_mult and expl_attr_name in special_mult.keys():
-                        expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
-                    else:
-                        expl_attr_new_value.value *= 100 * u.dimensionless
-                    test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
-
-
-        test_variations_on_obj_inputs(self.streaming_step)
-        test_variations_on_obj_inputs(
+        self._test_variations_on_obj_inputs(self.streaming_step)
+        self._test_variations_on_obj_inputs(
             self.server, attrs_to_skip=["fraction_of_usage_time"],
             special_mult={
                 "ram": 0.01, "server_utilization_rate": 0.5,
                 "base_ram_consumption": 380,
                 "base_cpu_consumption": 10
             })
-        test_variations_on_obj_inputs(
+        self._test_variations_on_obj_inputs(
             self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
-        test_input_change(self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
+        self._test_input_change(self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
         self.storage.fixed_nb_of_instances = EmptyExplainableObject()
         old_initial_footprint = self.initial_footprint
         self.initial_footprint = self.system.total_footprint
-        test_input_change(
+        self._test_input_change(
             self.storage.base_storage_need, SourceValue(5000 * u.TB), self.storage, "base_storage_need")
         self.storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         self.assertEqual(old_initial_footprint, self.system.total_footprint)
         self.initial_footprint = old_initial_footprint
-        test_variations_on_obj_inputs(self.uj)
-        test_variations_on_obj_inputs(self.network)
-        test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
-        test_variations_on_obj_inputs(self.streaming_job)
+        self._test_variations_on_obj_inputs(self.uj)
+        self._test_variations_on_obj_inputs(self.network)
+        self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
+        self._test_variations_on_obj_inputs(self.streaming_job)
 
     def test_hourly_user_journey_starts_update(self):
         logger.warning("Updating hourly user journey starts")
@@ -198,7 +207,9 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Updating devices in usage pattern")
         self.usage_pattern.devices = [default_laptop(), default_screen()]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        self.usage_pattern.devices = [default_laptop()]
+        up_laptop_with_normalized_id = default_laptop()
+        up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
+        self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_server(self):
@@ -263,7 +274,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Changing jobs storage")
 
         self.server.storage = new_storage
-        self.footprint_has_changed([self.storage])
+        self.footprint_has_changed([self.storage], system=self.system)
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
@@ -279,7 +290,7 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
         new_job = Job("new job", self.server, data_upload=SourceValue(5 * u.MB),
-                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.MB),
+                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
                       cpu_needed=SourceValue(1 * u.core))
 
@@ -307,7 +318,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.uj.uj_steps = [new_step]
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        self.footprint_has_changed([self.storage, self.server, self.network])
+        self.footprint_has_changed([self.storage, self.server, self.network], system=self.system)
 
         logger.warning("Changing back to previous uj steps")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
@@ -321,7 +332,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.usage_pattern.user_journey = new_uj
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern])
+        self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern], system=self.system)
 
         logger.warning("Changing back to previous uj")
         self.usage_pattern.user_journey = self.uj
@@ -350,7 +361,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.usage_pattern.network = new_network
 
         self.assertEqual(0, self.network.energy_footprint.max().magnitude)
-        self.footprint_has_changed([self.network])
+        self.footprint_has_changed([self.network], system=self.system)
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial network")
@@ -387,6 +398,91 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_json_to_system(self):
         self.run_json_to_system_test(self.system)
+
+    def test_variations_on_inputs_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UserJourneyStep"].values())))
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["Autoscaling"].values())), attrs_to_skip=["fraction_of_usage_time"],
+            special_mult={
+                "ram": 0.01, "server_utilization_rate": 0.5,
+                "base_ram_consumption": 380,
+                "base_cpu_consumption": 10
+            })
+        storage = next(iter(class_obj_dict["Storage"].values()))
+        self._test_variations_on_obj_inputs(
+            storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
+        self._test_input_change(storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
+        storage.fixed_nb_of_instances = EmptyExplainableObject()
+        old_initial_footprint = self.initial_footprint
+        system = next(iter(class_obj_dict["System"].values()))
+        self.initial_footprint = system.total_footprint
+        self._test_input_change(
+            storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
+        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+        self.assertEqual(old_initial_footprint, system.total_footprint)
+        self.initial_footprint = old_initial_footprint
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UserJourney"].values())))
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Network"].values())))
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_user_journey_starts"])
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Job"].values())))
+
+    def test_update_user_journey_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        new_uj = UserJourney("New version of daily Youtube usage",
+                             uj_steps=[next(iter(class_obj_dict["UserJourneyStep"].values()))])
+        usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
+        previous_uj = usage_pattern.user_journey
+        usage_pattern.user_journey = new_uj
+
+        system = next(iter(class_obj_dict["System"].values()))
+        storage = next(iter(class_obj_dict["Storage"].values()))
+        server = next(iter(class_obj_dict["Autoscaling"].values()))
+        network = next(iter(class_obj_dict["Network"].values()))
+        self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.footprint_has_changed([storage, server, network, usage_pattern])
+
+        logger.warning("Changing back to previous uj")
+        usage_pattern.user_journey = previous_uj
+
+        self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.footprint_has_not_changed([storage, server, network, usage_pattern])
+
+    def test_update_jobs_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
+        user_journey = usage_pattern.user_journey
+        streaming_step = user_journey.uj_steps[0]
+        previous_jobs = copy(streaming_step.jobs)
+        system = next(iter(class_obj_dict["System"].values()))
+        storage = next(iter(class_obj_dict["Storage"].values()))
+        server = next(iter(class_obj_dict["Autoscaling"].values()))
+        network = next(iter(class_obj_dict["Network"].values()))
+        logger.warning("Modifying streaming jobs")
+        new_job = Job("new job", server, data_upload=SourceValue(5 * u.MB),
+                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
+                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
+                      cpu_needed=SourceValue(1 * u.core))
+
+        streaming_step.jobs += [new_job]
+
+        self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.footprint_has_not_changed([usage_pattern])
+        self.footprint_has_changed([storage, server, network])
+
+        logger.warning("Changing back to previous jobs")
+        streaming_step.jobs = previous_jobs
+
+        self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
     def test_modeling_object_prints(self):
         str(self.usage_pattern)

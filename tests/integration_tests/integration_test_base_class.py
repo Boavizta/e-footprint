@@ -22,7 +22,7 @@ class IntegrationTestBaseClass(TestCase):
 
         cls.ref_json_filename = None
 
-    def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
+    def footprint_has_changed(self, objects_to_test: List[ModelingObject], system=None):
         for obj in objects_to_test:
             try:
                 initial_energy_footprint = self.initial_energy_footprints[obj]
@@ -40,10 +40,13 @@ class IntegrationTestBaseClass(TestCase):
                                 f"{initial_energy_footprint} to {obj.energy_footprint}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
-
+        if objects_to_test[0].systems:
+            system = objects_to_test[0].systems[0]
+        else:
+            assert system is not None
         for prev_fp, initial_fp in zip(
-                (self.system.previous_total_energy_footprints_sum_over_period,
-                 self.system.previous_total_fabrication_footprints_sum_over_period),
+                (system.previous_total_energy_footprints_sum_over_period,
+                 system.previous_total_fabrication_footprints_sum_over_period),
                 (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
             for key in ["Servers", "Storage", "Devices", "Network"]:
                 self.assertEqual(initial_fp[key], prev_fp[key])
@@ -61,18 +64,8 @@ class IntegrationTestBaseClass(TestCase):
                 raise AssertionError(f"Footprint has changed for {obj.name}")
 
     def run_system_to_json_test(self, input_system):
-        mod_obj_list = [input_system] + input_system.all_linked_objects
-
-        old_ids = {}
-        for mod_obj in mod_obj_list:
-            old_ids[mod_obj.name] = mod_obj.id
-            mod_obj.id = "uuid" + mod_obj.id[9:]
-
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
-
-        for mod_obj in mod_obj_list:
-            mod_obj.id = old_ids[mod_obj.name]
 
         with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), 'r') as ref_file,
               open(tmp_filepath, 'r') as tmp_file):

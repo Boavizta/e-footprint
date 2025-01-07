@@ -16,7 +16,6 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 
 
-PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
 CANONICAL_CLASS_COMPUTATION_ORDER = [
     "UserJourneyStep", "UserJourney", "Hardware", "Country", "UsagePattern", "Job", "Network", "Autoscaling",
     "Serverless", "OnPremise", "Storage", "System"]
@@ -315,7 +314,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     or key in ["all_changes", "modeling_obj_containers", "trigger_modeling_updates", "simulation"]
                     or key.startswith("previous")
                     or key.startswith("initial")
-                    or PREVIOUS_LIST_VALUE_SET_SUFFIX in key
             ):
                 continue
             if value is None:
@@ -359,7 +357,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 else:
                     if type(input_value[0]) == str:
                         key_value_str = f"{input_key}: {input_value}"
-                    elif isinstance(input_value[0], ModelingObject) and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
+                    elif isinstance(input_value[0], ModelingObject):
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
             elif isinstance(input_value, ObjectLinkedToModelingObj):
