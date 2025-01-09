@@ -49,15 +49,13 @@ class Storage(InfraHardware):
         self.fixed_nb_of_instances.set_label(
             f"User defined number of {self.name} instances").to(u.dimensionless)
 
-    def add_obj_to_modeling_obj_containers(self, server):
-        if len(self.modeling_obj_containers) == 1:
-            raise ValueError("Storage object can only be associated with one server object")
-        else:
-            super().add_obj_to_modeling_obj_containers(server)
-
     @property
     def server(self) -> Type["Server"]:
         if self.modeling_obj_containers:
+            if len(self.modeling_obj_containers) > 1:
+                raise PermissionError(
+                    f"Storage object can only be associated with one server object but {self.name} is associated "
+                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         else:
             return None

@@ -3,6 +3,7 @@ from datetime import timedelta
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -26,21 +27,24 @@ class TestJob(TestCase):
     def test_self_delete_should_raise_error_if_self_has_associated_uj_step(self):
         uj_step = MagicMock()
         uj_step.name = "uj_step"
-        self.job.modeling_obj_containers = [uj_step]
+        self.job.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(self.job, uj_step, "jobs")]
         with self.assertRaises(PermissionError):
             self.job.self_delete()
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_network(self):
         network = MagicMock(id="network")
         network.class_as_simple_str = "Network"
-        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
-                patch.object(self.server, "modeling_obj_containers", [self.job]), \
-                patch.object(self.server, "mod_objs_computation_chain", [self.server, network]):
-            mock_mod_obj_attributes.return_value = [self.server]
+        server = MagicMock(id="server")
+        server.class_as_simple_str = "Autoscaling"
+        server.name = "server"
+        server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, self.job, "server")]
+        server.mod_objs_computation_chain = [server, network]
+        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+            mock_mod_obj_attributes.return_value = [server]
 
             self.job.self_delete()
-            self.assertEqual([], self.server.modeling_obj_containers)
-            self.server.compute_calculated_attributes.assert_called_once()
+            server.set_modeling_obj_container.assert_called_once_with(None, None)
+            server.compute_calculated_attributes.assert_called_once()
             network.compute_calculated_attributes.assert_called_once()
 
     def test_duration_in_full_hours(self):

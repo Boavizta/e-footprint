@@ -125,20 +125,21 @@ class TestSystem(TestCase):
             with self.assertRaises(PermissionError):
                 new_system = System("new system", usage_patterns=[self.usage_pattern])
 
-    def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(self):
+    @patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock)
+    def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(
+            self, mock_get_objects_linked_to_usage_patterns):
+        mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
         new_up = MagicMock(spec=UsagePattern)
         new_up.name = "new up"
+        new_up.contextual_modeling_obj_containers = []
         other_system = MagicMock(spec=System)
         other_system.id = "other id"
         other_system.name = "other system"
         new_up.systems = [other_system]
 
-        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
-                as mock_get_objects_linked_to_usage_patterns:
-            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
-            with self.assertRaises(PermissionError):
-                self.system.usage_patterns = [new_up]
-                self.system.compute_calculated_attributes()
+        with self.assertRaises(PermissionError):
+            self.system.usage_patterns = [new_up]
+            self.system.compute_calculated_attributes()
         
     def test_fabrication_footprints(self):
         expected_dict = {

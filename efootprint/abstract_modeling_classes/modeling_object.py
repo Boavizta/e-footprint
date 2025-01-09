@@ -6,7 +6,6 @@ import re
 
 from IPython.display import HTML
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     retrieve_update_function_from_mod_obj_and_attr_name
@@ -45,12 +44,15 @@ class AfterInitMeta(type):
         return instance
 
 
-class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
+class ABCAfterInitMeta(AfterInitMeta, ABCMeta):
     def __instancecheck__(cls, instance):
+        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+            ContextualModelingObjectAttribute
         # Allow an instance of ContextualModelingObjectAttribute to be considered as an instance of ModelingObject
         if isinstance(instance, ContextualModelingObjectAttribute):
             return True
-        return super().__instancecheck__(instance)
+
+        return AfterInitMeta.__instancecheck__(cls, instance)
 
 
 def css_escape(input_string):
@@ -121,7 +123,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.trigger_modeling_updates = False
         self.name = name
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
-        self.modeling_obj_containers = []
+        self.contextual_modeling_obj_containers = []
+        self.generated_by = None
+        self.updated_after_generation = False
+
+    @property
+    def modeling_obj_containers(self):
+        return list(set(
+            [contextual_mod_obj_container.modeling_obj_container
+             for contextual_mod_obj_container in self.contextual_modeling_obj_containers
+             if contextual_mod_obj_container.modeling_obj_container is not None]))
 
     @property
     @abstractmethod
@@ -144,7 +155,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             update_func()
 
     @property
-    def mod_objs_computation_chain(self):
+    def mod_objs_computation_chain(self) -> List[Type["ModelingObject"]]:
         mod_objs_computation_chain = [self]
 
         mod_objs_with_attributes_to_compute = self.modeling_objects_whose_attributes_depend_directly_on_me
@@ -172,6 +183,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return hash(self.id)
 
     def __eq__(self, other):
+        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+            ContextualModelingObjectAttribute
+
         if isinstance(other, ContextualModelingObjectAttribute):
             return self.id == other._value.id
         elif isinstance(other, ModelingObject):
@@ -179,15 +193,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return False
 
+    @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers", "generated_by",
+                "updated_after_generation"]
+
     def __setattr__(self, name, input_value):
         current_attr = getattr(self, name, None)
-        if name in ["name", "id", "trigger_modeling_updates", "modeling_obj_containers", "all_changes",
-                    "previous_change", "previous_total_energy_footprints_sum_over_period",
-                    "previous_total_fabrication_footprints_sum_over_period", "simulation"]:
+        if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):
+                from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+                    ContextualModelingObjectAttribute
                 value_to_set = ContextualModelingObjectAttribute(value_to_set, self, name)
             elif type(value_to_set) == list:
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -204,12 +223,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             ModelingUpdate([[current_attr, input_value]])
+            if self.generated_by is not None:
+                self.updated_after_generation = True
+                logger.debug(f"Attribute {name} updated in {self.name} after generation")
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
 
     def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
-            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"], optimize_chain=True):
+            self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"], optimize_chain=True)\
+            -> List[Type["ModelingObject"]]:
         if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
                 old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
             raise AssertionError(
@@ -225,7 +248,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
             self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]],
-            optimize_chain=True):
+            optimize_chain=True) -> List[Type["ModelingObject"]]:
         removed_objs = [obj for obj in old_value if obj not in input_value]
         added_objs = [obj for obj in input_value if obj not in old_value]
 
@@ -243,21 +266,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             return mod_objs_computation_chain
 
-    def add_obj_to_modeling_obj_containers(self, new_obj):
-        if new_obj not in self.modeling_obj_containers and new_obj is not None:
-            if (len(self.modeling_obj_containers) > 0
-                    and not isinstance(new_obj, type(self.modeling_obj_containers[0]))):
-                raise ValueError(
-                    f"There shouldn't be objects of different types within modeling_obj_containers for {self.name},"
-                    f" found {type(new_obj)} and {type(self.modeling_obj_containers[0])}")
-            self.modeling_obj_containers.append(new_obj)
-
-    def remove_obj_from_modeling_obj_containers(self, obj_to_remove):
-        self.modeling_obj_containers = [
-            mod_obj for mod_obj in self.modeling_obj_containers if mod_obj != obj_to_remove]
-
     @property
-    def mod_obj_attributes(self):
+    def mod_obj_attributes(self) -> List[Type["ContextualModelingObjectAttribute"]]:
         from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
         output_list = []
         for value in vars(self).values():
@@ -294,7 +304,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         mod_objs_computation_chain = []
         for attr in self.mod_obj_attributes:
-            attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
+            attr.set_modeling_obj_container(None, None)
             mod_objs_computation_chain += attr.mod_objs_computation_chain
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
@@ -303,7 +313,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         del self
 
-    def to_json(self, save_calculated_attributes=False):
+    def to_json(self, save_calculated_attributes=False) -> dict:
         from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         output_dict = {}
@@ -311,12 +321,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "modeling_obj_containers", "trigger_modeling_updates", "simulation"]
+                    or key in ["all_changes", "contextual_modeling_obj_containers", "trigger_modeling_updates",
+                               "simulation", "updated_after_generation"]
                     or key.startswith("previous")
                     or key.startswith("initial")
             ):
                 continue
-            if value is None:
+            if key == "generated_by":
+                if value is not None:
+                    output_dict[key] = value.id
+                    output_dict["updated_after_generation"] = self.updated_after_generation
+            elif value is None:
                 output_dict[key] = value
             elif isinstance(value, str):
                 output_dict[key] = value
@@ -370,7 +385,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_str += f"{self.class_as_simple_str} {self.id}\n \n"
 
         for key, attr_value in self.__dict__.items():
-            if key == "modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous")\
+            if key == "contextual_modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous")\
                     or key in ["name", "id"]:
                 continue
             output_str += key_value_to_str(key, attr_value)

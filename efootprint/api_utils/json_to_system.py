@@ -64,7 +64,7 @@ def json_to_system(system_dict):
         current_class_dict = {}
         for class_instance_key in system_dict[class_key].keys():
             new_obj = current_class.__new__(current_class)
-            new_obj.__dict__["modeling_obj_containers"] = []
+            new_obj.__dict__["contextual_modeling_obj_containers"] = []
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
                     new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
@@ -83,14 +83,17 @@ def json_to_system(system_dict):
                 if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
                     mod_obj.__dict__[attr_key] = ContextualModelingObjectAttribute(flat_obj_dict[attr_value])
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
-                elif type(attr_value) == list and attr_key != "modeling_obj_containers":
+                elif type(attr_value) == list and attr_key != "contextual_modeling_obj_containers":
                     output_val = []
                     for elt in attr_value:
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
-            mod_obj.__dict__["trigger_modeling_updates"] = True
+            mod_obj.trigger_modeling_updates = True
+            if getattr(mod_obj, "generated_by", None) is None:
+                mod_obj.generated_by = None
+                mod_obj.updated_after_generation = False
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":

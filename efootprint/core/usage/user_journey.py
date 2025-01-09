@@ -58,10 +58,6 @@ class UserJourney(ModelingObject):
 
         return output_list
 
-    def add_step(self, step: UserJourneyStep) -> None:
-        step.add_obj_to_modeling_obj_containers(self)
-        self.uj_steps = self.uj_steps + [step]
-
     def update_duration(self):
         user_time_spent_sum = sum(
             [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())

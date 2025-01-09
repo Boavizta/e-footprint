@@ -92,7 +92,7 @@ class ModelingUpdate:
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 self.changes_list[index][1] = ListLinkedToModelingObj(new_value)
-            if isinstance(new_value, ModelingObject) and not isinstance(new_value, ContextualModelingObjectAttribute):
+            if isinstance(new_value, ModelingObject):
                 self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
 
             if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObj):

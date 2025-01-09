@@ -29,14 +29,10 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             f"Weighted sum of {attr_name} over {[modeling_obj.id for modeling_obj in self.keys()]}")
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
-        if self.modeling_obj_container is not None and new_parent_modeling_object is None:
-            for key in self.keys():
-                key.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
-
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
 
         for key, value in self.items():
-            key.add_obj_to_modeling_obj_containers(new_parent_modeling_object)
+            key.set_modeling_obj_container(new_parent_modeling_object, attr_name)
             value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
 
     def __setitem__(self, key, value: SourceValue):

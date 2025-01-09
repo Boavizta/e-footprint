@@ -376,7 +376,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         step_without_job = UserJourneyStep(
             "User checks her phone", user_time_spent=SourceValue(20 * u.min), jobs=[])
 
-        self.uj.add_step(step_without_job)
+        self.uj.uj_steps.append(step_without_job)
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.footprint_has_changed([self.usage_pattern])

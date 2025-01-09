@@ -1,5 +1,4 @@
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 

@@ -83,87 +83,6 @@
             ]
         }
     },
-    "Hardware": {
-        "uuid-Default-laptop": {
-            "name": "Default laptop",
-            "id": "uuid-Default-laptop",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
-                "value": 156.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
-            },
-            "power": {
-                "label": "Power of Default laptop from hypothesis",
-                "value": 50.0,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "lifespan": {
-                "label": "Lifespan of Default laptop from hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
-                "value": 7.0,
-                "unit": "hour / day",
-                "source": {
-                    "name": "DATA.AI - STATE OF MOBILE",
-                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
-                }
-            }
-        }
-    },
-    "Network": {
-        "uuid-Default-network": {
-            "name": "Default network",
-            "id": "uuid-Default-network",
-            "bandwidth_energy_intensity": {
-                "label": "bandwith energy intensity of Default network from Traficom study",
-                "value": 0.05,
-                "unit": "kilowatt_hour / gigabyte",
-                "source": {
-                    "name": "Traficom study",
-                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
-                }
-            }
-        }
-    },
-    "Country": {
-        "uuid-France": {
-            "name": "France",
-            "id": "uuid-France",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "label": "Average carbon intensity of France from Our world in data",
-                "value": 85.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
-                }
-            },
-            "timezone": {
-                "label": "France timezone from user data",
-                "zone": "Europe/Paris",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
-        }
-    },
     "UserJourneyStep": {
         "uuid-20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
@@ -1150,6 +1069,87 @@
                 }
             },
             "storage": "uuid-TikTok-Analytics-storage"
+        }
+    },
+    "Hardware": {
+        "uuid-Default-laptop": {
+            "name": "Default laptop",
+            "id": "uuid-Default-laptop",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
+                "value": 156.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of Default laptop from hypothesis",
+                "value": 50.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Default laptop from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "value": 7.0,
+                "unit": "hour / day",
+                "source": {
+                    "name": "DATA.AI - STATE OF MOBILE",
+                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+                }
+            }
+        }
+    },
+    "Network": {
+        "uuid-Default-network": {
+            "name": "Default network",
+            "id": "uuid-Default-network",
+            "bandwidth_energy_intensity": {
+                "label": "bandwith energy intensity of Default network from Traficom study",
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "uuid-France": {
+            "name": "France",
+            "id": "uuid-France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
         }
     }
 }

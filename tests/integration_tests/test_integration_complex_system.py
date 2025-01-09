@@ -285,17 +285,17 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             cpu_needed=SourceValue(1 * u.core))
 
-        new_uj = UserJourneyStep(
+        new_uj_step = UserJourneyStep(
             "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
-        self.uj.uj_steps += [new_uj]
+        self.uj.uj_steps += [new_uj_step]
 
         self.footprint_has_changed([self.server1, self.storage_1])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Removing new job")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
-        job = new_uj.jobs[0]
-        new_uj.self_delete()
+        job = new_uj_step.jobs[0]
+        new_uj_step.self_delete()
         job.self_delete()
 
         self.footprint_has_not_changed([self.server1, self.storage_1])

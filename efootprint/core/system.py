@@ -44,6 +44,12 @@ class System(ModelingObject):
     def calculated_attributes(self) -> List[str]:
         return ["total_footprint"]
 
+    @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return super().attributes_that_shouldnt_trigger_update_logic + ["all_changes",
+                "previous_change", "previous_total_energy_footprints_sum_over_period",
+                "previous_total_fabrication_footprints_sum_over_period", "simulation"]
+
     def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
         for mod_obj in self.get_objects_linked_to_usage_patterns(usage_patterns):
             mod_obj_systems = mod_obj.systems

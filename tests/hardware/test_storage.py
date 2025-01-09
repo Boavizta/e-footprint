@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 from datetime import datetime, timedelta
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
@@ -27,16 +28,15 @@ class TestStorage(TestCase):
 
         self.storage_base.trigger_modeling_updates = False
 
-    def test_init_storage_with_two_servers(self):
+    def test_storage_with_two_servers_raises_error(self):
         storage = self.storage_base
         server1 = MagicMock()
         server2 = MagicMock()
-        with patch.object(storage, "modeling_obj_containers", new=[server1]):
-            with self.assertRaises(ValueError) as context:
-                storage.add_obj_to_modeling_obj_containers(server2)
-                self.assertRaises(ValueError)
-                self.assertEqual(
-                    str(context.exception), "Storage object can only be associated with one server object")
+        with (patch.object(Storage, "modeling_obj_containers", new_callable=PropertyMock)
+              as modeling_obj_containers_mock):
+            modeling_obj_containers_mock.return_value = [server1, server2]
+            with self.assertRaises(PermissionError):
+                storage.server
 
     def test_update_storage_needs_single_job(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
@@ -273,7 +273,8 @@ class TestStorage(TestCase):
         all_active = SourceHourlyValues(create_hourly_usage_df_from_list(all_active_data, start_date))
 
         with (
-            patch.object(self.storage_base, "modeling_obj_containers", new=[server_mock]), \
+            patch.object(self.storage_base, "contextual_modeling_obj_containers", new=[
+                ContextualModelingObjectAttribute(self.storage_base, server_mock, "storage")]), \
             patch.object(self.storage_base, "nb_of_instances", all_instance), \
             patch.object(self.storage_base, "nb_of_active_instances", all_active), \
             patch.object(self.storage_base, "power", SourceValue(power_data)), \
@@ -289,7 +290,8 @@ class TestStorage(TestCase):
         server_mock = MagicMock(spec=Server)
         server_mock.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         server_mock.storage = self.storage_base
-        self.storage_base.modeling_obj_containers = [server_mock]
+        self.storage_base.contextual_modeling_obj_containers = [
+            ContextualModelingObjectAttribute(self.storage_base, server_mock, "storage")]
 
         expected_footprint = [0.09, 0.18, 0.27]  # in kg
 

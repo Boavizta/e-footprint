@@ -2,6 +2,7 @@ from copy import deepcopy
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -44,16 +45,23 @@ class TestInfraHardware(TestCase):
         self.job3.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.core))
 
         self.test_infra_hardware_single_job = deepcopy(self.test_infra_hardware)
-        self.test_infra_hardware_single_job.modeling_obj_containers = [self.job1]
+        self.test_infra_hardware_single_job.contextual_modeling_obj_containers = [
+            ContextualModelingObjectAttribute(self.test_infra_hardware_single_job, self.job1, "server")]
         self.test_infra_hardware_multiple_jobs = deepcopy(self.test_infra_hardware)
-        self.test_infra_hardware_multiple_jobs.modeling_obj_containers = [self.job1, self.job2, self.job3]
+        self.test_infra_hardware_multiple_jobs.contextual_modeling_obj_containers = [
+            ContextualModelingObjectAttribute(self.test_infra_hardware_multiple_jobs, self.job1, "server"),
+            ContextualModelingObjectAttribute(self.test_infra_hardware_multiple_jobs, self.job2, "server"),
+            ContextualModelingObjectAttribute(self.test_infra_hardware_multiple_jobs, self.job3, "server")
+            ]
 
     def test_jobs(self):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        with patch.object(self.test_infra_hardware, "modeling_obj_containers", new=[job1, job2]):
-            self.assertEqual([job1, job2], self.test_infra_hardware.jobs)
+        with patch.object(self.test_infra_hardware, "contextual_modeling_obj_containers",
+                          new=[ContextualModelingObjectAttribute(self.test_infra_hardware, job1, "server"),
+                               ContextualModelingObjectAttribute(self.test_infra_hardware, job2, "server")]):
+            self.assertEqual({job1, job2}, set(self.test_infra_hardware.jobs))
 
     def test_instances_fabrication_footprint(self):
         self.test_infra_hardware_single_job.update_nb_of_instances()

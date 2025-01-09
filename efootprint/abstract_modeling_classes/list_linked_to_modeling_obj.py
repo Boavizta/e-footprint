@@ -10,8 +10,6 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
     def __init__(self, values=None):
         super().__init__()
         self.trigger_modeling_updates = False
-        self.modeling_obj_container = None
-        self.attr_name_in_mod_obj_container = None
         if values is not None:
             self.extend(values)
 
@@ -25,12 +23,9 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
                 f"ListLinkedToModelingObjs only accept ModelingObjects as values, received {type(value)}")
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
-        if self.modeling_obj_container is not None and new_parent_modeling_object is None:
-            for value in self:
-                value.remove_obj_from_modeling_obj_containers(self.modeling_obj_container)
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         for value in self:
-            value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
+            value.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def __setitem__(self, index: int, value: ModelingObject):
         self.check_value_type(value)
@@ -38,9 +33,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             copied_list[index] = value
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
-        super().__setitem__(index, value)
-        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
+        value_to_set = ContextualModelingObjectAttribute(value)
+        super().__setitem__(index, value_to_set)
+        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def append(self, value: ModelingObject):
         self.check_value_type(value)
@@ -48,9 +45,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             copied_list.append(value)
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
-        super().append(value)
-        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
+        value_to_set = ContextualModelingObjectAttribute(value)
+        super().append(value_to_set)
+        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_list = []
@@ -79,15 +78,18 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             copied_list.insert(index, value)
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
-        super().insert(index, value)
-        value.add_obj_to_modeling_obj_containers(self.modeling_obj_container)
+        value_to_set = ContextualModelingObjectAttribute(value)
+        super().insert(index, value_to_set)
+        value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def extend(self, values) -> None:
         if self.trigger_modeling_updates:
             copied_list = list(self)
             copied_list.extend(values)
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
         initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
         self.trigger_modeling_updates = False
@@ -100,6 +102,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             _ = copied_list.pop(index)
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
         value = super().pop(index)
         value.set_modeling_obj_container(None, None)
@@ -111,6 +114,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             copied_list.remove(value)
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
         super().remove(value)
         value.set_modeling_obj_container(None, None)
@@ -118,9 +122,10 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
     def clear(self):
         if self.trigger_modeling_updates:
             ModelingUpdate([[self.return_copy_with_same_attributes(), []]])
+            self.set_modeling_obj_container(None, None)
 
-        for item in self:
-            item.set_modeling_obj_container(None, None)
+        for value in self:
+            value.set_modeling_obj_container(None, None)
         super().clear()
 
     def __delitem__(self, index: int):
@@ -128,6 +133,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             del copied_list[index]
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
         value = self[index]
         value.set_modeling_obj_container(None, None)
@@ -142,6 +148,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             copied_list = list(self)
             copied_list *= n
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
+            self.set_modeling_obj_container(None, None)
 
         initial_trigger_modeling_updates = copy(self.trigger_modeling_updates)
         self.trigger_modeling_updates = False

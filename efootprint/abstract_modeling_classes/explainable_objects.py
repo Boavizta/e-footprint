@@ -87,7 +87,7 @@ class EmptyExplainableObject(ExplainableObject):
     def __mul__(self, other):
         if isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        if issubclass(type(other), ExplainableObject):
+        if isinstance(other, ExplainableQuantity) or isinstance(other, ExplainableHourlyQuantities):
             return other.__mul__(self)
         elif other == 0:
             return self

@@ -4,7 +4,6 @@ import pandas as pd
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source
 from efootprint.core.hardware.servers.server_base_class import Server
-from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job, JobTypes
 from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_data_analysis import ECOBENCHMARK_DATA, \
     ECOBENCHMARK_RESULTS_LINK, default_request_duration
