@@ -46,6 +46,18 @@ class UsagePattern(ModelingObject):
         return self.jobs
 
     @property
+    def devices(self) -> List[Hardware]:
+        return list(self.device_mix.keys())
+
+    @property
+    def networks(self) -> List[Network]:
+        return list(self.network_mix.keys())
+
+    @property
+    def countries(self) -> List[Country]:
+        return list(self.country_mix.keys())
+
+    @property
     def jobs(self) -> List[Job]:
         return self.user_journey.jobs
 

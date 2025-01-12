@@ -5,6 +5,7 @@ from copy import copy
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 from efootprint.core.system import System
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
@@ -68,7 +69,8 @@ def json_to_system(system_dict):
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
                     new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
-                    new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
+                    if new_obj.__dict__[attr_key] is not None:
+                        new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
                 else:
                     new_obj.__dict__[attr_key] = attr_value
 
@@ -89,6 +91,13 @@ def json_to_system(system_dict):
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
+                    mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
+                elif attr_value is None:
+                    # ModelingObjectMix case
+                    modeling_object_mix_json_data = system_dict[class_key][mod_obj_key][attr_key]
+                    input_dict = {flat_obj_dict[key]: json_to_explainable_object(value)
+                                  for key, value in modeling_object_mix_json_data.items()}
+                    mod_obj.__dict__[attr_key] = ModelingObjectMix(input_dict)
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
             mod_obj.__dict__["trigger_modeling_updates"] = True
 
