@@ -41,7 +41,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
 
     def __setitem__(self, key, value: SourceValue):
         assert isinstance(key, ModelingObject)
-        if self.object_type is None:
+        if self.object_type is not None:
             assert type(key) == self.object_type
         else:
             self.object_type = type(key)
@@ -76,7 +76,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         return output_dict
 
     def __repr__(self):
-        return str(self.to_json())
+        return str(self)
 
     def __str__(self):
         return_str = "{\n"
@@ -134,13 +134,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
         if self.trigger_modeling_updates:
             copied_dict = dict(self)
             copied_dict.update(__m, **kwargs)
-            # TODO: move this to ModelingUpdate
-            value_updates = []
-            new_dict_part = __m.update(kwargs)
-            for key, value in new_dict_part.items():
-                if key in self.keys():
-                    value_updates.append((self[key], value))
-            ModelingUpdate(value_updates + [(self, copied_dict)])
+            ModelingUpdate([[self, copied_dict]])
         else:
             super().update(__m, **kwargs)
 
