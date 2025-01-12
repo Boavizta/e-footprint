@@ -4,6 +4,7 @@ from unittest.mock import patch, MagicMock, PropertyMock, call
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -153,6 +154,37 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(mod_obj.custom_list_input, [val1, val2])
         mod_obj.custom_list_input += [val3]
         self.assertEqual(mod_obj.custom_list_input, [val1, val2, val3])
+
+    def test_dict_attribute_update_works(self):
+        modelingobj1 = MagicMock(spec=ModelingObject)
+        modelingobj2 = MagicMock(spec=ModelingObject)
+        modelingobj3 = MagicMock(spec=ModelingObject)
+        for mod_obj in [modelingobj1, modelingobj2, modelingobj3]:
+            mod_obj.class_as_simple_str = "ModelingObject"
+        old_dict = ModelingObjectMix({modelingobj1: 0.5, modelingobj2: 0.5})
+        new_dict = {modelingobj1: 0.3, modelingobj2: 0.6, modelingobj3: 0.1}
+
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=old_dict)
+        mod_obj.custom_input = new_dict
+
+        for key, value in new_dict.items():
+            self.assertEqual(value, mod_obj.custom_input[key].magnitude)
+
+    def test_dict_attribute_update_works_when_not_triggering_updates(self):
+        modelingobj1 = MagicMock(spec=ModelingObject)
+        modelingobj2 = MagicMock(spec=ModelingObject)
+        modelingobj3 = MagicMock(spec=ModelingObject)
+        for mod_obj in [modelingobj1, modelingobj2, modelingobj3]:
+            mod_obj.class_as_simple_str = "ModelingObject"
+        old_dict = ModelingObjectMix({modelingobj1: 0.5, modelingobj2: 0.5})
+        new_dict = {modelingobj1: 0.3, modelingobj2: 0.6, modelingobj3: 0.1}
+
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=old_dict)
+        mod_obj.trigger_modeling_updates = False
+        mod_obj.custom_input = new_dict
+
+        for key, value in new_dict.items():
+            self.assertEqual(value, mod_obj.custom_input[key].magnitude)
 
     def test_optimize_mod_objs_computation_chain_simple_case(self):
         mod_obj1 = MagicMock(id=1)

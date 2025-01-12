@@ -7,6 +7,7 @@ import pandas as pd
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     optimize_attr_updates_chain
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
@@ -35,6 +36,7 @@ class ModelingUpdate:
             raise ValueError(
                 f"First changed value {first_changed_val} is not an ObjectLinkedToModelingObj")
         self.changes_list = changes_list
+        self.modeling_object_mix_updated_values = []
         self.parse_changes_list()
         if self.changes_list and self.system:
             self.system.previous_total_energy_footprints_sum_over_period = (
@@ -106,6 +108,11 @@ class ModelingUpdate:
                 self.changes_list[index][1] = ListLinkedToModelingObj(new_value)
             if isinstance(new_value, ModelingObject):
                 self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
+            if isinstance(new_value, dict):
+                self.changes_list[index][1] = ModelingObjectMix(new_value)
+                for key, value in self.changes_list[index][1].items():
+                    if key in old_value.keys():
+                        self.modeling_object_mix_updated_values.append(old_value[key])
 
             if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObj):
                 raise ValueError(
@@ -136,6 +143,10 @@ class ModelingUpdate:
                 mod_objs_computation_chain += (
                     old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
                         old_value, new_value, optimize_chain=False))
+            elif isinstance(old_value, ModelingObjectMix):
+                mod_objs_computation_chain += (
+                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
+                        old_value.keys(), new_value.keys(), optimize_chain=False))
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
 
@@ -181,8 +192,13 @@ class ModelingUpdate:
         attr_updates_chain_from_attributes_updates = sum(
             [old_value.attr_updates_chain for old_value in self.old_sourcevalues], start=[])
 
+        attr_updates_chain_from_modeling_object_mix_value_updates = sum(
+            [old_value.attr_updates_chain for old_value in self.modeling_object_mix_updated_values], start=[])
+
         optimized_chain = optimize_attr_updates_chain(
-            self.attr_updates_chain_from_mod_objs_computation_chains + attr_updates_chain_from_attributes_updates)
+            self.attr_updates_chain_from_mod_objs_computation_chains
+            + attr_updates_chain_from_modeling_object_mix_value_updates
+            + attr_updates_chain_from_attributes_updates)
 
         optimized_chain_without_previous_nor_initial_values = [
             attr for attr in optimized_chain if not attr.attr_name_in_mod_obj_container.startswith("previous_")

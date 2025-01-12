@@ -9,6 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 from efootprint.abstract_modeling_classes.modeling_update import (
     compute_attr_updates_chain_from_mod_objs_computation_chain, ModelingUpdate)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
@@ -45,6 +46,22 @@ class TestModelingUpdate(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             modeling_update.parse_changes_list()
+
+    def test_parse_changes_list_updates_modeling_object_mix_updated_values(self):
+        modeling_update = ModelingUpdate.__new__(ModelingUpdate)
+        modelingobj1 = MagicMock(spec=ModelingObject)
+        modelingobj2 = MagicMock(spec=ModelingObject)
+        modelingobj3 = MagicMock(spec=ModelingObject)
+        for mod_obj in [modelingobj1, modelingobj2, modelingobj3]:
+            mod_obj.class_as_simple_str = "ModelingObject"
+        old_dict = ModelingObjectMix({modelingobj1: 0.5, modelingobj2: 0.5})
+        new_dict = ModelingObjectMix({modelingobj1: 0.3, modelingobj2: 0.6, modelingobj3: 0.1})
+        modeling_update.changes_list = [[old_dict, new_dict]]
+        modeling_update.modeling_object_mix_updated_values = []
+        modeling_update.parse_changes_list()
+
+        self.assertEqual(
+            modeling_update.modeling_object_mix_updated_values, [old_dict[modelingobj1], old_dict[modelingobj2]])
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.optimize_mod_objs_computation_chain")
     def test_compute_compute_mod_objs_computation_chain_case_modeling_object(
