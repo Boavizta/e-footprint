@@ -15,7 +15,8 @@ class TestNetwork(TestCase):
 
     def test_update_energy_footprint_simple_case(self):
         usage_pattern = MagicMock()
-        usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern.average_country_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern.network_mix = {self.network: SourceValue(1 * u.dimensionless)}
 
         job1 = MagicMock()
         job1.hourly_data_upload_per_usage_pattern = {
@@ -49,7 +50,8 @@ class TestNetwork(TestCase):
 
     def test_update_energy_footprint_complex_case(self):
         usage_pattern = MagicMock()
-        usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern.average_country_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern.network_mix = {self.network: SourceValue(1 * u.dimensionless)}
 
         job1 = MagicMock()
         job1.hourly_data_upload_per_usage_pattern = {
@@ -59,7 +61,8 @@ class TestNetwork(TestCase):
         job1.usage_patterns = [usage_pattern]
 
         usage_pattern2 = MagicMock()
-        usage_pattern2.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern2.average_country_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern2.network_mix = {self.network: SourceValue(1 * u.dimensionless)}
         usage_pattern3 = MagicMock()
         job2 = MagicMock()
         job2.hourly_data_upload_per_usage_pattern = {

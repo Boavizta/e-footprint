@@ -48,7 +48,7 @@ class ModelingObjectMix(ObjectLinkedToModelingObj, dict, metaclass=ABCAfterInitM
             contextual_modeling_object_attribute_key = ContextualModelingObjectAttribute(
                 key, self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
-            assert isinstance(value, float) or isinstance(value, SourceValue)
+            assert isinstance(value, float) or isinstance(value, int) or isinstance(value, SourceValue)
             value_to_set = value
             if isinstance(value, SourceValue):
                 assert value.value.check("[]")
