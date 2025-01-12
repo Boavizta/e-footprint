@@ -1,6 +1,7 @@
 from typing import Dict
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
@@ -48,9 +49,9 @@ class ModelingObjectMix(ObjectLinkedToModelingObj, dict, metaclass=ABCAfterInitM
             contextual_modeling_object_attribute_key = ContextualModelingObjectAttribute(
                 key, self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
-            assert isinstance(value, float) or isinstance(value, SourceValue)
+            assert isinstance(value, float) or isinstance(value, int) or isinstance(value, ExplainableObject)
             value_to_set = value
-            if isinstance(value, SourceValue):
+            if isinstance(value, ExplainableObject):
                 assert value.value.check("[]")
             else:
                 value_to_set = SourceValue(value * u.dimensionless)

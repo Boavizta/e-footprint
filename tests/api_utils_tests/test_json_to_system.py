@@ -54,3 +54,6 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             base_system_dict = json.load(file)
 
         class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
+    def test_version_9_to_10_conversion_works(self):
+        raise NotImplementedError("This test and feature are not implemented yet.")

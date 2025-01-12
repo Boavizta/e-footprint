@@ -95,7 +95,7 @@ class System(ModelingObject):
         uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
-        countries = list(set([up.country for up in usage_patterns]))
+        countries = list(set(sum([up.countries for up in usage_patterns], start=[])))
         servers = self.servers_from_usage_patterns(usage_patterns)
         services = list(set(sum([server.installed_services for server in servers], start=[])))
         all_modeling_objects = output_list + usage_journeys + uj_steps + jobs + devices + countries + servers + services
@@ -134,7 +134,7 @@ class System(ModelingObject):
     def networks_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Network]:
         output_set = set()
         for usage_pattern in usage_patterns:
-            output_set.update({usage_pattern.network})
+            output_set.update(set(usage_pattern.networks))
 
         return list(output_set)
 

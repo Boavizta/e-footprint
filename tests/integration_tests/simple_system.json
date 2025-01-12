@@ -34,11 +34,39 @@
                 }
             },
             "usage_journey": "uuid-Daily-Youtube-usage",
-            "devices": [
-                "uuid-Default-laptop"
-            ],
-            "network": "uuid-Default-network",
-            "country": "uuid-France"
+            "device_mix": {
+                "uuid-Default-laptop": {
+                    "label": "unnamed source from hypothesis",
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "source": {
+                        "name": "hypothesis",
+                        "link": null
+                    }
+                }
+            },
+            "network_mix": {
+                "uuid-Default-network": {
+                    "label": "unnamed source from hypothesis",
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "source": {
+                        "name": "hypothesis",
+                        "link": null
+                    }
+                }
+            },
+            "country_mix": {
+                "uuid-France": {
+                    "label": "unnamed source from hypothesis",
+                    "value": 1.0,
+                    "unit": "dimensionless",
+                    "source": {
+                        "name": "hypothesis",
+                        "link": null
+                    }
+                }
+            }
         }
     },
     "UsageJourney": {

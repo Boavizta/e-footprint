@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
@@ -90,6 +91,12 @@ def json_to_system(system_dict, launch_system_computations=True):
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val), check_input_validity=False)
+                elif attr_value is None:
+                    # ModelingObjectMix case
+                    modeling_object_mix_json_data = system_dict[class_key][mod_obj_key][attr_key]
+                    input_dict = {flat_obj_dict[key]: json_to_explainable_object(value)
+                                  for key, value in modeling_object_mix_json_data.items()}
+                    mod_obj.__setattr__(attr_key, ModelingObjectMix(input_dict), check_input_validity=False)
             for calculated_attribute in mod_obj.calculated_attributes:
                 mod_obj.__setattr__(calculated_attribute, EmptyExplainableObject(), check_input_validity=False)
 

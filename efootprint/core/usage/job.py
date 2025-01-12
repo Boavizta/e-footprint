@@ -72,7 +72,7 @@ class JobBase(ModelingObject):
 
     @property
     def networks(self) -> List[Type["Network"]]:
-        return list(set(up.network for up in self.usage_patterns))
+        return list(set(sum([up.networks for up in self.usage_patterns], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:

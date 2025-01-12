@@ -79,20 +79,21 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        cls.default_laptop = Hardware.laptop()
+        cls.france = Countries.FRANCE()
+        # Normalize ids before association with usage pattern because some are used as dict keys
+        for mod_obj in [cls.network, cls.default_laptop, cls.france, cls.uj, cls.streaming_step,
+                        cls.upload_step, cls.streaming_job, cls.upload_job, cls.server, cls.storage]:
+            mod_obj.id = "uuid" + mod_obj.id[9:]
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [Hardware.laptop()], cls.network, Countries.FRANCE(),
+            "Youtube usage in France", cls.uj, {cls.default_laptop: 1}, {cls.network: 1},
+            {cls.france: 1},
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
-        # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
-        # calculations
         cls.usage_pattern.id = "uuid" + cls.usage_pattern.id[9:]
-
         cls.system = System("system 1", [cls.usage_pattern])
-        mod_obj_list = [cls.system] + cls.system.all_linked_objects
-        for mod_obj in mod_obj_list:
-            if mod_obj != cls.usage_pattern:
-                mod_obj.id = "uuid" + mod_obj.id[9:]
+        cls.system.id = "uuid" + cls.system.id[9:]
 
         cls.initial_footprint = cls.system.total_footprint
 
@@ -118,7 +119,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertEqual(
             {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
              self.upload_step, self.streaming_job, self.upload_job, self.usage_pattern.devices[0],
-             self.usage_pattern.country}, set(self.system.all_linked_objects))
+             self.usage_pattern.countries[0]}, set(self.system.all_linked_objects))
 
     def test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
@@ -179,11 +180,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
-        self.usage_pattern.devices = [Hardware.laptop(), Hardware.screen()]
+        self.usage_pattern.device_mix = {default_laptop(): 0.5, default_screen(): 0.5}
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        up_laptop_with_normalized_id = Hardware.laptop()
-        up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
-        self.usage_pattern.devices = [up_laptop_with_normalized_id]
+        self.usage_pattern.device_mix = {self.default_laptop: 1}
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_server(self):

@@ -46,7 +46,7 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
         return self._value(*args, **kwargs)
 
     def __eq__(self, other):
-        return self._value == other
+        return self._value.__eq__(other)
 
     def __hash__(self):
         return hash(self._value)  # Use built-in hash directly

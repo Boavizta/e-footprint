@@ -1,7 +1,8 @@
 import json
 
-import efootprint
+from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object_mix import ModelingObjectMix
 
 
 def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes=True):
@@ -13,9 +14,12 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
         for key, value in mod_obj.__dict__.items():
             if isinstance(value, ModelingObject):
                 recursively_write_json_dict(output_dict, value, save_calculated_attributes)
-            elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], ModelingObject):
+            elif isinstance(value, ListLinkedToModelingObj):
                 for mod_obj_elt in value:
                     recursively_write_json_dict(output_dict, mod_obj_elt, save_calculated_attributes)
+            elif isinstance(value, ModelingObjectMix):
+                for key in value.keys():
+                    recursively_write_json_dict(output_dict, key, save_calculated_attributes)
 
     return output_dict
 
