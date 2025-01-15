@@ -1,22 +1,13 @@
 from datetime import datetime
 
 import pytz
-from copy import copy
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.core.system import System
-from efootprint.core.hardware.storage import Storage
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
-from efootprint.core.hardware.servers.serverless import Serverless
-from efootprint.core.hardware.servers.on_premise import OnPremise
-from efootprint.core.hardware.hardware_base_classes import Hardware
-from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.job import Job
-from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.hardware.network import Network
-from efootprint.constants.countries import Country
+from efootprint.abstract_modeling_classes.modeling_object_generator import ModelingObjectGenerator
+from efootprint.core import CORE_CLASSES
+from efootprint.builders.services import SERVICE_CLASSES
+from efootprint.builders.hardware import HARDWARE_BUILDER_CLASSES
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -25,6 +16,11 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import S
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.logger import logger
+
+
+modeling_object_classes = CORE_CLASSES + SERVICE_CLASSES + HARDWARE_BUILDER_CLASSES
+modeling_object_classes_dict = {modeling_object_class.__name__: modeling_object_class
+                                for modeling_object_class in modeling_object_classes}
 
 
 def json_to_explainable_object(input_dict):
@@ -49,6 +45,8 @@ def json_to_explainable_object(input_dict):
     elif "zone" in input_dict.keys():
         output = SourceObject(
             pytz.timezone(input_dict["zone"]), source, input_dict["label"])
+    elif "label" in input_dict.keys():
+        output = SourceObject(input_dict["value"], source, input_dict["label"])
 
     return output
 
@@ -60,13 +58,22 @@ def json_to_system(system_dict):
     for class_key in system_dict.keys():
         if class_key not in class_obj_dict.keys():
             class_obj_dict[class_key] = {}
-        current_class = globals()[class_key]
+        current_class = modeling_object_classes_dict[class_key]
         current_class_dict = {}
         for class_instance_key in system_dict[class_key].keys():
             new_obj = current_class.__new__(current_class)
             new_obj.__dict__["contextual_modeling_obj_containers"] = []
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
-                if type(attr_value) == dict:
+                if attr_key == "generated_objects":
+                    new_obj.__dict__[attr_key] = attr_value
+                    for gen_obj_key, gen_obj in attr_value.items():
+                        new_obj.__dict__[attr_key][gen_obj_key]["args"] = [
+                            json_to_explainable_object(arg) if isinstance(arg, dict) else arg
+                            for arg in attr_value[gen_obj_key]["args"]]
+                        new_obj.__dict__[attr_key][gen_obj_key]["kwargs"] = {
+                            key: json_to_explainable_object(value)
+                            for key, value in attr_value[gen_obj_key]["kwargs"].items()}
+                elif type(attr_value) == dict:
                     new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
                     new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
                 else:
@@ -90,6 +97,8 @@ def json_to_system(system_dict):
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
+                elif attr_key == "generated_objects":
+                    mod_obj.__dict__[attr_key] = {flat_obj_dict[key]: value for key, value in attr_value.items()}
             mod_obj.trigger_modeling_updates = True
             if getattr(mod_obj, "generated_by", None) is None:
                 mod_obj.generated_by = None
@@ -98,6 +107,8 @@ def json_to_system(system_dict):
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
             for mod_obj in class_obj_dict[obj_type].values():
+                if isinstance(mod_obj, ModelingObjectGenerator):
+                    mod_obj.compute_calculated_attributes()
                 if len(mod_obj.systems) == 0:
                     logger.warning(
                         f"{mod_obj.class_as_simple_str} {mod_obj.name} is not linked to any existing system so needs "

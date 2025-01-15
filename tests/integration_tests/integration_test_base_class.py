@@ -1,3 +1,4 @@
+import re
 from typing import List
 from unittest import TestCase
 import os
@@ -66,6 +67,11 @@ class IntegrationTestBaseClass(TestCase):
     def run_system_to_json_test(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
+        with open(tmp_filepath, 'r') as tmp_file:
+            file_content = tmp_file.read()
+        with open(tmp_filepath, 'w') as tmp_file:
+            file_content_without_random_ids = re.sub(r"\"id-[a-zA-Z0-9]{6}-", "\"id-XXXXXX-", file_content)
+            tmp_file.write(file_content_without_random_ids)
 
         with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), 'r') as ref_file,
               open(tmp_filepath, 'r') as tmp_file):
@@ -92,7 +98,9 @@ class IntegrationTestBaseClass(TestCase):
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():
                 if isinstance(attr_value, ExplainableQuantity) or isinstance(attr_value, ExplainableHourlyQuantities):
-                    self.assertEqual(getattr(corresponding_obj, attr_key), attr_value)
-                    self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label)
+                    self.assertEqual(getattr(corresponding_obj, attr_key), attr_value,
+                                     f"Attribute {attr_key} is not equal for {obj.name}")
+                    self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label,
+                                     f"Attribute {attr_key} label is not equal for {obj.name}")
 
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")

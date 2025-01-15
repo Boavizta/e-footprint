@@ -213,8 +213,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 value_to_set = ListLinkedToModelingObj(value_to_set)
             elif type(value_to_set) == dict:
                 value_to_set = current_attr.__class__(value_to_set)
-            assert (isinstance(value_to_set, ObjectLinkedToModelingObj) or isinstance(value_to_set, str )
-                    or value_to_set is None)
+            assert (isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None)
             super().__setattr__(name, value_to_set)
             if isinstance(current_attr, ObjectLinkedToModelingObj):
                 current_attr.set_modeling_obj_container(None, None)
@@ -331,21 +330,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 if value is not None:
                     output_dict[key] = value.id
                     output_dict["updated_after_generation"] = self.updated_after_generation
-            elif value is None:
+            elif value is None or isinstance(value, str):
                 output_dict[key] = value
-            elif isinstance(value, str):
                 output_dict[key] = value
-            elif isinstance(value, list):
-                assert len(value) == 0 or isinstance(value[0], ModelingObject)
-                output_dict[key] = [elt.id for elt in value]
-            elif isinstance(value, ExplainableObject):
-                output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id
-            elif isinstance(value, ExplainableObjectDict):
-                output_dict[key] = value.to_json(save_calculated_attributes)
             elif isinstance(value, ModelingUpdate):
                 continue
+            elif getattr(value, "to_json", None) is not None:
+                output_dict[key] = value.to_json(save_calculated_attributes)
             else:
                 raise ValueError(f"Attribute {key} of {self.name} {type(value)}) is not handled in to_json")
 
@@ -353,7 +346,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def class_as_simple_str(self):
-        return self.__class__.__name__
+        return type(self).__name__
 
     def __repr__(self):
         return str(self)

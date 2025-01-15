@@ -52,12 +52,7 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
     def to_json(self, with_calculated_attributes_data=False):
-        output_list = []
-
-        for item in self:
-            output_list.append(item.to_json(with_calculated_attributes_data))
-
-        return output_list
+        return [elt.id for elt in self]
 
     def __repr__(self):
         return str(self.to_json())

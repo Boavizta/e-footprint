@@ -25,6 +25,8 @@ class Server(InfraHardware):
         self.server_utilization_rate = EmptyExplainableObject()
         self.raw_nb_of_instances = EmptyExplainableObject()
         self.nb_of_instances = EmptyExplainableObject()
+        self.occupied_ram_per_instance = EmptyExplainableObject()
+        self.occupied_cpu_per_instance = EmptyExplainableObject()
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")
@@ -51,8 +53,10 @@ class Server(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return ["hour_by_hour_cpu_need", "hour_by_hour_ram_need", "available_ram_per_instance",
-                "available_cpu_per_instance", "raw_nb_of_instances", "nb_of_instances",
+        return ["hour_by_hour_ram_need", "hour_by_hour_cpu_need",
+                "occupied_ram_per_instance", "occupied_cpu_per_instance",
+                "available_ram_per_instance", "available_cpu_per_instance",
+                "raw_nb_of_instances", "nb_of_instances",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
@@ -60,11 +64,19 @@ class Server(InfraHardware):
         return {"ram": "GB", "cpu": "core"}
 
     @property
-    def jobs(self):
-        return self.modeling_obj_containers
+    def jobs(self) -> List[ModelingObject]:
+        from efootprint.core.usage.job import Job
+
+        return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Job)]
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+    def installed_services(self) -> List[ModelingObject]:
+        from efootprint.builders.services.service_base_class import Service
+
+        return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Service)]
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ContextualModelingObjectAttribute]:
         return [self.storage]
 
     def compute_hour_by_hour_resource_need(self, resource):
@@ -76,30 +88,40 @@ class Server(InfraHardware):
 
         return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
 
-    def update_hour_by_hour_cpu_need(self):
-        self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
-
     def update_hour_by_hour_ram_need(self):
         self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
 
+    def update_hour_by_hour_cpu_need(self):
+        self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
+
+    def update_occupied_ram_per_instance(self):
+        self.occupied_ram_per_instance = (self.base_ram_consumption + sum(
+            [service.base_ram_consumption for service in self.installed_services])).set_label(
+            f"Occupied RAM per {self.name} instance including services")
+
+    def update_occupied_cpu_per_instance(self):
+        self.occupied_cpu_per_instance = (self.base_cpu_consumption + sum(
+            [service.base_cpu_consumption for service in self.installed_services])).set_label(
+            f"Occupied CPU per {self.name} instance including services")
+
     def update_available_ram_per_instance(self):
         available_ram_per_instance = self.ram * self.server_utilization_rate
-        available_ram_per_instance -= self.base_ram_consumption
+        available_ram_per_instance -= self.occupied_ram_per_instance
         if available_ram_per_instance.value < 0 * u.B:
             raise ValueError(
-                f"server has available capacity of {(self.ram * self.server_utilization_rate).value} "
-                f" but is asked {self.base_ram_consumption.value}")
+                f"{self.name} has available capacity of {(self.ram * self.server_utilization_rate).value} "
+                f" but is asked {self.occupied_ram_per_instance.value}")
 
         self.available_ram_per_instance = available_ram_per_instance.set_label(
             f"Available RAM per {self.name} instance")
 
     def update_available_cpu_per_instance(self):
         available_cpu_per_instance = self.cpu_cores * self.server_utilization_rate
-        available_cpu_per_instance -= self.base_cpu_consumption
+        available_cpu_per_instance -= self.occupied_cpu_per_instance
         if available_cpu_per_instance.value < 0:
             raise ValueError(
                 f"server has available capacity of {(self.cpu_cores * self.server_utilization_rate).value} "
-                f" but is asked {self.base_cpu_consumption.value}")
+                f" but is asked {self.occupied_cpu_per_instance.value}")
 
         self.available_cpu_per_instance = available_cpu_per_instance.set_label(
             f"Available CPU per {self.name} instance")

@@ -88,7 +88,6 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
-            "job_type": "undefined",
             "server": "uuid-Default-server",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
@@ -143,13 +142,11 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         },
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
-            "job_type": "undefined",
             "server": "uuid-Default-server",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
@@ -204,8 +201,7 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         }
     },
     "Autoscaling": {

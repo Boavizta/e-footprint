@@ -1,7 +1,7 @@
 from typing import List
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.constants.countries import Country
+from efootprint.core.country import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.user_journey import UserJourney

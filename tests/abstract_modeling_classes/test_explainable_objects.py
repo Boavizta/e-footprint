@@ -69,6 +69,14 @@ class TestExplainableQuantity(unittest.TestCase):
         self.a = ExplainableQuantity(1.5 * u.W, "1.5 Watt")
         self.assertEqual(2 * u.W, self.a.ceil().value)
 
+    def test_copy(self):
+        copied = self.a.copy()
+        self.assertNotEqual(id(self.a), id(copied))
+        self.assertEqual(self.a.value, copied.value)
+        self.assertEqual(self.a.label, copied.label)
+        self.assertEqual(None, copied.modeling_obj_container)
+        self.assertEqual(id(self.a), id(copied.left_parent))
+
 
 class TestExplainableHourlyQuantities(unittest.TestCase):
     def setUp(self):

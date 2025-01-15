@@ -12,32 +12,10 @@ from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 
 
-class JobTypes:
-    AUTH = "auth"
-    DATA_READ = "data_read"
-    DATA_WRITE = "data_write"
-    DATA_LIST = "data_list"
-    DATA_SIMPLE_ANALYTIC = "data_simple_analytic"
-    DATA_STREAM = "data_stream"  # video, musique, data
-    TRANSACTION = "transaction"
-    TRANSACTION_STRONG = "transaction_strong"
-    NOTIFICATION = "notification"
-    ANALYTIC_DATA_LOADING = "analytic_data_loading"
-    ANALYTIC_READING_PREPARED = "analytic_reading_prepared"
-    ANALYTIC_READING_ON_THE_FLY = "analytic_reading_on_the_fly"
-    ML_RECOMMENDATION = "ml_reco"  # kvm
-    ML_LLM = "ml_llm"
-    ML_DEEPLEARNING = "ml_dl"
-    ML_REGRESSION = "ml_regression"  # linear regression, polynomial regression, svm
-    ML_CLASSIFIER = "ml_classifier"  # bayes, random forest
-    UNDEFINED = "undefined"
-
-
 class Job(ModelingObject):
     def __init__(self, name: str, server: Server, data_upload: SourceValue,
                  data_download: SourceValue, data_stored: SourceValue, request_duration: SourceValue,
-                 cpu_needed: SourceValue, ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED,
-                 description: str = ""):
+                 cpu_needed: SourceValue, ram_needed: SourceValue):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -48,7 +26,6 @@ class Job(ModelingObject):
         self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
-        self.job_type = job_type
         self.server = ContextualModelingObjectAttribute(server)
         if not data_upload.value.check("[]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
@@ -77,8 +54,6 @@ class Job(ModelingObject):
         self.cpu_needed = cpu_needed.set_label(
             f"CPU needed on server {self.server.name} to process {self.name}")
 
-        self.description = description
-        
     @property
     def calculated_attributes(self) -> List[str]:
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",

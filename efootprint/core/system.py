@@ -94,8 +94,10 @@ class System(ModelingObject):
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
+        all_modeling_objects = output_list + user_journeys + uj_steps + jobs + devices + countries
+        generators = list(set([mod_obj.generated_by for mod_obj in all_modeling_objects if mod_obj.generated_by]))
 
-        return output_list + user_journeys + uj_steps + jobs + devices + countries
+        return all_modeling_objects + generators
 
     @property
     def all_linked_objects(self):

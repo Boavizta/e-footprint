@@ -1,7 +1,7 @@
 import math
 import numbers
+from copy import copy
 from datetime import datetime
-from typing import Type
 
 import pandas as pd
 import pint_pandas
@@ -156,8 +156,8 @@ class EmptyExplainableObject(ExplainableObject):
 
 class ExplainableQuantity(ExplainableObject):
     def __init__(
-            self, value: Quantity, label: str = None, left_parent: Type["ExplainableQuantity"] = None,
-            right_parent: Type["ExplainableQuantity"] = None, operator: str = None, source: Source = None):
+            self, value: Quantity, label: str = None, left_parent: ExplainableObject = None,
+            right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
         if not isinstance(value, Quantity):
             raise ValueError(
                 f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
@@ -186,6 +186,9 @@ class ExplainableQuantity(ExplainableObject):
     def ceil(self):
         self.value = np.ceil(self.value)
         return self
+
+    def copy(self):
+        return ExplainableQuantity(copy(self.value), label=self.label, left_parent=self, operator="duplicate")
 
     def __gt__(self, other):
         if isinstance(other, ExplainableQuantity):
@@ -423,7 +426,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         )
 
     def copy(self):
-        return ExplainableHourlyQuantities(self.value.copy(), left_parent=self, operator="duplicate")
+        return ExplainableHourlyQuantities(self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
 
     def __eq__(self, other):
         if isinstance(other, numbers.Number) and other == 0:

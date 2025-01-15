@@ -154,7 +154,6 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
-            "job_type": "undefined",
             "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
@@ -209,13 +208,11 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         },
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
-            "job_type": "undefined",
             "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
@@ -270,13 +267,11 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         },
         "uuid-dailymotion": {
             "name": "dailymotion",
             "id": "uuid-dailymotion",
-            "job_type": "undefined",
             "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
@@ -331,13 +326,11 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         },
         "uuid-tiktok": {
             "name": "tiktok",
             "id": "uuid-tiktok",
-            "job_type": "undefined",
             "server": "uuid-Server-2",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
@@ -392,13 +385,11 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         },
         "uuid-tiktok-analytics": {
             "name": "tiktok analytics",
             "id": "uuid-tiktok-analytics",
-            "job_type": "undefined",
             "server": "uuid-TikTok-Analytics-server",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
@@ -453,8 +444,7 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            },
-            "description": ""
+            }
         }
     },
     "Autoscaling": {
