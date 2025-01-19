@@ -44,6 +44,10 @@ class EmptyExplainableObject(ExplainableObject):
     def copy(self):
         return EmptyExplainableObject()
 
+    def generate_explainable_object_with_logical_dependency(self, explainable_condition: ExplainableObject):
+        return EmptyExplainableObject(
+            label=self.label, left_parent=self, right_parent=explainable_condition, operator="logically dependent on")
+
     @property
     def iloc(self):
         return [EmptyExplainableObject(left_parent=self, operator="iloc")]

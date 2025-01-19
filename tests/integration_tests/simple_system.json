@@ -204,7 +204,7 @@
             }
         }
     },
-    "Autoscaling": {
+    "Server": {
         "uuid-Default-server": {
             "name": "Default server",
             "id": "uuid-Default-server",
@@ -248,6 +248,14 @@
                 "label": "Default server utilization rate from hypothesis",
                 "value": 0.9,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_type": {
+                "label": "Server type of Default server from hypothesis",
+                "value": "on-premise",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -315,6 +323,10 @@
                     "name": "hypothesis",
                     "link": null
                 }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Default server instances",
+                "value": null
             },
             "storage": "uuid-Default-SSD-storage"
         }

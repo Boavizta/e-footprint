@@ -5,7 +5,7 @@ import pandas as pd
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source, SourceObject
 from efootprint.builders.services.service_base_class import Service
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 from efootprint.builders.services.ecobenchmark_analysis.ecobenchmark_data_analysis import ECOBENCHMARK_DATA, \
     ECOBENCHMARK_RESULTS_LINK, default_request_duration

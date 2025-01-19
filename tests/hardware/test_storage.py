@@ -8,7 +8,7 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 
 

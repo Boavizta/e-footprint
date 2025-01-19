@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.user_journey import UserJourney
@@ -97,9 +97,8 @@ class System(ModelingObject):
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
         all_modeling_objects = output_list + user_journeys + uj_steps + jobs + devices + countries
-        generators = list(set([mod_obj.generated_by for mod_obj in all_modeling_objects if mod_obj.generated_by]))
 
-        return all_modeling_objects + generators
+        return all_modeling_objects
 
     @property
     def all_linked_objects(self):

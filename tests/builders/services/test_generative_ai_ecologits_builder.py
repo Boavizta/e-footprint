@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import Mock, patch
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.builders.hardware.gpu_server_builder import GPUServerBuilder
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel
 

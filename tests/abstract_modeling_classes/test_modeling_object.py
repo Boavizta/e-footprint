@@ -13,6 +13,10 @@ MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
 class ModelingObjectForTesting(ModelingObject):
+    @classmethod
+    def default_values(cls):
+        return {}
+
     def __init__(self, name, custom_input=None, custom_input2=None):
         super().__init__(name)
         if custom_input is not None:
@@ -175,7 +179,7 @@ class TestModelingObject(unittest.TestCase):
         mod_obj5.class_as_simple_str = "UserJourney"
         mod_obj1.class_as_simple_str = "UsagePattern"
         mod_obj2.class_as_simple_str = "Job"
-        mod_obj4.class_as_simple_str = "Autoscaling"
+        mod_obj4.class_as_simple_str = "Server"
         mod_obj3.class_as_simple_str = "Storage"
 
         attributes_computation_chain = [

@@ -64,6 +64,9 @@ class ModelingUpdate:
             self.make_simulation_specific_operations()
 
         self.apply_changes()
+        for new_sourcevalue in self.new_sourcevalues:
+            new_sourcevalue.modeling_obj_container.check_belonging_to_authorized_values(
+                new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue)
         self.recomputed_values = self.recompute_attributes()
         self.updated_values_set = True
 
@@ -160,6 +163,10 @@ class ModelingUpdate:
     @property
     def old_sourcevalues(self):
         return [old_value for old_value, new_value in self.changes_list if isinstance(old_value, ExplainableObject)]
+
+    @property
+    def new_sourcevalues(self):
+        return [new_value for old_value, new_value in self.changes_list if isinstance(old_value, ExplainableObject)]
 
     def generate_optimized_attr_updates_chain(self):
         attr_updates_chain_from_attributes_updates = sum(

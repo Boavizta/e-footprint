@@ -1,22 +1,66 @@
-from abc import abstractmethod
 from typing import List
+
+import numpy as np
+import pandas as pd
+import pint_pandas
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, \
-    EmptyExplainableObject
+    EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.sources import Sources
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SOURCE_VALUE_DEFAULT_NAME
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 
+class ServerTypes:
+    @classmethod
+    def autoscaling(cls):
+        return SourceObject("autoscaling")
+    @classmethod
+    def on_premise(cls):
+        return SourceObject("on-premise")
+    @classmethod
+    def serverless(cls):
+        return SourceObject("serverless")
+
 
 class Server(InfraHardware):
-    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
-                 power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
+    @classmethod
+    def default_values(cls):
+        return {
+            "server_type": ServerTypes.autoscaling(),
+            "carbon_footprint_fabrication": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
+            "power": SourceValue(300 * u.W, Sources.HYPOTHESIS),
+            "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
+            "idle_power": SourceValue(50 * u.W, Sources.HYPOTHESIS),
+            "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
+            "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
+            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
+            "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
+            "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+            "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
+        }
+
+    @classmethod
+    def list_values(cls):
+        return {"server_type": [ServerTypes.autoscaling(), ServerTypes.on_premise(), ServerTypes.serverless()]}
+
+    @classmethod
+    def conditional_list_values(cls):
+        return {"fixed_nb_of_instances": {"depends_on": "server_type", "conditional_list_values": {
+            ServerTypes.autoscaling(): [EmptyExplainableObject()],
+            ServerTypes.serverless(): [EmptyExplainableObject()]}
+        }}
+
+    def __init__(self, name: str, server_type: SourceObject, carbon_footprint_fabrication: SourceValue,
+                 power: SourceValue, lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue,
+                 cpu_cores: SourceValue, power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                 base_cpu_consumption: SourceValue, storage: Storage):
+                 base_cpu_consumption: SourceValue, storage: Storage,
+                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.hour_by_hour_cpu_need = EmptyExplainableObject()
         self.hour_by_hour_ram_need = EmptyExplainableObject()
@@ -27,6 +71,7 @@ class Server(InfraHardware):
         self.nb_of_instances = EmptyExplainableObject()
         self.occupied_ram_per_instance = EmptyExplainableObject()
         self.occupied_cpu_per_instance = EmptyExplainableObject()
+        self.server_type = server_type.set_label(f"Server type of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")
@@ -49,6 +94,14 @@ class Server(InfraHardware):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
+        self.fixed_nb_of_instances = fixed_nb_of_instances or EmptyExplainableObject()
+        if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
+            assert self.server_type.value == ServerTypes.on_premise(), \
+                "Fixed number of instances can only be defined for on-premise servers"
+            if not fixed_nb_of_instances.value.check("[]"):
+                raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
+        self.fixed_nb_of_instances.set_label(
+            f"User defined number of {self.name} instances").to(u.dimensionless)
         self.storage = ContextualModelingObjectAttribute(storage)
 
     @property
@@ -155,6 +208,67 @@ class Server(InfraHardware):
         self.instances_energy = server_power.to(u.kWh).set_label(
             f"Hourly energy consumed by {self.name} instances")
 
-    @abstractmethod
+    def autoscaling_update_nb_of_instances(self):
+        hour_by_hour_nb_of_instances = self.raw_nb_of_instances.ceil()
+
+        self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
+            self.server_type).set_label(f"Hourly number of {self.name} instances")
+        
+    def serverless_update_nb_of_instances(self):
+        hour_by_hour_nb_of_instances = self.raw_nb_of_instances.copy()
+
+        self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
+            self.server_type).set_label(f"Hourly number of {self.name} instances")
+
+    def on_premise_update_nb_of_instances(self):
+        if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
+            nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
+        else:
+            max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
+
+            nb_of_instances_df = pd.DataFrame(
+                {"value": pint_pandas.PintArray(
+                        max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), dtype=u.dimensionless)},
+                index=self.raw_nb_of_instances.value.index
+            )
+
+            if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
+                if max_nb_of_instances > self.fixed_nb_of_instances:
+                    raise ValueError(
+                        f"The number of {self.name} instances computed from its resources need is superior to the "
+                        f"number of instances specified by the user "
+                        f"({max_nb_of_instances.value} > {self.fixed_nb_of_instances})")
+                else:
+                    fixed_nb_of_instances_df = pd.DataFrame(
+                        {"value": pint_pandas.PintArray(
+                            np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.value),
+                            dtype=u.dimensionless
+                        )},
+                        index=self.raw_nb_of_instances.value.index
+                    )
+                    nb_of_instances = ExplainableHourlyQuantities(
+                        fixed_nb_of_instances_df,
+                        "Nb of instances",
+                        left_parent=self.raw_nb_of_instances,
+                        right_parent=self.fixed_nb_of_instances
+                    )
+            else:
+                nb_of_instances = ExplainableHourlyQuantities(
+                    nb_of_instances_df,
+                    f"Hourly number of {self.name} instances",
+                    left_parent=self.raw_nb_of_instances,
+                    right_parent=self.fixed_nb_of_instances,
+                    operator="depending on not being empty"
+                )
+
+        self.nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
+        self.server_type).set_label(f"Hourly number of {self.name} instances")
+
+
     def update_nb_of_instances(self):
-        pass
+        logic_mapping = {
+            ServerTypes.autoscaling(): self.autoscaling_update_nb_of_instances,
+            ServerTypes.on_premise(): self.on_premise_update_nb_of_instances,
+            ServerTypes.serverless(): self.serverless_update_nb_of_instances
+        }
+        logic_mapping[self.server_type]()

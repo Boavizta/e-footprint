@@ -35,7 +35,7 @@ class TestJob(TestCase):
         network = MagicMock(id="network")
         network.class_as_simple_str = "Network"
         server = MagicMock(id="server")
-        server.class_as_simple_str = "Autoscaling"
+        server.class_as_simple_str = "Server"
         server.name = "server"
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, self.job, "server")]
         server.mod_objs_computation_chain = [server, network]

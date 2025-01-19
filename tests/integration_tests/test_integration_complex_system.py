@@ -5,15 +5,13 @@ from datetime import datetime, timedelta
 
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
-from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.core.hardware.servers.on_premise import OnPremise
+from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -22,7 +20,6 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.builders.hardware.devices_defaults import default_laptop
-from efootprint.builders.hardware.servers_defaults import default_serverless, default_onpremise
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -53,8 +50,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
 
-        cls.server1 = Autoscaling(
+        cls.server1 = Server(
             "Server 1",
+            server_type=ServerTypes.autoscaling(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
@@ -70,8 +68,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         )
         cores_per_cpu_units = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         nb_cpu_units = SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
-        cls.server2 = OnPremise(
+        cls.server2 = Server(
             "Server 2",
+            server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
@@ -85,8 +84,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
             storage=cls.storage_2
         )
-        cls.server3 = default_serverless(
-            "TikTok Analytics server",storage=default_ssd("TikTok Analytics storage"))
+        cls.server3 = Server.from_defaults(
+            "TikTok Analytics server", server_type=ServerTypes.serverless(),
+            storage=Storage.from_defaults("TikTok Analytics storage"))
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         cls.storage_3 = cls.server3.storage
@@ -399,7 +399,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertIn(self.server1.energy_footprint.id, recomputed_elements_ids)
 
     def test_simulation_add_new_object(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
+                                          storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
                       data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
                       request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -439,7 +440,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def test_simulation_add_multiple_objects(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
+                                          storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
                       data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
                       request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -468,7 +470,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def test_simulation_add_objects_and_make_input_changes(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
+                                          storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
                       data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
                       request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),

@@ -7,6 +7,10 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class ModelingObjectForTesting(ModelingObject):
+    @classmethod
+    def default_values(cls):
+        return {}
+
     def __init__(self, name, custom_input=None):
         super().__init__(name)
         if custom_input is not None:

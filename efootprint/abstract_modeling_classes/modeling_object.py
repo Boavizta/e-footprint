@@ -1,5 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
+from copy import copy
 from typing import List, Type
 import os
 import re
@@ -16,8 +17,8 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
 
 
 CANONICAL_CLASS_COMPUTATION_ORDER = [
-    "UserJourneyStep", "UserJourney", "Hardware", "Country", "UsagePattern", "Job", "Network", "Autoscaling",
-    "Serverless", "OnPremise", "Storage", "System"]
+    "UserJourneyStep", "UserJourney", "Hardware", "Country", "UsagePattern", "Job", "Network", "Server", "Storage",
+    "System"]
 
 
 def get_instance_attributes(obj, target_class):
@@ -119,13 +120,81 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
+    @classmethod
+    def default_values(cls):
+        return {}
+
+    @classmethod
+    def default_value(cls, attr_name):
+        return cls.default_values()[attr_name]
+
+    @classmethod
+    def list_values(cls):
+        return {}
+
+    @classmethod
+    def conditional_list_values(cls):
+        return {}
+
+    @classmethod
+    def attributes_with_depending_values(cls):
+        output_dict = {}
+        for dependent_attribute, dependent_attribute_dependencies in cls.conditional_list_values().items():
+            if dependent_attribute not in output_dict.keys():
+                output_dict[dependent_attribute_dependencies["depends_on"]] = [dependent_attribute]
+            else:
+                output_dict[dependent_attribute_dependencies["depends_on"]].append(dependent_attribute)
+
+        return output_dict
+
+    @classmethod
+    def from_defaults(cls, name, **kwargs):
+        output_kwargs = cls.default_values()
+        output_kwargs.update(kwargs)
+
+        return cls(name, **output_kwargs)
+
     def __init__(self, name):
         self.trigger_modeling_updates = False
         self.name = name
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.contextual_modeling_obj_containers = []
-        self.generated_by = None
-        self.updated_after_generation = False
+
+    def check_belonging_to_authorized_values(self, name, input_value):
+        if name in self.list_values().keys():
+            if input_value not in self.list_values()[name]:
+                raise ValueError(
+                    f"Value {input_value} for attribute {name} is not in the list of possible values: "
+                    f"{self.list_values()[name]}")
+
+        if name in self.conditional_list_values().keys():
+            conditional_attr_name = self.conditional_list_values()[name]['depends_on']
+            conditional_value = getattr(self, self.conditional_list_values()[name]["depends_on"])
+            if conditional_value is None:
+                raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
+                                 f"validity of {name}")
+            if (conditional_value in self.conditional_list_values()[name]["conditional_list_values"].keys()
+                    and input_value not in
+                    self.conditional_list_values()[name]["conditional_list_values"][conditional_value]):
+                raise ValueError(
+                    f"Value {input_value} for attribute {name} is not in the list of possible values for "
+                    f"{conditional_attr_name} {conditional_value}: "
+                    f"{self.conditional_list_values()[name]['conditional_list_values'][conditional_value]}")
+
+        if name in self.attributes_with_depending_values().keys():
+            for dependent_attribute in self.attributes_with_depending_values()[name]:
+                dependent_attribute_value = getattr(self, dependent_attribute, None)
+                if (dependent_attribute_value is not None
+                        and input_value
+                        in self.conditional_list_values()[dependent_attribute]["conditional_list_values"].keys()
+                        and dependent_attribute_value not in
+                        self.conditional_list_values()[dependent_attribute]["conditional_list_values"][input_value]):
+                    raise ValueError(
+                        f"Setting {name} as {input_value} is not possible because {dependent_attribute_value}"
+                        f" is not in the list of possible values for {dependent_attribute} "
+                        f"when {name} is {input_value}: "
+                        f"{self.conditional_list_values()[dependent_attribute]['conditional_list_values'][input_value]}"
+                    )
 
     @property
     def modeling_obj_containers(self):
@@ -195,14 +264,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
-        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers", "generated_by",
-                "updated_after_generation"]
+        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers"]
 
     def __setattr__(self, name, input_value):
         current_attr = getattr(self, name, None)
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
+            self.check_belonging_to_authorized_values(name, input_value)
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):
                 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
@@ -222,9 +291,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             ModelingUpdate([[current_attr, input_value]])
-            if self.generated_by is not None:
-                self.updated_after_generation = True
-                logger.debug(f"Attribute {name} updated in {self.name} after generation")
 
         if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
@@ -270,8 +336,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
         output_list = []
         for attr_name, attr_value in get_instance_attributes(self, ModelingObject).items():
-            if attr_name != "generated_by":
-                output_list.append(attr_value)
+            output_list.append(attr_value)
         for attr_value in get_instance_attributes(self, ListLinkedToModelingObj).values():
             output_list += list(attr_value)
 
@@ -325,10 +390,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     or key.startswith("initial")
             ):
                 continue
-            if key == "generated_by":
-                if value is not None:
-                    output_dict[key] = value.id
-                    output_dict["updated_after_generation"] = self.updated_after_generation
             elif value is None or isinstance(value, str):
                 output_dict[key] = value
                 output_dict[key] = value

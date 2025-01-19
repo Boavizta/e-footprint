@@ -2,6 +2,14 @@
   "uuid-New-server": {
             "name": "New server",
             "id": "uuid-New-server",
+            "server_type": {
+              "label": "Server type for Default server",
+              "value": "autoscaling",
+              "source": {
+                "name": "hypothesis",
+                "link": null
+              }
+            },
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of New server from Base ADEME_V19",
                 "value": 600,

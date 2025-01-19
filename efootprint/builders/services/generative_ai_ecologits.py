@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.builders.hardware.gpu_server_builder import GPUServerBuilder
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 
 models = ModelRepository.from_json()

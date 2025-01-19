@@ -64,16 +64,7 @@ def json_to_system(system_dict):
             new_obj = current_class.__new__(current_class)
             new_obj.__dict__["contextual_modeling_obj_containers"] = []
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
-                if attr_key == "generated_objects":
-                    new_obj.__dict__[attr_key] = attr_value
-                    for gen_obj_key, gen_obj in attr_value.items():
-                        new_obj.__dict__[attr_key][gen_obj_key]["args"] = [
-                            json_to_explainable_object(arg) if isinstance(arg, dict) else arg
-                            for arg in attr_value[gen_obj_key]["args"]]
-                        new_obj.__dict__[attr_key][gen_obj_key]["kwargs"] = {
-                            key: json_to_explainable_object(value)
-                            for key, value in attr_value[gen_obj_key]["kwargs"].items()}
-                elif type(attr_value) == dict:
+                if type(attr_value) == dict:
                     new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
                     new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
                 else:
@@ -97,12 +88,7 @@ def json_to_system(system_dict):
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
-                elif attr_key == "generated_objects":
-                    mod_obj.__dict__[attr_key] = {flat_obj_dict[key]: value for key, value in attr_value.items()}
             mod_obj.trigger_modeling_updates = True
-            if getattr(mod_obj, "generated_by", None) is None:
-                mod_obj.generated_by = None
-                mod_obj.updated_after_generation = False
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":

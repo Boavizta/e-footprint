@@ -208,10 +208,18 @@
             "description": ""
         }
     },
-    "Autoscaling": {
+    "Server": {
         "uuid-Default-server": {
             "name": "Default server",
             "id": "uuid-Default-server",
+            "server_type": {
+                "label": "Server type for Default server",
+                "value": "autoscaling",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default server from Base ADEME_V19",
                 "value": 600,

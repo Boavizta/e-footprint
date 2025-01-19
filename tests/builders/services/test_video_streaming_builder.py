@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.services.video_streaming import VideoStreamingService
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 
 
 class TestVideoStreamingService(unittest.TestCase):

@@ -72,26 +72,6 @@ class ModelingObjectGenerator(ModelingObject, ABC):
 
         return object_to_return
 
-    def check_belonging_to_authorized_values(self, name, str_input_value):
-        if name in self.list_values().keys():
-            if str_input_value not in self.list_values()[name]:
-                raise ValueError(
-                    f"Value {str_input_value} for attribute {name} is not in the list of possible values: "
-                    f"{self.list_values()[name]}")
-        if name in self.conditional_list_values():
-            conditional_attr_name = self.conditional_list_values()[name]['depends_on']
-            conditional_value = getattr(self, self.conditional_list_values()[name]["depends_on"])
-            if conditional_value is None:
-                raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
-                                 f"validity of {name}")
-            if isinstance(conditional_value, ExplainableObject):
-                conditional_value = conditional_value.value
-            if str_input_value not in self.conditional_list_values()[name]["conditional_list_values"][conditional_value]:
-                raise ValueError(
-                    f"Value {str_input_value} for attribute {name} is not in the list of possible values for "
-                    f"{conditional_attr_name} {conditional_value}: "
-                    f"{self.conditional_list_values()[name]['conditional_list_values'][conditional_value]}")
-
 
 class GeneratedObjectDict(dict):
     def to_json(self, save_calculated_attributes=False):

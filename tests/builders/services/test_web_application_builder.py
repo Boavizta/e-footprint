@@ -6,7 +6,7 @@ import pandas as pd
 from efootprint.builders.services.web_application import WebApplicationService
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 
 
 class TestWebApplicationService(unittest.TestCase):

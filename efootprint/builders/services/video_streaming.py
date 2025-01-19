@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 
 

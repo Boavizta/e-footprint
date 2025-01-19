@@ -6,13 +6,12 @@ from datetime import datetime, timedelta
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
-from efootprint.builders.hardware.servers_defaults import default_onpremise
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
+from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -44,8 +43,9 @@ class IntegrationTest(IntegrationTestBaseClass):
             fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
-        cls.server = Autoscaling(
+        cls.server = Server(
             "Default server",
+            ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
@@ -134,12 +134,16 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_variations_on_inputs(self):
         self._test_variations_on_obj_inputs(self.streaming_step)
         self._test_variations_on_obj_inputs(
-            self.server, attrs_to_skip=["fraction_of_usage_time"],
+            self.server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={
                 "ram": 0.01, "server_utilization_rate": 0.5,
                 "base_ram_consumption": 380,
                 "base_cpu_consumption": 10
             })
+        self._test_input_change(self.server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), self.server,
+                                "fixed_nb_of_instances")
+        self._test_input_change(self.server.server_type, ServerTypes.serverless(), self.server, "server_type")
+        self._test_input_change(self.server.server_type, ServerTypes.autoscaling(), self.server, "server_type")
         self._test_variations_on_obj_inputs(
             self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
         self._test_input_change(self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
@@ -196,8 +200,9 @@ class IntegrationTest(IntegrationTestBaseClass):
             fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
-        new_server = Autoscaling(
+        new_server = Server(
             "New server, identical in specs to default one",
+            server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
@@ -375,13 +380,19 @@ class IntegrationTest(IntegrationTestBaseClass):
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UserJourneyStep"].values())))
+        server = next(iter(class_obj_dict["Server"].values()))
         self._test_variations_on_obj_inputs(
-            next(iter(class_obj_dict["Autoscaling"].values())), attrs_to_skip=["fraction_of_usage_time"],
+            server,
+            attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={
                 "ram": 0.01, "server_utilization_rate": 0.5,
                 "base_ram_consumption": 380,
                 "base_cpu_consumption": 10
             })
+        self._test_input_change(server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), server,
+                                "fixed_nb_of_instances")
+        self._test_input_change(server.server_type, ServerTypes.serverless(), server, "server_type")
+        self._test_input_change(server.server_type, ServerTypes.autoscaling(), server, "server_type")
         storage = next(iter(class_obj_dict["Storage"].values()))
         self._test_variations_on_obj_inputs(
             storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
@@ -413,7 +424,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         system = next(iter(class_obj_dict["System"].values()))
         storage = next(iter(class_obj_dict["Storage"].values()))
-        server = next(iter(class_obj_dict["Autoscaling"].values()))
+        server = next(iter(class_obj_dict["Server"].values()))
         network = next(iter(class_obj_dict["Network"].values()))
         self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
         self.footprint_has_changed([storage, server, network, usage_pattern])
@@ -434,7 +445,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         previous_jobs = copy(streaming_step.jobs)
         system = next(iter(class_obj_dict["System"].values()))
         storage = next(iter(class_obj_dict["Storage"].values()))
-        server = next(iter(class_obj_dict["Autoscaling"].values()))
+        server = next(iter(class_obj_dict["Server"].values()))
         network = next(iter(class_obj_dict["Network"].values()))
         logger.warning("Modifying streaming jobs")
         new_job = Job("new job", server, data_upload=SourceValue(5 * u.MB),
@@ -527,7 +538,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertIn(self.server.energy_footprint.id, recomputed_elements_ids)
 
     def test_simulation_add_new_object(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -563,7 +574,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def test_simulation_add_multiple_objects(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -591,7 +602,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def test_simulation_add_objects_and_make_input_changes(self):
-        new_server = default_onpremise()
+        new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),

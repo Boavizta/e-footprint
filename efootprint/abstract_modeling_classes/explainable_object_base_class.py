@@ -226,6 +226,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @property
     def update_function_chain(self):
         return [attribute.update_function for attribute in self.attr_updates_chain]
+    
+    def generate_explainable_object_with_logical_dependency(
+            self, explainable_condition: Type["ExplainableObject"]):
+        return self.__class__(value=self.value, label=self.label, left_parent=self, right_parent=explainable_condition,
+                              operator="logically dependent on")
 
     def explain(self, pretty_print=True):
         element_value_to_print = str(self)
@@ -356,3 +361,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     def __str__(self):
         return str(self.value)
+
+    def __eq__(self, other):
+        if isinstance(other, ExplainableObject):
+            return self.value == other.value
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.value)

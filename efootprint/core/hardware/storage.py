@@ -6,6 +6,7 @@ import pandas as pd
 import pint_pandas
 
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.constants.sources import Sources
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -14,6 +15,19 @@ from efootprint.constants.units import u
 
 
 class Storage(InfraHardware):
+    @classmethod
+    def default_values(cls):
+        return {
+            "carbon_footprint_fabrication": SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power": SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "lifespan": SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
+            "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
+        }
+
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,

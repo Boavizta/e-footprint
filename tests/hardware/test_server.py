@@ -2,33 +2,20 @@ from datetime import timedelta, datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.server_base_class import Server
-from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.server import Server, ServerTypes
 
 
-class TestServerBaseClass(TestCase):
+class TestServer(TestCase):
     def setUp(self):
-        class TestServer(Server):
-            def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                         lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
-                         power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
-                         server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                         base_cpu_consumption: SourceValue, storage: Storage):
-                super().__init__(
-                    name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores,
-                    power_usage_effectiveness, average_carbon_intensity, server_utilization_rate, base_ram_consumption,
-                    base_cpu_consumption, storage)
-
-            def update_nb_of_instances(self):
-                return SourceValue(10 * u.dimensionless)
-
         self.country = MagicMock()
-        self.server_base = TestServer(
+        self.server_base = Server(
             "Test server",
+            server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(0 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),
@@ -205,3 +192,81 @@ class TestServerBaseClass(TestCase):
             expected_footprint = [0.09, 0.18, 0.27]  # in kg
             self.assertEqual(expected_footprint, self.server_base.energy_footprint.value_as_float_list)
             self.assertEqual(u.kg, self.server_base.energy_footprint.unit)
+
+    def test_autoscaling_nb_of_instances(self):
+        raw_data = [0.5, 1, 1.5, 1.5, 5]
+        expected_data = [1, 1, 2, 2, 5]
+
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        with patch.object(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
+                patch.object(self.server_base, "server_type", ServerTypes.autoscaling()):
+            self.server_base.update_nb_of_instances()
+
+            self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
+
+    def test_nb_of_instances_on_premise_rounds_up_to_next_integer(self):
+        raw_data = [0.5, 1, 1.5, 1.5, 5.5]
+        expected_data = [6, 6, 6, 6, 6]
+
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
+                patch.object(self.server_base, "server_type", ServerTypes.on_premise()):
+            self.server_base.update_nb_of_instances()
+            self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
+
+    def test_nb_of_instances_takes_fixed_nb_of_instances_into_account(self):
+        raw_data = [0.5, 1, 1.5, 1.5, 5.5]
+        expected_data = [12, 12, 12, 12, 12]
+
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
+                patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
+                patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
+            self.server_base.update_nb_of_instances()
+            self.assertEqual(
+                expected_data,
+                self.server_base.nb_of_instances.value_as_float_list)
+
+    def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
+        raw_data = [0.5, 1, 1.5, 1.5, 14]
+
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
+                patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
+                patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
+            with self.assertRaises(ValueError):
+                self.server_base.update_nb_of_instances()
+
+    def test_nb_of_instances_returns_emptyexplainableobject_if_raw_nb_of_instances_is_emptyexplainableobject(self):
+        with patch.object(self.server_base, "raw_nb_of_instances", new=EmptyExplainableObject()), \
+                patch.object(self.server_base, "server_type", ServerTypes.on_premise()):
+            self.server_base.update_nb_of_instances()
+            self.assertIsInstance(self.server_base.nb_of_instances, EmptyExplainableObject)
+
+    def test_nb_of_instances_serverless(self):
+        raw_data = [0.5, 1, 1.5, 1.5, 5]
+        expected_data = [0.5, 1, 1.5, 1.5, 5]
+
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
+                patch.object(self.server_base, "server_type", ServerTypes.serverless()):
+            self.server_base.update_nb_of_instances()
+
+            self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
+
+    def test_server_raises_error_if_server_type_is_not_supported(self):
+        with self.assertRaises(ValueError):
+            self.server_base.server_type = SourceObject("unsupported_server_type")
+
+    def test_server_raises_error_if_fixed_nb_of_instances_is_defined_for_non_on_premise_server(self):
+        with patch.object(self.server_base, "server_type", ServerTypes.serverless()):
+            with self.assertRaises(ValueError):
+                self.server_base.fixed_nb_of_instances = SourceValue(12 * u.dimensionless)
+
+    def test_server_raises_error_if_fixed_nb_of_instances_is_defined_and_server_type_changes_for_non_on_premise_server(
+            self):
+        with patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
+            with self.assertRaises(ValueError):
+                self.server_base.server_type = ServerTypes.serverless()

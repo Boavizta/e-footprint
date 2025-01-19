@@ -6,9 +6,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
-from efootprint.core.hardware.servers.on_premise import OnPremise
-from efootprint.core.hardware.servers.serverless import Serverless
+from efootprint.core.hardware.server import Server
 
 BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https://arxiv.org/abs/2211.05100")
 
