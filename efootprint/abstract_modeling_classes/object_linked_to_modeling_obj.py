@@ -61,9 +61,9 @@ class ObjectLinkedToModelingObj:
     def list_container(self):
         output = None
         if (
-                self.modeling_obj_container is not None
+                not isinstance(self, list)
+                and self.modeling_obj_container is not None
                 and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), list)
-                and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
         ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
