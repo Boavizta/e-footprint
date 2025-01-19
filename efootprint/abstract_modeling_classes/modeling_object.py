@@ -20,7 +20,7 @@ CANONICAL_CLASS_COMPUTATION_ORDER = [
     "Serverless", "OnPremise", "Storage", "System"]
 
 
-def get_subclass_attributes(obj, target_class):
+def get_instance_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
             if isinstance(attr_value, target_class)}
 
@@ -269,11 +269,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def mod_obj_attributes(self) -> List[Type["ContextualModelingObjectAttribute"]]:
         from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
         output_list = []
-        for value in vars(self).values():
-            if isinstance(value, ModelingObject) and value not in self.modeling_obj_containers:
-                output_list.append(value)
-            elif isinstance(value, ListLinkedToModelingObj):
-                output_list += list(value)
+        for attr_name, attr_value in get_instance_attributes(self, ModelingObject).items():
+            if attr_name != "generated_by":
+                output_list.append(attr_value)
+        for attr_value in get_instance_attributes(self, ListLinkedToModelingObj).values():
+            output_list += list(attr_value)
 
         return output_list
 
@@ -314,7 +314,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def to_json(self, save_calculated_attributes=False) -> dict:
         from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         output_dict = {}
 
         for key, value in self.__dict__.items():
@@ -368,10 +367,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     elif isinstance(input_value[0], ModelingObject):
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
-            elif isinstance(input_value, ObjectLinkedToModelingObj):
-                key_value_str = f"{input_key}: {input_value}\n"
             elif isinstance(input_value, ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"
+            elif isinstance(input_value, ObjectLinkedToModelingObj):
+                key_value_str = f"{input_key}: {input_value}\n"
 
             return key_value_str
 

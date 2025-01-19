@@ -57,6 +57,30 @@ class ObjectLinkedToModelingObj:
 
         return output_key
 
+    @property
+    def list_container(self):
+        output = None
+        if (
+                self.modeling_obj_container is not None
+                and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), list)
+                and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
+        ):
+            output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+
+        return output
+
+    @property
+    def indexes_in_list(self):
+        if self.list_container is None:
+            raise ValueError(f"{self} is not linked to a ModelingObject through a list attribute.")
+        else:
+            output_indexes = []
+            for index, value in enumerate(self.list_container):
+                if id(value) == id(self):
+                    output_indexes.append(index)
+
+        return output_indexes
+
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
         assert self.modeling_obj_container is not None, f"{self} is not linked to a ModelingObject."
         assert isinstance(new_value, ObjectLinkedToModelingObj), (
@@ -69,13 +93,22 @@ class ObjectLinkedToModelingObj:
                 f"Trying to replace {self} by {new_value} which is of different type."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
-        if self.dict_container is None:
-            mod_obj_container.__dict__[attr_name] = new_value
-        else:
+        if self.dict_container is not None:
             if self.key_in_dict not in self.dict_container.keys():
                 raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
                                f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
                                f"This should not happen.")
             self.dict_container[self.key_in_dict] = new_value
+        elif self.list_container is not None:
+            if not self.indexes_in_list:
+                raise ValueError(f"object of id {self.id} not found in {attr_name} attribute of {mod_obj_container.id} "
+                                 f"when trying to replace \n\n{self}\nby\n\n{new_value}.\n\nThis should not happen.")
+            for index in self.indexes_in_list:
+                initial_trigger_modeling_updates = self.list_container.trigger_modeling_updates
+                self.list_container.trigger_modeling_updates = False
+                self.list_container[index] = new_value
+                self.list_container.trigger_modeling_updates = initial_trigger_modeling_updates
+        else:
+            mod_obj_container.__dict__[attr_name] = new_value
         self.set_modeling_obj_container(None, None)
         new_value.set_modeling_obj_container(mod_obj_container, attr_name)

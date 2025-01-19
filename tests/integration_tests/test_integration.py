@@ -3,7 +3,6 @@ from copy import copy
 import os
 from datetime import datetime, timedelta
 
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
@@ -20,7 +19,6 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
@@ -33,7 +31,6 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 class IntegrationTest(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
-
         cls.storage = Storage(
             "Default SSD storage",
             carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -133,33 +130,6 @@ class IntegrationTest(IntegrationTestBaseClass):
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
-
-    def _test_input_change(self, expl_attr, expl_attr_new_value, input_object, expl_attr_name):
-        expl_attr_new_value.label = expl_attr.label
-        logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to"
-                    f" {expl_attr_new_value.value}")
-        system = input_object.systems[0]
-        input_object.__setattr__(expl_attr_name, expl_attr_new_value)
-        new_footprint = system.total_footprint
-        logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
-        self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
-        input_object.__setattr__(expl_attr_name, expl_attr)
-        self.assertTrue(system.total_footprint.value.equals(self.initial_footprint.value))
-
-    def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
-        if attrs_to_skip is None:
-            attrs_to_skip = []
-        logger.warning(f"Testing input variations on {input_object.name}")
-        for expl_attr_name, expl_attr in get_subclass_attributes(input_object, ExplainableObject).items():
-            if expl_attr.left_parent is None and expl_attr.right_parent is None \
-                    and expl_attr_name not in attrs_to_skip:
-
-                expl_attr_new_value = copy(expl_attr)
-                if special_mult and expl_attr_name in special_mult.keys():
-                    expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
-                else:
-                    expl_attr_new_value.value *= 100 * u.dimensionless
-                self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
 
     def test_variations_on_inputs(self):
         self._test_variations_on_obj_inputs(self.streaming_step)

@@ -1,9 +1,12 @@
 import re
+from typing import List
 
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
+from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.usage.job import Job
 
 
@@ -32,8 +35,9 @@ class VideoStreamingService(Service):
     def conditional_list_values(cls):
         return {}
     
-    def __init__(self, name, server, base_ram_consumption: SourceValue = None, bits_per_pixel: SourceValue = None,
-                 static_delivery_cpu_cost: SourceValue = None, ram_buffer_per_user: SourceValue = None):
+    def __init__(self, name: str, server: Server, base_ram_consumption: SourceValue = None,
+                 bits_per_pixel: SourceValue = None, static_delivery_cpu_cost: SourceValue = None,
+                 ram_buffer_per_user: SourceValue = None):
         super().__init__(name, server)
         self.server = server
         self.base_ram_consumption = (base_ram_consumption or self.default_value("base_ram_consumption")).set_label(
@@ -45,40 +49,43 @@ class VideoStreamingService(Service):
         self.ram_buffer_per_user = (ram_buffer_per_user or self.default_value("ram_buffer_per_user")).set_label(
             f"{self.name} RAM buffer size per user")
 
-    def generate_job(self, resolution: str, video_watch_duration: SourceValue,
-                     frames_per_second: SourceValue = None):
-        """
-        Create a Job object for a streaming request based on the duration of the video watched.
-        The bitrate is dynamically computed based on the resolution.
 
-        Args:
-            resolution (str): Resolution of the video stream (e.g., "1920x1080").
-            video_watch_duration (SourceValue): Duration of the video watched in seconds.
-            frames_per_second (SourceValue): Number of frames per second for video playback.
+class StreamingJob(Job):
+    def __init__(self, service: VideoStreamingService, resolution: str, video_watch_duration: SourceValue,
+                 frames_per_second: SourceValue):
+        super().__init__(f"{resolution} streaming on {service.name}",
+                         service.server, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
+                         video_watch_duration, SourceValue(0 * u.core), SourceValue(0 * u.GB))
+        self.service = service
+        self.resolution = SourceObject(resolution, Sources.USER_DATA, f"{self.name} resolution")
+        self.frames_per_second = frames_per_second
+        self.dynamic_bitrate = EmptyExplainableObject()
 
-        Returns:
-            Job: An object that represents the resources needed for the streaming job.
-        """
-        match = re.search(r"\((\d+)\s*x\s*(\d+)\)", resolution)
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return ["dynamic_bitrate", "data_download", "cpu_needed", "ram_needed"] + super().calculated_attributes
+
+    def update_dynamic_bitrate(self):
+        match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)
         if not match:
-            raise ValueError(f"Invalid resolution format: {resolution}")
+            raise ValueError(f"Invalid resolution format: {self.resolution.value}")
         width, height = map(int, match.groups())
         pixel_count = ExplainableQuantity(
-            width * height * u.dimensionless,f"pixel count for resolution {resolution}", source=Sources.USER_DATA)
+            width * height * u.dimensionless, f"pixel count for resolution {self.resolution}",
+            left_parent=self.resolution, operator="pixel count computation", source=Sources.USER_DATA)
 
-        frames_per_second = frames_per_second or self.default_value("frames_per_second")
-        dynamic_bitrate = (pixel_count * self.bits_per_pixel * frames_per_second).to(u.MB / u.s)
+        frames_per_second = self.frames_per_second
 
-        stream_duration = video_watch_duration
+        self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * frames_per_second).to(u.MB / u.s).set_label(
+            f"{self.name} dynamic bitrate")
 
-        data_transfer = stream_duration * dynamic_bitrate
-        cpu_needed = self.static_delivery_cpu_cost * dynamic_bitrate
+    def update_data_download(self):
+        self.data_download = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
+            f"{self.name} data download")
 
-        return Job(
-            f"{resolution} streaming", self.server,
-            data_upload=SourceValue(0 * u.kB),
-            data_stored=data_transfer.to(u.GB).set_label("data stored during streaming"),
-            data_download=data_transfer.to(u.GB).set_label("data downloaded during streaming"),
-            request_duration=stream_duration,
-            cpu_needed=cpu_needed.to(u.core),
-            ram_needed=self.ram_buffer_per_user.to(u.MB).copy())
+    def update_cpu_needed(self):
+        self.cpu_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.core).set_label(
+            f"{self.name} CPU needed")
+
+    def update_ram_needed(self):
+        self.ram_needed = self.service.ram_buffer_per_user.copy().set_label(f"{self.name} RAM needed")

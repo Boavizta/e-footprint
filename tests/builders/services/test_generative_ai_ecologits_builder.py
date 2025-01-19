@@ -100,11 +100,11 @@ class TestGenAIModel(unittest.TestCase):
                 ram_needed=SourceValue(0 * u.GB)
             )
 
-    def test_active_parameters_extraction(self):
-        raise NotImplementedError
+    def test_initialization_for_all_possible_list_input_values(self):
+        for provider in GenAIModel.list_values()["provider"]:
+            for model_name in GenAIModel.conditional_list_values()["model_name"]["conditional_list_values"][provider]:
+                model = GenAIModel(name="Test GenAI", provider=provider, model_name=model_name, server=self.mock_server)
 
-    def test_total_parameters_extraction(self):
-        raise NotImplementedError
 
 if __name__ == "__main__":
     unittest.main()

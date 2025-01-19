@@ -1,15 +1,16 @@
 import re
+from copy import copy
 from typing import List
 from unittest import TestCase
 import os
 import json
 
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, get_instance_attributes
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
-from efootprint.core.hardware.network import Network
-from efootprint.core.system import System
+from efootprint.constants.units import u
 from efootprint.logger import logger
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -104,3 +105,30 @@ class IntegrationTestBaseClass(TestCase):
                                      f"Attribute {attr_key} label is not equal for {obj.name}")
 
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")
+
+    def _test_input_change(self, expl_attr, expl_attr_new_value, input_object, expl_attr_name):
+        expl_attr_new_value.label = expl_attr.label
+        logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to {expl_attr_new_value.value}")
+        system = input_object.systems[0]
+        input_object.__setattr__(expl_attr_name, expl_attr_new_value)
+        new_footprint = system.total_footprint
+        logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
+        self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
+        logger.info(f"Setting back {expl_attr_new_value.label} to {expl_attr}")
+        input_object.__setattr__(expl_attr_name, expl_attr)
+        self.assertTrue(system.total_footprint.value.equals(self.initial_footprint.value))
+
+    def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
+        if attrs_to_skip is None:
+            attrs_to_skip = []
+        logger.warning(f"Testing input variations on {input_object.name}")
+        for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
+            if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:
+
+                expl_attr_new_value = copy(expl_attr)
+                if special_mult and expl_attr_name in special_mult.keys():
+                    expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
+                else:
+                    expl_attr_new_value.value *= 100 * u.dimensionless
+
+                self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)

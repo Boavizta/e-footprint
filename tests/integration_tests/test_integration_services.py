@@ -1,13 +1,8 @@
-import json
-from copy import copy
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.gpu_server_builder import GPUServerBuilder
-from efootprint.builders.services.generative_ai_ecologits import GenAIModel
-from efootprint.builders.services.video_streaming import VideoStreamingService
+from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
+from efootprint.builders.services.video_streaming import VideoStreamingService, StreamingJob
 from efootprint.builders.services.web_application import WebApplicationService
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -68,11 +63,13 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
             "Web application service", cls.server, technology="php-symfony")
         cls.genai_service = GenAIModel("GenAI service", "openai", "gpt-3.5-turbo-1106", cls.gpu_server)
 
-        cls.video_streaming_job = cls.video_streaming_service.generate_job("720p (1280 x 720)", SourceValue(20 * u.min))
+        cls.video_streaming_job = StreamingJob(
+            cls.video_streaming_service, "720p (1280 x 720)", SourceValue(20 * u.min),
+            frames_per_second=cls.video_streaming_service.default_value("frames_per_second"))
         cls.web_application_job = cls.web_application_service.generate_job(
             "default", data_upload=SourceValue(300 * u.kB), data_download=SourceValue(1 * u.MB),
             data_stored=SourceValue(300 * u.kB))
-        cls.genai_job = cls.genai_service.generate_job(output_token_count=SourceValue(1000 * u.dimensionless))
+        cls.genai_job = GenAIJob(cls.genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
 
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube with genAI chat", user_time_spent=SourceValue(20 * u.min),
@@ -117,7 +114,12 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self.run_json_to_system_test(self.system)
 
     def test_variations_on_services_inputs(self):
-        raise NotImplementedError("This test should be implemented")
+        self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_cpu_consumption"],
+                                            special_mult={"base_ram_consumption": 57})
+        self._test_variations_on_obj_inputs(
+            self.genai_service, attrs_to_skip=["provider", "model_name", "base_cpu_consumption"],
+            special_mult={"llm_memory_factor": 3, "ram_per_gpu": 16})
+        self._test_variations_on_obj_inputs(self.web_application_service, attrs_to_skip=["technology"])
 
     def test_variations_on_services_inputs_after_json_to_system(self):
         raise NotImplementedError("This test should be implemented")

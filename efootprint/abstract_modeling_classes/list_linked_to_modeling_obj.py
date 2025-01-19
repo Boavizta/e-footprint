@@ -35,7 +35,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
             self.set_modeling_obj_container(None, None)
 
-        value_to_set = ContextualModelingObjectAttribute(value)
+        if (not isinstance(value, ContextualModelingObjectAttribute)
+                or (isinstance(value, ContextualModelingObjectAttribute) and value.modeling_obj_container is None)):
+            value_to_set = ContextualModelingObjectAttribute(value)
+        else:
+            value_to_set = value
         super().__setitem__(index, value_to_set)
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
@@ -47,7 +51,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
             self.set_modeling_obj_container(None, None)
 
-        value_to_set = ContextualModelingObjectAttribute(value)
+        if (not isinstance(value, ContextualModelingObjectAttribute)
+                or (isinstance(value, ContextualModelingObjectAttribute) and value.modeling_obj_container is None)):
+            value_to_set = ContextualModelingObjectAttribute(value)
+        else:
+            value_to_set = value
         super().append(value_to_set)
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
@@ -75,7 +83,11 @@ class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterIn
             ModelingUpdate([[self.return_copy_with_same_attributes(), copied_list]])
             self.set_modeling_obj_container(None, None)
 
-        value_to_set = ContextualModelingObjectAttribute(value)
+        if (not isinstance(value, ContextualModelingObjectAttribute)
+                or (isinstance(value, ContextualModelingObjectAttribute) and value.modeling_obj_container is None)):
+            value_to_set = ContextualModelingObjectAttribute(value)
+        else:
+            value_to_set = value
         super().insert(index, value_to_set)
         value_to_set.set_modeling_obj_container(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 

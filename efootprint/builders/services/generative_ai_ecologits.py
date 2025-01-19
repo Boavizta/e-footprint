@@ -42,7 +42,8 @@ class GenAIModel(Service):
 
     def __init__(self, name: str, provider: str, model_name: str, server: Server,
                  nb_of_bits_per_parameter: SourceValue = None, llm_memory_factor: SourceValue = None,
-                 gpu_latency_alpha: SourceValue = None, gpu_latency_beta: SourceValue = None):
+                 gpu_latency_alpha: SourceValue = None, gpu_latency_beta: SourceValue = None,
+                 bits_per_token: SourceValue = None):
         super().__init__(name=name, server=server)
         self.provider = SourceObject(provider, source=Sources.USER_DATA, label=f"{model_name} provider")
         self.model_name = SourceObject(model_name, source=Sources.USER_DATA, label=f"{provider} model used")
@@ -57,6 +58,7 @@ class GenAIModel(Service):
         self.llm_memory_factor = llm_memory_factor or self.default_value("llm_memory_factor")
         self.gpu_latentcy_alpha = gpu_latency_alpha or self.default_value("gpu_latency_alpha")
         self.gpu_latency_beta = gpu_latency_beta or self.default_value("gpu_latency_beta")
+        self.bits_per_token = bits_per_token or self.default_value("bits_per_token")
         self.active_params = EmptyExplainableObject()
         self.total_params = EmptyExplainableObject()
         self.nb_of_required_gpus_during_inference = EmptyExplainableObject()
@@ -112,27 +114,52 @@ class GenAIModel(Service):
         ).to(u.dimensionless).set_label(
             f"{self.name} nb of required GPUs during inference")
 
-    def generate_job(self, output_token_count: SourceValue, bits_per_token: SourceValue = None):
+
+class GenAIJob(Job):
+    def __init__(self, service: GenAIModel, output_token_count: SourceValue):
         """
         Create a Job object requesting the Gen AI model.
 
         Args:
+            service (GenAIModel): The Gen AI model to use for the job.
             output_token_count (SourceValue): The number of output tokens for the job.
-            bits_per_token (SourceValue): The number of bits per token. Default is 24 bits per token.
-
         Returns:
             Job: An object that represents the resources needed for the task.
         """
-        gpu_latency = output_token_count * (self.gpu_latentcy_alpha * self.active_params + self.gpu_latency_beta)
-        bits_per_token = bits_per_token or self.default_value("bits_per_token")
-        output_tokens_weight = output_token_count * bits_per_token
-
-        return Job(
-            f"request to {self.model_name} installed on {self.server.name}",
-            self.server,
+        super().__init__(
+            f"request to {service.model_name} installed on {service.server.name}",
+            service.server,
             data_upload=SourceValue(100 * u.kB),
-            data_stored=SourceValue(100 * u.kB) + output_tokens_weight,
-            data_download=SourceValue(100 * u.kB) + output_tokens_weight,
-            request_duration=gpu_latency,
-            cpu_needed=self.nb_of_required_gpus_during_inference * self.nb_of_cpu_cores_per_gpu,
+            data_stored=SourceValue(0 * u.kB),
+            data_download=SourceValue(0 * u.kB),
+            request_duration=SourceValue(0 * u.s),
+            cpu_needed=SourceValue(0 * u.core),
             ram_needed=SourceValue(0 * u.GB))
+        self.service = service
+        self.output_token_count = output_token_count
+        self.output_token_weights = EmptyExplainableObject()
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return (["output_token_weights", "data_stored", "data_download", "request_duration", "cpu_needed"]
+                + super().calculated_attributes)
+
+    def update_output_token_weights(self):
+        self.output_token_weights = (self.output_token_count * self.service.bits_per_token).to(u.kB).set_label(
+            f"{self.name} output token weights")
+
+    def update_data_stored(self):
+        self.data_stored = (SourceValue(100 * u.kB) + self.output_token_weights).set_label(f"{self.name} data stored")
+
+    def update_data_download(self):
+        self.data_download = (SourceValue(100 * u.kB) + self.output_token_weights).set_label(
+            f"{self.name} data download")
+
+    def update_request_duration(self):
+        gpu_latency = self.output_token_count * (
+            self.service.gpu_latentcy_alpha * self.service.active_params + self.service.gpu_latency_beta)
+        self.request_duration = gpu_latency.set_label(f"{self.name} request duration")
+
+    def update_cpu_needed(self):
+        self.cpu_needed = (self.service.nb_of_required_gpus_during_inference * self.service.nb_of_cpu_cores_per_gpu
+                           ).to(u.core).set_label(f"{self.name} CPU needed")
