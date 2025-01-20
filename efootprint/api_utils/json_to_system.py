@@ -4,7 +4,6 @@ import pytz
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.abstract_modeling_classes.modeling_object_generator import ModelingObjectGenerator
 from efootprint.core import CORE_CLASSES
 from efootprint.builders.services import SERVICE_CLASSES
 from efootprint.builders.hardware import HARDWARE_BUILDER_CLASSES
@@ -93,8 +92,6 @@ def json_to_system(system_dict):
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
             for mod_obj in class_obj_dict[obj_type].values():
-                if isinstance(mod_obj, ModelingObjectGenerator):
-                    mod_obj.compute_calculated_attributes()
                 if len(mod_obj.systems) == 0:
                     logger.warning(
                         f"{mod_obj.class_as_simple_str} {mod_obj.name} is not linked to any existing system so needs "

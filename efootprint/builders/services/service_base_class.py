@@ -1,10 +1,10 @@
 from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object_generator import ModelingObjectGenerator
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
-class Service(ModelingObjectGenerator):
+class Service(ModelingObject):
     def __init__(self, name, server):
         super().__init__(name=name)
         self.name = name
