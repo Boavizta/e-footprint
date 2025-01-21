@@ -17,12 +17,20 @@ class ModelingObjectForTesting(ModelingObject):
     def default_values(cls):
         return {}
 
-    def __init__(self, name, custom_input=None, custom_input2=None):
+    def __init__(self, name, custom_input: ObjectLinkedToModelingObj=None,
+                 custom_input2: ObjectLinkedToModelingObj=None, custom_list_input: ListLinkedToModelingObj=None,
+                 mod_obj_input1: ModelingObject=None, mod_obj_input2: ModelingObject=None):
         super().__init__(name)
-        if custom_input is not None:
+        if custom_input:
             self.custom_input = custom_input
-        if custom_input2 is not None:
+        if custom_input2:
             self.custom_input2 = custom_input2
+        if custom_list_input:
+            self.custom_list_input = custom_list_input
+        if mod_obj_input1:
+            self.mod_obj_input1 = mod_obj_input1
+        if mod_obj_input2:
+            self.mod_obj_input2 = mod_obj_input2
 
     @property
     def class_as_simple_str(self):
@@ -52,19 +60,19 @@ class TestModelingObject(unittest.TestCase):
         input_value = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.dimensionless))
         child_obj = ModelingObjectForTesting("child_object", custom_input=input_value)
-        parent_obj = ModelingObjectForTesting("parent_object", custom_input=child_obj)
+        parent_obj = ModelingObjectForTesting("parent_object", mod_obj_input1=child_obj)
 
-        self.assertEqual(child_obj, parent_obj.custom_input)
+        self.assertEqual(child_obj, parent_obj.mod_obj_input1)
         self.assertIn(parent_obj, child_obj.modeling_obj_containers)
 
-        parent_obj.custom_input = child_obj
-        self.assertEqual(child_obj, parent_obj.custom_input)
+        parent_obj.mod_obj_input1 = child_obj
+        self.assertEqual(child_obj, parent_obj.mod_obj_input1)
         self.assertIn(parent_obj, child_obj.modeling_obj_containers)
 
         child_obj.custom_input = SourceHourlyValues(
             create_hourly_usage_df_from_list([4, 5, 6], pint_unit=u.dimensionless))
 
-        self.assertEqual([4, 5, 6], parent_obj.custom_input.custom_input.value_as_float_list)
+        self.assertEqual([4, 5, 6], parent_obj.mod_obj_input1.custom_input.value_as_float_list)
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
     def test_input_change_triggers_modeling_update(self, mock_modeling_update):
@@ -140,11 +148,11 @@ class TestModelingObject(unittest.TestCase):
         val2 = MagicMock()
         val3 = MagicMock()
 
-        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=ListLinkedToModelingObj([val1, val2]))
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_list_input=ListLinkedToModelingObj([val1, val2]))
 
-        self.assertEqual(mod_obj.custom_input, [val1, val2])
-        mod_obj.custom_input += [val3]
-        self.assertEqual(mod_obj.custom_input, [val1, val2, val3])
+        self.assertEqual(mod_obj.custom_list_input, [val1, val2])
+        mod_obj.custom_list_input += [val3]
+        self.assertEqual(mod_obj.custom_list_input, [val1, val2, val3])
 
     def test_optimize_mod_objs_computation_chain_simple_case(self):
         mod_obj1 = MagicMock(id=1)
@@ -191,14 +199,14 @@ class TestModelingObject(unittest.TestCase):
     def test_mod_obj_attributes(self):
         attr1 = MagicMock(spec=ModelingObject, contextual_modeling_obj_containers=[])
         attr2 = MagicMock(spec=ModelingObject, contextual_modeling_obj_containers=[])
-        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=attr1, custom_input2=attr2)
+        mod_obj = ModelingObjectForTesting("test mod obj", mod_obj_input1=attr1, mod_obj_input2=attr2)
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)
 
     def test_to_json_correct_export_with_child(self):
         custom_input = MagicMock(spec=ExplainableObject)
         child_obj = ModelingObjectForTesting(name="child_object", custom_input=custom_input)
-        parent_obj = ModelingObjectForTesting(name="parent_object",custom_input=child_obj)
+        parent_obj = ModelingObjectForTesting(name="parent_object",mod_obj_input1=child_obj)
         parent_obj.trigger_modeling_updates = False
 
         parent_obj.none_attr = None
@@ -207,7 +215,7 @@ class TestModelingObject(unittest.TestCase):
 
         expected_json = {'name': 'parent_object',
              'id': parent_obj.id,
-             'custom_input': child_obj.id,
+             'mod_obj_input1': child_obj.id,
              'none_attr': None,
              'empty_list_attr': [],
              'source_value_attr': {'label': 'unnamed source',
@@ -220,8 +228,7 @@ class TestModelingObject(unittest.TestCase):
 
     def test_invalid_input_type_error(self):
         custom_input = MagicMock(spec=ExplainableObject)
-        child_obj = ModelingObjectForTesting(name="child_object", custom_input=custom_input)
-        parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=child_obj)
+        parent_obj = ModelingObjectForTesting(name="parent_object", custom_input=custom_input)
         parent_obj.trigger_modeling_updates = False
 
         with self.assertRaises(AssertionError):

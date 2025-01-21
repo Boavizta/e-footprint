@@ -37,6 +37,8 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_new_and_old_source_values_and_mod_obj_link_lists_wrong_input_types_raises_value_error(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         old_value = MagicMock(spec=ObjectLinkedToModelingObj)
+        old_value.modeling_obj_container = MagicMock()
+        old_value.attr_name_in_mod_obj_container = MagicMock()
         new_value = 1
 
         modeling_update.changes_list = [(old_value, new_value)]

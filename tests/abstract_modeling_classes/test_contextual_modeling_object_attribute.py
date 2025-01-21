@@ -11,10 +11,12 @@ class ModelingObjectForTesting(ModelingObject):
     def default_values(cls):
         return {}
 
-    def __init__(self, name, custom_input=None):
+    def __init__(self, name, custom_input: ObjectLinkedToModelingObj = None, mod_obj_input: ModelingObject = None):
         super().__init__(name)
         if custom_input is not None:
             self.custom_input = custom_input
+        if mod_obj_input is not None:
+            self.mod_obj_input = mod_obj_input
 
     def after_init(self):
         self.trigger_modeling_updates = False
@@ -45,11 +47,12 @@ class TestContextualModObjAttribute(unittest.TestCase):
         self.assertEqual([], contextual_attribute.systems)
 
     def test_works_when_setting_attr_to_variable(self):
-        custom_input = MagicMock(name="custom_input", spec=ObjectLinkedToModelingObj)
-        modeling_obj = ModelingObjectForTesting(name="test", custom_input=custom_input)
+        custom_input = MagicMock(name="mod obj input", spec=ModelingObject)
+        custom_input.contextual_modeling_obj_containers = []
+        modeling_obj = ModelingObjectForTesting(name="test", mod_obj_input=custom_input)
         other_modeling_obj = ModelingObjectForTesting(name="other")
 
-        modeling_obj.custom_input = other_modeling_obj
+        modeling_obj.mod_obj_input = other_modeling_obj
 
-        self.assertTrue(isinstance(modeling_obj.custom_input, ContextualModelingObjectAttribute))
-        self.assertEqual(modeling_obj.custom_input.modeling_obj_container, modeling_obj)
+        self.assertTrue(isinstance(modeling_obj.mod_obj_input, ContextualModelingObjectAttribute))
+        self.assertEqual(modeling_obj.mod_obj_input.modeling_obj_container, modeling_obj)

@@ -24,44 +24,75 @@ def get_implementation_details() -> List[str]:
 
 
 class WebApplicationService(Service):
-    _default_values = {}
+    @classmethod
+    def default_values(cls):
+        return {"technology": SourceValue("php-symphony")}
 
     @classmethod
     def list_values(cls):
-        return {"technology": get_ecobenchmark_technologies(),
-                "implementation_details": get_implementation_details()}
+        return {"technology": [SourceObject(technology) for technology in get_ecobenchmark_technologies()]}
 
     @classmethod
     def conditional_list_values(cls):
         return {}
 
-    def __init__(self, name, server: Server, technology: str):
+    def __init__(self, name, server: Server, technology: SourceObject):
         super().__init__(name, server)
-        self.technology = SourceObject(technology, ecobenchmark_source, f"Technology used in {self.name}")
+        self.technology = technology.set_label(f"Technology used in {self.name}")
 
-    def generate_job(self, name: str, data_upload: SourceValue, data_download: SourceValue,
-                     data_stored: SourceValue, implementation_details: str = "default"):
+
+class WebApplicationJob(Job):
+    @classmethod
+    def default_values(cls):
+        return {
+            "data_upload": SourceValue(200 * u.kB),
+            "data_download": SourceValue(2 * u.MB),
+            "data_stored": SourceValue(100 * u.kB),
+            "implementation_details": SourceObject("default"),
+        }
+
+    @classmethod
+    def list_values(cls):
+        return {"implementation_details": [
+            SourceObject(implementation_detail) for implementation_detail in get_implementation_details()]}
+
+    def __init__(self, name: str, service: WebApplicationService, data_upload: SourceValue, data_download: SourceValue,
+                     data_stored: SourceValue, implementation_details: SourceObject):
+        super().__init__(
+            name, service.server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
+            cpu_needed=SourceValue(0 * u.core), ram_needed=SourceValue(0 * u.GB))
+        self.service = service
+        self.implementation_details = implementation_details.set_label(f"{self.name} implementation details")
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return ["cpu_needed", "ram_needed"] + super().calculated_attributes
+
+    def update_cpu_needed(self):
         filter_df = ECOBENCHMARK_DF[
-            (ECOBENCHMARK_DF['service'] == self.technology.value) & (ECOBENCHMARK_DF['use_case'] == implementation_details)]
+            (ECOBENCHMARK_DF['service'] == self.service.technology.value)
+            & (ECOBENCHMARK_DF['use_case'] == self.implementation_details.value)]
         tech_row = filter_df.iloc[0]
 
-        cpu_needed = ExplainableQuantity(
+        self.cpu_needed = ExplainableQuantity(
             tech_row['avg_cpu_core_per_request'] * u.core, "",
-            right_parent=self.technology,
-            left_parent=SourceObject(implementation_details, ecobenchmark_source, f"{name} implementation details"),
+            right_parent=self.service.technology,
+            left_parent=self.implementation_details,
             operator="query CPU Ecobenchmark data with",
             source=ecobenchmark_source)
 
-        ram_needed = ExplainableQuantity(
+    def update_ram_needed(self):
+        filter_df = ECOBENCHMARK_DF[
+            (ECOBENCHMARK_DF['service'] == self.service.technology.value)
+            & (ECOBENCHMARK_DF['use_case'] == self.implementation_details.value)]
+        tech_row = filter_df.iloc[0]
+
+        self.ram_needed = ExplainableQuantity(
             tech_row['avg_ram_per_request_in_MB'] * u.MB, label="",
-            right_parent=self.technology,
-            left_parent=SourceObject(implementation_details, ecobenchmark_source, f"{name} implementation details"),
+            right_parent=self.service.technology,
+            left_parent=self.implementation_details,
             operator="query RAM Ecobenchmark data with",
             source=ecobenchmark_source)
-
-        return Job(
-            name, self.server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
-            cpu_needed=cpu_needed, ram_needed=ram_needed)
 
 
 class JobTypes:

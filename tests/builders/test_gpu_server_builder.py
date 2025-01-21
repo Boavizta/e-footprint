@@ -3,12 +3,12 @@ from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.builders.hardware.gpu_server_builder import GPUServerBuilder
+from efootprint.builders.hardware.gpu_server_builder import GPUServer
 
-class TestGPUServerBuilder(unittest.TestCase):
+class TestGPUServer(unittest.TestCase):
 
     def setUp(self):
-        self.builder = GPUServerBuilder("Test GPU Server Builder")
+        self.builder = GPUServer("Test GPU Server Builder")
 
     def test_initialization(self):
         self.assertEqual(self.builder.gpu_power.value, 400 * u.W)

@@ -91,6 +91,9 @@ class ModelingUpdate:
             if new_value is None:
                 assert isinstance(old_value, ExplainableObject)
                 self.changes_list[index][1] = EmptyExplainableObject()
+            else:
+                old_value.modeling_obj_container.check_input_value_type_and_unit(
+                    old_value.attr_name_in_mod_obj_container, new_value)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj

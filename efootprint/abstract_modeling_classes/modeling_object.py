@@ -1,15 +1,16 @@
 import uuid
 from abc import ABCMeta, abstractmethod
-from copy import copy
+from inspect import signature
 from typing import List, Type
 import os
 import re
 
 from IPython.display import HTML
 
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.logger import logger
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    retrieve_update_function_from_mod_obj_and_attr_name
+from efootprint.abstract_modeling_classes.explainable_object_base_class import (
+    retrieve_update_function_from_mod_obj_and_attr_name)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
@@ -160,12 +161,27 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.contextual_modeling_obj_containers = []
 
+    def check_input_value_type_and_unit(self, name, input_value):
+        init_sig_params = signature(self.__init__).parameters
+        if name in init_sig_params.keys():
+            annotation = init_sig_params[name].annotation
+            if issubclass(annotation, list):
+                a = 1
+            elif not isinstance(input_value, annotation):
+                raise PermissionError(f"Value {input_value} for attribute {name} should be of type {annotation} "
+                                      f"but is of type {type(input_value)}")
+            elif issubclass(annotation, ExplainableQuantity):
+                if not input_value.value.check(self.default_value(name).value.units):
+                    raise ValueError(
+                        f"Value {input_value} for attribute {name} is not homogeneous to required unit"
+                        f" {self.default_value(name).value.units}")
+
     def check_belonging_to_authorized_values(self, name, input_value):
         if name in self.list_values().keys():
             if input_value not in self.list_values()[name]:
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values: "
-                    f"{self.list_values()[name]}")
+                    f"{[elt.value for elt in self.list_values()[name]]}")
 
         if name in self.conditional_list_values().keys():
             conditional_attr_name = self.conditional_list_values()[name]['depends_on']
@@ -271,6 +287,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
+            self.check_input_value_type_and_unit(name, input_value)
             self.check_belonging_to_authorized_values(name, input_value)
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):

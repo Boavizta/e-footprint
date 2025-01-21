@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from efootprint.builders.hardware.gpu_server_builder import GPUServerBuilder
+from efootprint.builders.hardware.gpu_server_builder import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreamingService, StreamingJob
 from efootprint.builders.services.web_application import WebApplicationService
@@ -52,7 +52,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
             storage=cls.storage
         )
         
-        cls.gpu_server_builder = GPUServerBuilder("GPU server builder")
+        cls.gpu_server_builder = GPUServer("GPU server builder")
         cls.gpu_server = cls.gpu_server_builder.generate_gpu_server(
             "GPU server", "OnPremise", average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             nb_gpus_per_instance=SourceValue(4 * u.dimensionless, Sources.HYPOTHESIS),
