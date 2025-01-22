@@ -13,6 +13,17 @@ from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_
 
 
 class Job(ModelingObject):
+    @classmethod
+    def default_values(cls):
+        return {
+            "data_upload": SourceValue(150 * u.kB),
+            "data_download": SourceValue(2 * u.MB),
+            "data_stored": SourceValue(100 * u.kB),
+            "request_duration": SourceValue(1 * u.s),
+            "cpu_needed": SourceValue(0.1 * u.core),
+            "ram_needed": SourceValue(50 * u.MB)
+        }
+
     def __init__(self, name: str, server: Server, data_upload: SourceValue,
                  data_download: SourceValue, data_stored: SourceValue, request_duration: SourceValue,
                  cpu_needed: SourceValue, ram_needed: SourceValue):
@@ -27,30 +38,16 @@ class Job(ModelingObject):
         self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
         self.server = ContextualModelingObjectAttribute(server)
-        if not data_upload.value.check("[]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
-        elif data_upload.value.magnitude < 0:
+        if data_upload.value.magnitude < 0:
             raise ValueError(f"Variable 'data_upload' must be greater than 0, got {data_upload.value}")
         self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
-        if not data_download.value.check("[]"):
-            raise ValueError("Variable 'data_download' does not have the appropriate '[]' dimensionality")
-        elif data_download.value.magnitude < 0:
+        if data_download.value.magnitude < 0:
             raise ValueError(f"Variable 'data_download' must be greater than 0, got {data_download.value}")
         self.data_download = data_download.set_label(f"Data download of request {self.name}")
-        if not data_stored.value.check("[]"):
-            raise ValueError("Variable 'data_stored' does not have the appropriate '[]' dimensionality")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
-        if not request_duration.value.check("[time]"):
-            raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
         self.request_duration = request_duration.set_label(f"Request duration of {self.name} to {server.name}")
-        if not ram_needed.value.check("[]"):
-            raise ValueError(
-                "Variable 'ram_needed' does not have the appropriate '[]' dimensionality")
         self.ram_needed = ram_needed.set_label(
             f"RAM needed on server {self.server.name} to process {self.name}")
-        if not cpu_needed.value.check("[cpu]"):
-            raise ValueError(
-                "Variable 'cpu_needed' does not have the appropriate '[cpu]' dimensionality")
         self.cpu_needed = cpu_needed.set_label(
             f"CPU needed on server {self.server.name} to process {self.name}")
 

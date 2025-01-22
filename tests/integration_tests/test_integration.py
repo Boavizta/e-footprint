@@ -8,6 +8,7 @@ from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.core import Hardware
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -22,7 +23,6 @@ from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.builders.hardware.devices_defaults import default_laptop, default_screen
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
@@ -81,11 +81,12 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
+            "Youtube usage in France", cls.uj, [Hardware.laptop()], cls.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
-        # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary calculations
+        # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
+        # calculations
         cls.usage_pattern.id = "uuid" + cls.usage_pattern.id[9:]
 
         cls.system = System("system 1", [cls.usage_pattern])
@@ -179,9 +180,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
-        self.usage_pattern.devices = [default_laptop(), default_screen()]
+        self.usage_pattern.devices = [Hardware.laptop(), Hardware.screen()]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        up_laptop_with_normalized_id = default_laptop()
+        up_laptop_with_normalized_id = Hardware.laptop()
         up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))

@@ -66,7 +66,6 @@ class Server(InfraHardware):
         self.hour_by_hour_ram_need = EmptyExplainableObject()
         self.available_cpu_per_instance = EmptyExplainableObject()
         self.available_ram_per_instance = EmptyExplainableObject()
-        self.server_utilization_rate = EmptyExplainableObject()
         self.raw_nb_of_instances = EmptyExplainableObject()
         self.nb_of_instances = EmptyExplainableObject()
         self.occupied_ram_per_instance = EmptyExplainableObject()
@@ -75,32 +74,14 @@ class Server(InfraHardware):
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")
-        if not power_usage_effectiveness.value.check("[]"):
-            raise ValueError(
-                "Value of variable 'power_usage_effectiveness' does not have appropriate [] dimensionality")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
-        if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
-            raise ValueError(
-                "Variable 'average_carbon_intensity' does not have mass over energy "
-                "('[time]**2 / [length]**2') dimensionality"
-            )
         self.average_carbon_intensity = average_carbon_intensity
         if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
         self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
-        if not base_ram_consumption.value.check("[]"):
-            raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
-        if not base_cpu_consumption.value.check("[cpu]"):
-            raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
-        self.fixed_nb_of_instances = fixed_nb_of_instances or EmptyExplainableObject()
-        if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
-            assert self.server_type.value == ServerTypes.on_premise(), \
-                "Fixed number of instances can only be defined for on-premise servers"
-            if not fixed_nb_of_instances.value.check("[]"):
-                raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
-        self.fixed_nb_of_instances.set_label(
+        self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.dimensionless)
         self.storage = ContextualModelingObjectAttribute(storage)
 

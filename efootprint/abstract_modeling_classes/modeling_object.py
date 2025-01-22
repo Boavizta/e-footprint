@@ -1,7 +1,7 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 from inspect import signature
-from typing import List, Type
+from typing import List, Type, get_origin, get_args
 import os
 import re
 
@@ -155,6 +155,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return cls(name, **output_kwargs)
 
+    @classmethod
+    def archetypes(cls):
+        return []
+
     def __init__(self, name):
         self.trigger_modeling_updates = False
         self.name = name
@@ -165,8 +169,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         init_sig_params = signature(self.__init__).parameters
         if name in init_sig_params.keys():
             annotation = init_sig_params[name].annotation
-            if issubclass(annotation, list):
-                a = 1
+            if get_origin(annotation):
+                if get_origin(annotation) in (list, List):
+                    inner_type = get_args(annotation)[0]
+                    if not all(isinstance(item, inner_type) for item in input_value):
+                        raise ValueError(f"All elements in '{name}' must be instances of {inner_type.__name__}, "
+                                         f"got {[type(item) for item in input_value]}")
             elif not isinstance(input_value, annotation):
                 raise PermissionError(f"Value {input_value} for attribute {name} should be of type {annotation} "
                                       f"but is of type {type(input_value)}")

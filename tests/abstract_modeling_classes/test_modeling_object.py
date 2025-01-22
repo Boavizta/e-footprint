@@ -18,7 +18,7 @@ class ModelingObjectForTesting(ModelingObject):
         return {}
 
     def __init__(self, name, custom_input: ObjectLinkedToModelingObj=None,
-                 custom_input2: ObjectLinkedToModelingObj=None, custom_list_input: ListLinkedToModelingObj=None,
+                 custom_input2: ObjectLinkedToModelingObj=None, custom_list_input: list=None,
                  mod_obj_input1: ModelingObject=None, mod_obj_input2: ModelingObject=None):
         super().__init__(name)
         if custom_input:

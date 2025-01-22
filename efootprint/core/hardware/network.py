@@ -3,17 +3,34 @@ from typing import List
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 
 
 class Network(ModelingObject):
+    @classmethod
+    def default_values(cls):
+        return {
+            "bandwidth_energy_intensity": SourceValue(0.1 * u.kWh / u.GB)
+        }
+
+    @classmethod
+    def wifi_network(cls, name: str = "Default wifi network"):
+        return cls(
+            name=name, bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+
+    @classmethod
+    def mobile_network(cls, name: str = "Default mobile network"):
+        return cls(
+            name=name, bandwidth_energy_intensity=SourceValue(0.12 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+
+    @classmethod
+    def archetypes(cls):
+        return [cls.wifi_network, cls.mobile_network]
+
     def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
         super().__init__(name)
         self.energy_footprint = EmptyExplainableObject()
-        if not bandwidth_energy_intensity.value.check("[energy]/[]"):
-            raise ValueError(
-                "Value of variable 'bandwidth_energy_intensity' does not have the appropriate "
-                "'energy/data transfer' dimensionality")
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
             f"bandwith energy intensity of {self.name}")
 

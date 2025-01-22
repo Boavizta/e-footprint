@@ -18,6 +18,19 @@ class Storage(InfraHardware):
     @classmethod
     def default_values(cls):
         return {
+            "carbon_footprint_fabrication": SourceValue(160 * u.kg),
+            "power": SourceValue(1.3 * u.W),
+            "lifespan": SourceValue(6 * u.years),
+            "idle_power": SourceValue(0 * u.W),
+            "storage_capacity": SourceValue(1 * u.TB),
+            "data_replication_factor": SourceValue(3 * u.dimensionless),
+            "base_storage_need": SourceValue(0 * u.TB),
+            "data_storage_duration": SourceValue(5 * u.year)
+        }
+
+    @classmethod
+    def ssd(cls, name="Default SSD storage", **kwargs):
+        output_args = {
             "carbon_footprint_fabrication": SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "power": SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years, Sources.HYPOTHESIS),
@@ -28,6 +41,31 @@ class Storage(InfraHardware):
             "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
         }
 
+        output_args.update(kwargs)
+
+        return cls(name, **output_args)
+
+    @classmethod
+    def hdd(cls, name="Default HDD storage", **kwargs):
+        output_args = {
+            "carbon_footprint_fabrication": SourceValue(20 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power": SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "lifespan": SourceValue(4 * u.years, Sources.HYPOTHESIS),
+            "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
+            "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
+        }
+
+        output_args.update(kwargs)
+
+        return cls(name, **output_args)
+
+    @classmethod
+    def archetypes(cls):
+        return [cls.ssd, cls.hdd]
+
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
@@ -37,30 +75,12 @@ class Storage(InfraHardware):
         self.storage_delta = EmptyExplainableObject()
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.nb_of_active_instances = EmptyExplainableObject()
-        if not idle_power.value.check("[power]"):
-            raise ValueError("Value of variable 'idle_power' does not have appropriate power dimensionality")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
-        if not storage_capacity.value.check("[]"):
-            raise ValueError("Value of variable 'storage_capacity' does not have appropriate [] dimensionality")
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
-        if not data_replication_factor.value.check("[]"):
-            raise ValueError("Value of variable 'data_replication_factor' does not have appropriate [] dimensionality")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor of {self.name}")
-        if not data_storage_duration.value.check("[time]"):
-            raise ValueError("Value of variable 'data_storage_duration' does not have appropriate time dimensionality")
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration of {self.name}")
-        if not base_storage_need.value.check("[]"):
-            raise ValueError(
-                "Value of variable 'base_storage_need' does not have the appropriate"
-                " '[]' dimensionality")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
-        self.fixed_nb_of_instances = fixed_nb_of_instances
-        if self.fixed_nb_of_instances is not None:
-            if not fixed_nb_of_instances.value.check("[]"):
-                raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
-        else:
-            self.fixed_nb_of_instances = EmptyExplainableObject()
-        self.fixed_nb_of_instances.set_label(
+        self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.dimensionless)
 
     @property
