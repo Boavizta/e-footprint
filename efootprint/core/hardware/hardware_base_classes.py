@@ -74,8 +74,8 @@ class Hardware(ModelingObject):
     def archetypes(cls):
         return [cls.smartphone, cls.laptop, cls.box, cls.screen]
 
-    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, fraction_of_usage_time: SourceValue):
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
+                 lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
         super().__init__(name)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
             f"Carbon footprint fabrication of {self.name}")
@@ -93,7 +93,8 @@ class Hardware(ModelingObject):
 
 
 class InfraHardware(Hardware):
-    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue, lifespan: SourceValue):
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
+                 lifespan: ExplainableQuantity):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
         self.raw_nb_of_instances = EmptyExplainableObject()

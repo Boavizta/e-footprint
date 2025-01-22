@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -13,8 +14,8 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 class TestInfraHardware(TestCase):
     def setUp(self):
         class InfraHardwareTestClass(InfraHardware):
-            def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                         lifespan: SourceValue):
+            def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
+                         power: ExplainableQuantity, lifespan: ExplainableQuantity):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan)
 
             def update_raw_nb_of_instances(self):

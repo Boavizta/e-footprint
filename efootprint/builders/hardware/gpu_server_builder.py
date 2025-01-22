@@ -1,5 +1,5 @@
-from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
@@ -38,13 +38,14 @@ class GPUServer(Server):
     def conditional_list_values(cls):
         return {}
     
-    def __init__(self, name: str, server_type: SourceObject,  gpu_power: SourceValue, gpu_idle_power: SourceValue, 
-                 ram_per_gpu: SourceValue, carbon_footprint_fabrication_one_gpu: SourceValue,
-                 average_carbon_intensity: SourceValue, nb_gpus_per_instance: SourceValue,
-                 carbon_footprint_fabrication_without_gpu: SourceValue, lifespan: SourceValue,
-                 power_usage_effectiveness: SourceValue, server_utilization_rate: SourceValue,
-                 base_cpu_consumption: SourceValue, base_ram_consumption: SourceValue, storage: Storage,
-                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
+    def __init__(self, name: str, server_type: ExplainableObject,  gpu_power: ExplainableQuantity,
+                 gpu_idle_power: ExplainableQuantity, ram_per_gpu: ExplainableQuantity,
+                 carbon_footprint_fabrication_one_gpu: ExplainableQuantity,
+                 average_carbon_intensity: ExplainableQuantity, nb_gpus_per_instance: ExplainableQuantity,
+                 carbon_footprint_fabrication_without_gpu: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 power_usage_effectiveness: ExplainableQuantity, server_utilization_rate: ExplainableQuantity,
+                 base_cpu_consumption: ExplainableQuantity, base_ram_consumption: ExplainableQuantity, storage: Storage,
+                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power=SourceValue(0 * u.W), ram=SourceValue(0 * u.GB),

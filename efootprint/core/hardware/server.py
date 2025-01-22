@@ -5,6 +5,7 @@ import pandas as pd
 import pint_pandas
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, \
     EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -55,12 +56,13 @@ class Server(InfraHardware):
             ServerTypes.serverless(): [EmptyExplainableObject()]}
         }}
 
-    def __init__(self, name: str, server_type: SourceObject, carbon_footprint_fabrication: SourceValue,
-                 power: SourceValue, lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue,
-                 cpu_cores: SourceValue, power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
-                 server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
-                 base_cpu_consumption: SourceValue, storage: Storage,
-                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
+    def __init__(self, name: str, server_type: ExplainableObject, carbon_footprint_fabrication: ExplainableQuantity,
+                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
+                 ram: ExplainableQuantity, cpu_cores: ExplainableQuantity,
+                 power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
+                 server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 base_cpu_consumption: ExplainableQuantity, storage: Storage,
+                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.hour_by_hour_cpu_need = EmptyExplainableObject()
         self.hour_by_hour_ram_need = EmptyExplainableObject()

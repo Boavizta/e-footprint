@@ -66,11 +66,11 @@ class Storage(InfraHardware):
     def archetypes(cls):
         return [cls.ssd, cls.hdd]
 
-    def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
-                 data_replication_factor: SourceValue, data_storage_duration: SourceValue,
-                 base_storage_need: SourceValue,
-                 fixed_nb_of_instances: SourceValue | EmptyExplainableObject = None):
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
+                 lifespan: ExplainableQuantity, idle_power: ExplainableQuantity, storage_capacity: ExplainableQuantity,
+                 data_replication_factor: ExplainableQuantity, data_storage_duration: ExplainableQuantity,
+                 base_storage_need: ExplainableQuantity,
+                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.storage_delta = EmptyExplainableObject()
         self.full_cumulative_storage_need = EmptyExplainableObject()

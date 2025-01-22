@@ -2,6 +2,7 @@ from typing import List
 
 import pandas as pd
 
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source, SourceObject
 from efootprint.builders.services.service_base_class import Service
@@ -36,7 +37,7 @@ class WebApplicationService(Service):
     def conditional_list_values(cls):
         return {}
 
-    def __init__(self, name, server: Server, technology: SourceObject):
+    def __init__(self, name, server: Server, technology: ExplainableObject):
         super().__init__(name, server)
         self.technology = technology.set_label(f"Technology used in {self.name}")
 
@@ -56,8 +57,9 @@ class WebApplicationJob(Job):
         return {"implementation_details": [
             SourceObject(implementation_detail) for implementation_detail in get_implementation_details()]}
 
-    def __init__(self, name: str, service: WebApplicationService, data_upload: SourceValue, data_download: SourceValue,
-                     data_stored: SourceValue, implementation_details: SourceObject):
+    def __init__(self, name: str, service: WebApplicationService, data_upload: ExplainableQuantity,
+                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
+                 implementation_details: ExplainableObject):
         super().__init__(
             name, service.server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
             cpu_needed=SourceValue(0 * u.core), ram_needed=SourceValue(0 * u.GB))

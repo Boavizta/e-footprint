@@ -20,8 +20,9 @@ class VideoStreamingService(Service):
             "ram_buffer_per_user": SourceValue(50 * u.MB, source=Sources.HYPOTHESIS),
             }
 
-    def __init__(self, name: str, server: Server, base_ram_consumption: SourceValue,
-                 bits_per_pixel: SourceValue, static_delivery_cpu_cost: SourceValue, ram_buffer_per_user: SourceValue):
+    def __init__(self, name: str, server: Server, base_ram_consumption: ExplainableQuantity,
+                 bits_per_pixel: ExplainableQuantity, static_delivery_cpu_cost: ExplainableQuantity,
+                 ram_buffer_per_user: ExplainableQuantity):
         super().__init__(name, server)
         self.base_ram_consumption = base_ram_consumption.set_label(
             f"{self.name} OS and streaming software base RAM consumption")
@@ -47,8 +48,8 @@ class StreamingJob(Job):
             SourceObject("4K (3840 x 2160)"), SourceObject("8K (7680 x 4320)")]
         }
 
-    def __init__(self, name: str, service: VideoStreamingService, resolution: SourceObject,
-                 video_watch_duration: SourceValue, frames_per_second: SourceValue):
+    def __init__(self, name: str, service: VideoStreamingService, resolution: ExplainableObject,
+                 video_watch_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
                          service.server, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
                          video_watch_duration, SourceValue(0 * u.core), SourceValue(0 * u.GB))

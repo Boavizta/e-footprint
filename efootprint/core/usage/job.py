@@ -24,9 +24,10 @@ class Job(ModelingObject):
             "ram_needed": SourceValue(50 * u.MB)
         }
 
-    def __init__(self, name: str, server: Server, data_upload: SourceValue,
-                 data_download: SourceValue, data_stored: SourceValue, request_duration: SourceValue,
-                 cpu_needed: SourceValue, ram_needed: SourceValue):
+    def __init__(self, name: str, server: Server, data_upload: ExplainableQuantity,
+                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
+                 request_duration: ExplainableQuantity, cpu_needed: ExplainableQuantity,
+                 ram_needed: ExplainableQuantity):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()

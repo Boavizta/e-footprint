@@ -1,6 +1,6 @@
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
@@ -28,7 +28,7 @@ class Network(ModelingObject):
     def archetypes(cls):
         return [cls.wifi_network, cls.mobile_network]
 
-    def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
+    def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
         self.energy_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(

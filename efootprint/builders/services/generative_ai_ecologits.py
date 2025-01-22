@@ -3,6 +3,7 @@ from typing import List
 from ecologits.model_repository import ModelRepository
 from ecologits.utils.range_value import RangeValue
 
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import Source, SourceValue, Sources, SourceObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.builders.hardware.gpu_server_builder import GPUServer
@@ -41,9 +42,9 @@ class GenAIModel(Service):
 
         return {"model_name": {"depends_on": "provider", "conditional_list_values": values}}
 
-    def __init__(self, name: str, provider: SourceObject, model_name: SourceObject, server: GPUServer,
-                 nb_of_bits_per_parameter: SourceValue, llm_memory_factor: SourceValue,
-                 gpu_latency_alpha: SourceValue, gpu_latency_beta: SourceValue, bits_per_token: SourceValue):
+    def __init__(self, name: str, provider: ExplainableObject, model_name: ExplainableObject, server: GPUServer,
+                 nb_of_bits_per_parameter: ExplainableQuantity, llm_memory_factor: ExplainableQuantity,
+                 gpu_latency_alpha: ExplainableQuantity, gpu_latency_beta: ExplainableQuantity, bits_per_token: ExplainableQuantity):
         super().__init__(name=name, server=server)
         self.provider = provider.set_label(f"{model_name} provider")
         self.model_name = model_name.set_label(f"{provider} model used")
@@ -116,7 +117,7 @@ class GenAIJob(Job):
             "output_token_count": SourceValue(1000 * u.dimensionless)
         }
 
-    def __init__(self, name: str, service: GenAIModel, output_token_count: SourceValue):
+    def __init__(self, name: str, service: GenAIModel, output_token_count: ExplainableQuantity):
         """
         Create a Job object requesting the Gen AI model.
 
