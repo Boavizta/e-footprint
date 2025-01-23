@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
     EmptyExplainableObject, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.hardware_base_classes import InfraHardware
+from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage

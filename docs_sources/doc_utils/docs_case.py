@@ -1,7 +1,7 @@
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.hardware.storage_defaults import default_ssd
-from efootprint.core.hardware.hardware_base_classes import Hardware
+from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.job import Job

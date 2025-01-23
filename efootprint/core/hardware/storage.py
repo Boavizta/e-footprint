@@ -7,7 +7,7 @@ import pint_pandas
 
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.hardware_base_classes import InfraHardware
+from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue

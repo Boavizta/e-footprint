@@ -6,7 +6,7 @@ from efootprint.builders.services.video_streaming import VideoStreaming, VideoSt
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
-from efootprint.core.hardware.hardware_base_classes import Hardware
+from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.server import Server, ServerTypes

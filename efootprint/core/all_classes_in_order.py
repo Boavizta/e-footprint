@@ -1,6 +1,6 @@
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.hardware.hardware_base_classes import Hardware
+from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.country import Country
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.storage import Storage

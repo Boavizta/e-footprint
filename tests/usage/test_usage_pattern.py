@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.core.hardware.hardware_base_classes import Hardware
+from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.builders.time_builders import create_random_hourly_usage_df, create_hourly_usage_df_from_list
 from efootprint.constants.units import u
