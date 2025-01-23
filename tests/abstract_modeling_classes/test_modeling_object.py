@@ -197,8 +197,8 @@ class TestModelingObject(unittest.TestCase):
                          optimize_mod_objs_computation_chain(attributes_computation_chain))
 
     def test_mod_obj_attributes(self):
-        attr1 = MagicMock(spec=ModelingObject, contextual_modeling_obj_containers=[])
-        attr2 = MagicMock(spec=ModelingObject, contextual_modeling_obj_containers=[])
+        attr1 = MagicMock(spec=ModelingObject)
+        attr2 = MagicMock(spec=ModelingObject)
         mod_obj = ModelingObjectForTesting("test mod obj", mod_obj_input1=attr1, mod_obj_input2=attr2)
 
         self.assertEqual([attr1, attr2], mod_obj.mod_obj_attributes)

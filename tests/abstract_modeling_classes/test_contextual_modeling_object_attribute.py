@@ -48,7 +48,6 @@ class TestContextualModObjAttribute(unittest.TestCase):
 
     def test_works_when_setting_attr_to_variable(self):
         custom_input = MagicMock(name="mod obj input", spec=ModelingObject)
-        custom_input.contextual_modeling_obj_containers = []
         modeling_obj = ModelingObjectForTesting(name="test", mod_obj_input=custom_input)
         other_modeling_obj = ModelingObjectForTesting(name="other")
 

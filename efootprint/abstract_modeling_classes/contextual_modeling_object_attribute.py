@@ -9,7 +9,7 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
             self._value = value._value
         else:
             self._value = value
-        self._value.contextual_modeling_obj_containers.append(self)
+        self._value.add_to_contextual_modeling_obj_containers(self)
         self.modeling_obj_container = modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name_in_mod_obj_container
 

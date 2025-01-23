@@ -88,15 +88,16 @@ class System(ModelingObject):
         self.trigger_modeling_updates = True
 
     def get_objects_linked_to_usage_patterns(self, usage_patterns: List[UsagePattern]):
-        output_list = self.servers_from_usage_patterns(usage_patterns) + \
-                      self.storages_from_usage_patterns(usage_patterns) + usage_patterns + \
+        output_list =  self.storages_from_usage_patterns(usage_patterns) + usage_patterns + \
                       self.networks_from_usage_patterns(usage_patterns)
         user_journeys = list(set([up.user_journey for up in usage_patterns]))
         uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
-        all_modeling_objects = output_list + user_journeys + uj_steps + jobs + devices + countries
+        servers = self.servers_from_usage_patterns(usage_patterns)
+        services = list(set(sum([server.installed_services for server in servers], start=[])))
+        all_modeling_objects = output_list + user_journeys + uj_steps + jobs + devices + countries + servers + services
 
         return all_modeling_objects
 

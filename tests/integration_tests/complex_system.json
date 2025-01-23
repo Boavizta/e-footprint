@@ -487,15 +487,6 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
-                "label": "Server 1 utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_type": {
                 "label": "Server type of Server 1 from hypothesis",
                 "value": "autoscaling",
@@ -544,6 +535,15 @@
                 "label": "unnamed source from hypothesis",
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "Server 1 utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -612,15 +612,6 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
-                "label": "Server 2 utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_type": {
                 "label": "Server type of Server 2 from hypothesis",
                 "value": "on-premise",
@@ -665,6 +656,15 @@
                 "label": "unnamed source from hypothesis",
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "Server 2 utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -733,15 +733,6 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
-                "label": "TikTok Analytics server utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_type": {
                 "label": "Server type of TikTok Analytics server from hypothesis",
                 "value": "serverless",
@@ -790,6 +781,15 @@
                 "label": "unnamed source from hypothesis",
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "TikTok Analytics server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
                     "link": null

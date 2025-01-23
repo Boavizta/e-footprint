@@ -2,20 +2,20 @@ from datetime import datetime
 
 from efootprint.builders.hardware.gpu_server_builder import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
-from efootprint.builders.services.video_streaming import VideoStreamingService, StreamingJob
-from efootprint.builders.services.web_application import WebApplicationService
+from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
+from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
+from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
+from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.builders.hardware.devices_defaults import default_laptop
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
@@ -23,53 +23,38 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 class ServiceIntegrationTest(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
-        cls.storage = Storage(
+        cls.storage = Storage.ssd(
             "Web server storage",
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB),
             fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
-        cls.server = Autoscaling(
+        cls.server = Server.from_defaults(
             "Web server",
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(128 * u.GB, Sources.USER_DATA),
-            cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
+            server_type=ServerTypes.on_premise(),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
             storage=cls.storage
         )
         
-        cls.gpu_server_builder = GPUServer("GPU server builder")
-        cls.gpu_server = cls.gpu_server_builder.generate_gpu_server(
-            "GPU server", "OnPremise", average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            nb_gpus_per_instance=SourceValue(4 * u.dimensionless, Sources.HYPOTHESIS),
-            fixed_nb_of_instances=SourceValue(70 * u.dimensionless, Sources.HYPOTHESIS))
-                                                                    
-        cls.video_streaming_service = VideoStreamingService("Youtube streaming service", cls.server)
-        cls.web_application_service = WebApplicationService(
-            "Web application service", cls.server, technology="php-symfony")
-        cls.genai_service = GenAIModel("GenAI service", "openai", "gpt-3.5-turbo-1106", cls.gpu_server)
+        cls.gpu_server = GPUServer.from_defaults("GPU server", storage=Storage.ssd())
 
-        cls.video_streaming_job = StreamingJob(
-            cls.video_streaming_service, "720p (1280 x 720)", SourceValue(20 * u.min),
-            frames_per_second=cls.video_streaming_service.default_value("frames_per_second"))
-        cls.web_application_job = cls.web_application_service.generate_job(
-            "default", data_upload=SourceValue(300 * u.kB), data_download=SourceValue(1 * u.MB),
-            data_stored=SourceValue(300 * u.kB))
-        cls.genai_job = GenAIJob(cls.genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
+        cls.video_streaming_service = VideoStreaming.from_defaults(
+            "Youtube streaming service", server=cls.server)
+        cls.web_application_service = WebApplication(
+            "Web application service", cls.server, technology=SourceObject("php-symfony"))
+        cls.genai_service = GenAIModel.from_defaults(
+            "GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"),
+            server=cls.gpu_server)
+
+        cls.video_streaming_job = VideoStreamingJob.from_defaults(
+            "Streaming job", service=cls.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
+            video_duration=SourceValue(20 * u.min))
+        cls.web_application_job = WebApplicationJob.from_defaults("web app job", service=cls.web_application_service)
+        cls.genai_job = GenAIJob("GenAI job", cls.genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
 
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube with genAI chat", user_time_spent=SourceValue(20 * u.min),
@@ -80,7 +65,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
+            "Youtube usage in France", cls.uj, [Hardware.laptop()], cls.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
@@ -118,8 +103,9 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
                                             special_mult={"base_ram_consumption": 57})
         self._test_variations_on_obj_inputs(
             self.genai_service, attrs_to_skip=["provider", "model_name", "base_cpu_consumption"],
-            special_mult={"llm_memory_factor": 3, "ram_per_gpu": 16})
-        self._test_variations_on_obj_inputs(self.web_application_service, attrs_to_skip=["technology"])
+            special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
+        self._test_variations_on_obj_inputs(
+            self.web_application_service, attrs_to_skip=["technology", "base_cpu_consumption", "base_ram_consumption"])
 
     def test_variations_on_services_inputs_after_json_to_system(self):
         raise NotImplementedError("This test should be implemented")

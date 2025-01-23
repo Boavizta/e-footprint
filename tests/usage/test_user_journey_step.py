@@ -15,7 +15,7 @@ class TestUserJourneyStep(TestCase):
         uj_step_without_job = UserJourneyStep("", user_time_spent=SourceValue(2 * u.min), jobs=[])
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj(self):
-        user_time_spent = MagicMock(spec=ExplainableQuantity, value=MagicMock())
+        user_time_spent = SourceValue(10 * u.s)
         user_time_spent.value.check = lambda x: x == "[time]"
         uj_step = UserJourneyStep("test uj step", user_time_spent=user_time_spent, jobs=[])
         uj_step.trigger_modeling_updates = False

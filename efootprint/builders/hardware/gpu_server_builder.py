@@ -1,10 +1,10 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from efootprint.core import Storage
-from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.server import Server, ServerTypes
 
 BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https://arxiv.org/abs/2211.05100")
 
@@ -13,22 +13,22 @@ class GPUServer(Server):
     @classmethod
     def default_values(cls):
         return {
-                "gpu_power": SourceValue(400 * u.W, BLOOM_PAPER_SOURCE, "GPU Power"),
-                "gpu_idle_power": SourceValue(50 * u.W, BLOOM_PAPER_SOURCE, "GPU idle power"),
-                "ram_per_gpu": SourceValue(80 * u.GB, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
-                "carbon_footprint_fabrication_one_gpu": SourceValue(150 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint one GPU"),
-                "carbon_footprint_fabrication_server_without_gpu": SourceValue(
-                2500 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint without GPU"),
-                "nb_gpus_per_instance": SourceValue(4 * u.dimensionless, Sources.HYPOTHESIS, label="Number of GPUs"),
-                "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
-                "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-                "server_utilization_rate": SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS),
-                "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS),
-                "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-                "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS),
-                "data_replication_factor": SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS),
-                "base_storage_need": SourceValue(200 * u.GB, Sources.HYPOTHESIS)
-                }
+            "server_type": ServerTypes.serverless(),
+            "gpu_power": SourceValue(400 * u.W, BLOOM_PAPER_SOURCE, "GPU Power"),
+            "gpu_idle_power": SourceValue(50 * u.W, BLOOM_PAPER_SOURCE, "GPU idle power"),
+            "ram_per_gpu": SourceValue(80 * u.GB, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
+            "carbon_footprint_fabrication_one_gpu": SourceValue(
+                150 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint one GPU"),
+            "average_carbon_intensity": SourceValue(100 * u.g / u.kWh),
+            "carbon_footprint_fabrication_without_gpu": SourceValue(
+            2500 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint without GPU"),
+            "nb_gpus_per_instance": SourceValue(4 * u.dimensionless, Sources.HYPOTHESIS, label="Number of GPUs"),
+            "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
+            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
+            "server_utilization_rate": SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS),
+            "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS)
+            }
 
     @classmethod
     def list_values(cls):
@@ -62,8 +62,10 @@ class GPUServer(Server):
         self.carbon_footprint_fabrication_one_gpu = carbon_footprint_fabrication_one_gpu.set_label(
             f"{self.name} carbon footprint one GPU")
 
+    @property
     def calculated_attributes(self):
-        return ["carbon_footprint_fabrication", "power", "idle_power", "ram", "cpu_cores"]
+        return (["carbon_footprint_fabrication", "power", "idle_power", "ram", "cpu_cores"] +
+                super().calculated_attributes)
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (self.carbon_footprint_fabrication_without_gpu

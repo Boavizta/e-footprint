@@ -3,24 +3,23 @@ from unittest.mock import Mock, patch
 
 import pandas as pd
 
-from efootprint.builders.services.web_application import WebApplicationService, WebApplicationJob
+from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
 
 
-class TestWebApplicationService(unittest.TestCase):
+class TestWebApplication(unittest.TestCase):
     def setUp(self):
         mock_server = Mock(spec=Server)
-        mock_server.contextual_modeling_obj_containers = []
         self.server = mock_server
-        self.builder = WebApplicationService("test", self.server, SourceObject("php-symfony"))
+        self.builder = WebApplication("test", self.server, SourceObject("php-symfony"))
 
 
 
     def test_web_application_builder_raises_valueerror_if_technology_is_not_in_list(self):
         with self.assertRaises(ValueError):
-            WebApplicationService("test", self.server, SourceObject("not-in-list"))
+            WebApplication("test", self.server, SourceObject("not-in-list"))
 
 
 class TestWebApplicationJob(unittest.TestCase):
@@ -31,9 +30,8 @@ class TestWebApplicationJob(unittest.TestCase):
             {"service": ["php-symfony"], "use_case": ["default"],
              "avg_cpu_core_per_request": [0.5], "avg_ram_per_request_in_MB": [512]}).__getitem__
         mock_default_request_duration.return_value = SourceValue(1 * u.s)
-        service = Mock(spec=WebApplicationService)
+        service = Mock(spec=WebApplication)
         service.technology = SourceObject("php-symfony")
-        service.contextual_modeling_obj_containers = []
         service.server = Mock()
         job = WebApplicationJob(
             "test job", service=service, data_upload=SourceValue(1 * u.MB),
@@ -49,9 +47,8 @@ class TestWebApplicationJob(unittest.TestCase):
             {"service": ["php-symfony"], "use_case": ["default"],
              "avg_cpu_core_per_request": [0.5], "avg_ram_per_request_in_MB": [512]}).__getitem__
         mock_default_request_duration.return_value = SourceValue(1 * u.s)
-        service = Mock(spec=WebApplicationService)
+        service = Mock(spec=WebApplication)
         service.technology = SourceObject("php-symfony")
-        service.contextual_modeling_obj_containers = []
         service.server = Mock()
         job = WebApplicationJob(
             "test job", service=service, data_upload=SourceValue(1 * u.MB),

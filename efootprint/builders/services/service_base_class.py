@@ -12,6 +12,10 @@ class Service(ModelingObject):
         self.base_ram_consumption = EmptyExplainableObject()
         self.base_cpu_consumption = EmptyExplainableObject()
 
+    def after_init(self):
+        super().after_init()
+        self.compute_calculated_attributes()
+
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return [self.server]

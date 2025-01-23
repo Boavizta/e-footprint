@@ -341,7 +341,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {"label": self.label}
 
-        if isinstance(self.value, str):  # Case of technology in WebApplicationService
+        if isinstance(self.value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
         elif getattr(self.value, "zone", None) is not None:  # Case of timezone in Country class
             output_dict["zone"] = self.value.zone

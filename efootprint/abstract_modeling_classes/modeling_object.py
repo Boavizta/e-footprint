@@ -7,7 +7,7 @@ import re
 
 from IPython.display import HTML
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     retrieve_update_function_from_mod_obj_and_attr_name)
@@ -15,11 +15,6 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-
-
-CANONICAL_CLASS_COMPUTATION_ORDER = [
-    "UserJourneyStep", "UserJourney", "Hardware", "Country", "UsagePattern", "Job", "Network", "Server", "Storage",
-    "System"]
 
 
 def get_instance_attributes(obj, target_class):
@@ -73,6 +68,7 @@ def css_escape(input_string):
 
 
 def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
+    from efootprint.core.all_classes_in_order import ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER
     initial_chain_len = len(mod_objs_computation_chain)
     # Keep only last occurrence of each mod_obj
     optimized_chain = []
@@ -90,9 +86,9 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
                     f" modeling object calculated attributes recomputations.")
 
     ordered_chain = []
-    for class_name in CANONICAL_CLASS_COMPUTATION_ORDER:
+    for efootprint_class in ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER:
         for mod_obj in optimized_chain:
-            if mod_obj.class_as_simple_str == class_name:
+            if mod_obj.class_as_simple_str == efootprint_class.__name__:
                 ordered_chain.append(mod_obj)
 
     ordered_chain_ids = [elt.id for elt in ordered_chain]
@@ -175,14 +171,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     if not all(isinstance(item, inner_type) for item in input_value):
                         raise ValueError(f"All elements in '{name}' must be instances of {inner_type.__name__}, "
                                          f"got {[type(item) for item in input_value]}")
-            elif not isinstance(input_value, annotation):
+            elif not isinstance(input_value, annotation) and not isinstance(input_value, EmptyExplainableObject):
                 raise PermissionError(f"Value {input_value} for attribute {name} should be of type {annotation} "
                                       f"but is of type {type(input_value)}")
             elif issubclass(annotation, ExplainableQuantity):
-                if not input_value.value.check(self.default_value(name).value.units):
+                default_value = self.default_value(name)
+                if (not isinstance(input_value, EmptyExplainableObject)
+                        and input_value.value.dimensionality != default_value.value.dimensionality):
                     raise ValueError(
-                        f"Value {input_value} for attribute {name} is not homogeneous to required unit"
-                        f" {self.default_value(name).value.units}")
+                        f"Value {input_value} for attribute {name} is not homogeneous to "
+                        f"{default_value.value.units} ({default_value.value.dimensionality})")
 
     def check_belonging_to_authorized_values(self, name, input_value):
         if name in self.list_values().keys():
@@ -226,6 +224,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             [contextual_mod_obj_container.modeling_obj_container
              for contextual_mod_obj_container in self.contextual_modeling_obj_containers
              if contextual_mod_obj_container.modeling_obj_container is not None]))
+
+    def add_to_contextual_modeling_obj_containers(self, contextual_mod_obj_container):
+        self.contextual_modeling_obj_containers.append(contextual_mod_obj_container)
 
     @property
     @abstractmethod

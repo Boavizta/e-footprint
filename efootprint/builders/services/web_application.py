@@ -24,7 +24,7 @@ def get_implementation_details() -> List[str]:
     return list(ECOBENCHMARK_DF["use_case"].unique())
 
 
-class WebApplicationService(Service):
+class WebApplication(Service):
     @classmethod
     def default_values(cls):
         return {"technology": SourceValue("php-symphony")}
@@ -57,7 +57,7 @@ class WebApplicationJob(Job):
         return {"implementation_details": [
             SourceObject(implementation_detail) for implementation_detail in get_implementation_details()]}
 
-    def __init__(self, name: str, service: WebApplicationService, data_upload: ExplainableQuantity,
+    def __init__(self, name: str, service: WebApplication, data_upload: ExplainableQuantity,
                  data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
                  implementation_details: ExplainableObject):
         super().__init__(
@@ -98,7 +98,7 @@ class WebApplicationJob(Job):
 
 
 class JobTypes:
-    # Job types to add in the WebApplicationService class
+    # Job types to add in the WebApplication class
     AUTH = "auth"
     DATA_READ = "data_read"
     DATA_WRITE = "data_write"

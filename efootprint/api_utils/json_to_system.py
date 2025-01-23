@@ -4,22 +4,18 @@ import pytz
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.core import CORE_CLASSES
-from efootprint.builders.services import SERVICE_CLASSES
-from efootprint.builders.hardware import HARDWARE_BUILDER_CLASSES
-
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
+from efootprint.core.all_classes_in_order import ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER
 from efootprint.logger import logger
 
 
-modeling_object_classes = CORE_CLASSES + SERVICE_CLASSES + HARDWARE_BUILDER_CLASSES
 modeling_object_classes_dict = {modeling_object_class.__name__: modeling_object_class
-                                for modeling_object_class in modeling_object_classes}
+                                for modeling_object_class in ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER}
 
 
 def json_to_explainable_object(input_dict):
@@ -97,6 +93,8 @@ def json_to_system(system_dict):
                         f"{mod_obj.class_as_simple_str} {mod_obj.name} is not linked to any existing system so needs "
                         f"to compute its own calculated attributes")
                     mod_obj.compute_calculated_attributes()
+                else:
+                    mod_obj.after_init()
 
     for system in class_obj_dict["System"].values():
         system_id = system.id

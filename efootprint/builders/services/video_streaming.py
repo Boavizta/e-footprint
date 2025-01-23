@@ -10,7 +10,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 
 
-class VideoStreamingService(Service):
+class VideoStreaming(Service):
     @classmethod
     def default_values(cls):
         return {
@@ -31,12 +31,12 @@ class VideoStreamingService(Service):
         self.ram_buffer_per_user = ram_buffer_per_user.set_label(f"{self.name} RAM buffer size per user")
 
 
-class StreamingJob(Job):
+class VideoStreamingJob(Job):
     @classmethod
     def default_values(cls):
         return {
             "resolution": SourceObject("1080p (1920 x 1080)"),
-            "video_watch_duration": SourceValue(1 * u.hour, source=Sources.HYPOTHESIS),
+            "video_duration": SourceValue(1 * u.hour, source=Sources.HYPOTHESIS),
             "frames_per_second": SourceValue(30 * u.dimensionless / u.s, source=Sources.HYPOTHESIS),
         }
 
@@ -48,11 +48,11 @@ class StreamingJob(Job):
             SourceObject("4K (3840 x 2160)"), SourceObject("8K (7680 x 4320)")]
         }
 
-    def __init__(self, name: str, service: VideoStreamingService, resolution: ExplainableObject,
-                 video_watch_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
+    def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
+                 video_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
                          service.server, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
-                         video_watch_duration, SourceValue(0 * u.core), SourceValue(0 * u.GB))
+                         video_duration, SourceValue(0 * u.core), SourceValue(0 * u.GB))
         self.service = service
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.frames_per_second = frames_per_second.set_label(f"{self.name} frames per second")

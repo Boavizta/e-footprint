@@ -131,7 +131,6 @@ class TestSystem(TestCase):
         mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
         new_up = MagicMock(spec=UsagePattern)
         new_up.name = "new up"
-        new_up.contextual_modeling_obj_containers = []
         other_system = MagicMock(spec=System)
         other_system.id = "other id"
         other_system.name = "other system"

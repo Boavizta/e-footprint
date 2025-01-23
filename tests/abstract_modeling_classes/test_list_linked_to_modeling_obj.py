@@ -11,14 +11,11 @@ class TestListLinkedToModelingObj(unittest.TestCase):
         self.mock_modeling_obj_1 = Mock()
         self.mock_modeling_obj_1.id = 1
         self.mock_modeling_obj_1.name = "TestModelingObject"
-        self.mock_modeling_obj_1.contextual_modeling_obj_containers = []
         self.mock_modeling_obj_2 = Mock(spec=ModelingObject)
         self.mock_modeling_obj_2.set_modeling_obj_container = Mock()
-        self.mock_modeling_obj_2.contextual_modeling_obj_containers = []
         self.mock_modeling_obj_2.to_json = Mock(return_value={"mock": "object"})
         self.mock_modeling_obj_3 = Mock(spec=ModelingObject)
         self.mock_modeling_obj_3.set_modeling_obj_container = Mock()
-        self.mock_modeling_obj_3.contextual_modeling_obj_containers = []
         self.mock_modeling_obj_3.to_json = Mock(return_value={"mock2": "object2"})
         self.linked_list = ListLinkedToModelingObj()
         self.linked_list.trigger_modeling_updates = False

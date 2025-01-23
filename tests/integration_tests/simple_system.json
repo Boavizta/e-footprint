@@ -244,15 +244,6 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
-                "label": "Default server utilization rate from hypothesis",
-                "value": 0.9,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "server_type": {
                 "label": "Server type of Default server from hypothesis",
                 "value": "on-premise",
@@ -303,6 +294,15 @@
                 "unit": "gram / kilowatt_hour",
                 "source": {
                     "name": "user data",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "Default server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
                     "link": null
                 }
             },

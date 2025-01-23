@@ -42,9 +42,16 @@ class GenAIModel(Service):
 
         return {"model_name": {"depends_on": "provider", "conditional_list_values": values}}
 
+    def __setattr__(self, name, input_value):
+        if name == "provider" and self.trigger_modeling_updates:
+            raise PermissionError("The provider of a GenAIModel cannot be changed after initialization. "
+                                  "Use a ModelingUpdate to update both provider and a compatible model name.")
+        super().__setattr__(name, input_value)
+
     def __init__(self, name: str, provider: ExplainableObject, model_name: ExplainableObject, server: GPUServer,
                  nb_of_bits_per_parameter: ExplainableQuantity, llm_memory_factor: ExplainableQuantity,
-                 gpu_latency_alpha: ExplainableQuantity, gpu_latency_beta: ExplainableQuantity, bits_per_token: ExplainableQuantity):
+                 gpu_latency_alpha: ExplainableQuantity, gpu_latency_beta: ExplainableQuantity,
+                 bits_per_token: ExplainableQuantity):
         super().__init__(name=name, server=server)
         self.provider = provider.set_label(f"{model_name} provider")
         self.model_name = model_name.set_label(f"{provider} model used")

@@ -8,6 +8,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
@@ -19,7 +20,6 @@ from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
-from efootprint.builders.hardware.devices_defaults import default_laptop
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -86,7 +86,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         )
         cls.server3 = Server.from_defaults(
             "TikTok Analytics server", server_type=ServerTypes.serverless(),
-            storage=Storage.from_defaults("TikTok Analytics storage"))
+            storage=Storage.ssd("TikTok Analytics storage"))
         cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
         cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         cls.storage_3 = cls.server3.storage
@@ -137,12 +137,14 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern1 = UsagePattern(
-            "Video watching in France in the morning", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
+            "Video watching in France in the morning", cls.uj, [Hardware.laptop()], cls.network,
+            Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                     [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=cls.start_date)))
 
         cls.usage_pattern2 = UsagePattern(
-            "Video watching in France in the evening", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
+            "Video watching in France in the evening", cls.uj, [Hardware.laptop()], cls.network,
+            Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=cls.start_date)))
 
@@ -303,7 +305,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_add_new_usage_pattern(self):
         new_up = UsagePattern(
-            "New usage pattern video watching in France", self.uj, [default_laptop()], self.network, Countries.FRANCE(),
+            "New usage pattern video watching in France", self.uj, [Hardware.laptop()], self.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
 
         logger.warning("Adding new usage pattern")
@@ -333,7 +335,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         current_ups = copy(system.usage_patterns)
         new_up = UsagePattern(
-            "New usage pattern video watching in France", current_ups[0].user_journey, [default_laptop()],
+            "New usage pattern video watching in France", current_ups[0].user_journey, [Hardware.laptop()],
             current_ups[0].network, Countries.FRANCE(),
             SourceHourlyValues(
                 create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 23, 12, 52, 24, 51, 71, 85, 3]])))

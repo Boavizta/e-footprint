@@ -4,85 +4,44 @@ from unittest.mock import patch
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.builders.hardware.gpu_server_builder import GPUServer
+from efootprint.core.hardware.storage import Storage
+
 
 class TestGPUServer(unittest.TestCase):
-
     def setUp(self):
-        self.builder = GPUServer("Test GPU Server Builder")
+        self.gpu_server = GPUServer.from_defaults(
+            "Test GPU Server Builder", storage=Storage.from_defaults("default storage"))
+        self.gpu_server.trigger_modeling_updates = False
 
-    def test_initialization(self):
-        self.assertEqual(self.builder.gpu_power.value, 400 * u.W)
-        self.assertEqual(self.builder.gpu_idle_power.value, 50 * u.W)
-        self.assertEqual(self.builder.ram_per_gpu.value, 80 * u.GB)
-        self.assertEqual(self.builder.carbon_footprint_fabrication_one_gpu.value, 150 * u.kg)
-        self.assertEqual(self.builder.nb_of_cpu_cores_per_gpu.value, 1 * u.core)
+    def test_update_carbon_footprint_fabrication(self):
+        with patch.object(self.gpu_server, "nb_gpus_per_instance", SourceValue(4 * u.dimensionless)), \
+                patch.object(self.gpu_server, "carbon_footprint_fabrication_without_gpu", SourceValue(2000 * u.kg)), \
+                patch.object(self.gpu_server, "carbon_footprint_fabrication_one_gpu", SourceValue(250 * u.kg)):
+            self.gpu_server.update_carbon_footprint_fabrication()
+        self.assertEqual(self.gpu_server.carbon_footprint_fabrication.value, 3000 * u.kg)
 
-    @patch("efootprint.builders.hardware.gpu_server_builder.Autoscaling")
-    @patch("efootprint.builders.hardware.gpu_server_builder.OnPremise")
-    @patch("efootprint.builders.hardware.gpu_server_builder.Serverless")
-    def test_generate_gpu_server(self, mock_serverless, mock_on_premise, mock_autoscaling):
-        """Test the generate_gpu_server method with various inputs."""
-        name = "Test GPU Server"
-        average_carbon_intensity = SourceValue(0.5 * u.kg / u.kWh)
-        nb_gpus_per_instance = SourceValue(4 * u.dimensionless)
+    def test_update_power(self):
+        with patch.object(self.gpu_server, "nb_gpus_per_instance", SourceValue(4 * u.dimensionless)), \
+                patch.object(self.gpu_server, "gpu_power", SourceValue(400 * u.W)):
+            self.gpu_server.update_power()
+        self.assertEqual(self.gpu_server.power.value, 1600 * u.W)
 
-        # Test Autoscaling case
-        self.builder.generate_gpu_server(name, "Autoscaling", average_carbon_intensity, nb_gpus_per_instance)
-        mock_autoscaling.assert_called_once()
+    def test_update_idle_power(self):
+        with patch.object(self.gpu_server, "nb_gpus_per_instance", SourceValue(4 * u.dimensionless)), \
+                patch.object(self.gpu_server, "gpu_idle_power", SourceValue(50 * u.W)):
+            self.gpu_server.update_idle_power()
+        self.assertEqual(self.gpu_server.idle_power.value, 200 * u.W)
 
-        # Test OnPremise case
-        self.builder.generate_gpu_server(name, "OnPremise", average_carbon_intensity, nb_gpus_per_instance,
-                                         fixed_nb_of_instances=SourceValue(5 * u.dimensionless))
-        mock_on_premise.assert_called_once()
+    def test_update_ram(self):
+        with patch.object(self.gpu_server, "nb_gpus_per_instance", SourceValue(4 * u.dimensionless)), \
+                patch.object(self.gpu_server, "ram_per_gpu", SourceValue(80 * u.GB)):
+            self.gpu_server.update_ram()
+        self.assertEqual(self.gpu_server.ram.value, 320 * u.GB)
 
-        # Test Serverless case
-        self.builder.generate_gpu_server(name, "Serverless", average_carbon_intensity, nb_gpus_per_instance)
-        mock_serverless.assert_called_once()
-
-        # Test invalid fixed_nb_of_instances for non-OnPremise
-        with self.assertRaises(AssertionError):
-            self.builder.generate_gpu_server(name, "Serverless", average_carbon_intensity, nb_gpus_per_instance,
-                                             fixed_nb_of_instances=SourceValue(5 * u.dimensionless))
-
-    def test_default_values_property(self):
-        """Test that the default_values property returns the correct defaults."""
-        defaults = self.builder.default_values()
-        self.assertEqual(defaults["gpu_power"].value, 400 * u.W)
-        self.assertEqual(defaults["nb_gpus_per_instance"].value, 4 * u.dimensionless)
-
-    @patch("efootprint.builders.hardware.gpu_server_builder.default_ssd")
-    @patch("efootprint.builders.hardware.gpu_server_builder.OnPremise")
-    def test_on_premise_generation_with_specific_values(self, mock_on_premise, mock_default_ssd):
-        name = "Test GPU Server"
-        average_carbon_intensity = SourceValue(0.5 * u.kg / u.kWh)
-        nb_gpus_per_instance = SourceValue(4 * u.dimensionless)
-
-        self.builder.generate_gpu_server(name, "OnPremise", average_carbon_intensity, nb_gpus_per_instance,
-                                         fixed_nb_of_instances=SourceValue(5 * u.dimensionless))
-
-        mock_on_premise.assert_called_once_with(
-            name,
-            carbon_footprint_fabrication=(
-                    SourceValue(2500 * u.kg) + SourceValue(4 * (150 * u.kg))
-            ).set_label("default"),
-            power=SourceValue(400 * u.W * 4).set_label("default"),
-            lifespan=self.builder.default_value('lifespan'),
-            idle_power=SourceValue(50 * u.W * 4).set_label("default"),
-            ram=SourceValue(80 * u.GB * 4).set_label("default"),
-            cpu_cores=SourceValue(4 * (1 * u.core)).set_label("default"),
-            power_usage_effectiveness=self.builder.default_value('power_usage_effectiveness'),
-            average_carbon_intensity=average_carbon_intensity,
-            server_utilization_rate=self.builder.default_value('server_utilization_rate'),
-            base_cpu_consumption=self.builder.default_value('base_cpu_consumption'),
-            base_ram_consumption=self.builder.default_value('base_ram_consumption'),
-            storage=mock_on_premise.call_args[1]['storage'],
-            fixed_nb_of_instances=SourceValue(5 * u.dimensionless)
-        )
-        mock_default_ssd.assert_called_with(
-            data_replication_factor=self.builder.default_value('data_replication_factor'),
-            base_storage_need=self.builder.default_value('base_storage_need'),
-            data_storage_duration=self.builder.default_value('data_storage_duration')
-        )
+    def test_update_cpu_cores(self):
+        with patch.object(self.gpu_server, "nb_gpus_per_instance", SourceValue(4 * u.dimensionless)):
+            self.gpu_server.update_cpu_cores()
+        self.assertEqual(self.gpu_server.cpu_cores.value, 4 * u.core)
 
 
 if __name__ == "__main__":

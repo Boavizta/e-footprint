@@ -4,19 +4,18 @@ from unittest.mock import Mock, patch
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
-from efootprint.builders.services.video_streaming import VideoStreamingService, StreamingJob
+from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 
 
-class TestStreamingJob(unittest.TestCase):
+class TestVideoStreamingJob(unittest.TestCase):
     def setUp(self):
-        self.service = Mock(spec=VideoStreamingService)
+        self.service = Mock(spec=VideoStreaming)
         self.service.server = Mock()
-        self.service.contextual_modeling_obj_containers = []
         self.service.bits_per_pixel = EmptyExplainableObject()
         self.service.frames_per_second = EmptyExplainableObject()
         self.service.static_delivery_cpu_cost = EmptyExplainableObject()
         self.service.ram_buffer_per_user = EmptyExplainableObject()
-        self.job = StreamingJob.from_defaults("Test Job", service=self.service)
+        self.job = VideoStreamingJob.from_defaults("Test Job", service=self.service)
         self.job.trigger_modeling_updates = False
 
     def test_update_dynamic_bitrate(self):
