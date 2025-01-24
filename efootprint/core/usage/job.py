@@ -20,13 +20,13 @@ class Job(ModelingObject):
             "data_download": SourceValue(2 * u.MB),
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),
-            "cpu_needed": SourceValue(0.1 * u.core),
+            "compute_needed": SourceValue(0.1 * u.cpu_core),
             "ram_needed": SourceValue(50 * u.MB)
         }
 
     def __init__(self, name: str, server: Server, data_upload: ExplainableQuantity,
                  data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
-                 request_duration: ExplainableQuantity, cpu_needed: ExplainableQuantity,
+                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -49,7 +49,7 @@ class Job(ModelingObject):
         self.request_duration = request_duration.set_label(f"Request duration of {self.name} to {server.name}")
         self.ram_needed = ram_needed.set_label(
             f"RAM needed on server {self.server.name} to process {self.name}")
-        self.cpu_needed = cpu_needed.set_label(
+        self.compute_needed = compute_needed.set_label(
             f"CPU needed on server {self.server.name} to process {self.name}")
 
     @property

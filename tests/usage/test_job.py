@@ -20,7 +20,7 @@ class TestJob(TestCase):
         self.job = Job(
             "test job", server=self.server, data_download=SourceValue(200 * u.MB),
             data_upload=SourceValue(100 * u.MB), data_stored=SourceValue(300 * u.MB),
-            ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
+            ram_needed=SourceValue(400 * u.MB), compute_needed=SourceValue(2 * u.cpu_core),
             request_duration=SourceValue(2 * u.min))
         self.job.trigger_modeling_updates = False
 

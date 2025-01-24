@@ -6,7 +6,7 @@ from ecologits.utils.range_value import RangeValue
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import Source, SourceValue, Sources, SourceObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
-from efootprint.builders.hardware.gpu_server_builder import GPUServer
+from efootprint.builders.hardware.gpu_server import GPUServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.core.usage.job import Job
@@ -63,11 +63,10 @@ class GenAIModel(Service):
         self.bits_per_token = bits_per_token.set_label(f"Number of bits per token")
         self.active_params = EmptyExplainableObject()
         self.total_params = EmptyExplainableObject()
-        self.nb_of_required_gpus_during_inference = EmptyExplainableObject()
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["active_params", "total_params", "base_ram_consumption", "nb_of_required_gpus_during_inference"]
+        return ["active_params", "total_params", "base_ram_consumption"]
 
     def update_active_params(self):
         model = models.find_model(provider=self.provider.value, model_name=self.model_name.value)
@@ -109,12 +108,7 @@ class GenAIModel(Service):
         self.base_ram_consumption = (
                 self.llm_memory_factor * self.total_params * self.nb_of_bits_per_parameter).to(u.GB).set_label(
             f"{self.name} base RAM consumption")
-        
-    def update_nb_of_required_gpus_during_inference(self):
-        self.nb_of_required_gpus_during_inference = (
-            (self.llm_memory_factor * self.active_params * self.nb_of_bits_per_parameter / self.server.ram_per_gpu)
-        ).to(u.dimensionless).set_label(
-            f"{self.name} nb of required GPUs during inference")
+
 
 
 class GenAIJob(Job):
@@ -141,7 +135,7 @@ class GenAIJob(Job):
             data_stored=SourceValue(0 * u.kB),
             data_download=SourceValue(0 * u.kB),
             request_duration=SourceValue(0 * u.s),
-            cpu_needed=SourceValue(0 * u.core),
+            compute_needed=SourceValue(0 * u.gpu),
             ram_needed=SourceValue(0 * u.GB))
         self.service = service
         self.output_token_count = output_token_count
@@ -149,7 +143,7 @@ class GenAIJob(Job):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return (["output_token_weights", "data_stored", "data_download", "request_duration", "cpu_needed"]
+        return (["output_token_weights", "data_stored", "data_download", "request_duration", "compute_needed"]
                 + super().calculated_attributes)
 
     def update_output_token_weights(self):
@@ -168,7 +162,7 @@ class GenAIJob(Job):
             self.service.gpu_latency_alpha * self.service.active_params + self.service.gpu_latency_beta)
         self.request_duration = gpu_latency.set_label(f"{self.name} request duration")
 
-    def update_cpu_needed(self):
-        nb_of_cpu_cores_per_gpu = SourceValue(1 * u.core, label="1 CPU core / GPU")
-        self.cpu_needed = (self.service.nb_of_required_gpus_during_inference * nb_of_cpu_cores_per_gpu
-                           ).to(u.core).set_label(f"{self.name} CPU needed")
+    def update_compute_needed(self):
+        self.compute_needed = (
+            (self.service.llm_memory_factor * self.service.active_params * self.service.nb_of_bits_per_parameter
+             / self.server.ram_per_gpu)).to(u.gpu).set_label(f"{self.name} nb of required GPUs during inference")

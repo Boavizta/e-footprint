@@ -4,7 +4,7 @@ from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.country import Country
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.storage import Storage
-from efootprint.builders.hardware.gpu_server_builder import GPUServer
+from efootprint.builders.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob

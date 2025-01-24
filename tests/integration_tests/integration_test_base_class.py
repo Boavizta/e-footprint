@@ -124,11 +124,12 @@ class IntegrationTestBaseClass(TestCase):
         logger.warning(f"Testing input variations on {input_object.name}")
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:
-
                 expl_attr_new_value = copy(expl_attr)
                 if special_mult and expl_attr_name in special_mult.keys():
+                    logger.info(f"Multiplying {expl_attr_name} by {special_mult[expl_attr_name]}")
                     expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
                 else:
+                    logger.info(f"Multiplying {expl_attr_name} by 100")
                     expl_attr_new_value.value *= 100 * u.dimensionless
 
                 self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)

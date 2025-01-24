@@ -1,4 +1,5 @@
 {
+    "efootprint_version": "8.2.1",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -200,10 +201,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Server 1 to process streaming from hypothesis",
                 "value": 1.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -259,10 +260,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Server 1 to process upload from hypothesis",
                 "value": 1.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -318,10 +319,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Server 1 to process dailymotion from hypothesis",
                 "value": 1.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -377,10 +378,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Server 2 to process tiktok from hypothesis",
                 "value": 1.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -436,10 +437,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server TikTok Analytics server to process tiktok analytics from hypothesis",
                 "value": 1.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -513,10 +514,10 @@
                     "link": null
                 }
             },
-            "cpu_cores": {
-                "label": "Nb cpus cores of Server 1 from hypothesis",
+            "compute": {
+                "label": "Nb cpu cores of Server 1 from hypothesis",
                 "value": 6.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -558,10 +559,10 @@
                     "link": null
                 }
             },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Server 1 from hypothesis",
+            "base_compute_consumption": {
+                "label": "Base cpu core consumption of Server 1 from hypothesis",
                 "value": 2.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -638,10 +639,10 @@
                     "link": null
                 }
             },
-            "cpu_cores": {
-                "label": "Nb cpus cores of Server 2",
+            "compute": {
+                "label": "Nb cpu cores of Server 2",
                 "value": 6.0,
-                "unit": "core"
+                "unit": "cpu_core"
             },
             "power_usage_effectiveness": {
                 "label": "PUE of Server 2 from hypothesis",
@@ -679,10 +680,10 @@
                     "link": null
                 }
             },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Server 2 from hypothesis",
+            "base_compute_consumption": {
+                "label": "Base cpu core consumption of Server 2 from hypothesis",
                 "value": 2.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -759,10 +760,10 @@
                     "link": null
                 }
             },
-            "cpu_cores": {
-                "label": "Nb cpus cores of TikTok Analytics server from hypothesis",
+            "compute": {
+                "label": "Nb cpu cores of TikTok Analytics server from hypothesis",
                 "value": 24.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -804,10 +805,10 @@
                     "link": null
                 }
             },
-            "base_cpu_consumption": {
+            "base_compute_consumption": {
                 "label": "unnamed source from hypothesis",
                 "value": 2.0,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null

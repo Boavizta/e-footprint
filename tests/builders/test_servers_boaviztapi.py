@@ -35,7 +35,7 @@ class TestBoaviztapiBuilders(unittest.TestCase):
         self.assertEqual(aws_server.storage.name, 'Test storage')
         self.assertEqual(aws_server.carbon_footprint_fabrication.value, 460 * u.kg)
         self.assertEqual(aws_server.ram.value, 32 * u.GB)
-        self.assertEqual(aws_server.cpu_cores.value, 16 * u.core)
+        self.assertEqual(aws_server.compute.value, 16 * u.cpu_core)
         self.assertEqual(round(aws_server.power.value, 2), 51.89 * u.W)
 
     @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')
@@ -56,7 +56,7 @@ class TestBoaviztapiBuilders(unittest.TestCase):
                          default_ssd().carbon_footprint_fabrication.value * 0.032)
         self.assertEqual(aws_server.carbon_footprint_fabrication.value, 460 * u.kg)
         self.assertEqual(aws_server.ram.value, 32 * u.GB)
-        self.assertEqual(aws_server.cpu_cores.value, 16 * u.core)
+        self.assertEqual(aws_server.compute.value, 16 * u.cpu_core)
         self.assertEqual(round(aws_server.power.value, 2), 51.89 * u.W)
 
     @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')
@@ -72,7 +72,7 @@ class TestBoaviztapiBuilders(unittest.TestCase):
         self.assertEqual(on_prem_server.storage.name, 'Test storage')
         self.assertEqual(on_prem_server.storage.storage_capacity.value, 2 * u.TB)
         self.assertEqual(on_prem_server.ram.value, 384 * u.GB)
-        self.assertEqual(on_prem_server.cpu_cores.value, 48 * u.core)
+        self.assertEqual(on_prem_server.compute.value, 48 * u.cpu_core)
         self.assertEqual(on_prem_server.carbon_footprint_fabrication.value, 1150 * u.kg)
 
     @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')
@@ -87,7 +87,7 @@ class TestBoaviztapiBuilders(unittest.TestCase):
         self.assertEqual(on_prem_server.storage.storage_capacity.value, 500 * u.GB)
         self.assertEqual(on_prem_server.storage.fixed_nb_of_instances.value, 1 * u.dimensionless)
         self.assertEqual(on_prem_server.ram.value, 384 * u.GB)
-        self.assertEqual(on_prem_server.cpu_cores.value, 48 * u.core)
+        self.assertEqual(on_prem_server.compute.value, 48 * u.cpu_core)
         self.assertEqual(on_prem_server.carbon_footprint_fabrication.value, 1150 * u.kg)
 
     @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')
@@ -102,7 +102,7 @@ class TestBoaviztapiBuilders(unittest.TestCase):
         self.assertEqual(on_prem_server.storage.storage_capacity.value, 500 * u.GB)
         self.assertEqual(on_prem_server.storage.fixed_nb_of_instances.value, 1 * u.dimensionless)
         self.assertEqual(on_prem_server.ram.value, 384 * u.GB)
-        self.assertEqual(on_prem_server.cpu_cores.value, 48 * u.core)
+        self.assertEqual(on_prem_server.compute.value, 48 * u.cpu_core)
         self.assertEqual(on_prem_server.carbon_footprint_fabrication.value, 1150 * u.kg)
 
     @patch('efootprint.builders.hardware.servers_boaviztapi.call_boaviztapi')

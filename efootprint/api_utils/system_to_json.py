@@ -1,5 +1,6 @@
 import json
 
+import efootprint
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
@@ -20,7 +21,7 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
 
 
 def system_to_json(input_system, save_calculated_attributes, output_filepath=None):
-    output_dict = {}
+    output_dict = {"efootprint_version": efootprint.__version__}
     recursively_write_json_dict(output_dict, input_system, save_calculated_attributes)
 
     if output_filepath is not None:

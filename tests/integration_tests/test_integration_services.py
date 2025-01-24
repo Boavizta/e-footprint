@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from efootprint.builders.hardware.gpu_server_builder import GPUServer
+from efootprint.builders.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
@@ -36,7 +36,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
             server_type=ServerTypes.on_premise(),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
             storage=cls.storage
         )
         
@@ -99,13 +99,13 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self.run_json_to_system_test(self.system)
 
     def test_variations_on_services_inputs(self):
-        self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_cpu_consumption"],
+        self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],
                                             special_mult={"base_ram_consumption": 57})
         self._test_variations_on_obj_inputs(
-            self.genai_service, attrs_to_skip=["provider", "model_name", "base_cpu_consumption"],
+            self.genai_service, attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
             special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
         self._test_variations_on_obj_inputs(
-            self.web_application_service, attrs_to_skip=["technology", "base_cpu_consumption", "base_ram_consumption"])
+            self.web_application_service, attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
 
     def test_variations_on_services_inputs_after_json_to_system(self):
         raise NotImplementedError("This test should be implemented")

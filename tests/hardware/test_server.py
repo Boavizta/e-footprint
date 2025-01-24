@@ -21,17 +21,17 @@ class TestServer(TestCase):
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            cpu_cores=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            compute=SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
             storage=MagicMock()
         )
         self.server_base.trigger_modeling_updates = False
 
-    def test_update_hour_by_hour_cpu_need(self):
+    def test_update_hour_by_hour_compute_need(self):
         job1 = MagicMock()
         job2 = MagicMock()
 
@@ -39,14 +39,14 @@ class TestServer(TestCase):
             create_hourly_usage_df_from_list([10, 20, 1, 0]))
         job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([20, 15, 5, 3]))
-        job1.cpu_needed = SourceValue(2 * u.core)
-        job2.cpu_needed = SourceValue(3 * u.core)
+        job1.compute_needed = SourceValue(2 * u.cpu_core)
+        job2.compute_needed = SourceValue(3 * u.cpu_core)
 
         with patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = {job1, job2}
-            self.server_base.update_hour_by_hour_cpu_need()
+            self.server_base.update_hour_by_hour_compute_need()
 
-        self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_cpu_need.value_as_float_list)
+        self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_compute_need.value_as_float_list)
 
     def test_update_hour_by_hour_ram_need(self):
         job1 = MagicMock()
@@ -66,14 +66,14 @@ class TestServer(TestCase):
         self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_ram_need.value_as_float_list)
 
 
-    def test_available_cpu_per_instance(self):
-        with patch.object(self.server_base, "occupied_cpu_per_instance", SourceValue(2 * u.core)), \
-                patch.object(self.server_base, "cpu_cores", SourceValue(24 * u.core)), \
+    def test_available_compute_per_instance(self):
+        with patch.object(self.server_base, "occupied_compute_per_instance", SourceValue(2 * u.cpu_core)), \
+                patch.object(self.server_base, "compute", SourceValue(24 * u.cpu_core)), \
                 patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            self.server_base.update_available_cpu_per_instance()
-            expected_value = SourceValue((24 * 0.7 - 2) * u.core)
+            self.server_base.update_available_compute_per_instance()
+            expected_value = SourceValue((24 * 0.7 - 2) * u.cpu_core)
 
-            self.assertEqual(expected_value.value, self.server_base.available_cpu_per_instance.value)
+            self.assertEqual(expected_value.value, self.server_base.available_compute_per_instance.value)
 
     def test_available_ram_per_instance(self):
         with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB)), \
@@ -92,17 +92,17 @@ class TestServer(TestCase):
             with self.assertRaises(ValueError):
                 self.server_base.update_available_ram_per_instance()
 
-    def test_occupied_cpu_per_instance(self):
+    def test_occupied_compute_per_instance(self):
         service_1 = MagicMock()
         service_2 = MagicMock()
-        service_1.base_cpu_consumption = SourceValue(2 * u.core)
-        service_2.base_cpu_consumption = SourceValue(3 * u.core)
-        with patch.object(self.server_base, "base_cpu_consumption", SourceValue(5 * u.core)), \
+        service_1.base_compute_consumption = SourceValue(2 * u.cpu_core)
+        service_2.base_compute_consumption = SourceValue(3 * u.cpu_core)
+        with patch.object(self.server_base, "base_compute_consumption", SourceValue(5 * u.cpu_core)), \
                 patch.object(Server, "installed_services", [service_1, service_2]):
-            self.server_base.update_occupied_cpu_per_instance()
-            expected_value = SourceValue(10 * u.core)
+            self.server_base.update_occupied_compute_per_instance()
+            expected_value = SourceValue(10 * u.cpu_core)
 
-            self.assertEqual(expected_value.value, self.server_base.occupied_cpu_per_instance.value)
+            self.assertEqual(expected_value.value, self.server_base.occupied_compute_per_instance.value)
 
     def test_occupied_ram_per_instance(self):
         service_1 = MagicMock()
@@ -118,12 +118,12 @@ class TestServer(TestCase):
 
     def test_raw_nb_of_instances_autoscaling_simple_case(self):
         ram_need = SourceHourlyValues(create_hourly_usage_df_from_list([0, 1, 3, 3, 10], pint_unit=u.GB))
-        cpu_need = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 2, 6, 3], pint_unit=u.core))
+        cpu_need = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 2, 6, 3], pint_unit=u.cpu_core))
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=ram_need), \
-                patch.object(self.server_base, "hour_by_hour_cpu_need", new=cpu_need), \
+                patch.object(self.server_base, "hour_by_hour_compute_need", new=cpu_need), \
                 patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(4 * u.core)):
+                patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
             self.server_base.update_raw_nb_of_instances()
 
             self.assertEqual([0.5, 1, 1.5, 1.5, 5], self.server_base.raw_nb_of_instances.value_as_float_list)
@@ -137,9 +137,9 @@ class TestServer(TestCase):
         ram_need_b = SourceHourlyValues(
             create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_b, pint_unit=u.GB), label="ram_need_b")
         cpu_need_a = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.core), label="cpu_need_a")
+            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.cpu_core), label="cpu_need_a")
         cpu_need_b = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.core), label="cpu_need_b")
+            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.cpu_core), label="cpu_need_b")
         all_ram_need = (ram_need_a + ram_need_b).set_label("all_ram_need")
         all_cpu_need = (cpu_need_a + cpu_need_b).set_label("all_cpu_need")
 
@@ -147,9 +147,9 @@ class TestServer(TestCase):
         expected_max_date = start_date_b + timedelta(hours=(len(ram_need_b)-1))
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=all_ram_need), \
-                patch.object(self.server_base, "hour_by_hour_cpu_need", new=all_cpu_need), \
+                patch.object(self.server_base, "hour_by_hour_compute_need", new=all_cpu_need), \
                 patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(4 * u.core)):
+                patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
             self.server_base.update_raw_nb_of_instances()
 
             self.assertEqual(expected_data, self.server_base.raw_nb_of_instances.value_as_float_list)

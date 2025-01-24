@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytz
 
+import efootprint
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
@@ -47,6 +48,13 @@ def json_to_explainable_object(input_dict):
 
 
 def json_to_system(system_dict):
+    json_efootprint_version = system_dict.pop("efootprint_version", None)
+    if json_efootprint_version != efootprint.__version__:
+        logger.warning(
+            f"Warning: the version of the efootprint library used to generate the JSON file is "
+            f"{json_efootprint_version} while the current version of the efootprint library is "
+            f"{efootprint.__version__}. Please make sure that the JSON file is compatible with the current version"
+            f" of the efootprint library.")
     class_obj_dict = {}
     flat_obj_dict = {}
 

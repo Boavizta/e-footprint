@@ -62,22 +62,22 @@ class WebApplicationJob(Job):
                  implementation_details: ExplainableObject):
         super().__init__(
             name, service.server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
-            cpu_needed=SourceValue(0 * u.core), ram_needed=SourceValue(0 * u.GB))
+            compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB))
         self.service = service
         self.implementation_details = implementation_details.set_label(f"{self.name} implementation details")
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["cpu_needed", "ram_needed"] + super().calculated_attributes
+        return ["compute_needed", "ram_needed"] + super().calculated_attributes
 
-    def update_cpu_needed(self):
+    def update_compute_needed(self):
         filter_df = ECOBENCHMARK_DF[
             (ECOBENCHMARK_DF['service'] == self.service.technology.value)
             & (ECOBENCHMARK_DF['use_case'] == self.implementation_details.value)]
         tech_row = filter_df.iloc[0]
 
-        self.cpu_needed = ExplainableQuantity(
-            tech_row['avg_cpu_core_per_request'] * u.core, "",
+        self.compute_needed = ExplainableQuantity(
+            tech_row['avg_cpu_core_per_request'] * u.cpu_core, "",
             right_parent=self.service.technology,
             left_parent=self.implementation_details,
             operator="query CPU Ecobenchmark data with",

@@ -51,19 +51,19 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(128 * u.GB, Sources.USER_DATA),
-            cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
+            compute=SourceValue(24 * u.cpu_core, Sources.USER_DATA),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
             storage=cls.storage
         )
 
         cls.streaming_job = Job("streaming", server=cls.server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
@@ -71,7 +71,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.upload_job = Job("upload", server=cls.server, data_upload=SourceValue(300 * u.MB),
             data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.MB),
             request_duration=SourceValue(40 * u.s), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.upload_step = UserJourneyStep(
             "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
@@ -139,7 +139,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             special_mult={
                 "ram": 0.01, "server_utilization_rate": 0.5,
                 "base_ram_consumption": 380,
-                "base_cpu_consumption": 10
+                "base_compute_consumption": 10
             })
         self._test_input_change(self.server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), self.server,
                                 "fixed_nb_of_instances")
@@ -209,12 +209,12 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-            cpu_cores=SourceValue(24 * u.core, Sources.HYPOTHESIS),
+            compute=SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
             storage=new_storage
         )
 
@@ -268,7 +268,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_job = Job("new job", self.server, data_upload=SourceValue(5 * u.MB),
                       data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                      cpu_needed=SourceValue(1 * u.core))
+                      compute_needed=SourceValue(1 * u.cpu_core))
 
         self.streaming_step.jobs += [new_job]
 
@@ -289,7 +289,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             jobs=[Job("new job", self.server, data_upload=SourceValue(5 * u.kB),
                       data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                      cpu_needed=SourceValue(1 * u.core))]
+                      compute_needed=SourceValue(1 * u.cpu_core))]
         )
         self.uj.uj_steps = [new_step]
 
@@ -388,7 +388,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             special_mult={
                 "ram": 0.01, "server_utilization_rate": 0.5,
                 "base_ram_consumption": 380,
-                "base_cpu_consumption": 10
+                "base_compute_consumption": 10
             })
         self._test_input_change(server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), server,
                                 "fixed_nb_of_instances")
@@ -452,7 +452,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_job = Job("new job", server, data_upload=SourceValue(5 * u.MB),
                       data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                      cpu_needed=SourceValue(1 * u.core))
+                      compute_needed=SourceValue(1 * u.cpu_core))
 
         streaming_step.jobs += [new_job]
 
@@ -527,12 +527,12 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
-                [self.server.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA)]],
+                [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
                  self.start_date + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server.cpu_cores])
+        self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
@@ -543,7 +543,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate([[self.upload_step.jobs, self.upload_step.jobs + [new_job]]],
@@ -568,7 +568,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.upload_job.server.hour_by_hour_cpu_need.id, recomputed_elements_ids)
+        self.assertIn(self.upload_job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_upload_step_jobs, self.upload_step.jobs)
         simulation.set_updated_values()
         self.assertEqual(initial_upload_step_jobs + [self.upload_job], self.upload_step.jobs)
@@ -579,12 +579,12 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate([
@@ -596,7 +596,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.streaming_job]:
-            self.assertIn(job.server.hour_by_hour_cpu_need.id, recomputed_elements_ids)
+            self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_upload_step_jobs, self.upload_step.jobs)
         simulation.set_updated_values()
         self.assertEqual(initial_upload_step_jobs + [new_job, new_job2, self.streaming_job], self.upload_step.jobs)
@@ -607,23 +607,23 @@ class IntegrationTest(IntegrationTestBaseClass):
         new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            cpu_needed=SourceValue(1 * u.core))
+            compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate([
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]],
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
-                [self.server.cpu_cores, SourceValue(42 * u.core, Sources.USER_DATA)]],
+                [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
                 self.start_date + timedelta(hours=1))
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         for job in [new_job, new_job2, self.streaming_job]:
-            self.assertIn(job.server.hour_by_hour_cpu_need.id, recomputed_elements_ids)
+            self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
     

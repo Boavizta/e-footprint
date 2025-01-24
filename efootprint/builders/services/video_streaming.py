@@ -16,7 +16,7 @@ class VideoStreaming(Service):
         return {
             "base_ram_consumption": SourceValue(2 * u.GB, source=Sources.HYPOTHESIS),
             "bits_per_pixel": SourceValue(24 * u.dimensionless, source=Sources.HYPOTHESIS),
-            "static_delivery_cpu_cost": SourceValue(4 * u.core / (u.GB / u.s), source=Sources.HYPOTHESIS),
+            "static_delivery_cpu_cost": SourceValue(4 * u.cpu_core / (u.GB / u.s), source=Sources.HYPOTHESIS),
             "ram_buffer_per_user": SourceValue(50 * u.MB, source=Sources.HYPOTHESIS),
             }
 
@@ -52,7 +52,7 @@ class VideoStreamingJob(Job):
                  video_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
                          service.server, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
-                         video_duration, SourceValue(0 * u.core), SourceValue(0 * u.GB))
+                         video_duration, SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
         self.service = service
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.frames_per_second = frames_per_second.set_label(f"{self.name} frames per second")
@@ -60,7 +60,7 @@ class VideoStreamingJob(Job):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["dynamic_bitrate", "data_download", "cpu_needed", "ram_needed"] + super().calculated_attributes
+        return ["dynamic_bitrate", "data_download", "compute_needed", "ram_needed"] + super().calculated_attributes
 
     def update_dynamic_bitrate(self):
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)
@@ -78,8 +78,8 @@ class VideoStreamingJob(Job):
         self.data_download = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
             f"{self.name} data download")
 
-    def update_cpu_needed(self):
-        self.cpu_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.core).set_label(
+    def update_compute_needed(self):
+        self.compute_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(
             f"{self.name} CPU needed")
 
     def update_ram_needed(self):

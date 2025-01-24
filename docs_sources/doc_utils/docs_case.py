@@ -40,12 +40,12 @@ autoscaling_server = Autoscaling(
     lifespan=SourceValue(6 * u.year, source=None),
     idle_power=SourceValue(50 * u.W, source=None),
     ram=SourceValue(128 * u.GB, source=None),
-    cpu_cores=SourceValue(24 * u.core, source=None),
+    compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     base_ram_consumption=SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption=SourceValue(2 * u.core, source=None),
+    base_compute_consumption=SourceValue(2 * u.cpu_core, source=None),
     storage=storage
 )
 
@@ -56,12 +56,12 @@ serverless_server = Serverless(
     lifespan=SourceValue(6 * u.year, source=None),
     idle_power=SourceValue(50 * u.W, source=None),
     ram=SourceValue(128 * u.GB, source=None),
-    cpu_cores=SourceValue(24 * u.core, source=None),
+    compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption = SourceValue(2 * u.core, source=None),
+    base_compute_consumption = SourceValue(2 * u.cpu_core, source=None),
     storage=default_ssd()
 )
 
@@ -72,13 +72,13 @@ on_premise_server = OnPremise(
     lifespan=SourceValue(6 * u.year, source=None),
     idle_power=SourceValue(50 * u.W, source=None),
     ram=SourceValue(128 * u.GB, source=None),
-    cpu_cores=SourceValue(24 * u.core, source=None),
+    compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     fixed_nb_of_instances=EmptyExplainableObject(),
     base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption = SourceValue(2 * u.core, source=None),
+    base_compute_consumption = SourceValue(2 * u.cpu_core, source=None),
     storage=default_ssd()
 )
 
@@ -93,7 +93,7 @@ streaming_step = UserJourneyStep(
             data_download=SourceValue(800 * u.MB, source=None),
             data_stored=SourceValue(0.05 * u.MB, source=None),
             request_duration=SourceValue(4 * u.min, source=None),
-            cpu_needed=SourceValue(1 * u.core, source=None),
+            compute_needed=SourceValue(1 * u.cpu_core, source=None),
             ram_needed=SourceValue(50 * u.MB, source=None)
             )
         ]

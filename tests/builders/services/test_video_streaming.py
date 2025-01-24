@@ -32,11 +32,11 @@ class TestVideoStreamingJob(unittest.TestCase):
             self.job.update_data_download()
         self.assertTrue(abs(self.job.data_download.value - 30 * u.dimensionless) < 1e-5 * u.dimensionless)
 
-    def test_update_cpu_needed(self):
+    def test_update_compute_needed(self):
         with patch.object(self.job, "dynamic_bitrate", SourceValue(3 * u.GB / u.s)), \
-            patch.object(self.service, "static_delivery_cpu_cost", SourceValue(4 * u.core / (u.GB / u.s))):
-            self.job.update_cpu_needed()
-        self.assertTrue(self.job.cpu_needed.value, 12 * u.core)
+            patch.object(self.service, "static_delivery_cpu_cost", SourceValue(4 * u.cpu_core / (u.GB / u.s))):
+            self.job.update_compute_needed()
+        self.assertTrue(self.job.compute_needed.value, 12 * u.cpu_core)
 
     def test_update_ram_needed(self):
         with patch.object(self.service, "ram_buffer_per_user", SourceValue(50 * u.MB)):

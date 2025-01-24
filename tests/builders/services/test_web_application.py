@@ -25,7 +25,7 @@ class TestWebApplication(unittest.TestCase):
 class TestWebApplicationJob(unittest.TestCase):
     @patch("efootprint.builders.services.web_application.default_request_duration")
     @patch("efootprint.builders.services.web_application.ECOBENCHMARK_DF")
-    def test_update_cpu_needed(self, mock_ecobenchmark_df, mock_default_request_duration):
+    def test_update_compute_needed(self, mock_ecobenchmark_df, mock_default_request_duration):
         mock_ecobenchmark_df.__getitem__.side_effect = pd.DataFrame.from_dict(
             {"service": ["php-symfony"], "use_case": ["default"],
              "avg_cpu_core_per_request": [0.5], "avg_ram_per_request_in_MB": [512]}).__getitem__
@@ -37,8 +37,8 @@ class TestWebApplicationJob(unittest.TestCase):
             "test job", service=service, data_upload=SourceValue(1 * u.MB),
             data_stored=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
             implementation_details=SourceObject("default"))
-        job.update_cpu_needed()
-        self.assertEqual(job.cpu_needed, SourceValue(0.5 * u.core))
+        job.update_compute_needed()
+        self.assertEqual(job.compute_needed, SourceValue(0.5 * u.cpu_core))
 
     @patch("efootprint.builders.services.web_application.default_request_duration")
     @patch("efootprint.builders.services.web_application.ECOBENCHMARK_DF")

@@ -135,10 +135,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Default server to process streaming from hypothesis",
                 "value": 1,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -196,10 +196,10 @@
                     "link": null
                 }
             },
-            "cpu_needed": {
+            "compute_needed": {
                 "label": "CPU needed on server Default server to process upload from hypothesis",
                 "value": 1,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -292,10 +292,10 @@
                     "link": null
                 }
             },
-            "cpu_cores": {
+            "compute": {
                 "label": "Nb cpus cores of Default server from user data",
                 "value": 24,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "user data",
                     "link": null
@@ -319,10 +319,10 @@
                     "link": null
                 }
             },
-            "base_cpu_consumption": {
+            "base_compute_consumption": {
                 "label": "Base CPU consumption of Youtube from hypothesis",
                 "value": 2,
-                "unit": "core",
+                "unit": "cpu_core",
                 "source": {
                     "name": "hypothesis",
                     "link": null

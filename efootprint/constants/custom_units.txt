@@ -1,2 +1,3 @@
-core = [cpu] = core
+cpu_core = [cpu_core] = cpu_core
+gpu = [gpu] = gpu
 year = 365.25 day = yr

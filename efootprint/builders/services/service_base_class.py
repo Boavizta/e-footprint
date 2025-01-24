@@ -10,7 +10,7 @@ class Service(ModelingObject):
         self.name = name
         self.server = server
         self.base_ram_consumption = EmptyExplainableObject()
-        self.base_cpu_consumption = EmptyExplainableObject()
+        self.base_compute_consumption = EmptyExplainableObject()
 
     def after_init(self):
         super().after_init()

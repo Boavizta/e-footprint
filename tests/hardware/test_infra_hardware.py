@@ -41,9 +41,9 @@ class TestInfraHardware(TestCase):
         self.job1.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.GB))
         self.job2.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.GB))
         self.job3.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.GB))
-        self.job1.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.core))
-        self.job2.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.core))
-        self.job3.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.core))
+        self.job1.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.cpu_core))
+        self.job2.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.cpu_core))
+        self.job3.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.cpu_core))
 
         self.test_infra_hardware_single_job = deepcopy(self.test_infra_hardware)
         self.test_infra_hardware_single_job.contextual_modeling_obj_containers = [
