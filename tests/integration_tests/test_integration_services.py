@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from efootprint.builders.hardware.gpu_server import GPUServer
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob

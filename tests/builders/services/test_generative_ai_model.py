@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.hardware.server import Server
-from efootprint.builders.hardware.gpu_server import GPUServer
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 
 

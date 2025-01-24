@@ -6,7 +6,7 @@ from ecologits.utils.range_value import RangeValue
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import Source, SourceValue, Sources, SourceObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
-from efootprint.builders.hardware.gpu_server import GPUServer
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.core.usage.job import Job

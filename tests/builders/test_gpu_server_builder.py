@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.builders.hardware.gpu_server import GPUServer
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.storage import Storage
 
 
