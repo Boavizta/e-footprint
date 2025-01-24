@@ -6,10 +6,10 @@ from ecologits.utils.range_value import RangeValue
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import Source, SourceValue, Sources, SourceObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.builders.services.service_job_base_class import ServiceJob
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
-from efootprint.core.usage.job import Job
 
 models = ModelRepository.from_json()
 
@@ -111,7 +111,7 @@ class GenAIModel(Service):
 
 
 
-class GenAIJob(Job):
+class GenAIJob(ServiceJob):
     @classmethod
     def default_values(cls):
         return {
@@ -130,14 +130,13 @@ class GenAIJob(Job):
         """
         super().__init__(
             name or f"request to {service.model_name} installed on {service.server.name}",
-            service.server,
+            service,
             data_upload=SourceValue(100 * u.kB),
             data_stored=SourceValue(0 * u.kB),
             data_download=SourceValue(0 * u.kB),
             request_duration=SourceValue(0 * u.s),
             compute_needed=SourceValue(0 * u.gpu),
             ram_needed=SourceValue(0 * u.GB))
-        self.service = service
         self.output_token_count = output_token_count
         self.output_token_weights = EmptyExplainableObject()
 

@@ -5,9 +5,9 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.builders.services.service_base_class import Service
+from efootprint.builders.services.service_job_base_class import ServiceJob
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
-from efootprint.core.usage.job import Job
 
 
 class VideoStreaming(Service):
@@ -31,7 +31,7 @@ class VideoStreaming(Service):
         self.ram_buffer_per_user = ram_buffer_per_user.set_label(f"{self.name} RAM buffer size per user")
 
 
-class VideoStreamingJob(Job):
+class VideoStreamingJob(ServiceJob):
     @classmethod
     def default_values(cls):
         return {
@@ -51,9 +51,8 @@ class VideoStreamingJob(Job):
     def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
                  video_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
-                         service.server, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
+                         service, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
                          video_duration, SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
-        self.service = service
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.frames_per_second = frames_per_second.set_label(f"{self.name} frames per second")
         self.dynamic_bitrate = EmptyExplainableObject()

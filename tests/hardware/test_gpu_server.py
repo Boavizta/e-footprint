@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.builders.services.generative_ai_ecologits import GenAIModel
 from efootprint.constants.units import u
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.storage import Storage
@@ -12,6 +13,9 @@ class TestGPUServer(unittest.TestCase):
         self.gpu_server = GPUServer.from_defaults(
             "Test GPU Server Builder", storage=Storage.from_defaults("default storage"))
         self.gpu_server.trigger_modeling_updates = False
+
+    def test_installable_services(self):
+        self.assertEqual(GPUServer.installable_services(), [GenAIModel])
 
     def test_update_carbon_footprint_fabrication(self):
         with patch.object(self.gpu_server, "compute", SourceValue(4 * u.gpu)), \

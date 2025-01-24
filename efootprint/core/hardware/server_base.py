@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import List
 
 import numpy as np
@@ -30,6 +31,22 @@ class ServerTypes:
 
 
 class ServerBase(InfraHardware):
+    @classmethod
+    @abstractmethod
+    def default_values(cls):
+        pass
+
+    @classmethod
+    def installable_services(cls) -> List:
+        from efootprint.core.all_classes_in_order import SERVICE_CLASSES
+        installable_services = []
+        for service_class in SERVICE_CLASSES:
+            if cls in service_class.installable_on():
+                installable_services.append(service_class)
+
+        return installable_services
+
+
     def __init__(self, name: str, server_type: ExplainableObject, carbon_footprint_fabrication: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,

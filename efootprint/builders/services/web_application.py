@@ -6,8 +6,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source, SourceObject
 from efootprint.builders.services.service_base_class import Service
+from efootprint.builders.services.service_job_base_class import ServiceJob
 from efootprint.core.hardware.server import Server
-from efootprint.core.usage.job import Job
 from efootprint.builders.services.ecobenchmark_analysis.ecobenchmark_data_analysis import ECOBENCHMARK_DATA, \
     ECOBENCHMARK_RESULTS_LINK, default_request_duration
 from efootprint.constants.units import u
@@ -42,7 +42,7 @@ class WebApplication(Service):
         self.technology = technology.set_label(f"Technology used in {self.name}")
 
 
-class WebApplicationJob(Job):
+class WebApplicationJob(ServiceJob):
     @classmethod
     def default_values(cls):
         return {
@@ -61,9 +61,8 @@ class WebApplicationJob(Job):
                  data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
                  implementation_details: ExplainableObject):
         super().__init__(
-            name, service.server, data_upload, data_download, data_stored, request_duration=default_request_duration(),
+            name, service, data_upload, data_download, data_stored, request_duration=default_request_duration(),
             compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB))
-        self.service = service
         self.implementation_details = implementation_details.set_label(f"{self.name} implementation details")
 
     @property

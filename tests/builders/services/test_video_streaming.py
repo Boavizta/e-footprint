@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
+from efootprint.core.hardware.server import Server
 
 
 class TestVideoStreamingJob(unittest.TestCase):
@@ -17,6 +18,15 @@ class TestVideoStreamingJob(unittest.TestCase):
         self.service.ram_buffer_per_user = EmptyExplainableObject()
         self.job = VideoStreamingJob.from_defaults("Test Job", service=self.service)
         self.job.trigger_modeling_updates = False
+
+    def test_installable_on(self):
+        self.assertEqual(VideoStreaming.installable_on(), [Server])
+
+    def test_compatible_services(self):
+        self.assertEqual(VideoStreamingJob.compatible_services(), [VideoStreaming])
+
+    def test_compatible_jobs(self):
+        self.assertEqual(VideoStreaming.compatible_jobs(), [VideoStreamingJob])
 
     def test_update_dynamic_bitrate(self):
         with patch.object(self.job, "resolution", SourceObject("1080p (1920 x 1080)")), \

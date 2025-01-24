@@ -14,11 +14,11 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 
 
-SERVICES_CLASSES = [WebApplication, VideoStreaming, GenAIModel]
-JOB_CLASSES = [Job, WebApplicationJob, VideoStreamingJob, GenAIJob]
+SERVICE_CLASSES = [WebApplication, VideoStreaming, GenAIModel]
+SERVICE_JOB_CLASSES = [WebApplicationJob, VideoStreamingJob, GenAIJob]
 SERVER_CLASSES = [Server, GPUServer]
 
 
 ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER = (
-        [UserJourneyStep, UserJourney, Hardware, Country, UsagePattern] + SERVICES_CLASSES + JOB_CLASSES + [Network]
-        + SERVER_CLASSES + [Storage, System])
+        [UserJourneyStep, UserJourney, Hardware, Country, UsagePattern] + SERVICE_CLASSES + [Job] + SERVICE_JOB_CLASSES
+        + [Network] + SERVER_CLASSES + [Storage, System])

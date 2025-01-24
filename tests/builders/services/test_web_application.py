@@ -15,7 +15,11 @@ class TestWebApplication(unittest.TestCase):
         self.server = mock_server
         self.builder = WebApplication("test", self.server, SourceObject("php-symfony"))
 
+    def test_installable_on(self):
+        self.assertEqual(WebApplication.installable_on(), [Server])
 
+    def test_compatible_jobs(self):
+        self.assertEqual(WebApplication.compatible_jobs(), [WebApplicationJob])
 
     def test_web_application_builder_raises_valueerror_if_technology_is_not_in_list(self):
         with self.assertRaises(ValueError):
@@ -23,6 +27,9 @@ class TestWebApplication(unittest.TestCase):
 
 
 class TestWebApplicationJob(unittest.TestCase):
+    def test_compatible_services(self):
+        self.assertEqual(WebApplicationJob.compatible_services(), [WebApplication])
+
     @patch("efootprint.builders.services.web_application.default_request_duration")
     @patch("efootprint.builders.services.web_application.ECOBENCHMARK_DF")
     def test_update_compute_needed(self, mock_ecobenchmark_df, mock_default_request_duration):
