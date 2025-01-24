@@ -155,7 +155,6 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
-            "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -184,7 +183,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of streaming to Server 1 from hypothesis",
+                "label": "Request duration of streaming from hypothesis",
                 "value": 4.0,
                 "unit": "minute",
                 "source": {
@@ -209,12 +208,12 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Server-1"
         },
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
-            "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -243,7 +242,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of upload to Server 1 from hypothesis",
+                "label": "Request duration of upload from hypothesis",
                 "value": 0.4,
                 "unit": "second",
                 "source": {
@@ -268,12 +267,12 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Server-1"
         },
         "uuid-dailymotion": {
             "name": "dailymotion",
             "id": "uuid-dailymotion",
-            "server": "uuid-Server-1",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
                 "value": 300.0,
@@ -302,7 +301,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of dailymotion to Server 1 from hypothesis",
+                "label": "Request duration of dailymotion from hypothesis",
                 "value": 1.0,
                 "unit": "second",
                 "source": {
@@ -327,12 +326,12 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Server-1"
         },
         "uuid-tiktok": {
             "name": "tiktok",
             "id": "uuid-tiktok",
-            "server": "uuid-Server-2",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
                 "value": 0.0,
@@ -361,7 +360,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of tiktok to Server 2 from hypothesis",
+                "label": "Request duration of tiktok from hypothesis",
                 "value": 4.0,
                 "unit": "minute",
                 "source": {
@@ -386,12 +385,12 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Server-2"
         },
         "uuid-tiktok-analytics": {
             "name": "tiktok analytics",
             "id": "uuid-tiktok-analytics",
-            "server": "uuid-TikTok-Analytics-server",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
                 "value": 50.0,
@@ -420,7 +419,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of tiktok analytics to TikTok Analytics server from hypothesis",
+                "label": "Request duration of tiktok analytics from hypothesis",
                 "value": 4.0,
                 "unit": "minute",
                 "source": {
@@ -445,7 +444,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-TikTok-Analytics-server"
         }
     },
     "Server": {
@@ -825,24 +825,6 @@
         "uuid-Default-SSD-storage-1": {
             "name": "Default SSD storage 1",
             "id": "uuid-Default-SSD-storage-1",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage 1 from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power": {
-                "label": "Power of Default SSD storage 1 from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
             "lifespan": {
                 "label": "Lifespan of Default SSD storage 1 from hypothesis",
                 "value": 6.0,
@@ -859,6 +841,24 @@
                 "source": {
                     "name": "hypothesis",
                     "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage 1 per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage 1 per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
             "idle_power": {
@@ -914,24 +914,6 @@
         "uuid-Default-SSD-storage-2": {
             "name": "Default SSD storage 2",
             "id": "uuid-Default-SSD-storage-2",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage 2 from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power": {
-                "label": "Power of Default SSD storage 2 from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
             "lifespan": {
                 "label": "Lifespan of Default SSD storage 2 from hypothesis",
                 "value": 6.0,
@@ -948,6 +930,24 @@
                 "source": {
                     "name": "hypothesis",
                     "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage 2 per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage 2 per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
             "idle_power": {
@@ -1003,24 +1003,6 @@
         "uuid-TikTok-Analytics-storage": {
             "name": "TikTok Analytics storage",
             "id": "uuid-TikTok-Analytics-storage",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power": {
-                "label": "Power of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
             "lifespan": {
                 "label": "Lifespan of TikTok Analytics storage from hypothesis",
                 "value": 6.0,
@@ -1037,6 +1019,24 @@
                 "source": {
                     "name": "hypothesis",
                     "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / gigabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
             "idle_power": {

@@ -47,3 +47,7 @@ class Service(ModelingObject):
     @property
     def systems(self) -> List:
         return self.server.systems
+
+    @property
+    def jobs(self) -> List[ModelingObject]:
+        return self.modeling_obj_containers

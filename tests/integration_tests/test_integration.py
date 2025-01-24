@@ -32,8 +32,9 @@ class IntegrationTest(IntegrationTestBaseClass):
     def setUpClass(cls):
         cls.storage = Storage(
             "Default SSD storage",
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -190,8 +191,9 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_server(self):
         new_storage = Storage(
             "new SSD storage, identical in specs to default one",
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -237,8 +239,9 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_storage(self):
         new_storage = Storage(
             "New storage, identical in specs to Default SSD storage",
-            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),

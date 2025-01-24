@@ -18,8 +18,8 @@ class Storage(InfraHardware):
     @classmethod
     def default_values(cls):
         return {
-            "carbon_footprint_fabrication": SourceValue(160 * u.kg),
-            "power": SourceValue(1.3 * u.W),
+            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg),
+            "power_per_storage_capacity": SourceValue(1.3 * u.W),
             "lifespan": SourceValue(6 * u.years),
             "idle_power": SourceValue(0 * u.W),
             "storage_capacity": SourceValue(1 * u.TB),
@@ -31,8 +31,9 @@ class Storage(InfraHardware):
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "power": SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+                160 * u.kg / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power_per_storage_capacity": SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years, Sources.HYPOTHESIS),
             "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -48,8 +49,9 @@ class Storage(InfraHardware):
     @classmethod
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication": SourceValue(20 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "power": SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+                20 * u.kg / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power_per_storage_capacity": SourceValue(4.2 * u.W / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years, Sources.HYPOTHESIS),
             "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -66,15 +68,17 @@ class Storage(InfraHardware):
     def archetypes(cls):
         return [cls.ssd, cls.hdd]
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
-                 lifespan: ExplainableQuantity, idle_power: ExplainableQuantity, storage_capacity: ExplainableQuantity,
-                 data_replication_factor: ExplainableQuantity, data_storage_duration: ExplainableQuantity,
-                 base_storage_need: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_fabrication_per_storage_capacity: ExplainableQuantity,
+                 power_per_storage_capacity: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
+                 storage_capacity: ExplainableQuantity, data_replication_factor: ExplainableQuantity,
+                 data_storage_duration: ExplainableQuantity, base_storage_need: ExplainableQuantity,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.storage_delta = EmptyExplainableObject()
-        self.full_cumulative_storage_need = EmptyExplainableObject()
-        self.nb_of_active_instances = EmptyExplainableObject()
+        super().__init__(
+            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
+        self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
+        .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
+        self.power_per_storage_capacity = power_per_storage_capacity.set_label(
+            f"Power of {self.name} per storage capacity")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor of {self.name}")
@@ -82,6 +86,9 @@ class Storage(InfraHardware):
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.dimensionless)
+        self.storage_delta = EmptyExplainableObject()
+        self.full_cumulative_storage_need = EmptyExplainableObject()
+        self.nb_of_active_instances = EmptyExplainableObject()
 
     @property
     def server(self) -> Type["Server"]:
@@ -97,8 +104,9 @@ class Storage(InfraHardware):
     @property
     def calculated_attributes(self):
         return (
-            ["storage_delta", "full_cumulative_storage_need", "raw_nb_of_instances", "nb_of_instances",
-             "nb_of_active_instances", "instances_fabrication_footprint", "instances_energy", "energy_footprint"])
+            ["carbon_footprint_fabrication", "power", "storage_delta", "full_cumulative_storage_need",
+             "raw_nb_of_instances", "nb_of_instances", "nb_of_active_instances", "instances_fabrication_footprint",
+             "instances_energy", "energy_footprint"])
 
     @property
     def jobs(self) -> List[Type["Job"]]:
@@ -119,6 +127,14 @@ class Storage(InfraHardware):
             return self.server.average_carbon_intensity
         else:
             return EmptyExplainableObject()
+
+    def update_carbon_footprint_fabrication(self):
+        self.carbon_footprint_fabrication = (
+                self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
+            f"Carbon footprint of {self.name}")
+
+    def update_power(self):
+        self.power = (self.power_per_storage_capacity * self.storage_capacity).set_label(f"Power of {self.name}")
 
     # If storage_needed, storage_freed and automatic_storage_dumps_after_storage_duration had their update function
     # and were attributes of the storage class then the update of the data_stored attribute of a job from positive to

@@ -335,19 +335,19 @@
         "uuid-Default-SSD-storage": {
             "name": "Default SSD storage",
             "id": "uuid-Default-SSD-storage",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 160,
-                "unit": "kilogram",
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
-            "power": {
-                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 1.3,
-                "unit": "watt",
+                "unit": "watt / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -442,19 +442,19 @@
         "uuid-Default-SSD-storage-bis": {
             "name": "Default SSD storage bis",
             "id": "uuid-Default-SSD-storage-bis",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 160,
-                "unit": "kilogram",
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
-            "power": {
-                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 1.3,
-                "unit": "watt",
+                "unit": "watt / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"

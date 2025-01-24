@@ -28,7 +28,7 @@ class Server(ServerBase):
 
     @classmethod
     def list_values(cls):
-        return {"server_type": [ServerTypes.autoscaling(), ServerTypes.on_premise(), ServerTypes.serverless()]}
+        return {"server_type": ServerTypes.all()}
 
     @classmethod
     def conditional_list_values(cls):

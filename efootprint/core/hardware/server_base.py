@@ -29,6 +29,10 @@ class ServerTypes:
     def serverless(cls):
         return SourceObject("serverless")
 
+    @classmethod
+    def all(cls):
+        return [cls.autoscaling(), cls.on_premise(), cls.serverless()]
+
 
 class ServerBase(InfraHardware):
     @classmethod
@@ -98,9 +102,13 @@ class ServerBase(InfraHardware):
 
     @property
     def jobs(self) -> List[ModelingObject]:
-        from efootprint.core.usage.job import Job
+        from efootprint.core.usage.job import JobBase
 
-        return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Job)]
+        return (
+            [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, JobBase)]
+            + sum([service.jobs for service in self.installed_services], [])
+            )
+
 
     @property
     def installed_services(self) -> List[ModelingObject]:

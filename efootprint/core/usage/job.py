@@ -1,4 +1,5 @@
 import math
+from abc import abstractmethod
 from copy import copy
 from typing import List, Type
 
@@ -12,19 +13,13 @@ from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 
 
-class Job(ModelingObject):
+class JobBase(ModelingObject):
     @classmethod
+    @abstractmethod
     def default_values(cls):
-        return {
-            "data_upload": SourceValue(150 * u.kB),
-            "data_download": SourceValue(2 * u.MB),
-            "data_stored": SourceValue(100 * u.kB),
-            "request_duration": SourceValue(1 * u.s),
-            "compute_needed": SourceValue(0.1 * u.cpu_core),
-            "ram_needed": SourceValue(50 * u.MB)
-        }
+        pass
 
-    def __init__(self, name: str, server: Server, data_upload: ExplainableQuantity,
+    def __init__(self, name: str, data_upload: ExplainableQuantity,
                  data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
@@ -38,7 +33,6 @@ class Job(ModelingObject):
         self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
-        self.server = ContextualModelingObjectAttribute(server)
         if data_upload.value.magnitude < 0:
             raise ValueError(f"Variable 'data_upload' must be greater than 0, got {data_upload.value}")
         self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
@@ -46,11 +40,9 @@ class Job(ModelingObject):
             raise ValueError(f"Variable 'data_download' must be greater than 0, got {data_download.value}")
         self.data_download = data_download.set_label(f"Data download of request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
-        self.request_duration = request_duration.set_label(f"Request duration of {self.name} to {server.name}")
-        self.ram_needed = ram_needed.set_label(
-            f"RAM needed on server {self.server.name} to process {self.name}")
-        self.compute_needed = compute_needed.set_label(
-            f"CPU needed on server {self.server.name} to process {self.name}")
+        self.request_duration = request_duration.set_label(f"Request duration of {self.name}")
+        self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}")
+        self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
 
     @property
     def calculated_attributes(self) -> List[str]:
@@ -89,7 +81,7 @@ class Job(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server] + self.networks
+        return self.networks
 
     def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
         job_occurrences = EmptyExplainableObject()
@@ -179,3 +171,30 @@ class Job(ModelingObject):
     def update_hourly_data_stored_across_usage_patterns(self):
         self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_stored_per_usage_pattern", "data upload")
+
+
+class Job(JobBase):
+    @classmethod
+    def default_values(cls):
+        return {
+            "data_upload": SourceValue(150 * u.kB),
+            "data_download": SourceValue(2 * u.MB),
+            "data_stored": SourceValue(100 * u.kB),
+            "request_duration": SourceValue(1 * u.s),
+            "compute_needed": SourceValue(0.1 * u.cpu_core),
+            "ram_needed": SourceValue(50 * u.MB)
+        }
+
+    def __init__(self, name: str, server: Server, data_upload: ExplainableQuantity,
+                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
+                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
+                 ram_needed: ExplainableQuantity):
+        super().__init__(name, data_upload, data_download, data_stored, request_duration,
+                         compute_needed, ram_needed)
+        self.server = ContextualModelingObjectAttribute(server)
+        self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
+        self.compute_needed.set_label(f"CPU needed on server {self.server.name} to process {self.name}")
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me

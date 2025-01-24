@@ -1,5 +1,10 @@
+import json
+import os
 from datetime import datetime
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -9,7 +14,6 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
-from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -17,29 +21,16 @@ from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
+from efootprint.logger import logger
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
 class ServiceIntegrationTest(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
-        cls.storage = Storage.ssd(
-            "Web server storage",
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
-        )
-
-        cls.server = Server.from_defaults(
-            "Web server",
-            server_type=ServerTypes.on_premise(),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
-            storage=cls.storage
-        )
-        
+        cls.storage = Storage.ssd("Web server SSD storage")
+        cls.server = BoaviztaCloudServer.from_defaults(
+            "Web server", storage=cls.storage, base_ram_consumption=SourceValue(1 * u.GB))
         cls.gpu_server = GPUServer.from_defaults("GPU server", storage=Storage.ssd())
 
         cls.video_streaming_service = VideoStreaming.from_defaults(
@@ -100,12 +91,55 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
 
     def test_variations_on_services_inputs(self):
         self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],
-                                            special_mult={"base_ram_consumption": 57})
+                                            special_mult={"base_ram_consumption": 114, "ram_buffer_per_user": 500})
         self._test_variations_on_obj_inputs(
             self.genai_service, attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
             special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
         self._test_variations_on_obj_inputs(
-            self.web_application_service, attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
+            self.web_application_service,
+            attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
 
     def test_variations_on_services_inputs_after_json_to_system(self):
-        raise NotImplementedError("This test should be implemented")
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["VideoStreaming"].values())),
+            attrs_to_skip = ["base_compute_consumption"],
+            special_mult = {"base_ram_consumption": 114, "ram_buffer_per_user": 500})
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["GenAIModel"].values())),
+            attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
+            special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["WebApplication"].values())),
+            attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
+
+    def test_update_service_servers(self):
+        logger.info("Linking services to new servers")
+        new_server = BoaviztaCloudServer.from_defaults("New server", storage=Storage.ssd())
+        new_gpu_server = GPUServer.from_defaults("New GPU server", storage=Storage.ssd())
+        self.video_streaming_service.server = new_server
+        self.web_application_service.server = new_server
+        self.genai_service.server = new_gpu_server
+
+        self.assertEqual(self.server.installed_services, [])
+        self.assertEqual(self.server.jobs, [])
+        self.assertIsInstance(self.server.hour_by_hour_ram_need, EmptyExplainableObject)
+        self.assertIsInstance(self.server.hour_by_hour_compute_need, EmptyExplainableObject)
+        self.assertEqual(
+            set(new_server.installed_services), {self.video_streaming_service, self.web_application_service})
+        self.assertEqual(self.gpu_server.installed_services, [])
+        self.assertEqual(self.gpu_server.jobs, [])
+        self.assertIsInstance(self.gpu_server.hour_by_hour_ram_need, EmptyExplainableObject)
+        self.assertIsInstance(self.gpu_server.hour_by_hour_compute_need, EmptyExplainableObject)
+        self.assertEqual(set(new_gpu_server.installed_services), {self.genai_service})
+
+        logger.info("Linking services back to initial servers")
+        self.web_application_service.server = self.server
+        self.video_streaming_service.server = self.server
+        self.genai_service.server = self.gpu_server
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])

@@ -16,8 +16,8 @@ class TestStorage(TestCase):
     def setUp(self):
         self.storage_base = Storage(
             "storage_base",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power=SourceValue(0 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg/u.TB),
+            power_per_storage_capacity=SourceValue(0 * u.W / u.TB),
             lifespan=SourceValue(0 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),

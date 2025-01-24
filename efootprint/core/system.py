@@ -79,6 +79,7 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
+        logger.info(f"Starting computing {self.name} modeling")
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
         self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
         self.compute_calculated_attributes()

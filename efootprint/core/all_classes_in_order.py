@@ -1,3 +1,4 @@
+from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.hardware.hardware import Hardware
@@ -17,8 +18,9 @@ from efootprint.core.system import System
 SERVICE_CLASSES = [WebApplication, VideoStreaming, GenAIModel]
 SERVICE_JOB_CLASSES = [WebApplicationJob, VideoStreamingJob, GenAIJob]
 SERVER_CLASSES = [Server, GPUServer]
+SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 
 
 ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER = (
-        [UserJourneyStep, UserJourney, Hardware, Country, UsagePattern] + SERVICE_CLASSES + [Job] + SERVICE_JOB_CLASSES
-        + [Network] + SERVER_CLASSES + [Storage, System])
+        [UserJourneyStep, UserJourney, Hardware, Country, UsagePattern] + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
+        + [Job] + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES + [Storage, System])

@@ -89,7 +89,6 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
-            "server": "uuid-Default-server",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -118,7 +117,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of streaming to Default server from hypothesis",
+                "label": "Request duration of streaming from hypothesis",
                 "value": 4.0,
                 "unit": "minute",
                 "source": {
@@ -143,12 +142,12 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Default-server"
         },
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
-            "server": "uuid-Default-server",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -177,7 +176,7 @@
                 }
             },
             "request_duration": {
-                "label": "Request duration of upload to Default server from hypothesis",
+                "label": "Request duration of upload from hypothesis",
                 "value": 40.0,
                 "unit": "second",
                 "source": {
@@ -202,7 +201,8 @@
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "server": "uuid-Default-server"
         }
     },
     "Server": {
@@ -336,24 +336,6 @@
         "uuid-Default-SSD-storage": {
             "name": "Default SSD storage",
             "id": "uuid-Default-SSD-storage",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power": {
-                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
             "lifespan": {
                 "label": "Lifespan of Default SSD storage from hypothesis",
                 "value": 6.0,
@@ -370,6 +352,24 @@
                 "source": {
                     "name": "hypothesis",
                     "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
             "idle_power": {

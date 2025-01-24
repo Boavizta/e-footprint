@@ -1,11 +1,15 @@
 from abc import abstractmethod
 from inspect import signature
+from typing import List
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.builders.services.service_base_class import Service
-from efootprint.core.usage.job import Job
+from efootprint.core.usage.job import JobBase
 
 
-class ServiceJob(Job):
+class ServiceJob(JobBase):
     @classmethod
     @abstractmethod
     def default_values(cls):
@@ -18,6 +22,19 @@ class ServiceJob(Job):
 
         return [service_annotation]
 
-    def __init__(self, name: str, service: Service, *args, **kwargs):
-        super().__init__(name, service.server, *args, **kwargs)
-        self.service = service
+    def __init__(self, name: str, service: Service, data_upload: ExplainableQuantity,
+                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
+                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
+                 ram_needed: ExplainableQuantity):
+        super().__init__(name, data_upload, data_download, data_stored, request_duration, compute_needed, ram_needed)
+        self.service = ContextualModelingObjectAttribute(service)
+        self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
+        self.compute_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
+
+    @property
+    def server(self) -> ModelingObject:
+        return self.service.server
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me
