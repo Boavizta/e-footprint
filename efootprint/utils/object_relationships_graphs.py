@@ -9,14 +9,14 @@ COLOR_MAP = {
     "Hardware": "red",
     "Storage": "red",
     "UsagePattern": "blue",
-    "UserJourney": "dodgerblue",
-    "UserJourneyStep": "deepskyblue",
+    "UsageJourney": "dodgerblue",
+    "UsageJourneyStep": "deepskyblue",
     "Job": "palegoldenrod"
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = ["System", "Network", "Hardware", "Country", "Job", "Storage"]
 INFRA_VIEW_CLASSES_TO_IGNORE = [
-    "UsagePattern", "Network", "Hardware", "System", "UserJourney", "UserJourneyStep"]
+    "UsagePattern", "Network", "Hardware", "System", "UsageJourney", "UsageJourneyStep"]
 
 
 def build_object_relationships_graph(

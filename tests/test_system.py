@@ -27,14 +27,14 @@ class TestSystem(TestCase):
         self.usage_pattern.devices = [device]
         device.systems = []
         self.usage_pattern.country.systems = []
-        self.usage_pattern.user_journey.systems = []
+        self.usage_pattern.usage_journey.systems = []
         uj_step = MagicMock()
-        self.usage_pattern.user_journey.uj_steps = [uj_step]
+        self.usage_pattern.usage_journey.uj_steps = [uj_step]
         uj_step.systems = []
         job = MagicMock()
         uj_step.jobs = [job]
         job.systems = []
-        self.usage_pattern.user_journey.systems = []
+        self.usage_pattern.usage_journey.systems = []
         self.server = MagicMock()
         self.server.name = "server"
         self.server.systems = []
@@ -45,8 +45,8 @@ class TestSystem(TestCase):
         self.network.name = "network"
         self.network.systems = []
 
-        self.usage_pattern.user_journey.servers = {self.server}
-        self.usage_pattern.user_journey.storages = {self.storage}
+        self.usage_pattern.usage_journey.servers = {self.server}
+        self.usage_pattern.usage_journey.storages = {self.storage}
         self.usage_pattern.network = self.network
 
         self.server.instances_fabrication_footprint = SourceHourlyValues(

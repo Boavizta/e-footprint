@@ -2,8 +2,8 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.core.hardware.hardware import Hardware
-from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.servers.serverless import Serverless
@@ -82,7 +82,7 @@ on_premise_server = OnPremise(
     storage=default_ssd()
 )
 
-streaming_step = UserJourneyStep(
+streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
     jobs=[
@@ -99,7 +99,7 @@ streaming_step = UserJourneyStep(
         ]
     )
 
-user_journey = UserJourney("user journey", uj_steps=[streaming_step])
+usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])
 
 network = Network(
         "network",
@@ -107,7 +107,7 @@ network = Network(
 
 usage_pattern = UsagePattern(
     "usage pattern",
-    user_journey=user_journey,
+    usage_journey=usage_journey,
     devices=[
         Hardware(name="device on which the user journey is made",
                  carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
@@ -117,7 +117,7 @@ usage_pattern = UsagePattern(
     network=network,
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-    hourly_user_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year)))
+    hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year)))
 
 system = System("system", usage_patterns=[usage_pattern])
 

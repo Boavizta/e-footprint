@@ -165,7 +165,7 @@ class TestModelingObject(unittest.TestCase):
         magic_system = MagicMock()
         mod_obj2.systems = [magic_system]
 
-        mod_obj1.class_as_simple_str = "UserJourney"
+        mod_obj1.class_as_simple_str = "UsageJourney"
         mod_obj2.class_as_simple_str = "UsagePattern"
         mod_obj3.class_as_simple_str = "Job"
 
@@ -184,7 +184,7 @@ class TestModelingObject(unittest.TestCase):
         for mod_obj in [mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5]:
             mod_obj.systems = None
 
-        mod_obj5.class_as_simple_str = "UserJourney"
+        mod_obj5.class_as_simple_str = "UsageJourney"
         mod_obj1.class_as_simple_str = "UsagePattern"
         mod_obj2.class_as_simple_str = "Job"
         mod_obj4.class_as_simple_str = "Server"

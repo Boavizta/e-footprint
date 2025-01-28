@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
-    system, usage_pattern, user_journey, network, streaming_step, autoscaling_server, storage,
+    system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_server)
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
@@ -132,7 +132,7 @@ def generate_object_reference(automatically_update_yaml=False):
 
     nav_items = []
     for mod_obj in (
-            system, usage_pattern, user_journey, country, device, network, streaming_step,
+            system, usage_pattern, usage_journey, country, device, network, streaming_step,
             streaming_step.jobs[0], autoscaling_server, storage):
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)

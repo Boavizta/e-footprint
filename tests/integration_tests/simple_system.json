@@ -13,7 +13,7 @@
         "uuid-Youtube-usage-in-France": {
             "name": "Youtube usage in France",
             "id": "uuid-Youtube-usage-in-France",
-            "hourly_user_journey_starts": {
+            "hourly_usage_journey_starts": {
                 "label": "Youtube usage in France hourly nb of visits from hypothesis",
                 "values": [
                     1000.0,
@@ -33,7 +33,7 @@
                     "link": null
                 }
             },
-            "user_journey": "uuid-Daily-Youtube-usage",
+            "usage_journey": "uuid-Daily-Youtube-usage",
             "devices": [
                 "uuid-Default-laptop"
             ],
@@ -41,7 +41,7 @@
             "country": "uuid-France"
         }
     },
-    "UserJourney": {
+    "UsageJourney": {
         "uuid-Daily-Youtube-usage": {
             "name": "Daily Youtube usage",
             "id": "uuid-Daily-Youtube-usage",
@@ -51,7 +51,7 @@
             ]
         }
     },
-    "UserJourneyStep": {
+    "UsageJourneyStep": {
         "uuid-20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
             "id": "uuid-20-min-streaming-on-Youtube",

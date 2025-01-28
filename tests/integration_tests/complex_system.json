@@ -14,7 +14,7 @@
         "uuid-Video-watching-in-France-in-the-morning": {
             "name": "Video watching in France in the morning",
             "id": "uuid-Video-watching-in-France-in-the-morning",
-            "hourly_user_journey_starts": {
+            "hourly_usage_journey_starts": {
                 "label": "Video watching in France in the morning hourly nb of visits from hypothesis",
                 "values": [
                     1000.0,
@@ -34,7 +34,7 @@
                     "link": null
                 }
             },
-            "user_journey": "uuid-Daily-video-usage",
+            "usage_journey": "uuid-Daily-video-usage",
             "devices": [
                 "uuid-Default-laptop"
             ],
@@ -44,7 +44,7 @@
         "uuid-Video-watching-in-France-in-the-evening": {
             "name": "Video watching in France in the evening",
             "id": "uuid-Video-watching-in-France-in-the-evening",
-            "hourly_user_journey_starts": {
+            "hourly_usage_journey_starts": {
                 "label": "Video watching in France in the evening hourly nb of visits from hypothesis",
                 "values": [
                     4000.0,
@@ -64,7 +64,7 @@
                     "link": null
                 }
             },
-            "user_journey": "uuid-Daily-video-usage",
+            "usage_journey": "uuid-Daily-video-usage",
             "devices": [
                 "uuid-Default-laptop"
             ],
@@ -72,7 +72,7 @@
             "country": "uuid-France"
         }
     },
-    "UserJourney": {
+    "UsageJourney": {
         "uuid-Daily-video-usage": {
             "name": "Daily video usage",
             "id": "uuid-Daily-video-usage",
@@ -84,7 +84,7 @@
             ]
         }
     },
-    "UserJourneyStep": {
+    "UsageJourneyStep": {
         "uuid-20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
             "id": "uuid-20-min-streaming-on-Youtube",

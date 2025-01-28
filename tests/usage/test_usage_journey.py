@@ -5,17 +5,17 @@ from unittest.mock import MagicMock, patch, PropertyMock
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.constants.units import u
 
 
-class TestUserJourney(TestCase):
+class TestUsageJourney(TestCase):
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
         self.mock_check_value_type = patcher.start()
         self.addCleanup(patcher.stop)
-        self.user_journey = UserJourney("test user journey", uj_steps=[])
-        self.user_journey.trigger_modeling_updates = False
+        self.usage_journey = UsageJourney("test user journey", uj_steps=[])
+        self.usage_journey.trigger_modeling_updates = False
 
     def test_servers(self):
         server_1 = MagicMock()
@@ -29,10 +29,10 @@ class TestUserJourney(TestCase):
         job_2.server = server_2
         job_3.server = server_1
 
-        with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
+        with patch.object(UsageJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
             jobs_mock.return_value = [job_1, job_2, job_3]
-            self.assertEqual(2, len(self.user_journey.servers))
-            self.assertEqual({server_1, server_2}, set(self.user_journey.servers))
+            self.assertEqual(2, len(self.usage_journey.servers))
+            self.assertEqual({server_1, server_2}, set(self.usage_journey.servers))
 
     def test_storages(self):
         storage_1 = MagicMock()
@@ -49,10 +49,10 @@ class TestUserJourney(TestCase):
         job_2.server = server_2
         job_3.server = server_1
 
-        with patch.object(UserJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
+        with patch.object(UsageJourney, "jobs", new_callable=PropertyMock) as jobs_mock:
             jobs_mock.return_value = [job_1, job_2, job_3]
-            self.assertEqual(2, len(self.user_journey.storages))
-            self.assertEqual({storage_1, storage_2}, set(self.user_journey.storages))
+            self.assertEqual(2, len(self.usage_journey.storages))
+            self.assertEqual({storage_1, storage_2}, set(self.usage_journey.storages))
 
     def test_jobs(self):
         job1 = MagicMock()
@@ -64,23 +64,23 @@ class TestUserJourney(TestCase):
         uj_step1.jobs = [job1]
         uj_step2.jobs = [job2]
 
-        uj = UserJourney("test user journey", uj_steps=[uj_step1, uj_step2])
+        uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
 
         self.assertEqual(2, len(set(uj.jobs)))
         self.assertEqual({job1, job2}, set(uj.jobs))
 
     def test_update_duration_no_step(self):
-        self.user_journey.update_duration()
+        self.usage_journey.update_duration()
         expected_duration = EmptyExplainableObject()
 
-        self.assertEqual(self.user_journey.duration, expected_duration)
+        self.assertEqual(self.usage_journey.duration, expected_duration)
 
     def test_update_duration_with_multiple_steps(self):
         uj_step1 = MagicMock()
         uj_step1.user_time_spent = SourceValue(5 * u.min)
         uj_step2 = MagicMock()
         uj_step2.user_time_spent = SourceValue(3 * u.min)
-        uj = UserJourney("test user journey", uj_steps=[uj_step1, uj_step2])
+        uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
 
         uj.update_duration()
 

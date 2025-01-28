@@ -11,8 +11,8 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
-from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -96,13 +96,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.streaming_job = Job("streaming", cls.server1, data_transferred=SourceValue(1 * u.GB),
                                 data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
-        cls.streaming_step = UserJourneyStep(
+        cls.streaming_step = UsageJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
         cls.upload_job = Job("upload", cls.server1, data_transferred=SourceValue(300 * u.kB),
                              data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(0.4 * u.s),
                              ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
-        cls.upload_step = UserJourneyStep(
+        cls.upload_step = UsageJourneyStep(
             "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
@@ -110,7 +110,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
              data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
              ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.dailymotion_step = UserJourneyStep(
+        cls.dailymotion_step = UsageJourneyStep(
             "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
@@ -123,11 +123,11 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.tiktok_step = UserJourneyStep(
+        cls.tiktok_step = UsageJourneyStep(
             "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min),
             jobs=[cls.tiktok_job, cls.tiktok_analytics_job])
 
-        cls.uj = UserJourney(
+        cls.uj = UsageJourney(
             "Daily video usage", uj_steps=[cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step])
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -283,7 +283,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_uj_step = UserJourneyStep(
+        new_uj_step = UsageJourneyStep(
             "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
         self.uj.uj_steps += [new_uj_step]
 
@@ -331,7 +331,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         current_ups = copy(system.usage_patterns)
         new_up = UsagePattern(
-            "New usage pattern video watching in France", current_ups[0].user_journey, [Hardware.laptop()],
+            "New usage pattern video watching in France", current_ups[0].usage_journey, [Hardware.laptop()],
             current_ups[0].network, Countries.FRANCE(),
             SourceHourlyValues(
                 create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 23, 12, 52, 24, 51, 71, 85, 3]])))

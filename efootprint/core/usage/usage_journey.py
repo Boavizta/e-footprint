@@ -5,12 +5,12 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.job import Job
 
 
-class UserJourney(ModelingObject):
-    def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
+class UsageJourney(ModelingObject):
+    def __init__(self, name: str, uj_steps: List[UsageJourneyStep]):
         super().__init__(name)
         self.duration = EmptyExplainableObject()
         self.uj_steps = ListLinkedToModelingObj(uj_steps)

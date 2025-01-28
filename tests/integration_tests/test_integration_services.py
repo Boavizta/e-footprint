@@ -12,8 +12,8 @@ from efootprint.builders.services.web_application import WebApplication, WebAppl
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.core.hardware.hardware import Hardware
-from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -47,11 +47,11 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         cls.web_application_job = WebApplicationJob.from_defaults("web app job", service=cls.web_application_service)
         cls.genai_job = GenAIJob("GenAI job", cls.genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
 
-        cls.streaming_step = UserJourneyStep(
+        cls.streaming_step = UsageJourneyStep(
             "20 min streaming on Youtube with genAI chat", user_time_spent=SourceValue(20 * u.min),
             jobs=[cls.video_streaming_job, cls.web_application_job, cls.genai_job])
 
-        cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step])
+        cls.uj = UsageJourney("Daily Youtube usage", uj_steps=[cls.streaming_step])
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")

@@ -8,7 +8,7 @@ from efootprint.constants.units import u
 from efootprint.core.usage.job import Job
 
 
-class UserJourneyStep(ModelingObject):
+class UsageJourneyStep(ModelingObject):
     @classmethod
     def default_values(cls):
         return {"user_time_spent": SourceValue(1 * u.min)}
@@ -20,20 +20,20 @@ class UserJourneyStep(ModelingObject):
         self.jobs = ListLinkedToModelingObj(jobs)
 
     @property
-    def user_journeys(self) -> List[Type["UserJourney"]]:
+    def usage_journeys(self) -> List[Type["UsageJourney"]]:
         return self.modeling_obj_containers
 
     @property
     def usage_patterns(self) -> List[Type["UsagePattern"]]:
-        return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
+        return list(set(sum([uj.usage_patterns for uj in self.usage_journeys], start=[])))
 
     @property
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
-        if self.user_journeys:
-            return self.user_journeys
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsageJourney"]]:
+        if self.usage_journeys:
+            return self.usage_journeys
         else:
             return self.jobs

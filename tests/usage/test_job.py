@@ -56,9 +56,9 @@ class TestJob(TestCase):
         uj_step11.jobs = [self.job]
         uj_step11.user_time_spent = SourceValue(90 * u.min)
         usage_pattern = MagicMock()
-        usage_pattern.user_journey = uj1
+        usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
-        usage_pattern.utc_hourly_user_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
         self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
@@ -76,9 +76,9 @@ class TestJob(TestCase):
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = MagicMock()
-        usage_pattern.user_journey = uj1
+        usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
-        usage_pattern.utc_hourly_user_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
         self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
@@ -96,9 +96,9 @@ class TestJob(TestCase):
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = MagicMock()
-        usage_pattern.user_journey = uj1
+        usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
-        usage_pattern.utc_hourly_user_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
         self.assertEqual(hourly_uj_starts.value.index.min().to_timestamp() + timedelta(hours=1),
@@ -121,9 +121,9 @@ class TestJob(TestCase):
         uj_step13.jobs = [self.job, self.job]
         uj_step13.user_time_spent = SourceValue(1 * u.min)
         usage_pattern = MagicMock()
-        usage_pattern.user_journey = uj1
+        usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
-        usage_pattern.utc_hourly_user_journey_starts = hourly_uj_starts
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
         self.assertEqual(

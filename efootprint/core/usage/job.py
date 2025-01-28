@@ -55,16 +55,16 @@ class JobBase(ModelingObject):
                 f"{self.name} duration in full hours")
 
     @property
-    def user_journey_steps(self) -> List[Type["UserJourneyStep"]]:
+    def usage_journey_steps(self) -> List[Type["UsageJourneyStep"]]:
         return self.modeling_obj_containers
 
     @property
-    def user_journeys(self) -> List[Type["UserJourney"]]:
-        return list(set(sum([uj_step.user_journeys for uj_step in self.user_journey_steps], start=[])))
+    def usage_journeys(self) -> List[Type["UsageJourney"]]:
+        return list(set(sum([uj_step.usage_journeys for uj_step in self.usage_journey_steps], start=[])))
 
     @property
     def usage_patterns(self) -> List[Type["UsagePattern"]]:
-        return list(set(sum([uj_step.usage_patterns for uj_step in self.user_journey_steps], start=[])))
+        return list(set(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
 
     @property
     def systems(self) -> List[Type["System"]]:
@@ -81,10 +81,10 @@ class JobBase(ModelingObject):
     def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
         job_occurrences = EmptyExplainableObject()
         delay_between_uj_start_and_job_evt = EmptyExplainableObject()
-        for uj_step in usage_pattern.user_journey.uj_steps:
+        for uj_step in usage_pattern.usage_journey.uj_steps:
             for uj_step_job in uj_step.jobs:
                 if uj_step_job == self:
-                    job_occurrences += usage_pattern.utc_hourly_user_journey_starts.return_shifted_hourly_quantities(
+                    job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
                         delay_between_uj_start_and_job_evt)
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent

@@ -19,7 +19,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
     def test_create_unlinked_server(self):
         full_dict = deepcopy(self.base_system_dict)
-        with open(os.path.join(API_UTILS_TEST_DIR, "server_not_linked_to_user_journey.json"), "rb") as file:
+        with open(os.path.join(API_UTILS_TEST_DIR, "server_not_linked_to_usage_journey.json"), "rb") as file:
             full_dict["Server"].update(json.load(file))
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -29,7 +29,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
     def test_create_unlinked_uj(self):
         full_dict = deepcopy(self.base_system_dict)
         with open(os.path.join(API_UTILS_TEST_DIR, "uj_not_linked_to_usage_pattern.json"), "rb") as file:
-            full_dict["UserJourney"].update(json.load(file))
+            full_dict["UsageJourney"].update(json.load(file))
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 

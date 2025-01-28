@@ -4,7 +4,7 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.core.country import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware import Hardware
-from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.network import Network
@@ -15,25 +15,25 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 
 
 class UsagePattern(ModelingObject):
-    def __init__(self, name: str, user_journey: UserJourney, devices: List[Hardware],
-                 network: Network, country: Country, hourly_user_journey_starts: ExplainableHourlyQuantities):
+    def __init__(self, name: str, usage_journey: UsageJourney, devices: List[Hardware],
+                 network: Network, country: Country, hourly_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
-        self.utc_hourly_user_journey_starts = EmptyExplainableObject()
-        self.nb_user_journeys_in_parallel = EmptyExplainableObject()
+        self.utc_hourly_usage_journey_starts = EmptyExplainableObject()
+        self.nb_usage_journeys_in_parallel = EmptyExplainableObject()
         self.devices_energy = EmptyExplainableObject()
         self.devices_energy_footprint = EmptyExplainableObject()
         self.devices_fabrication_footprint = EmptyExplainableObject()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
-        self.hourly_user_journey_starts = hourly_user_journey_starts.set_label(f"{self.name} hourly nb of visits")
-        self.user_journey = ContextualModelingObjectAttribute(user_journey)
+        self.hourly_usage_journey_starts = hourly_usage_journey_starts.set_label(f"{self.name} hourly nb of visits")
+        self.usage_journey = ContextualModelingObjectAttribute(usage_journey)
         self.devices = ListLinkedToModelingObj(devices)
         self.network = ContextualModelingObjectAttribute(network)
         self.country = ContextualModelingObjectAttribute(country)
 
     @property
     def calculated_attributes(self):
-        return ["utc_hourly_user_journey_starts", "nb_user_journeys_in_parallel", "devices_energy",
+        return ["utc_hourly_usage_journey_starts", "nb_usage_journeys_in_parallel", "devices_energy",
                 "devices_energy_footprint", "devices_fabrication_footprint", "energy_footprint",
                 "instances_fabrication_footprint"]
 
@@ -43,30 +43,30 @@ class UsagePattern(ModelingObject):
 
     @property
     def jobs(self) -> List[Job]:
-        return self.user_journey.jobs
+        return self.usage_journey.jobs
 
     @property
     def systems(self) -> List:
         return self.modeling_obj_containers
 
-    def update_utc_hourly_user_journey_starts(self):
-        utc_hourly_user_journey_starts = self.hourly_user_journey_starts.convert_to_utc(
+    def update_utc_hourly_usage_journey_starts(self):
+        utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)
 
-        self.utc_hourly_user_journey_starts = utc_hourly_user_journey_starts.set_label(f"{self.name} UTC")
+        self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(f"{self.name} UTC")
 
-    def update_nb_user_journeys_in_parallel(self):
-        nb_of_user_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
-            self.utc_hourly_user_journey_starts, self.user_journey.duration)
+    def update_nb_usage_journeys_in_parallel(self):
+        nb_of_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
+            self.utc_hourly_usage_journey_starts, self.usage_journey.duration)
 
-        self.nb_user_journeys_in_parallel = nb_of_user_journeys_in_parallel.set_label(
+        self.nb_usage_journeys_in_parallel = nb_of_usage_journeys_in_parallel.set_label(
             f"{self.name} hourly nb of user journeys in parallel")
 
     def update_devices_energy(self):
         total_devices_energy_spent_over_one_full_hour = sum(
             [device.power for device in self.devices]) * ExplainableQuantity(1 * u.hour, "one full hour")
 
-        devices_energy = (self.nb_user_journeys_in_parallel * total_devices_energy_spent_over_one_full_hour).to(u.kWh)
+        devices_energy = (self.nb_usage_journeys_in_parallel * total_devices_energy_spent_over_one_full_hour).to(u.kWh)
 
         self.devices_energy = devices_energy.set_label(f"Energy consumed by {self.name} devices")
 
@@ -86,7 +86,7 @@ class UsagePattern(ModelingObject):
             devices_fabrication_footprint_over_one_hour += device_uj_fabrication_footprint
 
         devices_fabrication_footprint = (
-                self.nb_user_journeys_in_parallel * devices_fabrication_footprint_over_one_hour).to(u.kg, rounding=2)
+                self.nb_usage_journeys_in_parallel * devices_fabrication_footprint_over_one_hour).to(u.kg, rounding=2)
 
         self.devices_fabrication_footprint = devices_fabrication_footprint.set_label(
             f"Devices fabrication footprint of {self.name}")

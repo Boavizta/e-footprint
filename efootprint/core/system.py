@@ -14,7 +14,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject, \
     ExplainableHourlyQuantities
 from efootprint.logger import logger
@@ -63,16 +63,16 @@ class System(ModelingObject):
                                  f" e-footprint bug at https://github.com/Boavizta/e-footprint/issues")
 
     @property
-    def user_journeys(self) -> List[UserJourney]:
+    def usage_journeys(self) -> List[UsageJourney]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
-            output_set.update({usage_pattern.user_journey})
+            output_set.update({usage_pattern.usage_journey})
 
         return list(output_set)
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.user_journeys
+        return self.usage_journeys
 
     @property
     def systems(self) -> List:
@@ -91,14 +91,14 @@ class System(ModelingObject):
     def get_objects_linked_to_usage_patterns(self, usage_patterns: List[UsagePattern]):
         output_list =  self.storages_from_usage_patterns(usage_patterns) + usage_patterns + \
                       self.networks_from_usage_patterns(usage_patterns)
-        user_journeys = list(set([up.user_journey for up in usage_patterns]))
-        uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
+        usage_journeys = list(set([up.usage_journey for up in usage_patterns]))
+        uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
         servers = self.servers_from_usage_patterns(usage_patterns)
         services = list(set(sum([server.installed_services for server in servers], start=[])))
-        all_modeling_objects = output_list + user_journeys + uj_steps + jobs + devices + countries + servers + services
+        all_modeling_objects = output_list + usage_journeys + uj_steps + jobs + devices + countries + servers + services
 
         return all_modeling_objects
 
@@ -110,7 +110,7 @@ class System(ModelingObject):
     def servers_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Server]:
         output_set = set()
         for usage_pattern in usage_patterns:
-            output_set.update(usage_pattern.user_journey.servers)
+            output_set.update(usage_pattern.usage_journey.servers)
 
         return list(output_set)
 
@@ -122,7 +122,7 @@ class System(ModelingObject):
     def storages_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Storage]:
         output_set = set()
         for usage_pattern in usage_patterns:
-            output_set.update(usage_pattern.user_journey.storages)
+            output_set.update(usage_pattern.usage_journey.storages)
 
         return list(output_set)
 

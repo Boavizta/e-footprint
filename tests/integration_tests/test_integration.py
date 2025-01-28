@@ -10,8 +10,8 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.hardware.hardware import Hardware
 from efootprint.core.usage.job import Job
-from efootprint.core.usage.user_journey import UserJourney
-from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -65,17 +65,17 @@ class IntegrationTest(IntegrationTestBaseClass):
         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.streaming_step = UserJourneyStep(
+        cls.streaming_step = UsageJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
         cls.upload_job = Job("upload", server=cls.server, data_transferred=SourceValue(300 * u.MB),
             data_stored=SourceValue(300 * u.MB), request_duration=SourceValue(40 * u.s),
             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.upload_step = UserJourneyStep(
+        cls.upload_step = UsageJourneyStep(
             "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
 
-        cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
+        cls.uj = UsageJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
@@ -157,17 +157,17 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.initial_footprint = old_initial_footprint
         self._test_variations_on_obj_inputs(self.uj)
         self._test_variations_on_obj_inputs(self.network)
-        self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
+        self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job)
 
-    def test_hourly_user_journey_starts_update(self):
+    def test_hourly_usage_journey_starts_update(self):
         logger.warning("Updating hourly user journey starts")
-        initial_hourly_uj_starts = self.usage_pattern.hourly_user_journey_starts
-        self.usage_pattern.hourly_user_journey_starts = SourceHourlyValues(
+        initial_hourly_uj_starts = self.usage_pattern.hourly_usage_journey_starts
+        self.usage_pattern.hourly_usage_journey_starts = SourceHourlyValues(
             create_hourly_usage_df_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]))
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        self.usage_pattern.hourly_user_journey_starts = initial_hourly_uj_starts
+        self.usage_pattern.hourly_usage_journey_starts = initial_hourly_uj_starts
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_uj_step_update(self):
@@ -284,7 +284,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
-        new_step = UserJourneyStep(
+        new_step = UsageJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
             jobs=[Job("new job", self.server, data_transferred=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
@@ -301,16 +301,16 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
-    def test_update_user_journey(self):
+    def test_update_usage_journey(self):
         logger.warning("Changing user journey")
-        new_uj = UserJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
-        self.usage_pattern.user_journey = new_uj
+        new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
+        self.usage_pattern.usage_journey = new_uj
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern], system=self.system)
 
         logger.warning("Changing back to previous uj")
-        self.usage_pattern.user_journey = self.uj
+        self.usage_pattern.usage_journey = self.uj
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
@@ -348,7 +348,7 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_add_uj_step_without_job(self):
         logger.warning("Add uj step without job")
 
-        step_without_job = UserJourneyStep(
+        step_without_job = UsageJourneyStep(
             "User checks her phone", user_time_spent=SourceValue(20 * u.min), jobs=[])
 
         self.uj.uj_steps.append(step_without_job)
@@ -379,7 +379,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
-        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UserJourneyStep"].values())))
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UsageJourneyStep"].values())))
         server = next(iter(class_obj_dict["Server"].values()))
         self._test_variations_on_obj_inputs(
             server,
@@ -406,21 +406,21 @@ class IntegrationTest(IntegrationTestBaseClass):
         storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         self.assertEqual(old_initial_footprint, system.total_footprint)
         self.initial_footprint = old_initial_footprint
-        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UserJourney"].values())))
+        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["UsageJourney"].values())))
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Network"].values())))
         self._test_variations_on_obj_inputs(
-            next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_user_journey_starts"])
+            next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Job"].values())))
 
-    def test_update_user_journey_after_json_to_system(self):
+    def test_update_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-        new_uj = UserJourney("New version of daily Youtube usage",
-                             uj_steps=[next(iter(class_obj_dict["UserJourneyStep"].values()))])
+        new_uj = UsageJourney("New version of daily Youtube usage",
+                             uj_steps=[next(iter(class_obj_dict["UsageJourneyStep"].values()))])
         usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
-        previous_uj = usage_pattern.user_journey
-        usage_pattern.user_journey = new_uj
+        previous_uj = usage_pattern.usage_journey
+        usage_pattern.usage_journey = new_uj
 
         system = next(iter(class_obj_dict["System"].values()))
         storage = next(iter(class_obj_dict["Storage"].values()))
@@ -430,7 +430,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_changed([storage, server, network, usage_pattern])
 
         logger.warning("Changing back to previous uj")
-        usage_pattern.user_journey = previous_uj
+        usage_pattern.usage_journey = previous_uj
 
         self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
@@ -440,8 +440,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
         usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
-        user_journey = usage_pattern.user_journey
-        streaming_step = user_journey.uj_steps[0]
+        usage_journey = usage_pattern.usage_journey
+        streaming_step = usage_journey.uj_steps[0]
         previous_jobs = copy(streaming_step.jobs)
         system = next(iter(class_obj_dict["System"].values()))
         storage = next(iter(class_obj_dict["Storage"].values()))
