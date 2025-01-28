@@ -131,9 +131,8 @@ class GenAIJob(ServiceJob):
         super().__init__(
             name or f"request to {service.model_name} installed on {service.server.name}",
             service,
-            data_upload=SourceValue(100 * u.kB),
+            data_transferred=SourceValue(0 * u.kB),
             data_stored=SourceValue(0 * u.kB),
-            data_download=SourceValue(0 * u.kB),
             request_duration=SourceValue(0 * u.s),
             compute_needed=SourceValue(0 * u.gpu),
             ram_needed=SourceValue(0 * u.GB))
@@ -142,7 +141,7 @@ class GenAIJob(ServiceJob):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return (["output_token_weights", "data_stored", "data_download", "request_duration", "compute_needed"]
+        return (["output_token_weights", "data_stored", "data_transferred", "request_duration", "compute_needed"]
                 + super().calculated_attributes)
 
     def update_output_token_weights(self):
@@ -152,9 +151,9 @@ class GenAIJob(ServiceJob):
     def update_data_stored(self):
         self.data_stored = (SourceValue(100 * u.kB) + self.output_token_weights).set_label(f"{self.name} data stored")
 
-    def update_data_download(self):
-        self.data_download = (SourceValue(100 * u.kB) + self.output_token_weights).set_label(
-            f"{self.name} data download")
+    def update_data_transferred(self):
+        self.data_transferred = (SourceValue(100 * u.kB) + self.output_token_weights).set_label(
+            f"{self.name} data transferred")
 
     def update_request_duration(self):
         gpu_latency = self.output_token_count * (

@@ -89,7 +89,7 @@ streaming_step = UserJourneyStep(
         Job(
             "streaming",
             server=autoscaling_server,
-            data_upload=SourceValue(0.05 * u.MB, source=None),
+            data_transferred=SourceValue(0.05 * u.MB, source=None),
             data_download=SourceValue(800 * u.MB, source=None),
             data_stored=SourceValue(0.05 * u.MB, source=None),
             request_duration=SourceValue(4 * u.min, source=None),

@@ -22,11 +22,10 @@ class ServiceJob(JobBase):
 
         return [service_annotation]
 
-    def __init__(self, name: str, service: Service, data_upload: ExplainableQuantity,
-                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
-                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
-                 ram_needed: ExplainableQuantity):
-        super().__init__(name, data_upload, data_download, data_stored, request_duration, compute_needed, ram_needed)
+    def __init__(self, name: str, service: Service, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
+                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+        super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.service = ContextualModelingObjectAttribute(service)
         self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
         self.compute_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")

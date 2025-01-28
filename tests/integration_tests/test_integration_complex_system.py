@@ -93,38 +93,33 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.server3.base_compute_consumption = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
         cls.storage_3 = cls.server3.storage
 
-        cls.streaming_job = Job("streaming", cls.server1, data_upload=SourceValue(50 * u.kB),
-                                data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                                request_duration=SourceValue(4 * u.min),
+        cls.streaming_job = Job("streaming", cls.server1, data_transferred=SourceValue(1 * u.GB),
+                                data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.server1, data_upload=SourceValue(300 * u.kB),
-                             data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.kB),
-                             request_duration=SourceValue(0.4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                             compute_needed=SourceValue(1 * u.cpu_core))
+        cls.upload_job = Job("upload", cls.server1, data_transferred=SourceValue(300 * u.kB),
+                             data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(0.4 * u.s),
+                             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
         cls.upload_step = UserJourneyStep(
             "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
-            "dailymotion", cls.server1, data_upload=SourceValue(300 * u.kB),
-            data_download=SourceValue(3 * u.MB), data_stored=SourceValue(300 * u.kB),
-            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+            "dailymotion", cls.server1, data_transferred=SourceValue(3.3 * u.MB),
+             data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
+             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.dailymotion_step = UserJourneyStep(
             "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
-            "tiktok", cls.server2, data_upload=SourceValue(0 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
+            "tiktok", cls.server2, data_transferred=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.tiktok_analytics_job = Job(
-            "tiktok analytics", cls.server3, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue(0 * u.GB), data_stored=SourceValue(50 * u.kB),
+            "tiktok analytics", cls.server3, data_transferred=SourceValue(50 * u.kB), data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
@@ -284,8 +279,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_add_new_job(self):
         logger.warning("Adding job")
         new_job = Job(
-            "new job", self.server1, data_upload=SourceValue(300 * u.kB),
-            data_download=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
+            "new job", self.server1, data_transferred=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
             request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
@@ -368,10 +362,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         with self.assertRaises(ValueError):
             self.system.plot_emission_diffs(filepath=file)
 
-        self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
+        old_data_transferred = self.streaming_step.jobs[0].data_transferred
+        self.streaming_step.jobs[0].data_transferred = SourceValue(500 * u.kB)
         self.system.plot_emission_diffs(filepath=file)
-        self.streaming_step.jobs[0].data_upload = SourceValue(
-            50 * u.kB, label="Data upload of request streaming")
+        self.streaming_step.jobs[0].data_transferred = old_data_transferred
 
         self.assertTrue(os.path.isfile(file))
 
@@ -405,10 +399,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-                      data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                      request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-                      compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
@@ -446,15 +439,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-                      data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                      request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-                      compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
-                       data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                       request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-                       compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
@@ -476,15 +467,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-                      data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                      request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-                      compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
-                       data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-                       request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-                       compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+         compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate(
             [

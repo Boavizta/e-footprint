@@ -18,10 +18,8 @@ class TestNetwork(TestCase):
         usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
 
         job1 = MagicMock()
-        job1.hourly_data_upload_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
-        job1.hourly_data_download_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
+        job1.hourly_data_transferred_per_usage_pattern = {
+            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
         job1.usage_patterns = [usage_pattern]
 
         with patch.object(Network, "jobs", new_callable=PropertyMock) as mock_jobs,\
@@ -52,25 +50,19 @@ class TestNetwork(TestCase):
         usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
 
         job1 = MagicMock()
-        job1.hourly_data_upload_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
-        job1.hourly_data_download_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
+        job1.hourly_data_transferred_per_usage_pattern = {
+            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
         job1.usage_patterns = [usage_pattern]
 
         usage_pattern2 = MagicMock()
         usage_pattern2.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         usage_pattern3 = MagicMock()
         job2 = MagicMock()
-        job2.hourly_data_upload_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB)),
-            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB)),
+        job2.hourly_data_transferred_per_usage_pattern = {
+            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB)),
+            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB)),
             # Should be ignored in the calculation as usage_pattern3 will not be linked to the network
-            usage_pattern3: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
-        job2.hourly_data_download_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB)),
-            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB)),
-            usage_pattern3: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.GB))}
+            usage_pattern3: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
         job2.usage_patterns = [usage_pattern, usage_pattern2, usage_pattern3]
 
         with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups, \

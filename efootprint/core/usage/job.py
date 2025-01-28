@@ -19,26 +19,22 @@ class JobBase(ModelingObject):
     def default_values(cls):
         pass
 
-    def __init__(self, name: str, data_upload: ExplainableQuantity,
-                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
+    def __init__(self, name: str, data_transferred: ExplainableQuantity, data_stored: ExplainableQuantity,
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_upload_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_data_download_per_usage_pattern = ExplainableObjectDict()
+        self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
         self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
         self.hourly_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
-        self.hourly_data_upload_across_usage_patterns = EmptyExplainableObject()
+        self.hourly_data_transferred_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
-        if data_upload.value.magnitude < 0:
-            raise ValueError(f"Variable 'data_upload' must be greater than 0, got {data_upload.value}")
-        self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
-        if data_download.value.magnitude < 0:
-            raise ValueError(f"Variable 'data_download' must be greater than 0, got {data_download.value}")
-        self.data_download = data_download.set_label(f"Data download of request {self.name}")
+        if data_transferred.value.magnitude < 0:
+            raise ValueError(f"Variable 'data_transferred' must be greater than 0, got {data_transferred.value}")
+        self.data_transferred = data_transferred.set_label(
+            f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
         self.request_duration = request_duration.set_label(f"Request duration of {self.name}")
         self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}")
@@ -47,10 +43,9 @@ class JobBase(ModelingObject):
     @property
     def calculated_attributes(self) -> List[str]:
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
-                "hourly_data_upload_per_usage_pattern", "hourly_data_download_per_usage_pattern",
-                "hourly_data_stored_per_usage_pattern", "hourly_occurrences_across_usage_patterns",
-                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_upload_across_usage_patterns",
-                "hourly_data_stored_across_usage_patterns"]
+                "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
+                "hourly_occurrences_across_usage_patterns", "hourly_avg_occurrences_across_usage_patterns",
+                "hourly_data_transferred_across_usage_patterns", "hourly_data_stored_across_usage_patterns"]
 
     @property
     def duration_in_full_hours(self):
@@ -129,17 +124,11 @@ class JobBase(ModelingObject):
         return hourly_data_exchange.set_label(
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
 
-    def update_hourly_data_upload_per_usage_pattern(self):
-        self.hourly_data_upload_per_usage_pattern = ExplainableObjectDict()
+    def update_hourly_data_transferred_per_usage_pattern(self):
+        self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
-            self.hourly_data_upload_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
-                up, "data_upload")
-
-    def update_hourly_data_download_per_usage_pattern(self):
-        self.hourly_data_download_per_usage_pattern = ExplainableObjectDict()
-        for up in self.usage_patterns:
-            self.hourly_data_download_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
-                up, "data_download")
+            self.hourly_data_transferred_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
+                up, "data_transferred")
 
     def update_hourly_data_stored_per_usage_pattern(self):
         self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
@@ -164,33 +153,30 @@ class JobBase(ModelingObject):
         self.hourly_avg_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_avg_occurrences_per_usage_pattern", "average occurrences")
 
-    def update_hourly_data_upload_across_usage_patterns(self):
-        self.hourly_data_upload_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
-            "hourly_data_upload_per_usage_pattern", "data upload")
+    def update_hourly_data_transferred_across_usage_patterns(self):
+        self.hourly_data_transferred_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
+            "hourly_data_transferred_per_usage_pattern", "data transferred")
 
     def update_hourly_data_stored_across_usage_patterns(self):
         self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
-            "hourly_data_stored_per_usage_pattern", "data upload")
+            "hourly_data_stored_per_usage_pattern", "data stored")
 
 
 class Job(JobBase):
     @classmethod
     def default_values(cls):
         return {
-            "data_upload": SourceValue(150 * u.kB),
-            "data_download": SourceValue(2 * u.MB),
+            "data_transferred": SourceValue(150 * u.kB),
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),
             "compute_needed": SourceValue(0.1 * u.cpu_core),
             "ram_needed": SourceValue(50 * u.MB)
         }
 
-    def __init__(self, name: str, server: Server, data_upload: ExplainableQuantity,
-                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
-                 request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
-                 ram_needed: ExplainableQuantity):
-        super().__init__(name, data_upload, data_download, data_stored, request_duration,
-                         compute_needed, ram_needed)
+    def __init__(self, name: str, server: Server, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
+                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+        super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.server = ContextualModelingObjectAttribute(server)
         self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
         self.compute_needed.set_label(f"CPU needed on server {self.server.name} to process {self.name}")

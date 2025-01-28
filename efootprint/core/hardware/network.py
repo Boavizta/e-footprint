@@ -59,8 +59,7 @@ class Network(ModelingObject):
         for job in self.jobs:
             job_ups_in_network_ups = [up for up in job.usage_patterns if up in self.usage_patterns]
             for up in job_ups_in_network_ups:
-                hourly_data_transferred_per_up[up] += job.hourly_data_upload_per_usage_pattern[up]
-                hourly_data_transferred_per_up[up] += job.hourly_data_download_per_usage_pattern[up]
+                hourly_data_transferred_per_up[up] += job.hourly_data_transferred_per_usage_pattern[up]
 
         energy_footprint = EmptyExplainableObject()
         for up in self.usage_patterns:

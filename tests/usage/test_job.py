@@ -18,10 +18,9 @@ class TestJob(TestCase):
         self.server.name = "server"
 
         self.job = Job(
-            "test job", server=self.server, data_download=SourceValue(200 * u.MB),
-            data_upload=SourceValue(100 * u.MB), data_stored=SourceValue(300 * u.MB),
-            ram_needed=SourceValue(400 * u.MB), compute_needed=SourceValue(2 * u.cpu_core),
-            request_duration=SourceValue(2 * u.min))
+            "test job", server=self.server, data_transferred=SourceValue(300 * u.MB),
+             data_stored=SourceValue(300 * u.MB), ram_needed=SourceValue(400 * u.MB),
+              compute_needed=SourceValue(2 * u.cpu_core), request_duration=SourceValue(2 * u.min))
         self.job.trigger_modeling_updates = False
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj_step(self):

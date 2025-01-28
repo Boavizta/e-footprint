@@ -51,7 +51,7 @@ class VideoStreamingJob(ServiceJob):
     def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
                  video_duration: ExplainableQuantity, refresh_rate: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
-                         service, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
+                         service, SourceValue(0 * u.kB), SourceValue(0 * u.kB),
                          video_duration, SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.refresh_rate = refresh_rate.set_label(f"{self.name} frames per second")
@@ -59,7 +59,7 @@ class VideoStreamingJob(ServiceJob):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["dynamic_bitrate", "data_download", "compute_needed", "ram_needed"] + super().calculated_attributes
+        return ["dynamic_bitrate", "data_transferred", "compute_needed", "ram_needed"] + super().calculated_attributes
 
     def update_dynamic_bitrate(self):
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)
@@ -73,9 +73,9 @@ class VideoStreamingJob(ServiceJob):
         self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * self.refresh_rate
                                 ).to(u.MB / u.s).set_label(f"{self.name} dynamic bitrate")
 
-    def update_data_download(self):
-        self.data_download = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
-            f"{self.name} data download")
+    def update_data_transferred(self):
+        self.data_transferred = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
+            f"{self.name} data transferred")
 
     def update_compute_needed(self):
         self.compute_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(

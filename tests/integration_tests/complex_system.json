@@ -155,18 +155,9 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
-            "data_upload": {
-                "label": "Data upload of request streaming from hypothesis",
-                "value": 50.0,
-                "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request streaming from hypothesis",
-                "value": 0.8333333333333334,
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request streaming from hypothesis",
+                "value": 1.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -214,19 +205,10 @@
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
-            "data_upload": {
-                "label": "Data upload of request upload from hypothesis",
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request upload from hypothesis",
                 "value": 300.0,
                 "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request upload from hypothesis",
-                "value": 0.0,
-                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -273,18 +255,9 @@
         "uuid-dailymotion": {
             "name": "dailymotion",
             "id": "uuid-dailymotion",
-            "data_upload": {
-                "label": "Data upload of request dailymotion from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request dailymotion from hypothesis",
-                "value": 3.0,
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request dailymotion from hypothesis",
+                "value": 3.3,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -332,17 +305,8 @@
         "uuid-tiktok": {
             "name": "tiktok",
             "id": "uuid-tiktok",
-            "data_upload": {
-                "label": "Data upload of request tiktok from hypothesis",
-                "value": 0.0,
-                "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request tiktok from hypothesis",
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request tiktok from hypothesis",
                 "value": 0.8333333333333334,
                 "unit": "gigabyte",
                 "source": {
@@ -391,19 +355,10 @@
         "uuid-tiktok-analytics": {
             "name": "tiktok analytics",
             "id": "uuid-tiktok-analytics",
-            "data_upload": {
-                "label": "Data upload of request tiktok analytics from hypothesis",
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request tiktok analytics from hypothesis",
                 "value": 50.0,
                 "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request tiktok analytics from hypothesis",
-                "value": 0.0,
-                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null

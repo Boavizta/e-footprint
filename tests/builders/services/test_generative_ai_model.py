@@ -121,10 +121,10 @@ class TestGenAIJob(unittest.TestCase):
             self.job.update_data_stored()
             self.assertEqual(self.job.data_stored.value, 16000 * u.dimensionless + 100 * u.kB)
 
-    def test_update_data_download(self):
+    def test_update_data_transferred(self):
         with patch.object(self.job, "output_token_weights", SourceValue(16000 * u.dimensionless)):
-            self.job.update_data_download()
-            self.assertEqual(self.job.data_download.value, 16000 * u.dimensionless + 100 * u.kB)
+            self.job.update_data_transferred()
+            self.assertEqual(self.job.data_transferred.value, 16000 * u.dimensionless + 100 * u.kB)
 
     def test_update_request_duration(self):
         with patch.object(self.service, "gpu_latency_alpha", SourceValue(1e-11 * u.s)), \

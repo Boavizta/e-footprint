@@ -41,9 +41,8 @@ class TestWebApplicationJob(unittest.TestCase):
         service.technology = SourceObject("php-symfony")
         service.server = Mock()
         job = WebApplicationJob(
-            "test job", service=service, data_upload=SourceValue(1 * u.MB),
-            data_stored=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
-            implementation_details=SourceObject("default"))
+            "test job", service=service, data_transferred=SourceValue(2 * u.MB),
+            data_stored=SourceValue(1 * u.MB), implementation_details=SourceObject("default"))
         job.update_compute_needed()
         self.assertEqual(job.compute_needed, SourceValue(0.5 * u.cpu_core))
 
@@ -58,8 +57,7 @@ class TestWebApplicationJob(unittest.TestCase):
         service.technology = SourceObject("php-symfony")
         service.server = Mock()
         job = WebApplicationJob(
-            "test job", service=service, data_upload=SourceValue(1 * u.MB),
-            data_stored=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
-            implementation_details=SourceObject("default"))
+            "test job", service=service, data_transferred=SourceValue(2 * u.MB),
+            data_stored=SourceValue(1 * u.MB), implementation_details=SourceObject("default"))
         job.update_ram_needed()
         self.assertEqual(job.ram_needed, SourceValue(512 * u.MB))

@@ -90,19 +90,10 @@
             "id": "uuid-streaming",
             "job_type": "undefined",
             "server": "uuid-Default-server",
-            "data_upload": {
+            "data_transferred": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50,
                 "unit": "kilobyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request streaming from hypothesis",
-                "value": 0.8333333333333334,
-                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -151,19 +142,10 @@
             "id": "uuid-upload",
             "job_type": "undefined",
             "server": "uuid-Default-server",
-            "data_upload": {
+            "data_transferred": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300,
                 "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request upload from hypothesis",
-                "value": 0,
-                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null

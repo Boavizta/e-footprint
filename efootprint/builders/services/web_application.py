@@ -46,8 +46,7 @@ class WebApplicationJob(ServiceJob):
     @classmethod
     def default_values(cls):
         return {
-            "data_upload": SourceValue(200 * u.kB),
-            "data_download": SourceValue(2 * u.MB),
+            "data_transferred": SourceValue(2.2 * u.MB),
             "data_stored": SourceValue(100 * u.kB),
             "implementation_details": SourceObject("default"),
         }
@@ -57,11 +56,10 @@ class WebApplicationJob(ServiceJob):
         return {"implementation_details": [
             SourceObject(implementation_detail) for implementation_detail in get_implementation_details()]}
 
-    def __init__(self, name: str, service: WebApplication, data_upload: ExplainableQuantity,
-                 data_download: ExplainableQuantity, data_stored: ExplainableQuantity,
-                 implementation_details: ExplainableObject):
+    def __init__(self, name: str, service: WebApplication, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, implementation_details: ExplainableObject):
         super().__init__(
-            name, service, data_upload, data_download, data_stored, request_duration=default_request_duration(),
+            name, service, data_transferred, data_stored, request_duration=default_request_duration(),
             compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB))
         self.implementation_details = implementation_details.set_label(f"{self.name} implementation details")
 

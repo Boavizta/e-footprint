@@ -61,18 +61,16 @@ class IntegrationTest(IntegrationTestBaseClass):
             storage=cls.storage
         )
 
-        cls.streaming_job = Job("streaming", server=cls.server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        cls.streaming_job = Job("streaming", server=cls.server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", server=cls.server, data_upload=SourceValue(300 * u.MB),
-            data_download=SourceValue(0 * u.GB), data_stored=SourceValue(300 * u.MB),
-            request_duration=SourceValue(40 * u.s), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        cls.upload_job = Job("upload", server=cls.server, data_transferred=SourceValue(300 * u.MB),
+            data_stored=SourceValue(300 * u.MB), request_duration=SourceValue(40 * u.s),
+            ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
         cls.upload_step = UserJourneyStep(
             "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
@@ -268,10 +266,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.server, data_upload=SourceValue(5 * u.MB),
-                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
-                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                      compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", self.server, data_transferred=SourceValue(5 * u.GB),
+         data_stored=SourceValue(50 * u.MB), request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
+         compute_needed=SourceValue(1 * u.cpu_core))
 
         self.streaming_step.jobs += [new_job]
 
@@ -289,8 +286,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Modifying uj steps")
         new_step = UserJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
-            jobs=[Job("new job", self.server, data_upload=SourceValue(5 * u.kB),
-                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
+            jobs=[Job("new job", self.server, data_transferred=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
                       compute_needed=SourceValue(1 * u.cpu_core))]
         )
@@ -452,8 +448,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         server = next(iter(class_obj_dict["Server"].values()))
         network = next(iter(class_obj_dict["Network"].values()))
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", server, data_upload=SourceValue(5 * u.MB),
-                      data_download=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
+        new_job = Job("new job", server, data_transferred=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
                       request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
                       compute_needed=SourceValue(1 * u.cpu_core))
 
@@ -543,9 +538,8 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
@@ -579,15 +573,13 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate([
@@ -607,15 +599,13 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_upload=SourceValue(50 * u.kB),
-            data_download=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+         compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate([
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]],
