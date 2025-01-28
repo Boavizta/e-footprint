@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.0.0] 2025-01-29
+
+### Added
+- Introduction of the concept of Services with VideoStreaming, WebApplication and GenAIModel classes, and their associated jobs VideoStreamingJob, WebApplicatioJob and GenAIJob.
+- BoaviztaCloudServer class to replace the Boavizta builder functions. This change allows for better calculation graph tracking and to be able to update BoaviztaCloudServer instances attributes and benefit from the recomputation logic.
+- GPUServer class with its compute attribute in new unit gpu.
+- All e-footprint objects now have default values and a from_defaults method.
+
+### Changed
+- Data upload and data download have been suppressed in the Job class and replaced by a single data_transferred attribute. This removes the ambiguity around the notion of data upload and download (is it in reference to the device ? to the server ?) and simplifies the model.
+- UserJourney and UserJourneyStep classes have been renamed UsageJourney and UsageJourneyStep to better reflect their generic purpose.
+- The notion of cpu needed in jobs and servers has been abstracted to compute to better handle different compute types like cpu and gpu.
+
 ## [8.2.1] 2025-01-07
 
 ### Fixed

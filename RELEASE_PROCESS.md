@@ -11,7 +11,7 @@ python -m pytest --cov=tests
 
 ## Update [README.md](README.md) if needed
 
-## Update [tutorial notebook](tutorial.ipynb) if needed, [builders notebook](builders.ipynb) if needed and update doc
+## Update [tutorial notebook](tutorial.ipynb) if needed and update doc
 
 ```shell
 python docs_sources/doc_utils/main.py
@@ -23,7 +23,7 @@ python docs_sources/doc_utils/main.py
 mkdocs serve
 ```
 
-## Update e-footprint version in [pyproject.toml](pyproject.toml)
+## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
 
 ## Update poetry dependencies
 

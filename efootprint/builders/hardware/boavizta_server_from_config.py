@@ -166,8 +166,8 @@ class BoaviztaStorageFromConfig(Storage):
     def __init__(self, name: str, idle_power: ExplainableQuantity, data_replication_factor: ExplainableQuantity,
                  data_storage_duration: ExplainableQuantity, base_storage_need: ExplainableQuantity):
         super().__init__(
-            name, carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.GB), 
-            power_per_storage_capacity=SourceValue(0 * u.W / u.GB),
+            name, carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB),
+            power_per_storage_capacity=SourceValue(0 * u.W / u.TB),
             lifespan=SourceValue(0 * u.year), idle_power=idle_power, storage_capacity=SourceValue(0 * u.TB), 
             data_replication_factor=data_replication_factor, data_storage_duration=data_storage_duration, 
             base_storage_need=base_storage_need)
@@ -225,9 +225,9 @@ class BoaviztaStorageFromConfig(Storage):
     def update_power_per_storage_capacity(self):
         power_per_storage_capacity = None
         if self.storage_type.value == "SSD":
-            power_per_storage_capacity = SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+            power_per_storage_capacity = SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY)
         elif self.storage_type.value == "HDD":
-            power_per_storage_capacity = SourceValue(4.2 * u.W / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+            power_per_storage_capacity = SourceValue(4.2 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY)
 
         self.power_per_storage_capacity = (
             power_per_storage_capacity.generate_explainable_object_with_logical_dependency(

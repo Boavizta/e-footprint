@@ -1,13 +1,15 @@
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.builders.hardware.storage_defaults import default_ssd
+from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
+from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
+from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
+from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
+from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.job import Job
-from efootprint.core.hardware.servers.autoscaling import Autoscaling
-from efootprint.core.hardware.servers.serverless import Serverless
-from efootprint.core.hardware.servers.on_premise import OnPremise
+from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
@@ -23,8 +25,8 @@ start = time()
 
 storage = Storage(
     "storage",
-    carbon_footprint_fabrication=SourceValue(160 * u.kg, source=None),
-    power=SourceValue(1.3 * u.W, source=None),
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
     idle_power=SourceValue(0 * u.W, source=None),
     storage_capacity=SourceValue(1 * u.TB, source=None),
@@ -33,8 +35,9 @@ storage = Storage(
     base_storage_need=SourceValue(0 * u.TB, source=None)
 )
 
-autoscaling_server = Autoscaling(
+autoscaling_server = Server(
     "server",
+    server_type=ServerTypes.autoscaling(),
     carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
     power=SourceValue(300 * u.W, source=None),
     lifespan=SourceValue(6 * u.year, source=None),
@@ -49,54 +52,39 @@ autoscaling_server = Autoscaling(
     storage=storage
 )
 
-serverless_server = Serverless(
-    "serverless",
-    carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
-    power=SourceValue(300 * u.W, source=None),
-    lifespan=SourceValue(6 * u.year, source=None),
-    idle_power=SourceValue(50 * u.W, source=None),
-    ram=SourceValue(128 * u.GB, source=None),
-    compute=SourceValue(24 * u.cpu_core, source=None),
+serverless_server = BoaviztaCloudServer.from_defaults(
+    "serverless cloud functions",
+    server_type=ServerTypes.serverless(),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
-    base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_compute_consumption = SourceValue(2 * u.cpu_core, source=None),
-    storage=default_ssd()
+    storage=Storage.ssd()
 )
 
-on_premise_server = OnPremise(
-    "on premise server",
-    carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
-    power=SourceValue(300 * u.W, source=None),
+on_premise_gpu_server = GPUServer.from_defaults(
+    "on premise GPU server",
+    server_type=ServerTypes.on_premise(),
     lifespan=SourceValue(6 * u.year, source=None),
-    idle_power=SourceValue(50 * u.W, source=None),
-    ram=SourceValue(128 * u.GB, source=None),
-    compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
-    fixed_nb_of_instances=EmptyExplainableObject(),
-    base_ram_consumption = SourceValue(300 * u.MB, source=None),
-    base_compute_consumption = SourceValue(2 * u.cpu_core, source=None),
-    storage=default_ssd()
+    storage=Storage.ssd()
 )
+
+video_streaming = VideoStreaming.from_defaults("Video streaming service", server=autoscaling_server)
+web_application = WebApplication.from_defaults("Web application service", server=serverless_server)
+genai_model = GenAIModel.from_defaults("Generative AI model", server=on_premise_gpu_server)
+
+video_streaming_job = VideoStreamingJob.from_defaults(
+    "Video streaming job", service=video_streaming, video_duration=SourceValue(20 * u.min))
+web_application_job = WebApplicationJob.from_defaults("Web application job", service=web_application)
+genai_model_job = GenAIJob.from_defaults("Generative AI model job", service=genai_model)
+manually_written_job = Job.from_defaults("Manually defined job", server=autoscaling_server)
 
 streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
-    jobs=[
-        Job(
-            "streaming",
-            server=autoscaling_server,
-            data_transferred=SourceValue(0.05 * u.MB, source=None),
-            data_download=SourceValue(800 * u.MB, source=None),
-            data_stored=SourceValue(0.05 * u.MB, source=None),
-            request_duration=SourceValue(4 * u.min, source=None),
-            compute_needed=SourceValue(1 * u.cpu_core, source=None),
-            ram_needed=SourceValue(50 * u.MB, source=None)
-            )
-        ]
+    jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job]
     )
 
 usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])

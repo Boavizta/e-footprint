@@ -22,12 +22,12 @@ class GPUServer(ServerBase):
             "average_carbon_intensity": SourceValue(100 * u.g / u.kWh),
             "carbon_footprint_fabrication_without_gpu": SourceValue(
             2500 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint without GPU"),
-            "compute": SourceValue(4 * u.gpu, Sources.HYPOTHESIS, label="Number of GPUs"),
-            "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            "server_utilization_rate": SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS),
-            "base_compute_consumption": SourceValue(0 * u.gpu, Sources.HYPOTHESIS),
-            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+            "compute": SourceValue(4 * u.gpu),
+            "lifespan": SourceValue(6 * u.year),
+            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
+            "server_utilization_rate": SourceValue(1 * u.dimensionless),
+            "base_compute_consumption": SourceValue(0 * u.gpu),
+            "base_ram_consumption": SourceValue(0 * u.GB),
             "storage": Storage.ssd("Default SSD storage"),
             "fixed_nb_of_instances": EmptyExplainableObject()
             }

@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "8.2.1",
+    "efootprint_version": "9.0.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -979,7 +979,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "label": "Fabrication carbon footprint of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 160.0,
-                "unit": "kilogram / gigabyte",
+                "unit": "kilogram / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -988,7 +988,7 @@
             "power_per_storage_capacity": {
                 "label": "Power of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 1.3,
-                "unit": "watt",
+                "unit": "watt / terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"

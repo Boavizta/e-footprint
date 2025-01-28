@@ -18,8 +18,8 @@ class Storage(InfraHardware):
     @classmethod
     def default_values(cls):
         return {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg),
-            "power_per_storage_capacity": SourceValue(1.3 * u.W),
+            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
+            "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
             "lifespan": SourceValue(6 * u.years),
             "idle_power": SourceValue(0 * u.W),
             "storage_capacity": SourceValue(1 * u.TB),
@@ -32,8 +32,8 @@ class Storage(InfraHardware):
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                160 * u.kg / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "power_per_storage_capacity": SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years, Sources.HYPOTHESIS),
             "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -50,8 +50,8 @@ class Storage(InfraHardware):
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                20 * u.kg / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "power_per_storage_capacity": SourceValue(4.2 * u.W / u.GB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                20 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "power_per_storage_capacity": SourceValue(4.2 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years, Sources.HYPOTHESIS),
             "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),

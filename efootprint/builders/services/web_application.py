@@ -27,7 +27,7 @@ def get_implementation_details() -> List[str]:
 class WebApplication(Service):
     @classmethod
     def default_values(cls):
-        return {"technology": SourceValue("php-symphony")}
+        return {"technology": SourceObject("php-symfony")}
 
     @classmethod
     def list_values(cls):
@@ -59,13 +59,16 @@ class WebApplicationJob(ServiceJob):
     def __init__(self, name: str, service: WebApplication, data_transferred: ExplainableQuantity,
                  data_stored: ExplainableQuantity, implementation_details: ExplainableObject):
         super().__init__(
-            name, service, data_transferred, data_stored, request_duration=default_request_duration(),
+            name, service, data_transferred, data_stored, request_duration=SourceValue(0 * u.s),
             compute_needed=SourceValue(0 * u.cpu_core), ram_needed=SourceValue(0 * u.GB))
         self.implementation_details = implementation_details.set_label(f"{self.name} implementation details")
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["compute_needed", "ram_needed"] + super().calculated_attributes
+        return ["request_duration", "compute_needed", "ram_needed"] + super().calculated_attributes
+
+    def update_request_duration(self):
+        self.request_duration = default_request_duration().set_label(f"{self.name} request duration")
 
     def update_compute_needed(self):
         filter_df = ECOBENCHMARK_DF[

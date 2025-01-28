@@ -36,20 +36,29 @@ nav:
   - How to read the object reference: object_reference.md
   - Hardware:
       - Servers:
-          - Autoscaling: Autoscaling.md
-          - On Premise: OnPremise.md
-          - Serverless: Serverless.md
+          - Server: Server.md
+          - GPU Server: GPUServer.md
+          - Boavizta cloud server: BoaviztaCloudServer.md
       - Hardware: Hardware.md
       - Network: Network.md
       - Storage: Storage.md
+  - Services:
+      - Web application:
+          - Web application service: WebApplication.md
+          - Web application job: WebApplicationJob.md
+      - Video streaming:
+          - Video streaming service: VideoStreaming.md
+          - Video streaming job: VideoStreamingJob.md
+      - Gen AI:
+          - Gen AI service: GenAIModel.md
+          - Gen AI job: GenAIJob.md
   - Usage:
       - UsagePattern: UsagePattern.md
-      - UserJourney: UserJourney.md
-      - UserJourneyStep: UserJourneyStep.md
+      - UsageJourney: UsageJourney.md
+      - UsageJourneyStep: UsageJourneyStep.md
       - Job: Job.md
   - System: System.md
   - Country: Country.md
-- e-footprint builders: builders.md
 - FAQ:
     - What about best practices ?: best_practices.md
     - What about measurement tools ?: measurement_tools.md

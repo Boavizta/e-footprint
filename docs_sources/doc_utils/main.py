@@ -1,7 +1,6 @@
 import os
 import shutil
 
-from docs_sources.doc_utils.format_builders_md import format_builders_ipynb_to_md_and_save_to_mkdocs_sourcefiles
 from docs_sources.doc_utils.format_tutorial_md import efootprint_tutorial_to_md, \
     format_tutorial_and_save_to_mkdocs_sourcefiles
 from docs_sources.doc_utils.generate_object_reference import generate_object_reference
@@ -31,8 +30,6 @@ logger.info("Converting e-footprint tutorial to markdown")
 md_doc_tuto_path = efootprint_tutorial_to_md()
 logger.info("Reformating markdown tutorial file and saving it to mkdocs_sourcefiles")
 format_tutorial_and_save_to_mkdocs_sourcefiles(md_doc_tuto_path)
-logger.info("Formating builders.ipynb to md and saving it to mkdocs_sourcefiles")
-format_builders_ipynb_to_md_and_save_to_mkdocs_sourcefiles()
 logger.info("Generating object reference")
 generate_object_reference()
 logger.info("Copying changelog and manually written doc files to generated_mkdocs_sourcefiles")

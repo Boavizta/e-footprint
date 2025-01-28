@@ -36,8 +36,9 @@ class VideoStreamingJob(ServiceJob):
     def default_values(cls):
         return {
             "resolution": SourceObject("1080p (1920 x 1080)"),
-            "video_duration": SourceValue(1 * u.hour, source=Sources.HYPOTHESIS),
-            "refresh_rate": SourceValue(30 * u.dimensionless / u.s, source=Sources.HYPOTHESIS),
+            "video_duration": SourceValue(1 * u.hour),
+            "refresh_rate": SourceValue(30 * u.dimensionless / u.s),
+            "data_stored": SourceValue(0 * u.MB),
         }
 
     @classmethod
@@ -49,17 +50,23 @@ class VideoStreamingJob(ServiceJob):
         }
 
     def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
-                 video_duration: ExplainableQuantity, refresh_rate: ExplainableQuantity):
+                 video_duration: ExplainableQuantity, refresh_rate: ExplainableQuantity,
+                 data_stored: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
-                         service, SourceValue(0 * u.kB), SourceValue(0 * u.kB),
-                         video_duration, SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
+                         service, SourceValue(0 * u.kB), data_stored,
+                         SourceValue(0 * u.s), SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
+        self.video_duration = video_duration.set_label(f"{self.name} video duration")
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.refresh_rate = refresh_rate.set_label(f"{self.name} frames per second")
         self.dynamic_bitrate = EmptyExplainableObject()
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["dynamic_bitrate", "data_transferred", "compute_needed", "ram_needed"] + super().calculated_attributes
+        return (["request_duration", "dynamic_bitrate", "data_transferred", "compute_needed", "ram_needed"]
+                + super().calculated_attributes)
+
+    def update_request_duration(self):
+        self.request_duration = self.video_duration.copy().set_label(f"{self.name} request duration")
 
     def update_dynamic_bitrate(self):
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)

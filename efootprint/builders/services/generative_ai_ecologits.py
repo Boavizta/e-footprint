@@ -141,8 +141,8 @@ class GenAIJob(ServiceJob):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return (["output_token_weights", "data_stored", "data_transferred", "request_duration", "compute_needed"]
-                + super().calculated_attributes)
+        return (["output_token_weights", "data_stored", "data_transferred", "request_duration", "ram_needed",
+                 "compute_needed"] + super().calculated_attributes)
 
     def update_output_token_weights(self):
         self.output_token_weights = (self.output_token_count * self.service.bits_per_token).to(u.kB).set_label(
@@ -159,6 +159,10 @@ class GenAIJob(ServiceJob):
         gpu_latency = self.output_token_count * (
             self.service.gpu_latency_alpha * self.service.active_params + self.service.gpu_latency_beta)
         self.request_duration = gpu_latency.set_label(f"{self.name} request duration")
+
+    def update_ram_needed(self):
+        self.ram_needed = SourceValue(0 * u.GB).set_label(
+            f"No additional GPU RAM needed because model is already loaded in memory")
 
     def update_compute_needed(self):
         self.compute_needed = (
