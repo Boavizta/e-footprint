@@ -45,7 +45,8 @@ class BoaviztaCloudServer(Server):
             "server_utilization_rate": SourceValue(0.9 * u.dimensionless),
             "base_ram_consumption": SourceValue(0 * u.GB),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
-            "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB))
+            "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
+            "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
     @classmethod

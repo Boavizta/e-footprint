@@ -13,7 +13,7 @@ class TestVideoStreamingJob(unittest.TestCase):
         self.service = Mock(spec=VideoStreaming)
         self.service.server = Mock()
         self.service.bits_per_pixel = EmptyExplainableObject()
-        self.service.frames_per_second = EmptyExplainableObject()
+        self.service.refresh_rate = EmptyExplainableObject()
         self.service.static_delivery_cpu_cost = EmptyExplainableObject()
         self.service.ram_buffer_per_user = EmptyExplainableObject()
         self.job = VideoStreamingJob.from_defaults("Test Job", service=self.service)
@@ -31,7 +31,7 @@ class TestVideoStreamingJob(unittest.TestCase):
     def test_update_dynamic_bitrate(self):
         with patch.object(self.job, "resolution", SourceObject("1080p (1920 x 1080)")), \
             patch.object(self.service, "bits_per_pixel", SourceValue(24 * u.dimensionless)), \
-                patch.object(self.service, "frames_per_second", SourceValue(30 * u.dimensionless / u.s)):
+                patch.object(self.service, "refresh_rate", SourceValue(30 * u.dimensionless / u.s)):
             self.job.update_dynamic_bitrate()
         self.job.update_dynamic_bitrate()
         self.assertEqual(self.job.dynamic_bitrate.value, 0 * u.dimensionless)

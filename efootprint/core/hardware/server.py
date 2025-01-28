@@ -23,7 +23,9 @@ class Server(ServerBase):
             "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            "base_compute_consumption": SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS)
+            "base_compute_consumption": SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
+            "storage": Storage.ssd("Default SSD storage"),
+            "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
     @classmethod

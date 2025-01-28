@@ -42,7 +42,7 @@ class Service(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return [self.server]
+        return [self.server] + self.jobs
 
     @property
     def systems(self) -> List:

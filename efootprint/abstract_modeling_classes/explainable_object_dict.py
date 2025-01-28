@@ -68,6 +68,9 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         return str(self)
 
     def __str__(self):
+        if len(list(self.keys())) == 0:
+            return "{}"
+
         return_str = "{\n"
 
         for key, value in self.items():

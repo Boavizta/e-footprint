@@ -461,11 +461,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
             return key_value_str
 
-        output_str += f"{self.class_as_simple_str} {self.id}\n \n"
+        output_str += f"{self.class_as_simple_str} {self.id}\n \nname: {self.name}\n"
 
         for key, attr_value in self.__dict__.items():
-            if key == "contextual_modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous")\
-                    or key in ["name", "id"]:
+            if key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes:
                 continue
             output_str += key_value_to_str(key, attr_value)
 

@@ -51,7 +51,7 @@ class Network(ModelingObject):
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
-    def jobs(self):
+    def jobs(self) -> List[ModelingObject]:
         return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
 
     def update_energy_footprint(self):

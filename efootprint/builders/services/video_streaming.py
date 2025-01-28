@@ -15,7 +15,7 @@ class VideoStreaming(Service):
     def default_values(cls):
         return {
             "base_ram_consumption": SourceValue(2 * u.GB, source=Sources.HYPOTHESIS),
-            "bits_per_pixel": SourceValue(24 * u.dimensionless, source=Sources.HYPOTHESIS),
+            "bits_per_pixel": SourceValue(0.1 * u.dimensionless, source=Sources.HYPOTHESIS),
             "static_delivery_cpu_cost": SourceValue(4 * u.cpu_core / (u.GB / u.s), source=Sources.HYPOTHESIS),
             "ram_buffer_per_user": SourceValue(50 * u.MB, source=Sources.HYPOTHESIS),
             }
@@ -37,7 +37,7 @@ class VideoStreamingJob(ServiceJob):
         return {
             "resolution": SourceObject("1080p (1920 x 1080)"),
             "video_duration": SourceValue(1 * u.hour, source=Sources.HYPOTHESIS),
-            "frames_per_second": SourceValue(30 * u.dimensionless / u.s, source=Sources.HYPOTHESIS),
+            "refresh_rate": SourceValue(30 * u.dimensionless / u.s, source=Sources.HYPOTHESIS),
         }
 
     @classmethod
@@ -49,12 +49,12 @@ class VideoStreamingJob(ServiceJob):
         }
 
     def __init__(self, name: str, service: VideoStreaming, resolution: ExplainableObject,
-                 video_duration: ExplainableQuantity, frames_per_second: ExplainableQuantity):
+                 video_duration: ExplainableQuantity, refresh_rate: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
                          service, SourceValue(0 * u.kB), SourceValue(0 * u.kB), SourceValue(0 * u.kB),
                          video_duration, SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
         self.resolution = resolution.set_label(f"{self.name} resolution")
-        self.frames_per_second = frames_per_second.set_label(f"{self.name} frames per second")
+        self.refresh_rate = refresh_rate.set_label(f"{self.name} frames per second")
         self.dynamic_bitrate = EmptyExplainableObject()
 
     @property
@@ -70,7 +70,7 @@ class VideoStreamingJob(ServiceJob):
             width * height * u.dimensionless, f"pixel count for resolution {self.resolution}",
             left_parent=self.resolution, operator="pixel count computation", source=Sources.USER_DATA)
 
-        self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * self.frames_per_second
+        self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * self.refresh_rate
                                 ).to(u.MB / u.s).set_label(f"{self.name} dynamic bitrate")
 
     def update_data_download(self):

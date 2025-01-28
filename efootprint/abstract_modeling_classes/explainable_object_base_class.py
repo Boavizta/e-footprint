@@ -357,10 +357,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return output_dict
 
     def __repr__(self):
-        return str(self.to_json())
+        return str(self)
 
     def __str__(self):
-        return str(self.value)
+        self_as_str = str(self.value)
+        if len(self_as_str) > 60:
+            self_as_str = self_as_str[:60] + "..."
+
+        return self_as_str
 
     def __eq__(self, other):
         if isinstance(other, ExplainableObject):

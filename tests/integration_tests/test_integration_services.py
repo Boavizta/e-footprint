@@ -143,3 +143,36 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
+
+    def test_update_service_jobs(self):
+        new_storage = Storage.ssd("New web server SSD storage, identical to previous one")
+        new_server = BoaviztaCloudServer.from_defaults(
+            "New web server, identical to previous one", storage=new_storage,
+            base_ram_consumption=SourceValue(1 * u.GB))
+        new_gpu_server = GPUServer.from_defaults("New GPU server, identical to previous one", storage=Storage.ssd())
+
+        new_video_streaming_service = VideoStreaming.from_defaults(
+            "New Youtube streaming service", server=new_server)
+        new_web_application_service = WebApplication(
+            "New Web application service", new_server, technology=SourceObject("php-symfony"))
+        new_genai_service = GenAIModel.from_defaults(
+            "New GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"),
+            server=new_gpu_server)
+
+        logger.info("Linking jobs to new services")
+        self.video_streaming_job.service = new_video_streaming_service
+        self.web_application_job.service = new_web_application_service
+        self.genai_job.service = new_genai_service
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_changed([self.storage, self.server, self.gpu_server], system=self.system)
+        self.assertEqual(self.server.jobs, [])
+        self.footprint_has_not_changed([self.network, self.usage_pattern])
+
+        logger.info("Linking jobs back to initial services")
+        self.video_streaming_job.service = self.video_streaming_service
+        self.web_application_job.service = self.web_application_service
+        self.genai_job.service = self.genai_service
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])

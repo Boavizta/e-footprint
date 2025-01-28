@@ -27,7 +27,9 @@ class GPUServer(ServerBase):
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             "server_utilization_rate": SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS),
             "base_compute_consumption": SourceValue(0 * u.gpu, Sources.HYPOTHESIS),
-            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS)
+            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+            "storage": Storage.ssd("Default SSD storage"),
+            "fixed_nb_of_instances": EmptyExplainableObject()
             }
 
     @classmethod
