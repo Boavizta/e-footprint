@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_393850 {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_393850" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_393850');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\n(Hourly Manually defined job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data stored per hour for job Manually defined job in\nusage pattern\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7] shifted by 0 hour) * 100.0 kilobyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 100.0, 100.0, 800.0, 900.0, 200.0, 900.0, 400.0, 800.0,\n200.0],\nlast 10 vals [800.0, 600.0, 200.0, 100.0, 900.0, 700.0, 200.0, 600.0, 100.0,\n700.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Manually defined job occurrences in usage pattern", "label": "Hourly Manually\ndefined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7] shifted by no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7]", "x": -200.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26299 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7] converted to UTC from Europe/Paris\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7]", "x": -225.0, "y": 300}, {"color": "darkred", "id": "usage pattern hourly nb of visits from hypothesis", "label": "usage pattern hourly\nnb of visits from\nhypothesis", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits from hypothesis = 26299 values from 2025-01-01\n00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7]", "x": -150.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 300}, {"color": null, "id": "hour nb 0 within 1 dimensionless", "label": "hour nb 0 within 1\ndimensionless", "shape": "dot", "size": 15, "title": "hour nb 0 within 1 dimensionless\n=\nManually defined job duration in full hours\n=\n1 dimensionless\n=\n0 hour", "x": 0.0, "y": 450}, {"color": null, "id": "Manually defined job duration in full hours", "label": "Manually defined job\nduration in full\nhours", "shape": "dot", "size": 15, "title": "Manually defined job duration in full hours = 1 dimensionless", "x": 75.0, "y": 300}, {"color": null, "id": "data stored per hour for job Manually defined job in usage pattern", "label": "data stored per hour\nfor job Manually\ndefined job in usage\npattern", "shape": "dot", "size": 15, "title": "data stored per hour for job Manually defined job in usage pattern\n=\nData stored by request Manually defined job from hypothesis / Manually defined\njob duration in full hours\n=\n100 kilobyte / 1 dimensionless\n=\n100.0 kilobyte", "x": 200.0, "y": 450}, {"color": "darkred", "id": "Data stored by request Manually defined job from hypothesis", "label": "Data stored by\nrequest Manually\ndefined job from\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Manually defined job from hypothesis = 100 kilobyte", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Manually defined job occurrences in usage pattern", "to": "Hourly data stored for Manually defined job in usage pattern"}, {"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Manually defined job occurrences in usage pattern"}, {"arrows": "to", "from": "usage pattern hourly nb of visits from hypothesis", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}, {"arrows": "to", "from": "no value", "to": "Hourly Manually defined job occurrences in usage pattern"}, {"arrows": "to", "from": "hour nb 0 within 1 dimensionless", "to": "Hourly data stored for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Manually defined job duration in full hours", "to": "hour nb 0 within 1 dimensionless"}, {"arrows": "to", "from": "data stored per hour for job Manually defined job in usage pattern", "to": "Hourly data stored for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Manually defined job from hypothesis", "to": "data stored per hour for job Manually defined job in usage pattern"}, {"arrows": "to", "from": "Manually defined job duration in full hours", "to": "data stored per hour for job Manually defined job in usage pattern"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
