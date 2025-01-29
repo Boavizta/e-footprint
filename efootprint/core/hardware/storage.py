@@ -69,7 +69,8 @@ class Storage(InfraHardware):
         return [cls.ssd, cls.hdd]
 
     def __init__(self, name: str, carbon_footprint_fabrication_per_storage_capacity: ExplainableQuantity,
-                 power_per_storage_capacity: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
+                 power_per_storage_capacity: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 idle_power: ExplainableQuantity,
                  storage_capacity: ExplainableQuantity, data_replication_factor: ExplainableQuantity,
                  data_storage_duration: ExplainableQuantity, base_storage_need: ExplainableQuantity,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):

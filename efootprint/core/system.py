@@ -184,13 +184,15 @@ class System(ModelingObject):
     @property
     def total_fabrication_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         fab_footprints = {
-            "Servers": sum(server.instances_fabrication_footprint for server in self.servers).to(u.kg).set_label(
+            "Servers": sum([server.instances_fabrication_footprint for server in self.servers],
+                           start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Servers total fabrication footprint"),
-            "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages).to(u.kg).set_label(
+            "Storage": sum([storage.instances_fabrication_footprint for storage in self.storages],
+                           start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Storage total fabrication footprint"),
             "Network": EmptyExplainableObject(),
-            "Devices": sum(usage_pattern.devices_fabrication_footprint
-                           for usage_pattern in self.usage_patterns).to(u.kg).set_label(
+            "Devices": sum([usage_pattern.devices_fabrication_footprint
+                           for usage_pattern in self.usage_patterns], start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Devices total fabrication footprint")
         }
 
@@ -199,14 +201,14 @@ class System(ModelingObject):
     @property
     def total_energy_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         energy_footprints = {
-            "Servers": sum(server.energy_footprint for server in self.servers).to(u.kg).set_label(
-                "Servers total energy footprint"),
-            "Storage": sum(storage.energy_footprint for storage in self.storages).to(u.kg).set_label(
-                "Storage total energy footprint"),
-            "Network": sum(network.energy_footprint for network in self.networks).to(u.kg).set_label(
-                "Network total energy footprint"),
-            "Devices": sum(usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns).to(u.kg).set_label(
-                "Devices total energy footprint")
+            "Servers": sum([server.energy_footprint for server in self.servers], start=EmptyExplainableObject()
+                           ).to(u.kg).set_label("Servers total energy footprint"),
+            "Storage": sum([storage.energy_footprint for storage in self.storages], start=EmptyExplainableObject()
+                           ).to(u.kg).set_label("Storage total energy footprint"),
+            "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
+                           ).to(u.kg).set_label("Network total energy footprint"),
+            "Devices": sum([usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns],
+                           start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint")
         }
 
         return energy_footprints

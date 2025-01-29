@@ -2,6 +2,7 @@ import json
 import os.path
 from copy import deepcopy
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.units import u
@@ -35,7 +36,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         new_uj = flat_obj_dict["uuid-New-UJ"]
 
-        assert new_uj.duration.magnitude > 0
+        self.assertIsInstance(new_uj.duration, EmptyExplainableObject)
 
     def test_update_value_after_system_creation(self):
         class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
@@ -47,3 +48,9 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         self.assertEqual(
             list(class_obj_dict["System"].values())[0].id, list(self.base_system_dict["System"].values())[0]["id"])
+
+    def test_loads_when_usage_journey_step_has_no_jobs(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_no_jobs.json"), "rb") as file:
+            base_system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)

@@ -91,18 +91,14 @@ def json_to_system(system_dict):
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
                     mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
+            for calculated_attribute in mod_obj.calculated_attributes:
+                mod_obj.__dict__[calculated_attribute] = EmptyExplainableObject()
             mod_obj.trigger_modeling_updates = True
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
             for mod_obj in class_obj_dict[obj_type].values():
-                if len(mod_obj.systems) == 0:
-                    logger.warning(
-                        f"{mod_obj.class_as_simple_str} {mod_obj.name} is not linked to any existing system so needs "
-                        f"to compute its own calculated attributes")
-                    mod_obj.compute_calculated_attributes()
-                else:
-                    mod_obj.after_init()
+                mod_obj.after_init()
 
     for system in class_obj_dict["System"].values():
         system_id = system.id
