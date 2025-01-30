@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.0.2] 2025-01-30
+
+### Fixed
+- Define list_values and conditional_list_values in ServerBaseClass instead of Server and GPUServer to ensure consistency.
+
 ## [9.0.1] 2025-01-29
 
 ### Fixed

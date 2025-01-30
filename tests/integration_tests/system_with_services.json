@@ -1,0 +1,811 @@
+{
+    "efootprint_version": "9.0.2",
+    "System": {
+        "id-XXXXXX-system-1": {
+            "name": "system 1",
+            "id": "id-XXXXXX-system-1",
+            "usage_patterns": [
+                "id-XXXXXX-Youtube-usage-in-France"
+            ]
+        }
+    },
+    "UsagePattern": {
+        "id-XXXXXX-Youtube-usage-in-France": {
+            "name": "Youtube usage in France",
+            "id": "id-XXXXXX-Youtube-usage-in-France",
+            "hourly_usage_journey_starts": {
+                "label": "Youtube usage in France hourly nb of visits from hypothesis",
+                "values": [
+                    1000.0,
+                    2000.0,
+                    4000.0,
+                    5000.0,
+                    8000.0,
+                    12000.0,
+                    2000.0,
+                    2000.0,
+                    3000.0
+                ],
+                "unit": "dimensionless",
+                "start_date": "2025-01-01 00:00:00",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "usage_journey": "id-XXXXXX-Daily-Youtube-usage",
+            "devices": [
+                "id-XXXXXX-Default-laptop"
+            ],
+            "network": "id-XXXXXX-Default-network",
+            "country": "id-XXXXXX-France"
+        }
+    },
+    "UsageJourney": {
+        "id-XXXXXX-Daily-Youtube-usage": {
+            "name": "Daily Youtube usage",
+            "id": "id-XXXXXX-Daily-Youtube-usage",
+            "uj_steps": [
+                "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat"
+            ]
+        }
+    },
+    "UsageJourneyStep": {
+        "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat": {
+            "name": "20 min streaming on Youtube with genAI chat",
+            "id": "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat",
+            "user_time_spent": {
+                "label": "Time spent on step 20 min streaming on Youtube with genAI chat from hypothesis",
+                "value": 20.0,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "jobs": [
+                "id-XXXXXX-Streaming-job",
+                "id-XXXXXX-web-app-job",
+                "id-XXXXXX-GenAI-job"
+            ]
+        }
+    },
+    "VideoStreamingJob": {
+        "id-XXXXXX-Streaming-job": {
+            "name": "Streaming job",
+            "id": "id-XXXXXX-Streaming-job",
+            "data_stored": {
+                "label": "Data stored by request Streaming job from hypothesis",
+                "value": 0.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "service": "id-XXXXXX-Youtube-streaming-service",
+            "video_duration": {
+                "label": "Streaming job video duration from hypothesis",
+                "value": 20.0,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "resolution": {
+                "label": "Streaming job resolution from hypothesis",
+                "value": "720p (1280 x 720)",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "refresh_rate": {
+                "label": "Streaming job frames per second from hypothesis",
+                "value": 30.0,
+                "unit": "1 / second",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "VideoStreaming": {
+        "id-XXXXXX-Youtube-streaming-service": {
+            "name": "Youtube streaming service",
+            "id": "id-XXXXXX-Youtube-streaming-service",
+            "server": "id-XXXXXX-Web-server",
+            "base_ram_consumption": {
+                "label": "Youtube streaming service OS and streaming software base RAM consumption from hypothesis",
+                "value": 2.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "label": "no value",
+                "value": null
+            },
+            "bits_per_pixel": {
+                "label": "Youtube streaming service bits per pixel from hypothesis",
+                "value": 0.1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "static_delivery_cpu_cost": {
+                "label": "Youtube streaming service CPU cost per static stream from hypothesis",
+                "value": 4.0,
+                "unit": "cpu_core * second / gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_buffer_per_user": {
+                "label": "Youtube streaming service RAM buffer size per user from hypothesis",
+                "value": 50.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "BoaviztaCloudServer": {
+        "id-XXXXXX-Web-server": {
+            "name": "Web server",
+            "id": "id-XXXXXX-Web-server",
+            "lifespan": {
+                "label": "Lifespan of Web server from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Web server fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_type": {
+                "label": "Server type of Web server from hypothesis",
+                "value": "autoscaling",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Web server from hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of Web server from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 0.233,
+                "unit": "kilogram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "Web server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of Web server from hypothesis",
+                "value": 1.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "label": "Base cpu core consumption of Web server from hypothesis",
+                "value": 0.0,
+                "unit": "cpu_core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Web server instances",
+                "value": null
+            },
+            "storage": "id-XXXXXX-Web-server-SSD-storage",
+            "provider": {
+                "label": "unnamed source from hypothesis",
+                "value": "scaleway",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "instance_type": {
+                "label": "unnamed source from hypothesis",
+                "value": "dev1-s",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "impact_url": "https://api.boavizta.org/v1/cloud/instance"
+        }
+    },
+    "Storage": {
+        "id-XXXXXX-Web-server-SSD-storage": {
+            "name": "Web server SSD storage",
+            "id": "id-XXXXXX-Web-server-SSD-storage",
+            "lifespan": {
+                "label": "Lifespan of Web server SSD storage from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Web server SSD storage fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Web server SSD storage from hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Web server SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Web server SSD storage from hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Web server SSD storage from hypothesis",
+                "value": 43830.0,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Web server SSD storage initial storage need from hypothesis",
+                "value": 0.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Web server SSD storage instances",
+                "value": null
+            }
+        },
+        "id-XXXXXX-Default-SSD-storage": {
+            "name": "Default SSD storage",
+            "id": "id-XXXXXX-Default-SSD-storage",
+            "lifespan": {
+                "label": "Lifespan of Default SSD storage from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default SSD storage fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Default SSD storage from hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Default SSD storage from hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "value": 43830.0,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Default SSD storage initial storage need from hypothesis",
+                "value": 0.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Default SSD storage instances",
+                "value": null
+            }
+        }
+    },
+    "WebApplicationJob": {
+        "id-XXXXXX-web-app-job": {
+            "name": "web app job",
+            "id": "id-XXXXXX-web-app-job",
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request web app job from hypothesis",
+                "value": 2.2,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored by request web app job from hypothesis",
+                "value": 100.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "service": "id-XXXXXX-Web-application-service",
+            "implementation_details": {
+                "label": "web app job implementation details from hypothesis",
+                "value": "default",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "WebApplication": {
+        "id-XXXXXX-Web-application-service": {
+            "name": "Web application service",
+            "id": "id-XXXXXX-Web-application-service",
+            "server": "id-XXXXXX-Web-server",
+            "base_ram_consumption": {
+                "label": "no value",
+                "value": null
+            },
+            "base_compute_consumption": {
+                "label": "no value",
+                "value": null
+            },
+            "technology": {
+                "label": "Technology used in Web application service from hypothesis",
+                "value": "php-symfony",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "GenAIJob": {
+        "id-XXXXXX-GenAI-job": {
+            "name": "GenAI job",
+            "id": "id-XXXXXX-GenAI-job",
+            "service": "id-XXXXXX-GenAI-service",
+            "output_token_count": {
+                "label": "unnamed source from hypothesis",
+                "value": 1000.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "GenAIModel": {
+        "id-XXXXXX-GenAI-service": {
+            "name": "GenAI service",
+            "id": "id-XXXXXX-GenAI-service",
+            "server": "id-XXXXXX-GPU-server",
+            "base_compute_consumption": {
+                "label": "no value",
+                "value": null
+            },
+            "provider": {
+                "label": "gpt-3.5-turbo-1106 provider from hypothesis",
+                "value": "openai",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "model_name": {
+                "label": "openai model used from hypothesis",
+                "value": "gpt-3.5-turbo-1106",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_bits_per_parameter": {
+                "label": "GenAI service nb of bits per parameter from hypothesis",
+                "value": 16.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "llm_memory_factor": {
+                "label": "GenAI service ratio between GPU memory footprint and model size from Ecologits",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "Ecologits",
+                    "link": "https://github.com/genai-impact/ecologits"
+                }
+            },
+            "gpu_latency_alpha": {
+                "label": "GPU latency per active parameter and output token from Ecologits",
+                "value": 8.02e-13,
+                "unit": "second",
+                "source": {
+                    "name": "Ecologits",
+                    "link": "https://github.com/genai-impact/ecologits"
+                }
+            },
+            "gpu_latency_beta": {
+                "label": "Base GPU latency per output_token from Ecologits",
+                "value": 0.0223,
+                "unit": "second",
+                "source": {
+                    "name": "Ecologits",
+                    "link": "https://github.com/genai-impact/ecologits"
+                }
+            },
+            "bits_per_token": {
+                "label": "Number of bits per token from hypothesis",
+                "value": 24.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "GPUServer": {
+        "id-XXXXXX-GPU-server": {
+            "name": "GPU server",
+            "id": "id-XXXXXX-GPU-server",
+            "lifespan": {
+                "label": "Lifespan of GPU server from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "GPU server fraction of usage time from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_type": {
+                "label": "Server type of GPU server from hypothesis",
+                "value": "serverless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "compute": {
+                "label": "Nb gpus of GPU server from hypothesis",
+                "value": 4.0,
+                "unit": "gpu",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of GPU server from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "GPU server utilization rate from hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of GPU server from hypothesis",
+                "value": 0.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "label": "Base gpu consumption of GPU server from hypothesis",
+                "value": 0.0,
+                "unit": "gpu",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of GPU server instances",
+                "value": null
+            },
+            "storage": "id-XXXXXX-Default-SSD-storage",
+            "gpu_power": {
+                "label": "GPU server GPU power from Estimating the Carbon Footprint of BLOOM",
+                "value": 400.0,
+                "unit": "watt / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "gpu_idle_power": {
+                "label": "GPU server GPU idle power from Estimating the Carbon Footprint of BLOOM",
+                "value": 50.0,
+                "unit": "watt / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "ram_per_gpu": {
+                "label": "GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 80.0,
+                "unit": "gigabyte / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "carbon_footprint_fabrication_without_gpu": {
+                "label": "GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 2500.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "carbon_footprint_fabrication_per_gpu": {
+                "label": "GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 150.0,
+                "unit": "kilogram / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            }
+        }
+    },
+    "Hardware": {
+        "id-XXXXXX-Default-laptop": {
+            "name": "Default laptop",
+            "id": "id-XXXXXX-Default-laptop",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
+                "value": 156.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of Default laptop from hypothesis",
+                "value": 50.0,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Default laptop from hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "value": 7.0,
+                "unit": "hour / day",
+                "source": {
+                    "name": "DATA.AI - STATE OF MOBILE",
+                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+                }
+            }
+        }
+    },
+    "Network": {
+        "id-XXXXXX-Default-network": {
+            "name": "Default network",
+            "id": "id-XXXXXX-Default-network",
+            "bandwidth_energy_intensity": {
+                "label": "bandwith energy intensity of Default network from Traficom study",
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "id-XXXXXX-France": {
+            "name": "France",
+            "id": "id-XXXXXX-France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
+        }
+    }
+}

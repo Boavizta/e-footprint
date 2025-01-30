@@ -31,14 +31,6 @@ class GPUServer(ServerBase):
             "storage": Storage.ssd("Default SSD storage"),
             "fixed_nb_of_instances": EmptyExplainableObject()
             }
-
-    @classmethod
-    def list_values(cls):
-        return {"base_efootprint_class_str": ["Autoscaling", "OnPremise", "Serverless"]}
-
-    @classmethod
-    def conditional_list_values(cls):
-        return {}
     
     def __init__(self, name: str, server_type: ExplainableObject,  gpu_power: ExplainableQuantity,
                  gpu_idle_power: ExplainableQuantity, ram_per_gpu: ExplainableQuantity,

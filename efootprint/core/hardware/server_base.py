@@ -41,6 +41,22 @@ class ServerBase(InfraHardware):
         pass
 
     @classmethod
+    def list_values(cls):
+        return {"server_type": ServerTypes.all()}
+
+    @classmethod
+    def conditional_list_values(cls):
+        return {
+            "fixed_nb_of_instances": {
+                "depends_on": "server_type",
+                "conditional_list_values": {
+                    ServerTypes.autoscaling(): [EmptyExplainableObject()],
+                    ServerTypes.serverless(): [EmptyExplainableObject()]
+                }
+            }
+        }
+
+    @classmethod
     def installable_services(cls) -> List:
         from efootprint.core.all_classes_in_order import SERVICE_CLASSES
         installable_services = []

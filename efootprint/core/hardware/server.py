@@ -28,17 +28,6 @@ class Server(ServerBase):
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
-    @classmethod
-    def list_values(cls):
-        return {"server_type": ServerTypes.all()}
-
-    @classmethod
-    def conditional_list_values(cls):
-        return {"fixed_nb_of_instances": {"depends_on": "server_type", "conditional_list_values": {
-            ServerTypes.autoscaling(): [EmptyExplainableObject()],
-            ServerTypes.serverless(): [EmptyExplainableObject()]}
-        }}
-
     def __init__(self, name: str, server_type: ExplainableObject, carbon_footprint_fabrication: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,

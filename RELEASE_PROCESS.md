@@ -1,11 +1,7 @@
 # Release process
 
-## Make sure all tests pass
-
-```shell
-export PYTHONPATH="./:$PYTHONPATH"
-python -m pytest --cov=tests
-```
+## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
+You might need to update the version in the reference integration test json files as well.
 
 ## Update [CHANGELOG.md](CHANGELOG.md)
 
@@ -23,8 +19,6 @@ python docs_sources/doc_utils/main.py
 mkdocs serve
 ```
 
-## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
-
 ## Update poetry dependencies
 
 ```shell
@@ -36,6 +30,13 @@ poetry update
 ```shell
 poetry export -f requirements.txt --without-hashes -o requirements.txt 
 poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 
+```
+
+## Make sure all tests pass
+
+```shell
+export PYTHONPATH="./:$PYTHONPATH"
+python -m pytest --cov=tests
 ```
 
 ## Make new version commit, starting with [Vx.y.z]
