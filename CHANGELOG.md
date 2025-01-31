@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.0.3] 2025-01-31
+
+### Fixed
+- Use modeling object’s __setattr__ method in json_to_system to ensure that modeling object containers are always correctly set (the logic had been forgotten for EmptyExplainableObjects).
+- Set JobBase as required class for UsageJourneyStep jobs attribute, to keep it generic.
+
 ## [9.0.2] 2025-01-30
 
 ### Fixed

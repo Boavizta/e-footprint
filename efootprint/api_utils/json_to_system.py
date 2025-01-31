@@ -80,20 +80,18 @@ def json_to_system(system_dict):
 
     for class_key in class_obj_dict.keys():
         for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
+            mod_obj.trigger_modeling_updates = False
             for attr_key, attr_value in list(mod_obj.__dict__.items()):
                 if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
-                    mod_obj.__dict__[attr_key] = ContextualModelingObjectAttribute(flat_obj_dict[attr_value])
-                    mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
+                    mod_obj.__setattr__(attr_key, ContextualModelingObjectAttribute(flat_obj_dict[attr_value]))
                 elif type(attr_value) == list and attr_key != "contextual_modeling_obj_containers":
                     output_val = []
                     for elt in attr_value:
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
-                    mod_obj.__dict__[attr_key] = ListLinkedToModelingObj(output_val)
-                    mod_obj.__dict__[attr_key].set_modeling_obj_container(mod_obj, attr_key)
+                    mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val))
             for calculated_attribute in mod_obj.calculated_attributes:
-                mod_obj.__dict__[calculated_attribute] = EmptyExplainableObject()
-            mod_obj.trigger_modeling_updates = True
+                mod_obj.__setattr__(calculated_attribute, EmptyExplainableObject())
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
