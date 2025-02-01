@@ -28,12 +28,13 @@ class UsageJourneyStep(ModelingObject):
         return list(set(sum([uj.usage_patterns for uj in self.usage_journeys], start=[])))
 
     @property
+    def networks(self) -> List[Type["Network"]]:
+        return list(set([up.network for up in self.usage_patterns]))
+
+    @property
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsageJourney"]]:
-        if self.usage_journeys:
-            return self.usage_journeys
-        else:
-            return self.jobs
+        return self.jobs + self.networks

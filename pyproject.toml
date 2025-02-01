@@ -5,11 +5,12 @@
 
 [tool.poetry]
 name = "efootprint"
-version = "9.0.3"
+version = "9.1.0"
 description = "Digital service environmental footprint model"
 authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"
-include = ["efootprint/constants/custom_units.txt"]
+include = ["efootprint/constants/custom_units.txt",
+    "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv"]
 
 [tool.black]
 line-length = 120

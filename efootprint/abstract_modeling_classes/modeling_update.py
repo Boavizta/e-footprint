@@ -51,6 +51,9 @@ class ModelingUpdate:
             self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
         
         self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
+        if self.mod_objs_computation_chain:
+            logger.info(f"{len(self.mod_objs_computation_chain)} recomputed objects: "
+                        f"{[mod_obj.id for mod_obj in self.mod_objs_computation_chain]}")
         self.attr_updates_chain_from_mod_objs_computation_chains = (
             compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
         self.values_to_recompute = self.generate_optimized_attr_updates_chain()

@@ -47,7 +47,7 @@ def json_to_explainable_object(input_dict):
     return output
 
 
-def json_to_system(system_dict):
+def json_to_system(system_dict, launch_system_computations=True):
     json_efootprint_version = system_dict.pop("efootprint_version", None)
     if json_efootprint_version != efootprint.__version__:
         logger.warning(
@@ -66,10 +66,10 @@ def json_to_system(system_dict):
         for class_instance_key in system_dict[class_key].keys():
             new_obj = current_class.__new__(current_class)
             new_obj.__dict__["contextual_modeling_obj_containers"] = []
+            new_obj.trigger_modeling_updates = False
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
-                    new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
-                    new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
+                    new_obj.__setattr__(attr_key, json_to_explainable_object(attr_value))
                 else:
                     new_obj.__dict__[attr_key] = attr_value
 
@@ -80,7 +80,6 @@ def json_to_system(system_dict):
 
     for class_key in class_obj_dict.keys():
         for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
-            mod_obj.trigger_modeling_updates = False
             for attr_key, attr_value in list(mod_obj.__dict__.items()):
                 if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
                     mod_obj.__setattr__(attr_key, ContextualModelingObjectAttribute(flat_obj_dict[attr_value]))
@@ -102,7 +101,8 @@ def json_to_system(system_dict):
         system_id = system.id
         system.__init__(system.name, usage_patterns=system.usage_patterns)
         system.id = system_id
-        system.after_init()
+        if launch_system_computations:
+            system.after_init()
 
     return class_obj_dict, flat_obj_dict
 

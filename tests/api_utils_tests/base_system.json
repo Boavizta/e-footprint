@@ -353,15 +353,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "idle_power": {
                 "label": "Idle power of Default SSD storage from hypothesis",
                 "value": 0.1,
@@ -378,15 +369,6 @@
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_usage_effectiveness": {
-                "label": "PUE of Default SSD storage from hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
                 }
             },
             "data_replication_factor": {
@@ -460,15 +442,6 @@
                     "link": null
                 }
             },
-            "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "idle_power": {
                 "label": "Idle power of Default SSD storage from hypothesis",
                 "value": 0.1,
@@ -485,15 +458,6 @@
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_usage_effectiveness": {
-                "label": "PUE of Default SSD storage from hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
                 }
             },
             "data_replication_factor": {

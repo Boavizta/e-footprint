@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.1.0] 2025-02-01
+
+### Added
+- Boolean launch_system_computations in json_to_system function to allow for not launching system computations after loading it from a json file. Will be useful for avoiding unnecessary computations in the interface.
+
+### Fixed
+- Include ecobenchmark csv file in package so that it doesn’t ever has to be downloaded from the internet.
+
+### Changed
+- Optimized usage journey step dependencies to reduce required computations when jobs are updated.
+
 ## [9.0.3] 2025-01-31
 
 ### Fixed
