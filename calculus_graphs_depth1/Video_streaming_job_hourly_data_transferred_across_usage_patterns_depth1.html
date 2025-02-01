@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f8437c {
+             #mynetwork_587182 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f8437c" class="card-body"></div>
+            <div id="mynetwork_587182" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f8437c');
+                  var container = document.getElementById('mynetwork_587182');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data transferred across usage patterns", "label": "Hourly Video\nstreaming job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data transferred across usage patterns\n=\nHourly data transferred for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 0.93, 0.93, 7.46, 8.4, 1.87, 8.4, 3.73, 7.46, 1.87],\nlast 10 vals [7.46, 5.6, 1.87, 0.93, 8.4, 6.53, 1.87, 5.6, 0.93, 6.53]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 0.93, 0.93, 7.46, 8.4, 1.87, 8.4, 3.73, 7.46, 1.87],\nlast 10 vals [7.46, 5.6, 1.87, 0.93, 8.4, 6.53, 1.87, 5.6, 0.93, 6.53]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\n(Hourly Video streaming job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data transferred per hour for job Video streaming job\nin usage pattern\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 1, 1, 8, 9, 2, 9, 4, 8, 2],\nlast 10 vals [8, 6, 2, 1, 9, 7, 2, 6, 1, 7] shifted by 0 hour) * 0.93 gigabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 0.93, 0.93, 7.46, 8.4, 1.87, 8.4, 3.73, 7.46, 1.87],\nlast 10 vals [7.46, 5.6, 1.87, 0.93, 8.4, 6.53, 1.87, 5.6, 0.93, 6.53]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data transferred across usage patterns", "label": "Hourly Video\nstreaming job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data transferred across usage patterns\n=\nHourly data transferred for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 5.6, 3.73, 4.67, 5.6, 7.46, 0.93, 4.67, 8.4, 0.93],\nlast 10 vals [8.4, 0.93, 4.67, 0.93, 4.67, 3.73, 6.53, 3.73, 1.87, 5.6]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 5.6, 3.73, 4.67, 5.6, 7.46, 0.93, 4.67, 8.4, 0.93],\nlast 10 vals [8.4, 0.93, 4.67, 0.93, 4.67, 3.73, 6.53, 3.73, 1.87, 5.6]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\n(Hourly Video streaming job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data transferred per hour for job Video streaming job\nin usage pattern\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [2, 6, 4, 5, 6, 8, 1, 5, 9, 1],\nlast 10 vals [9, 1, 5, 1, 5, 4, 7, 4, 2, 6] shifted by 0 hour) * 0.93 gigabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in GB:\nfirst 10 vals [1.87, 5.6, 3.73, 4.67, 5.6, 7.46, 0.93, 4.67, 8.4, 0.93],\nlast 10 vals [8.4, 0.93, 4.67, 0.93, 4.67, 3.73, 6.53, 3.73, 1.87, 5.6]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Video streaming job in usage pattern", "to": "Hourly Video streaming job data transferred across usage patterns"}]);
 
                   nodeColors = {};
