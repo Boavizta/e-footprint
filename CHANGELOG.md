@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.1.1] 2025-02-01
+
+### Changed
+- Don’t check inputs validity in json_to_system for performance optimisation.
+
+### Fixed
+- Remove storage from servers default values both for performance and consistency reasons (an object attribute should not be treated as a value).
+
 ## [9.1.0] 2025-02-01
 
 ### Added

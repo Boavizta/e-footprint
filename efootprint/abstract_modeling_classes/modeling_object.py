@@ -122,10 +122,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return {}
 
     @classmethod
-    def default_value(cls, attr_name):
-        return cls.default_values()[attr_name]
-
-    @classmethod
     def list_values(cls):
         return {}
 
@@ -161,7 +157,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.contextual_modeling_obj_containers = []
 
-    def check_input_value_type_and_unit(self, name, input_value):
+    def check_input_value_type_and_unit(self, name, input_value, default_values):
         init_sig_params = signature(self.__init__).parameters
         if name in init_sig_params.keys():
             annotation = init_sig_params[name].annotation
@@ -175,47 +171,48 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 raise PermissionError(f"Value {input_value} for attribute {name} should be of type {annotation} "
                                       f"but is of type {type(input_value)}")
             elif issubclass(annotation, ExplainableQuantity):
-                default_value = self.default_value(name)
+                default_value = default_values[name]
                 if (not isinstance(input_value, EmptyExplainableObject)
                         and input_value.value.dimensionality != default_value.value.dimensionality):
                     raise ValueError(
                         f"Value {input_value} for attribute {name} is not homogeneous to "
                         f"{default_value.value.units} ({default_value.value.dimensionality})")
 
-    def check_belonging_to_authorized_values(self, name, input_value):
-        if name in self.list_values().keys():
-            if input_value not in self.list_values()[name]:
+    def check_belonging_to_authorized_values(
+            self, name, input_value, list_values, conditional_list_values, attributes_with_depending_values):
+        if name in list_values.keys():
+            if input_value not in list_values[name]:
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values: "
-                    f"{[elt.value for elt in self.list_values()[name]]}")
+                    f"{[elt.value for elt in list_values[name]]}")
 
-        if name in self.conditional_list_values().keys():
-            conditional_attr_name = self.conditional_list_values()[name]['depends_on']
-            conditional_value = getattr(self, self.conditional_list_values()[name]["depends_on"])
+        if name in conditional_list_values.keys():
+            conditional_attr_name = conditional_list_values[name]['depends_on']
+            conditional_value = getattr(self, conditional_list_values[name]["depends_on"])
             if conditional_value is None:
                 raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
                                  f"validity of {name}")
-            if (conditional_value in self.conditional_list_values()[name]["conditional_list_values"].keys()
+            if (conditional_value in conditional_list_values[name]["conditional_list_values"].keys()
                     and input_value not in
-                    self.conditional_list_values()[name]["conditional_list_values"][conditional_value]):
+                    conditional_list_values[name]["conditional_list_values"][conditional_value]):
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values for "
                     f"{conditional_attr_name} {conditional_value}: "
-                    f"{self.conditional_list_values()[name]['conditional_list_values'][conditional_value]}")
+                    f"{conditional_list_values[name]['conditional_list_values'][conditional_value]}")
 
-        if name in self.attributes_with_depending_values().keys():
-            for dependent_attribute in self.attributes_with_depending_values()[name]:
+        if name in attributes_with_depending_values.keys():
+            for dependent_attribute in attributes_with_depending_values[name]:
                 dependent_attribute_value = getattr(self, dependent_attribute, None)
                 if (dependent_attribute_value is not None
                         and input_value
-                        in self.conditional_list_values()[dependent_attribute]["conditional_list_values"].keys()
+                        in conditional_list_values[dependent_attribute]["conditional_list_values"].keys()
                         and dependent_attribute_value not in
-                        self.conditional_list_values()[dependent_attribute]["conditional_list_values"][input_value]):
+                        conditional_list_values[dependent_attribute]["conditional_list_values"][input_value]):
                     raise ValueError(
                         f"Setting {name} as {input_value} is not possible because {dependent_attribute_value}"
                         f" is not in the list of possible values for {dependent_attribute} "
                         f"when {name} is {input_value}: "
-                        f"{self.conditional_list_values()[dependent_attribute]['conditional_list_values'][input_value]}"
+                        f"{conditional_list_values[dependent_attribute]['conditional_list_values'][input_value]}"
                     )
 
     @property
@@ -291,13 +288,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def attributes_that_shouldnt_trigger_update_logic(self):
         return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers"]
 
-    def __setattr__(self, name, input_value):
+    def __setattr__(self, name, input_value, check_input_validity=True):
         current_attr = getattr(self, name, None)
         if name in self.attributes_that_shouldnt_trigger_update_logic:
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
-            self.check_input_value_type_and_unit(name, input_value)
-            self.check_belonging_to_authorized_values(name, input_value)
+            if check_input_validity and name not in self.calculated_attributes:
+                self.check_input_value_type_and_unit(name, input_value, self.default_values())
+                self.check_belonging_to_authorized_values(
+                    name, input_value, self.list_values(), self.conditional_list_values(),
+                    self.attributes_with_depending_values())
             value_to_set = input_value
             if isinstance(value_to_set, ModelingObject):
                 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \

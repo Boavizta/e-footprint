@@ -45,7 +45,6 @@ class BoaviztaCloudServer(Server):
             "server_utilization_rate": SourceValue(0.9 * u.dimensionless),
             "base_ram_consumption": SourceValue(0 * u.GB),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
-            "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
@@ -81,11 +80,6 @@ class BoaviztaCloudServer(Server):
         self.instance_type = instance_type
         self.impact_url = "https://api.boavizta.org/v1/cloud/instance"
         self.api_call_response = EmptyExplainableObject()
-
-    def after_init(self):
-        super().after_init()
-        if len(self.jobs) == 0:
-            self.compute_calculated_attributes()
 
     @property
     def calculated_attributes(self):

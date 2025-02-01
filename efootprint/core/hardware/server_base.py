@@ -230,12 +230,6 @@ class ServerBase(InfraHardware):
         else:
             max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
 
-            nb_of_instances_df = pd.DataFrame(
-                {"value": pint_pandas.PintArray(
-                    max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), dtype=u.dimensionless)},
-                index=self.raw_nb_of_instances.value.index
-            )
-
             if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 if max_nb_of_instances > self.fixed_nb_of_instances:
                     raise ValueError(
@@ -257,6 +251,12 @@ class ServerBase(InfraHardware):
                         right_parent=self.fixed_nb_of_instances
                     )
             else:
+                nb_of_instances_df = pd.DataFrame(
+                    {"value": pint_pandas.PintArray(
+                        max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), dtype=u.dimensionless)},
+                    index=self.raw_nb_of_instances.value.index
+                )
+
                 nb_of_instances = ExplainableHourlyQuantities(
                     nb_of_instances_df,
                     f"Hourly number of {self.name} instances",

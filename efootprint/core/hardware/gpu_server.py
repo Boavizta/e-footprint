@@ -28,7 +28,6 @@ class GPUServer(ServerBase):
             "server_utilization_rate": SourceValue(1 * u.dimensionless),
             "base_compute_consumption": SourceValue(0 * u.gpu),
             "base_ram_consumption": SourceValue(0 * u.GB),
-            "storage": Storage.ssd("Default SSD storage"),
             "fixed_nb_of_instances": EmptyExplainableObject()
             }
     

@@ -32,15 +32,6 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
         )
 
-    def test_calculated_attributes_have_been_computed(self):
-        """
-        Test that the calculated attributes have been computed.
-        """
-        self.assertTrue(self.test_server.carbon_footprint_fabrication.value > 0 * u.kg)
-        self.assertTrue(self.test_server.power.value > 0 * u.W)
-        self.assertTrue(self.test_server.ram.value > 0 * u.GB)
-        self.assertTrue(self.test_server.compute.value > 0 * u.cpu_core)
-
     @patch("efootprint.builders.hardware.boavizta_cloud_server.call_boaviztapi")
     def test_update_api_call_response(self, mock_call):
         """
