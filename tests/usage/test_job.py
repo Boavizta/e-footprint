@@ -36,15 +36,33 @@ class TestJob(TestCase):
         server = MagicMock(id="server")
         server.class_as_simple_str = "Server"
         server.name = "server"
-        server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, self.job, "server")]
         server.mod_objs_computation_chain = [server, network]
+        job = Job.from_defaults("test job", server=server)
+        server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
             mock_mod_obj_attributes.return_value = [server]
-
-            self.job.self_delete()
+            job.trigger_modeling_updates = True
+            job.self_delete()
             server.set_modeling_obj_container.assert_called_once_with(None, None)
             server.compute_calculated_attributes.assert_called_once()
             network.compute_calculated_attributes.assert_called_once()
+
+    def test_self_delete_removes_backward_links_and_doesnt_recompute_server_and_network(self):
+        network = MagicMock(id="network")
+        network.class_as_simple_str = "Network"
+        server = MagicMock(id="server")
+        server.class_as_simple_str = "Server"
+        server.name = "server"
+        server.mod_objs_computation_chain = [server, network]
+        job = Job.from_defaults("test job", server=server)
+        server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
+        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+            mock_mod_obj_attributes.return_value = [server]
+            job.trigger_modeling_updates = False
+            job.self_delete()
+            server.set_modeling_obj_container.assert_called_once_with(None, None)
+            server.compute_calculated_attributes.assert_not_called()
+            network.compute_calculated_attributes.assert_not_called()
 
     def test_duration_in_full_hours(self):
         self.assertEqual(1 * u.dimensionless, self.job.duration_in_full_hours.value)

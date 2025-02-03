@@ -392,14 +392,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        mod_objs_computation_chain = []
         for attr in self.mod_obj_attributes:
             attr.set_modeling_obj_container(None, None)
-            mod_objs_computation_chain += attr.mod_objs_computation_chain
 
-        optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        if self.trigger_modeling_updates:
+            mod_objs_computation_chain = sum(
+                [attr.mod_objs_computation_chain for attr in self.mod_obj_attributes], start=[])
+            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
 
-        self.launch_mod_objs_computation_chain(optimized_chain)
+            self.launch_mod_objs_computation_chain(optimized_chain)
 
         del self
 
