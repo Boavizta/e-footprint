@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.1.2] 2025-02-03
+
+### Fixed
+- Fix order of providers in GenAIModel provider list values.
+
 ## [9.1.1] 2025-02-01
 
 ### Changed

@@ -31,7 +31,8 @@ class GenAIModel(Service):
 
     @classmethod
     def list_values(cls):
-        return {"provider": list(set([SourceObject(model.provider.name) for model in models.list_models()]))}
+        sorted_provider_names = sorted(list(set([model.provider.name for model in models.list_models()])))
+        return {"provider": [SourceObject(provider_name) for provider_name in sorted_provider_names]}
 
     @classmethod
     def conditional_list_values(cls):
