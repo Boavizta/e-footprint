@@ -2,8 +2,10 @@ import unittest
 from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.builders.services.video_streaming import VideoStreaming
+from efootprint.builders.services.web_application import WebApplication
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerTypes
@@ -151,6 +153,9 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         # 2 * 4 = 8 cpu_cores
         self.assertEqual(self.test_server.compute.value, 8 * u.cpu_core)
         self.assertIn("compute", self.test_server.compute.label)
+
+    def test_installable_services(self):
+        self.assertEqual(set(BoaviztaCloudServer.installable_services()), {WebApplication, VideoStreaming})
 
 
 if __name__ == "__main__":

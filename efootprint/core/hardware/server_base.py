@@ -61,8 +61,10 @@ class ServerBase(InfraHardware):
         from efootprint.core.all_classes_in_order import SERVICE_CLASSES
         installable_services = []
         for service_class in SERVICE_CLASSES:
-            if cls in service_class.installable_on():
-                installable_services.append(service_class)
+            for installable_on_class in service_class.installable_on():
+                if issubclass(cls, installable_on_class):
+                    installable_services.append(service_class)
+                    break
 
         return installable_services
 
