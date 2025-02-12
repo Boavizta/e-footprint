@@ -317,8 +317,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             ModelingUpdate([[current_attr, input_value]])
-
-        if getattr(self, "name", None) is not None:
             logger.debug(f"attribute {name} updated in {self.name}")
 
     def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(

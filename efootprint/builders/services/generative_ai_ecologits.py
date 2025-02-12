@@ -137,7 +137,7 @@ class GenAIJob(ServiceJob):
             request_duration=SourceValue(0 * u.s),
             compute_needed=SourceValue(0 * u.gpu),
             ram_needed=SourceValue(0 * u.GB))
-        self.output_token_count = output_token_count
+        self.output_token_count = output_token_count.set_label(f"{self.name} output token count")
         self.output_token_weights = EmptyExplainableObject()
 
     @property
