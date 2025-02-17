@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.4">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.a40c8224.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
       
       
 
@@ -2068,7 +2068,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cfcdf8 {
+             #mynetwork_83d9db {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2090,7 +2090,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cfcdf8" class="card-body"></div>
+            <div id="mynetwork_83d9db" class="card-body"></div>
         </div>
 
 
@@ -2120,7 +2120,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cfcdf8');
+                  var container = document.getElementById('mynetwork_83d9db');
 
 
 
@@ -2234,7 +2234,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_04edcc {
+             #mynetwork_6a6083 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2256,7 +2256,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_04edcc" class="card-body"></div>
+            <div id="mynetwork_6a6083" class="card-body"></div>
         </div>
 
 
@@ -2286,7 +2286,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_04edcc');
+                  var container = document.getElementById('mynetwork_6a6083');
 
 
 
@@ -2362,7 +2362,7 @@
 <p>hourly storage delta for storage in terabyte.  </p>
 <p>Example value: 26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
-    last 10 vals [0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0]  </p>
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../VideoStreamingJob/#hourly_data_stored_across_usage_patterns">Hourly Video streaming job data stored across usage patterns</a></li>
@@ -2404,7 +2404,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_644df0 {
+             #mynetwork_ad3745 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2426,7 +2426,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_644df0" class="card-body"></div>
+            <div id="mynetwork_ad3745" class="card-body"></div>
         </div>
 
 
@@ -2456,12 +2456,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_644df0');
+                  var container = document.getElementById('mynetwork_ad3745');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage delta for storage", "label": "Hourly storage delta\nfor storage", "shape": "dot", "size": 15, "title": "Hourly storage delta for storage\n=\nHourly storage storage need + Storage dumps for storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 8767 values\nfrom 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Video streaming job data stored across usage patterns + Hourly Manually\ndefined job data stored across usage patterns) * Data replication factor of\nstorage\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 26299 values\nfrom 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]) * 3 dimensionless\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 900}, {"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 750}, {"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3 dimensionless", "x": 300.0, "y": 750}, {"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n8767 values from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage delta for storage", "label": "Hourly storage delta\nfor storage", "shape": "dot", "size": 15, "title": "Hourly storage delta for storage\n=\nHourly storage storage need + Storage dumps for storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 8767 values\nfrom 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Video streaming job data stored across usage patterns + Hourly Manually\ndefined job data stored across usage patterns) * Data replication factor of\nstorage\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 26299 values\nfrom 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]) * 3 dimensionless\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 900}, {"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 750}, {"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3 dimensionless", "x": 300.0, "y": 750}, {"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n8767 values from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly storage storage need", "to": "Hourly storage delta for storage"}, {"arrows": "to", "from": "Hourly Video streaming job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Hourly Manually defined job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Storage dumps for storage", "to": "Hourly storage delta for storage"}, {"arrows": "to", "from": "Hourly storage storage need", "to": "Storage dumps for storage"}, {"arrows": "to", "from": "Hourly Video streaming job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Hourly Manually defined job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data storage duration of storage", "to": "Storage dumps for storage"}]);
 
                   nodeColors = {};
@@ -2572,7 +2572,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7abb85 {
+             #mynetwork_966b8b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2594,7 +2594,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7abb85" class="card-body"></div>
+            <div id="mynetwork_966b8b" class="card-body"></div>
         </div>
 
 
@@ -2624,12 +2624,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7abb85');
+                  var container = document.getElementById('mynetwork_966b8b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Full cumulative storage need for storage", "label": "Full cumulative\nstorage need for\nstorage", "shape": "dot", "size": 15, "title": "Full cumulative storage need for storage\n=\nHourly storage delta for storage cumulative sum of storage delta with initial\nstorage need storage initial storage need\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0] cumulative\nsum of storage delta with initial storage need 0 terabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly storage delta for storage", "label": "Hourly storage delta\nfor storage", "shape": "dot", "size": 15, "title": "Hourly storage delta for storage\n=\nHourly storage storage need + Storage dumps for storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 8767 values\nfrom 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0]", "x": -225.0, "y": 1200}, {"color": null, "id": "storage initial storage need", "label": "storage initial\nstorage need", "shape": "dot", "size": 15, "title": "storage initial storage need = 0 terabyte", "x": 225.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Full cumulative storage need for storage", "label": "Full cumulative\nstorage need for\nstorage", "shape": "dot", "size": 15, "title": "Full cumulative storage need for storage\n=\nHourly storage delta for storage cumulative sum of storage delta with initial\nstorage need storage initial storage need\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] cumulative sum\nof storage delta with initial storage need 0 terabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly storage delta for storage", "label": "Hourly storage delta\nfor storage", "shape": "dot", "size": 15, "title": "Hourly storage delta for storage\n=\nHourly storage storage need + Storage dumps for storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 8767 values\nfrom 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 1200}, {"color": null, "id": "storage initial storage need", "label": "storage initial\nstorage need", "shape": "dot", "size": 15, "title": "storage initial storage need = 0 terabyte", "x": 225.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly storage delta for storage", "to": "Full cumulative storage need for storage"}, {"arrows": "to", "from": "storage initial storage need", "to": "Full cumulative storage need for storage"}]);
 
                   nodeColors = {};
@@ -2740,7 +2740,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a3ce8c {
+             #mynetwork_3ed442 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2762,7 +2762,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a3ce8c" class="card-body"></div>
+            <div id="mynetwork_3ed442" class="card-body"></div>
         </div>
 
 
@@ -2792,12 +2792,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a3ce8c');
+                  var container = document.getElementById('mynetwork_3ed442');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03] / 1\nterabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": 0.0, "y": 1500}, {"color": null, "id": "Full cumulative storage need for storage", "label": "Full cumulative\nstorage need for\nstorage", "shape": "dot", "size": 15, "title": "Full cumulative storage need for storage\n=\nHourly storage delta for storage cumulative sum of storage delta with initial\nstorage need storage initial storage need\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, 0.0, -0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0] cumulative\nsum of storage delta with initial storage need 0 terabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": -225.0, "y": 1350}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 225.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03] / 1\nterabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": 0.0, "y": 1500}, {"color": null, "id": "Full cumulative storage need for storage", "label": "Full cumulative\nstorage need for\nstorage", "shape": "dot", "size": 15, "title": "Full cumulative storage need for storage\n=\nHourly storage delta for storage cumulative sum of storage delta with initial\nstorage need storage initial storage need\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] cumulative sum\nof storage delta with initial storage need 0 terabyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": -225.0, "y": 1350}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 225.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Full cumulative storage need for storage", "to": "Hourly raw number of instances for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Hourly raw number of instances for storage"}]);
 
                   nodeColors = {};
@@ -2908,7 +2908,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_716e35 {
+             #mynetwork_b954f5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2930,7 +2930,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_716e35" class="card-body"></div>
+            <div id="mynetwork_b954f5" class="card-body"></div>
         </div>
 
 
@@ -2960,7 +2960,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_716e35');
+                  var container = document.getElementById('mynetwork_b954f5');
 
 
 
@@ -3080,7 +3080,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8ccb1a {
+             #mynetwork_b9a7d5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3102,7 +3102,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8ccb1a" class="card-body"></div>
+            <div id="mynetwork_b9a7d5" class="card-body"></div>
         </div>
 
 
@@ -3132,12 +3132,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8ccb1a');
+                  var container = document.getElementById('mynetwork_b9a7d5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of active instances for storage", "label": "Hourly number of\nactive instances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of active instances for storage\n=\n(None compared with no value + abs of (Storage dumps for storage)) / Storage\ncapacity of storage min compared with abs of (Hourly number of instances for\nstorage)\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + abs of (8767\nvalues from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0])) / 1\nterabyte min compared with abs of (26299 values from 2024-12-31 23:00:00 to\n2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "None compared with no value", "label": "None compared with\nno value", "shape": "dot", "size": 15, "title": "None compared with no value\n=\nmax compared with of (abs of (Hourly storage storage need))\n=\nmax compared with of (abs of (26299 values from 2024-12-31 23:00:00 to\n2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 1650}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Video streaming job data stored across usage patterns + Hourly Manually\ndefined job data stored across usage patterns) * Data replication factor of\nstorage\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 26299 values\nfrom 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]) * 3 dimensionless\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 900}, {"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 750}, {"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 600.0, 400.0, 500.0, 600.0, 800.0, 100.0, 500.0, 900.0,\n100.0],\nlast 10 vals [900.0, 100.0, 500.0, 100.0, 500.0, 400.0, 700.0, 400.0, 200.0,\n600.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3 dimensionless", "x": 300.0, "y": 750}, {"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n8767 values from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 900}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 225.0, "y": 1350}, {"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage) depending on being empty\nUser defined number of storage instances\n=\nceil of (26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\ndepending on being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 225.0, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of active instances for storage", "label": "Hourly number of\nactive instances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of active instances for storage\n=\n(None compared with no value + abs of (Storage dumps for storage)) / Storage\ncapacity of storage min compared with abs of (Hourly number of instances for\nstorage)\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + abs of (8767\nvalues from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0])) / 1\nterabyte min compared with abs of (26299 values from 2024-12-31 23:00:00 to\n2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "None compared with no value", "label": "None compared with\nno value", "shape": "dot", "size": 15, "title": "None compared with no value\n=\nmax compared with of (abs of (Hourly storage storage need))\n=\nmax compared with of (abs of (26299 values from 2024-12-31 23:00:00 to\n2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]))\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 1650}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Video streaming job data stored across usage patterns + Hourly Manually\ndefined job data stored across usage patterns) * Data replication factor of\nstorage\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 26299 values\nfrom 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]) * 3 dimensionless\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 900}, {"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -300.0, "y": 750}, {"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [200.0, 700.0, 600.0, 500.0, 200.0, 100.0, 900.0, 800.0, 700.0,\n400.0],\nlast 10 vals [400.0, 300.0, 600.0, 600.0, 300.0, 500.0, 300.0, 600.0, 900.0,\n600.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3 dimensionless", "x": 300.0, "y": 750}, {"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n8767 values from 2027-01-01 11:00:00 to 2028-01-01 17:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 900}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 225.0, "y": 1350}, {"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage) depending on being empty\nUser defined number of storage instances\n=\nceil of (26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\ndepending on being empty no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 225.0, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "None compared with no value", "to": "Hourly number of active instances for storage"}, {"arrows": "to", "from": "Hourly storage storage need", "to": "None compared with no value"}, {"arrows": "to", "from": "Hourly Video streaming job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Hourly Manually defined job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Storage dumps for storage", "to": "Hourly number of active instances for storage"}, {"arrows": "to", "from": "Hourly storage storage need", "to": "Storage dumps for storage"}, {"arrows": "to", "from": "Hourly Video streaming job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Hourly Manually defined job data stored across usage patterns", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Hourly storage storage need"}, {"arrows": "to", "from": "Data storage duration of storage", "to": "Storage dumps for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Hourly number of active instances for storage"}, {"arrows": "to", "from": "Hourly number of instances for storage", "to": "Hourly number of active instances for storage"}]);
 
                   nodeColors = {};
@@ -3249,7 +3249,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_de7438 {
+             #mynetwork_0e88e9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3271,7 +3271,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_de7438" class="card-body"></div>
+            <div id="mynetwork_0e88e9" class="card-body"></div>
         </div>
 
 
@@ -3301,7 +3301,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_de7438');
+                  var container = document.getElementById('mynetwork_0e88e9');
 
 
 
@@ -3420,7 +3420,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_707ed3 {
+             #mynetwork_c7888f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3442,7 +3442,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_707ed3" class="card-body"></div>
+            <div id="mynetwork_c7888f" class="card-body"></div>
         </div>
 
 
@@ -3472,7 +3472,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_707ed3');
+                  var container = document.getElementById('mynetwork_c7888f');
 
 
 
@@ -3588,7 +3588,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_03a6d6 {
+             #mynetwork_10e362 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3610,7 +3610,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_03a6d6" class="card-body"></div>
+            <div id="mynetwork_10e362" class="card-body"></div>
         </div>
 
 
@@ -3640,7 +3640,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_03a6d6');
+                  var container = document.getElementById('mynetwork_10e362');
 
 
 
@@ -3761,7 +3761,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.5090c770.min.js"></script>
+      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c73e64 {
+             #mynetwork_c8ea9c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c73e64" class="card-body"></div>
+            <div id="mynetwork_c8ea9c" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c73e64');
+                  var container = document.getElementById('mynetwork_c8ea9c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nunnamed source from hypothesis * Number of bits per token from hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "unnamed source from hypothesis", "label": "unnamed source from\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from hypothesis = 1000 dimensionless", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of bits per token from hypothesis", "label": "Number of bits per\ntoken from\nhypothesis", "shape": "dot", "size": 15, "title": "Number of bits per token from hypothesis = 24 dimensionless", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from hypothesis", "to": "Generative AI model job output token weights"}, {"arrows": "to", "from": "Number of bits per token from hypothesis", "to": "Generative AI model job output token weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from hypothesis * Number of bits per\ntoken from hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model job output token count from hypothesis", "label": "Generative AI model\njob output token\ncount from\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from hypothesis = 1000 dimensionless", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of bits per token from hypothesis", "label": "Number of bits per\ntoken from\nhypothesis", "shape": "dot", "size": 15, "title": "Number of bits per token from hypothesis = 24 dimensionless", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from hypothesis", "to": "Generative AI model job output token weights"}, {"arrows": "to", "from": "Number of bits per token from hypothesis", "to": "Generative AI model job output token weights"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
