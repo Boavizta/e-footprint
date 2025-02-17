@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [9.1.5] 2025-02-17
+
+### Fixed
+- Pass check_input_validity parameter from GenAIModel’s __setattr__ to its super()’s __setattr__ method to avoid unnecessary input validity checks.
+- Set output token count label in GenAIJob.
+
+### Changed
+- Only log attribute updates in ModelingObject to reduce the number of debug logs.
+
 ## [9.1.4] 2025-02-04
 
 ### Fixed

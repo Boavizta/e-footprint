@@ -47,7 +47,7 @@ class GenAIModel(Service):
         if name == "provider" and self.trigger_modeling_updates:
             raise PermissionError("The provider of a GenAIModel cannot be changed after initialization. "
                                   "Use a ModelingUpdate to update both provider and a compatible model name.")
-        super().__setattr__(name, input_value)
+        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
 
     def __init__(self, name: str, provider: ExplainableObject, model_name: ExplainableObject, server: GPUServer,
                  nb_of_bits_per_parameter: ExplainableQuantity, llm_memory_factor: ExplainableQuantity,

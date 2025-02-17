@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "9.1.4",
+    "efootprint_version": "9.1.5",
     "System": {
         "id-XXXXXX-system-1": {
             "name": "system 1",
@@ -509,7 +509,7 @@
             "id": "id-XXXXXX-GenAI-job",
             "service": "id-XXXXXX-GenAI-service",
             "output_token_count": {
-                "label": "unnamed source from hypothesis",
+                "label": "GenAI job output token count from hypothesis",
                 "value": 1000.0,
                 "unit": "dimensionless",
                 "source": {

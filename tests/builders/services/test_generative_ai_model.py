@@ -90,6 +90,11 @@ class TestGenAIModel(unittest.TestCase):
         self.assertEqual(initial_total_params, self.genai_model.total_params)
         self.assertEqual(initial_active_params, self.genai_model.active_params)
 
+    def test_setattr_passes_check_input_validity_parameter_to_super_method(self):
+        with patch("efootprint.builders.services.generative_ai_ecologits.Service.__setattr__") as mock_setattr:
+            self.genai_model.__setattr__("provider", SourceObject("openai"), check_input_validity=False)
+            mock_setattr.assert_called_once_with("provider", SourceObject("openai"), check_input_validity=False)
+
 
 class TestGenAIJob(unittest.TestCase):
     def setUp(self):
