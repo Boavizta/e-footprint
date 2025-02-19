@@ -4,7 +4,7 @@ import efootprint
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
-def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes=True):
+def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes):
     mod_obj_class = mod_obj.class_as_simple_str
     if mod_obj_class not in output_dict.keys():
         output_dict[mod_obj_class] = {}

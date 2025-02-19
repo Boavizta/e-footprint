@@ -6,7 +6,7 @@ COLOR_MAP = {
     "Server": "red",
     "BoaviztaCloudServer": "red",
     "GPUServer": "red",
-    "Hardware": "red",
+    "Device": "red",
     "Storage": "red",
     "UsagePattern": "blue",
     "UsageJourney": "dodgerblue",
@@ -21,10 +21,10 @@ COLOR_MAP = {
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
-    "System", "Network", "Hardware", "Country", "Job", "Storage", "VideoStreaming", "GenAIModel", "WebApplication",
+    "System", "Network", "Device", "Country", "Job", "Storage", "VideoStreaming", "GenAIModel", "WebApplication",
     "VideoStreamingJob", "GenAIJob", "WebApplicationJob"]
 INFRA_VIEW_CLASSES_TO_IGNORE = [
-    "UsagePattern", "Network", "Hardware", "System", "UsageJourney", "UsageJourneyStep", "Country"]
+    "UsagePattern", "Network", "Device", "System", "UsageJourney", "UsageJourneyStep", "Country"]
 
 
 def build_object_relationships_graph(

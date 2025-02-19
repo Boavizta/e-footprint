@@ -68,7 +68,7 @@ def css_escape(input_string):
 
 
 def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
-    from efootprint.core.all_classes_in_order import ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER
+    from efootprint.core.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
     initial_chain_len = len(mod_objs_computation_chain)
     # Keep only last occurrence of each mod_obj
     optimized_chain = []
@@ -86,9 +86,9 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
                     f" modeling object calculated attributes recomputations.")
 
     ordered_chain = []
-    for efootprint_class in ALL_CLASSES_IN_CANONICAL_COMPUTATION_ORDER:
+    for efootprint_class in CANONICAL_COMPUTATION_ORDER:
         for mod_obj in optimized_chain:
-            if mod_obj.class_as_simple_str == efootprint_class.__name__:
+            if issubclass(mod_obj.efootprint_class, efootprint_class):
                 ordered_chain.append(mod_obj)
 
     ordered_chain_ids = [elt.id for elt in ordered_chain]
@@ -156,6 +156,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.name = name
         self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.contextual_modeling_obj_containers = []
+
+    @property
+    def efootprint_class(self):
+        return type(self)
 
     def check_input_value_type_and_unit(self, name, input_value, default_values):
         init_sig_params = signature(self.__init__).parameters

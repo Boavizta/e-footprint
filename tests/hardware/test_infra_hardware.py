@@ -14,6 +14,14 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 class TestInfraHardware(TestCase):
     def setUp(self):
         class InfraHardwareTestClass(InfraHardware):
+            @classmethod
+            def default_values(cls):
+                return {
+                    "carbon_footprint_fabrication": SourceValue(100 * u.kg),
+                    "power": SourceValue(100 * u.W),
+                    "lifespan": SourceValue(5 * u.year)
+                }
+
             def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
                          power: ExplainableQuantity, lifespan: ExplainableQuantity):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan)

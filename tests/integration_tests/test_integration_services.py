@@ -11,7 +11,7 @@ from efootprint.builders.services.video_streaming import VideoStreaming, VideoSt
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.device import Device
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.hardware.storage import Storage
@@ -56,7 +56,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [Hardware.laptop()], cls.network, Countries.FRANCE(),
+            "Youtube usage in France", cls.uj, [Device.laptop()], cls.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 

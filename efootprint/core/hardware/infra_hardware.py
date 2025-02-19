@@ -6,10 +6,10 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.hardware_base import HardwareBase
 
 
-class InfraHardware(Hardware):
+class InfraHardware(HardwareBase):
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity):
         super().__init__(

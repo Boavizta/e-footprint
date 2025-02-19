@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.0] 2025-02-20
+
+### Changed
+- Make canonical computation order depend on class inheritance of base efootprint classes instead of a full explicit list of all e-footprint classes.
+- json_to_system function now takes a dict of all e-footprint classes as input.
+- These changes will allow for extendability of e-footprint classes in projects that use e-footprint as a dependency. As long a the new classes are subclasses of the base e-footprint classes defined in the CANONICAL_COMPUTATION_ORDER variable in [efootprint.core.all_classes_in_order](https://github.com/Boavizta/e-footprint/tree/main/efootprint/core/all_classes_in_order.py), they will be taken into account in the canonical computation order. The extended classes will have to be added to the dict of all e-footprint classes passed to the json_to_system function.
+
+### Added
+- retrocompatibility with version 9 json files.
+
 ## [9.1.5] 2025-02-17
 
 ### Fixed

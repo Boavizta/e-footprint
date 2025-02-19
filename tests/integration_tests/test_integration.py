@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.device import Device
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
@@ -80,7 +80,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [Hardware.laptop()], cls.network, Countries.FRANCE(),
+            "Youtube usage in France", cls.uj, [Device.laptop()], cls.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
 
@@ -179,9 +179,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
-        self.usage_pattern.devices = [Hardware.laptop(), Hardware.screen()]
+        self.usage_pattern.devices = [Device.laptop(), Device.screen()]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
-        up_laptop_with_normalized_id = Hardware.laptop()
+        up_laptop_with_normalized_id = Device.laptop()
         up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))

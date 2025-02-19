@@ -39,7 +39,7 @@ nav:
           - Server: Server.md
           - GPU Server: GPUServer.md
           - Boavizta cloud server: BoaviztaCloudServer.md
-      - Hardware: Hardware.md
+      - Devices: Device.md
       - Network: Network.md
       - Storage: Storage.md
   - Services:

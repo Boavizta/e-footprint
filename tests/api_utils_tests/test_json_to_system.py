@@ -13,10 +13,9 @@ API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestJsonToSystem(IntegrationTestBaseClass):
-    @classmethod
-    def setUpClass(cls):
+    def setUp(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
-            cls.base_system_dict = json.load(file)
+            self.base_system_dict = json.load(file)
 
     def test_create_unlinked_server(self):
         full_dict = deepcopy(self.base_system_dict)
@@ -54,3 +53,16 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             base_system_dict = json.load(file)
 
         class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
+    def test_loads_version_9_system(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v9.json"), "rb") as file:
+            base_system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
+    def test_json_to_system_doesnt_update_input_dict(self):
+        input_dict = deepcopy(self.base_system_dict)
+
+        json_to_system(input_dict)
+
+        self.assertDictEqual(input_dict, self.base_system_dict)

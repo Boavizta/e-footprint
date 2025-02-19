@@ -7,6 +7,8 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.core.hardware.network import Network
+from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 from efootprint.constants.units import u
 
@@ -32,9 +34,9 @@ class TestJob(TestCase):
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_network(self):
         network = MagicMock(id="network")
-        network.class_as_simple_str = "Network"
+        network.efootprint_class = Network
         server = MagicMock(id="server")
-        server.class_as_simple_str = "Server"
+        server.efootprint_class = Server
         server.name = "server"
         server.mod_objs_computation_chain = [server, network]
         job = Job.from_defaults("test job", server=server)

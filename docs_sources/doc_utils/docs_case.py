@@ -4,7 +4,7 @@ from efootprint.builders.services.generative_ai_ecologits import GenAIModel, Gen
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.core.hardware.gpu_server import GPUServer
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
@@ -97,7 +97,7 @@ usage_pattern = UsagePattern(
     "usage pattern",
     usage_journey=usage_journey,
     devices=[
-        Hardware(name="device on which the user journey is made",
+        Device(name="device on which the user journey is made",
                  carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
                  power=SourceValue(50 * u.W, source=None),
                  lifespan=SourceValue(6 * u.year, source=None),

@@ -8,6 +8,11 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
+from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.storage import Storage
+from efootprint.core.usage.job import Job
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_pattern import UsagePattern
 
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
@@ -165,9 +170,9 @@ class TestModelingObject(unittest.TestCase):
         magic_system = MagicMock()
         mod_obj2.systems = [magic_system]
 
-        mod_obj1.class_as_simple_str = "UsageJourney"
-        mod_obj2.class_as_simple_str = "UsagePattern"
-        mod_obj3.class_as_simple_str = "Job"
+        mod_obj1.efootprint_class = UsageJourney
+        mod_obj2.efootprint_class = UsagePattern
+        mod_obj3.efootprint_class = Job
 
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
 
@@ -184,11 +189,11 @@ class TestModelingObject(unittest.TestCase):
         for mod_obj in [mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5]:
             mod_obj.systems = None
 
-        mod_obj5.class_as_simple_str = "UsageJourney"
-        mod_obj1.class_as_simple_str = "UsagePattern"
-        mod_obj2.class_as_simple_str = "Job"
-        mod_obj4.class_as_simple_str = "Server"
-        mod_obj3.class_as_simple_str = "Storage"
+        mod_obj5.efootprint_class = UsageJourney
+        mod_obj1.efootprint_class = UsagePattern
+        mod_obj2.efootprint_class = Job
+        mod_obj4.efootprint_class = Server
+        mod_obj3.efootprint_class = Storage
 
         attributes_computation_chain = [
             mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]

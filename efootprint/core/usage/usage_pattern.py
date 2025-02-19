@@ -3,7 +3,7 @@ from typing import List
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.core.country import Country
 from efootprint.constants.units import u
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.device import Device
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.job import Job
@@ -15,7 +15,7 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 
 
 class UsagePattern(ModelingObject):
-    def __init__(self, name: str, usage_journey: UsageJourney, devices: List[Hardware],
+    def __init__(self, name: str, usage_journey: UsageJourney, devices: List[Device],
                  network: Network, country: Country, hourly_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
         self.utc_hourly_usage_journey_starts = EmptyExplainableObject()

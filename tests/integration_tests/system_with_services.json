@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "9.1.5",
+    "efootprint_version": "10.0.0",
     "System": {
         "id-XXXXXX-system-1": {
             "name": "system 1",
@@ -727,7 +727,7 @@
             }
         }
     },
-    "Hardware": {
+    "Device": {
         "id-XXXXXX-Default-laptop": {
             "name": "Default laptop",
             "id": "id-XXXXXX-Default-laptop",

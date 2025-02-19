@@ -8,7 +8,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.core.hardware.hardware import Hardware
+from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -134,13 +134,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         cls.usage_pattern1 = UsagePattern(
-            "Video watching in France in the morning", cls.uj, [Hardware.laptop()], cls.network,
+            "Video watching in France in the morning", cls.uj, [Device.laptop()], cls.network,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                     [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=cls.start_date)))
 
         cls.usage_pattern2 = UsagePattern(
-            "Video watching in France in the evening", cls.uj, [Hardware.laptop()], cls.network,
+            "Video watching in France in the evening", cls.uj, [Device.laptop()], cls.network,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=cls.start_date)))
@@ -301,7 +301,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_add_new_usage_pattern(self):
         new_up = UsagePattern(
-            "New usage pattern video watching in France", self.uj, [Hardware.laptop()], self.network, Countries.FRANCE(),
+            "New usage pattern video watching in France", self.uj, [Device.laptop()], self.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
 
         logger.warning("Adding new usage pattern")
@@ -331,7 +331,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         current_ups = copy(system.usage_patterns)
         new_up = UsagePattern(
-            "New usage pattern video watching in France", current_ups[0].usage_journey, [Hardware.laptop()],
+            "New usage pattern video watching in France", current_ups[0].usage_journey, [Device.laptop()],
             current_ups[0].network, Countries.FRANCE(),
             SourceHourlyValues(
                 create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 23, 12, 52, 24, 51, 71, 85, 3]])))
