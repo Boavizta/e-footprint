@@ -1,5 +1,7 @@
 import time
 
+from efootprint.logger import logger
+
 
 def round_dict(my_dict, round_level):
     for key in my_dict:
@@ -15,7 +17,7 @@ def time_it(func):
         end_time = time.time()
         diff = end_time - start_time
         if diff > 0.001:
-            print(f"Function {func.__name__} took {diff:.5f} seconds to execute.")
+            logger.info(f"Function {func.__name__} took {diff:.5f} seconds to execute.")
         return result
     return wrapper
 

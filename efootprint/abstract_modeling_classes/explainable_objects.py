@@ -516,10 +516,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity,"
                 f" not with {type(other)}")
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, rounding_depth=3, with_calculated_attributes_data=False):
         output_dict = {
             "label": self.label,
-            "values": list(map(lambda x: round(float(x), 2), self.value["value"].values._data)),
+            "values": list(map(lambda x: round(float(x), rounding_depth), self.value["value"].values._data)),
             "unit": str(self.value.dtypes.iloc[0].units),
             "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S")
         }
