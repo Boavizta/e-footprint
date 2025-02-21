@@ -86,7 +86,7 @@ class UsagePattern(ModelingObject):
             devices_fabrication_footprint_over_one_hour += device_uj_fabrication_footprint
 
         devices_fabrication_footprint = (
-                self.nb_usage_journeys_in_parallel * devices_fabrication_footprint_over_one_hour).to(u.kg, rounding=2)
+                self.nb_usage_journeys_in_parallel * devices_fabrication_footprint_over_one_hour).to(u.kg)
 
         self.devices_fabrication_footprint = devices_fabrication_footprint.set_label(
             f"Devices fabrication footprint of {self.name}")
