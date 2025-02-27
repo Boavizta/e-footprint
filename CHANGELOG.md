@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.1] 2025-02-27
+
+### Fixed
+- Make sure version 9 to 10 json upgrade doesn’t break when the json doesn’t have "Hardware" in its keys.
+
+### Changed
+- round time series in json by default at 3 decimals and remove rounding of devices fabrication footprint in computation.
+
 ## [10.0.0] 2025-02-20
 
 ### Changed

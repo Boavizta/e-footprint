@@ -11,3 +11,11 @@ class TestVersionUpgradeHandlers(TestCase):
         output_dict = upgrade_version_9_to_10(input_dict)
 
         self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_9_to_10_doesnt_break_when_no_hardware(self):
+        input_dict = {"a": 1}
+        expected_output = {"a": 1}
+
+        output_dict = upgrade_version_9_to_10(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
