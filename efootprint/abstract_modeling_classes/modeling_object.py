@@ -320,8 +320,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 value_to_set.set_modeling_obj_container(self, name)
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+            logger.debug(f"Updating {name} in {self.name}")
             ModelingUpdate([[current_attr, input_value]])
-            logger.debug(f"attribute {name} updated in {self.name}")
 
     def compute_mod_objs_computation_chain_from_old_and_new_modeling_objs(
             self, old_value: Type["ModelingObject"], input_value: Type["ModelingObject"], optimize_chain=True)\
@@ -411,16 +411,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_dict = {}
 
         for key, value in self.__dict__.items():
+            if key in ["name", "id", "short_name", "impact_url"]:
+                output_dict[key] = value
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["all_changes", "contextual_modeling_obj_containers", "trigger_modeling_updates",
-                               "simulation", "updated_after_generation"]
-                    or key.startswith("previous")
-                    or key.startswith("initial")
+                    or key in self.attributes_that_shouldnt_trigger_update_logic
             ):
                 continue
             elif value is None or isinstance(value, str):
-                output_dict[key] = value
                 output_dict[key] = value
             elif isinstance(value, ModelingObject):
                 output_dict[key] = value.id

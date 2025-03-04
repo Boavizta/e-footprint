@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.2] 2025-03-04
+
+### Fixed
+- Don’t exclude all attributes starting with "previous" or "initial" from ModelingObject json representation.
+- log warning only if json efootprint version is different from the current efootprint version.
+
+### Changed
+- Upgrade ecologits to 0.6 version.
+- Small logging improvements.
+
 ## [10.0.1] 2025-02-27
 
 ### Fixed

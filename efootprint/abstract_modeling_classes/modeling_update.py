@@ -163,6 +163,7 @@ class ModelingUpdate:
         for value_to_recompute in self.values_to_recompute:
             attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
             modeling_obj_container = value_to_recompute.modeling_obj_container
+            logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id}")
             value_to_recompute.update_function()
             recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)
             recomputed_values.append(recomputed_value)
