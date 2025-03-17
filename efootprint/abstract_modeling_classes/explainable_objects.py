@@ -284,8 +284,9 @@ class ExplainableQuantity(ExplainableObject):
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __round__(self, round_level):
-        self.value = round(self.value, round_level)
-        return self
+        return ExplainableQuantity(
+            round(self.value, round_level), label=self.label, left_parent=self,
+            operator=f"rounded to {round_level} decimals", source=self.source)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
@@ -329,16 +330,23 @@ class ExplainableHourlyQuantities(ExplainableObject):
                              f" got {type(value.dtypes.iloc[0])} dtype")
         super().__init__(value, label, left_parent, right_parent, operator, source)
 
-    def to(self, unit_to_convert_to: Unit, rounding=6):
+    def to(self, unit_to_convert_to: Unit):
         self.value["value"] = self.value["value"].pint.to(unit_to_convert_to)
-        if rounding is not None:
-            self.round(rounding)
 
         return self
 
-    def round(self, rounding_nb):
+    def __round__(self, round_level):
+        return ExplainableHourlyQuantities(
+            pd.DataFrame(
+                {"value": pint_pandas.PintArray(
+                    np.round(self.value["value"].values._data, round_level), dtype=self.unit)},
+                index=self.value.index),
+            label=self.label, left_parent=self, operator=f"rounded to {round_level} decimals", source=self.source
+        )
+
+    def round(self, round_level):
         self.value["value"] = pint_pandas.PintArray(
-            np.round(self.value["value"].values._data, rounding_nb), dtype=self.unit)
+            np.round(self.value["value"].values._data, round_level), dtype=self.unit)
 
         return self
 

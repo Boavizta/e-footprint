@@ -273,7 +273,7 @@ class System(ModelingObject):
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
 
-        self.total_footprint = total_footprint
+        self.total_footprint = round(total_footprint, 4)
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
         fab_footprints = self.fabrication_footprint_sum_over_period

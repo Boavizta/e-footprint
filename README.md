@@ -1,4 +1,4 @@
-# E-footprint model
+# e-footprint model
 
 A toolkit for exhaustively modeling the environmental impact of digital services.
 

@@ -51,16 +51,16 @@ class IntegrationTestBaseClass(TestCase):
                  system.previous_total_fabrication_footprints_sum_over_period),
                 (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
             for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(initial_fp[key], prev_fp[key])
+                self.assertEqual(round(initial_fp[key], 4), round(prev_fp[key], 4))
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = self.initial_energy_footprints[obj].value
+                initial_energy_footprint = round(self.initial_energy_footprints[obj], 4).value
                 if obj.class_as_simple_str != "Network":
-                    initial_fab_footprint = self.initial_fab_footprints[obj].value
-                    self.assertTrue(initial_fab_footprint.equals(obj.instances_fabrication_footprint.value))
-                self.assertTrue(initial_energy_footprint.equals(obj.energy_footprint.value))
+                    initial_fab_footprint = round(self.initial_fab_footprints[obj], 4).value
+                    self.assertTrue(initial_fab_footprint.equals(round(obj.instances_fabrication_footprint, 4).value))
+                self.assertTrue(initial_energy_footprint.equals(round(obj.energy_footprint, 4).value))
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
@@ -99,7 +99,7 @@ class IntegrationTestBaseClass(TestCase):
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():
                 if isinstance(attr_value, ExplainableQuantity) or isinstance(attr_value, ExplainableHourlyQuantities):
-                    self.assertEqual(getattr(corresponding_obj, attr_key), attr_value,
+                    self.assertEqual(round(getattr(corresponding_obj, attr_key), 4), round(attr_value, 4),
                                      f"Attribute {attr_key} is not equal for {obj.name}")
                     self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label,
                                      f"Attribute {attr_key} label is not equal for {obj.name}")

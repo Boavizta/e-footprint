@@ -89,7 +89,7 @@ class TestUsagePattern(unittest.TestCase):
             self.usage_pattern.update_devices_fabrication_footprint()
             self.assertEqual(u.kg, self.usage_pattern.devices_fabrication_footprint.unit)
             self.assertEqual(
-                [110, 220, 330], self.usage_pattern.devices_fabrication_footprint.value_as_float_list)
+                [110, 220, 330], round(self.usage_pattern.devices_fabrication_footprint, 0).value_as_float_list)
 
 
 if __name__ == '__main__':

@@ -52,4 +52,4 @@ Thank you for considering contributing to e-footprint. Your contributions are va
 
 Happy coding 🚀
 
-E-footprint Team
+e-footprint Team

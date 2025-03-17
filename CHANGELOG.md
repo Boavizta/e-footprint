@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.3] 2025-03-20
+
+### Fixed
+- Stop automatic rounding of ExplainableHourlyQuantities when converting their unit.
+- Round total system footprint to the tenth of gram.
+
 ## [10.0.2] 2025-03-04
 
 ### Fixed

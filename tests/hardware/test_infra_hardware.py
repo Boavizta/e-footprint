@@ -78,7 +78,7 @@ class TestInfraHardware(TestCase):
         self.assertEqual(u.kg, self.test_infra_hardware_single_job.instances_fabrication_footprint.unit)
         self.assertEqual(
             [round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
-            self.test_infra_hardware_single_job.instances_fabrication_footprint.round(3).value_as_float_list)
+            round(self.test_infra_hardware_single_job.instances_fabrication_footprint, 3).value_as_float_list)
 
     def test_energy_footprints(self):
         self.test_infra_hardware_single_job.average_carbon_intensity = SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS)
