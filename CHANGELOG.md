@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.5] 2025-03-27
+
+### Fixed
+- Computation update logic when system usage patterns are updated.
+
 ## [10.0.4] 2025-03-25
 
 ### Fixed

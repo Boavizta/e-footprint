@@ -15,6 +15,10 @@ class UsageJourney(ModelingObject):
         self.duration = EmptyExplainableObject()
         self.uj_steps = ListLinkedToModelingObj(uj_steps)
 
+    def after_init(self):
+        super().after_init()
+        self.compute_calculated_attributes()
+
     @property
     def calculated_attributes(self):
         return ["duration"]

@@ -72,7 +72,7 @@ class System(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_journeys
+        return self.usage_patterns
 
     @property
     def systems(self) -> List:

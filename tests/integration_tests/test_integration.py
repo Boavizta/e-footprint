@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.core.hardware.device import Device
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -23,7 +23,7 @@ from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list, create_hourly_usage_from_frequency
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -382,6 +382,35 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.uj.uj_steps = self.uj.uj_steps[:-1]
         step_without_job.self_delete()
         self.footprint_has_not_changed([self.server, self.storage])
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+
+    def test_add_usage_pattern(self):
+        from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
+        analytics_server = BoaviztaCloudServer.from_defaults(
+            f"analytics provider server", server_type=ServerTypes.serverless(), storage=Storage.ssd())
+        data_upload_job = Job(
+            f"analytics provider data upload", server=analytics_server, data_transferred=SourceValue(350 * u.GB),
+            data_stored=SourceValue(350 * u.GB), compute_needed=SourceValue(1 * u.cpu_core),
+            ram_needed=SourceValue(1 * u.GB), request_duration=SourceValue(1 * u.hour)
+        )
+        daily_analytics_uj = UsageJourney(f"Daily analytics provider usage journey", uj_steps=[
+            UsageJourneyStep(f"Ingest daily data", user_time_spent=SourceValue(1 * u.s),
+                             jobs=[data_upload_job])
+        ])
+        usage_pattern = UsagePattern(
+            f"analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
+            country=Countries.FRANCE(), network=Network.wifi_network(),
+            hourly_usage_journey_starts=create_hourly_usage_from_frequency(
+                timespan=1 * u.year, input_volume=1, frequency="daily",
+                start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
+        )
+
+        self.system.usage_patterns += [usage_pattern]
+
+        self.assertFalse(self.system.total_footprint.value.equals(self.initial_footprint.value))
+
+        self.system.usage_patterns = self.system.usage_patterns[:-1]
+
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
     def test_system_to_json(self):

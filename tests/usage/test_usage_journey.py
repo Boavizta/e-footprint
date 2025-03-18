@@ -63,6 +63,8 @@ class TestUsageJourney(TestCase):
 
         uj_step1.jobs = [job1]
         uj_step2.jobs = [job2]
+        for uj_step in [uj_step1, uj_step2]:
+            uj_step.user_time_spent = SourceValue(5 * u.min)
 
         uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
 
