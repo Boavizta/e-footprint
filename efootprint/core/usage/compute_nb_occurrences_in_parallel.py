@@ -24,14 +24,15 @@ def compute_nb_avg_hourly_occurrences(
                 hourly_occurrences_starts.value.shift(hour_shift, freq="h"), fill_value=0)
 
     nonfull_duration_rest = event_duration_in_nb_of_hours - nb_of_full_hours_in_event_duration
-    if nb_avg_hourly_occurrences_in_parallel is None:
-        nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value.shift(
-            nb_of_full_hours_in_event_duration, freq="h") * nonfull_duration_rest
-    else:
-        nb_avg_hourly_occurrences_in_parallel = nb_avg_hourly_occurrences_in_parallel.add(
-            hourly_occurrences_starts.value.shift(nb_of_full_hours_in_event_duration, freq="h")
-            * nonfull_duration_rest,
-            fill_value=0)
+    if nonfull_duration_rest > 0:
+        if nb_avg_hourly_occurrences_in_parallel is None:
+            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value.shift(
+                nb_of_full_hours_in_event_duration, freq="h") * nonfull_duration_rest
+        else:
+            nb_avg_hourly_occurrences_in_parallel = nb_avg_hourly_occurrences_in_parallel.add(
+                hourly_occurrences_starts.value.shift(nb_of_full_hours_in_event_duration, freq="h")
+                * nonfull_duration_rest,
+                fill_value=0)
         
     return ExplainableHourlyQuantities(
             nb_avg_hourly_occurrences_in_parallel, left_parent=hourly_occurrences_starts, right_parent=event_duration,
