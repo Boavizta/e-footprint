@@ -163,7 +163,7 @@ class System(ModelingObject):
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
             "Network": {"networks": EmptyExplainableObject()},
-            "Devices": {usage_pattern.name: usage_pattern.devices_fabrication_footprint
+            "Devices": {usage_pattern.name: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
         }
 
@@ -175,7 +175,7 @@ class System(ModelingObject):
             "Servers": {server.name: server.energy_footprint for server in self.servers},
             "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
             "Network": {network.name: network.energy_footprint for network in self.networks},
-            "Devices": {usage_pattern.name: usage_pattern.devices_energy_footprint
+            "Devices": {usage_pattern.name: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
         }
 
@@ -191,7 +191,7 @@ class System(ModelingObject):
                            start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Storage total fabrication footprint"),
             "Network": EmptyExplainableObject(),
-            "Devices": sum([usage_pattern.devices_fabrication_footprint
+            "Devices": sum([usage_pattern.instances_fabrication_footprint
                            for usage_pattern in self.usage_patterns], start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Devices total fabrication footprint")
         }
@@ -207,7 +207,7 @@ class System(ModelingObject):
                            ).to(u.kg).set_label("Storage total energy footprint"),
             "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
                            ).to(u.kg).set_label("Network total energy footprint"),
-            "Devices": sum([usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns],
+            "Devices": sum([usage_pattern.energy_footprint for usage_pattern in self.usage_patterns],
                            start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint")
         }
 

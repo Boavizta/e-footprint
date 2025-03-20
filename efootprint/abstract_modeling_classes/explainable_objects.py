@@ -42,7 +42,7 @@ class EmptyExplainableObject(ExplainableObject):
         return EmptyExplainableObject(left_parent=self, operator="sum")
 
     def copy(self):
-        return EmptyExplainableObject()
+        return EmptyExplainableObject(left_parent=self, operator="copy")
 
     def generate_explainable_object_with_logical_dependency(self, explainable_condition: ExplainableObject):
         return EmptyExplainableObject(
@@ -57,7 +57,7 @@ class EmptyExplainableObject(ExplainableObject):
         return 0
 
     def __copy__(self):
-        return EmptyExplainableObject(label=self.label)
+        return EmptyExplainableObject(label=self.label, left_parent=self, operator="copy")
 
     def __eq__(self, other):
         if isinstance(other, EmptyExplainableObject):
@@ -105,7 +105,8 @@ class EmptyExplainableObject(ExplainableObject):
         return "no value"
 
     def __deepcopy__(self, memo):
-        return EmptyExplainableObject(label=self.label)
+        return EmptyExplainableObject(label=self.label, left_parent=self.left_parent, right_parent=self.right_parent,
+                                      operator=self.operator)
 
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, EmptyExplainableObject):
@@ -223,7 +224,7 @@ class ExplainableQuantity(ExplainableObject):
             # summing with sum() adds an implicit 0 as starting value
             return ExplainableQuantity(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
-            return ExplainableQuantity(self.value, left_parent=self)
+            return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
         else:
@@ -233,7 +234,7 @@ class ExplainableQuantity(ExplainableObject):
         if isinstance(other, numbers.Number) and other == 0:
             return ExplainableQuantity(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
-            return ExplainableQuantity(self.value, left_parent=self)
+            return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
         else:
@@ -410,7 +411,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
         if isinstance(compared_object, EmptyExplainableObject):
             compared_values = np.full(len(self.value), fill_value=0)
-            right_parent = None
+            right_parent = compared_object
         elif isinstance(compared_object, ExplainableHourlyQuantities):
             compared_values = compared_object.value["value"].values.data.to_numpy()
             right_parent = compared_object
@@ -463,7 +464,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             # summing with sum() adds an implicit 0 as starting value
             return ExplainableHourlyQuantities(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
-            return ExplainableHourlyQuantities(self.value, left_parent=self)
+            return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableHourlyQuantities):
             df_sum = self.value.add(other.value, fill_value=0 * self.unit)
             return ExplainableHourlyQuantities(df_sum, "", self, other, "+")
@@ -477,7 +478,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(other, numbers.Number) and other == 0:
             return ExplainableHourlyQuantities(self.value, left_parent=self)
         elif isinstance(other, EmptyExplainableObject):
-            return ExplainableHourlyQuantities(self.value, left_parent=self)
+            return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value - other.value, "", self, other, "-")
         else:
