@@ -160,6 +160,22 @@ class IntegrationTest(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job)
 
+    def test_set_uj_duration_to_0_and_back_to_previous_value(self):
+        logger.info("Setting user journey steps duration to 0")
+        previous_user_time_spents = []
+        for uj_step in self.uj.uj_steps:
+            previous_user_time_spents.append(uj_step.user_time_spent)
+            uj_step.user_time_spent = SourceValue(0 * u.min)
+
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+
+        logger.info("Setting user journey steps user_time_spent back to previous values")
+
+        for uj_step, previous_user_time_spent in zip(self.uj.uj_steps, previous_user_time_spents):
+            uj_step.user_time_spent = previous_user_time_spent
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+
     def test_hourly_usage_journey_starts_update(self):
         logger.warning("Updating hourly user journey starts")
         initial_hourly_uj_starts = self.usage_pattern.hourly_usage_journey_starts
