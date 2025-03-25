@@ -3,7 +3,7 @@ from pint import UnitRegistry
 
 from efootprint.constants.files import CUSTOM_UNITS_PATH
 
-u = UnitRegistry()
+u = UnitRegistry(cache_folder=":auto:")
 u.load_definitions(CUSTOM_UNITS_PATH)
 u.default_locale = 'en_EN'
 pint.set_application_registry(u)
