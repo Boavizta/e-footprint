@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_541688 {
+             #mynetwork_2eea8f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_541688" class="card-body"></div>
+            <div id="mynetwork_2eea8f" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_541688');
+                  var container = document.getElementById('mynetwork_2eea8f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [900.0, 800.0, 600.0, 100.0, 500.0, 800.0, 700.0, 200.0, 700.0,\n300.0],\nlast 10 vals [300.0, 600.0, 600.0, 300.0, 100.0, 600.0, 300.0, 200.0, 900.0,\n100.0]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [900.0, 800.0, 600.0, 100.0, 500.0, 800.0, 700.0, 200.0, 700.0,\n300.0],\nlast 10 vals [300.0, 600.0, 600.0, 300.0, 100.0, 600.0, 300.0, 200.0, 900.0,\n100.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\n(Hourly Manually defined job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data stored per hour for job Manually defined job in\nusage pattern\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [9, 8, 6, 1, 5, 8, 7, 2, 7, 3],\nlast 10 vals [3, 6, 6, 3, 1, 6, 3, 2, 9, 1] shifted by 0 hour) * 100.0 kilobyte\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [900.0, 800.0, 600.0, 100.0, 500.0, 800.0, 700.0, 200.0, 700.0,\n300.0],\nlast 10 vals [300.0, 600.0, 600.0, 300.0, 100.0, 600.0, 300.0, 200.0, 900.0,\n100.0]", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Manually defined job in usage pattern", "to": "Hourly Manually defined job data stored across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [800.0, 100.0, 800.0, 300.0, 800.0, 700.0, 600.0, 100.0, 100.0,\n100.0],\nlast 10 vals [800.0, 100.0, 500.0, 500.0, 100.0, 900.0, 200.0, 800.0, 800.0,\n400.0] + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [800.0, 100.0, 800.0, 300.0, 800.0, 700.0, 600.0, 100.0, 100.0,\n100.0],\nlast 10 vals [800.0, 100.0, 500.0, 500.0, 100.0, 900.0, 200.0, 800.0, 800.0,\n400.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\n(Hourly Manually defined job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data stored per hour for job Manually defined job in\nusage pattern + no value\n=\n(26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [8, 1, 8, 3, 8, 7, 6, 1, 1, 1],\nlast 10 vals [8, 1, 5, 5, 1, 9, 2, 8, 8, 4] shifted by 0 hour) * 100.0 kilobyte\n+ no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in kB:\nfirst 10 vals [800.0, 100.0, 800.0, 300.0, 800.0, 700.0, 600.0, 100.0, 100.0,\n100.0],\nlast 10 vals [800.0, 100.0, 500.0, 500.0, 100.0, 900.0, 200.0, 800.0, 800.0,\n400.0]", "x": -150.0, "y": 600}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Manually defined job in usage pattern", "to": "Hourly Manually defined job data stored across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Manually defined job data stored across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

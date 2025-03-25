@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.8608ea7d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
       
       
 
@@ -1745,7 +1745,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fd5737 {
+             #mynetwork_d0faa8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1767,7 +1767,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fd5737" class="card-body"></div>
+            <div id="mynetwork_d0faa8" class="card-body"></div>
         </div>
 
 
@@ -1797,13 +1797,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fd5737');
+                  var container = document.getElementById('mynetwork_d0faa8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20 minute\n=\n20 minute", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20 minute", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming + no value\n=\n20 minute + no value\n=\n20 minute", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20 minute", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}, {"arrows": "to", "from": "no value", "to": "Duration of user journey"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -1918,7 +1918,7 @@
     <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.f1b6f286.min.js"></script>
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
       
     
   </body>

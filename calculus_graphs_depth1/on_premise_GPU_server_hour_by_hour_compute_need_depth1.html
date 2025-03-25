@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1761e6 {
+             #mynetwork_5207b9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_1761e6" class="card-body"></div>
+            <div id="mynetwork_5207b9" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1761e6');
+                  var container = document.getElementById('mynetwork_5207b9');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server hour by hour compute need", "label": "on premise GPU\nserver hour by hour\ncompute need", "shape": "dot", "size": 15, "title": "on premise GPU server hour by hour compute need\n=\nHourly Generative AI model job average occurrences across usage patterns *\nGenerative AI model job nb of required GPUs during inference\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01] * 0.22\ngpu\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in gpu:\nfirst 10 vals [0.02, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.0, 0.02, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01]", "x": -225.0, "y": 750}, {"color": null, "id": "Generative AI model job nb of required GPUs during inference", "label": "Generative AI model\njob nb of required\nGPUs during\ninference", "shape": "dot", "size": 15, "title": "Generative AI model job nb of required GPUs during inference\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai nb of active parameters from\nEcologits * Generative AI model nb of bits per parameter from hypothesis / on\npremise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless / 80.0\ngigabyte / gpu\n=\n0.22 gpu", "x": 225.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job average occurrences across usage patterns", "to": "on premise GPU server hour by hour compute need"}, {"arrows": "to", "from": "Generative AI model job nb of required GPUs during inference", "to": "on premise GPU server hour by hour compute need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server hour by hour compute need", "label": "on premise GPU\nserver hour by hour\ncompute need", "shape": "dot", "size": 15, "title": "on premise GPU server hour by hour compute need\n=\nHourly Generative AI model job average occurrences across usage patterns *\nGenerative AI model job nb of required GPUs during inference + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03] * 0.22\ngpu + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in gpu:\nfirst 10 vals [0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0],\nlast 10 vals [0.01, 0.0, 0.01, 0.01, 0.0, 0.02, 0.0, 0.01, 0.01, 0.01]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03] + no\nvalue\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03]", "x": -300.0, "y": 750}, {"color": null, "id": "Generative AI model job nb of required GPUs during inference", "label": "Generative AI model\njob nb of required\nGPUs during\ninference", "shape": "dot", "size": 15, "title": "Generative AI model job nb of required GPUs during inference\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai nb of active parameters from\nEcologits * Generative AI model nb of bits per parameter from hypothesis / on\npremise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless / 80.0\ngigabyte / gpu\n=\n0.22 gpu", "x": 0.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job average occurrences across usage patterns", "to": "on premise GPU server hour by hour compute need"}, {"arrows": "to", "from": "Generative AI model job nb of required GPUs during inference", "to": "on premise GPU server hour by hour compute need"}, {"arrows": "to", "from": "no value", "to": "on premise GPU server hour by hour compute need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

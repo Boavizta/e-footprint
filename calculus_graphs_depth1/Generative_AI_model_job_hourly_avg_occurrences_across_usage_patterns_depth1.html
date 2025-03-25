@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_19f6e4 {
+             #mynetwork_319e5b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_19f6e4" class="card-body"></div>
+            <div id="mynetwork_319e5b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_19f6e4');
+                  var container = document.getElementById('mynetwork_319e5b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01]\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [9, 8, 6, 1, 5, 8, 7, 2, 7, 3],\nlast 10 vals [3, 6, 6, 3, 1, 6, 3, 2, 9, 1] hourly occurrences average 28.15\nsecond\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.07, 0.06, 0.05, 0.01, 0.04, 0.06, 0.05, 0.02, 0.05, 0.02],\nlast 10 vals [0.02, 0.05, 0.05, 0.02, 0.01, 0.05, 0.02, 0.02, 0.07, 0.01]", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly Generative AI model job average occurrences across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03] + no\nvalue\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [8, 1, 8, 3, 8, 7, 6, 1, 1, 1],\nlast 10 vals [8, 1, 5, 5, 1, 9, 2, 8, 8, 4] hourly occurrences average 28.15\nsecond\n=\n26299 values from 2024-12-31 23:00:00 to 2028-01-01 17:00:00 in dimensionless:\nfirst 10 vals [0.06, 0.01, 0.06, 0.02, 0.06, 0.05, 0.05, 0.01, 0.01, 0.01],\nlast 10 vals [0.06, 0.01, 0.04, 0.04, 0.01, 0.07, 0.02, 0.06, 0.06, 0.03]", "x": -225.0, "y": 600}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly Generative AI model job average occurrences across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
