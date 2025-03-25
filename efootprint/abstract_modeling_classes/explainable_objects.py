@@ -69,13 +69,17 @@ class EmptyExplainableObject(ExplainableObject):
 
         return False
 
+    def __round__(self, round_level):
+        return EmptyExplainableObject(
+            label=self.label, left_parent=self, operator=f"rounded to {round_level} decimals")
+
     def __add__(self, other):
         if isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="+")
         if isinstance(other, ExplainableObject):
             return other.__add__(self)
         elif other == 0:
-            return self
+            return EmptyExplainableObject(left_parent=self, operator="+ 0")
         else:
             raise ValueError
 

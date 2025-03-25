@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.4] 2025-03-25
+
+### Fixed
+- Make calculations possible even if usage journey duration is 0.
+- Cast default null values to float in create_hourly_usage_from_frequency to prevent subsequent automatic casting to int.
+- Create round method for EmptyExplainableObjects so that an empty System can be created.
+
 ## [10.0.3] 2025-03-20
 
 ### Fixed

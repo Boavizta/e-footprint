@@ -53,14 +53,14 @@ class TestSystem(TestCase):
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
         self.storage.instances_fabrication_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.usage_pattern.devices_fabrication_footprint = SourceHourlyValues(
+        self.usage_pattern.instances_fabrication_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
 
         self.server.energy_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
         self.storage.energy_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.usage_pattern.devices_energy_footprint = SourceHourlyValues(
+        self.usage_pattern.energy_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
         self.network.energy_footprint = SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
@@ -351,6 +351,9 @@ class TestSystem(TestCase):
             eneg.return_value = energy_footprints
             fab.return_value = fab_footprints
             self.system.plot_emission_diffs(filepath=os.path.join(root_dir, "test_system_diff_plot.png"))
+
+    def test_creating_system_with_empty_up_list_is_possible(self):
+        system = System("Test system", usage_patterns=[])
 
 
 if __name__ == '__main__':

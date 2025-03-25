@@ -92,10 +92,10 @@ class UsagePattern(ModelingObject):
             f"Devices fabrication footprint of {self.name}")
 
     def update_energy_footprint(self):
-        # The +0 is to create a new ExplainableObject with the same value as the previous one, and hence make clear
+        # The copy is to create a new ExplainableObject with the same value as the previous one, and hence make clear
         # in the calculation graph that the usage pattern energy footprint is the same as the devices energy footprint
-        self.energy_footprint = (self.devices_energy_footprint + 0).set_label(f"{self.name} total energy footprint")
+        self.energy_footprint = self.devices_energy_footprint.copy().set_label(f"{self.name} total energy footprint")
 
     def update_instances_fabrication_footprint(self):
-        self.instances_fabrication_footprint = (self.devices_fabrication_footprint + 0).set_label(
+        self.instances_fabrication_footprint = self.devices_fabrication_footprint.copy().set_label(
             f"{self.name} total fabrication footprint")
