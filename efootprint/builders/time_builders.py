@@ -115,7 +115,8 @@ def create_hourly_usage_from_frequency(
         hours = [0]  # default to midnight
 
     period_index = pd.period_range(start=start_date, end=end_date, freq='h')
-    values = np.full(shape=len(period_index), fill_value=0)
+    # Important to have fill_value be 0.0 otherwise values will be cast to int
+    values = np.full(shape=len(period_index), fill_value=0.0)
 
     for i, period in enumerate(period_index):
         hour_of_day = period.hour  # Hour of the day, 0 to 23
