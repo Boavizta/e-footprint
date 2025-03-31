@@ -151,6 +151,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def archetypes(cls):
         return []
 
+    @classmethod
+    def attributes_that_can_have_negative_values(cls):
+        return []
+
     def __init__(self, name):
         self.trigger_modeling_updates = False
         self.name = name
@@ -161,7 +165,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def efootprint_class(self):
         return type(self)
 
-    def check_input_value_type_and_unit(self, name, input_value, default_values):
+    def check_input_value_type_positivity_and_unit(self, name, input_value, default_values):
         init_sig_params = signature(self.__init__).parameters
         if name in init_sig_params.keys():
             annotation = init_sig_params[name].annotation
@@ -181,6 +185,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     raise ValueError(
                         f"Value {input_value} for attribute {name} is not homogeneous to "
                         f"{default_value.value.units} ({default_value.value.dimensionality})")
+                if input_value.magnitude < 0 and name not in self.attributes_that_can_have_negative_values():
+                    raise ValueError(
+                        f"Value {input_value} for attribute {name} should be positive but is negative")
 
     def check_belonging_to_authorized_values(
             self, name, input_value, list_values, conditional_list_values, attributes_with_depending_values):
@@ -298,7 +305,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
             if check_input_validity and name not in self.calculated_attributes:
-                self.check_input_value_type_and_unit(name, input_value, self.default_values())
+                self.check_input_value_type_positivity_and_unit(name, input_value, self.default_values())
                 self.check_belonging_to_authorized_values(
                     name, input_value, self.list_values(), self.conditional_list_values(),
                     self.attributes_with_depending_values())

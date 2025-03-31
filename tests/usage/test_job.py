@@ -25,6 +25,13 @@ class TestJob(TestCase):
               compute_needed=SourceValue(2 * u.cpu_core), request_duration=SourceValue(2 * u.min))
         self.job.trigger_modeling_updates = False
 
+    def test_data_stored_can_have_negative_value(self):
+        Job.from_defaults("test job", server=self.server, data_stored=SourceValue(-300 * u.MB))
+
+    def test_data_transferred_raises_error_if_negative_value(self):
+        with self.assertRaises(ValueError):
+            Job.from_defaults("test job", server=self.server, data_transferred=SourceValue(-300 * u.MB))
+
     def test_self_delete_should_raise_error_if_self_has_associated_uj_step(self):
         uj_step = MagicMock()
         uj_step.name = "uj_step"

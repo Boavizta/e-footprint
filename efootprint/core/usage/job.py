@@ -19,6 +19,10 @@ class JobBase(ModelingObject):
     def default_values(cls):
         pass
 
+    @classmethod
+    def attributes_that_can_have_negative_values(cls):
+        return ["data_stored"]
+
     def __init__(self, name: str, data_transferred: ExplainableQuantity, data_stored: ExplainableQuantity,
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
@@ -31,8 +35,6 @@ class JobBase(ModelingObject):
         self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_transferred_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
-        if data_transferred.value.magnitude < 0:
-            raise ValueError(f"Variable 'data_transferred' must be greater than 0, got {data_transferred.value}")
         self.data_transferred = data_transferred.set_label(
             f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
