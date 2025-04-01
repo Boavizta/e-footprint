@@ -1,10 +1,11 @@
-from matplotlib import pyplot as plt
 from pandas import DataFrame
-import matplotlib.dates as mdates
 
 
 def plot_baseline_and_simulation_dfs(baseline_df: DataFrame, simulated_values_df: DataFrame=None,
                                      figsize=(10, 4), xlims=None):
+    from matplotlib import pyplot as plt
+    import matplotlib.dates as mdates
+
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
     if xlims is not None:

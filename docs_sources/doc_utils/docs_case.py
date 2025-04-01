@@ -1,3 +1,7 @@
+from time import time
+
+start = time()
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
@@ -18,10 +22,8 @@ from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_random_hourly_usage_df
 from efootprint.logger import logger
+logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
-from time import time
-
-start = time()
 
 storage = Storage(
     "storage",

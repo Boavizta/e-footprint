@@ -1,5 +1,3 @@
-from pyvis.network import Network
-
 from efootprint.utils.graph_tools import set_string_max_width
 
 
@@ -44,6 +42,8 @@ def calculate_positions(node):
 def build_calculus_graph(
         root_node, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px",
         notebook=False, max_depth=100):
+    from pyvis.network import Network
+
     if colors_dict is None:
         colors_dict = {"user data": "gold", "default": "darkred"}
     cdn_resources = "local"

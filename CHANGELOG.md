@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.6] 2025-04-01
+
+### Changed
+- Attributes positivity is now checked when attributes are set. For now only the data_stored attribute of the Job class is allowed to be negative.
+- The Boaviztapi is now a dependency of e-footprint so there is no need no do a network call to query its data. Setting the environment variable CALL_BOAVIZTAPI_VIA_WEB to any value will fallback to the web call. This might be useful for launching e-footprint python scripts repeatidly as the boavizta package may take several seconds to load.
+
+### Fixed
+- Boaviztapi data parsing logic in BoaviztaCloudServer class. The CPU and RAM values used were the ones of the platform and not the virtual machine, which resulted very wrong values.
+
 ## [10.0.5] 2025-03-27
 
 ### Fixed

@@ -2,8 +2,6 @@ from typing import Type, Optional
 from dataclasses import dataclass
 import os
 
-from IPython.display import HTML
-
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.constants.units import u
 from efootprint.logger import logger
@@ -336,6 +334,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         add_unique_id_to_mynetwork(filename)
 
         if notebook:
+            from IPython.display import HTML
+
             return HTML(filename)
 
     def to_json(self, with_calculated_attributes_data=False):

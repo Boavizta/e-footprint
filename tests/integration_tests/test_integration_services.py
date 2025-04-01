@@ -91,7 +91,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
 
     def test_variations_on_services_inputs(self):
         self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],
-                                            special_mult={"base_ram_consumption": 114, "ram_buffer_per_user": 500})
+                                            special_mult={"base_ram_consumption": 2, "ram_buffer_per_user": 5})
         self._test_variations_on_obj_inputs(
             self.genai_service, attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
             special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
@@ -107,7 +107,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(
             next(iter(class_obj_dict["VideoStreaming"].values())),
             attrs_to_skip = ["base_compute_consumption"],
-            special_mult = {"base_ram_consumption": 114, "ram_buffer_per_user": 500})
+            special_mult = {"base_ram_consumption": 2, "ram_buffer_per_user": 5})
         self._test_variations_on_obj_inputs(
             next(iter(class_obj_dict["GenAIModel"].values())),
             attrs_to_skip=["provider", "model_name", "base_compute_consumption"],

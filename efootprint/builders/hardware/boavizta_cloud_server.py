@@ -1,6 +1,5 @@
-import json
-import requests
-
+from time import time
+start = time()
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
@@ -10,24 +9,20 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
+from efootprint.logger import logger
 
-boavizta_cloud_providers_request_result = json.loads(
-    requests.get(
-        "https://api.boavizta.org/v1/cloud/instance/all_providers", headers={'accept': 'application/json'}
-    ).content.decode('utf-8')
-)
+boavizta_cloud_providers_request_result = call_boaviztapi(
+        "https://api.boavizta.org/v1/cloud/instance/all_providers")
 all_boavizta_cloud_providers = []
 for cloud_provider in boavizta_cloud_providers_request_result:
     all_boavizta_cloud_providers.append(SourceObject(cloud_provider))
 instance_types_conditional_list_values_dict = {"depends_on": "provider", "conditional_list_values": {}}
 for cloud_provider in boavizta_cloud_providers_request_result:
-    provider_instance_types = json.loads(
-        requests.get(
+    provider_instance_types = call_boaviztapi(
             f"https://api.boavizta.org/v1/cloud/instance/all_instances",
-            headers={'accept': 'application/json'}, params={"provider": cloud_provider}
-        ).content.decode('utf-8')
+            params={"provider": cloud_provider}
     )
-    instance_types_conditional_list_values_dict["conditional_list_values"][cloud_provider] = [
+    instance_types_conditional_list_values_dict["conditional_list_values"][SourceObject(cloud_provider)] = [
         SourceObject(instance_type) for instance_type in provider_instance_types]
 
 
@@ -36,7 +31,7 @@ class BoaviztaCloudServer(Server):
     def default_values(cls):
         return {
             "provider": SourceObject("scaleway"),
-            "instance_type": SourceObject("dev1-s"),
+            "instance_type": SourceObject("ent1-s"),
             "server_type": ServerTypes.autoscaling(),
             "average_carbon_intensity": SourceValue(0.233 * u.kg / u.kWh),
             "lifespan": SourceValue(6 * u.year),
@@ -61,6 +56,12 @@ class BoaviztaCloudServer(Server):
         server_conditional_list_values.update({"instance_type": instance_types_conditional_list_values_dict})
 
         return server_conditional_list_values
+
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        if name == "provider" and self.trigger_modeling_updates:
+            raise PermissionError("The provider of a BoaviztaCloudServer cannot be changed after initialization. "
+                                  "Use a ModelingUpdate to update both provider and a compatible model name.")
+        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
 
     def __init__(
             self, name, provider: ExplainableObject, instance_type: ExplainableObject, server_type: ExplainableObject,
@@ -95,8 +96,9 @@ class BoaviztaCloudServer(Server):
         impact_source = Source(name="Boavizta API cloud instances",
                                link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params.keys()])}")
 
+        call_response = call_boaviztapi(url=self.impact_url, params=params)
         self.api_call_response = ExplainableObject(
-            call_boaviztapi(url=self.impact_url, params=params), "API call response",
+            call_response, "API call response",
             left_parent=self.provider, right_parent=self.instance_type, operator="combined in Boavizta API call with",
             source=impact_source)
 
@@ -118,15 +120,46 @@ class BoaviztaCloudServer(Server):
             operator="data extraction from", source=self.api_call_response.source)
 
     def update_ram(self):
-        ram_spec = self.api_call_response.value["verbose"]["RAM-1"]
+        assert self.api_call_response.value["verbose"]["memory"]["unit"] == "GB", \
+            f"Unexpected RAM unit {self.api_call_response.value['verbose']['memory']['unit']}"
+        ram_spec = self.api_call_response.value["verbose"]["memory"]["value"]
 
         self.ram = ExplainableQuantity(
-            ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, f"{self.name} ram",
+            ram_spec * u.GB, f"{self.name} ram",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
     def update_compute(self):
-        cpu_spec = self.api_call_response.value["verbose"]["CPU-1"]
+        nb_vcpu = self.api_call_response.value["verbose"]["vcpu"]["value"]
 
         self.compute = ExplainableQuantity(
-            cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.cpu_core, f"{self.name} compute",
-            left_parent=self.api_call_response, operator="data extration from", source=self.api_call_response.source)
+            nb_vcpu * u.cpu_core, f"{self.name} compute",
+            left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
+
+logger.info(f"Imported BoaviztaCloudServer in {time() - start:.5f} seconds.")
+
+
+if __name__ == "__main__":
+    from efootprint.abstract_modeling_classes.explainable_object_base_class import \
+        retrieve_update_function_from_mod_obj_and_attr_name
+
+    for provider in all_boavizta_cloud_providers:
+        for instance_type in instance_types_conditional_list_values_dict["conditional_list_values"][provider]:
+            try:
+                cloud_server = BoaviztaCloudServer(name=f"test_{provider}_{instance_type}",
+                                    provider=SourceObject(provider.value), instance_type=SourceObject(instance_type.value),
+                                    server_type=ServerTypes.autoscaling(),
+                                    lifespan=SourceValue(6 * u.year),
+                                    idle_power=SourceValue(0 * u.W),
+                                    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
+                                    average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
+                                    server_utilization_rate=SourceValue(0.9 * u.dimensionless),
+                                    base_ram_consumption=SourceValue(0 * u.GB),
+                                    base_compute_consumption=SourceValue(0 * u.cpu_core),
+                                    storage=Storage.ssd())
+                for attr_name in ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]:
+                    update_func = retrieve_update_function_from_mod_obj_and_attr_name(cloud_server, attr_name)
+                    update_func()
+                logger.info(f"{provider} - {instance_type}: Compute {cloud_server.compute} RAM {cloud_server.ram} "
+                            f"CCF {cloud_server.carbon_footprint_fabrication} power {cloud_server.power}.")
+            except Exception as e:
+                logger.error(f"Error with provider {provider} and instance type {instance_type}: {e}")

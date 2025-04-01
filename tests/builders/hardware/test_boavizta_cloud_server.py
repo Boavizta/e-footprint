@@ -34,6 +34,30 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
         )
 
+    def test_raises_error_if_wrong_instance_type(self):
+        with self.assertRaises(ValueError):
+            BoaviztaCloudServer(
+                name="Test Boavizta Server",
+                provider=SourceObject("scaleway"),
+                instance_type=SourceObject("wrong-instance-type"),
+                server_type=ServerTypes.autoscaling(),
+                lifespan=SourceValue(6 * u.year),
+                idle_power=SourceValue(0 * u.W),
+                power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
+                average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
+                server_utilization_rate=SourceValue(0.9 * u.dimensionless),
+                base_ram_consumption=SourceValue(0 * u.GB),
+                base_compute_consumption=SourceValue(0 * u.cpu_core),
+                storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
+                fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
+            )
+
+    def test_setting_provider_after_init_raises_permission_error(self):
+        self.test_server.trigger_modeling_updates = True
+        with self.assertRaises(PermissionError):
+            self.test_server.provider = SourceObject("openai")
+        self.test_server.trigger_modeling_updates = False
+
     @patch("efootprint.builders.hardware.boavizta_cloud_server.call_boaviztapi")
     def test_update_api_call_response(self, mock_call):
         """
@@ -115,36 +139,26 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.assertIn("power", self.test_server.power.label)
 
     def test_update_ram(self):
-        """
-        Test that update_ram extracts the RAM-1 spec from self.api_call_response.value.
-        """
         mock_data = {
             "impacts": {},
             "verbose": {
-                "RAM-1": {
-                    "units": {"value": 2},
-                    "capacity": {"value": 16}
+                "memory": {
+                    "unit": "GB",
+                    "value": 32
                 }
             }
         }
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
         self.test_server.update_ram()
-        # 2 * 16 = 32 GB
         self.assertEqual(self.test_server.ram.value, 32 * u.GB)
         self.assertIn("ram", self.test_server.ram.label)
 
     def test_update_compute(self):
-        """
-        Test that update_compute extracts the CPU-1 spec from self.api_call_response.value.
-        """
         mock_data = {
             "impacts": {},
             "verbose": {
-                "CPU-1": {
-                    "units": {"value": 2},
-                    "core_units": {"value": 4}
-                }
+                "vcpu": {"value": 8},
             }
         }
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")

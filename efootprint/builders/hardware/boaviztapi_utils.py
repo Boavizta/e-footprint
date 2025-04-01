@@ -1,55 +1,86 @@
 import requests
+import os
 
 from efootprint.logger import logger
 
 
-def call_boaviztapi(url, method="GET", **kwargs):
-    logger.info(f"Calling Boavizta API with url {url}, method {method} and params {kwargs}")
+def call_boaviztapi_from_web_request(url, method="GET", params={}):
+    logger.info(f"Calling Boavizta API with url {url}, method {method} and params {params}")
     headers = {'accept': 'application/json'}
     response = None
     if method == "GET":
-        response = requests.get(url, headers=headers, **kwargs)
+        response = requests.get(url, headers=headers, params=params)
     elif method == "POST":
         headers["Content-Type"] = "application/json"
-        response = requests.post(url, headers=headers, **kwargs)
+        response = requests.post(url, headers=headers, params=params)
 
     if response.status_code == 200:
         return response.json()
     else:
         raise ValueError(
-            f"{method} request to {url} with params {kwargs} failed with status code {response.status_code}")
+            f"{method} request to {url} with params {params} failed with status code {response.status_code}")
 
 
-def get_archetypes_and_their_configs_and_impacts():
-    output_dict = {}
-    for archetype in call_boaviztapi('https://api.boavizta.org/v1/server/archetypes'):
-        configuration = call_boaviztapi(
-            url="https://api.boavizta.org/v1/server/archetype_config", params={"archetype": archetype})
-        impact = call_boaviztapi(
-            url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
-        if impact is None:
-            logger.info(f"No impact for archetype {archetype}")
-        else:
-            output_dict[archetype] = {}
-            output_dict[archetype]["config"] = configuration
-            output_dict[archetype]["impact"] = impact
+def call_boaviztapi_from_package_dependency(url, method="GET", params={}):
+    import asyncio
+    import inspect
+    import warnings
+    from scipy.optimize import OptimizeWarning
 
-    return output_dict
+    warnings.simplefilter("ignore", ResourceWarning)
+    warnings.simplefilter("ignore", OptimizeWarning)
+    warnings.simplefilter("ignore", DeprecationWarning)
+    warnings.simplefilter("ignore", UserWarning)
+
+    from boaviztapi.routers.cloud_router import instance_cloud_impact, server_get_all_provider_name, \
+        server_get_all_archetype_name as server_get_all_archetype_name_cloud
+    from boaviztapi.routers.server_router import (
+        server_impact_from_model, server_get_all_archetype_name as server_get_all_archetype_name_server,
+        get_archetype_config)
+
+    url_method_mapping = {
+        "https://api.boavizta.org/v1/cloud/instance/all_providers": server_get_all_provider_name,
+        "https://api.boavizta.org/v1/cloud/instance/all_instances": server_get_all_archetype_name_cloud,
+        "https://api.boavizta.org/v1/cloud/instance": instance_cloud_impact,
+        "https://api.boavizta.org/v1/server/": server_impact_from_model,
+        "https://api.boavizta.org/v1/server/archetypes": server_get_all_archetype_name_server,
+        "https://api.boavizta.org/v1/server/archetype_config": get_archetype_config,
+    }
+
+    if url in url_method_mapping:
+        method = url_method_mapping[url]
+        if "criteria" in inspect.signature(method).parameters:
+            params["criteria"] = params.get("criteria", ["gwp"])
+        return asyncio.run(method(**params))
+    else:
+        raise ValueError(
+            f"URL {url} is not in the list of available urls: {list(url_method_mapping.keys())}. Please provide a valid "
+            f"URL, update the list of urls in call_boaviztapi_from_package_dependency or set environment variable "
+            f"CALL_BOAVIZTAPI_VIA_WEB to True to use the web API.")
+
+
+if not os.environ.get("CALL_BOAVIZTAPI_VIA_WEB"):
+    call_boaviztapi = call_boaviztapi_from_package_dependency
+else:
+    call_boaviztapi = call_boaviztapi_from_web_request
 
 
 def print_archetypes_and_their_configs():
-    archetypes_data = get_archetypes_and_their_configs_and_impacts()
+    for archetype in call_boaviztapi('https://api.boavizta.org/v1/server/archetypes'):
+        config = call_boaviztapi(
+            url="https://api.boavizta.org/v1/server/archetype_config", params={"archetype": archetype})
+        impact = call_boaviztapi(
+            url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
 
-    for archetype in archetypes_data.keys():
-        config = archetypes_data[archetype]["config"]
-        impact = archetypes_data[archetype]["impact"]
         if "default" in config['CPU']['core_units'].keys():
             nb_cpu_core_units = config['CPU']['core_units']['default']
-        else:
+        elif "core_units" in impact["verbose"]['CPU-1'].keys():
             nb_cpu_core_units = impact["verbose"]['CPU-1']['core_units']['value']
+        else:
+            nb_cpu_core_units = 1
 
-        nb_ssd_units = config['SSD']["units"]['default']
-        nb_hdd_units = config['HDD']["units"]['default']
+        nb_ssd_units = config['SSD']["units"].get('default', 0)
+        nb_hdd_units = config['HDD']["units"].get('default', 0)
 
         if nb_hdd_units > 0 and nb_ssd_units > 0:
             raise ValueError(
@@ -87,4 +118,7 @@ def print_archetypes_and_their_configs():
 
 
 if __name__ == "__main__":
+    from time import time
+    start = time()
     print_archetypes_and_their_configs()
+    print(f"Execution time: {time() - start} seconds")

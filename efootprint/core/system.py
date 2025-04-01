@@ -1,10 +1,6 @@
 from typing import Dict, List
 
-import plotly.express as px
-import plotly
 import pandas as pd
-from IPython.display import HTML
-from matplotlib import pyplot as plt
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -79,11 +75,13 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
+        from time import time
+        start = time()
         logger.info(f"Starting computing {self.name} modeling")
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
         self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
         self.compute_calculated_attributes()
-        logger.info(f"Finished computing {self.name} modeling")
+        logger.info(f"Finished computing {self.name} modeling in {round(time() - start, 3)} seconds")
         self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
         self.trigger_modeling_updates = True
@@ -276,6 +274,9 @@ class System(ModelingObject):
         self.total_footprint = round(total_footprint, 4)
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
+        import plotly.express as px
+        import plotly
+
         fab_footprints = self.fabrication_footprint_sum_over_period
         energy_footprints = self.energy_footprint_sum_over_period
         categories = list(fab_footprints.keys())
@@ -343,6 +344,8 @@ class System(ModelingObject):
             return fig.to_html(full_html=False, include_plotlyjs=False)
 
         else:
+            from IPython.display import HTML
+
             if filename is None:
                 filename = f"{self.name} footprints.html"
 
@@ -351,6 +354,8 @@ class System(ModelingObject):
             return HTML(filename)
 
     def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
+        from matplotlib import pyplot as plt
+
         if self.previous_change is None:
             raise ValueError(
                 f"There has been no change to the system yet so no diff to plot.\n"

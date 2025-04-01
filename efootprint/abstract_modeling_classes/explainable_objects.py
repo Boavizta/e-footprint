@@ -8,7 +8,6 @@ import pint_pandas
 import pytz
 from pint import Quantity, Unit
 import numpy as np
-import matplotlib.pyplot as plt
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
@@ -133,6 +132,7 @@ class EmptyExplainableObject(ExplainableObject):
         return output_dict
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
+        import matplotlib.pyplot as plt
         assert self.simulation_twin is not None, "Cannot plot EmptyExplainableObject if simulation twin is None"
         simulated_values_df = self.simulation_twin.value
         assert not isinstance(simulated_values_df, EmptyExplainableObject), \

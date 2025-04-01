@@ -22,6 +22,12 @@ class TestGenAIModel(unittest.TestCase):
             name="Test GenAI", provider=self.provider, model_name=self.model_name, server=self.mock_server)
         self.genai_model.trigger_modeling_updates = False
 
+    def test_raises_error_if_wrong_model_name(self):
+        with self.assertRaises(ValueError):
+            GenAIModel.from_defaults(
+                name="Test GenAI", provider=SourceObject("mistralai"), model_name=SourceObject("wrong-model"),
+                server=self.mock_server)
+
     def test_installable_on(self):
         """Test that the installable_on property returns the server type."""
         self.assertEqual(GenAIModel.installable_on(), [GPUServer])
