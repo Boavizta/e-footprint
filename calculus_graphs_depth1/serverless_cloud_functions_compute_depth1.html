@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9e1074 {
+             #mynetwork_59d60d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_9e1074" class="card-body"></div>
+            <div id="mynetwork_59d60d" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9e1074');
+                  var container = document.getElementById('mynetwork_59d60d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extration from of (API call response from Boavizta API cloud instances)\n=\ndata extration from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n16.0 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from hypothesis combined in Boavizta API call with unnamed source\nfrom hypothesis\n=\nscaleway combined in Boavizta API call with dev1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from hypothesis combined in Boavizta API call with unnamed source\nfrom hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response from Boavizta API cloud instances", "to": "serverless cloud functions compute from Boavizta API cloud instances"}]);
 
                   nodeColors = {};

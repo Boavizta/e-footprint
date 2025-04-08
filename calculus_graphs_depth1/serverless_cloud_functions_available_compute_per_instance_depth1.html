@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e8fc42 {
+             #mynetwork_4ed5ac {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e8fc42" class="card-body"></div>
+            <div id="mynetwork_4ed5ac" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e8fc42');
+                  var container = document.getElementById('mynetwork_4ed5ac');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n16.0 cpu_core * 0.9 dimensionless - 0 cpu_core\n=\n14.4 cpu_core", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extration from of (API call response from Boavizta API cloud instances)\n=\ndata extration from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n16.0 cpu_core", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from hypothesis + no\nvalue\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 150.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.9 dimensionless - 0 cpu_core\n=\n7.2 cpu_core", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from hypothesis + no\nvalue\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 150.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions compute from Boavizta API cloud instances", "to": "Available CPU per serverless cloud functions instance"}, {"arrows": "to", "from": "serverless cloud functions utilization rate", "to": "Available CPU per serverless cloud functions instance"}, {"arrows": "to", "from": "Occupied CPU per serverless cloud functions instance including services", "to": "Available CPU per serverless cloud functions instance"}]);
 
                   nodeColors = {};
