@@ -307,8 +307,8 @@ class System(ModelingObject):
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
             title=f"Total CO2 emissions from "
-                  f"{total_footprint.value.index.min().to_timestamp().date()} "
-                  f"to {total_footprint.value.index.max().to_timestamp().date()}"
+                  f"{total_footprint.value.index.min().date()} "
+                  f"to {total_footprint.value.index.max().date()}"
                   f": {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))}"
                   )
 

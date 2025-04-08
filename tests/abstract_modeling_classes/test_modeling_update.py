@@ -1,5 +1,5 @@
 import unittest
-from datetime import datetime
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch, PropertyMock
 
 import pandas as pd
@@ -13,7 +13,6 @@ from efootprint.abstract_modeling_classes.modeling_update import (
     compute_attr_updates_chain_from_mod_objs_computation_chain, ModelingUpdate)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
-from tests.abstract_modeling_classes.test_modeling_object import ModelingObjectForTesting
 
 
 class TestModelingUpdateFunctions(unittest.TestCase):
@@ -166,10 +165,14 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_within_modeling_period(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 2, tzinfo=timezone.utc)
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
+
+        for ancestor in [ancestor_1, ancestor_2]:
+            ancestor.modeling_obj_container = MagicMock()
+            ancestor.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
@@ -181,10 +184,13 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_simulation_date_outside_modeling_period_raises_error(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2024, 12, 31)).to_period(freq="h")
+        modeling_update.simulation_date = datetime(2024, 12, 31, tzinfo=timezone.utc)
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2))
+        for ancestor in [ancestor_1, ancestor_2]:
+            ancestor.modeling_obj_container = MagicMock()
+            ancestor.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
@@ -194,11 +200,15 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_multiple_ancestors(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2)).to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 2, tzinfo=timezone.utc)
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 1))
         ancestor_3 = create_source_hourly_values_from_list([9, 10, 11, 12], start_date=datetime(2025, 1, 2))
+
+        for ancestor in [ancestor_1, ancestor_2, ancestor_3]:
+            ancestor.modeling_obj_container = MagicMock()
+            ancestor.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2, ancestor_3]
 
@@ -210,10 +220,14 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_simulation_date_equal_to_max_date(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 2, 23)).to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 2, 23, tzinfo=timezone.utc)
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_2 = create_source_hourly_values_from_list([5, 6, 7, 8], start_date=datetime(2025, 1, 2, 20))
+
+        for ancestor in [ancestor_1, ancestor_2]:
+            ancestor.modeling_obj_container = MagicMock()
+            ancestor.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.ancestors_not_in_computation_chain = [ancestor_1, ancestor_2]
 
@@ -225,9 +239,11 @@ class TestModelingUpdate(unittest.TestCase):
     def test_compute_hourly_quantities_to_filter_with_max_date_less_than_simulation_date_raises_error(self):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp(datetime(2025, 1, 1, 10)).to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 1, 10, tzinfo=timezone.utc)
 
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1, 7))
+        ancestor_1.modeling_obj_container = MagicMock()
+        ancestor_1.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.ancestors_not_in_computation_chain = [ancestor_1]
 
@@ -238,12 +254,13 @@ class TestModelingUpdate(unittest.TestCase):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the modeling_update date rounded to the previous hour
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-01 01:00").to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 1, 1, tzinfo=timezone.utc)
 
         # Create mock hourly quantities using create_source_hourly_values_from_list
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3, 4], start_date=datetime(2025, 1, 1))
         ancestor_1.modeling_obj_container = MagicMock()
         ancestor_1.attr_name_in_mod_obj_container = "attr_1"
+        ancestor_1.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.hourly_quantities_to_filter = [ancestor_1]
         modeling_update.filtered_hourly_quantities = []
@@ -258,7 +275,7 @@ class TestModelingUpdate(unittest.TestCase):
 
         # Check that the index of the filtered value matches the expected timestamp
         filtered_index = modeling_update.filtered_hourly_quantities[0].value.index
-        expected_index = pd.period_range(start="2025-01-01 01:00", periods=3, freq='h')
+        expected_index = pd.date_range(start="2025-01-01 01:00", periods=3, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)
 
@@ -266,14 +283,15 @@ class TestModelingUpdate(unittest.TestCase):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the modeling_update date rounded to the previous hour
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 2, 1, tzinfo=timezone.utc)
 
         # Create mock hourly quantities with no values after the modeling_update date
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1))
         ancestor_1.modeling_obj_container = MagicMock()
         ancestor_1.attr_name_in_mod_obj_container = "attr_1"
+        ancestor_1.value.index = ancestor_1.value.index.tz_localize(timezone.utc)
         ancestor_1.value = ancestor_1.value[
-            ancestor_1.value.index < modeling_update.simulation_date_as_hourly_freq]
+            ancestor_1.value.index < modeling_update.simulation_date]
 
         modeling_update.hourly_quantities_to_filter = [ancestor_1]
         modeling_update.filtered_hourly_quantities = []
@@ -288,7 +306,7 @@ class TestModelingUpdate(unittest.TestCase):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
 
         # Mock the modeling_update date rounded to the previous hour
-        modeling_update.simulation_date_as_hourly_freq = pd.Timestamp("2025-01-02 01:00").to_period(freq="h")
+        modeling_update.simulation_date = datetime(2025, 1, 2, 1, tzinfo=timezone.utc)
 
         # Create mock hourly quantities with some having values after the modeling_update date and some not
         ancestor_1 = create_source_hourly_values_from_list([1, 2, 3], start_date=datetime(2025, 1, 1))
@@ -298,6 +316,10 @@ class TestModelingUpdate(unittest.TestCase):
         ancestor_2 = create_source_hourly_values_from_list([4, 5], start_date=datetime(2025, 1, 2))
         ancestor_2.modeling_obj_container = MagicMock()
         ancestor_2.attr_name_in_mod_obj_container = "attr_2"
+
+        for ancestor in [ancestor_1, ancestor_2]:
+            ancestor.modeling_obj_container = MagicMock()
+            ancestor.modeling_obj_container.country.timezone.value = timezone.utc
 
         modeling_update.hourly_quantities_to_filter = [ancestor_1, ancestor_2]
         modeling_update.filtered_hourly_quantities = []
@@ -315,7 +337,7 @@ class TestModelingUpdate(unittest.TestCase):
 
         # Check that the index of the filtered value matches the expected timestamp
         filtered_index = modeling_update.filtered_hourly_quantities[1].value.index
-        expected_index = pd.period_range(start="2025-01-02 01:00", periods=1, freq='h')
+        expected_index = pd.date_range(start="2025-01-02 01:00", periods=1, freq='h')
 
         pd.testing.assert_index_equal(filtered_index, expected_index)
 

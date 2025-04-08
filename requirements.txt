@@ -48,7 +48,7 @@ prompt-toolkit==3.0.50 ; python_version >= "3.12" and python_version < "4.0"
 ptyprocess==0.7.0 ; python_version >= "3.12" and python_version < "4.0" and (sys_platform != "win32" and sys_platform != "emscripten")
 pure-eval==0.2.3 ; python_version >= "3.12" and python_version < "4.0"
 pydantic-core==2.33.1 ; python_version >= "3.12" and python_version < "4"
-pydantic==2.11.2 ; python_version >= "3.12" and python_version < "4"
+pydantic==2.11.3 ; python_version >= "3.12" and python_version < "4"
 pygments==2.19.1 ; python_version >= "3.12" and python_version < "4.0"
 pyparsing==3.2.3 ; python_version >= "3.12" and python_version < "4.0"
 python-dateutil==2.9.0.post0 ; python_version >= "3.12" and python_version < "4.0"

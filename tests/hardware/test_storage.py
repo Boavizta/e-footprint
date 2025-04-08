@@ -109,10 +109,10 @@ class TestStorage(TestCase):
                 [-2, -4], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
             self.assertEqual(
                 expected_min_date,
-                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.min().to_timestamp())
+                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.min())
             self.assertEqual(
                 expected_max_date,
-                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.max().to_timestamp())
+                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.max())
 
     def test_update_automatic_storage_dumps_after_storage_duration_returns_hourly_quantities_full_of_zeros_when_no_dump_during_period(self):
         input_data = [2, 4, 6]

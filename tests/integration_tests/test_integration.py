@@ -1,13 +1,13 @@
 import json
 from copy import copy
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.hardware.device import Device
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -553,7 +553,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_simulation_input_change(self):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
-                                    self.start_date + timedelta(hours=1))
+                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -571,7 +571,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         simulation = ModelingUpdate([
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-                 self.start_date + timedelta(hours=1))
+                 self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -589,7 +589,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate([[self.upload_step.jobs, self.upload_step.jobs + [new_job]]],
-                                    self.start_date + timedelta(hours=1))
+                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -603,7 +603,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_simulation_add_existing_object(self):
         simulation = ModelingUpdate([[self.upload_step.jobs, self.upload_step.jobs + [self.upload_job]]],
-                                    self.start_date + timedelta(hours=1))
+                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
@@ -629,7 +629,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate([
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]]],
-            self.start_date + timedelta(hours=1))
+            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -656,7 +656,7 @@ class IntegrationTest(IntegrationTestBaseClass):
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]],
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-                self.start_date + timedelta(hours=1))
+                self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))

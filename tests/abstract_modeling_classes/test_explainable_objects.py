@@ -192,8 +192,8 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual(mock_data, converted_ahead_utc.value_as_float_list)
         self.assertEqual(mock_data, converted_behind_utc.value_as_float_list)
 
-        self.assertEqual(start_date - timedelta(hours=2), converted_ahead_utc.value.index.min().to_timestamp())
-        self.assertEqual(start_date + timedelta(hours=4), converted_behind_utc.value.index.min().to_timestamp())
+        self.assertEqual(str(start_date - timedelta(hours=2)), str(converted_ahead_utc.value.index.min())[:19])
+        self.assertEqual(str(start_date + timedelta(hours=4)), str(converted_behind_utc.value.index.min())[:19])
 
         # Check other attributes of converted ExplainableHourlyUsage
         self.assertEqual(None, converted_ahead_utc.label)
@@ -259,8 +259,8 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         duplicated = hourly_usage_data.copy()
         self.assertEqual(expected_data, duplicated.value_as_float_list)
         self.assertEqual(u.GB, duplicated.unit)
-        self.assertEqual(start_date, duplicated.value.index.min().to_timestamp())
-        self.assertEqual(end_date, duplicated.value.index.max().to_timestamp())
+        self.assertEqual(start_date, duplicated.value.index.min())
+        self.assertEqual(end_date, duplicated.value.index.max())
 
     def test_np_compared_with(self):
         usage_to_compare = [0.5, 1.5] * 12
@@ -381,8 +381,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         simulation.values_to_recompute = [MagicMock(id=value_id)]
         simulation.recomputed_values = [recomputed_value]
-        simulation.simulation_date_as_hourly_freq = pd.Timestamp(
-            self.start_date + timedelta(hours=3)).to_period(freq="h")
+        simulation.simulation_date = self.start_date + timedelta(hours=3)
 
         ehq = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(self.usage1, self.start_date, pint_unit=u.W), "Usage 1")

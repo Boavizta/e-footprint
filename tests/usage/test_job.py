@@ -128,10 +128,10 @@ class TestJob(TestCase):
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
-        self.assertEqual(hourly_uj_starts.value.index.min().to_timestamp() + timedelta(hours=1),
-                         job_occurrences.value.index.min().to_timestamp())
-        self.assertEqual(hourly_uj_starts.value.index.max().to_timestamp() + timedelta(hours=1),
-                         job_occurrences.value.index.max().to_timestamp())
+        self.assertEqual(hourly_uj_starts.value.index.min() + timedelta(hours=1),
+                         job_occurrences.value.index.min())
+        self.assertEqual(hourly_uj_starts.value.index.max() + timedelta(hours=1),
+                         job_occurrences.value.index.max())
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
 
     def test_compute_hourly_job_occurrences_uj_steps_sum_up_to_more_than_one_hour(self):
@@ -154,11 +154,11 @@ class TestJob(TestCase):
 
         job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
         self.assertEqual(
-            hourly_uj_starts.value.index.min().to_timestamp() + timedelta(hours=1),
-            job_occurrences.value.index.min().to_timestamp())
+            hourly_uj_starts.value.index.min() + timedelta(hours=1),
+            job_occurrences.value.index.min())
         self.assertEqual(
-            hourly_uj_starts.value.index.max().to_timestamp() + timedelta(hours=1),
-            job_occurrences.value.index.max().to_timestamp())
+            hourly_uj_starts.value.index.max() + timedelta(hours=1),
+            job_occurrences.value.index.max())
         self.assertEqual([elt * 2 for elt in hourly_uj_starts.value_as_float_list],
                          job_occurrences.value_as_float_list)
 

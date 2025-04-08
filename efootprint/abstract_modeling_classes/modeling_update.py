@@ -2,7 +2,7 @@ from copy import copy
 from datetime import datetime
 from typing import List
 
-import pandas as pd
+import numpy as np
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -26,14 +26,12 @@ class ModelingUpdate:
     def __init__(
             self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None):
         self.updated_values_set = False
-        first_changed_val = changes_list[0][0]
         self.system = None
-        if isinstance(first_changed_val, ObjectLinkedToModelingObj):
-            if first_changed_val.modeling_obj_container.systems:
-                self.system = first_changed_val.modeling_obj_container.systems[0]
-        else:
-            raise ValueError(
-                f"First changed value {first_changed_val} is not an ObjectLinkedToModelingObj")
+        for change in changes_list:
+            changed_val = change[0]
+            if isinstance(changed_val, ObjectLinkedToModelingObj) and changed_val.modeling_obj_container.systems:
+                self.system = changed_val.modeling_obj_container.systems[0]
+                break
         self.changes_list = changes_list
         self.parse_changes_list()
         if self.changes_list and self.system:
@@ -45,11 +43,14 @@ class ModelingUpdate:
             self.system.all_changes += changes_list
 
         self.simulation_date = simulation_date
-        self.simulation_date_as_hourly_freq = None
-        if simulation_date is not None and self.system is not None:
+        if simulation_date is not None:
+            assert self.system is not None
+            if simulation_date.tzinfo is None:
+                raise ValueError(
+                    f"Simulation date {simulation_date} should be timezone aware. "
+                    f"Please use a timezone aware datetime object by setting its tzinfo attribute.")
             self.system.simulation = self
-            self.simulation_date_as_hourly_freq = pd.Timestamp(simulation_date).to_period(freq="h")
-        
+
         self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
         if self.mod_objs_computation_chain:
             logger.info(f"{len(self.mod_objs_computation_chain)} recomputed objects: "
@@ -218,28 +219,39 @@ class ModelingUpdate:
         for ancestor in hourly_quantities_ancestors_not_in_computation_chain:
             min_date = ancestor.value.index.min()
             max_date = ancestor.value.index.max()
+            if min_date.tzinfo is None:
+                # Should only be the case for UsagePattern’s hourly_usage_journeys
+                min_date = min_date.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
+            if max_date.tzinfo is None:
+                max_date = max_date.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
             if global_min_date is None:
                 global_min_date = min_date
             if global_max_date is None:
                 global_max_date = max_date
             global_min_date = min(min_date, global_min_date)
             global_max_date = max(max_date, global_max_date)
-            if self.simulation_date_as_hourly_freq <= max_date:
+            if self.simulation_date <= max_date:
                 hourly_quantities_to_filter.append(ancestor)
 
-        if not (global_min_date <= self.simulation_date_as_hourly_freq <= global_max_date):
+        if not (global_min_date <= self.simulation_date <= global_max_date):
             raise ValueError(
-                f"Can’t start a simulation on the {self.simulation_date_as_hourly_freq} because "
-                f"{self.simulation_date_as_hourly_freq}doesn’t belong to the existing modeling period "
+                f"Can’t start a simulation on the {self.simulation_date} because "
+                f"{self.simulation_date}doesn’t belong to the existing modeling period "
                 f"{global_min_date} to {global_max_date}")
 
         return hourly_quantities_to_filter
 
     def filter_hourly_quantities_to_filter(self):
         for hourly_quantities in self.hourly_quantities_to_filter:
-
+            if hourly_quantities.value.index.tz is None:
+                # Should only be the case for UsagePattern’s hourly_usage_journeys
+                filtering_index = hourly_quantities.value.index.tz_localize(
+                    hourly_quantities.modeling_obj_container.country.timezone.value,
+                    nonexistent="shift_forward", ambiguous=np.full(len(hourly_quantities.value), fill_value=True))
+            else:
+                filtering_index = hourly_quantities.value.index
             new_value = ExplainableHourlyQuantities(
-                hourly_quantities.value[hourly_quantities.value.index >= self.simulation_date_as_hourly_freq],
+                hourly_quantities.value[filtering_index >= self.simulation_date],
                 hourly_quantities.label, hourly_quantities.left_parent, hourly_quantities.right_parent,
                 hourly_quantities.operator, hourly_quantities.source
             )

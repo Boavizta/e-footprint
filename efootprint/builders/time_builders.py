@@ -15,7 +15,7 @@ def create_random_hourly_usage_df(
         pint_unit: pint.Unit = u.dimensionless):
     nb_days = timespan.to(u.day).magnitude
     end_date = start_date + timedelta(days=nb_days)
-    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
+    period_index = pd.date_range(start=start_date, end=end_date, freq='h')
 
     data = np.random.randint(min_val, max_val, size=len(period_index))
     df = pd.DataFrame(data, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
@@ -27,7 +27,7 @@ def create_hourly_usage_df_from_list(
         input_list: List[float], start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
         pint_unit: pint.Unit = u.dimensionless):
     end_date = start_date + timedelta(hours=len(input_list) - 1)
-    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
+    period_index = pd.date_range(start=start_date, end=end_date, freq='h')
 
     df = pd.DataFrame(input_list, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
 
@@ -114,7 +114,7 @@ def create_hourly_usage_from_frequency(
     if hours is None:
         hours = [0]  # default to midnight
 
-    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
+    period_index = pd.date_range(start=start_date, end=end_date, freq='h')
     # Important to have fill_value be 0.0 otherwise values will be cast to int
     values = np.full(shape=len(period_index), fill_value=0.0)
 

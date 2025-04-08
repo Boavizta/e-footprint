@@ -1,7 +1,7 @@
 import json
 import os.path
 from copy import copy
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
@@ -371,7 +371,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_simulation_input_change(self):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
-                                    self.start_date + timedelta(hours=1))
+                                    self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -386,7 +386,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         simulation = ModelingUpdate([
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server1.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-                self.start_date + timedelta(hours=1))
+                self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -406,7 +406,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
             [[self.upload_step.jobs, self.upload_step.jobs + [new_job]]],
-            self.start_date + timedelta(hours=1))
+            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -422,7 +422,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_simulation_add_existing_object(self):
         simulation = ModelingUpdate(
             [[self.upload_step.jobs, self.upload_step.jobs + [self.upload_job]]],
-            self.start_date + timedelta(hours=1))
+            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
@@ -450,7 +450,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         initial_upload_step_jobs = copy(self.upload_step.jobs)
         simulation = ModelingUpdate(
             [[self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]]],
-            self.start_date + timedelta(hours=1))
+            self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)
@@ -480,7 +480,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]],
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server1.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
-        self.start_date + timedelta(hours=1))
+        self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
         self.assertEqual(self.system.simulation, simulation)

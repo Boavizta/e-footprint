@@ -371,13 +371,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return [float(elt) for elt in self.value["value"].values._data]
 
     def convert_to_utc(self, local_timezone):
-        utc_tz = pytz.timezone('UTC')
-        current_time = datetime.now()
-        time_diff = (utc_tz.utcoffset(current_time) - local_timezone.value.utcoffset(current_time))
-        time_diff_in_hours = int(time_diff.total_seconds() / 3600)
-
         return ExplainableHourlyQuantities(
-            self.value.copy().shift(time_diff_in_hours, freq="h"),
+            self.value.tz_localize(local_timezone.value, nonexistent="shift_forward",
+                                   ambiguous=np.full(len(self.value), fill_value=True))
+            .tz_convert('UTC'),
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
     def sum(self):
@@ -568,8 +565,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
                                  + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
 
-        return f"{nb_of_values} values from {self.value.index.min().to_timestamp()} " \
-               f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
+        return f"{nb_of_values} values from {self.value.index.min()} " \
+               f"to {self.value.index.max()} in {compact_unit}:\n    {str_rounded_values}"
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
         if self.baseline_twin is None and self.simulation_twin is None:
@@ -589,7 +586,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
         if simulated_values_df is not None:
             if isinstance(simulated_values_df, EmptyExplainableObject):
-                period_index = pd.period_range(start=self.simulation.simulation_date_as_hourly_freq,
+                period_index = pd.date_range(start=self.simulation.simulation_date,
                                              end=self.value.index.max(), freq='h')
                 simulated_values_df = pd.DataFrame(
                     {"value": pint_pandas.PintArray(

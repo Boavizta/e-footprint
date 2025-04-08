@@ -158,8 +158,8 @@ class TestServer(TestCase):
             self.server_base.update_raw_nb_of_instances()
 
             self.assertEqual(expected_data, self.server_base.raw_nb_of_instances.value_as_float_list)
-            self.assertEqual(start_date_a, self.server_base.raw_nb_of_instances.value.index.min().to_timestamp())
-            self.assertEqual(expected_max_date, self.server_base.raw_nb_of_instances.value.index.max().to_timestamp())
+            self.assertEqual(start_date_a, self.server_base.raw_nb_of_instances.value.index.min())
+            self.assertEqual(expected_max_date, self.server_base.raw_nb_of_instances.value.index.max())
 
     def test_compute_instances_energy_simple_case(self):
         with patch.object(self.server_base, "nb_of_instances",

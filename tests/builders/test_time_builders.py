@@ -37,7 +37,7 @@ class TestTimeBuilders(unittest.TestCase):
         self.assertEqual(input_list, list(df["value"].values._data))
         self.assertEqual(start_date, datetime.strptime(df.index.min().strftime("%Y-%m-%d"), "%Y-%m-%d"))
         self.assertEqual(start_date + timedelta(hours=len(input_list) - 1),
-                         df.index.max().to_timestamp().to_pydatetime())
+                         df.index.max().to_pydatetime())
 
     def test_linear_growth_hourly_values(self):
         nb_of_hours = 5
@@ -92,7 +92,7 @@ class TestTimeBuilders(unittest.TestCase):
 
         expected_index_populated = [9, 33, 57, 81, 105, 129, 153]
 
-        expected_max_period = pd.Period("2024-01-07 23:00", freq='h')
+        expected_max_period = pd.Timestamp("2024-01-07 23:00")
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(result.unit, u.dimensionless)
@@ -116,7 +116,7 @@ class TestTimeBuilders(unittest.TestCase):
 
         expected_index_populated = [9, 10, 33, 34, 57, 58, 81, 82, 105, 106, 129, 130, 153, 154]
 
-        expected_max_period = pd.Period("2024-01-07 23:00", freq='h')
+        expected_max_period = pd.Timestamp("2024-01-07 23:00")
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(result.unit, u.dimensionless)
@@ -143,7 +143,7 @@ class TestTimeBuilders(unittest.TestCase):
         expected_index_populated = [
             9, 11, 33, 35, 57, 59, 81, 83, 105, 107, 177, 179, 201, 203, 225, 227, 249, 251, 273, 275]
 
-        expected_max_period = pd.Period("2024-01-14 23:00", freq='h')
+        expected_max_period = pd.Timestamp("2024-01-14 23:00")
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(result.unit, u.dimensionless)
@@ -170,7 +170,7 @@ class TestTimeBuilders(unittest.TestCase):
         expected_index_populated = [9, 11, 129, 131, 249, 251, 369, 371, 489, 491, 609, 611, 753, 755, 873, 875, 993,
                                     995, 1113, 1115, 1233, 1235, 1353, 1355]
 
-        expected_max_period = pd.Period("2024-02-29 23:00", freq='h')
+        expected_max_period = pd.Timestamp("2024-02-29 23:00")
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(result.unit,u.dimensionless)
@@ -196,7 +196,7 @@ class TestTimeBuilders(unittest.TestCase):
 
         expected_index_populated = [12, 8796, 17556]
 
-        expected_max_period = pd.Period("2026-12-31 23:00", freq='h')
+        expected_max_period = pd.Timestamp("2026-12-31 23:00")
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(result.unit,u.dimensionless)

@@ -180,8 +180,8 @@ class Storage(InfraHardware):
                 automatic_storage_dumps_after_storage_duration_df.index <= self.storage_needed.value.index.max()]
 
             if len(automatic_storage_dumps_after_storage_duration_df) == 0:
-                storage_needs_start_date = self.storage_needed.value.index.min().to_timestamp()
-                storage_needs_end_date = self.storage_needed.value.index.max().to_timestamp()
+                storage_needs_start_date = self.storage_needed.value.index.min()
+                storage_needs_end_date = self.storage_needed.value.index.max()
                 storage_needs_nb_of_hours = int((storage_needs_end_date - storage_needs_start_date).seconds / 3600)
                 automatic_storage_dumps_after_storage_duration_df = create_hourly_usage_df_from_list(
                     [0] * (storage_needs_nb_of_hours + 1), start_date=storage_needs_start_date)
