@@ -158,10 +158,10 @@ class System(ModelingObject):
     @property
     def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         fab_footprints = {
-            "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
-            "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
+            "Servers": {server.id: server.instances_fabrication_footprint for server in self.servers},
+            "Storage": {storage.id: storage.instances_fabrication_footprint for storage in self.storages},
             "Network": {"networks": EmptyExplainableObject()},
-            "Devices": {usage_pattern.name: usage_pattern.instances_fabrication_footprint
+            "Devices": {usage_pattern.id: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
         }
 
@@ -170,10 +170,10 @@ class System(ModelingObject):
     @property
     def energy_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         energy_footprints = {
-            "Servers": {server.name: server.energy_footprint for server in self.servers},
-            "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
-            "Network": {network.name: network.energy_footprint for network in self.networks},
-            "Devices": {usage_pattern.name: usage_pattern.energy_footprint
+            "Servers": {server.id: server.energy_footprint for server in self.servers},
+            "Storage": {storage.id: storage.energy_footprint for storage in self.storages},
+            "Network": {network.id: network.energy_footprint for network in self.networks},
+            "Devices": {usage_pattern.id: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
         }
 

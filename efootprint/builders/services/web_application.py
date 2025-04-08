@@ -37,7 +37,7 @@ class WebApplication(Service):
     def conditional_list_values(cls):
         return {}
 
-    def __init__(self, name, server: Server, technology: ExplainableObject):
+    def __init__(self, name:str, server: Server, technology: ExplainableObject):
         super().__init__(name, server)
         self.technology = technology.set_label(f"Technology used in {self.name}")
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.7] 2025-04-08
+
+### Fixed
+- Use ids instead of names in system fabrication and energy footprints propertys to avoid overwrites in cases where several objects have the same name.
+
 ## [10.0.6] 2025-04-01
 
 ### Changed

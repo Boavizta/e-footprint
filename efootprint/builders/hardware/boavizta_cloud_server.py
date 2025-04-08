@@ -64,7 +64,7 @@ class BoaviztaCloudServer(Server):
         super().__setattr__(name, input_value, check_input_validity=check_input_validity)
 
     def __init__(
-            self, name, provider: ExplainableObject, instance_type: ExplainableObject, server_type: ExplainableObject,
+            self, name: str, provider: ExplainableObject, instance_type: ExplainableObject, server_type: ExplainableObject,
             lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
             power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
             server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,

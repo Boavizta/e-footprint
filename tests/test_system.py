@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplai
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.system import System
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.usage.usage_pattern import UsagePattern
 
@@ -22,6 +22,7 @@ class TestSystem(TestCase):
 
         self.usage_pattern = MagicMock()
         self.usage_pattern.name = "usage_pattern"
+        self.usage_pattern.id = "usage_pattern_id"
         self.usage_pattern.systems = []
         device = MagicMock()
         self.usage_pattern.devices = [device]
@@ -37,12 +38,15 @@ class TestSystem(TestCase):
         self.usage_pattern.usage_journey.systems = []
         self.server = MagicMock()
         self.server.name = "server"
+        self.server.id = "server_id"
         self.server.systems = []
         self.storage = MagicMock()
         self.storage.name = "storage"
+        self.storage.id = "storage_id"
         self.storage.systems = []
         self.network = MagicMock()
         self.network.name = "network"
+        self.network.id = "network_id"
         self.network.systems = []
 
         self.usage_pattern.usage_journey.servers = {self.server}
@@ -142,12 +146,12 @@ class TestSystem(TestCase):
         
     def test_fabrication_footprints(self):
         expected_dict = {
-            "Servers": {"server": SourceHourlyValues(
+            "Servers": {"server_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
+            "Storage": {"storage_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
             "Network": {"networks": EmptyExplainableObject()},
-            "Devices": {"usage_pattern": SourceHourlyValues(
+            "Devices": {"usage_pattern_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
         }
         
@@ -155,13 +159,13 @@ class TestSystem(TestCase):
 
     def test_energy_footprints(self):
         expected_dict = {
-            "Servers": {"server": SourceHourlyValues(
+            "Servers": {"server_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
+            "Storage": {"storage_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern": SourceHourlyValues(
+            "Devices": {"usage_pattern_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"network": SourceHourlyValues(
+            "Network": {"network_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
         }
 
@@ -196,19 +200,19 @@ class TestSystem(TestCase):
 
     def test_fabrication_footprint_sum_over_period(self):
         test_footprints = {
-            "Servers": {"server": SourceHourlyValues(
+            "Servers": {"server_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
+            "Storage": {"storage_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern": SourceHourlyValues(
+            "Devices": {"usage_pattern_id": SourceHourlyValues(
                 create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"networks": EmptyExplainableObject()}
+            "Network": {"networks_id": EmptyExplainableObject()}
         }
         expected_dict = {
-            "Servers": {"server": ExplainableQuantity(6 * u.kg, label="server")},
-            "Storage": {"storage": ExplainableQuantity(6 * u.kg, label="storage")},
-            "Devices": {"usage_pattern": ExplainableQuantity(6 * u.kg, label="devices")},
-            "Network": {"networks": EmptyExplainableObject()},
+            "Servers": {"server_id": ExplainableQuantity(6 * u.kg, label="server")},
+            "Storage": {"storage_id": ExplainableQuantity(6 * u.kg, label="storage")},
+            "Devices": {"usage_pattern_id": ExplainableQuantity(6 * u.kg, label="devices")},
+            "Network": {"networks_id": EmptyExplainableObject()},
         }
 
         with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
@@ -289,6 +293,85 @@ class TestSystem(TestCase):
             energy_mock.return_value = energy_footprints
             total_energy_footprint_sum_over_period = self.system.total_energy_footprint_sum_over_period
             self.assertDictEqual(expected_dict, total_energy_footprint_sum_over_period)
+
+    @patch("efootprint.core.system.System.servers", new_callable=PropertyMock)
+    @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
+    def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
+            self, mock_storages, mock_servers):
+        usage_pattern = MagicMock(spec=UsagePattern, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        usage_pattern.name = "usage pattern"
+        usage_pattern.id = "usage pattern id"
+        usage_pattern2 = MagicMock(spec=UsagePattern, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        usage_pattern2.name = "usage pattern2"
+        usage_pattern2.id = "usage pattern2 id"
+        server = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
+        server.name = "server"
+        server.id = "server id"
+        server2 = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
+        server2.name = "server2"
+        server2.id = "server2 id"
+        storage = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
+        storage.name = "storage"
+        storage.id = "storage id"
+        # same name
+        storage2 = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
+        storage2.name = "storage"
+        storage2.id = "storage2 id"
+
+        mock_servers.return_value = [server, server2]
+        mock_storages.return_value = [storage, storage2]
+
+        system2 = System.__new__(System)
+        system2.trigger_modeling_updates = False
+        system2.usage_patterns = [usage_pattern, usage_pattern2]
+
+        for category in ["Servers", "Storage", "Devices"]:
+            self.assertEqual(
+                len(list(system2.fabrication_footprints[category].values())), 2, f"{category} doesn’t have right len")
+
+    @patch("efootprint.core.system.System.servers", new_callable=PropertyMock)
+    @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
+    @patch("efootprint.core.system.System.networks", new_callable=PropertyMock)
+    def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
+            self, mock_networks, mock_storages, mock_servers):
+        usage_pattern = MagicMock(spec=UsagePattern, energy_footprint=SourceValue(1 * u.kg))
+        usage_pattern.name = "usage pattern"
+        usage_pattern.id = "usage pattern id"
+        usage_pattern2 = MagicMock(spec=UsagePattern, energy_footprint=SourceValue(1 * u.kg))
+        usage_pattern2.name = "usage pattern2"
+        usage_pattern2.id = "usage pattern2 id"
+        server = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        server.name = "server"
+        server.id = "server id"
+        server2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        server2.name = "server2"
+        server2.id = "server2 id"
+        storage = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        storage.name = "storage"
+        storage.id = "storage id"
+        # same name
+        storage2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        storage2.name = "storage"
+        storage2.id = "storage2 id"
+        network = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        network.name = "network"
+        network.id = "network id"
+        network2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
+        network2.name = "network2"
+        network2.id = "network2 id"
+
+        mock_servers.return_value = [server, server2]
+        mock_storages.return_value = [storage, storage2]
+        mock_networks.return_value = [network, network2]
+
+        system2 = System.__new__(System)
+        system2.trigger_modeling_updates = False
+        system2.usage_patterns = [usage_pattern, usage_pattern2]
+
+        for category in ["Servers", "Storage", "Devices", "Network"]:
+            self.assertEqual(
+                len(list(system2.energy_footprints[category].values())), 2,
+                f"{category} doesn’t have right len")
 
     def test_footprints_by_category_and_object(self):
         fab_footprints = {
