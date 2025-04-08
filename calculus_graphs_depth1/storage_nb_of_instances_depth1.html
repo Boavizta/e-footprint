@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d12482 {
+             #mynetwork_8ffb45 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d12482" class="card-body"></div>
+            <div id="mynetwork_8ffb45" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d12482');
+                  var container = document.getElementById('mynetwork_8ffb45');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage) depending on being empty\nUser defined number of storage instances\n=\nceil of (26299 values from 2024-12-31 22:00:00 to 2028-01-01 16:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\ndepending on being empty no value\n=\n26299 values from 2024-12-31 22:00:00 to 2028-01-01 16:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n26299 values from 2024-12-31 22:00:00 to 2028-01-01 16:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03] / 1\nterabyte\n=\n26299 values from 2024-12-31 22:00:00 to 2028-01-01 16:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": -225.0, "y": 1500}, {"color": null, "id": "User defined number of storage instances", "label": "User defined number\nof storage instances", "shape": "dot", "size": 15, "title": "User defined number of storage instances = no value", "x": 225.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage) depending on being empty\nUser defined number of storage instances\n=\nceil of (26301 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\ndepending on being empty no value\n=\n26301 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n26301 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03] / 1\nterabyte\n=\n26301 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03]", "x": -225.0, "y": 1500}, {"color": null, "id": "User defined number of storage instances", "label": "User defined number\nof storage instances", "shape": "dot", "size": 15, "title": "User defined number of storage instances = no value", "x": 225.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances for storage", "to": "Hourly number of instances for storage"}, {"arrows": "to", "from": "User defined number of storage instances", "to": "Hourly number of instances for storage"}]);
 
                   nodeColors = {};
