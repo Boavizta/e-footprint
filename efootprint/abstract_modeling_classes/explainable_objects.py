@@ -371,10 +371,22 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return [float(elt) for elt in self.value["value"].values._data]
 
     def convert_to_utc(self, local_timezone):
+        utc_localized_df = self.value.tz_localize(local_timezone.value, nonexistent="shift_forward",
+                                   ambiguous=np.full(len(self.value), fill_value=True)).tz_convert('UTC')
+        duplicate_datetimes_due_to_dst = utc_localized_df.index.duplicated(keep=False)
+
+        duplicates_df = utc_localized_df[duplicate_datetimes_due_to_dst]
+        if not duplicates_df.empty:
+            non_duplicates_df = utc_localized_df[~duplicate_datetimes_due_to_dst]
+            # Sum values for duplicate indices
+            fused_duplicates = duplicates_df.groupby(duplicates_df.index).sum()
+            # Combine the summed duplicates with the non-duplicates
+            deduplicated_localized_df = pd.concat([non_duplicates_df, fused_duplicates]).sort_index()
+        else:
+            deduplicated_localized_df = utc_localized_df
+
         return ExplainableHourlyQuantities(
-            self.value.tz_localize(local_timezone.value, nonexistent="shift_forward",
-                                   ambiguous=np.full(len(self.value), fill_value=True))
-            .tz_convert('UTC'),
+            deduplicated_localized_df,
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
     def sum(self):

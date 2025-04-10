@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.9] 2025-04-10
+
+### Fixed
+- Make sure simulated and reference timeseries have same unit when plotting.
+- Remove duplicate datetime indexes arising from DST changes by summing values with same datetime index.
+
 ## [10.0.8] 2025-04-08
 
 ### Fixed

@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
+import numpy as np
 import pandas as pd
 import pytz
 
@@ -173,11 +174,9 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         with self.assertRaises(ValueError):
             subtraction_result = self.hourly_usage1 - ExplainableQuantity(4 * u.W, "4W")
 
-    @patch('efootprint.abstract_modeling_classes.explainable_objects.datetime')
-    def test_convert_to_utc(self, mock_datetime):
+    def test_convert_to_utc(self):
         start_date = datetime(2023, 10, 1)
         # Artificially fix datetime to avoid test crashing because of annual time changes.
-        mock_datetime.now.return_value = start_date
         mock_data = [1] * 12
         usage = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(mock_data, start_date=start_date), "usage")
@@ -200,6 +199,19 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual(usage, converted_ahead_utc.left_parent)
         self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_parent)
         self.assertEqual("converted to UTC from", converted_ahead_utc.operator)
+
+    def test_convert_to_utc_return_non_duplicated_index(self):
+        # create datetime index that includes summer French time change
+        nb_hours = 24
+        datetime_index = pd.date_range(start=datetime(2025, 3, 30), periods=nb_hours, freq="h")
+        usage = ExplainableHourlyQuantities(
+            pd.DataFrame({"value": np.arange(nb_hours)}, index=datetime_index, dtype="pint[kg]"), "usage")
+
+        utc_converted = usage.convert_to_utc(ExplainableObject(pytz.timezone('Europe/Paris'), "local French timezone"))
+
+        # Check that the index is unique
+        self.assertTrue(utc_converted.value.index.is_unique)
+        self.assertEqual([0, 1, 5, 4, 5, 6] + list(range(7, nb_hours)), utc_converted.value_as_float_list)
 
     def test_sum(self):
         summed = self.hourly_usage1.sum()
