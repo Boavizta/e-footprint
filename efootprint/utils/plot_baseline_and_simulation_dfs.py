@@ -6,6 +6,9 @@ def plot_baseline_and_simulation_dfs(baseline_df: DataFrame, simulated_values_df
     from matplotlib import pyplot as plt
     import matplotlib.dates as mdates
 
+    if simulated_values_df is not None:
+        simulated_values_df["value"] = simulated_values_df["value"].pint.to(baseline_df.dtypes.value.units)
+
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
     if xlims is not None:
