@@ -29,7 +29,7 @@
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -60,7 +60,7 @@
                 "value": 20,
                 "unit": "minute",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -76,7 +76,7 @@
                 "value": 1,
                 "unit": "minute",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -96,7 +96,7 @@
                 "value": 50,
                 "unit": "kilobyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -105,7 +105,7 @@
                 "value": 50,
                 "unit": "kilobyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -114,7 +114,7 @@
                 "value": 0.06666666666666667,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -123,7 +123,7 @@
                 "value": 100,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -132,7 +132,7 @@
                 "value": 1,
                 "unit": "cpu_core",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -148,7 +148,7 @@
                 "value": 300,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -157,7 +157,7 @@
                 "value": 300,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -166,7 +166,7 @@
                 "value": 0.011111111111111112,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -175,7 +175,7 @@
                 "value": 100,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -184,7 +184,7 @@
                 "value": 1,
                 "unit": "cpu_core",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -199,7 +199,7 @@
                 "label": "Server type for Default server",
                 "value": "autoscaling",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -217,7 +217,7 @@
                 "value": 300,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -226,7 +226,7 @@
                 "value": 6,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -235,7 +235,7 @@
                 "value": 1,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -253,7 +253,7 @@
                 "value": 0.9,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -262,7 +262,7 @@
                 "value": 50,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -298,7 +298,7 @@
                 "value": 300,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -307,7 +307,7 @@
                 "value": 2,
                 "unit": "cpu_core",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -341,7 +341,7 @@
                 "value": 6,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -350,7 +350,7 @@
                 "value": 1,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -359,7 +359,7 @@
                 "value": 0.1,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -377,7 +377,7 @@
                 "value": 3,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -386,7 +386,7 @@
                 "value": 3,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -395,7 +395,7 @@
                 "value": 1,
                 "unit": "terabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -430,7 +430,7 @@
                 "value": 6,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -439,7 +439,7 @@
                 "value": 1,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -448,7 +448,7 @@
                 "value": 0.1,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -466,7 +466,7 @@
                 "value": 3,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -475,7 +475,7 @@
                 "value": 3,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -484,7 +484,7 @@
                 "value": 1,
                 "unit": "terabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -512,7 +512,7 @@
                 "value": 50,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -521,7 +521,7 @@
                 "value": 6,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },

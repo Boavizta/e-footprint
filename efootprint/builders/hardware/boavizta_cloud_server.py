@@ -33,7 +33,7 @@ class BoaviztaCloudServer(Server):
             "provider": SourceObject("scaleway"),
             "instance_type": SourceObject("ent1-s"),
             "server_type": ServerTypes.autoscaling(),
-            "average_carbon_intensity": SourceValue(0.233 * u.kg / u.kWh),
+            "average_carbon_intensity": SourceValue(233 * u.g / u.kWh),
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),

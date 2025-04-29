@@ -19,7 +19,7 @@ class Sources:
     TRAFICOM_STUDY = Source(
         "Traficom study", "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
     )
-    HYPOTHESIS = Source("hypothesis", None)
+    HYPOTHESIS = Source("e-footprint hypothesis", None)
     ECHOS_DU_NET = Source(
         "echosdunet",
         "https://www.echosdunet.net/dossiers/facture-denergie-peut-on-reduire-consommation-electrique-sa-box-internet",

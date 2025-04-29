@@ -12,7 +12,7 @@ class Country(ModelingObject):
     @classmethod
     def default_values(cls):
         return {
-            "average_carbon_intensity": SourceValue(50 * u.kg / u.kWh, label="Average carbon intensity of the country"),
+            "average_carbon_intensity": SourceValue(50 * u.g / u.kWh, label="Average carbon intensity of the country"),
             "timezone": SourceObject(pytz.timezone('Europe/Paris'), label="Country timezone")
         }
 

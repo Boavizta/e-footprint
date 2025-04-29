@@ -17,7 +17,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "nb_of_cores_per_cpu_unit": SourceValue(1 * u.dimensionless),
             "nb_of_ram_units": SourceValue(1 * u.dimensionless),
             "ram_quantity_per_unit": SourceValue(1 * u.GB),
-            "average_carbon_intensity": SourceValue(0.233 * u.kg / u.kWh),
+            "average_carbon_intensity": SourceValue(233 * u.g / u.kWh),
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.4 * u.dimensionless),

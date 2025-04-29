@@ -54,7 +54,7 @@ class GenAIModel(Service):
                  gpu_latency_alpha: ExplainableQuantity, gpu_latency_beta: ExplainableQuantity,
                  bits_per_token: ExplainableQuantity):
         super().__init__(name=name, server=server)
-        self.provider = provider.set_label(f"{model_name} provider")
+        self.provider = provider.set_label(str(provider))
         self.model_name = model_name.set_label(f"{provider} model used")
         self.nb_of_bits_per_parameter = nb_of_bits_per_parameter.set_label(f"{self.name} nb of bits per parameter")
         self.llm_memory_factor = (llm_memory_factor.set_label

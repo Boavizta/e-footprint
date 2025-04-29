@@ -14,7 +14,7 @@
             "name": "Youtube usage in France",
             "id": "id-XXXXXX-Youtube-usage-in-France",
             "hourly_usage_journey_starts": {
-                "label": "Youtube usage in France hourly nb of visits from hypothesis",
+                "label": "Youtube usage in France hourly nb of visits from e-footprint hypothesis",
                 "values": [
                     1000.0,
                     2000.0,
@@ -29,7 +29,7 @@
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -55,11 +55,11 @@
             "name": "20 min streaming on Youtube with genAI chat",
             "id": "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat",
             "user_time_spent": {
-                "label": "Time spent on step 20 min streaming on Youtube with genAI chat from hypothesis",
+                "label": "Time spent on step 20 min streaming on Youtube with genAI chat from e-footprint hypothesis",
                 "value": 20.0,
                 "unit": "minute",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -75,38 +75,38 @@
             "name": "Streaming job",
             "id": "id-XXXXXX-Streaming-job",
             "data_stored": {
-                "label": "Data stored by request Streaming job from hypothesis",
+                "label": "Data stored by request Streaming job from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "service": "id-XXXXXX-Youtube-streaming-service",
             "video_duration": {
-                "label": "Streaming job video duration from hypothesis",
+                "label": "Streaming job video duration from e-footprint hypothesis",
                 "value": 20.0,
                 "unit": "minute",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "resolution": {
-                "label": "Streaming job resolution from hypothesis",
+                "label": "Streaming job resolution from e-footprint hypothesis",
                 "value": "720p (1280 x 720)",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "refresh_rate": {
-                "label": "Streaming job frames per second from hypothesis",
+                "label": "Streaming job frames per second from e-footprint hypothesis",
                 "value": 30.0,
                 "unit": "1 / second",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -118,11 +118,11 @@
             "id": "id-XXXXXX-Youtube-streaming-service",
             "server": "id-XXXXXX-Web-server",
             "base_ram_consumption": {
-                "label": "Youtube streaming service OS and streaming software base RAM consumption from hypothesis",
+                "label": "Youtube streaming service OS and streaming software base RAM consumption from e-footprint hypothesis",
                 "value": 2.0,
                 "unit": "gigabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -131,29 +131,29 @@
                 "value": null
             },
             "bits_per_pixel": {
-                "label": "Youtube streaming service bits per pixel from hypothesis",
+                "label": "Youtube streaming service bits per pixel from e-footprint hypothesis",
                 "value": 0.1,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "static_delivery_cpu_cost": {
-                "label": "Youtube streaming service CPU cost per static stream from hypothesis",
+                "label": "Youtube streaming service CPU cost per static stream from e-footprint hypothesis",
                 "value": 4.0,
                 "unit": "cpu_core * second / gigabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "ram_buffer_per_user": {
-                "label": "Youtube streaming service RAM buffer size per user from hypothesis",
+                "label": "Youtube streaming service RAM buffer size per user from e-footprint hypothesis",
                 "value": 50.0,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -164,82 +164,82 @@
             "name": "Web server",
             "id": "id-XXXXXX-Web-server",
             "lifespan": {
-                "label": "Lifespan of Web server from hypothesis",
+                "label": "Lifespan of Web server from e-footprint hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "fraction_of_usage_time": {
-                "label": "Web server fraction of usage time from hypothesis",
+                "label": "Web server fraction of usage time from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "server_type": {
-                "label": "Server type of Web server from hypothesis",
+                "label": "Server type of Web server from e-footprint hypothesis",
                 "value": "autoscaling",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "idle_power": {
-                "label": "Idle power of Web server from hypothesis",
+                "label": "Idle power of Web server from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "power_usage_effectiveness": {
-                "label": "PUE of Web server from hypothesis",
+                "label": "PUE of Web server from e-footprint hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
-                "value": 0.233,
-                "unit": "kilogram / kilowatt_hour",
+                "label": "unnamed source from e-footprint hypothesis",
+                "value": 233.0,
+                "unit": "gram / kilowatt_hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "server_utilization_rate": {
-                "label": "Web server utilization rate from hypothesis",
+                "label": "Web server utilization rate from e-footprint hypothesis",
                 "value": 0.9,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_ram_consumption": {
-                "label": "Base RAM consumption of Web server from hypothesis",
+                "label": "Base RAM consumption of Web server from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "gigabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_compute_consumption": {
-                "label": "Base cpu core consumption of Web server from hypothesis",
+                "label": "Base cpu core consumption of Web server from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "cpu_core",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -249,18 +249,18 @@
             },
             "storage": "id-XXXXXX-Web-server-SSD-storage",
             "provider": {
-                "label": "unnamed source from hypothesis",
+                "label": "unnamed source from e-footprint hypothesis",
                 "value": "scaleway",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "instance_type": {
-                "label": "unnamed source from hypothesis",
+                "label": "unnamed source from e-footprint hypothesis",
                 "value": "ent1-s",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -272,20 +272,20 @@
             "name": "Web server SSD storage",
             "id": "id-XXXXXX-Web-server-SSD-storage",
             "lifespan": {
-                "label": "Lifespan of Web server SSD storage from hypothesis",
+                "label": "Lifespan of Web server SSD storage from e-footprint hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "fraction_of_usage_time": {
-                "label": "Web server SSD storage fraction of usage time from hypothesis",
+                "label": "Web server SSD storage fraction of usage time from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -308,11 +308,11 @@
                 }
             },
             "idle_power": {
-                "label": "Idle power of Web server SSD storage from hypothesis",
+                "label": "Idle power of Web server SSD storage from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -326,29 +326,29 @@
                 }
             },
             "data_replication_factor": {
-                "label": "Data replication factor of Web server SSD storage from hypothesis",
+                "label": "Data replication factor of Web server SSD storage from e-footprint hypothesis",
                 "value": 3.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "data_storage_duration": {
-                "label": "Data storage duration of Web server SSD storage from hypothesis",
+                "label": "Data storage duration of Web server SSD storage from e-footprint hypothesis",
                 "value": 43830.0,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_storage_need": {
-                "label": "Web server SSD storage initial storage need from hypothesis",
+                "label": "Web server SSD storage initial storage need from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "terabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -361,20 +361,20 @@
             "name": "Default SSD storage",
             "id": "id-XXXXXX-Default-SSD-storage",
             "lifespan": {
-                "label": "Lifespan of Default SSD storage from hypothesis",
+                "label": "Lifespan of Default SSD storage from e-footprint hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "fraction_of_usage_time": {
-                "label": "Default SSD storage fraction of usage time from hypothesis",
+                "label": "Default SSD storage fraction of usage time from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -397,11 +397,11 @@
                 }
             },
             "idle_power": {
-                "label": "Idle power of Default SSD storage from hypothesis",
+                "label": "Idle power of Default SSD storage from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -415,29 +415,29 @@
                 }
             },
             "data_replication_factor": {
-                "label": "Data replication factor of Default SSD storage from hypothesis",
+                "label": "Data replication factor of Default SSD storage from e-footprint hypothesis",
                 "value": 3.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "data_storage_duration": {
-                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "label": "Data storage duration of Default SSD storage from e-footprint hypothesis",
                 "value": 43830.0,
                 "unit": "hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_storage_need": {
-                "label": "Default SSD storage initial storage need from hypothesis",
+                "label": "Default SSD storage initial storage need from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "terabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -452,29 +452,29 @@
             "name": "web app job",
             "id": "id-XXXXXX-web-app-job",
             "data_transferred": {
-                "label": "Sum of all data uploads and downloads for request web app job from hypothesis",
+                "label": "Sum of all data uploads and downloads for request web app job from e-footprint hypothesis",
                 "value": 2.2,
                 "unit": "megabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "data_stored": {
-                "label": "Data stored by request web app job from hypothesis",
+                "label": "Data stored by request web app job from e-footprint hypothesis",
                 "value": 100.0,
                 "unit": "kilobyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "service": "id-XXXXXX-Web-application-service",
             "implementation_details": {
-                "label": "web app job implementation details from hypothesis",
+                "label": "web app job implementation details from e-footprint hypothesis",
                 "value": "default",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -494,10 +494,10 @@
                 "value": null
             },
             "technology": {
-                "label": "Technology used in Web application service from hypothesis",
+                "label": "Technology used in Web application service from e-footprint hypothesis",
                 "value": "php-symfony",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -509,11 +509,11 @@
             "id": "id-XXXXXX-GenAI-job",
             "service": "id-XXXXXX-GenAI-service",
             "output_token_count": {
-                "label": "GenAI job output token count from hypothesis",
+                "label": "GenAI job output token count from e-footprint hypothesis",
                 "value": 1000.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -529,27 +529,27 @@
                 "value": null
             },
             "provider": {
-                "label": "gpt-3.5-turbo-1106 provider from hypothesis",
+                "label": "openai from e-footprint hypothesis",
                 "value": "openai",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "model_name": {
-                "label": "openai model used from hypothesis",
+                "label": "openai model used from e-footprint hypothesis",
                 "value": "gpt-3.5-turbo-1106",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "nb_of_bits_per_parameter": {
-                "label": "GenAI service nb of bits per parameter from hypothesis",
+                "label": "GenAI service nb of bits per parameter from e-footprint hypothesis",
                 "value": 16.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -581,11 +581,11 @@
                 }
             },
             "bits_per_token": {
-                "label": "Number of bits per token from hypothesis",
+                "label": "Number of bits per token from e-footprint hypothesis",
                 "value": 24.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
@@ -596,82 +596,82 @@
             "name": "GPU server",
             "id": "id-XXXXXX-GPU-server",
             "lifespan": {
-                "label": "Lifespan of GPU server from hypothesis",
+                "label": "Lifespan of GPU server from e-footprint hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "fraction_of_usage_time": {
-                "label": "GPU server fraction of usage time from hypothesis",
+                "label": "GPU server fraction of usage time from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "server_type": {
-                "label": "Server type of GPU server from hypothesis",
+                "label": "Server type of GPU server from e-footprint hypothesis",
                 "value": "serverless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "compute": {
-                "label": "Nb gpus of GPU server from hypothesis",
+                "label": "Nb gpus of GPU server from e-footprint hypothesis",
                 "value": 4.0,
                 "unit": "gpu",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "power_usage_effectiveness": {
-                "label": "PUE of GPU server from hypothesis",
+                "label": "PUE of GPU server from e-footprint hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "average_carbon_intensity": {
-                "label": "unnamed source from hypothesis",
+                "label": "unnamed source from e-footprint hypothesis",
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "server_utilization_rate": {
-                "label": "GPU server utilization rate from hypothesis",
+                "label": "GPU server utilization rate from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_ram_consumption": {
-                "label": "Base RAM consumption of GPU server from hypothesis",
+                "label": "Base RAM consumption of GPU server from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "gigabyte",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "base_compute_consumption": {
-                "label": "Base gpu consumption of GPU server from hypothesis",
+                "label": "Base gpu consumption of GPU server from e-footprint hypothesis",
                 "value": 0.0,
                 "unit": "gpu",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -741,20 +741,20 @@
                 }
             },
             "power": {
-                "label": "Power of Default laptop from hypothesis",
+                "label": "Power of Default laptop from e-footprint hypothesis",
                 "value": 50.0,
                 "unit": "watt",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "lifespan": {
-                "label": "Lifespan of Default laptop from hypothesis",
+                "label": "Lifespan of Default laptop from e-footprint hypothesis",
                 "value": 6.0,
                 "unit": "year",
                 "source": {
-                    "name": "hypothesis",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
