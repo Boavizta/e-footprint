@@ -1,6 +1,5 @@
 from typing import List
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.core.country import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
@@ -11,7 +10,6 @@ from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import (
     ExplainableQuantity, ExplainableHourlyQuantities, EmptyExplainableObject)
-from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 
 
 class UsagePattern(ModelingObject):
@@ -26,10 +24,10 @@ class UsagePattern(ModelingObject):
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.hourly_usage_journey_starts = hourly_usage_journey_starts.set_label(f"{self.name} hourly nb of visits")
-        self.usage_journey = ContextualModelingObjectAttribute(usage_journey)
-        self.devices = ListLinkedToModelingObj(devices)
-        self.network = ContextualModelingObjectAttribute(network)
-        self.country = ContextualModelingObjectAttribute(country)
+        self.usage_journey = usage_journey
+        self.devices = devices
+        self.network = network
+        self.country = country
 
     @property
     def calculated_attributes(self):

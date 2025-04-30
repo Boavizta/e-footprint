@@ -3,7 +3,6 @@ from abc import abstractmethod
 from copy import copy
 from typing import List, Type
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -179,7 +178,7 @@ class Job(JobBase):
                  data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
-        self.server = ContextualModelingObjectAttribute(server)
+        self.server = server
         self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
         self.compute_needed.set_label(f"CPU needed on server {self.server.name} to process {self.name}")
 

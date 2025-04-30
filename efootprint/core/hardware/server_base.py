@@ -5,7 +5,6 @@ import numpy as np
 import pandas as pd
 import pint_pandas
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, \
     EmptyExplainableObject, ExplainableHourlyQuantities
@@ -100,7 +99,7 @@ class ServerBase(InfraHardware):
             f"Base {self.compute_type.replace("_", " ")} consumption of {self.name}")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.dimensionless)
-        self.storage = ContextualModelingObjectAttribute(storage)
+        self.storage = storage
         
     @property
     def compute_type(self) -> str:
@@ -135,7 +134,7 @@ class ServerBase(InfraHardware):
         return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Service)]
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ContextualModelingObjectAttribute]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
 
     def compute_hour_by_hour_resource_need(self, resource):

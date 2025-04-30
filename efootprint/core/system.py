@@ -3,7 +3,6 @@ from typing import Dict, List
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
@@ -23,7 +22,7 @@ class System(ModelingObject):
         super().__init__(name)
         self.total_footprint = EmptyExplainableObject()
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
-        self.usage_patterns = ListLinkedToModelingObj(usage_patterns)
+        self.usage_patterns = usage_patterns
         self.previous_change = None
         self.previous_total_energy_footprints_sum_over_period = ExplainableObjectDict()
         self.previous_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()

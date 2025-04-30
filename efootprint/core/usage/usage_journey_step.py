@@ -3,7 +3,6 @@ from typing import List, Type
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.constants.units import u
 from efootprint.core.usage.job import JobBase
 
@@ -17,7 +16,7 @@ class UsageJourneyStep(ModelingObject):
         super().__init__(name)
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_label(f"Time spent on step {self.name}")
-        self.jobs = ListLinkedToModelingObj(jobs)
+        self.jobs = jobs
 
     @property
     def usage_journeys(self) -> List[Type["UsageJourney"]]:

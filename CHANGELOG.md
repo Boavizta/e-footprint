@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.10] 2025-04-30
+
+### Fixed
+- Fix ecologits version to 0.6 in pyproject.toml to avoid breaking changes in the ecologits package.
+- Fix ContextualModelingObjectAttribute type checking so that passing a wrong modeling object input to another modeling object raises a helpful error
+
+### Changed
+- efootprint hypothesis label and better units for default values like average carbon intensity (g/kWh instead of kg/kWh).
+
 ## [10.0.9] 2025-04-10
 
 ### Fixed

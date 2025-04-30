@@ -1,7 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerBase, ServerTypes
