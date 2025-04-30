@@ -20,14 +20,16 @@ class TestSystem(TestCase):
         self.mock_check_value_type = patcher.start()
         self.addCleanup(patcher.stop)
 
-        self.usage_pattern = MagicMock()
+        self.usage_pattern = MagicMock(spec=UsagePattern)
         self.usage_pattern.name = "usage_pattern"
         self.usage_pattern.id = "usage_pattern_id"
         self.usage_pattern.systems = []
         device = MagicMock()
         self.usage_pattern.devices = [device]
         device.systems = []
+        self.usage_pattern.country = MagicMock()
         self.usage_pattern.country.systems = []
+        self.usage_pattern.usage_journey = MagicMock()
         self.usage_pattern.usage_journey.systems = []
         uj_step = MagicMock()
         self.usage_pattern.usage_journey.uj_steps = [uj_step]

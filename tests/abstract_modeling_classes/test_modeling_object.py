@@ -124,9 +124,9 @@ class TestModelingObject(unittest.TestCase):
 
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
     def test_list_attribute_update_works_with_classical_syntax(self, mock_modeling_update):
-        val1 = MagicMock()
-        val2 = MagicMock()
-        val3 = MagicMock()
+        val1 = MagicMock(spec=ModelingObject)
+        val2 = MagicMock(spec=ModelingObject)
+        val3 = MagicMock(spec=ModelingObject)
 
         mod_obj = ModelingObjectForTesting("test mod obj", custom_input=ListLinkedToModelingObj([val1, val2]))
 
@@ -137,9 +137,9 @@ class TestModelingObject(unittest.TestCase):
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
     def test_list_attribute_update_works_with_list_condensed_addition_syntax(
             self, mock_modeling_update_mod_update, mock_modeling_update_list):
-        val1 = MagicMock()
-        val2 = MagicMock()
-        val3 = MagicMock()
+        val1 = MagicMock(spec=ModelingObject)
+        val2 = MagicMock(spec=ModelingObject)
+        val3 = MagicMock(spec=ModelingObject)
 
         mod_obj = ModelingObjectForTesting("test mod obj", custom_input=ListLinkedToModelingObj([val1, val2]))
 
@@ -149,9 +149,9 @@ class TestModelingObject(unittest.TestCase):
 
     def test_list_attribute_update_works_with_list_condensed_addition_syntax__no_mocking(
             self):
-        val1 = MagicMock()
-        val2 = MagicMock()
-        val3 = MagicMock()
+        val1 = MagicMock(spec=ModelingObject)
+        val2 = MagicMock(spec=ModelingObject)
+        val3 = MagicMock(spec=ModelingObject)
 
         mod_obj = ModelingObjectForTesting("test mod obj", custom_list_input=ListLinkedToModelingObj([val1, val2]))
 

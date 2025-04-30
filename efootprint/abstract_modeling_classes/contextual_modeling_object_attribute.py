@@ -7,8 +7,10 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
         super().__init__()
         if isinstance(value, ContextualModelingObjectAttribute):
             self._value = value._value
-        else:
+        elif isinstance(value, ModelingObject):
             self._value = value
+        else:
+            raise TypeError(f"Expected a ModelingObject or ContextualModelingObjectAttribute, got {type(value)}")
         self._value.add_to_contextual_modeling_obj_containers(self)
         self.modeling_obj_container = modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name_in_mod_obj_container
@@ -50,6 +52,3 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
 
     def __hash__(self):
         return hash(self._value)  # Use built-in hash directly
-
-    def __instancecheck__(self, instance):
-        return isinstance(instance, self._value.__class__)  # Correctly check instance type

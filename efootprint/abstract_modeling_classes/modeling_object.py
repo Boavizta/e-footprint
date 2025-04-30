@@ -47,7 +47,7 @@ class ABCAfterInitMeta(AfterInitMeta, ABCMeta):
             ContextualModelingObjectAttribute
         # Allow an instance of ContextualModelingObjectAttribute to be considered as an instance of ModelingObject
         if isinstance(instance, ContextualModelingObjectAttribute):
-            return True
+            return AfterInitMeta.__instancecheck__(cls, instance._value)
 
         return AfterInitMeta.__instancecheck__(cls, instance)
 
@@ -173,11 +173,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 if get_origin(annotation) in (list, List):
                     inner_type = get_args(annotation)[0]
                     if not all(isinstance(item, inner_type) for item in input_value):
-                        raise ValueError(f"All elements in '{name}' must be instances of {inner_type.__name__}, "
-                                         f"got {[type(item) for item in input_value]}")
+                        raise TypeError(f"All elements in '{name}' must be instances of {inner_type.__name__}, "
+                                         f"got {[type(item._value) for item in input_value]}")
             elif not isinstance(input_value, annotation) and not isinstance(input_value, EmptyExplainableObject):
-                raise PermissionError(f"Value {input_value} for attribute {name} should be of type {annotation} "
-                                      f"but is of type {type(input_value)}")
+                from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+                    ContextualModelingObjectAttribute
+                if isinstance(input_value, ContextualModelingObjectAttribute):
+                    input_value_type_to_display = type(input_value._value)
+                else:
+                    input_value_type_to_display = type(input_value)
+                raise TypeError(f"In {self.name}, attribute {name} should be of type {annotation} "
+                                      f"but is of type {input_value_type_to_display}")
             elif issubclass(annotation, ExplainableQuantity):
                 default_value = default_values[name]
                 if (not isinstance(input_value, EmptyExplainableObject)

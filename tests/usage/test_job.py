@@ -15,7 +15,7 @@ from efootprint.constants.units import u
 
 class TestJob(TestCase):
     def setUp(self):
-        self.server = MagicMock(id="server")
+        self.server = MagicMock(spec=Server, id="server")
         self.server.class_as_simple_str = "Autoscaling"
         self.server.name = "server"
 
@@ -40,12 +40,14 @@ class TestJob(TestCase):
             self.job.self_delete()
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_network(self):
-        network = MagicMock(id="network")
+        network = MagicMock(spec=Network, id="network")
         network.efootprint_class = Network
-        server = MagicMock(id="server")
+        network.set_modeling_obj_container = MagicMock()
+        server = MagicMock(spec=Server, id="server")
         server.efootprint_class = Server
         server.name = "server"
         server.mod_objs_computation_chain = [server, network]
+        server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
@@ -57,12 +59,14 @@ class TestJob(TestCase):
             network.compute_calculated_attributes.assert_called_once()
 
     def test_self_delete_removes_backward_links_and_doesnt_recompute_server_and_network(self):
-        network = MagicMock(id="network")
+        network = MagicMock(spec=Network, id="network")
         network.class_as_simple_str = "Network"
-        server = MagicMock(id="server")
+        network.set_modeling_obj_container = MagicMock()
+        server = MagicMock(spec=Server, id="server")
         server.class_as_simple_str = "Server"
         server.name = "server"
         server.mod_objs_computation_chain = [server, network]
+        server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:

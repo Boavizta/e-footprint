@@ -10,6 +10,7 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server, ServerTypes
+from efootprint.core.hardware.storage import Storage
 
 
 class TestServer(TestCase):
@@ -29,7 +30,7 @@ class TestServer(TestCase):
             server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
-            storage=MagicMock()
+            storage=MagicMock(spec=Storage)
         )
         self.server_base.trigger_modeling_updates = False
 

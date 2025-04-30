@@ -33,6 +33,16 @@ class ModelingObjectForTesting(ModelingObject):
         return []
 
 
+class OtherModelingObjectForTesting(ModelingObject):
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+    @property
+    def systems(self):
+        return []
+
+
 class TestContextualModObjAttribute(unittest.TestCase):
     def test_contextual_modeling_object_attribute(self):
         custom_input = MagicMock(spec=ObjectLinkedToModelingObj)
@@ -55,3 +65,13 @@ class TestContextualModObjAttribute(unittest.TestCase):
 
         self.assertTrue(isinstance(modeling_obj.mod_obj_input, ContextualModelingObjectAttribute))
         self.assertEqual(modeling_obj.mod_obj_input.modeling_obj_container, modeling_obj)
+
+    def test_contextual_modeling_object_attribute_behaves_like_its_value_with_regards_to_isinstance(self):
+        custom_input = MagicMock(spec=ObjectLinkedToModelingObj)
+        modeling_obj = ModelingObjectForTesting(name="TestObject", custom_input=custom_input)
+        contextual_attribute = ContextualModelingObjectAttribute(value=modeling_obj)
+
+        self.assertTrue(isinstance(contextual_attribute, ModelingObject))
+        self.assertTrue(isinstance(contextual_attribute, ContextualModelingObjectAttribute))
+        self.assertTrue(isinstance(contextual_attribute, ObjectLinkedToModelingObj))
+        self.assertFalse(isinstance(contextual_attribute, OtherModelingObjectForTesting))
