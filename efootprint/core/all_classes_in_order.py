@@ -12,7 +12,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
-from efootprint.core.usage.job import Job, JobBase
+from efootprint.core.usage.job import Job, JobBase, GPUJob
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 
@@ -25,7 +25,7 @@ SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern] + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
-        + [Job] + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES + [Storage, System])
+        + [Job, GPUJob] + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, Service, JobBase,
                                Network, ServerBase, Storage, System]

@@ -12,7 +12,7 @@ from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
-from efootprint.core.usage.job import Job
+from efootprint.core.usage.job import Job, GPUJob
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -82,11 +82,12 @@ video_streaming_job = VideoStreamingJob.from_defaults(
 web_application_job = WebApplicationJob.from_defaults("Web application job", service=web_application)
 genai_model_job = GenAIJob.from_defaults("Generative AI model job", service=genai_model)
 manually_written_job = Job.from_defaults("Manually defined job", server=autoscaling_server)
+custom_gpu_job = GPUJob.from_defaults("Manually defined GPU job", server=on_premise_gpu_server)
 
 streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
-    jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job]
+    jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
     )
 
 usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])

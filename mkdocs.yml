@@ -57,6 +57,7 @@ nav:
       - UsageJourney: UsageJourney.md
       - UsageJourneyStep: UsageJourneyStep.md
       - Job: Job.md
+      - GPUJob: GPUJob.md
   - System: System.md
   - Country: Country.md
 - FAQ:

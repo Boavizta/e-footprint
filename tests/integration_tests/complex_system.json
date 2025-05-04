@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.0.10",
+    "efootprint_version": "10.0.11",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -192,7 +192,7 @@
                 }
             },
             "compute_needed": {
-                "label": "CPU needed on server Server 1 to process streaming from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process streaming from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "cpu_core",
                 "source": {
@@ -242,7 +242,7 @@
                 }
             },
             "compute_needed": {
-                "label": "CPU needed on server Server 1 to process upload from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process upload from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "cpu_core",
                 "source": {
@@ -292,7 +292,7 @@
                 }
             },
             "compute_needed": {
-                "label": "CPU needed on server Server 1 to process dailymotion from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process dailymotion from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "cpu_core",
                 "source": {
@@ -342,7 +342,7 @@
                 }
             },
             "compute_needed": {
-                "label": "CPU needed on server Server 2 to process tiktok from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 2 to process tiktok from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "cpu_core",
                 "source": {
@@ -392,7 +392,7 @@
                 }
             },
             "compute_needed": {
-                "label": "CPU needed on server TikTok Analytics server to process tiktok analytics from e-footprint hypothesis",
+                "label": "cpu cores needed on server TikTok Analytics server to process tiktok analytics from e-footprint hypothesis",
                 "value": 1.0,
                 "unit": "cpu_core",
                 "source": {

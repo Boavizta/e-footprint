@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.0.11] 2025-05-04
+
+### Fixed
+- Create GPUJob object to be able to create a custom call to a GPU server with no service installed. Using Job with compute_needed in gpu unit resulted in a unit check error.
+
 ## [10.0.10] 2025-04-30
 
 ### Fixed

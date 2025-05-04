@@ -6,9 +6,9 @@ from typing import List, Type
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.hardware.server import Server
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 
 
@@ -163,7 +163,28 @@ class JobBase(ModelingObject):
             "hourly_data_stored_per_usage_pattern", "data stored")
 
 
-class Job(JobBase):
+class DirectServerJob(JobBase):
+    @classmethod
+    @abstractmethod
+    def default_values(cls):
+        pass
+
+    def __init__(self, name: str, server: ServerBase, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
+                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+        super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
+        self.server = server
+        self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
+        self.compute_needed.set_label(
+            f"{str(compute_needed.value.units).replace('_', ' ')}s needed on server {self.server.name} "
+            f"to process {self.name}")
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me
+
+
+class Job(DirectServerJob):
     @classmethod
     def default_values(cls):
         return {
@@ -174,14 +195,14 @@ class Job(JobBase):
             "ram_needed": SourceValue(50 * u.MB)
         }
 
-    def __init__(self, name: str, server: Server, data_transferred: ExplainableQuantity,
-                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
-                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
-        super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
-        self.server = server
-        self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
-        self.compute_needed.set_label(f"CPU needed on server {self.server.name} to process {self.name}")
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.server] + super().modeling_objects_whose_attributes_depend_directly_on_me
+class GPUJob(DirectServerJob):
+    @classmethod
+    def default_values(cls):
+        return {
+            "data_transferred": SourceValue(150 * u.kB),
+            "data_stored": SourceValue(100 * u.kB),
+            "request_duration": SourceValue(1 * u.s),
+            "compute_needed": SourceValue(1 * u.gpu),
+            "ram_needed": SourceValue(50 * u.MB)
+        }

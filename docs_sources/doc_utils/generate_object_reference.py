@@ -13,7 +13,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, web_application, genai_model,
-    video_streaming_job, web_application_job, genai_model_job, manually_written_job)
+    video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job)
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
 
@@ -134,8 +134,9 @@ def generate_object_reference(automatically_update_yaml=False):
     nav_items = []
     for mod_obj in (
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
-            manually_written_job, autoscaling_server, serverless_server, on_premise_gpu_server, video_streaming,
-            web_application, genai_model, video_streaming_job, web_application_job, genai_model_job, storage):
+            manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
+            video_streaming, web_application, genai_model, video_streaming_job, web_application_job, genai_model_job,
+            storage):
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)
 

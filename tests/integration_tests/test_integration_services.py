@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.hardware.gpu_server import GPUServer
@@ -12,6 +13,7 @@ from efootprint.builders.services.web_application import WebApplication, WebAppl
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.core.hardware.device import Device
+from efootprint.core.usage.job import GPUJob
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.hardware.storage import Storage
@@ -46,10 +48,12 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
             video_duration=SourceValue(20 * u.min))
         cls.web_application_job = WebApplicationJob.from_defaults("web app job", service=cls.web_application_service)
         cls.genai_job = GenAIJob("GenAI job", cls.genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
+        cls.direct_gpu_job = GPUJob.from_defaults(
+            "direct GPU server job", compute_needed=SourceValue(1 * u.gpu), server=cls.gpu_server)
 
         cls.streaming_step = UsageJourneyStep(
             "20 min streaming on Youtube with genAI chat", user_time_spent=SourceValue(20 * u.min),
-            jobs=[cls.video_streaming_job, cls.web_application_job, cls.genai_job])
+            jobs=[cls.direct_gpu_job, cls.video_streaming_job, cls.web_application_job, cls.genai_job])
 
         cls.uj = UsageJourney("Daily Youtube usage", uj_steps=[cls.streaming_step])
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -123,6 +127,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self.video_streaming_service.server = new_server
         self.web_application_service.server = new_server
         self.genai_service.server = new_gpu_server
+        self.direct_gpu_job.server = new_gpu_server
 
         self.assertEqual(self.server.installed_services, [])
         self.assertEqual(self.server.jobs, [])
@@ -140,6 +145,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self.web_application_service.server = self.server
         self.video_streaming_service.server = self.server
         self.genai_service.server = self.gpu_server
+        self.direct_gpu_job.server = self.gpu_server
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
@@ -160,9 +166,10 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
             server=new_gpu_server)
 
         logger.info("Linking jobs to new services")
-        self.video_streaming_job.service = new_video_streaming_service
-        self.web_application_job.service = new_web_application_service
-        self.genai_job.service = new_genai_service
+        ModelingUpdate([[self.direct_gpu_job.server, new_gpu_server],
+        [self.video_streaming_job.service, new_video_streaming_service],
+        [self.web_application_job.service, new_web_application_service],
+        [self.genai_job.service, new_genai_service]])
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_changed([self.storage, self.server, self.gpu_server], system=self.system)
@@ -170,6 +177,7 @@ class ServiceIntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.network, self.usage_pattern])
 
         logger.info("Linking jobs back to initial services")
+        self.direct_gpu_job.server = self.gpu_server
         self.video_streaming_job.service = self.video_streaming_service
         self.web_application_job.service = self.web_application_service
         self.genai_job.service = self.genai_service

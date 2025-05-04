@@ -2,7 +2,6 @@ from abc import abstractmethod
 from inspect import signature
 from typing import List
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.builders.services.service_base_class import Service
@@ -26,7 +25,7 @@ class ServiceJob(JobBase):
                  data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
-        self.service = ContextualModelingObjectAttribute(service)
+        self.service = service
         self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
         self.compute_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
 

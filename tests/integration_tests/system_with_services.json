@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.0.10",
+    "efootprint_version": "10.0.11",
     "System": {
         "id-XXXXXX-system-1": {
             "name": "system 1",
@@ -64,10 +64,379 @@
                 }
             },
             "jobs": [
+                "id-XXXXXX-direct-GPU-server-job",
                 "id-XXXXXX-Streaming-job",
                 "id-XXXXXX-web-app-job",
                 "id-XXXXXX-GenAI-job"
             ]
+        }
+    },
+    "GPUJob": {
+        "id-XXXXXX-direct-GPU-server-job": {
+            "name": "direct GPU server job",
+            "id": "id-XXXXXX-direct-GPU-server-job",
+            "data_transferred": {
+                "label": "Sum of all data uploads and downloads for request direct GPU server job from e-footprint hypothesis",
+                "value": 150.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored by request direct GPU server job from e-footprint hypothesis",
+                "value": 100.0,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration of direct GPU server job from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "second",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server GPU server to process direct GPU server job from e-footprint hypothesis",
+                "value": 50.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_needed": {
+                "label": "gpus needed on server GPU server to process direct GPU server job from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "gpu",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "server": "id-XXXXXX-GPU-server"
+        }
+    },
+    "GPUServer": {
+        "id-XXXXXX-GPU-server": {
+            "name": "GPU server",
+            "id": "id-XXXXXX-GPU-server",
+            "lifespan": {
+                "label": "Lifespan of GPU server from e-footprint hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "GPU server fraction of usage time from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "server_type": {
+                "label": "Server type of GPU server from e-footprint hypothesis",
+                "value": "serverless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute": {
+                "label": "Nb gpus of GPU server from e-footprint hypothesis",
+                "value": 4.0,
+                "unit": "gpu",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of GPU server from e-footprint hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from e-footprint hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "GPU server utilization rate from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of GPU server from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "label": "Base gpu consumption of GPU server from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "gpu",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of GPU server instances",
+                "value": null
+            },
+            "storage": "id-XXXXXX-Default-SSD-storage",
+            "gpu_power": {
+                "label": "GPU server GPU power from Estimating the Carbon Footprint of BLOOM",
+                "value": 400.0,
+                "unit": "watt / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "gpu_idle_power": {
+                "label": "GPU server GPU idle power from Estimating the Carbon Footprint of BLOOM",
+                "value": 50.0,
+                "unit": "watt / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "ram_per_gpu": {
+                "label": "GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 80.0,
+                "unit": "gigabyte / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "carbon_footprint_fabrication_without_gpu": {
+                "label": "GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 2500.0,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            },
+            "carbon_footprint_fabrication_per_gpu": {
+                "label": "GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM",
+                "value": 150.0,
+                "unit": "kilogram / gpu",
+                "source": {
+                    "name": "Estimating the Carbon Footprint of BLOOM",
+                    "link": "https://arxiv.org/abs/2211.05100"
+                }
+            }
+        }
+    },
+    "Storage": {
+        "id-XXXXXX-Default-SSD-storage": {
+            "name": "Default SSD storage",
+            "id": "id-XXXXXX-Default-SSD-storage",
+            "lifespan": {
+                "label": "Lifespan of Default SSD storage from e-footprint hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default SSD storage fraction of usage time from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Default SSD storage from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Default SSD storage from e-footprint hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage from e-footprint hypothesis",
+                "value": 43830.0,
+                "unit": "hour",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Default SSD storage initial storage need from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Default SSD storage instances",
+                "value": null
+            }
+        },
+        "id-XXXXXX-Web-server-SSD-storage": {
+            "name": "Web server SSD storage",
+            "id": "id-XXXXXX-Web-server-SSD-storage",
+            "lifespan": {
+                "label": "Lifespan of Web server SSD storage from e-footprint hypothesis",
+                "value": 6.0,
+                "unit": "year",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Web server SSD storage fraction of usage time from e-footprint hypothesis",
+                "value": 1.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "label": "Fabrication carbon footprint of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "label": "Power of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of Web server SSD storage from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "watt",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "label": "Storage capacity of Web server SSD storage from Dirty secret of SSDs: embodied carbon",
+                "value": 1.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "data_replication_factor": {
+                "label": "Data replication factor of Web server SSD storage from e-footprint hypothesis",
+                "value": 3.0,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_storage_duration": {
+                "label": "Data storage duration of Web server SSD storage from e-footprint hypothesis",
+                "value": 43830.0,
+                "unit": "hour",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Web server SSD storage initial storage need from e-footprint hypothesis",
+                "value": 0.0,
+                "unit": "terabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fixed_nb_of_instances": {
+                "label": "User defined number of Web server SSD storage instances",
+                "value": null
+            }
         }
     },
     "VideoStreamingJob": {
@@ -267,186 +636,6 @@
             "impact_url": "https://api.boavizta.org/v1/cloud/instance"
         }
     },
-    "Storage": {
-        "id-XXXXXX-Web-server-SSD-storage": {
-            "name": "Web server SSD storage",
-            "id": "id-XXXXXX-Web-server-SSD-storage",
-            "lifespan": {
-                "label": "Lifespan of Web server SSD storage from e-footprint hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "Web server SSD storage fraction of usage time from e-footprint hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "carbon_footprint_fabrication_per_storage_capacity": {
-                "label": "Fabrication carbon footprint of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram / terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_per_storage_capacity": {
-                "label": "Power of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "idle_power": {
-                "label": "Idle power of Web server SSD storage from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "watt",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "storage_capacity": {
-                "label": "Storage capacity of Web server SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 1.0,
-                "unit": "terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "data_replication_factor": {
-                "label": "Data replication factor of Web server SSD storage from e-footprint hypothesis",
-                "value": 3.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "data_storage_duration": {
-                "label": "Data storage duration of Web server SSD storage from e-footprint hypothesis",
-                "value": 43830.0,
-                "unit": "hour",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "base_storage_need": {
-                "label": "Web server SSD storage initial storage need from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "terabyte",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fixed_nb_of_instances": {
-                "label": "User defined number of Web server SSD storage instances",
-                "value": null
-            }
-        },
-        "id-XXXXXX-Default-SSD-storage": {
-            "name": "Default SSD storage",
-            "id": "id-XXXXXX-Default-SSD-storage",
-            "lifespan": {
-                "label": "Lifespan of Default SSD storage from e-footprint hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "Default SSD storage fraction of usage time from e-footprint hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "carbon_footprint_fabrication_per_storage_capacity": {
-                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "value": 160.0,
-                "unit": "kilogram / terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_per_storage_capacity": {
-                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "idle_power": {
-                "label": "Idle power of Default SSD storage from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "watt",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "storage_capacity": {
-                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 1.0,
-                "unit": "terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "data_replication_factor": {
-                "label": "Data replication factor of Default SSD storage from e-footprint hypothesis",
-                "value": 3.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "data_storage_duration": {
-                "label": "Data storage duration of Default SSD storage from e-footprint hypothesis",
-                "value": 43830.0,
-                "unit": "hour",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "base_storage_need": {
-                "label": "Default SSD storage initial storage need from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "terabyte",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fixed_nb_of_instances": {
-                "label": "User defined number of Default SSD storage instances",
-                "value": null
-            }
-        }
-    },
     "WebApplicationJob": {
         "id-XXXXXX-web-app-job": {
             "name": "web app job",
@@ -587,142 +776,6 @@
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
-                }
-            }
-        }
-    },
-    "GPUServer": {
-        "id-XXXXXX-GPU-server": {
-            "name": "GPU server",
-            "id": "id-XXXXXX-GPU-server",
-            "lifespan": {
-                "label": "Lifespan of GPU server from e-footprint hypothesis",
-                "value": 6.0,
-                "unit": "year",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "GPU server fraction of usage time from e-footprint hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "server_type": {
-                "label": "Server type of GPU server from e-footprint hypothesis",
-                "value": "serverless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "compute": {
-                "label": "Nb gpus of GPU server from e-footprint hypothesis",
-                "value": 4.0,
-                "unit": "gpu",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "power_usage_effectiveness": {
-                "label": "PUE of GPU server from e-footprint hypothesis",
-                "value": 1.2,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "average_carbon_intensity": {
-                "label": "unnamed source from e-footprint hypothesis",
-                "value": 100.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "server_utilization_rate": {
-                "label": "GPU server utilization rate from e-footprint hypothesis",
-                "value": 1.0,
-                "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of GPU server from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "gigabyte",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "base_compute_consumption": {
-                "label": "Base gpu consumption of GPU server from e-footprint hypothesis",
-                "value": 0.0,
-                "unit": "gpu",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fixed_nb_of_instances": {
-                "label": "User defined number of GPU server instances",
-                "value": null
-            },
-            "storage": "id-XXXXXX-Default-SSD-storage",
-            "gpu_power": {
-                "label": "GPU server GPU power from Estimating the Carbon Footprint of BLOOM",
-                "value": 400.0,
-                "unit": "watt / gpu",
-                "source": {
-                    "name": "Estimating the Carbon Footprint of BLOOM",
-                    "link": "https://arxiv.org/abs/2211.05100"
-                }
-            },
-            "gpu_idle_power": {
-                "label": "GPU server GPU idle power from Estimating the Carbon Footprint of BLOOM",
-                "value": 50.0,
-                "unit": "watt / gpu",
-                "source": {
-                    "name": "Estimating the Carbon Footprint of BLOOM",
-                    "link": "https://arxiv.org/abs/2211.05100"
-                }
-            },
-            "ram_per_gpu": {
-                "label": "GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM",
-                "value": 80.0,
-                "unit": "gigabyte / gpu",
-                "source": {
-                    "name": "Estimating the Carbon Footprint of BLOOM",
-                    "link": "https://arxiv.org/abs/2211.05100"
-                }
-            },
-            "carbon_footprint_fabrication_without_gpu": {
-                "label": "GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM",
-                "value": 2500.0,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Estimating the Carbon Footprint of BLOOM",
-                    "link": "https://arxiv.org/abs/2211.05100"
-                }
-            },
-            "carbon_footprint_fabrication_per_gpu": {
-                "label": "GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM",
-                "value": 150.0,
-                "unit": "kilogram / gpu",
-                "source": {
-                    "name": "Estimating the Carbon Footprint of BLOOM",
-                    "link": "https://arxiv.org/abs/2211.05100"
                 }
             }
         }

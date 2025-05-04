@@ -51,7 +51,7 @@ class IntegrationTestBaseClass(TestCase):
                  system.previous_total_fabrication_footprints_sum_over_period),
                 (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
             for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(round(initial_fp[key], 4), round(prev_fp[key], 4))
+                self.assertEqual(round(initial_fp[key], 4), round(prev_fp[key], 4), f"{key} footprint is not equal")
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
