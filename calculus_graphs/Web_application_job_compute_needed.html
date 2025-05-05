@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_02138b {
+             #mynetwork_e30492 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_02138b" class="card-body"></div>
+            <div id="mynetwork_e30492" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_02138b');
+                  var container = document.getElementById('mynetwork_e30492');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from hypothesis query CPU\nEcobenchmark data with Technology used in Web application service from\nhypothesis\n=\ndefault query CPU Ecobenchmark data with php-symfony\n=\n0.08 cpu_core", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Web application job implementation details from hypothesis", "label": "Web application job\nimplementation\ndetails from\nhypothesis", "shape": "dot", "size": 15, "title": "Web application job implementation details from hypothesis = default", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Technology used in Web application service from hypothesis", "label": "Technology used in\nWeb application\nservice from\nhypothesis", "shape": "dot", "size": 15, "title": "Technology used in Web application service from hypothesis = php-symfony", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Web application job implementation details from hypothesis", "to": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data"}, {"arrows": "to", "from": "Technology used in Web application service from hypothesis", "to": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from e-footprint hypothesis query CPU\nEcobenchmark data with Technology used in Web application service from\ne-footprint hypothesis\n=\ndefault query CPU Ecobenchmark data with php-symfony\n=\n0.08 cpu_core", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Web application job implementation details from e-footprint hypothesis", "label": "Web application job\nimplementation\ndetails from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Web application job implementation details from e-footprint hypothesis = default", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Technology used in Web application service from e-footprint hypothesis", "label": "Technology used in\nWeb application\nservice from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Technology used in Web application service from e-footprint hypothesis =\nphp-symfony", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Web application job implementation details from e-footprint hypothesis", "to": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data"}, {"arrows": "to", "from": "Technology used in Web application service from e-footprint hypothesis", "to": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

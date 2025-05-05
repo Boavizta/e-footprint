@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_370aca {
+             #mynetwork_9742a3 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_370aca" class="card-body"></div>
+            <div id="mynetwork_9742a3" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_370aca');
+                  var container = document.getElementById('mynetwork_9742a3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server power", "label": "on premise GPU\nserver power", "shape": "dot", "size": 15, "title": "on premise GPU server power\n=\non premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM *\nNb gpus of on premise GPU server from hypothesis\n=\n400.0 watt / gpu * 4 gpu\n=\n1600.0 watt", "x": 0.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver GPU power\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM =\n400.0 watt / gpu", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom hypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from hypothesis = 4 gpu", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server power"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from hypothesis", "to": "on premise GPU server power"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server power", "label": "on premise GPU\nserver power", "shape": "dot", "size": 15, "title": "on premise GPU server power\n=\non premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM *\nNb gpus of on premise GPU server from e-footprint hypothesis\n=\n400.0 watt / gpu * 4 gpu\n=\n1600.0 watt", "x": 0.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver GPU power\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM =\n400.0 watt / gpu", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4 gpu", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server GPU power from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server power"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "on premise GPU server power"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_454dc1 {
+             #mynetwork_951b5a {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_454dc1" class="card-body"></div>
+            <div id="mynetwork_951b5a" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_454dc1');
+                  var container = document.getElementById('mynetwork_951b5a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server carbon footprint fabrication", "label": "on premise GPU\nserver carbon\nfootprint\nfabrication", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint fabrication\n=\non premise GPU server carbon footprint without GPU from Estimating the Carbon\nFootprint of BLOOM + Nb gpus of on premise GPU server from hypothesis * on\npremise GPU server carbon footprint one GPU from Estimating the Carbon Footprint\nof BLOOM\n=\n2500 kilogram + 4 gpu * 150.0 kilogram / gpu\n=\n3100.0 kilogram", "x": 0.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver carbon\nfootprint without\nGPU from Estimating\nthe Carbon Footprint\nof BLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint without GPU from Estimating the Carbon\nFootprint of BLOOM = 2500 kilogram", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom hypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from hypothesis = 4 gpu", "x": 0.0, "y": 150}, {"color": "darkred", "id": "on premise GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver carbon\nfootprint one GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint one GPU from Estimating the Carbon\nFootprint of BLOOM = 150.0 kilogram / gpu", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server carbon footprint fabrication"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from hypothesis", "to": "on premise GPU server carbon footprint fabrication"}, {"arrows": "to", "from": "on premise GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server carbon footprint fabrication"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server carbon footprint fabrication", "label": "on premise GPU\nserver carbon\nfootprint\nfabrication", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint fabrication\n=\non premise GPU server carbon footprint without GPU from Estimating the Carbon\nFootprint of BLOOM + Nb gpus of on premise GPU server from e-footprint\nhypothesis * on premise GPU server carbon footprint one GPU from Estimating the\nCarbon Footprint of BLOOM\n=\n2500 kilogram + 4 gpu * 150.0 kilogram / gpu\n=\n3100.0 kilogram", "x": 0.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver carbon\nfootprint without\nGPU from Estimating\nthe Carbon Footprint\nof BLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint without GPU from Estimating the Carbon\nFootprint of BLOOM = 2500 kilogram", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4 gpu", "x": 0.0, "y": 150}, {"color": "darkred", "id": "on premise GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver carbon\nfootprint one GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server carbon footprint one GPU from Estimating the Carbon\nFootprint of BLOOM = 150.0 kilogram / gpu", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server carbon footprint without GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server carbon footprint fabrication"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "on premise GPU server carbon footprint fabrication"}, {"arrows": "to", "from": "on premise GPU server carbon footprint one GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server carbon footprint fabrication"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

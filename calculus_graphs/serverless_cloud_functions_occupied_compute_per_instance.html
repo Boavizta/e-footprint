@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f34080 {
+             #mynetwork_47e0a5 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f34080" class="card-body"></div>
+            <div id="mynetwork_47e0a5" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f34080');
+                  var container = document.getElementById('mynetwork_47e0a5');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from hypothesis + no\nvalue\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Base cpu core consumption of serverless cloud functions from hypothesis", "label": "Base cpu core\nconsumption of\nserverless cloud\nfunctions from\nhypothesis", "shape": "dot", "size": 15, "title": "Base cpu core consumption of serverless cloud functions from hypothesis = 0\ncpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\n+ 0 of (no value)\n=\n+ 0 of (no value)\n=\nno value", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of serverless cloud functions from hypothesis", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "no value"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + no value\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base cpu core\nconsumption of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base cpu core consumption of serverless cloud functions from e-footprint\nhypothesis = 0 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\n+ 0 of (no value)\n=\n+ 0 of (no value)\n=\nno value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "no value"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

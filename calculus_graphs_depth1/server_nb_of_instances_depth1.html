@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_965464 {
+             #mynetwork_686951 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_965464" class="card-body"></div>
+            <div id="mynetwork_686951" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_965464');
+                  var container = document.getElementById('mynetwork_686951');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil of (Hourly raw number of server instances) logically dependent on Server\ntype of server from hypothesis\n=\nceil of (26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) logically\ndependent on autoscaling\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly raw number of server instances", "label": "Hourly raw number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly raw number of server instances\n=\nRaw nb of server instances based on RAM alone max compared with Raw nb of server\ninstances based on CPU alone\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -412.5, "y": 1200}, {"color": "darkred", "id": "Server type of server from hypothesis", "label": "Server type of\nserver from\nhypothesis", "shape": "dot", "size": 15, "title": "Server type of server from hypothesis = autoscaling", "x": 412.5, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of server instances", "to": "Hourly number of server instances"}, {"arrows": "to", "from": "Server type of server from hypothesis", "to": "Hourly number of server instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil of (Hourly raw number of server instances) logically dependent on Server\ntype of server from e-footprint hypothesis\n=\nceil of (26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) logically\ndependent on autoscaling\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly raw number of server instances", "label": "Hourly raw number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly raw number of server instances\n=\nRaw nb of server instances based on RAM alone max compared with Raw nb of server\ninstances based on CPU alone\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -412.5, "y": 1200}, {"color": "darkred", "id": "Server type of server from e-footprint hypothesis", "label": "Server type of\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Server type of server from e-footprint hypothesis = autoscaling", "x": 412.5, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of server instances", "to": "Hourly number of server instances"}, {"arrows": "to", "from": "Server type of server from e-footprint hypothesis", "to": "Hourly number of server instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

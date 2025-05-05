@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bba7a5 {
+             #mynetwork_a9191b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_bba7a5" class="card-body"></div>
+            <div id="mynetwork_a9191b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bba7a5');
+                  var container = document.getElementById('mynetwork_a9191b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job RAM needed", "label": "Video streaming job\nRAM needed", "shape": "dot", "size": 15, "title": "Video streaming job RAM needed\n=\nduplicate of (Video streaming service RAM buffer size per user from hypothesis)\n=\nduplicate of (50 megabyte)\n=\n50 megabyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming service RAM buffer size per user from hypothesis", "label": "Video streaming\nservice RAM buffer\nsize per user from\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service RAM buffer size per user from hypothesis = 50 megabyte", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming service RAM buffer size per user from hypothesis", "to": "Video streaming job RAM needed"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job RAM needed", "label": "Video streaming job\nRAM needed", "shape": "dot", "size": 15, "title": "Video streaming job RAM needed\n=\nduplicate of (Video streaming service RAM buffer size per user from e-footprint\nhypothesis)\n=\nduplicate of (50 megabyte)\n=\n50 megabyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming service RAM buffer size per user from e-footprint hypothesis", "label": "Video streaming\nservice RAM buffer\nsize per user from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service RAM buffer size per user from e-footprint hypothesis =\n50 megabyte", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming service RAM buffer size per user from e-footprint hypothesis", "to": "Video streaming job RAM needed"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

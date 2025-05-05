@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
       
       
 
@@ -1489,6 +1489,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GPUJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPUJob
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1931,7 +1954,7 @@
 <h3 id="server">server</h3>
 <p>An instance of <a href="../GPUServer/">GPUServer</a>.</p>
 <h3 id="nb_of_bits_per_parameter">nb_of_bits_per_parameter</h3>
-<p>generative ai model nb of bits per parameter from hypothesis in dimensionless.</p>
+<p>generative ai model nb of bits per parameter from e-footprint hypothesis in dimensionless.</p>
 <h3 id="llm_memory_factor">llm_memory_factor</h3>
 <p>generative ai model ratio between gpu memory footprint and model size from ecologits in dimensionless.</p>
 <h3 id="gpu_latency_alpha">gpu_latency_alpha</h3>
@@ -1939,7 +1962,7 @@
 <h3 id="gpu_latency_beta">gpu_latency_beta</h3>
 <p>base gpu latency per output_token from ecologits in second.</p>
 <h3 id="bits_per_token">bits_per_token</h3>
-<p>number of bits per token from hypothesis in dimensionless.</p>
+<p>number of bits per token from e-footprint hypothesis in dimensionless.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../GenAIJob/">GenAIJob</a></li>
@@ -1950,8 +1973,8 @@
 <p>Example value: 7300000000.0 dimensionless  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#provider">open-mistral-7b provider from hypothesis</a></li>
-<li><a href="./#model_name">mistralai model used from hypothesis</a>  </li>
+<li><a href="./#provider">mistralai from e-footprint hypothesis</a></li>
+<li><a href="./#model_name">mistralai model used from e-footprint hypothesis</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -1987,7 +2010,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9fc885 {
+             #mynetwork_bf1937 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2009,7 +2032,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9fc885" class="card-body"></div>
+            <div id="mynetwork_bf1937" class="card-body"></div>
         </div>
 
 
@@ -2039,13 +2062,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9fc885');
+                  var container = document.getElementById('mynetwork_bf1937');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nopen-mistral-7b provider from hypothesis query EcoLogits data with mistralai\nmodel used from hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "open-mistral-7b provider from hypothesis", "label": "open-mistral-7b\nprovider from\nhypothesis", "shape": "dot", "size": 15, "title": "open-mistral-7b provider from hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from hypothesis", "label": "mistralai model used\nfrom hypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "open-mistral-7b provider from hypothesis", "to": "open-mistral-7b from mistralai nb of active parameters from Ecologits"}, {"arrows": "to", "from": "mistralai model used from hypothesis", "to": "open-mistral-7b from mistralai nb of active parameters from Ecologits"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "mistralai from e-footprint hypothesis", "label": "mistralai from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai from e-footprint hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from e-footprint hypothesis", "label": "mistralai model used\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from e-footprint hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "mistralai from e-footprint hypothesis", "to": "open-mistral-7b from mistralai nb of active parameters from Ecologits"}, {"arrows": "to", "from": "mistralai model used from e-footprint hypothesis", "to": "open-mistral-7b from mistralai nb of active parameters from Ecologits"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2116,8 +2139,8 @@
 <p>Example value: 7300000000.0 dimensionless  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#provider">open-mistral-7b provider from hypothesis</a></li>
-<li><a href="./#model_name">mistralai model used from hypothesis</a>  </li>
+<li><a href="./#provider">mistralai from e-footprint hypothesis</a></li>
+<li><a href="./#model_name">mistralai model used from e-footprint hypothesis</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -2153,7 +2176,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_17c499 {
+             #mynetwork_69decf {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2175,7 +2198,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_17c499" class="card-body"></div>
+            <div id="mynetwork_69decf" class="card-body"></div>
         </div>
 
 
@@ -2205,13 +2228,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_17c499');
+                  var container = document.getElementById('mynetwork_69decf');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nopen-mistral-7b provider from hypothesis query EcoLogits data with mistralai\nmodel used from hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "open-mistral-7b provider from hypothesis", "label": "open-mistral-7b\nprovider from\nhypothesis", "shape": "dot", "size": 15, "title": "open-mistral-7b provider from hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from hypothesis", "label": "mistralai model used\nfrom hypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "open-mistral-7b provider from hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}, {"arrows": "to", "from": "mistralai model used from hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "mistralai from e-footprint hypothesis", "label": "mistralai from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai from e-footprint hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from e-footprint hypothesis", "label": "mistralai model used\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from e-footprint hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "mistralai from e-footprint hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}, {"arrows": "to", "from": "mistralai model used from e-footprint hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2284,7 +2307,7 @@
 <ul>
 <li><a href="./#llm_memory_factor">Generative AI model ratio between GPU memory footprint and model size from Ecologits</a></li>
 <li><a href="./#total_params">open-mistral-7b from mistralai total nb of parameters from Ecologits</a></li>
-<li><a href="./#nb_of_bits_per_parameter">Generative AI model nb of bits per parameter from hypothesis</a>  </li>
+<li><a href="./#nb_of_bits_per_parameter">Generative AI model nb of bits per parameter from e-footprint hypothesis</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -2320,7 +2343,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f19ad3 {
+             #mynetwork_a8a9db {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2342,7 +2365,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f19ad3" class="card-body"></div>
+            <div id="mynetwork_a8a9db" class="card-body"></div>
         </div>
 
 
@@ -2372,13 +2395,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f19ad3');
+                  var container = document.getElementById('mynetwork_a8a9db');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model base RAM consumption", "label": "Generative AI model\nbase RAM consumption", "shape": "dot", "size": 15, "title": "Generative AI model base RAM consumption\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai total nb of parameters from Ecologits\n* Generative AI model nb of bits per parameter from hypothesis\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless\n=\n17.52 gigabyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "label": "Generative AI model\nratio between GPU\nmemory footprint and\nmodel size from\nEcologits", "shape": "dot", "size": 15, "title": "Generative AI model ratio between GPU memory footprint and model size from\nEcologits = 1.2 dimensionless", "x": -150.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nopen-mistral-7b provider from hypothesis query EcoLogits data with mistralai\nmodel used from hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model nb of bits per parameter from hypothesis", "label": "Generative AI model\nnb of bits per\nparameter from\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model nb of bits per parameter from hypothesis = 16 dimensionless", "x": 150.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "to": "Generative AI model base RAM consumption"}, {"arrows": "to", "from": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "to": "Generative AI model base RAM consumption"}, {"arrows": "to", "from": "Generative AI model nb of bits per parameter from hypothesis", "to": "Generative AI model base RAM consumption"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model base RAM consumption", "label": "Generative AI model\nbase RAM consumption", "shape": "dot", "size": 15, "title": "Generative AI model base RAM consumption\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai total nb of parameters from Ecologits\n* Generative AI model nb of bits per parameter from e-footprint hypothesis\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless\n=\n17.52 gigabyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "label": "Generative AI model\nratio between GPU\nmemory footprint and\nmodel size from\nEcologits", "shape": "dot", "size": 15, "title": "Generative AI model ratio between GPU memory footprint and model size from\nEcologits = 1.2 dimensionless", "x": -150.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model nb of bits per parameter from e-footprint hypothesis", "label": "Generative AI model\nnb of bits per\nparameter from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model nb of bits per parameter from e-footprint hypothesis = 16\ndimensionless", "x": 150.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "to": "Generative AI model base RAM consumption"}, {"arrows": "to", "from": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "to": "Generative AI model base RAM consumption"}, {"arrows": "to", "from": "Generative AI model nb of bits per parameter from e-footprint hypothesis", "to": "Generative AI model base RAM consumption"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

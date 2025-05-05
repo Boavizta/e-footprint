@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.11">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.4af4bdda.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
       
       
 
@@ -1534,6 +1534,29 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GPUJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPUJob
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -2017,7 +2040,7 @@
 <h3 id="service">service</h3>
 <p>An instance of <a href="../GenAIModel/">GenAIModel</a>.</p>
 <h3 id="output_token_count">output_token_count</h3>
-<p>generative ai model job output token count from hypothesis in dimensionless.</p>
+<p>generative ai model job output token count from e-footprint hypothesis in dimensionless.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../UsageJourneyStep/">UsageJourneyStep</a></li>
@@ -2028,8 +2051,8 @@
 <p>Example value: 3.0 kilobyte  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#output_token_count">Generative AI model job output token count from hypothesis</a></li>
-<li><a href="../GenAIModel/#bits_per_token">Number of bits per token from hypothesis</a>  </li>
+<li><a href="./#output_token_count">Generative AI model job output token count from e-footprint hypothesis</a></li>
+<li><a href="../GenAIModel/#bits_per_token">Number of bits per token from e-footprint hypothesis</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -2065,7 +2088,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_599085 {
+             #mynetwork_78b6fa {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2087,7 +2110,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_599085" class="card-body"></div>
+            <div id="mynetwork_78b6fa" class="card-body"></div>
         </div>
 
 
@@ -2117,13 +2140,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_599085');
+                  var container = document.getElementById('mynetwork_78b6fa');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from hypothesis * Number of bits per\ntoken from hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model job output token count from hypothesis", "label": "Generative AI model\njob output token\ncount from\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from hypothesis = 1000 dimensionless", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of bits per token from hypothesis", "label": "Number of bits per\ntoken from\nhypothesis", "shape": "dot", "size": 15, "title": "Number of bits per token from hypothesis = 24 dimensionless", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from hypothesis", "to": "Generative AI model job output token weights"}, {"arrows": "to", "from": "Number of bits per token from hypothesis", "to": "Generative AI model job output token weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from e-footprint hypothesis * Number\nof bits per token from e-footprint hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model job output token count from e-footprint hypothesis", "label": "Generative AI model\njob output token\ncount from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from e-footprint hypothesis = 1000\ndimensionless", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of bits per token from e-footprint hypothesis", "label": "Number of bits per\ntoken from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of bits per token from e-footprint hypothesis = 24 dimensionless", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from e-footprint hypothesis", "to": "Generative AI model job output token weights"}, {"arrows": "to", "from": "Number of bits per token from e-footprint hypothesis", "to": "Generative AI model job output token weights"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2230,7 +2253,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_21d6bd {
+             #mynetwork_01595d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2252,7 +2275,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_21d6bd" class="card-body"></div>
+            <div id="mynetwork_01595d" class="card-body"></div>
         </div>
 
 
@@ -2282,13 +2305,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_21d6bd');
+                  var container = document.getElementById('mynetwork_01595d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data stored", "label": "Generative AI model\njob data stored", "shape": "dot", "size": 15, "title": "Generative AI model job data stored\n=\nunnamed source from hypothesis + Generative AI model job output token weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "unnamed source from hypothesis", "label": "unnamed source from\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from hypothesis = 100 kilobyte", "x": -75.0, "y": 300}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from hypothesis * Number of bits per\ntoken from hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from hypothesis", "to": "Generative AI model job data stored"}, {"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data stored"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data stored", "label": "Generative AI model\njob data stored", "shape": "dot", "size": 15, "title": "Generative AI model job data stored\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "unnamed source from e-footprint hypothesis", "label": "unnamed source from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from e-footprint hypothesis = 100 kilobyte", "x": -75.0, "y": 300}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from e-footprint hypothesis * Number\nof bits per token from e-footprint hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from e-footprint hypothesis", "to": "Generative AI model job data stored"}, {"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data stored"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2395,7 +2418,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1a24e2 {
+             #mynetwork_dc7279 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2417,7 +2440,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1a24e2" class="card-body"></div>
+            <div id="mynetwork_dc7279" class="card-body"></div>
         </div>
 
 
@@ -2447,13 +2470,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1a24e2');
+                  var container = document.getElementById('mynetwork_dc7279');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from hypothesis + Generative AI model job output token weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "unnamed source from hypothesis", "label": "unnamed source from\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from hypothesis = 100 kilobyte", "x": -75.0, "y": 300}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from hypothesis * Number of bits per\ntoken from hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from hypothesis", "to": "Generative AI model job data transferred"}, {"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data transferred"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "unnamed source from e-footprint hypothesis", "label": "unnamed source from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from e-footprint hypothesis = 100 kilobyte", "x": -75.0, "y": 300}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from e-footprint hypothesis * Number\nof bits per token from e-footprint hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from e-footprint hypothesis", "to": "Generative AI model job data transferred"}, {"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data transferred"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2524,7 +2547,7 @@
 <p>Example value: 28.15 second  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#output_token_count">Generative AI model job output token count from hypothesis</a></li>
+<li><a href="./#output_token_count">Generative AI model job output token count from e-footprint hypothesis</a></li>
 <li><a href="../GenAIModel/#gpu_latency_alpha">GPU latency per active parameter and output token from Ecologits</a></li>
 <li><a href="../GenAIModel/#active_params">open-mistral-7b from mistralai nb of active parameters from Ecologits</a></li>
 <li><a href="../GenAIModel/#gpu_latency_beta">Base GPU latency per output_token from Ecologits</a>  </li>
@@ -2563,7 +2586,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_13fa1d {
+             #mynetwork_7f0ff0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2585,7 +2608,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_13fa1d" class="card-body"></div>
+            <div id="mynetwork_7f0ff0" class="card-body"></div>
         </div>
 
 
@@ -2615,13 +2638,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_13fa1d');
+                  var container = document.getElementById('mynetwork_7f0ff0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job request duration", "label": "Generative AI model\njob request duration", "shape": "dot", "size": 15, "title": "Generative AI model job request duration\n=\nGenerative AI model job output token count from hypothesis * (GPU latency per\nactive parameter and output token from Ecologits * open-mistral-7b from\nmistralai nb of active parameters from Ecologits + Base GPU latency per\noutput_token from Ecologits)\n=\n1000 dimensionless * (0.0 second * 7300000000.0 dimensionless + 0.02 second)\n=\n28.15 second", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model job output token count from hypothesis", "label": "Generative AI model\njob output token\ncount from\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from hypothesis = 1000 dimensionless", "x": -225.0, "y": 300}, {"color": "darkred", "id": "GPU latency per active parameter and output token from Ecologits", "label": "GPU latency per\nactive parameter and\noutput token from\nEcologits", "shape": "dot", "size": 15, "title": "GPU latency per active parameter and output token from Ecologits = 0.0 second", "x": -75.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nopen-mistral-7b provider from hypothesis query EcoLogits data with mistralai\nmodel used from hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Base GPU latency per output_token from Ecologits", "label": "Base GPU latency per\noutput_token from\nEcologits", "shape": "dot", "size": 15, "title": "Base GPU latency per output_token from Ecologits = 0.02 second", "x": 225.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from hypothesis", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "GPU latency per active parameter and output token from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "Base GPU latency per output_token from Ecologits", "to": "Generative AI model job request duration"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job request duration", "label": "Generative AI model\njob request duration", "shape": "dot", "size": 15, "title": "Generative AI model job request duration\n=\nGenerative AI model job output token count from e-footprint hypothesis * (GPU\nlatency per active parameter and output token from Ecologits * open-mistral-7b\nfrom mistralai nb of active parameters from Ecologits + Base GPU latency per\noutput_token from Ecologits)\n=\n1000 dimensionless * (0.0 second * 7300000000.0 dimensionless + 0.02 second)\n=\n28.15 second", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model job output token count from e-footprint hypothesis", "label": "Generative AI model\njob output token\ncount from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from e-footprint hypothesis = 1000\ndimensionless", "x": -225.0, "y": 300}, {"color": "darkred", "id": "GPU latency per active parameter and output token from Ecologits", "label": "GPU latency per\nactive parameter and\noutput token from\nEcologits", "shape": "dot", "size": 15, "title": "GPU latency per active parameter and output token from Ecologits = 0.0 second", "x": -75.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Base GPU latency per output_token from Ecologits", "label": "Base GPU latency per\noutput_token from\nEcologits", "shape": "dot", "size": 15, "title": "Base GPU latency per output_token from Ecologits = 0.02 second", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from e-footprint hypothesis", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "GPU latency per active parameter and output token from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "Base GPU latency per output_token from Ecologits", "to": "Generative AI model job request duration"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2688,7 +2711,7 @@
 
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_duration.html' target='_blank'>link to Generative AI model job request duration’s full calculation graph</a>.</p>
 <h3 id="ram_needed">ram_needed</h3>
-<p>ExplainableQuantity in gigabyte, representing the no additional gpu ram needed because model is already loaded in memory from hypothesis.  </p>
+<p>ExplainableQuantity in gigabyte, representing the no additional gpu ram needed because model is already loaded in memory from e-footprint hypothesis.  </p>
 <p>Example value: 0 gigabyte  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -2728,7 +2751,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1ec2d6 {
+             #mynetwork_904b3d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2750,7 +2773,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1ec2d6" class="card-body"></div>
+            <div id="mynetwork_904b3d" class="card-body"></div>
         </div>
 
 
@@ -2780,12 +2803,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1ec2d6');
+                  var container = document.getElementById('mynetwork_904b3d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "darkred", "id": "No additional GPU RAM needed because model is already loaded in memory from hypothesis", "label": "No additional GPU\nRAM needed because\nmodel is already\nloaded in memory\nfrom hypothesis", "shape": "dot", "size": 15, "title": "No additional GPU RAM needed because model is already loaded in memory from\nhypothesis = 0 gigabyte", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": "darkred", "id": "No additional GPU RAM needed because model is already loaded in memory from e-footprint hypothesis", "label": "No additional GPU\nRAM needed because\nmodel is already\nloaded in memory\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "No additional GPU RAM needed because model is already loaded in memory from\ne-footprint hypothesis = 0 gigabyte", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([]);
 
                   nodeColors = {};
@@ -2851,7 +2874,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_ram_needed.html' target='_blank'>link to No additional GPU RAM needed because model is already loaded in memory from hypothesis’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_ram_needed.html' target='_blank'>link to No additional GPU RAM needed because model is already loaded in memory from e-footprint hypothesis’s full calculation graph</a>.</p>
 <h3 id="compute_needed">compute_needed</h3>
 <p>ExplainableQuantity in gpu, representing the generative ai model job nb of required gpus during inference.  </p>
 <p>Example value: 0.22 gpu  </p>
@@ -2859,7 +2882,7 @@
 <ul>
 <li><a href="../GenAIModel/#llm_memory_factor">Generative AI model ratio between GPU memory footprint and model size from Ecologits</a></li>
 <li><a href="../GenAIModel/#active_params">open-mistral-7b from mistralai nb of active parameters from Ecologits</a></li>
-<li><a href="../GenAIModel/#nb_of_bits_per_parameter">Generative AI model nb of bits per parameter from hypothesis</a></li>
+<li><a href="../GenAIModel/#nb_of_bits_per_parameter">Generative AI model nb of bits per parameter from e-footprint hypothesis</a></li>
 <li><a href="../GPUServer/#ram_per_gpu">on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
@@ -2896,7 +2919,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a7b389 {
+             #mynetwork_97185d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2918,7 +2941,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a7b389" class="card-body"></div>
+            <div id="mynetwork_97185d" class="card-body"></div>
         </div>
 
 
@@ -2948,13 +2971,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a7b389');
+                  var container = document.getElementById('mynetwork_97185d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job nb of required GPUs during inference", "label": "Generative AI model\njob nb of required\nGPUs during\ninference", "shape": "dot", "size": 15, "title": "Generative AI model job nb of required GPUs during inference\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai nb of active parameters from\nEcologits * Generative AI model nb of bits per parameter from hypothesis / on\npremise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless / 80.0\ngigabyte / gpu\n=\n0.22 gpu", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "label": "Generative AI model\nratio between GPU\nmemory footprint and\nmodel size from\nEcologits", "shape": "dot", "size": 15, "title": "Generative AI model ratio between GPU memory footprint and model size from\nEcologits = 1.2 dimensionless", "x": -225.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nopen-mistral-7b provider from hypothesis query EcoLogits data with mistralai\nmodel used from hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Generative AI model nb of bits per parameter from hypothesis", "label": "Generative AI model\nnb of bits per\nparameter from\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model nb of bits per parameter from hypothesis = 16 dimensionless", "x": 75.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver RAM per GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n= 80.0 gigabyte / gpu", "x": 225.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "Generative AI model nb of bits per parameter from hypothesis", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "to": "Generative AI model job nb of required GPUs during inference"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job nb of required GPUs during inference", "label": "Generative AI model\njob nb of required\nGPUs during\ninference", "shape": "dot", "size": 15, "title": "Generative AI model job nb of required GPUs during inference\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai nb of active parameters from\nEcologits * Generative AI model nb of bits per parameter from e-footprint\nhypothesis / on premise GPU server RAM per GPU from Estimating the Carbon\nFootprint of BLOOM\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16 dimensionless / 80.0\ngigabyte / gpu\n=\n0.22 gpu", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "label": "Generative AI model\nratio between GPU\nmemory footprint and\nmodel size from\nEcologits", "shape": "dot", "size": 15, "title": "Generative AI model ratio between GPU memory footprint and model size from\nEcologits = 1.2 dimensionless", "x": -225.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": -75.0, "y": 300}, {"color": "darkred", "id": "Generative AI model nb of bits per parameter from e-footprint hypothesis", "label": "Generative AI model\nnb of bits per\nparameter from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model nb of bits per parameter from e-footprint hypothesis = 16\ndimensionless", "x": 75.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver RAM per GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n= 80.0 gigabyte / gpu", "x": 225.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model ratio between GPU memory footprint and model size from Ecologits", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "Generative AI model nb of bits per parameter from e-footprint hypothesis", "to": "Generative AI model job nb of required GPUs during inference"}, {"arrows": "to", "from": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "to": "Generative AI model job nb of required GPUs during inference"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3024,9 +3047,9 @@
 <p>Dictionary with UsagePattern as keys and 
                         hourly generative ai model job occurrences in usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],<br />
-    last 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5], <br />
+id-2c6c36-usage-pattern: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+    first 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],<br />
+    last 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3066,7 +3089,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_847e19 {
+             #mynetwork_035f81 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3088,7 +3111,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_847e19" class="card-body"></div>
+            <div id="mynetwork_035f81" class="card-body"></div>
         </div>
 
 
@@ -3118,12 +3141,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_847e19');
+                  var container = document.getElementById('mynetwork_035f81');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from hypothesis converted to UTC from devices\ncountry timezone from user data\n=\n26299 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] converted to UTC from Europe/Paris\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": -75.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from e-footprint hypothesis converted to UTC\nfrom devices country timezone from user data\n=\n26299 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] converted to UTC from Europe/Paris\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": -75.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Generative AI model job occurrences in usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job occurrences in usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -3194,9 +3217,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>Dictionary with UsagePattern as keys and 
                         average hourly generative ai model job occurrences in usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],<br />
-    last 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04], <br />
+id-2c6c36-usage-pattern: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+    first 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],<br />
+    last 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3237,7 +3260,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_39145c {
+             #mynetwork_5a5f5d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3259,7 +3282,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_39145c" class="card-body"></div>
+            <div id="mynetwork_5a5f5d" class="card-body"></div>
         </div>
 
 
@@ -3289,12 +3312,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_39145c');
+                  var container = document.getElementById('mynetwork_5a5f5d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] hourly occurrences average 28.15\nsecond\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],\nlast 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": -225.0, "y": 450}, {"color": null, "id": "Generative AI model job request duration", "label": "Generative AI model\njob request duration", "shape": "dot", "size": 15, "title": "Generative AI model job request duration\n=\nGenerative AI model job output token count from hypothesis * (GPU latency per\nactive parameter and output token from Ecologits * open-mistral-7b from\nmistralai nb of active parameters from Ecologits + Base GPU latency per\noutput_token from Ecologits)\n=\n1000 dimensionless * (0.0 second * 7300000000.0 dimensionless + 0.02 second)\n=\n28.15 second", "x": 225.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] hourly occurrences average 28.15\nsecond\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],\nlast 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": -225.0, "y": 450}, {"color": null, "id": "Generative AI model job request duration", "label": "Generative AI model\njob request duration", "shape": "dot", "size": 15, "title": "Generative AI model job request duration\n=\nGenerative AI model job output token count from e-footprint hypothesis * (GPU\nlatency per active parameter and output token from Ecologits * open-mistral-7b\nfrom mistralai nb of active parameters from Ecologits + Base GPU latency per\noutput_token from Ecologits)\n=\n1000 dimensionless * (0.0 second * 7300000000.0 dimensionless + 0.02 second)\n=\n28.15 second", "x": 225.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in usage pattern", "to": "Average hourly Generative AI model job occurrences in usage pattern"}, {"arrows": "to", "from": "Generative AI model job request duration", "to": "Average hourly Generative AI model job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -3365,9 +3388,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>Dictionary with UsagePattern as keys and 
                         hourly data transferred for generative ai model job in usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
-    first 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0, 206.0],<br />
-    last 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0, 515.0], <br />
+id-2c6c36-usage-pattern: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
+    first 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0, 721.0],<br />
+    last 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0, 824.0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3408,7 +3431,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_a3dd53 {
+             #mynetwork_e8d59f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3430,7 +3453,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a3dd53" class="card-body"></div>
+            <div id="mynetwork_e8d59f" class="card-body"></div>
         </div>
 
 
@@ -3460,12 +3483,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a3dd53');
+                  var container = document.getElementById('mynetwork_e8d59f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data transferred per hour for job Generative AI\nmodel job in usage pattern + no value\n=\n(26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": -225.0, "y": 600}, {"color": null, "id": "hour nb 0 within 1 dimensionless", "label": "hour nb 0 within 1\ndimensionless", "shape": "dot", "size": 15, "title": "hour nb 0 within 1 dimensionless\n=\nGenerative AI model job duration in full hours\n=\n1 dimensionless\n=\n0 hour", "x": -75.0, "y": 600}, {"color": null, "id": "Generative AI model job duration in full hours", "label": "Generative AI model\njob duration in full\nhours", "shape": "dot", "size": 15, "title": "Generative AI model job duration in full hours = 1 dimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "data transferred per hour for job Generative AI model job in usage pattern", "label": "data transferred per\nhour for job\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "data transferred per hour for job Generative AI model job in usage pattern\n=\nGenerative AI model job data transferred / Generative AI model job duration in\nfull hours\n=\n103.0 kilobyte / 1 dimensionless\n=\n103.0 kilobyte", "x": 75.0, "y": 600}, {"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from hypothesis + Generative AI model job output token weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 225.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data transferred per hour for job Generative AI\nmodel job in usage pattern + no value\n=\n(26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": -225.0, "y": 600}, {"color": null, "id": "hour nb 0 within 1 dimensionless", "label": "hour nb 0 within 1\ndimensionless", "shape": "dot", "size": 15, "title": "hour nb 0 within 1 dimensionless\n=\nGenerative AI model job duration in full hours\n=\n1 dimensionless\n=\n0 hour", "x": -75.0, "y": 600}, {"color": null, "id": "Generative AI model job duration in full hours", "label": "Generative AI model\njob duration in full\nhours", "shape": "dot", "size": 15, "title": "Generative AI model job duration in full hours = 1 dimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "data transferred per hour for job Generative AI model job in usage pattern", "label": "data transferred per\nhour for job\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "data transferred per hour for job Generative AI model job in usage pattern\n=\nGenerative AI model job data transferred / Generative AI model job duration in\nfull hours\n=\n103.0 kilobyte / 1 dimensionless\n=\n103.0 kilobyte", "x": 75.0, "y": 600}, {"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 225.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in usage pattern", "to": "Hourly data transferred for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "hour nb 0 within 1 dimensionless", "to": "Hourly data transferred for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job duration in full hours", "to": "hour nb 0 within 1 dimensionless"}, {"arrows": "to", "from": "data transferred per hour for job Generative AI model job in usage pattern", "to": "Hourly data transferred for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job data transferred", "to": "data transferred per hour for job Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job duration in full hours", "to": "data transferred per hour for job Generative AI model job in usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly data transferred for Generative AI model job in usage pattern"}]);
 
                   nodeColors = {};
@@ -3536,9 +3559,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>Dictionary with UsagePattern as keys and 
                         hourly data stored for generative ai model job in usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
-    first 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0, 206.0],<br />
-    last 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0, 515.0], <br />
+id-2c6c36-usage-pattern: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
+    first 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0, 721.0],<br />
+    last 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0, 824.0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3579,7 +3602,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_af1e5c {
+             #mynetwork_9a176e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3601,7 +3624,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_af1e5c" class="card-body"></div>
+            <div id="mynetwork_9a176e" class="card-body"></div>
         </div>
 
 
@@ -3631,12 +3654,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_af1e5c');
+                  var container = document.getElementById('mynetwork_9a176e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data stored per hour for job Generative AI model job\nin usage pattern + no value\n=\n(26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": -225.0, "y": 600}, {"color": null, "id": "hour nb 0 within 1 dimensionless", "label": "hour nb 0 within 1\ndimensionless", "shape": "dot", "size": 15, "title": "hour nb 0 within 1 dimensionless\n=\nGenerative AI model job duration in full hours\n=\n1 dimensionless\n=\n0 hour", "x": -75.0, "y": 600}, {"color": null, "id": "Generative AI model job duration in full hours", "label": "Generative AI model\njob duration in full\nhours", "shape": "dot", "size": 15, "title": "Generative AI model job duration in full hours = 1 dimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "data stored per hour for job Generative AI model job in usage pattern", "label": "data stored per hour\nfor job Generative\nAI model job in\nusage pattern", "shape": "dot", "size": 15, "title": "data stored per hour for job Generative AI model job in usage pattern\n=\nGenerative AI model job data stored / Generative AI model job duration in full\nhours\n=\n103.0 kilobyte / 1 dimensionless\n=\n103.0 kilobyte", "x": 75.0, "y": 600}, {"color": null, "id": "Generative AI model job data stored", "label": "Generative AI model\njob data stored", "shape": "dot", "size": 15, "title": "Generative AI model job data stored\n=\nunnamed source from hypothesis + Generative AI model job output token weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 225.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data stored per hour for job Generative AI model job\nin usage pattern + no value\n=\n(26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": -225.0, "y": 600}, {"color": null, "id": "hour nb 0 within 1 dimensionless", "label": "hour nb 0 within 1\ndimensionless", "shape": "dot", "size": 15, "title": "hour nb 0 within 1 dimensionless\n=\nGenerative AI model job duration in full hours\n=\n1 dimensionless\n=\n0 hour", "x": -75.0, "y": 600}, {"color": null, "id": "Generative AI model job duration in full hours", "label": "Generative AI model\njob duration in full\nhours", "shape": "dot", "size": 15, "title": "Generative AI model job duration in full hours = 1 dimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "data stored per hour for job Generative AI model job in usage pattern", "label": "data stored per hour\nfor job Generative\nAI model job in\nusage pattern", "shape": "dot", "size": 15, "title": "data stored per hour for job Generative AI model job in usage pattern\n=\nGenerative AI model job data stored / Generative AI model job duration in full\nhours\n=\n103.0 kilobyte / 1 dimensionless\n=\n103.0 kilobyte", "x": 75.0, "y": 600}, {"color": null, "id": "Generative AI model job data stored", "label": "Generative AI model\njob data stored", "shape": "dot", "size": 15, "title": "Generative AI model job data stored\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 225.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in usage pattern", "to": "Hourly data stored for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "hour nb 0 within 1 dimensionless", "to": "Hourly data stored for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job duration in full hours", "to": "hour nb 0 within 1 dimensionless"}, {"arrows": "to", "from": "data stored per hour for job Generative AI model job in usage pattern", "to": "Hourly data stored for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job data stored", "to": "data stored per hour for job Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Generative AI model job duration in full hours", "to": "data stored per hour for job Generative AI model job in usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly data stored for Generative AI model job in usage pattern"}]);
 
                   nodeColors = {};
@@ -3705,9 +3728,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_data_stored_per_usage_pattern.html' target='_blank'>link to Hourly data stored for Generative AI model job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_occurrences_across_usage_patterns">hourly_occurrences_across_usage_patterns</h3>
 <p>hourly generative ai model job occurrences across usage patterns in dimensionless.  </p>
-<p>Example value: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],<br />
-    last 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]  </p>
+<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+    first 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],<br />
+    last 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences_per_usage_pattern">Hourly Generative AI model job occurrences in usage pattern</a>  </li>
@@ -3746,7 +3769,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_590684 {
+             #mynetwork_9996f1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3768,7 +3791,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_590684" class="card-body"></div>
+            <div id="mynetwork_9996f1" class="card-body"></div>
         </div>
 
 
@@ -3798,12 +3821,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_590684');
+                  var container = document.getElementById('mynetwork_9996f1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences across usage patterns\n=\nHourly Generative AI model job occurrences in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by no value + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5]", "x": -75.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences across usage patterns\n=\nHourly Generative AI model job occurrences in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by no value + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8]", "x": -75.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in usage pattern", "to": "Hourly Generative AI model job occurrences across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -3872,9 +3895,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly Generative AI model job occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>hourly generative ai model job average occurrences across usage patterns in dimensionless.  </p>
-<p>Example value: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],<br />
-    last 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04]  </p>
+<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+    first 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],<br />
+    last 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly Generative AI model job occurrences in usage pattern</a>  </li>
@@ -3913,7 +3936,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_f43fc4 {
+             #mynetwork_4c9c2c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3935,7 +3958,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f43fc4" class="card-body"></div>
+            <div id="mynetwork_4c9c2c" class="card-body"></div>
         </div>
 
 
@@ -3965,12 +3988,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f43fc4');
+                  var container = document.getElementById('mynetwork_4c9c2c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],\nlast 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04] + no\nvalue\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],\nlast 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] hourly occurrences average 28.15\nsecond\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.03, 0.02, 0.03, 0.03, 0.05, 0.05, 0.02, 0.02, 0.01, 0.02],\nlast 10 vals [0.02, 0.05, 0.02, 0.02, 0.06, 0.01, 0.06, 0.04, 0.03, 0.04]", "x": -225.0, "y": 600}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -225.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],\nlast 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06] + no\nvalue\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],\nlast 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in usage pattern hourly occurrences\naverage Generative AI model job request duration\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] hourly occurrences average 28.15\nsecond\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.05, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.05, 0.05, 0.05],\nlast 10 vals [0.06, 0.03, 0.05, 0.06, 0.07, 0.02, 0.01, 0.01, 0.06, 0.06]", "x": -225.0, "y": 600}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -225.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly Generative AI model job average occurrences across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -4039,9 +4062,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly Generative AI model job average occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>hourly generative ai model job data transferred across usage patterns in kilobyte.  </p>
-<p>Example value: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
-    first 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0, 206.0],<br />
-    last 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0, 515.0]  </p>
+<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
+    first 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0, 721.0],<br />
+    last 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0, 824.0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Generative AI model job in usage pattern</a>  </li>
@@ -4080,7 +4103,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_6e7b12 {
+             #mynetwork_807c37 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4102,7 +4125,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6e7b12" class="card-body"></div>
+            <div id="mynetwork_807c37" class="card-body"></div>
         </div>
 
 
@@ -4132,12 +4155,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6e7b12');
+                  var container = document.getElementById('mynetwork_807c37');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data transferred across usage patterns", "label": "Hourly Generative AI\nmodel job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data transferred across usage patterns\n=\nHourly data transferred for Generative AI model job in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0] + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data transferred per hour for job Generative AI\nmodel job in usage pattern + no value\n=\n(26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": -150.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data transferred across usage patterns", "label": "Hourly Generative AI\nmodel job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data transferred across usage patterns\n=\nHourly data transferred for Generative AI model job in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data transferred per hour for job Generative AI\nmodel job in usage pattern + no value\n=\n(26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": -150.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Generative AI model job in usage pattern", "to": "Hourly Generative AI model job data transferred across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -4206,9 +4229,9 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_data_transferred_across_usage_patterns.html' target='_blank'>link to Hourly Generative AI model job data transferred across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_stored_across_usage_patterns">hourly_data_stored_across_usage_patterns</h3>
 <p>hourly generative ai model job data stored across usage patterns in kilobyte.  </p>
-<p>Example value: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
-    first 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0, 206.0],<br />
-    last 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0, 515.0]  </p>
+<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:<br />
+    first 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0, 721.0],<br />
+    last 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0, 824.0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_stored_per_usage_pattern">Hourly data stored for Generative AI model job in usage pattern</a>  </li>
@@ -4247,7 +4270,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         </center>
         <style type="text/css">
 
-             #mynetwork_02d8c1 {
+             #mynetwork_d5d629 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4269,7 +4292,7 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_02d8c1" class="card-body"></div>
+            <div id="mynetwork_d5d629" class="card-body"></div>
         </div>
 
 
@@ -4299,12 +4322,12 @@ id-a989b5-usage-pattern: 26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_02d8c1');
+                  var container = document.getElementById('mynetwork_d5d629');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data stored across usage patterns", "label": "Hourly Generative AI\nmodel job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data stored across usage patterns\n=\nHourly data stored for Generative AI model job in usage pattern + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0] + no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data stored per hour for job Generative AI model job\nin usage pattern + no value\n=\n(26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4, 3, 4, 4, 6, 6, 2, 2, 1, 2],\nlast 10 vals [2, 6, 3, 3, 8, 1, 8, 5, 4, 5] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26299 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [412.0, 309.0, 412.0, 412.0, 618.0, 618.0, 206.0, 206.0, 103.0,\n206.0],\nlast 10 vals [206.0, 618.0, 309.0, 309.0, 824.0, 103.0, 824.0, 515.0, 412.0,\n515.0]", "x": -150.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data stored across usage patterns", "label": "Hourly Generative AI\nmodel job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data stored across usage patterns\n=\nHourly data stored for Generative AI model job in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\n(Hourly Generative AI model job occurrences in usage pattern shifted by hour nb\n0 within 1 dimensionless) * data stored per hour for job Generative AI model job\nin usage pattern + no value\n=\n(26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by 0 hour) * 103.0 kilobyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kB:\nfirst 10 vals [721.0, 206.0, 206.0, 412.0, 206.0, 103.0, 103.0, 618.0, 721.0,\n721.0],\nlast 10 vals [824.0, 412.0, 721.0, 824.0, 927.0, 206.0, 103.0, 103.0, 824.0,\n824.0]", "x": -150.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Generative AI model job in usage pattern", "to": "Hourly Generative AI model job data stored across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Generative AI model job data stored across usage patterns"}]);
 
                   nodeColors = {};
