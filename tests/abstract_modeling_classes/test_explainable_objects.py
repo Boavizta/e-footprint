@@ -238,7 +238,8 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
     def test_to_json(self):
         self.maxDiff = None
         self.assertDictEqual(
-            {"label": "Usage 1", "values": [1] * 24, "unit": "watt", "start_date": "2025-01-01 00:00:00"},
+            {"label": "Usage 1", "compressed_values": "KLUv/SDAlQAASAAAAAAAAPA/AAIArxUCLTgC", "unit": "watt",
+             "start_date": "2025-01-01 00:00:00"},
             self.hourly_usage1.to_json())
 
     def test_ceil_dimensionless(self):

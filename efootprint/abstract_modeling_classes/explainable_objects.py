@@ -1,13 +1,14 @@
 import math
 import numbers
 from copy import copy
-from datetime import datetime
+import base64
+import array
 
 import pandas as pd
 import pint_pandas
-import pytz
 from pint import Quantity, Unit
 import numpy as np
+import zstandard as zstd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
@@ -122,12 +123,8 @@ class EmptyExplainableObject(ExplainableObject):
                              f" not {type(compared_object)}")
 
     def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {"label": self.label, "value": None}
-
-        if with_calculated_attributes_data:
-            output_dict["id"] = self.id
-            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
-            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+        output_dict = {"value": None}
+        output_dict.update(super().to_json(with_calculated_attributes_data))
 
         return output_dict
 
@@ -295,15 +292,9 @@ class ExplainableQuantity(ExplainableObject):
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
-            "label": self.label, "value": float(self.value.magnitude), "unit": str(self.value.units)}
+            "value": float(self.value.magnitude), "unit": str(self.value.units)}
 
-        if self.source is not None:
-            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
-
-        if with_calculated_attributes_data:
-            output_dict["id"] = self.id
-            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
-            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+        output_dict.update(super().to_json(with_calculated_attributes_data))
 
         return output_dict
 
@@ -538,21 +529,20 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity,"
                 f" not with {type(other)}")
 
-    def to_json(self, rounding_depth=3, with_calculated_attributes_data=False):
+    @staticmethod
+    def compress_values(values):
+        arr = array.array("d", values)  # "d" is double-precision float
+        cctx = zstd.ZstdCompressor(level=1)
+        compressed = cctx.compress(arr.tobytes())
+        return base64.b64encode(compressed).decode("utf-8")
+
+    def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
-            "label": self.label,
-            "values": list(map(lambda x: round(float(x), rounding_depth), self.value["value"].values._data)),
-            "unit": str(self.value.dtypes.iloc[0].units),
-            "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S")
-        }
-
-        if self.source is not None:
-            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
-
-        if with_calculated_attributes_data:
-            output_dict["id"] = self.id
-            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
-            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+                "compressed_values": self.compress_values(self.value["value"].values._data.tolist()),
+                "unit": str(self.value.dtypes.iloc[0].units),
+                "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S")
+            }
+        output_dict.update(super().to_json(with_calculated_attributes_data))
 
         return output_dict
 
@@ -616,7 +606,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
 
         if filepath is not None:
+            import matplotlib.pyplot as plt
             plt.savefig(filepath, bbox_inches='tight')
 
         if plt_show:
+            import matplotlib.pyplot as plt
             plt.show()

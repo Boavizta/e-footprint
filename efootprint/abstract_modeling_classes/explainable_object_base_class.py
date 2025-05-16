@@ -350,9 +350,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
 
         if with_calculated_attributes_data:
-            output_dict["id"] = self.id
-            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
-            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+            output_dict["direct_ancestors"] = [
+                str((ancestor.modeling_obj_container.id, ancestor.attr_name_in_mod_obj_container,
+                     ancestor.key_in_dict.id if ancestor.dict_container is not None else None))
+                for ancestor in self.direct_ancestors_with_id]
+            output_dict["direct_children"] = [
+                str((child.modeling_obj_container.id, child.attr_name_in_mod_obj_container,
+                     child.key_in_dict.id if child.dict_container is not None else None))
+                for child in self.direct_children_with_id]
 
         return output_dict
 
