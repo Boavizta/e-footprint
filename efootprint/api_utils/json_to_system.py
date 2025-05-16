@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
+from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
@@ -74,6 +74,26 @@ def json_to_explainable_object(input_dict, flat_obj_dict=None):
     return output
 
 
+def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
+    modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = eval(attr_key)
+    if key_in_dict:
+        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)[
+            flat_obj_dict[key_in_dict]]
+    else:
+        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
+
+
+def connect_explainable_object_to_calculation_graph(explainable_object, flat_obj_dict):
+    explainable_object.direct_ancestors_with_id = [
+        get_attribute_from_flat_obj_dict(direct_ancestor_key, flat_obj_dict) for direct_ancestor_key in
+        explainable_object.direct_ancestors_with_id
+    ]
+    explainable_object.direct_children_with_id = [
+        get_attribute_from_flat_obj_dict(direct_child_key, flat_obj_dict) for direct_child_key in
+        explainable_object.direct_children_with_id
+    ]
+
+
 def json_to_system(
         system_dict, launch_system_computations=True, efootprint_classes_dict=None):
     if efootprint_classes_dict is None:
@@ -114,6 +134,10 @@ def json_to_system(
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
                     new_obj.__setattr__(attr_key, json_to_explainable_object(attr_value), check_input_validity=False)
+                    if "direct_ancestors_with_id" in attr_value.keys():
+                        getattr(new_obj, attr_key).direct_ancestors_with_id = attr_value["direct_ancestors_with_id"]
+                    if "direct_children_with_id" in attr_value.keys():
+                        getattr(new_obj, attr_key).direct_children_with_id = attr_value["direct_children_with_id"]
                 else:
                     new_obj.__dict__[attr_key] = attr_value
 
@@ -134,17 +158,25 @@ def json_to_system(
                         if type(elt) == str and elt in flat_obj_dict.keys():
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val), check_input_validity=False)
-            for calculated_attribute in mod_obj.calculated_attributes:
-                if getattr(mod_obj, calculated_attribute, None) is None:
-                    mod_obj.__setattr__(calculated_attribute, EmptyExplainableObject(), check_input_validity=False)
-                if isinstance(getattr(mod_obj, calculated_attribute, None), ExplainableObjectDict):
+            for calculated_attribute_name in mod_obj.calculated_attributes:
+                calculated_attribute = getattr(mod_obj, calculated_attribute_name, None)
+                if isinstance(calculated_attribute, ExplainableObjectDict):
                     mod_obj.__setattr__(
-                        calculated_attribute,
+                        calculated_attribute_name,
                         ExplainableObjectDict(
                             {flat_obj_dict[key]: value
-                             for key, value in getattr(mod_obj, calculated_attribute).items()}),
+                             for key, value in calculated_attribute.items()}),
                         check_input_validity=False
                     )
+                    for explainable_hourly_quantity in getattr(mod_obj, calculated_attribute_name, None).values():
+                        connect_explainable_object_to_calculation_graph(explainable_hourly_quantity, flat_obj_dict)
+            for calculated_attribute_name in mod_obj.calculated_attributes:
+                calculated_attribute = getattr(mod_obj, calculated_attribute_name, None)
+                if calculated_attribute is None:
+                    mod_obj.__setattr__(calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
+                elif isinstance(calculated_attribute, ExplainableObject):
+                    connect_explainable_object_to_calculation_graph(calculated_attribute, flat_obj_dict)
+
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
@@ -153,8 +185,10 @@ def json_to_system(
 
     for system in class_obj_dict["System"].values():
         system_id = system.id
+        total_footprint = system.total_footprint
         system.__init__(system.name, usage_patterns=system.usage_patterns)
         system.id = system_id
+        system.total_footprint = total_footprint
         if launch_system_computations:
             system.after_init()
 
