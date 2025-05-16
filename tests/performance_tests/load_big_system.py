@@ -12,3 +12,6 @@ def timed_json_to_system(input_filepath, *args, **kwargs):
     return json_to_system(system_dict, *args, **kwargs)
 
 class_obj_dict, flat_obj_dict = timed_json_to_system("big_system.json", launch_system_computations=False)
+
+class_obj_dict_computed, flat_obj_dict_computed = timed_json_to_system(
+    "big_system_with_calc_attr.json", launch_system_computations=False)

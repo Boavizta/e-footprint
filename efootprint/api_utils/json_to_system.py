@@ -7,6 +7,7 @@ import zstandard as zstd
 
 import efootprint
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -28,7 +29,7 @@ def decompress_values(compressed_str):
     return arr.tolist()
 
 
-def json_to_explainable_object(input_dict):
+def json_to_explainable_object(input_dict, flat_obj_dict=None):
     output = None
     source = None
     if "source" in input_dict.keys():
@@ -58,7 +59,16 @@ def json_to_explainable_object(input_dict):
     elif "zone" in input_dict.keys():
         output = SourceObject(
             pytz.timezone(input_dict["zone"]), source, input_dict["label"])
-    elif "label" in input_dict.keys():
+    elif "label" not in input_dict.keys():
+        if flat_obj_dict is not None:
+            output = ExplainableObjectDict(
+                {flat_obj_dict[key]: json_to_explainable_object(value) for key, value in input_dict.items()}
+            )
+        else:
+            output = ExplainableObjectDict(
+                {key: json_to_explainable_object(value) for key, value in input_dict.items()}
+            )
+    else:
         output = SourceObject(input_dict["value"], source, input_dict["label"])
 
     return output
@@ -125,7 +135,16 @@ def json_to_system(
                             output_val.append(flat_obj_dict[elt])
                     mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val), check_input_validity=False)
             for calculated_attribute in mod_obj.calculated_attributes:
-                mod_obj.__setattr__(calculated_attribute, EmptyExplainableObject(), check_input_validity=False)
+                if getattr(mod_obj, calculated_attribute, None) is None:
+                    mod_obj.__setattr__(calculated_attribute, EmptyExplainableObject(), check_input_validity=False)
+                if isinstance(getattr(mod_obj, calculated_attribute, None), ExplainableObjectDict):
+                    mod_obj.__setattr__(
+                        calculated_attribute,
+                        ExplainableObjectDict(
+                            {flat_obj_dict[key]: value
+                             for key, value in getattr(mod_obj, calculated_attribute).items()}),
+                        check_input_validity=False
+                    )
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":

@@ -343,6 +343,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         if isinstance(self.value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
+        elif isinstance(self.value, dict):  # Case of API call responses
+            output_dict["value"] = self.value
         elif getattr(self.value, "zone", None) is not None:  # Case of timezone in Country class
             output_dict["zone"] = self.value.zone
 
