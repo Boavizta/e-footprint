@@ -148,16 +148,6 @@ def json_to_system(
 
     for class_key in class_obj_dict.keys():
         for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
-            for attr_key, attr_value in list(mod_obj.__dict__.items()):
-                if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
-                    mod_obj.__setattr__(attr_key, ContextualModelingObjectAttribute(flat_obj_dict[attr_value]),
-                                        check_input_validity=False)
-                elif type(attr_value) == list and attr_key != "contextual_modeling_obj_containers":
-                    output_val = []
-                    for elt in attr_value:
-                        if type(elt) == str and elt in flat_obj_dict.keys():
-                            output_val.append(flat_obj_dict[elt])
-                    mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val), check_input_validity=False)
             for calculated_attribute_name in mod_obj.calculated_attributes:
                 calculated_attribute = getattr(mod_obj, calculated_attribute_name, None)
                 if isinstance(calculated_attribute, ExplainableObjectDict):
@@ -170,18 +160,35 @@ def json_to_system(
                     )
                     for explainable_hourly_quantity in getattr(mod_obj, calculated_attribute_name, None).values():
                         connect_explainable_object_to_calculation_graph(explainable_hourly_quantity, flat_obj_dict)
-            for calculated_attribute_name in mod_obj.calculated_attributes:
-                calculated_attribute = getattr(mod_obj, calculated_attribute_name, None)
                 if calculated_attribute is None:
+                    is_loaded_from_system_with_calculated_attributes = False
                     mod_obj.__setattr__(calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
-                elif isinstance(calculated_attribute, ExplainableObject):
-                    connect_explainable_object_to_calculation_graph(calculated_attribute, flat_obj_dict)
+                else:
+                    is_loaded_from_system_with_calculated_attributes = True
+
+    for class_key in class_obj_dict.keys():
+        for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
+            for attr_key, attr_value in list(mod_obj.__dict__.items()):
+                if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
+                    mod_obj.__setattr__(attr_key, ContextualModelingObjectAttribute(flat_obj_dict[attr_value]),
+                                        check_input_validity=False)
+                elif type(attr_value) == list and attr_key != "contextual_modeling_obj_containers":
+                    output_val = []
+                    for elt in attr_value:
+                        if type(elt) == str and elt in flat_obj_dict.keys():
+                            output_val.append(flat_obj_dict[elt])
+                    mod_obj.__setattr__(attr_key, ListLinkedToModelingObj(output_val), check_input_validity=False)
+                elif isinstance(attr_value, ExplainableObject):
+                    connect_explainable_object_to_calculation_graph(attr_value, flat_obj_dict)
 
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
             for mod_obj in class_obj_dict[obj_type].values():
-                mod_obj.after_init()
+                if is_loaded_from_system_with_calculated_attributes:
+                    mod_obj.trigger_modeling_updates = True
+                else:
+                    mod_obj.after_init()
 
     for system in class_obj_dict["System"].values():
         system_id = system.id
@@ -189,7 +196,7 @@ def json_to_system(
         system.__init__(system.name, usage_patterns=system.usage_patterns)
         system.id = system_id
         system.total_footprint = total_footprint
-        if launch_system_computations:
+        if launch_system_computations and not is_loaded_from_system_with_calculated_attributes:
             system.after_init()
 
     return class_obj_dict, flat_obj_dict

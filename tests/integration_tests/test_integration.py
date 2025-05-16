@@ -115,6 +115,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
+        cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "system_with_calculated_attributes.json")
+        system_to_json(cls.system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
+
     def test_all_objects_linked_to_system(self):
         self.assertEqual(
             {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
@@ -162,9 +165,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.streaming_job)
 
     def test_variations_on_inputs_after_system_reloading_with_calculated_attributes(self):
-        system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "system_with_calculated_attributes.json")
-        system_to_json(self.system, save_calculated_attributes=True, output_filepath=system_json_filepath)
-        with open(system_json_filepath, "r") as file:
+        with open(self.system_json_filepath, "r") as file:
             system_data = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(system_data, launch_system_computations=False)
         streaming_step = flat_obj_dict[self.streaming_step.id]
