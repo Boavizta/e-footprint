@@ -101,6 +101,7 @@ def timed_system_to_json(system, *args, **kwargs):
     system_to_json(system, *args, **kwargs)
 
 timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")
+timed_system_to_json(system, save_calculated_attributes=True, output_filepath="big_system_with_calc_attr.json")
 
 from time import time
 start = time()

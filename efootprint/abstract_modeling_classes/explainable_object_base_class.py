@@ -343,6 +343,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         if isinstance(self.value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
+        elif isinstance(self.value, dict):  # Case of API call responses
+            output_dict["value"] = self.value
         elif getattr(self.value, "zone", None) is not None:  # Case of timezone in Country class
             output_dict["zone"] = self.value.zone
 
@@ -350,11 +352,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
 
         if with_calculated_attributes_data:
-            output_dict["direct_ancestors"] = [
+            output_dict["direct_ancestors_with_id"] = [
                 str((ancestor.modeling_obj_container.id, ancestor.attr_name_in_mod_obj_container,
                      ancestor.key_in_dict.id if ancestor.dict_container is not None else None))
                 for ancestor in self.direct_ancestors_with_id]
-            output_dict["direct_children"] = [
+            output_dict["direct_children_with_id"] = [
                 str((child.modeling_obj_container.id, child.attr_name_in_mod_obj_container,
                      child.key_in_dict.id if child.dict_container is not None else None))
                 for child in self.direct_children_with_id]

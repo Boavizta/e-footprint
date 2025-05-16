@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.hardware.device import Device
@@ -114,6 +115,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
+        cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "system_with_calculated_attributes.json")
+        system_to_json(cls.system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
+
     def test_all_objects_linked_to_system(self):
         self.assertEqual(
             {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
@@ -159,6 +163,46 @@ class IntegrationTest(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.network)
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job)
+
+    def test_variations_on_inputs_after_system_reloading_with_calculated_attributes(self):
+        with open(self.system_json_filepath, "r") as file:
+            system_data = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(system_data, launch_system_computations=False)
+        streaming_step = flat_obj_dict[self.streaming_step.id]
+        server = flat_obj_dict[self.server.id]
+        system = flat_obj_dict[self.system.id]
+        uj = flat_obj_dict[self.uj.id]
+        network = flat_obj_dict[self.network.id]
+        storage = flat_obj_dict[self.storage.id]
+        usage_pattern = flat_obj_dict[self.usage_pattern.id]
+        streaming_job = flat_obj_dict[self.streaming_job.id]
+        self._test_variations_on_obj_inputs(streaming_step)
+        self._test_variations_on_obj_inputs(
+            server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
+            special_mult={
+                "ram": 0.01, "server_utilization_rate": 0.5,
+                "base_ram_consumption": 380,
+                "base_compute_consumption": 10
+            })
+        self._test_input_change(server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), server,
+                                "fixed_nb_of_instances")
+        self._test_input_change(server.server_type, ServerTypes.serverless(), server, "server_type")
+        self._test_input_change(server.server_type, ServerTypes.autoscaling(), server, "server_type")
+        self._test_variations_on_obj_inputs(
+            self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
+        self._test_input_change(storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
+        self.storage.fixed_nb_of_instances = EmptyExplainableObject()
+        old_initial_footprint = self.initial_footprint
+        self.initial_footprint = system.total_footprint
+        self._test_input_change(
+            storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
+        self.storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+        self.assertEqual(old_initial_footprint, system.total_footprint)
+        self.initial_footprint = old_initial_footprint
+        self._test_variations_on_obj_inputs(uj)
+        self._test_variations_on_obj_inputs(network)
+        self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
+        self._test_variations_on_obj_inputs(streaming_job)
 
     def test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
