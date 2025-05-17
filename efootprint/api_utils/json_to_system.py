@@ -78,7 +78,7 @@ def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
     modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = eval(attr_key)
     if key_in_dict:
         return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)[
-            flat_obj_dict[key_in_dict]]
+            key_in_dict]
     else:
         return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
 
@@ -92,6 +92,8 @@ def connect_explainable_object_to_calculation_graph(explainable_object, flat_obj
         get_attribute_from_flat_obj_dict(direct_child_key, flat_obj_dict) for direct_child_key in
         explainable_object.direct_children_with_id
     ]
+
+    return explainable_object
 
 
 def json_to_system(
@@ -134,10 +136,18 @@ def json_to_system(
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
                     new_obj.__setattr__(attr_key, json_to_explainable_object(attr_value), check_input_validity=False)
-                    if "direct_ancestors_with_id" in attr_value.keys():
-                        getattr(new_obj, attr_key).direct_ancestors_with_id = attr_value["direct_ancestors_with_id"]
-                    if "direct_children_with_id" in attr_value.keys():
-                        getattr(new_obj, attr_key).direct_children_with_id = attr_value["direct_children_with_id"]
+                    set_attribute = getattr(new_obj, attr_key)
+                    if isinstance(set_attribute, ExplainableObject):
+                        if "direct_ancestors_with_id" in attr_value.keys():
+                            getattr(new_obj, attr_key).direct_ancestors_with_id = attr_value["direct_ancestors_with_id"]
+                            getattr(new_obj, attr_key).direct_children_with_id = attr_value["direct_children_with_id"]
+                    elif isinstance(set_attribute, ExplainableObjectDict):
+                        for key, value in set_attribute.items():
+                            if "direct_ancestors_with_id" in attr_value[key].keys():
+                                value.direct_ancestors_with_id = attr_value[key]["direct_ancestors_with_id"]
+                                value.direct_children_with_id = attr_value[key]["direct_children_with_id"]
+                    else:
+                        raise ValueError(f"Unexpected type {type(set_attribute)} for attribute {attr_key}")
                 else:
                     new_obj.__dict__[attr_key] = attr_value
 
@@ -154,12 +164,10 @@ def json_to_system(
                     mod_obj.__setattr__(
                         calculated_attribute_name,
                         ExplainableObjectDict(
-                            {flat_obj_dict[key]: value
+                            {flat_obj_dict[key]: connect_explainable_object_to_calculation_graph(value, flat_obj_dict)
                              for key, value in calculated_attribute.items()}),
                         check_input_validity=False
                     )
-                    for explainable_hourly_quantity in getattr(mod_obj, calculated_attribute_name, None).values():
-                        connect_explainable_object_to_calculation_graph(explainable_hourly_quantity, flat_obj_dict)
                 if calculated_attribute is None:
                     is_loaded_from_system_with_calculated_attributes = False
                     mod_obj.__setattr__(calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
