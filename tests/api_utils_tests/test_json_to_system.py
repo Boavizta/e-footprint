@@ -4,8 +4,9 @@ from copy import deepcopy
 
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.constants.units import u
+from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
@@ -66,3 +67,15 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         json_to_system(input_dict)
 
         self.assertDictEqual(input_dict, self.base_system_dict)
+
+    def test_compute_object_generation_order(self):
+        efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
+                                   for modeling_object_class in ALL_EFOOTPRINT_CLASSES}
+        classes_generation_order = compute_classes_generation_order(efootprint_classes_dict)
+
+        self.assertListEqual(
+            ["Device", "Country", "Network", "Storage", "BoaviztaCloudServer", "Server", "GPUServer", "WebApplication",
+             "VideoStreaming", "GenAIModel", "Job", "GPUJob", "WebApplicationJob", "VideoStreamingJob", "GenAIJob",
+             "UsageJourneyStep", "UsageJourney", "UsagePattern", "System"],
+            classes_generation_order
+        )

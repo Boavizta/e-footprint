@@ -1,6 +1,10 @@
 import array
 import base64
+from copy import copy
 from datetime import datetime
+from inspect import signature, _empty as empty_annotation, isabstract
+from types import UnionType
+from typing import List, get_origin, get_args
 
 import pytz
 import zstandard as zstd
@@ -11,12 +15,14 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
+from efootprint.utils.tools import time_it
 
 
 def decompress_values(compressed_str):
@@ -95,6 +101,44 @@ def connect_explainable_object_to_calculation_graph(explainable_object, flat_obj
 
     return explainable_object
 
+
+def compute_classes_generation_order(efootprint_classes_dict):
+    classes_to_order_dict = copy(efootprint_classes_dict)
+    classes_generation_order = []
+
+    while len(classes_to_order_dict) > 0:
+        classes_to_append_to_generation_order = []
+        for efootprint_class_name, efootprint_class in classes_to_order_dict.items():
+            init_sig_params = signature(efootprint_class.__init__).parameters
+            classes_needed_to_generate_current_class = []
+            for init_sig_param_key in init_sig_params.keys():
+                annotation = init_sig_params[init_sig_param_key].annotation
+                if annotation is empty_annotation or isinstance(annotation, UnionType):
+                    continue
+                if get_origin(annotation) and get_origin(annotation) in (list, List):
+                    param_type = get_args(annotation)[0]
+                else:
+                    param_type = annotation
+                if issubclass(param_type, ModelingObject):
+                    if isabstract(param_type):
+                        # Case for UsageJourneyStep which has jobs params being abstract (JobBase)
+                        for efootprint_class_name_to_check, efootprint_class_to_check in efootprint_classes_dict.items():
+                            if issubclass(efootprint_class_to_check, param_type):
+                                classes_needed_to_generate_current_class.append(efootprint_class_name_to_check)
+                    else:
+                        classes_needed_to_generate_current_class.append(param_type.__name__)
+            append_to_classes_generation_order = True
+            for class_needed in classes_needed_to_generate_current_class:
+                if class_needed not in classes_generation_order:
+                    append_to_classes_generation_order = False
+
+            if append_to_classes_generation_order:
+                classes_to_append_to_generation_order.append(efootprint_class_name)
+        for class_to_append in classes_to_append_to_generation_order:
+            classes_generation_order.append(class_to_append)
+            del classes_to_order_dict[class_to_append]
+
+    return classes_generation_order
 
 def json_to_system(
         system_dict, launch_system_computations=True, efootprint_classes_dict=None):
