@@ -8,6 +8,8 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.hardware.gpu_server import GPUServer
+from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 
@@ -195,6 +197,12 @@ class Job(DirectServerJob):
             "ram_needed": SourceValue(50 * u.MB)
         }
 
+    # __init__ method is copied to change server type.
+    def __init__(self, name: str, server: Server, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
+                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+        super().__init__(name, server, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
+
 
 class GPUJob(DirectServerJob):
     @classmethod
@@ -206,3 +214,8 @@ class GPUJob(DirectServerJob):
             "compute_needed": SourceValue(1 * u.gpu),
             "ram_needed": SourceValue(50 * u.MB)
         }
+
+    def __init__(self, name: str, server: GPUServer, data_transferred: ExplainableQuantity,
+                 data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
+                 compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
+        super().__init__(name, server, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
