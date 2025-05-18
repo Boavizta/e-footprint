@@ -45,6 +45,15 @@ def optimize_attr_updates_chain(attr_updates_chain):
     return optimized_chain
 
 
+def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
+    modeling_obj_container_id, attr_name_in_mod_obj_container, key_in_dict = eval(attr_key)
+    if key_in_dict:
+        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)[
+            flat_obj_dict[key_in_dict]]
+    else:
+        return getattr(flat_obj_dict[modeling_obj_container_id], attr_name_in_mod_obj_container)
+
+
 class ExplainableObject(ObjectLinkedToModelingObj):
     def __init__(
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
@@ -63,14 +72,52 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.left_parent = left_parent
         self.right_parent = right_parent
         self.operator = operator
-        self.direct_ancestors_with_id = []
-        self.direct_children_with_id = []
+        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
+        self._keys_of_direct_children_with_id_loaded_from_json = None
+        self.flat_obj_dict = None
+        self.json_ancestor_keys_have_been_loaded = False
+        self.json_children_keys_have_been_loaded = False
+        self._direct_ancestors_with_id = []
+        self._direct_children_with_id = []
+
 
         for parent in (self.left_parent, self.right_parent):
             if parent is not None:
                 self.direct_ancestors_with_id += [
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
+
+    @property
+    def direct_ancestors_with_id(self):
+        if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
+                and not self.json_ancestor_keys_have_been_loaded):
+            self._direct_ancestors_with_id = [
+                get_attribute_from_flat_obj_dict(direct_ancestor_key, self.flat_obj_dict) for direct_ancestor_key in
+                self._keys_of_direct_ancestors_with_id_loaded_from_json
+            ]
+            self.json_ancestor_keys_have_been_loaded = True
+
+        return self._direct_ancestors_with_id
+
+    @direct_ancestors_with_id.setter
+    def direct_ancestors_with_id(self, value):
+        self._direct_ancestors_with_id = value
+
+    @property
+    def direct_children_with_id(self):
+        if (self._keys_of_direct_children_with_id_loaded_from_json is not None
+                and not self.json_children_keys_have_been_loaded):
+            self._direct_children_with_id = [
+                get_attribute_from_flat_obj_dict(direct_child_key, self.flat_obj_dict) for direct_child_key in
+                self._keys_of_direct_children_with_id_loaded_from_json
+            ]
+            self.json_children_keys_have_been_loaded = True
+
+        return self._direct_children_with_id
+
+    @direct_children_with_id.setter
+    def direct_children_with_id(self, value):
+        self._direct_children_with_id = value
 
     def __copy__(self):
         cls = self.__class__

@@ -319,12 +319,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 value_to_set = ListLinkedToModelingObj(value_to_set)
             elif type(value_to_set) == dict:
                 value_to_set = current_attr.__class__(value_to_set)
-            assert (isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None)
-            super().__setattr__(name, value_to_set)
+            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None, \
+                    f"input {name} of value {value_to_set} should be an ObjectLinkedToModelingObj or None but is of type {type(value_to_set)}"
             if isinstance(current_attr, ObjectLinkedToModelingObj):
                 current_attr.set_modeling_obj_container(None, None)
             if isinstance(value_to_set, ObjectLinkedToModelingObj):
                 value_to_set.set_modeling_obj_container(self, name)
+            # attribute setting must be done after setting modeling_obj_container because if system has been loaded
+            # with calculated attributes from json, the calculation graph must be loaded before the attribute setting.
+            super().__setattr__(name, value_to_set)
         else:
             from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             logger.debug(f"Updating {name} in {self.name}")

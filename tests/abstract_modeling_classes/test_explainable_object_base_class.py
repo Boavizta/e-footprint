@@ -82,14 +82,14 @@ class TestExplainableObjectBaseClass(TestCase):
 
     def test_set_modeling_obj_container_should_trigger_add_child_to_direct_children_with_id(self):
         ancestor = MagicMock()
-        self.a.direct_ancestors_with_id = [ancestor]
+        self.a._direct_ancestors_with_id = [ancestor]
         self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
         ancestor.add_child_to_direct_children_with_id.assert_called_once_with(direct_child=self.a)
 
     def test_set_modeling_obj_container_should_trigger_remove_child_from_direct_children_with_id(self):
         ancestor = MagicMock()
-        self.a.direct_ancestors_with_id = [ancestor]
-        self.a.direct_ancestors_with_id = [ancestor]
+        self.a._direct_ancestors_with_id = [ancestor]
+        self.a._direct_ancestors_with_id = [ancestor]
         self.a.modeling_obj_container = MagicMock()
         self.a.modeling_obj_container.id = 2
         self.a.modeling_obj_container.name = "Model2"
