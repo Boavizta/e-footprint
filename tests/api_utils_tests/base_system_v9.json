@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.0.11",
+    "efootprint_version": "9.1.5",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -89,6 +89,7 @@
         "uuid-streaming": {
             "name": "streaming",
             "id": "uuid-streaming",
+            "job_type": "undefined",
             "server": "uuid-Default-server",
             "data_transferred": {
                 "label": "Data upload of request streaming from hypothesis",
@@ -134,11 +135,13 @@
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
-            }
+            },
+            "description": ""
         },
         "uuid-upload": {
             "name": "upload",
             "id": "uuid-upload",
+            "job_type": "undefined",
             "server": "uuid-Default-server",
             "data_transferred": {
                 "label": "Data upload of request upload from hypothesis",
@@ -184,7 +187,8 @@
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
-            }
+            },
+            "description": ""
         }
     },
     "Server": {
@@ -490,7 +494,7 @@
             }
         }
     },
-    "Device": {
+    "Hardware": {
         "uuid-Default-laptop": {
             "name": "Default laptop",
             "id": "uuid-Default-laptop",
@@ -561,6 +565,7 @@
                     "link": "https://ourworldindata.org/energy#country-profiles"
                 }
             },
+            "year": 2022,
             "timezone": {
                 "label": "France timezone from user data",
                 "zone": "Europe/Paris",
