@@ -75,7 +75,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._keys_of_direct_ancestors_with_id_loaded_from_json = None
         self._keys_of_direct_children_with_id_loaded_from_json = None
         self.flat_obj_dict = None
-        self.json_ancestor_keys_have_been_loaded = False
+        self.ancestor_and_children_have_been_loaded_from_json = False
         self.json_children_keys_have_been_loaded = False
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
@@ -87,15 +87,23 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
 
-    @property
-    def direct_ancestors_with_id(self):
+    def load_ancestors_and_children_from_json(self):
         if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
-                and not self.json_ancestor_keys_have_been_loaded):
+                and self._keys_of_direct_children_with_id_loaded_from_json is not None
+                and not self.ancestor_and_children_have_been_loaded_from_json):
             self._direct_ancestors_with_id = [
                 get_attribute_from_flat_obj_dict(direct_ancestor_key, self.flat_obj_dict) for direct_ancestor_key in
                 self._keys_of_direct_ancestors_with_id_loaded_from_json
             ]
-            self.json_ancestor_keys_have_been_loaded = True
+            self._direct_children_with_id = [
+                get_attribute_from_flat_obj_dict(direct_child_key, self.flat_obj_dict) for direct_child_key in
+                self._keys_of_direct_children_with_id_loaded_from_json
+            ]
+            self.ancestor_and_children_have_been_loaded_from_json = True
+
+    @property
+    def direct_ancestors_with_id(self):
+        self.load_ancestors_and_children_from_json()
 
         return self._direct_ancestors_with_id
 
@@ -105,13 +113,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     @property
     def direct_children_with_id(self):
-        if (self._keys_of_direct_children_with_id_loaded_from_json is not None
-                and not self.json_children_keys_have_been_loaded):
-            self._direct_children_with_id = [
-                get_attribute_from_flat_obj_dict(direct_child_key, self.flat_obj_dict) for direct_child_key in
-                self._keys_of_direct_children_with_id_loaded_from_json
-            ]
-            self.json_children_keys_have_been_loaded = True
+        self.load_ancestors_and_children_from_json()
 
         return self._direct_children_with_id
 
