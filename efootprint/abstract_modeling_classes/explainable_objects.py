@@ -3,6 +3,7 @@ import numbers
 from copy import copy
 import base64
 import array
+from datetime import datetime
 
 import pandas as pd
 import pint_pandas
@@ -314,17 +315,46 @@ class ExplainableQuantity(ExplainableObject):
 
 class ExplainableHourlyQuantities(ExplainableObject):
     def __init__(
-            self, value: pd.DataFrame, label: str = None, left_parent: ExplainableObject = None,
+            self, value: pd.DataFrame | dict, label: str = None, left_parent: ExplainableObject = None,
             right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
-        if not isinstance(value, pd.DataFrame):
-            raise ValueError(f"ExplainableHourlyQuantities values must be pandas DataFrames, got {type(value)}")
-        if value.columns != ["value"]:
+        if isinstance(value, pd.DataFrame):
+            if value.columns != ["value"]:
+                raise ValueError(
+                    f"ExplainableHourlyQuantities values must have only one column named value, "
+                    f"got {value.columns}")
+            if not isinstance(value.dtypes.iloc[0], pint_pandas.pint_array.PintType):
+                raise ValueError(f"The pd DataFrame value of an ExplainableHourlyQuantities object must be typed with "
+                                 f"Pint, got {type(value.dtypes.iloc[0])} dtype")
+
+            super().__init__(value, label, left_parent, right_parent, operator, source)
+        elif isinstance(value, dict):
+            self.json_compressed_value_data = value
+            super().__init__(None, label, left_parent, right_parent, operator, source)
+        else:
             raise ValueError(
-                f"ExplainableHourlyQuantities values must have only one column named value, got {value.columns}")
-        if not isinstance(value.dtypes.iloc[0], pint_pandas.pint_array.PintType):
-            raise ValueError(f"The pd DataFrame value of an ExplainableHourlyQuantities object must be typed with Pint,"
-                             f" got {type(value.dtypes.iloc[0])} dtype")
-        super().__init__(value, label, left_parent, right_parent, operator, source)
+                f"ExplainableHourlyQuantities values must be pandas DataFrames or dict, got {type(value)}")
+
+    @property
+    def value(self):
+        if self._value is None and self.json_compressed_value_data is not None:
+            from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+            self._value = create_hourly_usage_df_from_list(
+                self.decompress_values(self.json_compressed_value_data["compressed_values"]),
+                pint_unit=u(self.json_compressed_value_data["unit"]),
+                start_date=datetime.strptime(self.json_compressed_value_data["start_date"], "%Y-%m-%d %H:%M:%S"),
+                timezone=self.json_compressed_value_data.get("timezone", None)
+            )
+
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+    @value.deleter
+    def value(self):
+        self._value = None
+        self.json_compressed_value_data = None
 
     def to(self, unit_to_convert_to: Unit):
         self.value["value"] = self.value["value"].pint.to(unit_to_convert_to)
@@ -422,7 +452,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         else:
             raise ValueError(f"Can only compare ExplainableHourlyQuantities with ExplainableHourlyQuantities or "
                              f"EmptyExplainableObjects, not {type(compared_object)}")
-        
+
         self_values = self.value["value"].values.data.to_numpy()
 
         if comparator == "max":
@@ -536,13 +566,26 @@ class ExplainableHourlyQuantities(ExplainableObject):
         compressed = cctx.compress(arr.tobytes())
         return base64.b64encode(compressed).decode("utf-8")
 
+    @staticmethod
+    def decompress_values(compressed_str):
+        """Decompress a base64-encoded, zstd-compressed array of doubles."""
+        compressed = base64.b64decode(compressed_str)
+        dctx = zstd.ZstdDecompressor()
+        decompressed = dctx.decompress(compressed)
+        arr = array.array("d")
+        arr.frombytes(decompressed)
+        return arr.tolist()
+
     def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {
-                "compressed_values": self.compress_values(self.value["value"].values._data.tolist()),
-                "unit": str(self.value.dtypes.iloc[0].units),
-                "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S"),
-                "timezone": str(self.value.index.tz) if self.value.index.tz is not None else None,
-            }
+        if self._value is not None:
+            output_dict = {
+                    "compressed_values": self.compress_values(self.value["value"].values._data.tolist()),
+                    "unit": str(self.value.dtypes.iloc[0].units),
+                    "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S"),
+                    "timezone": str(self.value.index.tz) if self.value.index.tz is not None else None,
+                }
+        else:
+            output_dict = self.json_compressed_value_data
         output_dict.update(super().to_json(with_calculated_attributes_data))
 
         return output_dict

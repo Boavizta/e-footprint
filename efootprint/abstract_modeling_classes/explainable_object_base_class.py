@@ -63,7 +63,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.baseline_twin = None
         self.simulation = None
         self.initial_modeling_obj_container = None
-        self.value = value
+        self._value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")
         self.source = source
@@ -80,12 +80,23 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
 
-
         for parent in (self.left_parent, self.right_parent):
             if parent is not None:
                 self.direct_ancestors_with_id += [
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
+
+    @property
+    def value(self):
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+    @value.deleter
+    def value(self):
+        self._value = None
 
     def load_ancestors_and_children_from_json(self):
         if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
@@ -390,11 +401,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {"label": self.label}
 
-        if isinstance(self.value, str):  # Case of technology in WebApplication
+        if isinstance(self._value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
-        elif isinstance(self.value, dict):  # Case of API call responses
+        elif isinstance(self._value, dict) and "compressed_data" not in self._value.keys():  # Case of API call responses
             output_dict["value"] = self.value
-        elif getattr(self.value, "zone", None) is not None:  # Case of timezone in Country class
+        elif getattr(self._value, "zone", None) is not None:  # Case of timezone in Country class
             output_dict["zone"] = self.value.zone
 
         if self.source is not None:
