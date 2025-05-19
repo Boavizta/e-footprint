@@ -1,5 +1,3 @@
-import array
-import base64
 from copy import copy
 from datetime import datetime
 from inspect import signature, _empty as empty_annotation, isabstract
@@ -7,7 +5,6 @@ from types import UnionType
 from typing import List, get_origin, get_args
 
 import pytz
-import zstandard as zstd
 
 import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -20,17 +17,6 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
-from efootprint.utils.tools import time_it
-
-
-def decompress_values(compressed_str):
-    """Decompress a base64-encoded, zstd-compressed array of doubles."""
-    compressed = base64.b64decode(compressed_str)
-    dctx = zstd.ZstdDecompressor()
-    decompressed = dctx.decompress(compressed)
-    arr = array.array("d")
-    arr.frombytes(decompressed)
-    return arr.tolist()
 
 
 def json_to_explainable_object(input_dict):
@@ -52,12 +38,7 @@ def json_to_explainable_object(input_dict):
             label=input_dict["label"], source=source)
     elif "compressed_values" in input_dict.keys() and "unit" in input_dict.keys():
         output = ExplainableHourlyQuantities(
-            create_hourly_usage_df_from_list(
-                decompress_values(input_dict["compressed_values"]),
-                pint_unit=u(input_dict["unit"]),
-                start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
-                timezone=input_dict.get("timezone", None)
-            ),
+            {key: input_dict[key] for key in ["compressed_values", "unit", "start_date", "timezone"]},
             label=input_dict["label"], source=source)
     elif "value" in input_dict.keys() and input_dict["value"] is None:
         output = EmptyExplainableObject(label=input_dict["label"])

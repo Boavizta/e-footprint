@@ -1,5 +1,6 @@
 import random
 import unittest
+from copy import copy
 from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
@@ -241,6 +242,19 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             {"label": "Usage 1", "compressed_values": "KLUv/SDAlQAASAAAAAAAAPA/AAIArxUCLTgC", "unit": "watt",
              "start_date": "2025-01-01 00:00:00", "timezone": None},
             self.hourly_usage1.to_json())
+
+    def test_to_json_with_compressed_data_from_json(self):
+        self.maxDiff = None
+        json_data = {
+            "compressed_values": "KLUv/SDAlQAASAAAAAAAAPA/AAIArxUCLTgC",
+            "unit": "watt",
+            "start_date": "2025-01-01 00:00:00",
+            "timezone": None
+        }
+        obj = ExplainableHourlyQuantities(json_data, "Usage 1")
+        expected_json = copy(json_data)
+        expected_json["label"] = "Usage 1"
+        self.assertDictEqual(json_data, obj.to_json())
 
     def test_ceil_dimensionless(self):
         usage_data = [1.5] * 24
