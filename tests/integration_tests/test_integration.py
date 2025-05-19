@@ -189,14 +189,14 @@ class IntegrationTest(IntegrationTestBaseClass):
         self._test_input_change(server.server_type, ServerTypes.serverless(), server, "server_type")
         self._test_input_change(server.server_type, ServerTypes.autoscaling(), server, "server_type")
         self._test_variations_on_obj_inputs(
-            self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
+            storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
         self._test_input_change(storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
-        self.storage.fixed_nb_of_instances = EmptyExplainableObject()
+        storage.fixed_nb_of_instances = EmptyExplainableObject()
         old_initial_footprint = self.initial_footprint
         self.initial_footprint = system.total_footprint
         self._test_input_change(
             storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
-        self.storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         self.assertEqual(old_initial_footprint, system.total_footprint)
         self.initial_footprint = old_initial_footprint
         self._test_variations_on_obj_inputs(uj)

@@ -17,6 +17,7 @@
                 "compressed_values": "KLUv/SBIzQEAdAIAAAAAAECPQABAn0AAQK9AAIizQABAv0AAcMdAAJ9AAAAAAABwp0AHAEsVAEFAEBAEBAFBAnAE",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
                 "label": "Youtube usage in France hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

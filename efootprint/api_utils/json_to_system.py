@@ -10,14 +10,12 @@ import pytz
 import zstandard as zstd
 
 import efootprint
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
@@ -49,6 +47,7 @@ def json_to_explainable_object(input_dict):
                 input_dict["values"],
                 pint_unit=u(input_dict["unit"]),
                 start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
+                timezone=input_dict.get("timezone", None)
             ),
             label=input_dict["label"], source=source)
     elif "compressed_values" in input_dict.keys() and "unit" in input_dict.keys():
@@ -57,6 +56,7 @@ def json_to_explainable_object(input_dict):
                 decompress_values(input_dict["compressed_values"]),
                 pint_unit=u(input_dict["unit"]),
                 start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
+                timezone=input_dict.get("timezone", None)
             ),
             label=input_dict["label"], source=source)
     elif "value" in input_dict.keys() and input_dict["value"] is None:
