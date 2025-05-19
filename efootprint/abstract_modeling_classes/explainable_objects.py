@@ -540,7 +540,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
         output_dict = {
                 "compressed_values": self.compress_values(self.value["value"].values._data.tolist()),
                 "unit": str(self.value.dtypes.iloc[0].units),
-                "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S")
+                "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S"),
+                "timezone": str(self.value.index.tz) if self.value.index.tz is not None else None,
             }
         output_dict.update(super().to_json(with_calculated_attributes_data))
 

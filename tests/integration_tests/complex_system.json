@@ -18,6 +18,7 @@
                 "compressed_values": "KLUv/SBIzQEAdAIAAAAAAECPQABAn0AAQK9AAIizQABAv0AAcMdAAJ9AAAAAAABwp0AHAEsVAEFAEBAEBAFBAnAE",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
                 "label": "Video watching in France in the morning hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -38,6 +39,7 @@
                 "compressed_values": "KLUv/SBIjQEAFAIAAAAAAECvQABAn0AAQI9AAIizQABYu79AAAAAAABwp0AGACDDnRhAEBAEBAnAEQ==",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
                 "label": "Video watching in France in the evening hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

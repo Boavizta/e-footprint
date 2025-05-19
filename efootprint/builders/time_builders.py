@@ -25,11 +25,11 @@ def create_random_hourly_usage_df(
 
 def create_hourly_usage_df_from_list(
         input_list: List[float], start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
-        pint_unit: pint.Unit = u.dimensionless):
+        pint_unit: pint.Unit = u.dimensionless, timezone=None):
     end_date = start_date + timedelta(hours=len(input_list) - 1)
-    period_index = pd.date_range(start=start_date, end=end_date, freq='h')
+    date_index = pd.date_range(start=start_date, end=end_date, freq='h', tz=timezone)
 
-    df = pd.DataFrame(input_list, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
+    df = pd.DataFrame(input_list, index=date_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
 
     return df
 
