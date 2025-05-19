@@ -199,11 +199,12 @@ def json_to_system(
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         modeling_obj.__setattr__(
             attr_key, ExplainableObjectDict(
-                {flat_obj_dict[key]: json_to_explainable_object(
-                    value) for key, value in attr_value.items()}
+                {flat_obj_dict[key]: json_to_explainable_object(value) for key, value in attr_value.items()}
             ), check_input_validity=False)
-        for explainable_object_item in getattr(modeling_obj, attr_key).values():
-            set_explainable_object_ancestors_and_children_from_json(explainable_object_item, attr_value, flat_obj_dict)
+        for usage_pattern_key, explainable_object_json in attr_value.items():
+            explainable_object_item = getattr(modeling_obj, attr_key)[flat_obj_dict[usage_pattern_key]]
+            set_explainable_object_ancestors_and_children_from_json(
+                explainable_object_item, explainable_object_json, flat_obj_dict)
 
     for system in class_obj_dict["System"].values():
         system_id = system.id
