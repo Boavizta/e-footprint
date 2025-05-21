@@ -266,7 +266,7 @@ class System(ModelingObject):
         total_footprint = (
             sum(
                 sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
-                for key in self.fabrication_footprints.keys()
+                for key in self.fabrication_footprints
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
 

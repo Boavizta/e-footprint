@@ -94,7 +94,7 @@ class ObjectLinkedToModelingObj:
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
         if self.dict_container is not None:
-            if self.key_in_dict not in self.dict_container.keys():
+            if self.key_in_dict not in self.dict_container:
                 raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
                                f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
                                f"This should not happen.")

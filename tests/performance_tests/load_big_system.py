@@ -1,14 +1,18 @@
 import json
+from time import time
 
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.logger import logger
 from efootprint.utils.tools import time_it
 
 
 @time_it
 def timed_json_to_system(input_filepath, *args, **kwargs):
+    start = time()
     with open(input_filepath, "r") as file:
         system_dict = json.load(file)
+    logger.info(f"Finished loading JSON file in {round((time() - start), 3)} seconds")
 
     return json_to_system(system_dict, *args, **kwargs)
 

@@ -72,9 +72,9 @@ def print_archetypes_and_their_configs():
         impact = call_boaviztapi(
             url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
 
-        if "default" in config['CPU']['core_units'].keys():
+        if "default" in config['CPU']['core_units']:
             nb_cpu_core_units = config['CPU']['core_units']['default']
-        elif "core_units" in impact["verbose"]['CPU-1'].keys():
+        elif "core_units" in impact["verbose"]['CPU-1']:
             nb_cpu_core_units = impact["verbose"]['CPU-1']['core_units']['value']
         else:
             nb_cpu_core_units = 1

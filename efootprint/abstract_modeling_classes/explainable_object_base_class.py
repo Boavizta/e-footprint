@@ -403,7 +403,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         if isinstance(self._value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
-        elif isinstance(self._value, dict) and "compressed_data" not in self._value.keys():  # Case of API call responses
+        elif isinstance(self._value, dict) and "compressed_data" not in self._value:  # Case of API call responses
             output_dict["value"] = self.value
         elif getattr(self._value, "zone", None) is not None:  # Case of timezone in Country class
             output_dict["zone"] = self.value.zone

@@ -133,7 +133,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def attributes_with_depending_values(cls):
         output_dict = {}
         for dependent_attribute, dependent_attribute_dependencies in cls.conditional_list_values().items():
-            if dependent_attribute not in output_dict.keys():
+            if dependent_attribute not in output_dict:
                 output_dict[dependent_attribute_dependencies["depends_on"]] = [dependent_attribute]
             else:
                 output_dict[dependent_attribute_dependencies["depends_on"]].append(dependent_attribute)
@@ -167,7 +167,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def check_input_value_type_positivity_and_unit(self, name, input_value, default_values):
         init_sig_params = signature(self.__init__).parameters
-        if name in init_sig_params.keys():
+        if name in init_sig_params:
             annotation = init_sig_params[name].annotation
             if get_origin(annotation):
                 if get_origin(annotation) in (list, List):
@@ -191,19 +191,19 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def check_belonging_to_authorized_values(
             self, name, input_value, list_values, conditional_list_values, attributes_with_depending_values):
-        if name in list_values.keys():
+        if name in list_values:
             if input_value not in list_values[name]:
                 raise ValueError(
                     f"Value {input_value} for attribute {name} is not in the list of possible values: "
                     f"{[elt.value for elt in list_values[name]]}")
 
-        if name in conditional_list_values.keys():
+        if name in conditional_list_values:
             conditional_attr_name = conditional_list_values[name]['depends_on']
             conditional_value = getattr(self, conditional_list_values[name]["depends_on"])
             if conditional_value is None:
                 raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
                                  f"validity of {name}")
-            if (conditional_value in conditional_list_values[name]["conditional_list_values"].keys()
+            if (conditional_value in conditional_list_values[name]["conditional_list_values"]
                     and input_value not in
                     conditional_list_values[name]["conditional_list_values"][conditional_value]):
                 raise ValueError(
@@ -211,12 +211,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     f"{conditional_attr_name} {conditional_value}: "
                     f"{conditional_list_values[name]['conditional_list_values'][conditional_value]}")
 
-        if name in attributes_with_depending_values.keys():
+        if name in attributes_with_depending_values:
             for dependent_attribute in attributes_with_depending_values[name]:
                 dependent_attribute_value = getattr(self, dependent_attribute, None)
                 if (dependent_attribute_value is not None
                         and input_value
-                        in conditional_list_values[dependent_attribute]["conditional_list_values"].keys()
+                        in conditional_list_values[dependent_attribute]["conditional_list_values"]
                         and dependent_attribute_value not in
                         conditional_list_values[dependent_attribute]["conditional_list_values"][input_value]):
                     raise ValueError(

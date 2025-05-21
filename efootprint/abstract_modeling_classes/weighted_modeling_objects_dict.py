@@ -26,7 +26,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             weighted_sum += getattr(modeling_obj, attr_name) * modeling_obj_weight
 
         return weighted_sum.set_label(
-            f"Weighted sum of {attr_name} over {[modeling_obj.id for modeling_obj in self.keys()]}")
+            f"Weighted sum of {attr_name} over {[modeling_obj.id for modeling_obj in self]}")
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
@@ -56,7 +56,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             value_to_set.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
         else:
-            if key in self.keys():
+            if key in self:
                 ModelingUpdate([[self[key], value_to_set]])
             else:
                 copied_dict = dict(self)
@@ -134,7 +134,7 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
             value_updates = []
             new_dict_part = __m.update(kwargs)
             for key, value in new_dict_part.items():
-                if key in self.keys():
+                if key in self:
                     value_updates.append((self[key], value))
             ModelingUpdate(value_updates + [(self, copied_dict)])
         else:
