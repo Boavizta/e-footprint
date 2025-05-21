@@ -94,7 +94,7 @@ class BoaviztaCloudServer(Server):
     def update_api_call_response(self):
         params = {"provider": self.provider.value, "instance_type": self.instance_type.value}
         impact_source = Source(name="Boavizta API cloud instances",
-                               link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params.keys()])}")
+                               link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params])}")
 
         call_response = call_boaviztapi(url=self.impact_url, params=params)
         self.api_call_response = ExplainableObject(

@@ -26,7 +26,7 @@ def nodes_at_depth(node, depth=0, depth_lists=None):
 def calculate_positions(node):
     depth_lists = nodes_at_depth(node)
     max_width = max(len(lst) for lst in depth_lists.values())
-    max_depth = len(depth_lists.keys())
+    max_depth = len(depth_lists)
     pos = {}
 
     for depth, nodes in depth_lists.items():
@@ -63,7 +63,7 @@ def build_calculus_graph(
             if node.left_parent is None and node.right_parent is None:
                 if getattr(node, "source", None) is not None:
                     source_name = node.source.name
-                    if source_name in colors_dict.keys():
+                    if source_name in colors_dict:
                         color = colors_dict[source_name]
                     else:
                         color = colors_dict["default"]

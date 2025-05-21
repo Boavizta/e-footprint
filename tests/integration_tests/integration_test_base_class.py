@@ -125,7 +125,7 @@ class IntegrationTestBaseClass(TestCase):
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:
                 expl_attr_new_value = copy(expl_attr)
-                if special_mult and expl_attr_name in special_mult.keys():
+                if special_mult and expl_attr_name in special_mult:
                     logger.info(f"Multiplying {expl_attr_name} by {special_mult[expl_attr_name]}")
                     expl_attr_new_value.value *= special_mult[expl_attr_name] * u.dimensionless
                 else:

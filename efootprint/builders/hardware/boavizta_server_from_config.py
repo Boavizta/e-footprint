@@ -53,7 +53,7 @@ class BoaviztaServerFromConfig(ServerBase):
         self.params = {"verbose": "true", "archetype": "platform_compute_medium", "criteria": ["gwp"]}
         self.impact_source = Source(
             name="Boavizta API servers",
-            link=f"{self.impact_url}?{'&'.join([key + '=' + str(self.params[key]) for key in self.params.keys()])}")
+            link=f"{self.impact_url}?{'&'.join([key + '=' + str(self.params[key]) for key in self.params])}")
         self.cpu_config = EmptyExplainableObject()
         self.ram_config = EmptyExplainableObject()
         self.api_call_response = EmptyExplainableObject()
@@ -182,12 +182,12 @@ class BoaviztaStorageFromConfig(Storage):
 
     def update_storage_type(self):
         storage_type = None
-        if ("SSD-1" in self.server.api_call_response.value["verbose"].keys() 
-                and "HDD-1" in self.server.api_call_response.value["verbose"].keys()):
+        if ("SSD-1" in self.server.api_call_response.value["verbose"]
+                and "HDD-1" in self.server.api_call_response.value["verbose"]):
             raise ValueError("Both SSD and HDD storage found in the server impact data. This is not implemented yet")
-        elif "SSD-1" in self.server.api_call_response.value["verbose"].keys():
+        elif "SSD-1" in self.server.api_call_response.value["verbose"]:
             storage_type = "SSD"
-        elif "HDD-1" in self.server.api_call_response.value["verbose"].keys():
+        elif "HDD-1" in self.server.api_call_response.value["verbose"]:
             storage_type = "HDD"
 
         self.storage_type = ExplainableObject(
