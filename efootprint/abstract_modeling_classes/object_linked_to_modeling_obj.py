@@ -44,16 +44,17 @@ class ObjectLinkedToModelingObj:
 
     @property
     def key_in_dict(self):
-        if self.dict_container is None:
+        dict_container = self.dict_container
+        if dict_container is None:
             raise ValueError(f"{self} is not linked to a ModelingObject through a dictionary attribute.")
         else:
             output_key = None
-            for key, value in self.dict_container.items():
+            for key, value in dict_container.items():
                 if id(value) == id(self):
                     if output_key is None:
                         output_key = key
                     else:
-                        raise ValueError(f"Multiple keys found for {self} in {self.dict_container}.")
+                        raise ValueError(f"Multiple keys found for {self} in {dict_container}.")
 
         return output_key
 
