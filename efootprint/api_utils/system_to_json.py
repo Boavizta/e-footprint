@@ -20,12 +20,12 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
     return output_dict
 
 
-def system_to_json(input_system, save_calculated_attributes, output_filepath=None):
+def system_to_json(input_system, save_calculated_attributes, output_filepath=None, indent=4):
     output_dict = {"efootprint_version": efootprint.__version__}
     recursively_write_json_dict(output_dict, input_system, save_calculated_attributes)
 
     if output_filepath is not None:
         with open(output_filepath, "w") as file:
-            file.write(json.dumps(output_dict, indent=4))
+            file.write(json.dumps(output_dict, indent=indent))
 
     return output_dict

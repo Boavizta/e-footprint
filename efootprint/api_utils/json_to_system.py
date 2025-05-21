@@ -3,7 +3,9 @@ from datetime import datetime
 from inspect import signature, _empty as empty_annotation, isabstract
 from types import UnionType
 from typing import List, get_origin, get_args
+from functools import lru_cache
 
+from pint import Quantity
 import pytz
 
 import efootprint
@@ -19,12 +21,17 @@ from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
 
 
+@lru_cache(maxsize=None)
+def get_unit(unit_str):
+    return u(unit_str)
+
+
 def json_to_explainable_object(input_dict):
     source = None
     if "source" in input_dict:
         source = Source(input_dict["source"]["name"], input_dict["source"]["link"])
     if "value" in input_dict and "unit" in input_dict:
-        value = input_dict["value"] * u(input_dict["unit"])
+        value = Quantity(input_dict["value"], get_unit(input_dict["unit"]))
         output = ExplainableQuantity(
             value, label=input_dict["label"], source=source)
     elif "values" in input_dict and "unit" in input_dict:
