@@ -21,13 +21,13 @@ from efootprint.logger import logger
 
 def json_to_explainable_object(input_dict):
     source = None
-    if "source" in input_dict.keys():
+    if "source" in input_dict:
         source = Source(input_dict["source"]["name"], input_dict["source"]["link"])
-    if "value" in input_dict.keys() and "unit" in input_dict.keys():
+    if "value" in input_dict and "unit" in input_dict:
         value = input_dict["value"] * u(input_dict["unit"])
         output = ExplainableQuantity(
             value, label=input_dict["label"], source=source)
-    elif "values" in input_dict.keys() and "unit" in input_dict.keys():
+    elif "values" in input_dict and "unit" in input_dict:
         output = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(
                 input_dict["values"],
@@ -36,13 +36,13 @@ def json_to_explainable_object(input_dict):
                 timezone=input_dict.get("timezone", None)
             ),
             label=input_dict["label"], source=source)
-    elif "compressed_values" in input_dict.keys() and "unit" in input_dict.keys():
+    elif "compressed_values" in input_dict and "unit" in input_dict:
         output = ExplainableHourlyQuantities(
             {key: input_dict[key] for key in ["compressed_values", "unit", "start_date", "timezone"]},
             label=input_dict["label"], source=source)
-    elif "value" in input_dict.keys() and input_dict["value"] is None:
+    elif "value" in input_dict and input_dict["value"] is None:
         output = EmptyExplainableObject(label=input_dict["label"])
-    elif "zone" in input_dict.keys():
+    elif "zone" in input_dict:
         output = SourceObject(
             pytz.timezone(input_dict["zone"]), source, input_dict["label"])
     else:
@@ -52,7 +52,7 @@ def json_to_explainable_object(input_dict):
 
 
 def set_explainable_object_ancestors_and_children_from_json(explainable_object, json_input, flat_obj_dict):
-    if "direct_ancestors_with_id" in json_input.keys():
+    if "direct_ancestors_with_id" in json_input:
         explainable_object._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
             "direct_ancestors_with_id"]
         explainable_object._keys_of_direct_children_with_id_loaded_from_json = json_input[
@@ -69,7 +69,7 @@ def compute_classes_generation_order(efootprint_classes_dict):
         for efootprint_class_name, efootprint_class in classes_to_order_dict.items():
             init_sig_params = signature(efootprint_class.__init__).parameters
             classes_needed_to_generate_current_class = []
-            for init_sig_param_key in init_sig_params.keys():
+            for init_sig_param_key in init_sig_params:
                 annotation = init_sig_params[init_sig_param_key].annotation
                 if annotation is empty_annotation or isinstance(annotation, UnionType):
                     continue
@@ -131,27 +131,28 @@ def json_to_system(
     is_loaded_from_system_with_calculated_attributes = False
 
     for class_key in classes_generation_order:
-        if class_key not in system_dict.keys():
+        if class_key not in system_dict:
             continue
-        if class_key not in class_obj_dict.keys():
+        if class_key not in class_obj_dict:
             class_obj_dict[class_key] = {}
         current_class = efootprint_classes_dict[class_key]
         current_class_dict = {}
-        for class_instance_key in system_dict[class_key].keys():
+        for class_instance_key in system_dict[class_key]:
             new_obj = current_class.__new__(current_class)
             new_obj.__dict__["contextual_modeling_obj_containers"] = []
             new_obj.trigger_modeling_updates = False
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
-                if type(attr_value) == dict and "label" in attr_value.keys():
+                if isinstance(attr_value, dict) and "label" in attr_value:
+                    new_value = json_to_explainable_object(attr_value)
                     new_obj.__setattr__(
-                        attr_key, json_to_explainable_object(attr_value), check_input_validity=False)
+                        attr_key, new_value, check_input_validity=False)
                     set_explainable_object_ancestors_and_children_from_json(
-                        getattr(new_obj, attr_key), attr_value, flat_obj_dict)
-                elif type(attr_value) == dict and "label" not in attr_value.keys():
+                        new_value, attr_value, flat_obj_dict)
+                elif isinstance(attr_value, dict) and "label" not in attr_value:
                     explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
-                elif type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
+                elif isinstance(attr_value, str) and attr_key != "id" and attr_value in flat_obj_dict:
                         new_obj.__setattr__(attr_key, flat_obj_dict[attr_value], check_input_validity=False)
-                elif type(attr_value) == list:
+                elif isinstance(attr_value, list):
                     new_obj.__setattr__(
                         attr_key, [flat_obj_dict[elt] for elt in attr_value], check_input_validity=False)
                 else:
@@ -178,12 +179,11 @@ def json_to_system(
         class_obj_dict[class_key] = current_class_dict
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
-        modeling_obj.__setattr__(
-            attr_key, ExplainableObjectDict(
-                {flat_obj_dict[key]: json_to_explainable_object(value) for key, value in attr_value.items()}
-            ), check_input_validity=False)
-        for usage_pattern_key, explainable_object_json in attr_value.items():
-            explainable_object_item = getattr(modeling_obj, attr_key)[flat_obj_dict[usage_pattern_key]]
+        explainable_object_dict = ExplainableObjectDict(
+            {flat_obj_dict[key]: json_to_explainable_object(value) for key, value in attr_value.items()})
+        modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+        for explainable_object_item, explainable_object_json \
+                in zip(explainable_object_dict.values(), attr_value.values()):
             set_explainable_object_ancestors_and_children_from_json(
                 explainable_object_item, explainable_object_json, flat_obj_dict)
 
@@ -200,6 +200,6 @@ def json_to_system(
 
 
 def get_obj_by_key_similarity(obj_container_dict, input_key):
-    for key in obj_container_dict.keys():
+    for key in obj_container_dict:
         if input_key in key:
             return obj_container_dict[key]
