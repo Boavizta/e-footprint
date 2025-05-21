@@ -188,11 +188,7 @@ def json_to_system(
                 explainable_object_item, explainable_object_json, flat_obj_dict)
 
     for system in class_obj_dict["System"].values():
-        system_id = system.id
-        total_footprint = system.total_footprint
-        system.__init__(system.name, usage_patterns=system.usage_patterns)
-        system.id = system_id
-        system.total_footprint = total_footprint
+        system.set_initial_and_previous_footprints()
         if launch_system_computations and not is_loaded_from_system_with_calculated_attributes:
             system.after_init()
 

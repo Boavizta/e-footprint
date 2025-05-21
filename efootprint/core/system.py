@@ -23,13 +23,16 @@ class System(ModelingObject):
         self.total_footprint = EmptyExplainableObject()
         self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
         self.usage_patterns = usage_patterns
+        self.simulation = None
+        self.set_initial_and_previous_footprints()
+
+    def set_initial_and_previous_footprints(self):
         self.previous_change = None
         self.previous_total_energy_footprints_sum_over_period = ExplainableObjectDict()
         self.previous_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
         self.all_changes = []
         self.initial_total_energy_footprints_sum_over_period = ExplainableObjectDict()
         self.initial_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
-        self.simulation = None
 
     def compute_calculated_attributes(self):
         self.check_no_object_to_link_is_already_linked_to_another_system(self.usage_patterns)
