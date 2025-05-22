@@ -1,0 +1,134 @@
+import json
+import os
+
+from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.utils.calculus_graph import build_calculus_graph
+from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+
+
+class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
+    @classmethod
+    def setUpClass(cls):
+        (system, storage, server, streaming_job, streaming_step, upload_job, upload_step, uj, network, start_date,
+         usage_pattern) = cls.generate_simple_system()
+
+        cls.system_json_filepath = "system_with_calculated_attributes.json"
+        system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
+        with open(cls.system_json_filepath, "r") as file:
+            system_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+
+        cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, cls.upload_step, \
+            cls.uj, cls.start_date, cls.network, cls.usage_pattern = \
+            flat_obj_dict[system.id], flat_obj_dict[storage.id], flat_obj_dict[server.id], \
+            flat_obj_dict[streaming_job.id], flat_obj_dict[streaming_step.id], flat_obj_dict[upload_job.id], \
+            flat_obj_dict[upload_step.id], flat_obj_dict[uj.id], start_date, flat_obj_dict[network.id], \
+            flat_obj_dict[usage_pattern.id]
+
+        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
+
+        cls.ref_json_filename = "simple_system"
+
+    def test_all_objects_linked_to_system(self):
+        self.run_test_all_objects_linked_to_system()
+
+    def test_calculation_graph(self):
+        self.run_test_calculation_graph()
+
+    def test_system_calculation_graph_right_after_json_to_system(self):
+        with open(self.system_json_filepath, "r") as file:
+            system_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        system = flat_obj_dict[self.system.id]
+        graph = build_calculus_graph(system.total_footprint)
+        graph.show(
+            os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), notebook=False)
+        # Assert generated file has a number of characters > 100000:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), "r") as f:
+            content = f.read()
+        self.assertGreater(len(content), 100000)
+
+    def test_object_relationship_graph(self):
+        self.run_test_object_relationship_graph()
+
+    def test_variations_on_inputs(self):
+        self.run_test_variations_on_inputs()
+
+    def test_set_uj_duration_to_0_and_back_to_previous_value(self):
+        self.run_test_set_uj_duration_to_0_and_back_to_previous_value()
+
+    def test_hourly_usage_journey_starts_update(self):
+        self.run_test_hourly_usage_journey_starts_update()
+
+    def test_uj_step_update(self):
+        self.run_test_uj_step_update()
+
+    def test_device_pop_update(self):
+        self.run_test_device_pop_update()
+
+    def test_update_server(self):
+        self.run_test_update_server()
+
+    def test_update_storage(self):
+        self.run_test_update_storage()
+
+    def test_update_jobs(self):
+        self.run_test_update_jobs()
+
+    def test_update_uj_steps(self):
+        self.run_test_update_uj_steps()
+
+    def test_update_usage_journey(self):
+        self.run_test_update_usage_journey()
+
+    def test_update_country_in_usage_pattern(self):
+        self.run_test_update_country_in_usage_pattern()
+
+    def test_update_network(self):
+        self.run_test_update_network()
+
+    def test_add_uj_step_without_job(self):
+        self.run_test_add_uj_step_without_job()
+
+    def test_add_usage_pattern(self):
+        self.run_test_add_usage_pattern()
+
+    def test_system_to_json(self):
+        self.run_system_to_json_test(self.system)
+
+    def test_json_to_system(self):
+        self.run_json_to_system_test(self.system)
+
+    def test_variations_on_inputs_after_json_to_system(self):
+        self.run_test_variations_on_inputs_after_json_to_system()
+
+    def test_update_usage_journey_after_json_to_system(self):
+        self.run_test_update_usage_journey_after_json_to_system()
+
+    def test_update_jobs_after_json_to_system(self):
+        self.run_test_update_jobs_after_json_to_system()
+
+    def test_modeling_object_prints(self):
+        self.run_test_modeling_object_prints()
+
+    def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+        self.run_test_update_footprint_job_datastored_from_positive_value_to_negative_value()
+
+    def test_simulation_input_change(self):
+        self.run_test_simulation_input_change()
+
+    def test_simulation_multiple_input_changes(self):
+        self.run_test_simulation_multiple_input_changes()
+
+    def test_simulation_add_new_object(self):
+        self.run_test_simulation_add_new_object()
+
+    def test_simulation_add_existing_object(self):
+        self.run_test_simulation_add_existing_object()
+
+    def test_simulation_add_multiple_objects(self):
+        self.run_test_simulation_add_multiple_objects()
+
+    def test_simulation_add_objects_and_make_input_changes(self):
+        self.run_test_simulation_add_objects_and_make_input_changes()

@@ -23,7 +23,7 @@ from efootprint.logger import logger
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
-class IntegrationTestComplexSystem(IntegrationTestBaseClass):
+class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     @staticmethod
     def generate_complex_system():
         storage_1 = Storage(
@@ -203,7 +203,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "complex_system"
 
-    def test_all_objects_linked_to_system(self):
+    def run_test_all_objects_linked_to_system(self):
         expected_list = [
             self.server2, self.server1, self.server3, self.storage_1, self.storage_2, self.storage_3,
             self.usage_pattern1, self.usage_pattern2,
@@ -213,7 +213,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             self.usage_pattern2.country]
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
-    def test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+    def run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         logger.warning("Setting storage fixed_nb_of_instances to not empty")
         old_fixed_nb_of_instances = self.storage_1.fixed_nb_of_instances
         self.storage_1.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
@@ -227,7 +227,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+    def run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         logger.warning("Setting on premise fixed_nb_of_instances to not empty")
         old_fixed_nb_of_instances = self.server2.fixed_nb_of_instances
         self.server2.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
@@ -241,7 +241,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_remove_dailymotion_and_tiktok_uj_step(self):
+    def run_test_remove_dailymotion_and_tiktok_uj_step(self):
         logger.warning("Removing Dailymotion and TikTok uj step")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
@@ -254,7 +254,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.server2, self.storage_1, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_remove_dailymotion_single_job(self):
+    def run_test_remove_dailymotion_single_job(self):
         logger.warning("Removing Dailymotion job")
         self.dailymotion_step.jobs = []
 
@@ -267,7 +267,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_remove_one_tiktok_job(self):
+    def run_test_remove_one_tiktok_job(self):
         logger.warning("Removing one TikTok job")
         self.tiktok_step.jobs = [self.tiktok_job]
 
@@ -281,7 +281,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_remove_all_tiktok_jobs(self):
+    def run_test_remove_all_tiktok_jobs(self):
         logger.warning("Removing all TikTok jobs")
         self.tiktok_step.jobs = []
 
@@ -296,7 +296,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_add_new_job(self):
+    def run_test_add_new_job(self):
         logger.warning("Adding job")
         new_job = Job(
             "new job", self.server1, data_transferred=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
@@ -319,7 +319,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_add_new_usage_pattern(self):
+    def run_test_add_new_usage_pattern(self):
         new_up = UsagePattern(
             "New usage pattern video watching in France", self.uj, [Device.laptop()], self.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
@@ -334,13 +334,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_system_to_json(self):
+    def run_test_system_to_json(self):
         self.run_system_to_json_test(self.system)
 
-    def test_json_to_system(self):
+    def run_test_json_to_system(self):
         self.run_json_to_system_test(self.system)
 
-    def test_add_usage_pattern_after_json_to_system(self):
+    def run_test_add_usage_pattern_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR,  f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
 
@@ -368,14 +368,14 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
 
-    def test_plot_footprints_by_category_and_object(self):
+    def run_test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
 
-    def test_plot_footprints_by_category_and_object_return_only_html(self):
+    def run_test_plot_footprints_by_category_and_object_return_only_html(self):
         html = self.system.plot_footprints_by_category_and_object(width=400, height=100, return_only_html=True)
         self.assertTrue(len(html) > 1000)
 
-    def test_plot_emission_diffs(self):
+    def run_test_plot_emission_diffs(self):
         file = "system_emission_diffs.png"
         self.system.previous_change = None
 
@@ -389,7 +389,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.assertTrue(os.path.isfile(file))
 
-    def test_simulation_input_change(self):
+    def run_test_simulation_input_change(self):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
@@ -402,7 +402,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id,
                       [elt.id for elt in simulation.values_to_recompute])
 
-    def test_simulation_multiple_input_changes(self):
+    def run_test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server1.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
@@ -416,7 +416,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
         self.assertIn(self.server1.energy_footprint.id, recomputed_elements_ids)
 
-    def test_simulation_add_new_object(self):
+    def run_test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
@@ -439,7 +439,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [new_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_existing_object(self):
+    def run_test_simulation_add_existing_object(self):
         simulation = ModelingUpdate(
             [[self.upload_step.jobs, self.upload_step.jobs + [self.upload_job]]],
             self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
@@ -456,7 +456,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [self.upload_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_multiple_objects(self):
+    def run_test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
@@ -484,7 +484,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [new_job, new_job2, self.streaming_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_objects_and_make_input_changes(self):
+    def run_test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),

@@ -127,13 +127,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
-    def test_all_objects_linked_to_system(self):
+    def run_test_all_objects_linked_to_system(self):
         self.assertEqual(
             {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
              self.upload_step, self.streaming_job, self.upload_job, self.usage_pattern.devices[0],
              self.usage_pattern.country}, set(self.system.all_linked_objects))
 
-    def test_calculation_graph(self):
+    def run_test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
         graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), notebook=False)
@@ -142,13 +142,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             content = f.read()
         self.assertGreater(len(content), 100000)
 
-    def test_object_relationship_graph(self):
+    def run_test_object_relationship_graph(self):
         object_relationships_graph = build_object_relationships_graph(
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
 
-    def test_variations_on_inputs(self):
+    def run_test_variations_on_inputs(self):
         self._test_variations_on_obj_inputs(self.streaming_step)
         self._test_variations_on_obj_inputs(
             self.server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
@@ -177,7 +177,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job)
 
-    def test_set_uj_duration_to_0_and_back_to_previous_value(self):
+    def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
         previous_user_time_spents = []
         for uj_step in self.uj.uj_steps:
@@ -193,7 +193,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_hourly_usage_journey_starts_update(self):
+    def run_test_hourly_usage_journey_starts_update(self):
         logger.warning("Updating hourly user journey starts")
         initial_hourly_uj_starts = self.usage_pattern.hourly_usage_journey_starts
         self.usage_pattern.hourly_usage_journey_starts = SourceHourlyValues(
@@ -203,14 +203,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.usage_pattern.hourly_usage_journey_starts = initial_hourly_uj_starts
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_uj_step_update(self):
+    def run_test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
         self.uj.uj_steps = [self.streaming_step]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_device_pop_update(self):
+    def run_test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
         self.usage_pattern.devices = [Device.laptop(), Device.screen()]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
@@ -219,7 +219,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_update_server(self):
+    def run_test_update_server(self):
         new_storage = Storage(
             "new SSD storage, identical in specs to default one",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
@@ -267,7 +267,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_update_storage(self):
+    def run_test_update_storage(self):
         new_storage = Storage(
             "New storage, identical in specs to Default SSD storage",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
@@ -297,7 +297,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_update_jobs(self):
+    def run_test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
         new_job = Job("new job", self.server, data_transferred=SourceValue(5 * u.GB),
          data_stored=SourceValue(50 * u.MB), request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
@@ -315,7 +315,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
-    def test_update_uj_steps(self):
+    def run_test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
         new_step = UsageJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
@@ -334,7 +334,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
-    def test_update_usage_journey(self):
+    def run_test_update_usage_journey(self):
         logger.warning("Changing user journey")
         new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
         self.usage_pattern.usage_journey = new_uj
@@ -348,7 +348,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
-    def test_update_country_in_usage_pattern(self):
+    def run_test_update_country_in_usage_pattern(self):
         logger.warning("Changing usage pattern country")
 
         self.usage_pattern.country = Countries.MALAYSIA()
@@ -362,7 +362,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.network, self.usage_pattern])
 
-    def test_update_network(self):
+    def run_test_update_network(self):
         logger.warning("Changing network")
         new_network = Network(
             "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -378,7 +378,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.network])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_add_uj_step_without_job(self):
+    def run_test_add_uj_step_without_job(self):
         logger.warning("Add uj step without job")
 
         step_without_job = UsageJourneyStep(
@@ -401,7 +401,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
-    def test_add_usage_pattern(self):
+    def run_test_add_usage_pattern(self):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
         analytics_server = BoaviztaCloudServer.from_defaults(
             f"analytics provider server", server_type=ServerTypes.serverless(), storage=Storage.ssd())
@@ -431,13 +431,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
-    def test_system_to_json(self):
+    def run_test_system_to_json(self):
         self.run_system_to_json_test(self.system)
 
-    def test_json_to_system(self):
+    def run_test_json_to_system(self):
         self.run_json_to_system_test(self.system)
 
-    def test_variations_on_inputs_after_json_to_system(self):
+    def run_test_variations_on_inputs_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -475,7 +475,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Job"].values())))
 
-    def test_update_usage_journey_after_json_to_system(self):
+    def run_test_update_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -498,7 +498,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
-    def test_update_jobs_after_json_to_system(self):
+    def run_test_update_jobs_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -527,7 +527,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
-    def test_modeling_object_prints(self):
+    def run_test_modeling_object_prints(self):
         str(self.usage_pattern)
         str(self.usage_pattern)
         str(self.server)
@@ -537,7 +537,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         str(self.network)
         str(self.system)
 
-    def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+    def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
         initial_upload_data_stored = self.upload_job.data_stored
         initial_storage_need = self.storage.storage_needed
         initial_storage_freed = self.storage.storage_freed
@@ -569,7 +569,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
 
-    def test_simulation_input_change(self):
+    def run_test_simulation_input_change(self):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
@@ -585,7 +585,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id,
                       [elt.id for elt in simulation.values_to_recompute])
 
-    def test_simulation_multiple_input_changes(self):
+    def run_test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
@@ -599,7 +599,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
         self.assertIn(self.server.energy_footprint.id, recomputed_elements_ids)
 
-    def test_simulation_add_new_object(self):
+    def run_test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -619,7 +619,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [new_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_existing_object(self):
+    def run_test_simulation_add_existing_object(self):
         simulation = ModelingUpdate([[self.upload_step.jobs, self.upload_step.jobs + [self.upload_job]]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
@@ -634,7 +634,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [self.upload_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_multiple_objects(self):
+    def run_test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
@@ -660,7 +660,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_upload_step_jobs + [new_job, new_job2, self.streaming_job], self.upload_step.jobs)
         simulation.reset_values()
 
-    def test_simulation_add_objects_and_make_input_changes(self):
+    def run_test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
