@@ -196,7 +196,9 @@ def json_to_system(
 
     for system in class_obj_dict["System"].values():
         system.set_initial_and_previous_footprints()
-        if launch_system_computations and not is_loaded_from_system_with_calculated_attributes:
+        if is_loaded_from_system_with_calculated_attributes:
+            system.trigger_modeling_updates = True
+        elif launch_system_computations:
             system.after_init()
 
     return class_obj_dict, flat_obj_dict

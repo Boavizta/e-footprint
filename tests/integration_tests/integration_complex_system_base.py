@@ -24,9 +24,9 @@ from tests.integration_tests.integration_test_base_class import IntegrationTestB
 
 
 class IntegrationTestComplexSystem(IntegrationTestBaseClass):
-    @classmethod
-    def setUpClass(cls):
-        cls.storage_1 = Storage(
+    @staticmethod
+    def generate_complex_system():
+        storage_1 = Storage(
             "Default SSD storage 1",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -39,7 +39,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
 
-        cls.storage_2 = Storage(
+        storage_2 = Storage(
             "Default SSD storage 2",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -52,7 +52,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
 
-        cls.server1 = Server(
+        server1 = Server(
             "Server 1",
             server_type=ServerTypes.autoscaling(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -66,11 +66,11 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
-            storage=cls.storage_1
+            storage=storage_1
         )
         cores_per_cpu_units = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
         nb_cpu_units = SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
-        cls.server2 = Server(
+        server2 = Server(
             "Server 2",
             server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -84,102 +84,122 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
-            storage=cls.storage_2
+            storage=storage_2
         )
-        cls.server3 = Server.from_defaults(
+        server3 = Server.from_defaults(
             "TikTok Analytics server", server_type=ServerTypes.serverless(),
             storage=Storage.ssd("TikTok Analytics storage"))
-        cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
-        cls.server3.base_compute_consumption = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
-        cls.storage_3 = cls.server3.storage
+        server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
+        server3.base_compute_consumption = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
+        storage_3 = server3.storage
 
-        cls.streaming_job = Job("streaming", cls.server1, data_transferred=SourceValue(1 * u.GB),
+        streaming_job = Job("streaming", server1, data_transferred=SourceValue(1 * u.GB),
                                 data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
-        cls.streaming_step = UsageJourneyStep(
-            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
+        streaming_step = UsageJourneyStep(
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[streaming_job])
 
-        cls.upload_job = Job("upload", cls.server1, data_transferred=SourceValue(300 * u.kB),
+        upload_job = Job("upload", server1, data_transferred=SourceValue(300 * u.kB),
                              data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(0.4 * u.s),
                              ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
-        cls.upload_step = UsageJourneyStep(
-            "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
+        upload_step = UsageJourneyStep(
+            "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[upload_job])
 
-        cls.dailymotion_job = Job(
-            "dailymotion", cls.server1, data_transferred=SourceValue(3.3 * u.MB),
-             data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
-             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
+        dailymotion_job = Job(
+            "dailymotion", server1, data_transferred=SourceValue(3.3 * u.MB),
+            data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
+            ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.dailymotion_step = UsageJourneyStep(
-            "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
+        dailymotion_step = UsageJourneyStep(
+            "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[dailymotion_job])
 
-        cls.tiktok_job = Job(
-            "tiktok", cls.server2, data_transferred=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
+        tiktok_job = Job(
+            "tiktok", server2, data_transferred=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.tiktok_analytics_job = Job(
-            "tiktok analytics", cls.server3, data_transferred=SourceValue(50 * u.kB), data_stored=SourceValue(50 * u.kB),
+        tiktok_analytics_job = Job(
+            "tiktok analytics", server3, data_transferred=SourceValue(50 * u.kB),
+            data_stored=SourceValue(50 * u.kB),
             request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
             compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.tiktok_step = UsageJourneyStep(
+        tiktok_step = UsageJourneyStep(
             "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min),
-            jobs=[cls.tiktok_job, cls.tiktok_analytics_job])
+            jobs=[tiktok_job, tiktok_analytics_job])
 
-        cls.uj = UsageJourney(
-            "Daily video usage", uj_steps=[cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step])
+        uj = UsageJourney(
+            "Daily video usage", uj_steps=[streaming_step, upload_step, dailymotion_step, tiktok_step])
 
-        cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
-        cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        cls.usage_pattern1 = UsagePattern(
-            "Video watching in France in the morning", cls.uj, [Device.laptop()], cls.network,
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        usage_pattern1 = UsagePattern(
+            "Video watching in France in the morning", uj, [Device.laptop()], network,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
-                    [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=cls.start_date)))
+                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=start_date)))
 
-        cls.usage_pattern2 = UsagePattern(
-            "Video watching in France in the evening", cls.uj, [Device.laptop()], cls.network,
+        usage_pattern2 = UsagePattern(
+            "Video watching in France in the evening", uj, [Device.laptop()], network,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
-                [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=cls.start_date)))
+                [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date)))
 
         # Normalize usage pattern ids before computation is made because it is used as dictionary key in intermediary calculations
-        cls.usage_pattern1.id = "uuid" + cls.usage_pattern1.id[9:]
-        cls.usage_pattern2.id = "uuid" + cls.usage_pattern2.id[9:]
+        usage_pattern1.id = "uuid" + usage_pattern1.id[9:]
+        usage_pattern2.id = "uuid" + usage_pattern2.id[9:]
 
-        cls.system = System("system 1", [cls.usage_pattern1, cls.usage_pattern2])
-        mod_obj_list = [cls.system] + cls.system.all_linked_objects
+        system = System("system 1", [usage_pattern1, usage_pattern2])
+        mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
-            if mod_obj not in [cls.usage_pattern1, cls.usage_pattern2]:
+            if mod_obj not in [usage_pattern1, usage_pattern2]:
                 mod_obj.id = "uuid" + mod_obj.id[9:]
 
-        cls.initial_footprint = cls.system.total_footprint
+        return system, storage_1, storage_2, storage_3, server1, server2, server3, \
+            streaming_job, upload_job, dailymotion_job, tiktok_job, tiktok_analytics_job, \
+            streaming_step, upload_step, dailymotion_step, tiktok_step, \
+            start_date, usage_pattern1, usage_pattern2, uj, network
+
+    @classmethod
+    def initialize_footprints(cls, system, storage_1, storage_2, storage_3, server1, server2, server3, usage_pattern1,
+                              usage_pattern2, network):
+        cls.initial_footprint = system.total_footprint
         cls.initial_fab_footprints = {
-            cls.storage_1: cls.storage_1.instances_fabrication_footprint,
-            cls.storage_2: cls.storage_2.instances_fabrication_footprint,
-            cls.storage_3: cls.storage_3.instances_fabrication_footprint,
-            cls.server1: cls.server1.instances_fabrication_footprint,
-            cls.server2: cls.server2.instances_fabrication_footprint,
-            cls.server3: cls.server3.instances_fabrication_footprint,
-            cls.usage_pattern1: cls.usage_pattern1.instances_fabrication_footprint,
-            cls.usage_pattern2: cls.usage_pattern2.instances_fabrication_footprint,
+            storage_1: storage_1.instances_fabrication_footprint,
+            storage_2: storage_2.instances_fabrication_footprint,
+            storage_3: storage_3.instances_fabrication_footprint,
+            server1: server1.instances_fabrication_footprint,
+            server2: server2.instances_fabrication_footprint,
+            server3: server3.instances_fabrication_footprint,
+            usage_pattern1: usage_pattern1.instances_fabrication_footprint,
+            usage_pattern2: usage_pattern2.instances_fabrication_footprint,
         }
         cls.initial_energy_footprints = {
-            cls.storage_1: cls.storage_1.energy_footprint,
-            cls.storage_2: cls.storage_2.energy_footprint,
-            cls.storage_3: cls.storage_3.energy_footprint,
-            cls.server1: cls.server1.energy_footprint,
-            cls.server2: cls.server2.energy_footprint,
-            cls.server3: cls.server3.energy_footprint,
-            cls.network: cls.network.energy_footprint,
-            cls.usage_pattern1: cls.usage_pattern1.energy_footprint,
-            cls.usage_pattern2: cls.usage_pattern2.energy_footprint,
+            storage_1: storage_1.energy_footprint,
+            storage_2: storage_2.energy_footprint,
+            storage_3: storage_3.energy_footprint,
+            server1: server1.energy_footprint,
+            server2: server2.energy_footprint,
+            server3: server3.energy_footprint,
+            network: network.energy_footprint,
+            usage_pattern1: usage_pattern1.energy_footprint,
+            usage_pattern2: usage_pattern2.energy_footprint,
         }
 
-        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprint_sum_over_period
-        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
+        cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
+        cls.initial_system_total_energy_footprint = system.total_energy_footprint_sum_over_period
+
+
+    @classmethod
+    def setUpClass(cls):
+        cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
+            cls.streaming_job, cls.upload_job, cls.dailymotion_job, cls.tiktok_job, cls.tiktok_analytics_job, \
+            cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step, \
+            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network = cls.generate_complex_system()
+
+        cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
+                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network)
 
         cls.ref_json_filename = "complex_system"
 

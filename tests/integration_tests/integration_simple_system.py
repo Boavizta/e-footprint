@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
-from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.hardware.device import Device
@@ -28,10 +27,10 @@ from efootprint.builders.time_builders import create_hourly_usage_df_from_list, 
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
-class IntegrationTest(IntegrationTestBaseClass):
-    @classmethod
-    def setUpClass(cls):
-        cls.storage = Storage(
+class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
+    @staticmethod
+    def generate_simple_system():
+        storage = Storage(
             "Default SSD storage",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -45,7 +44,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
-        cls.server = Server(
+        server = Server(
             "Default server",
             ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
@@ -59,64 +58,74 @@ class IntegrationTest(IntegrationTestBaseClass):
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
-            storage=cls.storage
+            storage=storage
         )
 
-        cls.streaming_job = Job("streaming", server=cls.server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        streaming_job = Job("streaming", server=server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+                                data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+                                ram_needed=SourceValue(100 * u.MB),
+                                compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.streaming_step = UsageJourneyStep(
-            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
+        streaming_step = UsageJourneyStep(
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[streaming_job])
 
-        cls.upload_job = Job("upload", server=cls.server, data_transferred=SourceValue(300 * u.MB),
-            data_stored=SourceValue(300 * u.MB), request_duration=SourceValue(40 * u.s),
-            ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
+        upload_job = Job("upload", server=server, data_transferred=SourceValue(300 * u.MB),
+                             data_stored=SourceValue(300 * u.MB), request_duration=SourceValue(40 * u.s),
+                             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
 
-        cls.upload_step = UsageJourneyStep(
-            "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
+        upload_step = UsageJourneyStep(
+            "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[upload_job])
 
-        cls.uj = UsageJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
-        cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        uj = UsageJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])
+        network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
-        cls.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [Device.laptop()], cls.network, Countries.FRANCE(),
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        usage_pattern = UsagePattern(
+            "Youtube usage in France", uj, [Device.laptop()], network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
-                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], cls.start_date)))
+                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date)))
 
         # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
         # calculations
-        cls.usage_pattern.id = "uuid" + cls.usage_pattern.id[9:]
+        usage_pattern.id = "uuid" + usage_pattern.id[9:]
 
-        cls.system = System("system 1", [cls.usage_pattern])
-        mod_obj_list = [cls.system] + cls.system.all_linked_objects
+        system = System("system 1", [usage_pattern])
+        mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
-            if mod_obj != cls.usage_pattern:
+            if mod_obj != usage_pattern:
                 mod_obj.id = "uuid" + mod_obj.id[9:]
 
-        cls.initial_footprint = cls.system.total_footprint
+        return (system, storage, server, streaming_job, streaming_step, upload_job, upload_step, uj, network,
+                start_date, usage_pattern)
+
+    @classmethod
+    def initialize_footprints(cls, system, storage, server, usage_pattern, network):
+        cls.initial_footprint = system.total_footprint
 
         cls.initial_fab_footprints = {
-            cls.storage: cls.storage.instances_fabrication_footprint,
-            cls.server: cls.server.instances_fabrication_footprint,
-            cls.usage_pattern: cls.usage_pattern.devices_fabrication_footprint,
+            storage: storage.instances_fabrication_footprint,
+            server: server.instances_fabrication_footprint,
+            usage_pattern: usage_pattern.devices_fabrication_footprint,
         }
 
         cls.initial_energy_footprints = {
-            cls.storage: cls.storage.energy_footprint,
-            cls.server: cls.server.energy_footprint,
-            cls.network: cls.network.energy_footprint,
-            cls.usage_pattern: cls.usage_pattern.devices_energy_footprint,
+            storage: storage.energy_footprint,
+            server: server.energy_footprint,
+            network: network.energy_footprint,
+            usage_pattern: usage_pattern.devices_energy_footprint,
         }
 
-        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprint_sum_over_period
-        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
+        cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
+        cls.initial_system_total_energy_footprint = system.total_energy_footprint_sum_over_period
+
+    @classmethod
+    def setUpClass(cls):
+        (cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, cls.upload_step,
+         cls.uj, cls.network, cls.start_date, cls.usage_pattern) = cls.generate_simple_system()
+
+        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
 
         cls.ref_json_filename = "simple_system"
-
-        cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "system_with_calculated_attributes.json")
-        system_to_json(cls.system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
 
     def test_all_objects_linked_to_system(self):
         self.assertEqual(
@@ -128,6 +137,10 @@ class IntegrationTest(IntegrationTestBaseClass):
         graph = build_calculus_graph(self.system.total_footprint)
         graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), notebook=False)
+        # Assert generated file has a number of characters > 100000:
+        with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), "r") as f:
+            content = f.read()
+        self.assertGreater(len(content), 100000)
 
     def test_object_relationship_graph(self):
         object_relationships_graph = build_object_relationships_graph(
@@ -163,46 +176,6 @@ class IntegrationTest(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.network)
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job)
-
-    def test_variations_on_inputs_after_system_reloading_with_calculated_attributes(self):
-        with open(self.system_json_filepath, "r") as file:
-            system_data = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(system_data, launch_system_computations=False)
-        streaming_step = flat_obj_dict[self.streaming_step.id]
-        server = flat_obj_dict[self.server.id]
-        system = flat_obj_dict[self.system.id]
-        uj = flat_obj_dict[self.uj.id]
-        network = flat_obj_dict[self.network.id]
-        storage = flat_obj_dict[self.storage.id]
-        usage_pattern = flat_obj_dict[self.usage_pattern.id]
-        streaming_job = flat_obj_dict[self.streaming_job.id]
-        self._test_variations_on_obj_inputs(streaming_step)
-        self._test_variations_on_obj_inputs(
-            server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
-            special_mult={
-                "ram": 0.01, "server_utilization_rate": 0.5,
-                "base_ram_consumption": 380,
-                "base_compute_consumption": 10
-            })
-        self._test_input_change(server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), server,
-                                "fixed_nb_of_instances")
-        self._test_input_change(server.server_type, ServerTypes.serverless(), server, "server_type")
-        self._test_input_change(server.server_type, ServerTypes.autoscaling(), server, "server_type")
-        self._test_variations_on_obj_inputs(
-            storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
-        self._test_input_change(storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
-        storage.fixed_nb_of_instances = EmptyExplainableObject()
-        old_initial_footprint = self.initial_footprint
-        self.initial_footprint = system.total_footprint
-        self._test_input_change(
-            storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
-        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
-        self.assertEqual(old_initial_footprint, system.total_footprint)
-        self.initial_footprint = old_initial_footprint
-        self._test_variations_on_obj_inputs(uj)
-        self._test_variations_on_obj_inputs(network)
-        self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(streaming_job)
 
     def test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
@@ -448,11 +421,12 @@ class IntegrationTest(IntegrationTestBaseClass):
                 timespan=1 * u.year, input_volume=1, frequency="daily",
                 start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
         )
-
+        logger.warning(f"Adding usage pattern {usage_pattern.name} to system")
         self.system.usage_patterns += [usage_pattern]
 
         self.assertFalse(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
+        logger.warning("Removing the new usage pattern from the system")
         self.system.usage_patterns = self.system.usage_patterns[:-1]
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
