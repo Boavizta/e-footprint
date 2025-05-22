@@ -2,18 +2,6 @@ from tests.integration_tests.integration_complex_system_base_class import Integr
 
 
 class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass):
-    @classmethod
-    def setUpClass(cls):
-        cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
-            cls.streaming_job, cls.upload_job, cls.dailymotion_job, cls.tiktok_job, cls.tiktok_analytics_job, \
-            cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step, \
-            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network = cls.generate_complex_system()
-
-        cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
-                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network)
-
-        cls.ref_json_filename = "complex_system"
-
     def test_all_objects_linked_to_system(self):
         self.run_test_all_objects_linked_to_system()
 

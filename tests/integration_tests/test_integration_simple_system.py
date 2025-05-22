@@ -2,15 +2,6 @@ from tests.integration_tests.integration_simple_system_base_class import Integra
 
 
 class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
-    @classmethod
-    def setUpClass(cls):
-        cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, cls.upload_step, \
-            cls.uj, cls.network, cls.start_date, cls.usage_pattern = cls.generate_simple_system()
-
-        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
-
-        cls.ref_json_filename = "simple_system"
-
     def test_all_objects_linked_to_system(self):
         self.run_test_all_objects_linked_to_system()
 
