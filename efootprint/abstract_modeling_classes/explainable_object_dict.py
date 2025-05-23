@@ -61,7 +61,6 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
             else:
                 raise ValueError(f"Key {key} is not a ModelingObject or a string")
 
-
         return output_dict
 
     def __repr__(self):

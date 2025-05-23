@@ -32,8 +32,7 @@ def json_to_explainable_object(input_dict):
         source = Source(input_dict["source"]["name"], input_dict["source"]["link"])
     if "value" in input_dict and "unit" in input_dict:
         value = Quantity(input_dict["value"], get_unit(input_dict["unit"]))
-        output = ExplainableQuantity(
-            value, label=input_dict["label"], source=source)
+        output = ExplainableQuantity(value, label=input_dict["label"], source=source)
     elif "values" in input_dict and "unit" in input_dict:
         output = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(
@@ -58,12 +57,13 @@ def json_to_explainable_object(input_dict):
     return output
 
 
-def set_explainable_object_ancestors_and_children_from_json(explainable_object, json_input, flat_obj_dict):
+def initialize_calculus_graph_data(explainable_object, json_input, flat_obj_dict):
     if "direct_ancestors_with_id" in json_input:
         explainable_object._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
             "direct_ancestors_with_id"]
         explainable_object._keys_of_direct_children_with_id_loaded_from_json = json_input[
             "direct_children_with_id"]
+        explainable_object.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
         explainable_object.flat_obj_dict = flat_obj_dict
 
 
@@ -151,10 +151,10 @@ def json_to_system(
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if isinstance(attr_value, dict) and "label" in attr_value:
                     new_value = json_to_explainable_object(attr_value)
-                    new_obj.__setattr__(
-                        attr_key, new_value, check_input_validity=False)
-                    set_explainable_object_ancestors_and_children_from_json(
-                        new_value, attr_value, flat_obj_dict)
+                    new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
+                    # Calculus graph data is added after setting as new_obj attribute to not interfere
+                    # with set_modeling_obj_container logic
+                    initialize_calculus_graph_data(new_value, attr_value, flat_obj_dict)
                 elif isinstance(attr_value, dict) and "label" not in attr_value:
                     explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
                 elif isinstance(attr_value, str) and attr_key != "id" and attr_value in flat_obj_dict:
@@ -191,7 +191,7 @@ def json_to_system(
         modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
-            set_explainable_object_ancestors_and_children_from_json(
+            initialize_calculus_graph_data(
                 explainable_object_item, explainable_object_json, flat_obj_dict)
 
     for system in class_obj_dict["System"].values():
