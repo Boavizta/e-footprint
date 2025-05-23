@@ -16,30 +16,38 @@ class TestExplainableObjectBaseClass(TestCase):
         self.c.left_parent = self.a
         self.c.right_parent = self.b
         self.c.operator = "+"
+        self.c.direct_ancestors_with_id = [self.a, self.b]
 
         self.d = ExplainableObject(4, "d")
         self.d.left_parent = self.c
         self.d.right_parent = self.a
         self.d.operator = "+"
+        self.d.direct_ancestors_with_id = [self.c, self.a]
 
         self.e = ExplainableObject(5, "e")
         self.e.left_parent = self.c
         self.e.right_parent = self.b
         self.e.operator = "+"
         self.e.label = None
+        self.e.direct_ancestors_with_id = [self.c, self.b]
 
         self.f = ExplainableObject(6, "f")
         self.f.left_parent = self.e
         self.f.right_parent = self.a
         self.f.operator = "+"
+        self.f.direct_ancestors_with_id = [self.a]
 
         self.g = ExplainableObject(2, "g")
         self.g.left_parent = self.d
         self.g.operator = "root square"
+        self.g.direct_ancestors_with_id = [self.d]
 
         self.modeling_obj_container_mock = MagicMock()
         self.modeling_obj_container_mock.id = 1
         self.modeling_obj_container_mock.name = "Model1"
+
+        for expl_obj in [self.a, self.b, self.c, self.d, self.f, self.g]:
+            expl_obj.set_modeling_obj_container(MagicMock(), "attr_name")
 
     def test_copy_should_set_modeling_obj_container_to_none(self):
         a = ExplainableObject(1, "a")
@@ -76,6 +84,7 @@ class TestExplainableObjectBaseClass(TestCase):
             self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
 
     def test_set_modeling_obj_container_success(self):
+        self.a.set_modeling_obj_container(None, None)
         self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
         self.assertEqual(self.a.modeling_obj_container, self.modeling_obj_container_mock)
         self.assertEqual(self.a.attr_name_in_mod_obj_container, "attr1")
@@ -83,6 +92,7 @@ class TestExplainableObjectBaseClass(TestCase):
     def test_set_modeling_obj_container_should_trigger_add_child_to_direct_children_with_id(self):
         ancestor = MagicMock()
         self.a._direct_ancestors_with_id = [ancestor]
+        self.a.set_modeling_obj_container(None, None)
         self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
         ancestor.add_child_to_direct_children_with_id.assert_called_once_with(direct_child=self.a)
 
@@ -310,13 +320,16 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual("g = root square of (d) = root square of (4) = 2", self.g.explain(pretty_print=False))
 
     def test_explain_should_put_right_parenthesis_in_complex_calculations(self):
-        self.d.label = None
-        self.c.label = None
+        self.d.set_modeling_obj_container(None, None)
+        self.c.set_modeling_obj_container(None, None)
         h = ExplainableObject(1, None, self.c, self.c, "/")
         i = ExplainableObject(2, None, h, self.g, "*")
         j = ExplainableObject(-1, "k", i, self.c, "-")
+        j.set_modeling_obj_container(MagicMock(), "attr_name")
         self.assertEqual('k = ((a + b) / (a + b)) * g - (a + b) = ((1 + 2) / (1 + 2)) * 2 - (1 + 2) = -1', j.explain(
             pretty_print=False))
+        self.d.set_modeling_obj_container(MagicMock(), "attr_name")
+        self.c.set_modeling_obj_container(MagicMock(), "attr_name")
 
     def test_explain_without_children(self):
         eo = ExplainableObject(value=5, label="Label A")

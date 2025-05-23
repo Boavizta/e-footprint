@@ -79,6 +79,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.json_children_keys_have_been_loaded = False
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
+        self.explain_nested_tuples = None
 
         for parent in (self.left_parent, self.right_parent):
             if parent is not None:
@@ -86,8 +87,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
 
-        if self.left_parent is not None and self.right_parent is not None:
-            self.explain_nested_tuples = self.compute_explain_nested_tuples()
 
     @property
     def value(self):
@@ -174,7 +173,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, new_modeling_obj_container: Type["ModelingObject"] | None, attr_name: str | None):
         if not self.label:
             raise PermissionError(
-                f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
+                f"ExplainableObjects that are attributes of a ModelingObject should always have a label. "
+                f"{self} doesn’t have one.")
         elif self.modeling_obj_container is not None and new_modeling_obj_container is not None\
                 and self.modeling_obj_container != new_modeling_obj_container:
             raise PermissionError(
@@ -192,6 +192,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 self.initial_modeling_obj_container = new_modeling_obj_container
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
+
+        if self.left_parent is not None or self.right_parent is not None:
+            self.explain_nested_tuples = self.compute_explain_nested_tuples()
 
     def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:
@@ -313,7 +316,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def compute_explain_nested_tuples(self, return_self_if_self_has_mod_obj_container_or_no_ancestors=False):
         if (return_self_if_self_has_mod_obj_container_or_no_ancestors and
                 (self.modeling_obj_container is not None or len(self.direct_ancestors_with_id) == 0)):
-            assert self.label is not None, f"{self} should have a label"
             return self
 
         left_explanation = None
@@ -409,19 +411,28 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return None
 
     def serialize_explain_nested_tuples(self):
-        if isinstance(self.explain_nested_tuples, tuple):
-            return (self.explain_nested_tuples[0].serialize_explain_nested_tuples(),
-                    self.explain_nested_tuples[1],
-                    self.explain_nested_tuples[2].serialize_explain_nested_tuples())
-        else:
-            assert isinstance(self.explain_nested_tuples, ExplainableObject), \
-                (f"{self.explain_nested_tuples} should be an ExplainableObject but is of "
-                 f"type {type(self.explain_nested_tuples)}")
-            if self.explain_nested_tuples.modeling_obj_container is not None:
-                return str((self.explain_nested_tuples.modeling_obj_container.id, self.explain_nested_tuples.attr_name_in_mod_obj_container,
-                     self.explain_nested_tuples.key_in_dict.id if self.explain_nested_tuples.dict_container is not None else None))
-            else:
-                return self.explain_nested_tuples.to_json()
+        def recursively_serialize_explain_nested_tuple(explain_nested_tuple):
+            if isinstance(explain_nested_tuple, tuple):
+                return (recursively_serialize_explain_nested_tuple(explain_nested_tuple[0]),
+                        explain_nested_tuple[1],
+                        recursively_serialize_explain_nested_tuple(explain_nested_tuple[2]))
+            elif explain_nested_tuple is not None:
+                assert isinstance(explain_nested_tuple, ExplainableObject), \
+                    (f"{explain_nested_tuple} should be an ExplainableObject but is of "
+                     f"type {type(explain_nested_tuple)}")
+                if explain_nested_tuple.modeling_obj_container is not None:
+                    return str(
+                        (explain_nested_tuple.modeling_obj_container.id,
+                         explain_nested_tuple.attr_name_in_mod_obj_container,
+                         explain_nested_tuple.key_in_dict.id
+                            if explain_nested_tuple.dict_container is not None else None)
+                    )
+                else:
+                    return explain_nested_tuple.to_json()
+
+            return None
+
+        return recursively_serialize_explain_nested_tuple(self.explain_nested_tuples)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {"label": self.label}
@@ -445,7 +456,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 str((child.modeling_obj_container.id, child.attr_name_in_mod_obj_container,
                      child.key_in_dict.id if child.dict_container is not None else None))
                 for child in self.direct_children_with_id]
-            output_dict["explain_nested_tuples"] = self.explain_nested_tuples
+            output_dict["explain_nested_tuples"] = self.serialize_explain_nested_tuples()
 
         return output_dict
 
