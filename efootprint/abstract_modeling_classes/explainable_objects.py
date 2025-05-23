@@ -224,7 +224,7 @@ class ExplainableQuantity(ExplainableObject):
     def __add__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableQuantity(self.value, left_parent=self)
+            return ExplainableQuantity(self.value, left_parent=self, operator="")
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableQuantity):
@@ -234,7 +234,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def __sub__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
-            return ExplainableQuantity(self.value, left_parent=self)
+            return ExplainableQuantity(self.value, left_parent=self, operator="")
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableQuantity):
@@ -496,7 +496,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __add__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableHourlyQuantities(self.value, left_parent=self)
+            return ExplainableHourlyQuantities(self.value, left_parent=self, operator="")
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableHourlyQuantities):
@@ -510,7 +510,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def __sub__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
-            return ExplainableHourlyQuantities(self.value, left_parent=self)
+            return ExplainableHourlyQuantities(self.value, left_parent=self, operator="")
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableHourlyQuantities):

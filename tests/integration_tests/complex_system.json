@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.0.11",
+    "efootprint_version": "10.1.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -472,7 +472,7 @@
             "average_carbon_intensity": {
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Average carbon intensity of Server 1 electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -593,7 +593,7 @@
             "average_carbon_intensity": {
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Average carbon intensity of Server 2 electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -718,7 +718,7 @@
             "average_carbon_intensity": {
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Average carbon intensity of TikTok Analytics server electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -736,7 +736,7 @@
             "base_ram_consumption": {
                 "value": 300.0,
                 "unit": "megabyte",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Base RAM consumption of TikTok Analytics server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -745,7 +745,7 @@
             "base_compute_consumption": {
                 "value": 2.0,
                 "unit": "cpu_core",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Base cpu core consumption of TikTok Analytics server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

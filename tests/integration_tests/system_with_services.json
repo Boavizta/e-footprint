@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.0.11",
+    "efootprint_version": "10.1.0",
     "System": {
         "id-XXXXXX-system-1": {
             "name": "system 1",
@@ -165,7 +165,7 @@
             "average_carbon_intensity": {
                 "value": 100.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Average carbon intensity of GPU server electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -570,7 +570,7 @@
             "average_carbon_intensity": {
                 "value": 233.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Average carbon intensity of Web server electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -609,7 +609,7 @@
             },
             "storage": "id-XXXXXX-Web-server-SSD-storage",
             "provider": {
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Web server cloud provider from e-footprint hypothesis",
                 "value": "scaleway",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -617,7 +617,7 @@
                 }
             },
             "instance_type": {
-                "label": "unnamed source from e-footprint hypothesis",
+                "label": "Web server instance type from e-footprint hypothesis",
                 "value": "ent1-s",
                 "source": {
                     "name": "e-footprint hypothesis",

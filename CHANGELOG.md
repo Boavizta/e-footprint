@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.0] 2025-05-25
+
+### Added
+- Possibility to save calculated attributes when serializing system to json.
+- Performance tests that make sure that big system (135 objects) serialization and deserialization take less than 50 ms.
+
+### Changed
+- Simplify calculation graphs by making only appear calculations that are attributes of a modeling object and not calculations that have labels (because all calculatinos that are attributes of a modeling object have labels but some calculations that have a label don’t belong to a modeling object).
+- Order of Storage parameters.
+
 ## [10.0.11] 2025-05-04
 
 ### Fixed

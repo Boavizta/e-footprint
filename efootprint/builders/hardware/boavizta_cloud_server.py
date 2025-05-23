@@ -77,8 +77,8 @@ class BoaviztaCloudServer(Server):
             server_utilization_rate=server_utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, storage=storage,
             fixed_nb_of_instances=fixed_nb_of_instances)
-        self.provider = provider
-        self.instance_type = instance_type
+        self.provider = provider.set_label(f"{self.name} cloud provider")
+        self.instance_type = instance_type.set_label(f"{self.name} instance type")
         self.impact_url = "https://api.boavizta.org/v1/cloud/instance"
         self.api_call_response = EmptyExplainableObject()
 

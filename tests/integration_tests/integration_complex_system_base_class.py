@@ -88,9 +88,9 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         )
         server3 = Server.from_defaults(
             "TikTok Analytics server", server_type=ServerTypes.serverless(),
-            storage=Storage.ssd("TikTok Analytics storage"))
-        server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
-        server3.base_compute_consumption = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
+            storage=Storage.ssd("TikTok Analytics storage"),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS))
         storage_3 = server3.storage
 
         streaming_job = Job("streaming", server1, data_transferred=SourceValue(1 * u.GB),

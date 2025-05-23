@@ -91,7 +91,7 @@ class ServerBase(InfraHardware):
         self.compute.set_label(f"Nb {self.compute_type.replace("_", " ")}s of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
         self.average_carbon_intensity = average_carbon_intensity
-        if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
+        if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
         self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")

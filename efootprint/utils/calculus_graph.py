@@ -15,10 +15,8 @@ def nodes_at_depth(node, depth=0, depth_lists=None):
 
         depth += 1
 
-    if node.left_parent:
-        nodes_at_depth(node.left_parent, depth, depth_lists)
-    if node.right_parent:
-        nodes_at_depth(node.right_parent, depth, depth_lists)
+    for ancestor in node.direct_ancestors_with_id:
+        nodes_at_depth(ancestor, depth, depth_lists)
 
     return depth_lists
 
@@ -60,7 +58,7 @@ def build_calculus_graph(
             if node.modeling_obj_container:
                 current_depth += 1
             color = None
-            if node.left_parent is None and node.right_parent is None:
+            if len(node.direct_ancestors_with_id) == 0:
                 if getattr(node, "source", None) is not None:
                     source_name = node.source.name
                     if source_name in colors_dict:
@@ -77,10 +75,9 @@ def build_calculus_graph(
         else:
             current_id = parent_id
 
-        if node.left_parent and current_depth <= max_depth:
-            add_nodes_edges(node.left_parent, current_depth, current_id)
-        if node.right_parent and current_depth <= max_depth:
-            add_nodes_edges(node.right_parent, current_depth, current_id)
+        if current_depth <= max_depth:
+            for ancestor in node.direct_ancestors_with_id:
+                add_nodes_edges(ancestor, current_depth, current_id)
 
     add_nodes_edges(root_node, 0)
 
