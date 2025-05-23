@@ -86,6 +86,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
                     if ancestor_with_id.id not in self.direct_ancestor_ids]
 
+        if self.left_parent is not None and self.right_parent is not None:
+            self.explain_nested_tuples = self.compute_explain_nested_tuples()
+
     @property
     def value(self):
         return self._value
@@ -293,34 +296,38 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def explain(self, pretty_print=True):
         element_value_to_print = str(self)
 
-        if self.left_parent is None and self.right_parent is None:
+        if len(self.direct_ancestors_with_id) == 0:
             return f"{self.label} = {element_value_to_print}"
-        explain_tuples = self.compute_explain_nested_tuples()
 
         if pretty_print:
             return self.pretty_print_calculation(
-                f"{self.label} = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=False)}"
-                f" = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=True)}"
+                f"{self.label} = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=False)}"
+                f" = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=True)}"
                 f" = {element_value_to_print}")
         else:
-            return f"{self.label} = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=False)}" \
-                f" = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=True)}" \
+            return f"{self.label} = {self.print_tuple_element(
+                self.explain_nested_tuples, print_values_instead_of_labels=False)}" \
+                f" = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=True)}" \
                 f" = {element_value_to_print}"
 
-    def compute_explain_nested_tuples(self, return_label_if_self_has_one=False):
-        if return_label_if_self_has_one and self.label:
+    def compute_explain_nested_tuples(self, return_self_if_self_has_mod_obj_container_or_no_ancestors=False):
+        if (return_self_if_self_has_mod_obj_container_or_no_ancestors and
+                (self.modeling_obj_container is not None or len(self.direct_ancestors_with_id) == 0)):
+            assert self.label is not None, f"{self} should have a label"
             return self
 
         left_explanation = None
         right_explanation = None
 
         if self.left_parent:
-            left_explanation = self.left_parent.compute_explain_nested_tuples(return_label_if_self_has_one=True)
+            left_explanation = self.left_parent.compute_explain_nested_tuples(
+                return_self_if_self_has_mod_obj_container_or_no_ancestors=True)
         if self.right_parent:
-            right_explanation = self.right_parent.compute_explain_nested_tuples(return_label_if_self_has_one=True)
+            right_explanation = self.right_parent.compute_explain_nested_tuples(
+                return_self_if_self_has_mod_obj_container_or_no_ancestors=True)
 
         if left_explanation is None and right_explanation is None:
-            raise ValueError("Object to explain should have at least one child")
+            raise ValueError(f"{self} should have at least one parent to be explained")
 
         return left_explanation, self.operator, right_explanation
 
@@ -373,6 +380,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             return f"{lp_open}{self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)}{lp_close}" \
                    f" {tuple_element[1]}" \
                    f" {rp_open}{self.print_tuple_element(tuple_element[2], print_values_instead_of_labels)}{rp_close}"
+        return None
 
     @staticmethod
     def pretty_print_calculation(calc_str):
@@ -398,6 +406,23 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
             return HTML(filename)
 
+        return None
+
+    def serialize_explain_nested_tuples(self):
+        if isinstance(self.explain_nested_tuples, tuple):
+            return (self.explain_nested_tuples[0].serialize_explain_nested_tuples(),
+                    self.explain_nested_tuples[1],
+                    self.explain_nested_tuples[2].serialize_explain_nested_tuples())
+        else:
+            assert isinstance(self.explain_nested_tuples, ExplainableObject), \
+                (f"{self.explain_nested_tuples} should be an ExplainableObject but is of "
+                 f"type {type(self.explain_nested_tuples)}")
+            if self.explain_nested_tuples.modeling_obj_container is not None:
+                return str((self.explain_nested_tuples.modeling_obj_container.id, self.explain_nested_tuples.attr_name_in_mod_obj_container,
+                     self.explain_nested_tuples.key_in_dict.id if self.explain_nested_tuples.dict_container is not None else None))
+            else:
+                return self.explain_nested_tuples.to_json()
+
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {"label": self.label}
 
@@ -420,6 +445,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 str((child.modeling_obj_container.id, child.attr_name_in_mod_obj_container,
                      child.key_in_dict.id if child.dict_container is not None else None))
                 for child in self.direct_children_with_id]
+            output_dict["explain_nested_tuples"] = self.explain_nested_tuples
 
         return output_dict
 

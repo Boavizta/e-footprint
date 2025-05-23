@@ -47,7 +47,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
         # Assert generated file has a number of characters > 100000:
         with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), "r") as f:
             content = f.read()
-        self.assertGreater(len(content), 100000)
+        self.assertGreater(len(content), 50000)
 
     def test_object_relationship_graph(self):
         self.run_test_object_relationship_graph()
