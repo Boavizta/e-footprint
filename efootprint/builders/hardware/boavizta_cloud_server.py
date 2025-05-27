@@ -1,4 +1,7 @@
 from time import time
+
+from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
+
 start = time()
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -98,7 +101,7 @@ class BoaviztaCloudServer(Server):
                                link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params])}")
 
         call_response = call_boaviztapi(url=self.impact_url, params=params)
-        self.api_call_response = ExplainableObject(
+        self.api_call_response = ExplainableDict(
             call_response, "API call response",
             left_parent=self.provider, right_parent=self.instance_type, operator="combined in Boavizta API call with",
             source=impact_source)

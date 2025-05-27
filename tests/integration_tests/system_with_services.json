@@ -137,8 +137,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of GPU server from e-footprint hypothesis",
                 "value": "serverless",
+                "label": "Server type of GPU server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -454,8 +454,8 @@
                 }
             },
             "resolution": {
-                "label": "Streaming job resolution from e-footprint hypothesis",
                 "value": "720p (1280 x 720)",
+                "label": "Streaming job resolution from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -542,8 +542,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of Web server from e-footprint hypothesis",
                 "value": "autoscaling",
+                "label": "Server type of Web server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -609,16 +609,16 @@
             },
             "storage": "id-XXXXXX-Web-server-SSD-storage",
             "provider": {
-                "label": "Web server cloud provider from e-footprint hypothesis",
                 "value": "scaleway",
+                "label": "Web server cloud provider from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "instance_type": {
-                "label": "Web server instance type from e-footprint hypothesis",
                 "value": "ent1-s",
+                "label": "Web server instance type from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -651,8 +651,8 @@
             },
             "service": "id-XXXXXX-Web-application-service",
             "implementation_details": {
-                "label": "web app job implementation details from e-footprint hypothesis",
                 "value": "default",
+                "label": "web app job implementation details from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -674,8 +674,8 @@
                 "label": "no value"
             },
             "technology": {
-                "label": "Technology used in Web application service from e-footprint hypothesis",
                 "value": "php-symfony",
+                "label": "Technology used in Web application service from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -709,16 +709,16 @@
                 "label": "no value"
             },
             "provider": {
-                "label": "openai from e-footprint hypothesis",
                 "value": "openai",
+                "label": "openai from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "model_name": {
-                "label": "openai model used from e-footprint hypothesis",
                 "value": "gpt-3.5-turbo-1106",
+                "label": "openai model used from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -843,8 +843,8 @@
                 }
             },
             "timezone": {
-                "label": "France timezone from user data",
                 "zone": "Europe/Paris",
+                "label": "France timezone from user data",
                 "source": {
                     "name": "user data",
                     "link": null

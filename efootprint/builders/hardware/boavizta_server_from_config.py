@@ -1,3 +1,4 @@
+from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -99,7 +100,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "model": {"type": "rack"},
             "configuration": {"cpu": self.cpu_config.value, "ram": self.ram_config.value}
         }
-        self.api_call_response = ExplainableObject(
+        self.api_call_response = ExplainableDict(
             call_boaviztapi(url=self.impact_url, params=self.params, json=api_call_data, method="POST"),
             label=f"{self.name} api call data", left_parent=self.cpu_config, right_parent=self.ram_config,
             operator="combined in Boavizta API data with", source=Sources.USER_DATA)

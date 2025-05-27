@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 import pint
 from pint import UnitRegistry
 
@@ -12,3 +14,8 @@ from pint_pandas import PintType
 
 
 u = PintType.ureg
+
+
+@lru_cache(maxsize=None)
+def get_unit(unit_str):
+    return u(unit_str)

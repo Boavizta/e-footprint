@@ -11,6 +11,11 @@ from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
 
 @dataclass
 class Source:
+    @classmethod
+    def from_json_dict(cls, d):
+        if "name" not in d:
+            raise ValueError("Source JSON must contain 'name' field")
+        return cls(name=d["name"], link=d.get("link", None))
     name: str
     link: Optional[str]
 
@@ -55,6 +60,26 @@ def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
 
 
 class ExplainableObject(ObjectLinkedToModelingObj):
+    _registry = []
+
+    @classmethod
+    def register_subclass(cls, matcher):
+        def decorator(subclass):
+            cls._registry.append((matcher, subclass))
+            return subclass
+
+        return decorator
+
+    @classmethod
+    def from_json_dict(cls, d):
+        for matcher, subclass in cls._registry:
+            if matcher(d):
+                return subclass.from_json_dict(d)
+        if "value" in d and isinstance(d["value"], str):
+            source = Source.from_json_dict(d.get("source")) if d.get("source") else None
+            return cls(d["value"], label=d.get("label", None), source=source)
+        raise ValueError("No matching subclass found for data: {}".format(d))
+
     def __init__(
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
             right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
@@ -113,8 +138,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     if isinstance(explain_nested_tuple, str):
                         return get_attribute_from_flat_obj_dict(explain_nested_tuple, self.flat_obj_dict)
                     elif isinstance(explain_nested_tuple, dict):
-                        from efootprint.api_utils.json_to_system import json_to_explainable_object
-                        return json_to_explainable_object(explain_nested_tuple)
+                        return ExplainableObject.from_json_dict(explain_nested_tuple)
                 return None
 
             self._explain_nested_tuples = recursively_deserialize_explain_nested_tuple(
@@ -469,14 +493,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return recursively_serialize_explain_nested_tuple(self.explain_nested_tuples)
 
     def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {"label": self.label}
+        output_dict = {}
 
         if isinstance(self._value, str):  # Case of technology in WebApplication
             output_dict["value"] = self.value
-        elif isinstance(self._value, dict) and "compressed_data" not in self._value:  # Case of API call responses
-            output_dict["value"] = self.value
-        elif getattr(self._value, "zone", None) is not None:  # Case of timezone in Country class
-            output_dict["zone"] = self.value.zone
+
+        output_dict["label"] = self.label
 
         if self.source is not None:
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}

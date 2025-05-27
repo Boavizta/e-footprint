@@ -4,12 +4,12 @@ import pytz
 
 from efootprint.constants.units import u
 from efootprint.constants.sources import Source,Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceTimezone
 from efootprint.core.country import Country
 
 
 def tz(timezone: str):
-    return SourceObject(pytz.timezone(timezone), Sources.USER_DATA)
+    return SourceTimezone(pytz.timezone(timezone), Sources.USER_DATA)
 
 
 def country_generator(country_name, country_short_name, country_avg_carbon_int, timezone):

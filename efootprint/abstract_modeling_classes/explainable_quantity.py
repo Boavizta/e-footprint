@@ -5,9 +5,17 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
+from efootprint.constants.units import get_unit
 
 
+@ExplainableObject.register_subclass(lambda d: "value" in d and "unit" in d)
 class ExplainableQuantity(ExplainableObject):
+    @classmethod
+    def from_json_dict(cls, d):
+        value = Quantity(d["value"], get_unit(d["unit"]))
+        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
+        return cls(value, label=d["label"], source=source)
+
     def __init__(
             self, value: Quantity, label: str = None, left_parent: ExplainableObject = None,
             right_parent: ExplainableObject = None, operator: str = None, source: Source = None):

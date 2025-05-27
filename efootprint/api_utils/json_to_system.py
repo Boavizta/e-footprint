@@ -1,61 +1,16 @@
 from copy import copy
-from datetime import datetime
 from inspect import signature, _empty as empty_annotation, isabstract
 from types import UnionType
 from typing import List, get_origin, get_args
-from functools import lru_cache
-
-from pint import Quantity
-import pytz
 
 import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
-from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
-
-
-@lru_cache(maxsize=None)
-def get_unit(unit_str):
-    return u(unit_str)
-
-
-def json_to_explainable_object(input_dict):
-    source = None
-    if "source" in input_dict:
-        source = Source(input_dict["source"]["name"], input_dict["source"]["link"])
-    if "value" in input_dict and "unit" in input_dict:
-        value = Quantity(input_dict["value"], get_unit(input_dict["unit"]))
-        output = ExplainableQuantity(value, label=input_dict["label"], source=source)
-    elif "values" in input_dict and "unit" in input_dict:
-        output = ExplainableHourlyQuantities(
-            create_hourly_usage_df_from_list(
-                input_dict["values"],
-                pint_unit=u(input_dict["unit"]),
-                start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
-                timezone=input_dict.get("timezone", None)
-            ),
-            label=input_dict["label"], source=source)
-    elif "compressed_values" in input_dict and "unit" in input_dict:
-        output = ExplainableHourlyQuantities(
-            {key: input_dict[key] for key in ["compressed_values", "unit", "start_date", "timezone"]},
-            label=input_dict["label"], source=source)
-    elif "value" in input_dict and input_dict["value"] is None:
-        output = EmptyExplainableObject(label=input_dict["label"])
-    elif "zone" in input_dict:
-        output = SourceObject(
-            pytz.timezone(input_dict["zone"]), source, input_dict["label"])
-    else:
-        output = SourceObject(input_dict["value"], source, input_dict["label"])
-
-    return output
 
 
 def initialize_calculus_graph_data(explainable_object, json_input, flat_obj_dict):
@@ -151,7 +106,7 @@ def json_to_system(
             new_obj.trigger_modeling_updates = False
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if isinstance(attr_value, dict) and "label" in attr_value:
-                    new_value = json_to_explainable_object(attr_value)
+                    new_value = ExplainableObject.from_json_dict(attr_value)
                     new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
                     # Calculus graph data is added after setting as new_obj attribute to not interfere
                     # with set_modeling_obj_container logic
@@ -188,7 +143,7 @@ def json_to_system(
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         explainable_object_dict = ExplainableObjectDict(
-            {flat_obj_dict[key]: json_to_explainable_object(value) for key, value in attr_value.items()})
+            {flat_obj_dict[key]: ExplainableObject.from_json_dict(value) for key, value in attr_value.items()})
         modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
@@ -203,9 +158,3 @@ def json_to_system(
             system.after_init()
 
     return class_obj_dict, flat_obj_dict
-
-
-def get_obj_by_key_similarity(obj_container_dict, input_key):
-    for key in obj_container_dict:
-        if input_key in key:
-            return obj_container_dict[key]

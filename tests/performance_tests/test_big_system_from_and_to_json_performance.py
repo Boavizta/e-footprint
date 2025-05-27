@@ -19,7 +19,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
 
 
         start = time()
-        nb_system_loadings = 10
+        nb_system_loadings = 50
         for i in range(nb_system_loadings):
             class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
                 system_dict, launch_system_computations=False)

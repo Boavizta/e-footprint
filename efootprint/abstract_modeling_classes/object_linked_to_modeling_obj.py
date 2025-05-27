@@ -91,7 +91,7 @@ class ObjectLinkedToModelingObj:
 
         if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
             assert isinstance(new_value, self.__class__) or isinstance(self, new_value.__class__), \
-                f"Trying to replace {self} by {new_value} which is of different type."
+                f"Trying to replace {self} of type {type(self)} by {new_value} which is of type {type(new_value)}."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
         if self.dict_container is not None:

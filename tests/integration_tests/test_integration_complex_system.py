@@ -1,7 +1,7 @@
 from tests.integration_tests.integration_complex_system_base_class import IntegrationTestComplexSystemBaseClass
 
 
-class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass):
+class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
     def test_all_objects_linked_to_system(self):
         self.run_test_all_objects_linked_to_system()
 

@@ -20,7 +20,25 @@ if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 
 
+@ExplainableObject.register_subclass(lambda d: ("values" in d or "compressed_values" in d) and "unit" in d)
 class ExplainableHourlyQuantities(ExplainableObject):
+    @classmethod
+    def from_json_dict(cls, d):
+        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
+        if "values" in d:
+            from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+            df = create_hourly_usage_df_from_list(
+                d["values"],
+                pint_unit=u(d["unit"]),
+                start_date=datetime.strptime(d["start_date"], "%Y-%m-%d %H:%M:%S"),
+                timezone=d.get("timezone", None)
+            )
+            return cls(df, label=d["label"], source=source)
+        elif "compressed_values" in d:
+            subset = {k: d[k] for k in ["compressed_values", "unit", "start_date", "timezone"]}
+            return cls(subset, label=d["label"], source=source)
+        raise ValueError("Invalid hourly quantity format")
+
     def __init__(
             self, value: pd.DataFrame | dict, label: str = None, left_parent: ExplainableObject = None,
             right_parent: ExplainableObject = None, operator: str = None, source: Source = None):

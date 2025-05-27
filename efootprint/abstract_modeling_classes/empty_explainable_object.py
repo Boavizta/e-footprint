@@ -6,7 +6,12 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs
 
 
+@ExplainableObject.register_subclass(lambda d: "value" in d and d["value"] is None)
 class EmptyExplainableObject(ExplainableObject):
+    @classmethod
+    def from_json_dict(cls, d):
+        return cls(label=d["label"])
+
     def __init__(self, label="no value", left_parent: ExplainableObject = None, right_parent: ExplainableObject = None,
                  operator: str = None):
         from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity

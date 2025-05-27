@@ -426,8 +426,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of Server 1 from e-footprint hypothesis",
                 "value": "autoscaling",
+                "label": "Server type of Server 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -551,8 +551,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of Server 2 from e-footprint hypothesis",
                 "value": "on-premise",
+                "label": "Server type of Server 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -672,8 +672,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of TikTok Analytics server from e-footprint hypothesis",
                 "value": "serverless",
+                "label": "Server type of TikTok Analytics server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1099,8 +1099,8 @@
                 }
             },
             "timezone": {
-                "label": "France timezone from user data",
                 "zone": "Europe/Paris",
+                "label": "France timezone from user data",
                 "source": {
                     "name": "user data",
                     "link": null

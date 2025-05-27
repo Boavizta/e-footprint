@@ -4,6 +4,7 @@ from unittest.mock import MagicMock, patch, PropertyMock
 import pytz
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import Source
 
 
@@ -374,7 +375,7 @@ Label L + Label R
             self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")
 
     def test_to_json_for_timezone(self):
-        timezone_expl = ExplainableObject(
+        timezone_expl = ExplainableTimezone(
             pytz.timezone("Europe/Paris"), "timezone", source=Source("source name", "source link"))
 
         self.assertEqual(

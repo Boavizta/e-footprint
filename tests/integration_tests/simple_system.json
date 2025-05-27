@@ -219,8 +219,8 @@
                 }
             },
             "server_type": {
-                "label": "Server type of Default server from e-footprint hypothesis",
                 "value": "on-premise",
+                "label": "Server type of Default server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -473,8 +473,8 @@
                 }
             },
             "timezone": {
-                "label": "France timezone from user data",
                 "zone": "Europe/Paris",
+                "label": "France timezone from user data",
                 "source": {
                     "name": "user data",
                     "link": null
