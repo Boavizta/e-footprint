@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableObject, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.server_base import ServerTypes

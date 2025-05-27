@@ -87,7 +87,7 @@ class ObjectLinkedToModelingObj:
         assert isinstance(new_value, ObjectLinkedToModelingObj), (
             f"Trying to replace {self} by {new_value} which is not an instance of "
             f"ObjectLinkedToModelingObj.")
-        from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+        from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
         if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
             assert isinstance(new_value, self.__class__) or isinstance(self, new_value.__class__), \

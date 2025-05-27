@@ -8,76 +8,12 @@ import numpy as np
 import pandas as pd
 import pytz
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
-    EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
-
-
-class TestExplainableQuantity(unittest.TestCase):
-    def setUp(self):
-        self.a = ExplainableQuantity(1 * u.W, "1 Watt")
-        self.b = ExplainableQuantity(2 * u.W, "2 Watt")
-        self.c = self.a + self.b
-        self.c.set_label("int calc")
-        self.d = self.c + self.b
-        self.d.set_label("int calc 2")
-        self.e = ExplainableQuantity(3 * u.W, "e")
-        for index, explainable_quantity in enumerate([self.a, self.b, self.e]):
-            explainable_quantity.modeling_obj_container = MagicMock(name="name", id=f"id{index}")
-        self.f = self.a + self.b + self.e
-
-    def test_compute_calculation(self):
-        self.assertEqual([self.a, self.b, self.e], self.f.direct_ancestors_with_id)
-
-    def test_init(self):
-        self.assertEqual(self.a.value, 1 * u.W)
-        self.assertEqual(self.a.label, "1 Watt")
-        self.assertEqual(self.a.left_parent, None)
-        self.assertEqual(self.a.right_parent, None)
-        self.assertEqual(self.a.operator, None)
-
-        self.assertEqual(self.c.value, 3 * u.W)
-        self.assertEqual(self.c.label, "int calc")
-        self.assertEqual(self.c.left_parent, self.a)
-        self.assertEqual(self.c.right_parent, self.b)
-        self.assertEqual(self.c.operator, '+')
-
-    def test_operators(self):
-        self.assertEqual(self.c.value, 3 * u.W)
-        self.assertRaises(ValueError, self.a.__add__, 1)
-        self.assertRaises(ValueError, self.a.__gt__, 1)
-        self.assertRaises(ValueError, self.a.__lt__, 1)
-        self.assertRaises(ValueError, self.a.__eq__, 1)
-
-    def test_to(self):
-        self.a.to(u.mW)
-        self.assertEqual(self.a.value, 1000 * u.mW)
-
-    def test_magnitude(self):
-        self.assertEqual(self.a.magnitude, 1)
-
-    def test_add_with_0(self):
-        self.assertEqual(self.a, self.a + 0)
-
-    def test_subtract_0(self):
-        self.assertEqual(self.a, self.a - 0)
-
-    def test_to_json(self):
-        self.assertDictEqual({"label": "1 Watt", "value": 1, "unit": "watt"}, self.a.to_json())
-
-    def test_ceil(self):
-        self.a = ExplainableQuantity(1.5 * u.W, "1.5 Watt")
-        self.assertEqual(2 * u.W, self.a.ceil().value)
-
-    def test_copy(self):
-        copied = self.a.copy()
-        self.assertNotEqual(id(self.a), id(copied))
-        self.assertEqual(self.a.value, copied.value)
-        self.assertEqual(self.a.label, copied.label)
-        self.assertEqual(None, copied.modeling_obj_container)
-        self.assertEqual(id(self.a), id(copied.left_parent))
 
 
 class TestExplainableHourlyQuantities(unittest.TestCase):
@@ -391,7 +327,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         self.assertEqual(expected_data, (-hourly_usage_data).value_as_float_list)
 
-    @patch("efootprint.abstract_modeling_classes.explainable_objects.ExplainableHourlyQuantities.id",
+    @patch("efootprint.abstract_modeling_classes.explainable_hourly_quantities.ExplainableHourlyQuantities.id",
            new_callable=PropertyMock)
     def test_plot_with_simulation(self, mock_id):
         modeling_obj_container = MagicMock()

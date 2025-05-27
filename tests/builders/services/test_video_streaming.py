@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import Mock, patch
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob

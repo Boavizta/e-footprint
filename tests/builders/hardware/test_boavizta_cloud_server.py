@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.builders.services.video_streaming import VideoStreaming
 from efootprint.builders.services.web_application import WebApplication
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.server_base import ServerTypes

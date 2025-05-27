@@ -1,6 +1,6 @@
 from typing import List, Type
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage

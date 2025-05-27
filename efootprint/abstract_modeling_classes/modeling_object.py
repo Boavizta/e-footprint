@@ -7,7 +7,8 @@ import re
 
 from IPython.display import HTML
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     retrieve_update_function_from_mod_obj_and_attr_name)

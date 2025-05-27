@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.hardware.boaviztapi_utils import call_boaviztapi
 from efootprint.constants.sources import Sources

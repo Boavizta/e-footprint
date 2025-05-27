@@ -8,8 +8,10 @@ from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import (
-    ExplainableQuantity, ExplainableHourlyQuantities, EmptyExplainableObject)
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
+    ExplainableHourlyQuantities)
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 
 class UsagePattern(ModelingObject):

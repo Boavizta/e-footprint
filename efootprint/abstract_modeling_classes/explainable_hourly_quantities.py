@@ -1,13 +1,13 @@
 import math
 import numbers
-from copy import copy
 import base64
 import array
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 import pandas as pd
 import pint_pandas
-from pint import Quantity, Unit
+from pint import Unit
 import numpy as np
 import zstandard as zstd
 
@@ -16,307 +16,18 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from efootprint.constants.units import u
 from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs
 
-
-class EmptyExplainableObject(ExplainableObject):
-    def __init__(self, label="no value", left_parent: ExplainableObject = None, right_parent: ExplainableObject = None,
-                 operator: str = None):
-        super().__init__(
-            value=None, label=label, left_parent=left_parent, right_parent=right_parent, operator=operator)
-        self.value = self
-
-    def to(self, unit):
-        return self
-
-    def check(self, str_unit):
-        return True
-
-    def ceil(self):
-        return EmptyExplainableObject(left_parent=self, operator="ceil")
-
-    def max(self):
-        return EmptyExplainableObject(left_parent=self, operator="max")
-
-    def abs(self):
-        return EmptyExplainableObject(left_parent=self, operator="abs")
-
-    def sum(self):
-        return EmptyExplainableObject(left_parent=self, operator="sum")
-
-    def copy(self):
-        return EmptyExplainableObject(left_parent=self, operator="copy")
-
-    def generate_explainable_object_with_logical_dependency(self, explainable_condition: ExplainableObject):
-        return EmptyExplainableObject(
-            label=self.label, left_parent=self, right_parent=explainable_condition, operator="logically dependent on")
-
-    @property
-    def iloc(self):
-        return [EmptyExplainableObject(left_parent=self, operator="iloc")]
-
-    @property
-    def magnitude(self):
-        return 0
-
-    def __copy__(self):
-        return EmptyExplainableObject(label=self.label, left_parent=self, operator="copy")
-
-    def __eq__(self, other):
-        if isinstance(other, EmptyExplainableObject):
-            return True
-        elif isinstance(other, ExplainableObject):
-            return other.__eq__(self)
-        elif other == 0:
-            return True
-
-        return False
-
-    def __round__(self, round_level):
-        return EmptyExplainableObject(
-            label=self.label, left_parent=self, operator=f"rounded to {round_level} decimals")
-
-    def __add__(self, other):
-        if isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="+")
-        if isinstance(other, ExplainableObject):
-            return other.__add__(self)
-        elif other == 0:
-            return EmptyExplainableObject(left_parent=self, operator="+ 0")
-        else:
-            raise ValueError
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __sub__(self, other):
-        if isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="-")
-        else:
-            raise ValueError
-
-    def __mul__(self, other):
-        if isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        if isinstance(other, ExplainableQuantity) or isinstance(other, ExplainableHourlyQuantities):
-            return other.__mul__(self)
-        elif other == 0:
-            return self
-        else:
-            raise ValueError
-
-    def __rmul__(self, other):
-        return self.__mul__(other)
-
-    def __str__(self):
-        return "no value"
-
-    def __deepcopy__(self, memo):
-        return EmptyExplainableObject(label=self.label, left_parent=self.left_parent, right_parent=self.right_parent,
-                                      operator=self.operator)
-
-    def np_compared_with(self, compared_object, comparator):
-        if isinstance(compared_object, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=compared_object,
-                                          operator=f"{comparator} compared with")
-        elif isinstance(compared_object, ExplainableHourlyQuantities):
-            return compared_object.np_compared_with(self, comparator)
-        else:
-            raise ValueError(f"Can only compare with another EmptyExplainableObject or ExplainableHourlyQuantities,"
-                             f" not {type(compared_object)}")
-
-    def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {"value": None}
-        output_dict.update(super().to_json(with_calculated_attributes_data))
-
-        return output_dict
-
-    def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
-        import matplotlib.pyplot as plt
-        assert self.simulation_twin is not None, "Cannot plot EmptyExplainableObject if simulation twin is None"
-        simulated_values_df = self.simulation_twin.value
-        assert not isinstance(simulated_values_df, EmptyExplainableObject), \
-            "Cannot plot EmptyExplainableObject if simulation twin is EmptyExplainableObject"
-
-        baseline_df = pd.DataFrame(
-            {"value": pint_pandas.PintArray(
-                np.zeros(len(simulated_values_df.index)),
-                dtype=simulated_values_df.dtypes.value.units)},
-            index=simulated_values_df.index)
-
-        if cumsum:
-            simulated_values_df = simulated_values_df.cumsum()
-
-        ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
-
-        if self.label:
-            if not cumsum:
-                ax.set_title(self.label)
-            else:
-                ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
-
-        if filepath is not None:
-            plt.savefig(filepath, bbox_inches='tight')
-
-        if plt_show:
-            plt.show()
-
-
-
-class ExplainableQuantity(ExplainableObject):
-    def __init__(
-            self, value: Quantity, label: str = None, left_parent: ExplainableObject = None,
-            right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
-        if not isinstance(value, Quantity):
-            raise ValueError(
-                f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
-                "it is indeed mandatory to define a unit"
-            )
-        super().__init__(value, label, left_parent, right_parent, operator, source)
-
-    def to(self, unit_to_convert_to):
-        self.value = self.value.to(unit_to_convert_to)
-
-        return self
-
-    @property
-    def magnitude(self):
-        return self.value.magnitude
-
-    def compare_with_and_return_max(self, other):
-        if isinstance(other, ExplainableQuantity):
-            if self.value >= other.value:
-                return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="max")
-            else:
-                return ExplainableQuantity(other.value, left_parent=self, right_parent=other, operator="max")
-        else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
-
-    def ceil(self):
-        self.value = np.ceil(self.value)
-        return self
-
-    def copy(self):
-        return ExplainableQuantity(copy(self.value), label=self.label, left_parent=self, operator="duplicate")
-
-    def __gt__(self, other):
-        if isinstance(other, ExplainableQuantity):
-            return self.value > other.value
-        elif isinstance(other, EmptyExplainableObject):
-            return self.value > 0
-        else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
-
-    def __lt__(self, other):
-        if isinstance(other, ExplainableQuantity):
-            return self.value < other.value
-        elif isinstance(other, EmptyExplainableObject):
-            return self.value < 0
-        else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
-
-    def __eq__(self, other):
-        if isinstance(other, ExplainableQuantity):
-            return self.value == other.value
-        elif isinstance(other, EmptyExplainableObject):
-            return self.value == 0
-        else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
-
-    def __add__(self, other):
-        if isinstance(other, numbers.Number) and other == 0:
-            # summing with sum() adds an implicit 0 as starting value
-            return ExplainableQuantity(self.value, left_parent=self, operator="")
-        elif isinstance(other, EmptyExplainableObject):
-            return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="+")
-        elif isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(self.value + other.value, "", self, other, "+")
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __sub__(self, other):
-        if isinstance(other, numbers.Number) and other == 0:
-            return ExplainableQuantity(self.value, left_parent=self, operator="")
-        elif isinstance(other, EmptyExplainableObject):
-            return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="-")
-        elif isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(self.value - other.value, "", self, other, "-")
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __mul__(self, other):
-        if isinstance(other, numbers.Number) and other == 0:
-            return 0
-        elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        elif isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(self.value * other.value, "", self, other, "*")
-        elif isinstance(other, ExplainableHourlyQuantities):
-            return other.__mul__(self)
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __truediv__(self, other):
-        if isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(self.value / other.value, "", self, other, "/")
-        elif isinstance(other, ExplainableHourlyQuantities):
-            return other.__rtruediv__(self)
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __rsub__(self, other):
-        if isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(other.value - self.value, "", other, self, "-")
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __rmul__(self, other):
-        return self.__mul__(other)
-
-    def __rtruediv__(self, other):
-        if isinstance(other, numbers.Number) and other == 0:
-            return 0
-        elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=other, right_parent=self, operator="/")
-        elif isinstance(other, ExplainableQuantity):
-            return ExplainableQuantity(other.value / self.value, "", other, self, "/")
-        elif isinstance(other, ExplainableHourlyQuantities):
-            return other.__truediv__(self)
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
-
-    def __round__(self, round_level):
-        return ExplainableQuantity(
-            round(self.value, round_level), label=self.label, left_parent=self,
-            operator=f"rounded to {round_level} decimals", source=self.source)
-
-    def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {
-            "value": float(self.value.magnitude), "unit": str(self.value.units)}
-
-        output_dict.update(super().to_json(with_calculated_attributes_data))
-
-        return output_dict
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        if isinstance(self.value, Quantity):
-            return f"{round(self.value, 2)}"
-        else:
-            return str(self.value)
-
-    def __copy__(self):
-        return ExplainableQuantity(
-            self.value, label=self.label, source=self.source, left_parent=self, operator="duplicate")
+if TYPE_CHECKING:
+    from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 
 
 class ExplainableHourlyQuantities(ExplainableObject):
     def __init__(
             self, value: pd.DataFrame | dict, label: str = None, left_parent: ExplainableObject = None,
             right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
+        from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+        from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+        self._ExplainableQuantity = ExplainableQuantity
+        self._EmptyExplainableObject = EmptyExplainableObject
         if isinstance(value, pd.DataFrame):
             if value.columns != ["value"]:
                 raise ValueError(
@@ -376,7 +87,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
         return self
 
-    def return_shifted_hourly_quantities(self, shift_duration: ExplainableQuantity):
+    def return_shifted_hourly_quantities(self, shift_duration: "ExplainableQuantity"):
         shift_duration_in_hours =  math.floor(shift_duration.to(u.hour).magnitude)
 
         return ExplainableHourlyQuantities(
@@ -411,13 +122,13 @@ class ExplainableHourlyQuantities(ExplainableObject):
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
     def sum(self):
-        return ExplainableQuantity(self.value["value"].sum(), left_parent=self, operator="sum")
+        return self._ExplainableQuantity(self.value["value"].sum(), left_parent=self, operator="sum")
 
     def mean(self):
-        return ExplainableQuantity(self.value["value"].mean(), left_parent=self, operator="mean")
+        return self._ExplainableQuantity(self.value["value"].mean(), left_parent=self, operator="mean")
 
     def max(self):
-        return ExplainableQuantity(self.value["value"].max(), left_parent=self, operator="max")
+        return self._ExplainableQuantity(self.value["value"].max(), left_parent=self, operator="max")
 
     def abs(self):
         return ExplainableHourlyQuantities(
@@ -443,7 +154,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if comparator not in ["max", "min"]:
             raise ValueError(f"Comparator {comparator} not implemented in np_compared_with method")
 
-        if isinstance(compared_object, EmptyExplainableObject):
+        if isinstance(compared_object, self._EmptyExplainableObject):
             compared_values = np.full(len(self.value), fill_value=0)
             right_parent = compared_object
         elif isinstance(compared_object, ExplainableHourlyQuantities):
@@ -478,7 +189,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __eq__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             return False
-        elif isinstance(other, EmptyExplainableObject):
+        elif isinstance(other, self._EmptyExplainableObject):
             return False
         if isinstance(other, ExplainableHourlyQuantities):
             if len(self.value) != len(other.value):
@@ -497,7 +208,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
             return ExplainableHourlyQuantities(self.value, left_parent=self, operator="")
-        elif isinstance(other, EmptyExplainableObject):
+        elif isinstance(other, self._EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableHourlyQuantities):
             df_sum = self.value.add(other.value, fill_value=0 * self.unit)
@@ -511,7 +222,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __sub__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             return ExplainableHourlyQuantities(self.value, left_parent=self, operator="")
-        elif isinstance(other, EmptyExplainableObject):
+        elif isinstance(other, self._EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value - other.value, "", self, other, "-")
@@ -527,9 +238,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __mul__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             return 0
-        elif isinstance(other, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
-        elif isinstance(other, ExplainableQuantity) or isinstance(other, ExplainableHourlyQuantities):
+        elif isinstance(other, self._EmptyExplainableObject):
+            return self._EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
+        elif isinstance(other, self._ExplainableQuantity) or isinstance(other, ExplainableHourlyQuantities):
             return ExplainableHourlyQuantities(self.value.mul(other.value, fill_value=0), "", self, other, "*")
         else:
             raise ValueError(
@@ -542,7 +253,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __truediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
-        elif isinstance(other, ExplainableQuantity):
+        elif isinstance(other, self._ExplainableQuantity):
             return ExplainableHourlyQuantities(self.value / other.value, "", self, other, "/")
         else:
             raise ValueError(
@@ -552,7 +263,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __rtruediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
-        elif isinstance(other, ExplainableQuantity):
+        elif isinstance(other, self._ExplainableQuantity):
             return ExplainableHourlyQuantities(other.value / self.value, "", other, self, "/")
         else:
             raise ValueError(
@@ -631,7 +342,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             baseline_df = baseline_df.cumsum()
 
         if simulated_values_df is not None:
-            if isinstance(simulated_values_df, EmptyExplainableObject):
+            if isinstance(simulated_values_df, self._EmptyExplainableObject):
                 period_index = pd.date_range(start=self.simulation.simulation_date,
                                              end=self.value.index.max(), freq='h')
                 simulated_values_df = pd.DataFrame(

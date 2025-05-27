@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.video_streaming import VideoStreaming
 from efootprint.builders.services.web_application import WebApplication
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list

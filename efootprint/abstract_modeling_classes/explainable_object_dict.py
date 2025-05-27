@@ -3,7 +3,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):

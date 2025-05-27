@@ -3,7 +3,8 @@ from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.builders.services.service_job_base_class import ServiceJob
 from efootprint.constants.units import u

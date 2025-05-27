@@ -3,7 +3,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 import unittest
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject, ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.system import System
 from efootprint.constants.units import u

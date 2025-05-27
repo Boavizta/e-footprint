@@ -3,7 +3,7 @@ from typing import List
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source, SourceObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.builders.services.service_job_base_class import ServiceJob

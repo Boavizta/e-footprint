@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer

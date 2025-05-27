@@ -2,7 +2,7 @@ from abc import abstractmethod
 from inspect import signature
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.usage.job import JobBase

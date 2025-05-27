@@ -2,7 +2,7 @@ import json
 import os.path
 from copy import deepcopy
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.constants.units import u

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 
 
 class EmissionPlotter:
