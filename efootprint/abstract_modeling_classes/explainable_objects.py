@@ -10,6 +10,7 @@ import pint_pandas
 from pint import Quantity, Unit
 import numpy as np
 import zstandard as zstd
+from pint_pandas import PintArray
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
@@ -493,6 +494,27 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __len__(self):
         return len(self.value)
 
+    @staticmethod
+    def strip_units(df):
+        return df.apply(lambda col: col.values._data)
+
+    @staticmethod
+    def restore_units(df, unit):
+        # Directly construct PintArray from existing numpy array — no dtype conversion
+        values = df["value"].values
+
+        # If it's already Float64Dtype (nullable), convert to float64
+        if pd.api.types.is_float_dtype(values):
+            values = values.astype("float64", copy=False)
+
+        pint_array = PintArray(values, dtype=unit)
+
+        # Construct series directly and reuse index
+        series = pd.Series(pint_array, index=df.index, name="value")
+
+        # Return as a single-column DataFrame (faster than constructing empty DataFrame)
+        return series.to_frame()
+
     def __add__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
@@ -500,7 +522,17 @@ class ExplainableHourlyQuantities(ExplainableObject):
         elif isinstance(other, EmptyExplainableObject):
             return ExplainableHourlyQuantities(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableHourlyQuantities):
-            df_sum = self.value.add(other.value, fill_value=0 * self.unit)
+            if self.unit == other.unit:
+                left_mag = self.strip_units(self.value)
+                right_mag = self.strip_units(other.value)
+
+                # Fast add
+                df_sum_mag = left_mag.add(right_mag, fill_value=0)
+
+                # Restore units
+                df_sum = self.restore_units(df_sum_mag, str(self.unit))
+            else:
+                df_sum = self.value.add(other.value, fill_value=0 * self.unit)
             return ExplainableHourlyQuantities(df_sum, "", self, other, "+")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")

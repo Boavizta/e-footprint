@@ -4,6 +4,7 @@ from typing import List, Type
 import numpy as np
 import pandas as pd
 import pint_pandas
+from line_profiler import profile
 
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
@@ -129,11 +130,13 @@ class Storage(InfraHardware):
         else:
             return EmptyExplainableObject()
 
+    @profile
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
                 self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
             f"Carbon footprint of {self.name}")
 
+    @profile
     def update_power(self):
         self.power = (self.power_per_storage_capacity * self.storage_capacity).set_label(f"Power of {self.name}")
 
@@ -145,6 +148,7 @@ class Storage(InfraHardware):
     # By turning these three attributes into properties, we make all of them dependencies of the calculation of
     # storage_delta and solve the problem.
     @property
+    @profile
     def storage_needed(self):
         storage_needed = EmptyExplainableObject()
 
@@ -157,6 +161,7 @@ class Storage(InfraHardware):
         return storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
 
     @property
+    @profile
     def storage_freed(self):
         storage_freed = EmptyExplainableObject()
 
@@ -169,6 +174,7 @@ class Storage(InfraHardware):
         return storage_freed.to(u.TB).set_label(f"Hourly {self.name} storage freed")
 
     @property
+    @profile
     def automatic_storage_dumps_after_storage_duration(self):
         if isinstance(self.storage_needed, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self.storage_needed)
@@ -191,12 +197,14 @@ class Storage(InfraHardware):
                 left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
+    @profile
     def update_storage_delta(self):
         storage_delta = (self.storage_needed + self.storage_freed
                          + self.automatic_storage_dumps_after_storage_duration)
 
         self.storage_delta = storage_delta.set_label(f"Hourly storage delta for {self.name}")
 
+    @profile
     def update_full_cumulative_storage_need(self):
         if isinstance(self.storage_delta, EmptyExplainableObject):
             self.full_cumulative_storage_need = EmptyExplainableObject(left_parent=self.storage_delta)
@@ -221,11 +229,13 @@ class Storage(InfraHardware):
                 left_parent=self.storage_delta, right_parent=self.base_storage_need,
                 operator="cumulative sum of storage delta with initial storage need")
 
+    @profile
     def update_raw_nb_of_instances(self):
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)
 
         self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances for {self.name}")
 
+    @profile
     def update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
@@ -262,6 +272,7 @@ class Storage(InfraHardware):
                     right_parent=self.fixed_nb_of_instances, operator="depending on being empty")
                 self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
+    @profile
     def update_nb_of_active_instances(self):
         tmp_nb_of_active_instances = (
                 (self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
@@ -273,6 +284,7 @@ class Storage(InfraHardware):
         self.nb_of_active_instances = nb_of_active_instances.set_label(
             f"Hourly number of active instances for {self.name}")
 
+    @profile
     def update_instances_energy(self):
         nb_of_idle_instances = (self.nb_of_instances - self.nb_of_active_instances).set_label(
             f"Hourly number of idle instances for {self.name}")
