@@ -1,4 +1,4 @@
-from typing import Type, Optional
+from typing import Type, Optional, TYPE_CHECKING
 from dataclasses import dataclass
 import os
 
@@ -7,6 +7,9 @@ from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
+
+if TYPE_CHECKING:
+    from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 @dataclass
@@ -79,6 +82,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             source = Source.from_json_dict(d.get("source")) if d.get("source") else None
             return cls(d["value"], label=d.get("label", None), source=source)
         raise ValueError("No matching subclass found for data: {}".format(d))
+
+    def initialize_calculus_graph_data_from_json(self, json_input: dict, flat_obj_dict: dict[str, "ModelingObject"]):
+        if "direct_ancestors_with_id" in json_input:
+            self._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
+                "direct_ancestors_with_id"]
+            self._keys_of_direct_children_with_id_loaded_from_json = json_input[
+                "direct_children_with_id"]
+            self.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
+            self.flat_obj_dict = flat_obj_dict
 
     def __init__(
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,

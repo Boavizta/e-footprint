@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.1] - 2025-05-28
+
+### Changed
+- Handle explainable objects deserialization through ExplainableObject.from_json_dict and allow for extensibility with the register_subclass classmethod of ExplainableObject. In this way, new ExplainableObject subclasses can be created in another project (the interface project for example), registered and deserialized, without having to modify the e-footprint codebase.
+- In the same vein, a from_json_dict method has been added to the ModelingObject class.
+
 ## [10.1.0] 2025-05-25
 
 ### Added

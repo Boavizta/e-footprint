@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    retrieve_update_function_from_mod_obj_and_attr_name)
+    retrieve_update_function_from_mod_obj_and_attr_name, ExplainableObject)
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
@@ -118,6 +118,38 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
+    @classmethod
+    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, trigger_modeling_updates=False,
+                       is_loaded_from_system_with_calculated_attributes=False):
+        new_obj = cls.__new__(cls)
+        new_obj.__dict__["contextual_modeling_obj_containers"] = []
+        new_obj.trigger_modeling_updates = trigger_modeling_updates
+        explainable_object_dicts_to_create_after_objects_creation = {}
+        for attr_key, attr_value in object_json_dict.items():
+            if isinstance(attr_value, dict) and "label" in attr_value:
+                new_value = ExplainableObject.from_json_dict(attr_value)
+                new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
+                # Calculus graph data is added after setting as new_obj attribute to not interfere
+                # with set_modeling_obj_container logic
+                new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict)
+            elif isinstance(attr_value, dict) and "label" not in attr_value:
+                explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
+            elif isinstance(attr_value, str) and attr_key != "id" and attr_value in flat_obj_dict:
+                new_obj.__setattr__(attr_key, flat_obj_dict[attr_value], check_input_validity=False)
+            elif isinstance(attr_value, list):
+                new_obj.__setattr__(
+                    attr_key, [flat_obj_dict[elt] for elt in attr_value], check_input_validity=False)
+            else:
+                new_obj.__setattr__(attr_key, attr_value)
+
+        if not is_loaded_from_system_with_calculated_attributes:
+            for calculated_attribute_name in new_obj.calculated_attributes:
+                if getattr(new_obj, calculated_attribute_name, None) is None:
+                    new_obj.__setattr__(
+                        calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
+
+        return new_obj, explainable_object_dicts_to_create_after_objects_creation
+
     @classmethod
     def default_values(cls):
         return {}

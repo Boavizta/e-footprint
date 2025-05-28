@@ -13,16 +13,6 @@ from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
 
 
-def initialize_calculus_graph_data(explainable_object, json_input, flat_obj_dict):
-    if "direct_ancestors_with_id" in json_input:
-        explainable_object._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
-            "direct_ancestors_with_id"]
-        explainable_object._keys_of_direct_children_with_id_loaded_from_json = json_input[
-            "direct_children_with_id"]
-        explainable_object.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
-        explainable_object.flat_obj_dict = flat_obj_dict
-
-
 def compute_classes_generation_order(efootprint_classes_dict):
     classes_to_order_dict = copy(efootprint_classes_dict)
     classes_generation_order = []
@@ -101,34 +91,17 @@ def json_to_system(
         current_class = efootprint_classes_dict[class_key]
         current_class_dict = {}
         for class_instance_key in system_dict[class_key]:
-            new_obj = current_class.__new__(current_class)
-            new_obj.__dict__["contextual_modeling_obj_containers"] = []
-            new_obj.trigger_modeling_updates = False
-            for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
-                if isinstance(attr_value, dict) and "label" in attr_value:
-                    new_value = ExplainableObject.from_json_dict(attr_value)
-                    new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
-                    # Calculus graph data is added after setting as new_obj attribute to not interfere
-                    # with set_modeling_obj_container logic
-                    initialize_calculus_graph_data(new_value, attr_value, flat_obj_dict)
-                elif isinstance(attr_value, dict) and "label" not in attr_value:
-                    explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
-                elif isinstance(attr_value, str) and attr_key != "id" and attr_value in flat_obj_dict:
-                        new_obj.__setattr__(attr_key, flat_obj_dict[attr_value], check_input_validity=False)
-                elif isinstance(attr_value, list):
-                    new_obj.__setattr__(
-                        attr_key, [flat_obj_dict[elt] for elt in attr_value], check_input_validity=False)
-                else:
-                    new_obj.__setattr__(attr_key, attr_value)
+            new_obj, new_obj_expl_obj_dicts_to_create_after_objects_creation = current_class.from_json_dict(
+                system_dict[class_key][class_instance_key], flat_obj_dict, trigger_modeling_updates=False,
+                is_loaded_from_system_with_calculated_attributes=is_loaded_from_system_with_calculated_attributes)
 
-            if not is_loaded_from_system_with_calculated_attributes:
-                for calculated_attribute_name in new_obj.calculated_attributes:
-                    calculated_attribute = getattr(new_obj, calculated_attribute_name, None)
-                    if calculated_attribute is not None:
-                        is_loaded_from_system_with_calculated_attributes = True
-                    else:
-                        new_obj.__setattr__(
-                            calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
+            explainable_object_dicts_to_create_after_objects_creation.update(
+                new_obj_expl_obj_dicts_to_create_after_objects_creation)
+
+            if not is_loaded_from_system_with_calculated_attributes and len(new_obj.calculated_attributes) > 0:
+                first_new_obj_calculated_attribute = getattr(new_obj, new_obj.calculated_attributes[0], None)
+                if not isinstance(first_new_obj_calculated_attribute, EmptyExplainableObject):
+                    is_loaded_from_system_with_calculated_attributes = True
 
             if class_key != "System":
                 if is_loaded_from_system_with_calculated_attributes:
@@ -147,8 +120,7 @@ def json_to_system(
         modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
-            initialize_calculus_graph_data(
-                explainable_object_item, explainable_object_json, flat_obj_dict)
+                explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
 
     for system in class_obj_dict["System"].values():
         system.set_initial_and_previous_footprints()
