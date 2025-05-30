@@ -119,11 +119,11 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     @classmethod
-    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, trigger_modeling_updates=False,
+    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
                        is_loaded_from_system_with_calculated_attributes=False):
         new_obj = cls.__new__(cls)
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
-        new_obj.trigger_modeling_updates = trigger_modeling_updates
+        new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
         for attr_key, attr_value in object_json_dict.items():
             if isinstance(attr_value, dict) and "label" in attr_value:
@@ -147,6 +147,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 if getattr(new_obj, calculated_attribute_name, None) is None:
                     new_obj.__setattr__(
                         calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
+
+        if set_trigger_modeling_updates_to_true:
+            new_obj.trigger_modeling_updates = True
 
         return new_obj, explainable_object_dicts_to_create_after_objects_creation
 

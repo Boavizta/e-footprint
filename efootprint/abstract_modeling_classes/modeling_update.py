@@ -95,7 +95,7 @@ class ModelingUpdate:
         for index in range(len(self.changes_list)):
             old_value, new_value = self.changes_list[index]
             assert isinstance(old_value, ObjectLinkedToModelingObj), \
-                              f"{old_value} should be an ObjectLink edToModelingObj but is of type {type(old_value)}"
+                              f"{old_value} should be an ObjectLinkedToModelingObj but is of type {type(old_value)}"
             if new_value is None:
                 assert isinstance(old_value, ExplainableObject)
                 self.changes_list[index][1] = EmptyExplainableObject()

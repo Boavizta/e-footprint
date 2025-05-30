@@ -92,7 +92,7 @@ def json_to_system(
         current_class_dict = {}
         for class_instance_key in system_dict[class_key]:
             new_obj, new_obj_expl_obj_dicts_to_create_after_objects_creation = current_class.from_json_dict(
-                system_dict[class_key][class_instance_key], flat_obj_dict, trigger_modeling_updates=False,
+                system_dict[class_key][class_instance_key], flat_obj_dict, set_trigger_modeling_updates_to_true=False,
                 is_loaded_from_system_with_calculated_attributes=is_loaded_from_system_with_calculated_attributes)
 
             explainable_object_dicts_to_create_after_objects_creation.update(
