@@ -106,7 +106,6 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         self.obj.replace_in_mod_obj_container_without_recomputation(new_value)
 
         self.assertEqual(self.mock_modeling_object.test_dict[key], new_value)
-        new_value.set_modeling_obj_container.assert_called_once_with(self.mock_modeling_object, "test_dict")
 
     def test_replace_with_no_modeling_obj_container(self):
         self.obj.modeling_obj_container = None

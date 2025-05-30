@@ -132,12 +132,16 @@ class TestExplainableObjectBaseClass(TestCase):
         root = ExplainableObject(0, "root")
         child1 = ExplainableObject(1, "child1")
         child1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
+        child1.attr_name_in_mod_obj_container = "grandchild1"
         child2 = ExplainableObject(2, "child2")
         child2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
+        child2.attr_name_in_mod_obj_container = "grandchild2"
         grandchild1 = ExplainableObject(3, "grandchild1")
         grandchild1.modeling_obj_container = MagicMock(id="grandchild1_mod_obj_container")
+        grandchild1.attr_name_in_mod_obj_container = "grandchild1"
         grandchild2 = ExplainableObject(4, "grandchild2")
         grandchild2.modeling_obj_container = MagicMock(id="grandchild2_mod_obj_container")
+        grandchild2.attr_name_in_mod_obj_container = "grandchild2"
 
         root.direct_children_with_id.append(child1)
         root.direct_children_with_id.append(child2)
@@ -154,12 +158,16 @@ class TestExplainableObjectBaseClass(TestCase):
         descendant = ExplainableObject(0, "descendant")
         parent1 = ExplainableObject(1, "parent1")
         parent1.modeling_obj_container = MagicMock(id="parent1_mod_obj_container")
+        parent1.attr_name_in_mod_obj_container = "parent1"
         parent2 = ExplainableObject(2, "parent2")
         parent2.modeling_obj_container = MagicMock(id="parent2_mod_obj_container")
+        parent2.attr_name_in_mod_obj_container = "parent2"
         grandparent1 = ExplainableObject(3, "grandparent1")
         grandparent1.modeling_obj_container = MagicMock(id="grandparent1_mod_obj_container")
+        grandparent1.attr_name_in_mod_obj_container = "grandparent1"
         grandparent2 = ExplainableObject(4, "grandparent2")
         grandparent2.modeling_obj_container = MagicMock(id="grandparent2_mod_obj_container")
+        grandparent2.attr_name_in_mod_obj_container = "grandparent2"
 
         descendant.direct_ancestors_with_id.append(parent1)
         descendant.direct_ancestors_with_id.append(parent2)
@@ -176,7 +184,9 @@ class TestExplainableObjectBaseClass(TestCase):
         left_parent = ExplainableObject(value=3, label="Label L")
         right_parent = ExplainableObject(value=4, label="Label R")
         left_parent.modeling_obj_container = MagicMock(name="lc_mod_obj_name", id="lc_mod_obj_id")
+        left_parent.attr_name_in_mod_obj_container = "left_parent"
         right_parent.modeling_obj_container = MagicMock(name="rc_mod_obj_name", id="rc_mod_obj_id")
+        right_parent.attr_name_in_mod_obj_container = "right_parent"
 
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent")
         self.assertEqual([left_parent, right_parent], eo.direct_ancestors_with_id)
@@ -186,6 +196,7 @@ class TestExplainableObjectBaseClass(TestCase):
         parent = ExplainableObject(1, "test")
         parent.modeling_obj_container = MagicMock()
         parent.modeling_obj_container.id = "id"
+        parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
         child1.id = 'child1_id'
@@ -218,6 +229,7 @@ class TestExplainableObjectBaseClass(TestCase):
         parent = ExplainableObject(1, "test")
         parent.modeling_obj_container = MagicMock()
         parent.modeling_obj_container.id = "id"
+        parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
         child1.id = 'child1_id'
@@ -255,6 +267,7 @@ class TestExplainableObjectBaseClass(TestCase):
         parent = ExplainableObject(1, "test")
         parent.modeling_obj_container = MagicMock()
         parent.modeling_obj_container.id = "id"
+        parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
         child1.id = 'child1_id'

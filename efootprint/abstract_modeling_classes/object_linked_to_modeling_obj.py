@@ -27,7 +27,17 @@ class ObjectLinkedToModelingObj:
             raise ValueError(
                 f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its ancestors")
+        elif self.dict_container is None:
+            return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+        else:
+            return f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
 
+    @property
+    def attribute_id(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its ancestors")
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
 
     @property
@@ -94,12 +104,13 @@ class ObjectLinkedToModelingObj:
                 f"Trying to replace {self} of type {type(self)} by {new_value} which is of type {type(new_value)}."
         mod_obj_container = self.modeling_obj_container
         attr_name = self.attr_name_in_mod_obj_container
-        if self.dict_container is not None:
-            if self.key_in_dict not in self.dict_container:
+        dict_container = self.dict_container
+        if dict_container is not None:
+            if self.key_in_dict not in dict_container:
                 raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
                                f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
                                f"This should not happen.")
-            self.dict_container[self.key_in_dict] = new_value
+            dict_container[self.key_in_dict] = new_value
         elif self.list_container is not None:
             if not self.indexes_in_list:
                 raise ValueError(f"object of id {self.id} not found in {attr_name} attribute of {mod_obj_container.id} "
@@ -110,6 +121,6 @@ class ObjectLinkedToModelingObj:
                 self.list_container[index] = new_value
                 self.list_container.trigger_modeling_updates = initial_trigger_modeling_updates
         else:
+            self.set_modeling_obj_container(None, None)
             mod_obj_container.__dict__[attr_name] = new_value
-        self.set_modeling_obj_container(None, None)
-        new_value.set_modeling_obj_container(mod_obj_container, attr_name)
+            new_value.set_modeling_obj_container(mod_obj_container, attr_name)

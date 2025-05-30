@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.2] - 2025-06-02
+
+### Fixed
+- In ModelingObject’s from_json_dict, only set trigger_modeling_updates to True at the end of object creation if parameter set_trigger_modeling_updates_to_true is True
+- ModelingUpdate recomputation order to handle rare case where an attribute must be recomputed both because object relationships changed and an object input changed.
+- ObjectLinkedToModelingObj id property to incorporate dict key when object is a value within an ExplainableObjectDict. Needed to fix compute_ancestors_not_in_computation_chain and set_modeling_obj_container logic in replace_in_mod_obj_container_without_recomputation.
+
 ## [10.1.1] - 2025-05-28
 
 ### Changed

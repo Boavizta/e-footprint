@@ -203,11 +203,11 @@ class ModelingUpdate:
         for ancestor in all_ancestors_of_values_to_recompute:
             if ancestor.id not in [elt.id for elt in deduplicated_all_ancestors_of_values_to_recompute]:
                 deduplicated_all_ancestors_of_values_to_recompute.append(ancestor)
-        values_to_recompute_ids = [elt.id for elt in self.values_to_recompute]
-        old_sourcevalues_ids = [old_value.id for old_value in self.old_sourcevalues]
+        values_to_recompute_attribute_ids = [elt.attribute_id for elt in self.values_to_recompute]
+        old_sourcevalues_attribute_ids = [old_value.attribute_id for old_value in self.old_sourcevalues]
         ancestors_not_in_computation_chain = [
             ancestor for ancestor in deduplicated_all_ancestors_of_values_to_recompute
-            if ancestor.id not in values_to_recompute_ids + old_sourcevalues_ids]
+            if ancestor.attribute_id not in values_to_recompute_attribute_ids + old_sourcevalues_attribute_ids]
 
         return ancestors_not_in_computation_chain
 
