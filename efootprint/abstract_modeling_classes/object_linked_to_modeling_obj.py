@@ -27,8 +27,10 @@ class ObjectLinkedToModelingObj:
             raise ValueError(
                 f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its ancestors")
-
-        return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+        elif self.dict_container is None:
+            return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+        else:
+            return f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
 
     @property
     def dict_container(self):
@@ -111,5 +113,5 @@ class ObjectLinkedToModelingObj:
                 self.list_container.trigger_modeling_updates = initial_trigger_modeling_updates
         else:
             mod_obj_container.__dict__[attr_name] = new_value
-        self.set_modeling_obj_container(None, None)
-        new_value.set_modeling_obj_container(mod_obj_container, attr_name)
+            self.set_modeling_obj_container(None, None)
+            new_value.set_modeling_obj_container(mod_obj_container, attr_name)

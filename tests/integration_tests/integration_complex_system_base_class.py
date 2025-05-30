@@ -324,9 +324,16 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "New usage pattern video watching in France", self.uj, [Device.laptop()], self.network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
 
+        streaming = self.streaming_job
+        up = self.usage_pattern2
+        hour_occs_per_up = streaming.hourly_occurrences_per_usage_pattern[up]
         logger.warning("Adding new usage pattern")
         self.system.usage_patterns += [new_up]
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        # streaming has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
+        self.assertIsNone(hour_occs_per_up.modeling_obj_container)
+        # streaming has 3 usage patterns so its hourly_occurrences_across_usage_patterns should have 3 ancestors
+        self.assertEqual(len(streaming.hourly_occurrences_across_usage_patterns.direct_ancestors_with_id), 3)
 
         logger.warning("Removing the new usage pattern")
         self.system.usage_patterns = [self.usage_pattern1, self.usage_pattern2]

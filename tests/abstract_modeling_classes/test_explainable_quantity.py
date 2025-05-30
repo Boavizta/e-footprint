@@ -16,6 +16,7 @@ class TestExplainableQuantity(unittest.TestCase):
         self.e = ExplainableQuantity(3 * u.W, "e")
         for index, explainable_quantity in enumerate([self.a, self.b, self.e]):
             explainable_quantity.modeling_obj_container = MagicMock(name="name", id=f"id{index}")
+            explainable_quantity.attr_name_in_mod_obj_container = "test_attr"
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):

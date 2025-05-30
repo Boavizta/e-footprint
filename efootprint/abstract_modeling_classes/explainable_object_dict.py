@@ -46,6 +46,8 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
             raise ValueError(
                 f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")
+        if key in self:
+            self[key].set_modeling_obj_container(None, None)  # Remove the old modeling object container
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
