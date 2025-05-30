@@ -8,6 +8,11 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_calculation_graph(self):
         self.run_test_calculation_graph()
 
+    def test_system_calculation_graph_right_after_json_to_system(self):
+        # Created just because it exists in the IntegrationTestSimpleSystem class and another test makes sure that both
+        # classes have the same methods.
+        pass
+
     def test_object_relationship_graph(self):
         self.run_test_object_relationship_graph()
 
@@ -91,3 +96,6 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
 
     def test_simulation_add_objects_and_make_input_changes(self):
         self.run_test_simulation_add_objects_and_make_input_changes()
+
+    def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+        self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()

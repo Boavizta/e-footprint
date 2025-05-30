@@ -185,8 +185,10 @@ class ModelingUpdate:
         attr_updates_chain_from_attributes_updates = sum(
             [old_value.attr_updates_chain for old_value in self.old_sourcevalues], start=[])
 
+        # Necessary to do the sum in this order because calculations from modeling objects computation chains must be
+        # done after the calculations from input updates.
         optimized_chain = optimize_attr_updates_chain(
-            self.attr_updates_chain_from_mod_objs_computation_chains + attr_updates_chain_from_attributes_updates)
+            attr_updates_chain_from_attributes_updates + self.attr_updates_chain_from_mod_objs_computation_chains)
 
         optimized_chain_without_previous_nor_initial_values = [
             attr for attr in optimized_chain if not attr.attr_name_in_mod_obj_container.startswith("previous_")

@@ -7,7 +7,7 @@ from tests.integration_tests.integration_services_base_class import IntegrationT
 from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR
 
 
-class IntegrationTestServices(IntegrationTestServicesBaseClass):
+class IntegrationTestServicesFromJson(IntegrationTestServicesBaseClass):
     @classmethod
     def setUpClass(cls):
         (system, storage, server, gpu_server, video_streaming_service, web_application_service,

@@ -681,4 +681,34 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         for job in [new_job, new_job2, self.streaming_job]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+
+    def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+        logger.warning("Changing network and hourly usage journey starts simultaneously")
+        new_network = Network(
+            "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        initial_usage_journey_starts = self.usage_pattern.hourly_usage_journey_starts
+
+        ModelingUpdate([
+            [self.usage_pattern.network, new_network],
+            [self.usage_pattern.hourly_usage_journey_starts, SourceHourlyValues(
+            create_hourly_usage_df_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]))]
+        ])
+
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_changed([self.network, self.usage_pattern], system=self.system)
+        for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
+            self.assertIsNotNone(ancestor.modeling_obj_container)
+
+        logger.warning("Changing back to initial network and hourly usage journey starts")
+
+        ModelingUpdate([
+            [self.usage_pattern.network, self.network],
+            [self.usage_pattern.hourly_usage_journey_starts, initial_usage_journey_starts]
+        ])
+
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.network, self.usage_pattern])
+
+        for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
+            self.assertIsNotNone(ancestor.modeling_obj_container)
     
