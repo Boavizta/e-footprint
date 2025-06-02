@@ -131,17 +131,18 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         uj = UsageJourney(
             "Daily video usage", uj_steps=[streaming_step, upload_step, dailymotion_step, tiktok_step])
 
-        network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        network1 = Network("network 1", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern1 = UsagePattern(
-            "Video watching in France in the morning", uj, [Device.laptop()], network,
+            "Video watching in France in the morning", uj, [Device.laptop()], network1,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=start_date)))
 
+        network2 = Network("network 2", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         usage_pattern2 = UsagePattern(
-            "Video watching in France in the evening", uj, [Device.laptop()], network,
+            "Video watching in France in the evening", uj, [Device.laptop()], network2,
             Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date)))
@@ -159,11 +160,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         return system, storage_1, storage_2, storage_3, server1, server2, server3, \
             streaming_job, upload_job, dailymotion_job, tiktok_job, tiktok_analytics_job, \
             streaming_step, upload_step, dailymotion_step, tiktok_step, \
-            start_date, usage_pattern1, usage_pattern2, uj, network
+            start_date, usage_pattern1, usage_pattern2, uj, network1, network2
 
     @classmethod
     def initialize_footprints(cls, system, storage_1, storage_2, storage_3, server1, server2, server3, usage_pattern1,
-                              usage_pattern2, network):
+                              usage_pattern2, network1, network2):
         cls.initial_footprint = system.total_footprint
         cls.initial_fab_footprints = {
             storage_1: storage_1.instances_fabrication_footprint,
@@ -182,7 +183,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             server1: server1.energy_footprint,
             server2: server2.energy_footprint,
             server3: server3.energy_footprint,
-            network: network.energy_footprint,
+            network1: network1.energy_footprint,
+            network2: network2.energy_footprint,
             usage_pattern1: usage_pattern1.energy_footprint,
             usage_pattern2: usage_pattern2.energy_footprint,
         }
@@ -196,10 +198,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
             cls.streaming_job, cls.upload_job, cls.dailymotion_job, cls.tiktok_job, cls.tiktok_analytics_job, \
             cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step, \
-            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network = cls.generate_complex_system()
+            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network1, \
+            cls.network2= cls.generate_complex_system()
 
         cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
-                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network)
+                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network1, cls.network2)
 
         cls.ref_json_filename = "complex_system"
 
@@ -207,10 +210,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         expected_list = [
             self.server2, self.server1, self.server3, self.storage_1, self.storage_2, self.storage_3,
             self.usage_pattern1, self.usage_pattern2,
-            self.network, self.uj, self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step,
-            self.streaming_job, self.upload_job, self.dailymotion_job, self.tiktok_job, self.tiktok_analytics_job,
-            self.usage_pattern1.devices[0], self.usage_pattern2.devices[0], self.usage_pattern1.country,
-            self.usage_pattern2.country]
+            self.network1, self.network2, self.uj, self.streaming_step, self.upload_step, self.dailymotion_step,
+            self.tiktok_step, self.streaming_job, self.upload_job, self.dailymotion_job, self.tiktok_job,
+            self.tiktok_analytics_job, self.usage_pattern1.devices[0], self.usage_pattern2.devices[0],
+            self.usage_pattern1.country, self.usage_pattern2.country]
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
     def run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
@@ -319,9 +322,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.storage_1])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def run_test_add_new_usage_pattern(self):
+    def run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
+        new_network = Network.wifi_network()
         new_up = UsagePattern(
-            "New usage pattern video watching in France", self.uj, [Device.laptop()], self.network, Countries.FRANCE(),
+            "New usage pattern video watching in France", self.uj, [Device.laptop()], new_network, Countries.FRANCE(),
             SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
 
         streaming = self.streaming_job
@@ -334,6 +338,13 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertIsNone(hour_occs_per_up.modeling_obj_container)
         # streaming has 3 usage patterns so its hourly_occurrences_across_usage_patterns should have 3 ancestors
         self.assertEqual(len(streaming.hourly_occurrences_across_usage_patterns.direct_ancestors_with_id), 3)
+
+        logger.warning("Editing the usage pattern network")
+        new_up.hourly_usage_journey_starts = SourceHourlyValues(
+            create_hourly_usage_df_from_list([elt * 1000 for elt in [2, 4, 1, 5, 3, 1, 5, 23, 2]]))
+        # self.network1.energy_footprint should not have been recomputed, nor its ancestors
+        for elt in self.network1.energy_footprint.direct_ancestors_with_id:
+            self.assertIsNotNone(elt.modeling_obj_container)
 
         logger.warning("Removing the new usage pattern")
         self.system.usage_patterns = [self.usage_pattern1, self.usage_pattern2]
@@ -406,8 +417,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         # Depending job occurrences should have been recomputed since a changing user_time_spent might shift jobs
         # distribution across time
-        self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id,
-                      [elt.id for elt in simulation.values_to_recompute])
+        for elt in self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.values():
+            self.assertIn(elt.id, [elt.id for elt in simulation.values_to_recompute])
 
     def run_test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
@@ -420,7 +431,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server1.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+        for elt in self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.values():
+            self.assertIn(elt.id, recomputed_elements_ids)
         self.assertIn(self.server1.energy_footprint.id, recomputed_elements_ids)
 
     def run_test_simulation_add_new_object(self):

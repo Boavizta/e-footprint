@@ -80,12 +80,12 @@ class ModelingUpdate:
         if self.simulation_date is not None:
             self.link_simulated_and_baseline_twins()
 
-        self.all_previous_obj_linked_to_mod_obj = (
-                [change[0] for change in self.changes_list] + self.hourly_quantities_to_filter
-                + self.ancestors_to_replace_by_copies + self.values_to_recompute)
-        self.all_new_obj_linked_to_mod_obj = (
-                [change[1] for change in self.changes_list] + self.filtered_hourly_quantities
-                + self.replaced_ancestors_copies + self.recomputed_values)
+        self.previous_and_new_objects_organized_in_sections = [
+            ["direct changes", [change[0] for change in self.changes_list], [change[1] for change in self.changes_list]],
+            ["filtered hourly quantities", self.hourly_quantities_to_filter, self.filtered_hourly_quantities],
+            ["replaced ancestors copies", self.ancestors_to_replace_by_copies, self.replaced_ancestors_copies],
+            ["recomputed values", self.values_to_recompute, self.recomputed_values]
+        ]
 
         if simulation_date is not None:
             self.reset_values()
@@ -166,9 +166,18 @@ class ModelingUpdate:
         for value_to_recompute in self.values_to_recompute:
             attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
             modeling_obj_container = value_to_recompute.modeling_obj_container
-            logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id}")
-            value_to_recompute.update_function()
-            recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)
+            key_in_dict = None
+            if value_to_recompute.dict_container is not None:
+                key_in_dict = value_to_recompute.key_in_dict
+            if not key_in_dict:
+                logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id}")
+                value_to_recompute.update_function()
+                recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)
+            else:
+                logger.debug(f"Recomputing {attr_name_in_mod_obj_container} in {modeling_obj_container.id} "
+                             f"with key {key_in_dict.id}")
+                value_to_recompute.update_function(key_in_dict)
+                recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)[key_in_dict]
             recomputed_values.append(recomputed_value)
 
         return recomputed_values
@@ -277,17 +286,19 @@ class ModelingUpdate:
 
     def reset_values(self):
         if self.updated_values_set:
-            for new_value, previous_value in zip(
-                    self.all_new_obj_linked_to_mod_obj, self.all_previous_obj_linked_to_mod_obj):
-                new_value.replace_in_mod_obj_container_without_recomputation(previous_value)
-            self.updated_values_set = False
+            for section_name, previous_values, new_values in self.previous_and_new_objects_organized_in_sections:
+                logger.info(f"Resetting {section_name} from {len(new_values)} updated values")
+                for new_value, previous_value in zip(new_values, previous_values):
+                    new_value.replace_in_mod_obj_container_without_recomputation(previous_value)
+                self.updated_values_set = False
 
     def set_updated_values(self):
         if not self.updated_values_set:
-            for new_value, previous_value in zip(
-                    self.all_new_obj_linked_to_mod_obj, self.all_previous_obj_linked_to_mod_obj):
-                previous_value.replace_in_mod_obj_container_without_recomputation(new_value)
-            self.updated_values_set = True
+            for section_name, previous_values, new_values in self.previous_and_new_objects_organized_in_sections:
+                logger.info(f"Setting {section_name} from {len(previous_values)} previous values")
+                for new_value, previous_value in zip(new_values, previous_values):
+                    previous_value.replace_in_mod_obj_container_without_recomputation(new_value)
+                self.updated_values_set = True
 
     def link_simulated_and_baseline_twins(self):
         assert self.simulation_date is not None

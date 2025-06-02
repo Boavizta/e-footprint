@@ -581,8 +581,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         # Depending job occurrences should have been recomputed since a changing user_time_spent might shift jobs
         # distribution across time
-        self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id,
-                      [elt.id for elt in simulation.values_to_recompute])
+        for elt in self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.values():
+            self.assertIn(elt.id, [elt.id for elt in simulation.values_to_recompute])
 
     def run_test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
@@ -595,7 +595,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+        for elt in self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.values():
+            self.assertIn(elt.id, recomputed_elements_ids)
         self.assertIn(self.server.energy_footprint.id, recomputed_elements_ids)
 
     def run_test_simulation_add_new_object(self):

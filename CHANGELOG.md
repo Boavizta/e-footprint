@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.3] - 2025-06-02
+
+### Fixed
+- Stop including dict containers in ExplainableObject attr_updates_chains. Instead include directly ExplainableObjectDict elements to clarify calculus graph logic.
+- In ExplainableObject only run compute_explain_tuples only if new_modeling_obj_container is not None.
+
 ## [10.1.2] - 2025-06-02
 
 ### Fixed

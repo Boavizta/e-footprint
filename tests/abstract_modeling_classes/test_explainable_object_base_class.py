@@ -3,7 +3,8 @@ from unittest.mock import MagicMock, patch, PropertyMock
 
 import pytz
 
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
+    optimize_attr_updates_chain
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import Source
 
@@ -308,6 +309,19 @@ class TestExplainableObjectBaseClass(TestCase):
             self.assertEqual(
                 [child1.update_function, child2.update_function, grandchild1.update_function,
                  grandchild2.update_function], result)
+
+    def test_optimize_attr_updates_chain_removes_dict_element_if_dict_is_recomputed_later(self):
+        element_in_dict = MagicMock()
+        element_in_dict.id = "element_id"
+        dict_container = MagicMock()
+        dict_container.id = "dict_container_id"
+        element_in_dict.dict_container = dict_container
+
+        attr_updates_chain = [element_in_dict, dict_container]
+
+        optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
+
+        self.assertEqual(optimized_chain, [dict_container])
 
     def test_set_label(self):
         eo = ExplainableObject(value=5, label="Label A")

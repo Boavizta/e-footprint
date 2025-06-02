@@ -90,11 +90,14 @@ class TestJob(TestCase):
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
         self.assertEqual(hourly_uj_starts.value.index.max(), job_occurrences.value.index.max())
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
     def test_compute_hourly_job_occurrences_uj_lasting_less_than_an_hour_before(self):
         uj1 = MagicMock()
@@ -110,11 +113,14 @@ class TestJob(TestCase):
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
         self.assertEqual(hourly_uj_starts.value.index.max(), job_occurrences.value.index.max())
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
     def test_compute_hourly_job_occurrences_uj_lasting_more_than_an_hour_before(self):
         uj1 = MagicMock()
@@ -130,13 +136,16 @@ class TestJob(TestCase):
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(hourly_uj_starts.value.index.min() + timedelta(hours=1),
-                         job_occurrences.value.index.min())
+        job_occurrences.value.index.min())
         self.assertEqual(hourly_uj_starts.value.index.max() + timedelta(hours=1),
                          job_occurrences.value.index.max())
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
     def test_compute_hourly_job_occurrences_uj_steps_sum_up_to_more_than_one_hour(self):
         uj1 = MagicMock()
@@ -155,8 +164,10 @@ class TestJob(TestCase):
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-        job_occurrences = self.job.compute_hourly_occurrences_for_usage_pattern(usage_pattern)
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(
             hourly_uj_starts.value.index.min() + timedelta(hours=1),
             job_occurrences.value.index.min())
@@ -165,6 +176,7 @@ class TestJob(TestCase):
             job_occurrences.value.index.max())
         self.assertEqual([elt * 2 for elt in hourly_uj_starts.value_as_float_list],
                          job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
     def test_compute_job_hourly_data_exchange_simple_case(self):
         data_exchange = "data_stored"

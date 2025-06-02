@@ -23,12 +23,24 @@ class Source:
     link: Optional[str]
 
 
-def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj, attr_name):
+def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject", attr_name: str):
     update_func_name = f"update_{attr_name}"
     update_func = getattr(mod_obj, update_func_name, None)
 
     if update_func is None:
         raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}, please create it.")
+
+    return update_func
+
+
+def retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
+        mod_obj: "ModelingObject", attr_name: str, key_in_dict: "ModelingObject"):
+    update_func_name = f"update_dict_element_in_{attr_name}"
+    update_func = getattr(mod_obj, update_func_name, None)
+
+    if update_func is None:
+        raise AttributeError(
+            f"No dict element update function associated to {attr_name} in {mod_obj.id}, please create it.")
 
     return update_func
 
@@ -40,9 +52,15 @@ def optimize_attr_updates_chain(attr_updates_chain):
 
     for index in range(len(attr_updates_chain)):
         attr_to_update = attr_updates_chain[index]
+        is_not_recomputed_later = attr_to_update.id not in attr_to_update_ids[index + 1:]
+        doesnt_belong_to_dict = attr_to_update.dict_container is None
+        belongs_to_dict_and_dict_is_not_recomputed_later = (
+            attr_to_update.dict_container is not None and
+            attr_to_update.dict_container.id not in attr_to_update_ids[index + 1:]
+        )
 
-        if attr_to_update.id not in attr_to_update_ids[index + 1:]:
-            # Keep only last occurrence of each update function
+        if is_not_recomputed_later and (doesnt_belong_to_dict or belongs_to_dict_and_dict_is_not_recomputed_later):
+            # Keep only last occurrence of each attribute to update
             optimized_chain.append(attr_to_update)
 
     optimized_chain_len = len(optimized_chain)
@@ -325,10 +343,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             if ancestor.id in [ancestor.id for ancestor in descendants]]
                         if all([has_been_added_to_chain_dict[ancestor.id]
                                 for ancestor in ancestors_that_belong_to_self_descendants]):
-                            if not child.dict_container:
-                                attr_updates_chain.append(child)
-                            else:
-                                attr_updates_chain.append(child.dict_container)
+                            attr_updates_chain.append(child)
                             has_been_added_to_chain_dict[child.id] = True
                             if len(child.direct_children_with_id) > 0:
                                 added_parents_with_children_to_add.append(child)
@@ -350,8 +365,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             raise ValueError(
                 f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its update function")
-        update_func = retrieve_update_function_from_mod_obj_and_attr_name(
-            self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        dict_container = self.dict_container
+        if dict_container is None:
+            update_func = retrieve_update_function_from_mod_obj_and_attr_name(
+                self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        else:
+            update_func = retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
+                self.modeling_obj_container, self.attr_name_in_mod_obj_container, self.key_in_dict)
 
         return update_func
 

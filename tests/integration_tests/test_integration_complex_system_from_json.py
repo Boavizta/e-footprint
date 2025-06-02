@@ -13,7 +13,7 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
         system, storage_1, storage_2, storage_3, server1, server2, server3, \
             streaming_job, upload_job, dailymotion_job, tiktok_job, tiktok_analytics_job, \
             streaming_step, upload_step, dailymotion_step, tiktok_step, \
-            start_date, usage_pattern1, usage_pattern2, uj, network = cls.generate_complex_system()
+            start_date, usage_pattern1, usage_pattern2, uj, network1, network2 = cls.generate_complex_system()
 
         cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "complex_system_with_calculated_attributes.json")
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
@@ -25,17 +25,17 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
         cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
             cls.streaming_job, cls.upload_job, cls.dailymotion_job, cls.tiktok_job, cls.tiktok_analytics_job, \
             cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step, \
-            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network = \
+            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network1, cls.network2 = \
         flat_obj_dict[system.id], flat_obj_dict[storage_1.id], flat_obj_dict[storage_2.id], flat_obj_dict[storage_3.id], \
         flat_obj_dict[server1.id], flat_obj_dict[server2.id], flat_obj_dict[server3.id], \
         flat_obj_dict[streaming_job.id], flat_obj_dict[upload_job.id], flat_obj_dict[dailymotion_job.id], \
         flat_obj_dict[tiktok_job.id], flat_obj_dict[tiktok_analytics_job.id], \
         flat_obj_dict[streaming_step.id], flat_obj_dict[upload_step.id], flat_obj_dict[dailymotion_step.id], \
         flat_obj_dict[tiktok_step.id], start_date, flat_obj_dict[usage_pattern1.id], \
-        flat_obj_dict[usage_pattern2.id], flat_obj_dict[uj.id], flat_obj_dict[network.id]
+        flat_obj_dict[usage_pattern2.id], flat_obj_dict[uj.id], flat_obj_dict[network1.id], flat_obj_dict[network2.id]
 
         cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
-                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network)
+                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network1, cls.network2)
 
         cls.ref_json_filename = "complex_system"
 
@@ -63,8 +63,8 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
     def test_add_new_job(self):
         self.run_test_add_new_job()
 
-    def test_add_new_usage_pattern(self):
-        self.run_test_add_new_usage_pattern()
+    def test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
+        self.run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts()
 
     def test_system_to_json(self):
         self.run_system_to_json_test(self.system)

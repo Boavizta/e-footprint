@@ -1,7 +1,7 @@
 import math
 from abc import abstractmethod
 from copy import copy
-from typing import List, Type
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -13,6 +13,13 @@ from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.usage.usage_journey import UsageJourney
+    from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+    from efootprint.core.system import System
+    from efootprint.core.hardware.network import Network
 
 
 class JobBase(ModelingObject):
@@ -59,30 +66,30 @@ class JobBase(ModelingObject):
                 f"{self.name} duration in full hours")
 
     @property
-    def usage_journey_steps(self) -> List[Type["UsageJourneyStep"]]:
+    def usage_journey_steps(self) -> List["UsageJourneyStep"]:
         return self.modeling_obj_containers
 
     @property
-    def usage_journeys(self) -> List[Type["UsageJourney"]]:
+    def usage_journeys(self) -> List["UsageJourney"]:
         return list(set(sum([uj_step.usage_journeys for uj_step in self.usage_journey_steps], start=[])))
 
     @property
-    def usage_patterns(self) -> List[Type["UsagePattern"]]:
+    def usage_patterns(self) -> List["UsagePattern"]:
         return list(set(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
 
     @property
-    def systems(self) -> List[Type["System"]]:
+    def systems(self) -> List["System"]:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
-    def networks(self) -> List[Type["Network"]]:
+    def networks(self) -> List["Network"]:
         return list(set(up.network for up in self.usage_patterns))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
         return self.networks
 
-    def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
+    def update_dict_element_in_hourly_occurrences_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         job_occurrences = EmptyExplainableObject()
         delay_between_uj_start_and_job_evt = EmptyExplainableObject()
         for uj_step in usage_pattern.usage_journey.uj_steps:
@@ -93,21 +100,26 @@ class JobBase(ModelingObject):
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent
 
-        return job_occurrences.set_label(f"Hourly {self.name} occurrences in {usage_pattern.name}")
+        self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.set_label(
+            f"Hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
-            self.hourly_occurrences_per_usage_pattern[up] = self.compute_hourly_occurrences_for_usage_pattern(up)
+            self.update_dict_element_in_hourly_occurrences_per_usage_pattern(up)
+
+    def update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(
+            self, usage_pattern: "UsagePattern"):
+        hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
+            self.hourly_occurrences_per_usage_pattern[usage_pattern], self.request_duration)
+
+        self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] = hourly_avg_job_occurrences.set_label(
+            f"Average hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_avg_occurrences_per_usage_pattern(self):
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
-            hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
-                self.hourly_occurrences_per_usage_pattern[up], self.request_duration)
-
-            self.hourly_avg_occurrences_per_usage_pattern[up] = hourly_avg_job_occurrences.set_label(
-                f"Average hourly {self.name} occurrences in {up.name}")
+            self.update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(up)
 
     def compute_hourly_data_exchange_for_usage_pattern(self, usage_pattern, data_exchange_type: str):
         data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
@@ -128,17 +140,25 @@ class JobBase(ModelingObject):
         return hourly_data_exchange.set_label(
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
 
+    def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
+            self, usage_pattern: "UsagePattern"):
+        self.hourly_data_transferred_per_usage_pattern[usage_pattern] = \
+            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
+
     def update_hourly_data_transferred_per_usage_pattern(self):
         self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
-            self.hourly_data_transferred_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
-                up, "data_transferred")
+            self.update_dict_element_in_hourly_data_transferred_per_usage_pattern(up)
+
+    def update_dict_element_in_hourly_data_stored_per_usage_pattern(
+            self, usage_pattern: "UsagePattern"):
+        self.hourly_data_stored_per_usage_pattern[usage_pattern] = \
+            self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
 
     def update_hourly_data_stored_per_usage_pattern(self):
         self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
-            self.hourly_data_stored_per_usage_pattern[up] = self.compute_hourly_data_exchange_for_usage_pattern(
-                up, "data_stored")
+            self.update_dict_element_in_hourly_data_stored_per_usage_pattern(up)
 
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):
