@@ -261,8 +261,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.add_child_to_direct_children_with_id(direct_child=self)
 
-        if self.left_parent is not None or self.right_parent is not None:
-            self.explain_nested_tuples = self.compute_explain_nested_tuples()
+            if self.left_parent is not None or self.right_parent is not None:
+                self.explain_nested_tuples = self.compute_explain_nested_tuples()
 
     def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:
