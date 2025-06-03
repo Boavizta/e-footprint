@@ -103,8 +103,14 @@ def timed_system_to_json(system, *args, **kwargs):
 timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")
 timed_system_to_json(system, save_calculated_attributes=True, output_filepath="big_system_with_calc_attr.json")
 
+edition_iterations = 10
+
 from time import time
 start = time()
-usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(100 * u.MB, source=None)
+
+for i in range(edition_iterations):
+    usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(100 * u.MB, source=None)
+    usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(30 * u.MB, source=None)
 end = time()
-logger.info(f"edition took {round((end - start), 3)} seconds")
+compute_time_per_edition = (end - start) / (edition_iterations * 2)
+logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on average per edition")

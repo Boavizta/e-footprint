@@ -270,6 +270,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if self.modeling_obj_container is not None:
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
                 direct_ancestor_with_id.remove_child_from_direct_children_with_id(direct_child=self)
+            for child in self.direct_children_with_id:
+                # Rehydrate child calculus graph so that it now has live links to its ancestors
+                child.load_ancestors_and_children_from_json()
 
         super().set_modeling_obj_container(new_modeling_obj_container, attr_name)
 

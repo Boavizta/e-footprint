@@ -135,3 +135,6 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
 
     def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()
+
+    def test_delete_job(self):
+        self.run_test_delete_job()

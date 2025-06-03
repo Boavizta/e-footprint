@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.4] - 2025-06-03
+
+### Fixed
+- Rehydrate children calculus graph relationships from json when setting ExplainableObject modeling obj container. In cases when an object is deleted after having been loaded from json it allows to make sure that children get to track their ancestors before the ancestors are updated.
+
 ## [10.1.3] - 2025-06-02
 
 ### Fixed

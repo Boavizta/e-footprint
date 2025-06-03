@@ -215,6 +215,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         up_laptop_with_normalized_id = Device.laptop()
         up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
+        logger.warning("Setting devices back to laptop with normalized id")
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
@@ -712,4 +713,12 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
             self.assertIsNotNone(ancestor.modeling_obj_container)
+
+    def run_test_delete_job(self):
+        logger.info("Removing upload job from upload step")
+        self.upload_step.jobs = []
+        logger.info("Deleting upload job")
+        self.upload_job.self_delete()
+        logger.info("Reinitialize system")
+        self.setUpClass()
     
