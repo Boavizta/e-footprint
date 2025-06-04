@@ -1,5 +1,6 @@
 from copy import copy
 from datetime import datetime
+from time import time
 from typing import List
 
 import numpy as np
@@ -26,6 +27,7 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
 class ModelingUpdate:
     def __init__(
             self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None):
+        start = time()
         self.updated_values_set = False
         self.system = None
         for change in changes_list:
@@ -89,6 +91,11 @@ class ModelingUpdate:
 
         if simulation_date is not None:
             self.reset_values()
+        compute_time = round((time() - start), 3)
+        avg_compute_time_per_value = round(1000 * compute_time / len(self.values_to_recompute), 3)\
+            if self.values_to_recompute else 0
+        logger.info(f"{len(self.values_to_recompute)} update computations done in {compute_time} seconds "
+                    f"(avg {avg_compute_time_per_value} ms per computation).")
 
     def parse_changes_list(self):
         indexes_to_skip = []

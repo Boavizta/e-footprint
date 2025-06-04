@@ -113,4 +113,13 @@ for i in range(edition_iterations):
     usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(30 * u.MB, source=None)
 end = time()
 compute_time_per_edition = (end - start) / (edition_iterations * 2)
-logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on average per edition")
+logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on average per data transferred edition")
+
+
+start = time()
+
+for i in range(edition_iterations):
+    usage_patterns[0].hourly_usage_journey_starts = SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year))
+end = time()
+compute_time_per_edition = (end - start) / edition_iterations
+logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on average per hourly usage journey starts edition")

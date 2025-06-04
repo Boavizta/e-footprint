@@ -168,7 +168,7 @@ class ServerBase(InfraHardware):
         available_ram_per_instance -= self.occupied_ram_per_instance
         if available_ram_per_instance.value < 0 * u.B:
             raise ValueError(
-                f"{self.name} has available capacity of {(self.ram * self.server_utilization_rate).value} "
+                f"{self.name} has available capacity of {(self.ram * self.server_utilization_rate).value}"
                 f" but is asked {self.occupied_ram_per_instance.value}")
 
         self.available_ram_per_instance = available_ram_per_instance.set_label(

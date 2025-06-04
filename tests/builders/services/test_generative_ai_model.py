@@ -8,6 +8,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
+from efootprint.core.hardware.storage import Storage
 
 
 class TestGenAIModel(unittest.TestCase):
@@ -100,6 +101,14 @@ class TestGenAIModel(unittest.TestCase):
         with patch("efootprint.builders.services.generative_ai_ecologits.Service.__setattr__") as mock_setattr:
             self.genai_model.__setattr__("provider", SourceObject("openai"), check_input_validity=False)
             mock_setattr.assert_called_once_with("provider", SourceObject("openai"), check_input_validity=False)
+
+    def test_installing_too_big_model_raises_error(self):
+        server = GPUServer.from_defaults("Test Server", storage=Storage.ssd())
+        with self.assertRaises(ValueError) as context:
+            GenAIModel.from_defaults(
+                name="Test GenAI", provider=SourceObject("openai"), model_name=SourceObject("gpt-4"), server=server)
+        self.assertIn(
+            "Test Server has available capacity of 320.0 gigabyte but is asked 4224.0 gigabyte", str(context.exception))
 
 
 class TestGenAIJob(unittest.TestCase):

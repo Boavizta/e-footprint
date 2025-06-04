@@ -1,9 +1,12 @@
 from abc import abstractmethod
 from inspect import signature
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+
+if TYPE_CHECKING:
+    from efootprint.core.hardware.server_base import ServerBase
 
 
 class Service(ModelingObject):
@@ -29,7 +32,7 @@ class Service(ModelingObject):
 
         return compatible_jobs
 
-    def __init__(self, name, server):
+    def __init__(self, name, server: "ServerBase"):
         super().__init__(name=name)
         self.name = name
         self.server = server
@@ -39,6 +42,8 @@ class Service(ModelingObject):
     def after_init(self):
         super().after_init()
         self.compute_calculated_attributes()
+        # Server attributes are computed to ensure that the server will raise and error if not enough resources
+        self.server.compute_calculated_attributes()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):

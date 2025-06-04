@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.5] - 2025-06-04
+
+### Fixed
+- Compute server attributes after installing service on it to raise error if server doesn’t have enough resources to run the service.
+
 ## [10.1.4] - 2025-06-03
 
 ### Fixed
