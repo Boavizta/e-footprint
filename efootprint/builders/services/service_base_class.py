@@ -41,9 +41,12 @@ class Service(ModelingObject):
 
     def after_init(self):
         super().after_init()
-        self.compute_calculated_attributes()
-        # Server attributes are computed to ensure that the server will raise and error if not enough resources
-        self.server.compute_calculated_attributes()
+        # Full mod obj computation chain is computed to ensure that the server will raise and error if not enough
+        # resources
+        self.launch_mod_objs_computation_chain(self.mod_objs_computation_chain)
+        for system in self.systems:
+            # Systems need to be recomputed because they depend on the server’s recomputed attributes
+            system.compute_calculated_attributes()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):

@@ -16,7 +16,8 @@ class TestGenAIModel(unittest.TestCase):
         self.mock_server = Mock(spec=GPUServer)
         self.mock_server.name = "Test Server"
         self.mock_server.ram_per_gpu = SourceValue(80 * u.GB)
-        self.mock_server.systems = None
+        self.mock_server.systems = []
+        self.mock_server.modeling_objects_whose_attributes_depend_directly_on_me = []
         self.model_name = SourceObject("open-mistral-7b")
         self.provider = SourceObject("mistralai")
         self.genai_model = GenAIModel.from_defaults(

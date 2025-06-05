@@ -13,6 +13,8 @@ class TestWebApplication(unittest.TestCase):
     def setUp(self):
         mock_server = Mock(spec=Server)
         self.server = mock_server
+        self.server.modeling_objects_whose_attributes_depend_directly_on_me = []
+        self.server.systems = []
         self.builder = WebApplication("test", self.server, SourceObject("php-symfony"))
 
     def test_installable_on(self):

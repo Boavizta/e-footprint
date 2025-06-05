@@ -199,3 +199,17 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
+
+    def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
+        logger.info("Installing new service on server")
+        new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
+
+        self.assertEqual(set(self.server.installed_services),
+                         {new_service, self.web_application_service, self.video_streaming_service})
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server])
+
+        logger.info("Uninstalling new service from server")
+        new_service.self_delete()
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server, self.server])

@@ -19,3 +19,6 @@ class IntegrationTestServices(IntegrationTestServicesBaseClass):
 
     def test_update_service_jobs(self):
         self.run_test_update_service_jobs()
+
+    def test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
+        self.run_test_install_new_service_on_server_and_make_sure_system_is_recomputed()
