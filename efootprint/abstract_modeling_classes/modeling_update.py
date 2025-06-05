@@ -94,8 +94,8 @@ class ModelingUpdate:
         compute_time = round((time() - start), 3)
         avg_compute_time_per_value = round(1000 * compute_time / len(self.values_to_recompute), 3)\
             if self.values_to_recompute else 0
-        logger.info(f"{len(self.values_to_recompute)} update computations done in {compute_time} seconds "
-                    f"(avg {avg_compute_time_per_value} ms per computation).")
+        logger.info(f"{len(self.changes_list)} changes lead to {len(self.values_to_recompute)} update computations "
+                    f"done in {compute_time} seconds (avg {avg_compute_time_per_value} ms per computation).")
 
     def parse_changes_list(self):
         indexes_to_skip = []

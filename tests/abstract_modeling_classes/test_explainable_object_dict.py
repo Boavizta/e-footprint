@@ -39,7 +39,7 @@ class TestExplainableObjectDict(unittest.TestCase):
         other_mock_modeling_obj.id = "other_mock_id"
         other_mock_modeling_obj.name = "other_mock_modeling_obj"
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(PermissionError):
             self.dict_obj.set_modeling_obj_container(other_mock_modeling_obj, "another_attr")
 
     def test_all_ancestors_with_id(self):

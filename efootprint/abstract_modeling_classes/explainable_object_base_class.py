@@ -261,11 +261,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             raise PermissionError(
                 f"ExplainableObjects that are attributes of a ModelingObject should always have a label. "
                 f"{self} doesn’t have one.")
-        elif self.modeling_obj_container is not None and new_modeling_obj_container is not None\
-                and self.modeling_obj_container != new_modeling_obj_container:
-            raise PermissionError(
-                f"{self} is already linked to {self.modeling_obj_container.id} and is trying to be linked to "
-                f"{new_modeling_obj_container.id}.")
 
         if self.modeling_obj_container is not None:
             for direct_ancestor_with_id in self.direct_ancestors_with_id:
@@ -514,12 +509,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                     (f"{explain_nested_tuple} should be an ExplainableObject but is of "
                      f"type {type(explain_nested_tuple)}")
                 if explain_nested_tuple.modeling_obj_container is not None:
-                    return str(
-                        (explain_nested_tuple.modeling_obj_container.id,
-                         explain_nested_tuple.attr_name_in_mod_obj_container,
-                         explain_nested_tuple.key_in_dict.id
-                            if explain_nested_tuple.dict_container is not None else None)
-                    )
+                    return str(explain_nested_tuple.full_tuple_id)
                 else:
                     return explain_nested_tuple.to_json()
 
@@ -540,13 +530,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         if with_calculated_attributes_data:
             output_dict["direct_ancestors_with_id"] = [
-                str((ancestor.modeling_obj_container.id, ancestor.attr_name_in_mod_obj_container,
-                     ancestor.key_in_dict.id if ancestor.dict_container is not None else None))
-                for ancestor in self.direct_ancestors_with_id]
+                str(ancestor.full_tuple_id) for ancestor in self.direct_ancestors_with_id]
             output_dict["direct_children_with_id"] = [
-                str((child.modeling_obj_container.id, child.attr_name_in_mod_obj_container,
-                     child.key_in_dict.id if child.dict_container is not None else None))
-                for child in self.direct_children_with_id]
+                str(child.full_tuple_id) for child in self.direct_children_with_id]
 
             if self._explain_nested_tuples is None and self.explain_nested_tuples_from_json is not None:
                 output_dict["explain_nested_tuples"] = self.explain_nested_tuples_from_json

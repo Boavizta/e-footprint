@@ -5,6 +5,9 @@ class ObjectLinkedToModelingObj:
     def __init__(self):
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
+        # kept in memory just for easier debugging and error messages
+        self.former_modeling_obj_container_id = None
+        self.former_attr_name_in_mod_obj_container = None
 
     def set_modeling_obj_container(
             self, new_parent_modeling_object: Type["ModelingObject"] | None, attr_name: str | None):
@@ -13,31 +16,44 @@ class ObjectLinkedToModelingObj:
                 f"Both new_parent_modeling_object and attr_name should be None or not None. "
                 f"Here new_parent_modeling_object is {new_parent_modeling_object} and attr_name is {attr_name}.")
         if (self.modeling_obj_container is not None and new_parent_modeling_object is not None and
-                new_parent_modeling_object.id != self.modeling_obj_container.id):
-            raise ValueError(
+                new_parent_modeling_object != self.modeling_obj_container):
+            raise PermissionError(
                 f"A {self.__class__.__name__} can’t be attributed to more than one ModelingObject. Here "
                 f"{self} is trying to be linked to {new_parent_modeling_object.name} but is already linked to "
                 f"{self.modeling_obj_container.name}.")
+        self.former_modeling_obj_container_id = self.modeling_obj_container.id \
+            if self.modeling_obj_container is not None else None
+        self.former_attr_name_in_mod_obj_container = self.attr_name_in_mod_obj_container
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
 
-    @property
-    def id(self):
+    def raise_error_if_modeling_obj_container_is_none(self):
         if self.modeling_obj_container is None:
             raise ValueError(
-                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its ancestors")
-        elif self.dict_container is None:
+                f"{self} doesn’t have a modeling_obj_container but is still retrieved in the context of calculation "
+                f"graph parsing. It probably means that it has been replaced in its former container but all "
+                f"dependencies haven’t been duly updated. Its former modeling_obj_container id was "
+                f"{self.former_modeling_obj_container_id} and its former attribute name in this container was"
+                f" {self.former_attr_name_in_mod_obj_container}.")
+
+    @property
+    def id(self):
+        self.raise_error_if_modeling_obj_container_is_none()
+        if self.dict_container is None:
             return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
         else:
             return f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
 
     @property
+    def full_tuple_id(self):
+        self.raise_error_if_modeling_obj_container_is_none()
+        return (self.modeling_obj_container.id,
+                self.attr_name_in_mod_obj_container,
+                self.key_in_dict.id if self.dict_container is not None else None)
+
+    @property
     def attribute_id(self):
-        if self.modeling_obj_container is None:
-            raise ValueError(
-                f"{self} doesn’t have a modeling_obj_container, hence it makes no sense "
-                f"to look for its ancestors")
+        self.raise_error_if_modeling_obj_container_is_none()
         return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
 
     @property

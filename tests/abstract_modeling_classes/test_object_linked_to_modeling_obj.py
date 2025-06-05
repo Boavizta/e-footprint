@@ -42,7 +42,7 @@ class TestObjectLinkedToModelingObj(unittest.TestCase):
         obj = ObjectLinkedToModelingObj()
         obj.set_modeling_obj_container(mock_modeling_object1, "attr_name")
 
-        with self.assertRaises(ValueError) as context:
+        with self.assertRaises(PermissionError) as context:
             obj.set_modeling_obj_container(mock_modeling_object2, "new_attr")
 
         self.assertIn(
