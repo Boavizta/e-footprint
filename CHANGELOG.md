@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.6] - 2025-06-06
+
+### Fixed
+- Launch modeling object computation chain after Service init to make sure servers raise errors if not enough resources + recompute systems because they depend on the server.
+- Test that system is loaded from json with calculated attribute by checking that calculated attribute name is in json dict and not that calculated attribute value is not EmptyExplainableObject, because in rare case (now tested) the only calculated value could be EmptyExplainableObject and then lead to incorrectly triggering the after_init method of the object
+
+### Changed
+- Improve quality of errors raised in the process of calculation graph parsing to facilitate debugging.
+
 ## [10.1.5] - 2025-06-04
 
 ### Fixed

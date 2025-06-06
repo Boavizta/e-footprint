@@ -99,8 +99,7 @@ def json_to_system(
                 new_obj_expl_obj_dicts_to_create_after_objects_creation)
 
             if not is_loaded_from_system_with_calculated_attributes and len(new_obj.calculated_attributes) > 0:
-                first_new_obj_calculated_attribute = getattr(new_obj, new_obj.calculated_attributes[0], None)
-                if not isinstance(first_new_obj_calculated_attribute, EmptyExplainableObject):
+                if new_obj.calculated_attributes[0] in system_dict[class_key][class_instance_key]:
                     is_loaded_from_system_with_calculated_attributes = True
 
             if class_key != "System":

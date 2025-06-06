@@ -11,8 +11,7 @@ from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.usage.usage_pattern import UsagePattern
-
-root_dir = os.path.dirname(os.path.abspath(__file__))
+from tests import root_test_dir
 
 
 class TestSystem(TestCase):
@@ -396,7 +395,7 @@ class TestSystem(TestCase):
             fab_mock.return_value = fab_footprints
             en_mock.return_value = energy_footprints
             self.system.plot_footprints_by_category_and_object(
-                filename=os.path.join(root_dir, "footprints by category and object unit test.html"))
+                filename=os.path.join(root_test_dir, "footprints by category and object unit test.html"))
 
     def test_plot_emission_diffs(self):
         change_test = "changed energy footprint value"
@@ -436,7 +435,7 @@ class TestSystem(TestCase):
             patch.object(self.system, "previous_change", change_test):
             eneg.return_value = energy_footprints
             fab.return_value = fab_footprints
-            self.system.plot_emission_diffs(filepath=os.path.join(root_dir, "test_system_diff_plot.png"))
+            self.system.plot_emission_diffs(filepath=os.path.join(root_test_dir, "test_system_diff_plot.png"))
 
     def test_creating_system_with_empty_up_list_is_possible(self):
         system = System("Test system", usage_patterns=[])

@@ -3,10 +3,18 @@ import os.path
 from copy import deepcopy
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
+from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.builders.time_builders import create_random_hourly_usage_df
+from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.core.hardware.network import Network
+from efootprint.core.system import System
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_pattern import UsagePattern
+from tests import root_test_dir
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
@@ -79,3 +87,28 @@ class TestJsonToSystem(IntegrationTestBaseClass):
              "UsageJourneyStep", "UsageJourney", "UsagePattern", "System"],
             classes_generation_order
         )
+
+    def test_system_with_calculated_attr_loaded_from_unique_uj_without_uj_step_and_linked_to_up_doesnt_fail(self):
+        """
+        This is a special case where the unique calculated attribute will be the empty duration of the UsageJourney.
+        Even though the duration is empty, the json_to_system function should still understand it’s loading a system
+        with calculated attributes, and therefore not try to launch the after_init method of the UsageJourney. In fact,
+        this would fail because the duration, however empty, has links to the UsagePattern in its children, but the
+        UsagePattern is loaded after the UsageJourney in the json_to_system function.
+        """
+        uj = UsageJourney("Usage journey", uj_steps=[])
+        up = UsagePattern(
+            "usage pattern", usage_journey=uj, devices=[], network=Network.wifi_network(), country=Countries.FRANCE(),
+            hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=1 * u.year)))
+
+        system = System("system", usage_patterns=[up])
+
+        system_filepath = os.path.join(
+            root_test_dir, "api_utils_tests", "unique_uj_without_uj_step_and_linked_to_up.json")
+        system_to_json(
+            system, save_calculated_attributes=True, output_filepath=system_filepath)
+
+        with open(system_filepath, "r") as file:
+            system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
