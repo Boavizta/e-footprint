@@ -3,22 +3,6 @@
 ## Update e-footprint version in [pyproject.toml](pyproject.toml) and [version.py](efootprint/version.py)
 You might need to update the version in the reference integration test json files as well.
 
-## Update [CHANGELOG.md](CHANGELOG.md)
-
-## Update [README.md](README.md) if needed
-
-## Update [tutorial notebook](tutorial.ipynb) if needed and update doc
-
-```shell
-python docs_sources/doc_utils/main.py
-```
-
-## Check locally that new doc version is correct (changelog has been updated, tutorial and builders notebooks have been updated, etc.)
-
-```shell
-mkdocs serve
-```
-
 ## Update poetry dependencies
 
 ```shell
@@ -37,6 +21,22 @@ poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt
 ```shell
 export PYTHONPATH="./:$PYTHONPATH"
 python -m pytest --cov=tests
+```
+
+## Update [CHANGELOG.md](CHANGELOG.md)
+
+## Update [README.md](README.md) if needed
+
+## Update [tutorial notebook](tutorial.ipynb) if needed and update doc
+
+```shell
+python docs_sources/doc_utils/main.py
+```
+
+## Check locally that new doc version is correct (changelog has been updated, tutorial and builders notebooks have been updated, etc.)
+
+```shell
+mkdocs serve
 ```
 
 ## Make new version commit, starting with [Vx.y.z]

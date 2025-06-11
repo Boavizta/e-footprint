@@ -416,7 +416,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         ])
         usage_pattern = UsagePattern(
             f"analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
-            country=Countries.FRANCE(), network=Network.wifi_network(),
+            country=self.usage_pattern.country, network=Network.wifi_network(),
             hourly_usage_journey_starts=create_hourly_usage_from_frequency(
                 timespan=1 * u.year, input_volume=1, frequency="daily",
                 start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
@@ -428,6 +428,12 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         logger.warning("Removing the new usage pattern from the system")
         self.system.usage_patterns = self.system.usage_patterns[:-1]
+        logger.warning("Deleting the usage pattern")
+        usage_pattern_id = usage_pattern.id
+        usage_pattern.self_delete()
+        # Make sure that calculus graph references to the deleted usage pattern are removed
+        for direct_child in self.usage_pattern.country.average_carbon_intensity.direct_children_with_id:
+            self.assertNotEqual(direct_child.modeling_obj_container.id, usage_pattern_id)
 
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 

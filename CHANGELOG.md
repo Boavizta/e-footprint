@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.7] - 2025-06-11
+
+### Fixed
+- When deleting an object, set modeling object container of its attributes to None to break all links they have with other object attributes in the calculation graph.
+
 ## [10.1.6] - 2025-06-06
 
 ### Fixed

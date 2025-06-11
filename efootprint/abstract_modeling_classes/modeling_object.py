@@ -442,6 +442,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         for attr in self.mod_obj_attributes:
             attr.set_modeling_obj_container(None, None)
+        for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObj).values():
+                attr_value.set_modeling_obj_container(None, None)
 
         if self.trigger_modeling_updates:
             mod_objs_computation_chain = sum(
