@@ -2,6 +2,8 @@ from typing import Type, Optional, TYPE_CHECKING
 from dataclasses import dataclass
 import os
 
+from line_profiler import profile
+
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.constants.units import u
 from efootprint.logger import logger
@@ -324,6 +326,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return all_ancestors
 
     @property
+    @profile
     def attr_updates_chain(self):
         attr_updates_chain = []
         descendants = self.all_descendants_with_id

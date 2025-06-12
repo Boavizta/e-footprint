@@ -29,12 +29,12 @@ class IntegrationTestBaseClass(TestCase):
         for obj in objects_to_test:
             try:
                 initial_energy_footprint = self.initial_energy_footprints[obj]
-                self.assertFalse(initial_energy_footprint.value.equals(obj.energy_footprint.value))
+                self.assertNotEqual(initial_energy_footprint, obj.energy_footprint)
                 if obj.class_as_simple_str != "Network":
                     initial_fab_footprint = self.initial_fab_footprints[obj]
                     new_footprint = obj.instances_fabrication_footprint + obj.energy_footprint
-                    self.assertFalse(
-                        (initial_fab_footprint + initial_energy_footprint).value.equals(new_footprint.value))
+                    self.assertNotEqual(
+                        (initial_fab_footprint + initial_energy_footprint), new_footprint)
                     logger.info(
                         f"{obj.name} footprint has changed from {str(initial_fab_footprint + initial_energy_footprint)}"
                         f" to {str(new_footprint)}")
@@ -57,11 +57,11 @@ class IntegrationTestBaseClass(TestCase):
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = round(self.initial_energy_footprints[obj], 4).value
+                initial_energy_footprint = round(self.initial_energy_footprints[obj], 4)
                 if obj.class_as_simple_str != "Network":
-                    initial_fab_footprint = round(self.initial_fab_footprints[obj], 4).value
-                    self.assertTrue(initial_fab_footprint.equals(round(obj.instances_fabrication_footprint, 4).value))
-                self.assertTrue(initial_energy_footprint.equals(round(obj.energy_footprint, 4).value))
+                    initial_fab_footprint = round(self.initial_fab_footprints[obj], 4)
+                    self.assertEqual(initial_fab_footprint, round(obj.instances_fabrication_footprint, 4))
+                self.assertEqual(initial_energy_footprint, round(obj.energy_footprint, 4))
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
@@ -114,10 +114,10 @@ class IntegrationTestBaseClass(TestCase):
         input_object.__setattr__(expl_attr_name, expl_attr_new_value)
         new_footprint = system.total_footprint
         logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
-        self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
+        self.assertNotEqual(self.initial_footprint, new_footprint)
         logger.info(f"Setting back {expl_attr_new_value.label} to {expl_attr}")
         input_object.__setattr__(expl_attr_name, expl_attr)
-        self.assertTrue(system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(system.total_footprint, self.initial_footprint)
 
     def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
         if attrs_to_skip is None:

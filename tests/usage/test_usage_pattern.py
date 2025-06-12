@@ -10,7 +10,7 @@ from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_random_source_hourly_values, create_source_hourly_values_from_list
 from efootprint.constants.units import u
 
 
@@ -59,7 +59,7 @@ class TestUsagePattern(unittest.TestCase):
 
         with patch.object(self.usage_pattern, "devices", new=[test_device1, test_device2]), \
              patch.object(self.usage_pattern, "nb_usage_journeys_in_parallel",
-                          SourceHourlyValues(create_hourly_usage_df_from_list(nb_uj_in_parallel))):
+                          create_source_hourly_values_from_list(nb_uj_in_parallel))):
             self.usage_pattern.update_devices_energy()
 
             self.assertEqual(u.kWh, self.usage_pattern.devices_energy.unit)
@@ -67,7 +67,7 @@ class TestUsagePattern(unittest.TestCase):
 
     def test_devices_energy_footprint(self):
         with patch.object(self.usage_pattern, "devices_energy",
-                          SourceHourlyValues(create_hourly_usage_df_from_list([10, 20, 30], pint_unit=u.kWh))):
+                          create_source_hourly_values_from_list([10, 20, 30], pint_unit=u.kWh)):
             self.usage_pattern.update_devices_energy_footprint()
             self.assertEqual(u.kg, self.usage_pattern.devices_energy_footprint.unit)
             self.assertEqual([1, 2, 3], self.usage_pattern.devices_energy_footprint.value_as_float_list)
@@ -86,7 +86,7 @@ class TestUsagePattern(unittest.TestCase):
         with patch.object(
                 self.usage_pattern, "devices", new=[device1, device2]),\
                 patch.object(self.usage_pattern, "nb_usage_journeys_in_parallel",
-                             SourceHourlyValues(create_hourly_usage_df_from_list([10, 20, 30]))):
+                             create_source_hourly_values_from_list([10, 20, 30])):
             self.usage_pattern.update_devices_fabrication_footprint()
             self.assertEqual(u.kg, self.usage_pattern.devices_fabrication_footprint.unit)
             self.assertEqual(

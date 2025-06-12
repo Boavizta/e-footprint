@@ -8,7 +8,7 @@ from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 
 
 class TestInfraHardware(TestCase):
@@ -27,13 +27,13 @@ class TestInfraHardware(TestCase):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan)
 
             def update_raw_nb_of_instances(self):
-                self.raw_nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([1.5, 3]))
+                self.raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 3])
 
             def update_nb_of_instances(self):
-                self.nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([2, 3]))
+                self.nb_of_instances = create_source_hourly_values_from_list([2, 3])
 
             def update_instances_energy(self):
-                self.instances_energy = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4], pint_unit=u.kWh))
+                self.instances_energy = create_source_hourly_values_from_list([2, 4], pint_unit=u.kWh)
 
             def after_init(self):
                 self.trigger_modeling_updates = False
@@ -46,12 +46,12 @@ class TestInfraHardware(TestCase):
         self.job2 = MagicMock()
         self.job3 = MagicMock()
 
-        self.job1.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.GB))
-        self.job2.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.GB))
-        self.job3.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.GB))
-        self.job1.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.cpu_core))
-        self.job2.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.cpu_core))
-        self.job3.compute_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.cpu_core))
+        self.job1.ram_needed = create_source_hourly_values_from_list([0, 8], pint_unit=u.GB)
+        self.job2.ram_needed = create_source_hourly_values_from_list([6, 14], pint_unit=u.GB)
+        self.job3.ram_needed = create_source_hourly_values_from_list([8, 16], pint_unit=u.GB)
+        self.job1.compute_needed = create_source_hourly_values_from_list([0, 8], pint_unit=u.cpu_core)
+        self.job2.compute_needed = create_source_hourly_values_from_list([6, 14], pint_unit=u.cpu_core)
+        self.job3.compute_needed = create_source_hourly_values_from_list([8, 16], pint_unit=u.cpu_core)
 
         self.test_infra_hardware_single_job = deepcopy(self.test_infra_hardware)
         self.test_infra_hardware_single_job.contextual_modeling_obj_containers = [

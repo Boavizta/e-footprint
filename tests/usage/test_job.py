@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch, PropertyMock
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
@@ -88,7 +88,7 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(90 * u.min)
         usage_pattern = MagicMock()
         usage_pattern.usage_journey = uj1
-        hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -111,7 +111,7 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = MagicMock()
         usage_pattern.usage_journey = uj1
-        hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -134,7 +134,7 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         usage_pattern = MagicMock()
         usage_pattern.usage_journey = uj1
-        hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -162,7 +162,7 @@ class TestJob(TestCase):
         uj_step13.user_time_spent = SourceValue(1 * u.min)
         usage_pattern = MagicMock()
         usage_pattern.usage_journey = uj1
-        hourly_uj_starts = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5, 7]))
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -182,7 +182,7 @@ class TestJob(TestCase):
         data_exchange = "data_stored"
         usage_pattern = MagicMock()
         hourly_occs_per_up = ExplainableObjectDict(
-            {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))})
+            {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
                 patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
@@ -197,7 +197,7 @@ class TestJob(TestCase):
         data_exchange = "data_stored"
         usage_pattern = MagicMock()
         hourly_occs_per_up = ExplainableObjectDict(
-            {usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([1, 3, 5]))})
+            {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
         with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
                 patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
@@ -212,8 +212,8 @@ class TestJob(TestCase):
         usage_pattern1 = MagicMock()
         usage_pattern2 = MagicMock()
         hourly_calc_attr_per_up = ExplainableObjectDict({
-            usage_pattern1: SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 5])),
-            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([3, 2, 4]))})
+            usage_pattern1: create_source_hourly_values_from_list([1, 2, 5]),
+            usage_pattern2: create_source_hourly_values_from_list([3, 2, 4])})
         self.job.hourly_calc_attr_per_up = hourly_calc_attr_per_up
 
         with patch.object(Job, "usage_patterns", new_callable=PropertyMock) as mock_ups:

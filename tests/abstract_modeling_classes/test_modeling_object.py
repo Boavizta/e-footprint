@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
@@ -62,8 +62,7 @@ class TestModelingObject(unittest.TestCase):
         self.modeling_object = ModelingObjectForTesting("test_object")
 
     def test_setattr_already_assigned_value(self):
-        input_value = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 5], pint_unit=u.dimensionless))
+        input_value = create_source_hourly_values_from_list([1, 2, 5], pint_unit=u.dimensionless)
         child_obj = ModelingObjectForTesting("child_object", custom_input=input_value)
         parent_obj = ModelingObjectForTesting("parent_object", mod_obj_input1=child_obj)
 
@@ -74,8 +73,7 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(child_obj, parent_obj.mod_obj_input1)
         self.assertIn(parent_obj, child_obj.modeling_obj_containers)
 
-        child_obj.custom_input = SourceHourlyValues(
-            create_hourly_usage_df_from_list([4, 5, 6], pint_unit=u.dimensionless))
+        child_obj.custom_input = create_source_hourly_values_from_list([4, 5, 6], pint_unit=u.dimensionless)
 
         self.assertEqual([4, 5, 6], parent_obj.mod_obj_input1.custom_input.value_as_float_list)
 

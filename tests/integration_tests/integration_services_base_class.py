@@ -22,7 +22,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.logger import logger
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
@@ -61,8 +61,8 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
             "Youtube usage in France", uj, [Device.laptop()], network, Countries.FRANCE(),
-            SourceHourlyValues(create_hourly_usage_df_from_list(
-                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date)))
+            create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
         system = System("system 1", [usage_pattern])
 
@@ -162,7 +162,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self.genai_service.server = self.gpu_server
         self.direct_gpu_job.server = self.gpu_server
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
 
     def run_test_update_service_jobs(self):
@@ -186,7 +186,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         [self.web_application_job.service, new_web_application_service],
         [self.genai_job.service, new_genai_service]])
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.storage, self.server, self.gpu_server], system=self.system)
         self.assertEqual(self.server.jobs, [])
         self.footprint_has_not_changed([self.network, self.usage_pattern])
@@ -197,7 +197,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self.web_application_job.service = self.web_application_service
         self.genai_job.service = self.genai_service
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
 
     def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
@@ -206,10 +206,10 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(set(self.server.installed_services),
                          {new_service, self.web_application_service, self.video_streaming_service})
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server])
 
         logger.info("Uninstalling new service from server")
         new_service.self_delete()
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server, self.server])

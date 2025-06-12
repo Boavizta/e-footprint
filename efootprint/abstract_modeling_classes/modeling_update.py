@@ -1,9 +1,7 @@
 from copy import copy
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import time
 from typing import List
-
-import numpy as np
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
@@ -230,53 +228,72 @@ class ModelingUpdate:
     def compute_hourly_quantities_to_filter(self):
         hourly_quantities_ancestors_not_in_computation_chain = [
             ancestor for ancestor in self.ancestors_not_in_computation_chain
-            if isinstance(ancestor, ExplainableHourlyQuantities)]
-        hourly_quantities_to_filter = []
+            if isinstance(ancestor, ExplainableHourlyQuantities)
+        ]
 
+        hourly_quantities_to_filter = []
         global_min_date = None
         global_max_date = None
 
         for ancestor in hourly_quantities_ancestors_not_in_computation_chain:
-            min_date = ancestor.value.index.min()
-            max_date = ancestor.value.index.max()
-            if min_date.tzinfo is None:
+            start = ancestor.start_date
+            end = start + timedelta(hours=len(ancestor.value) - 1)
+
+            # Ensure timezone awareness
+            if start.tzinfo is None:
                 # Should only be the case for UsagePattern’s hourly_usage_journeys
-                min_date = min_date.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
-            if max_date.tzinfo is None:
-                max_date = max_date.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
+                start = start.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
+            if end.tzinfo is None:
+                end = end.replace(tzinfo=ancestor.modeling_obj_container.country.timezone.value)
+
+            # Track global range
             if global_min_date is None:
-                global_min_date = min_date
+                global_min_date = start
+            else:
+                global_min_date = min(global_min_date, start)
+
             if global_max_date is None:
-                global_max_date = max_date
-            global_min_date = min(min_date, global_min_date)
-            global_max_date = max(max_date, global_max_date)
-            if self.simulation_date <= max_date:
+                global_max_date = end
+            else:
+                global_max_date = max(global_max_date, end)
+
+            # Filtering condition
+            if self.simulation_date <= end:
                 hourly_quantities_to_filter.append(ancestor)
 
+        # Final consistency check
         if not (global_min_date <= self.simulation_date <= global_max_date):
             raise ValueError(
-                f"Can’t start a simulation on the {self.simulation_date} because "
-                f"{self.simulation_date}doesn’t belong to the existing modeling period "
-                f"{global_min_date} to {global_max_date}")
+                f"Can't start a simulation on {self.simulation_date} because "
+                f"{self.simulation_date} doesn't belong to the existing modeling period "
+                f"from {global_min_date} to {global_max_date}"
+            )
 
         return hourly_quantities_to_filter
 
     def filter_hourly_quantities_to_filter(self):
         for hourly_quantities in self.hourly_quantities_to_filter:
-            if hourly_quantities.value.index.tz is None:
-                # Should only be the case for UsagePattern’s hourly_usage_journeys
-                filtering_index = hourly_quantities.value.index.tz_localize(
-                    hourly_quantities.modeling_obj_container.country.timezone.value,
-                    nonexistent="shift_forward", ambiguous=np.full(len(hourly_quantities.value), fill_value=True))
-            else:
-                filtering_index = hourly_quantities.value.index
-            new_value = ExplainableHourlyQuantities(
-                hourly_quantities.value[filtering_index >= self.simulation_date],
-                hourly_quantities.label, hourly_quantities.left_parent, hourly_quantities.right_parent,
-                hourly_quantities.operator, hourly_quantities.source
-            )
-            if len(new_value) == 0:
+            start = hourly_quantities.start_date
+            if start.tzinfo is None:
+                start = hourly_quantities.modeling_obj_container.country.timezone.value.localize(start)
+
+            # Find positions at or after simulation_date
+            mask = [start + timedelta(hours=i) >= self.simulation_date for i in range(len(hourly_quantities.value))]
+            filtered_values = hourly_quantities.value[mask]
+
+            if len(filtered_values) == 0:
                 new_value = EmptyExplainableObject()
+            else:
+                new_value = ExplainableHourlyQuantities(
+                    filtered_values,
+                    start_date=self.simulation_date,
+                    label=hourly_quantities.label,
+                    left_parent=hourly_quantities.left_parent,
+                    right_parent=hourly_quantities.right_parent,
+                    operator=hourly_quantities.operator,
+                    source=hourly_quantities.source,
+                )
+
             hourly_quantities.replace_in_mod_obj_container_without_recomputation(new_value)
             self.filtered_hourly_quantities.append(new_value)
 

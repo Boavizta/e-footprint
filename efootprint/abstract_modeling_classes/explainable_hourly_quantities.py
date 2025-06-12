@@ -17,7 +17,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.constants.units import u, get_unit
-from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs
+from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs, \
+    plot_baseline_and_simulation_data
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -184,6 +185,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def max(self):
         return self._ExplainableQuantity(np.max(self.value), left_parent=self, operator="max")
 
+    def min(self):
+        return self._ExplainableQuantity(np.min(self.value), left_parent=self, operator="min")
+
     def abs(self):
         return ExplainableHourlyQuantities(
             np.abs(self.value), start_date=self.start_date, left_parent=self, operator="abs")
@@ -235,13 +239,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         elif isinstance(other, self._EmptyExplainableObject):
             return False
         if isinstance(other, ExplainableHourlyQuantities):
-            if len(self.value) != len(other.value):
-                raise ValueError(
-                    f"Can only compare ExplainableHourlyUsages with values of same length. Here we are trying to "
-                    f"compare {self.value} and {other.value}.")
-            other.to(self.value.units)
+            aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
+                self.value, self.start_date, other.value, other.start_date)
 
-            return np.allclose(self.magnitude, other.magnitude, rtol=1e-05, atol=1e-08)
+            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-05, atol=1e-08)
         else:
             raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
 
@@ -391,53 +392,73 @@ class ExplainableHourlyQuantities(ExplainableObject):
             rounded_values = _round_series_values(self.value)
             str_rounded_values = "[" + ", ".join(rounded_values) + "]"
         else:
-            first_vals = _round_series_values(self.value.iloc[:10])
-            last_vals = _round_series_values(self.value.iloc[-10:])
+            first_vals = _round_series_values(self.value[:10])
+            last_vals = _round_series_values(self.value[-10:])
             str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
                                  + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
 
-        return f"{nb_of_values} values from {self.value.index.min()} " \
-               f"to {self.value.index.max()} in {compact_unit}:\n    {str_rounded_values}"
+        return f"{nb_of_values} values from {self.start_date} " \
+               f"to {self.start_date + timedelta(hours=len(self.value))} in {compact_unit}:\n    {str_rounded_values}"
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
+        import matplotlib.pyplot as plt
+
+        def get_time_axis(start_date: datetime, length: int) -> np.ndarray:
+            return np.array([start_date + timedelta(hours=i) for i in range(length)])
+
+        def prepare_data(q: Quantity, start: datetime, apply_cumsum=False) -> tuple[np.ndarray, Quantity]:
+            magnitudes = np.cumsum(q.magnitude) if apply_cumsum else q.magnitude
+            return get_time_axis(start, len(magnitudes)), Quantity(magnitudes, q.units)
+
         if self.baseline_twin is None and self.simulation_twin is None:
-            baseline_df = self.value
-            simulated_values_df = None
+            baseline_q = self.value
+            baseline_start = self.start_date
+            simulated_q = None
         elif self.baseline_twin is not None and self.simulation_twin is None:
-            baseline_df = self.baseline_twin.value
-            simulated_values_df = self.value
+            baseline_q = self.baseline_twin.value
+            baseline_start = self.baseline_twin.start_date
+            simulated_q = self.value
+            simulated_start = self.start_date
         elif self.simulation_twin is not None and self.baseline_twin is None:
-            baseline_df = self.value
-            simulated_values_df = self.simulation_twin.value
+            baseline_q = self.value
+            baseline_start = self.start_date
+            simulated_q = self.simulation_twin.value
+            simulated_start = self.simulation_twin.start_date
         else:
             raise ValueError("Both baseline and simulation twins are not None, this should not happen")
 
-        if cumsum:
-            baseline_df = baseline_df.cumsum()
+        time_baseline, baseline_q = prepare_data(baseline_q, baseline_start, cumsum)
 
-        if simulated_values_df is not None:
-            if isinstance(simulated_values_df, self._EmptyExplainableObject):
-                period_index = pd.date_range(start=self.simulation.simulation_date,
-                                             end=self.value.index.max(), freq='h')
-                simulated_values_df = pd.DataFrame(
-                    {"value": pint_pandas.PintArray(
-                        np.zeros(len(period_index)), dtype=self.unit)}, index=period_index)
+        if simulated_q is not None:
+            if isinstance(simulated_q, self._EmptyExplainableObject):
+                sim_len = len(baseline_q.magnitude)
+                simulated_q = Quantity(np.zeros(sim_len), baseline_q.units)
+                simulated_start = self.simulation.simulation_date
+
+            time_sim, simulated_q = prepare_data(simulated_q, simulated_start, cumsum)
+
+            # Align simulation start offset with baseline in cumsum mode
             if cumsum:
-                simulated_values_df = simulated_values_df.cumsum()
-                simulated_values_df["value"] += baseline_df["value"].at[simulated_values_df.index[0]]
+                baseline_interp_index = np.where(time_baseline == time_sim[0])[0]
+                if baseline_interp_index.size > 0:
+                    simulated_q += baseline_q[baseline_interp_index[0]]
+        else:
+            time_sim = None
 
-        ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
+        # Plotting
+        fig, ax = plot_baseline_and_simulation_data(baseline_q, time_baseline, simulated_q, time_sim, figsize, xlims)
 
         if self.label:
-            if not cumsum:
-                ax.set_title(self.label)
-            else:
-                ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
+            title = self.label if not cumsum else "Cumulative " + self.label[0].lower() + self.label[1:]
+            ax.set_title(title)
+        if xlims is not None:
+            ax.set_xlim(xlims)
 
-        if filepath is not None:
-            import matplotlib.pyplot as plt
+        fig.autofmt_xdate()
+        if filepath:
             plt.savefig(filepath, bbox_inches='tight')
-
         if plt_show:
-            import matplotlib.pyplot as plt
             plt.show()
+        plt.close(fig)
+
+        return ax

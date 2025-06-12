@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
@@ -42,8 +42,7 @@ class TestStorage(TestCase):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
         server1 = MagicMock()
         job1.server = server1
-        job1.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job1.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB)
         server1.storage = self.storage_base
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
@@ -54,10 +53,8 @@ class TestStorage(TestCase):
     def test_update_storage_needs_multiple_jobs(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
         job2 = MagicMock(data_stored=SourceValue(2 * u.TB))
-        job1.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-        job2.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job1.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB)
+        job2.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB)
 
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
@@ -68,10 +65,8 @@ class TestStorage(TestCase):
     def test_update_storage_needs_multiple_jobs_with_negative_data_stored(self):
         job1 = MagicMock(data_stored=SourceValue(2 * u.TB))
         job2 = MagicMock(data_stored=SourceValue(-2 * u.TB))
-        job1.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-        job2.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([-2, -4, -6], pint_unit=u.TB))
+        job1.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB)
+        job2.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([-2, -4, -6], pint_unit=u.TB)
 
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
@@ -82,10 +77,9 @@ class TestStorage(TestCase):
     def test_update_storage_freed_multiple_jobs_with_negative_data_stored(self):
         job1 = MagicMock(data_stored=SourceValue(6 * u.TB))
         job2 = MagicMock(data_stored=SourceValue(-6 * u.TB))
-        job1.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-        job2.hourly_data_stored_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([-1, -2, -3], pint_unit=u.TB))
+        job1.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB)
+        job2.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list(
+            [-1, -2, -3], pint_unit=u.TB)
 
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
@@ -97,47 +91,37 @@ class TestStorage(TestCase):
         input_data = [2, 4, 6]
         storage_duration = 1
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        all_needed_storage = SourceHourlyValues(
-            create_hourly_usage_df_from_list( input_data, start_date, pint_unit=u.TB))
-
-        expected_min_date = start_date + timedelta(hours=1)
-        expected_max_date = start_date + timedelta(hours=len(input_data) - storage_duration)
+        all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
 
         with patch.object(Storage, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
             self.assertEqual(
-                [-2, -4], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
+                [0, -2, -4], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
             self.assertEqual(
-                expected_min_date,
-                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.min())
-            self.assertEqual(
-                expected_max_date,
-                self.storage_base.automatic_storage_dumps_after_storage_duration.value.index.max())
+                start_date,
+                self.storage_base.automatic_storage_dumps_after_storage_duration.start_date)
 
     def test_update_automatic_storage_dumps_after_storage_duration_returns_hourly_quantities_full_of_zeros_when_no_dump_during_period(self):
         input_data = [2, 4, 6]
         storage_duration = 5
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        all_needed_storage = SourceHourlyValues(
-            create_hourly_usage_df_from_list(input_data, start_date, pint_unit=u.TB))
+        all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
 
         with patch.object(Storage, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
             self.assertEqual([0, 0, 0], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
-            self.assertTrue(all_needed_storage.value.index.equals(self.storage_base.automatic_storage_dumps_after_storage_duration.value.index))
+            self.assertEqual(start_date,
+                             self.storage_base.automatic_storage_dumps_after_storage_duration.start_date)
 
     def test_storage_delta(self):
         input_data = [2, 4, 6]
         free_data = [0, 0, -1]
         dumps_data = [-2, -4]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        all_needed_storage = SourceHourlyValues(
-            create_hourly_usage_df_from_list(input_data, start_date, pint_unit=u.TB))
-        all_freed_storage = SourceHourlyValues(
-            create_hourly_usage_df_from_list(free_data, start_date, pint_unit=u.TB))
+        all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
+        all_freed_storage = create_source_hourly_values_from_list(free_data, start_date, pint_unit=u.TB)
         dump_min_date = start_date + timedelta(hours=1)
-        dump_need_update = SourceHourlyValues(
-            create_hourly_usage_df_from_list(dumps_data, dump_min_date, pint_unit=u.TB))
+        dump_need_update = create_source_hourly_values_from_list(dumps_data, dump_min_date, pint_unit=u.TB)
 
         with patch.object(Storage, "storage_needed", all_needed_storage), \
             patch.object(Storage, "automatic_storage_dumps_after_storage_duration", dump_need_update), \
@@ -149,11 +133,9 @@ class TestStorage(TestCase):
         input_data = [2, 4, 6]
         dumps_data = [-2, -4]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        all_needed_storage = SourceHourlyValues(
-            create_hourly_usage_df_from_list(input_data, start_date, pint_unit=u.TB))
+        all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
         dump_min_date = start_date + timedelta(hours=1)
-        dump_need_update = SourceHourlyValues(
-            create_hourly_usage_df_from_list(dumps_data, dump_min_date, pint_unit=u.TB))
+        dump_need_update = create_source_hourly_values_from_list(dumps_data, dump_min_date, pint_unit=u.TB)
         all_freed_data = EmptyExplainableObject()
 
         with patch.object(Storage, "storage_needed", all_needed_storage), \
@@ -165,8 +147,7 @@ class TestStorage(TestCase):
 
     def test_update_full_cumulative_storage_need(self):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        delta_data = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, -2, 4, -5, 6], start_date, pint_unit=u.TB))
+        delta_data = create_source_hourly_values_from_list([2, -2, 4, -5, 6], start_date, pint_unit=u.TB)
 
         with patch.object(self.storage_base, "storage_delta", delta_data), \
                 patch.object(self.storage_base, "base_storage_need", SourceValue(5 * u.TB)):
@@ -176,11 +157,11 @@ class TestStorage(TestCase):
 
     def test_nb_of_active_instances(self):
         storage_capacity = SourceValue(1 * u.TB)
-        storage_needed = SourceHourlyValues(create_hourly_usage_df_from_list([-1, 1, 2, 3, 2], pint_unit=u.TB))
-        storage_freed = SourceHourlyValues(create_hourly_usage_df_from_list([0, -0.5, 0, -1, -5], pint_unit=u.TB))
-        automatic_storage_dumps_after_storage_duration = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0, -0.5, -1, -0.5, 0], pint_unit=u.TB))
-        nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([3, 3, 3, 2, 6], pint_unit=u.dimensionless))
+        storage_needed = create_source_hourly_values_from_list([-1, 1, 2, 3, 2], pint_unit=u.TB)
+        storage_freed = create_source_hourly_values_from_list([0, -0.5, 0, -1, -5], pint_unit=u.TB)
+        automatic_storage_dumps_after_storage_duration = create_source_hourly_values_from_list(
+            [0, -0.5, -1, -0.5, 0], pint_unit=u.TB)
+        nb_of_instances = create_source_hourly_values_from_list([3, 3, 3, 2, 6], pint_unit=u.dimensionless)
 
         with patch.object(Storage, "storage_needed", storage_needed), \
                 patch.object(Storage, "storage_freed", storage_freed), \
@@ -196,8 +177,7 @@ class TestStorage(TestCase):
         storage_needed = EmptyExplainableObject()
         storage_freed = EmptyExplainableObject()
         automatic_storage_dumps_after_storage_duration = EmptyExplainableObject()
-        nb_of_instances = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 2], pint_unit=u.dimensionless), label="test label")
+        nb_of_instances = create_source_hourly_values_from_list([1, 2, 2], pint_unit=u.dimensionless)
 
         with patch.object(Storage, "storage_needed", storage_needed), \
                 patch.object(Storage, "storage_freed", storage_freed), \
@@ -209,7 +189,7 @@ class TestStorage(TestCase):
             self.assertEqual(self.storage_base.nb_of_active_instances.value_as_float_list, [0, 0, 0])
 
     def test_raw_nb_of_instances(self):
-        full_storage_data = SourceHourlyValues(create_hourly_usage_df_from_list([10, 12, 14], pint_unit=u.TB))
+        full_storage_data = create_source_hourly_values_from_list([10, 12, 14], pint_unit=u.TB)
         storage_capacity = SourceValue(2 * u.TB)
         expected_data = [5, 6, 7]
 
@@ -219,8 +199,7 @@ class TestStorage(TestCase):
             self.assertEqual(expected_data, self.storage_base.raw_nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances(self):
-        raw_nb_of_instances = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
         expected_data = [2, 3, 4]
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances):
@@ -229,8 +208,7 @@ class TestStorage(TestCase):
             self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
 
     def test_nb_of_instances_with_fixed_nb_of_instances(self):
-        raw_nb_of_instances = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
         expected_data = [5, 5, 5]
         fixed_nb_of_instances = SourceValue(5 * u.dimensionless, Sources.HYPOTHESIS)
 
@@ -241,8 +219,7 @@ class TestStorage(TestCase):
             self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
 
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
-        raw_nb_of_instances = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
         fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
@@ -269,8 +246,8 @@ class TestStorage(TestCase):
         server_mock.storage = self.storage_base
         server_mock.power_usage_effectiveness = SourceValue(1 * u.dimensionless)
 
-        all_instance = SourceHourlyValues(create_hourly_usage_df_from_list(all_instance_data, start_date))
-        all_active = SourceHourlyValues(create_hourly_usage_df_from_list(all_active_data, start_date))
+        all_instance = create_source_hourly_values_from_list(all_instance_data, start_date)
+        all_active = create_source_hourly_values_from_list(all_active_data, start_date)
 
         with (
             patch.object(self.storage_base, "contextual_modeling_obj_containers", new=[
@@ -285,8 +262,7 @@ class TestStorage(TestCase):
             self.assertEqual([0.15, 0.3, 0.45], self.storage_base.instances_energy.value_as_float_list)
 
     def test_update_energy_footprint(self):
-        instance_energy = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh))
+        instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
         server_mock = MagicMock(spec=Server)
         server_mock.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         server_mock.storage = self.storage_base

@@ -6,7 +6,7 @@ import pandas as pd
 import pint_pandas
 from pint import Quantity
 
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities, \

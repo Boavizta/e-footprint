@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Dict, List
 
 import pandas as pd
@@ -282,41 +283,48 @@ class System(ModelingObject):
 
         fab_footprints = self.fabrication_footprint_sum_over_period
         energy_footprints = self.energy_footprint_sum_over_period
-        categories = list(fab_footprints.keys())
 
         rows_as_dicts = []
-
         value_colname = "tonnes CO2 emissions"
-        for category in categories:
+
+        for category in fab_footprints:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
 
             for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
-                data_dicts = [
-                    {"Type": color, "Category": category, "Object": obj[0],
-                     value_colname: obj[1].value.magnitude / 1000,
-                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))}"}
-                    for obj in objs]
-                rows_as_dicts += data_dicts
+                for obj_name, quantity in objs:
+                    magnitude_kg = quantity.magnitude
+                    magnitude_tonnes = magnitude_kg / 1000
+                    amount_str = display_co2_amount(format_co2_amount(magnitude_kg))
+
+                    rows_as_dicts.append({
+                        "Type": color, "Category": category, "Object": obj_name, value_colname: magnitude_tonnes,
+                        "Amount": amount_str})
 
         df = pd.DataFrame.from_records(rows_as_dicts)
 
         total_co2 = df[value_colname].sum()
-
         total_footprint = self.total_footprint
 
+        start_date = total_footprint.start_date
+        end_date = start_date + timedelta(hours=len(total_footprint.value) - 1)
+
         fig = px.bar(
-            df, x="Category", y=value_colname, color='Type', barmode='group', height=height, width=width,
+            df, x="Category", y=value_colname, color='Type', barmode='group',
+            height=height, width=width,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
-            title=f"Total CO2 emissions from "
-                  f"{total_footprint.value.index.min().date()} "
-                  f"to {total_footprint.value.index.max().date()}"
-                  f": {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))}"
-                  )
+            title=f"Total CO2 emissions from {start_date.date()} to {end_date.date()}: "
+                  f"{display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))}"
+        )
 
-        if (max(sum(energy_footprints["Servers"].values()), sum(fab_footprints["Servers"].values())) >
-                max(sum(energy_footprints["Devices"].values()), sum(fab_footprints["Devices"].values()))):
+        # Legend placement logic
+        total_energy_servers = sum(energy_footprints["Servers"].values(), start=0)
+        total_fab_servers = sum(fab_footprints["Servers"].values(), start=0)
+        total_energy_devices = sum(energy_footprints["Devices"].values(), start=0)
+        total_fab_devices = sum(fab_footprints["Devices"].values(), start=0)
+
+        if (total_energy_servers + total_fab_servers) > (total_energy_devices + total_fab_devices):
             legend_alignment = "right"
             legend_x = 0.98
         else:
@@ -326,21 +334,22 @@ class System(ModelingObject):
         fig.update_layout(
             legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": legend_alignment, "x": legend_x,
                     "title": ""},
-            title={"x": 0.5, "y": 0.9, "xanchor": 'center', "yanchor": 'top'})
+            title={"x": 0.5, "y": 0.9, "xanchor": 'center', "yanchor": 'top'}
+        )
 
-        total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
+        # Add annotations (percentages per category and type)
+        total_by_cat_type = df.groupby(["Category", "Type"])[value_colname].sum()
 
-        for category, source_type in total_co2_per_category_and_type.keys():
-            height = total_co2_per_category_and_type.loc[category, source_type]
-            x_shift_direction = 1 if source_type == 'Fabrication' else -1
+        for (category, source_type), height_val in total_by_cat_type.items():
+            x_shift = 30 if source_type == 'Fabrication' else -30
+            percentage = int((height_val / total_co2) * 100)
 
             fig.add_annotation(
-                x=category,
-                y=height,
-                text=f"{int((height / total_co2) * 100)}%",  # Format the label as a percentage
+                x=category, y=height_val,
+                text=f"{percentage}%",
                 showarrow=False,
-                yshift=10,  # Shift the label slightly above the stack
-                xshift=30 * x_shift_direction
+                yshift=10,
+                xshift=x_shift
             )
 
         if return_only_html:

@@ -20,7 +20,7 @@ def compute_nb_avg_hourly_occurrences(
 
     for hour_shift in range(0, nb_of_full_hours_in_event_duration):
         if nb_avg_hourly_occurrences_in_parallel is None:
-            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value
+            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value.astype(float)
         else:
             nb_avg_hourly_occurrences_in_parallel += shift_np_array(nb_avg_hourly_occurrences_in_parallel, hour_shift)
 
@@ -31,7 +31,7 @@ def compute_nb_avg_hourly_occurrences(
                 hourly_occurrences_starts.value, nb_of_full_hours_in_event_duration) * nonfull_duration_rest
         else:
             nb_avg_hourly_occurrences_in_parallel += (
-                    shift_np_array(hourly_occurrences_starts.value, nb_of_full_hours_in_event_duration)
+                    shift_np_array(hourly_occurrences_starts.value, nb_of_full_hours_in_event_duration).astype(float)
                     * nonfull_duration_rest)
 
     return ExplainableHourlyQuantities(
