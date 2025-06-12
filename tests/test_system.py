@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import Lis
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.usage.usage_pattern import UsagePattern
 from tests import root_test_dir
 
@@ -55,21 +55,15 @@ class TestSystem(TestCase):
         self.usage_pattern.usage_journey.storages = {self.storage}
         self.usage_pattern.network = self.network
 
-        self.server.instances_fabrication_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.storage.instances_fabrication_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.usage_pattern.instances_fabrication_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
+        self.server.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        self.storage.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        self.usage_pattern.instances_fabrication_footprint = create_source_hourly_values_from_list(
+            [1, 2, 3], pint_unit=u.kg)
 
-        self.server.energy_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.storage.energy_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.usage_pattern.energy_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
-        self.network.energy_footprint = SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
+        self.server.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        self.storage.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        self.usage_pattern.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        self.network.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
 
         self.system = System(
             "Non cloud system",
@@ -148,39 +142,39 @@ class TestSystem(TestCase):
         
     def test_fabrication_footprints(self):
         expected_dict = {
-            "Servers": {"server_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
+            "Servers": {"server_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"networks": EmptyExplainableObject()},
-            "Devices": {"usage_pattern_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
+            "Devices": {"usage_pattern_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
         }
         
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
 
     def test_energy_footprints(self):
         expected_dict = {
-            "Servers": {"server_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"network_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
+            "Servers": {"server_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {"usage_pattern_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Network": {"network_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
         }
 
         self.assertDictEqual(expected_dict, self.system.energy_footprints)
 
     def test_total_fabrication_footprints(self):
         expected_dict = {
-            "Servers": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
-            "Storage": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
-            "Devices": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
+            "Servers": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "Storage": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "Devices": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
             "Network": EmptyExplainableObject()
         }
         self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
@@ -188,26 +182,26 @@ class TestSystem(TestCase):
     def test_total_energy_footprints(self):
         energy_footprints = self.system.total_energy_footprints
         expected_dict = {
-            "Servers": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
-            "Storage": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
-            "Devices": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg)),
-            "Network": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))
+            "Servers": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "Storage": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "Devices": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "Network": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)
 
     def test_fabrication_footprint_sum_over_period(self):
         test_footprints = {
-            "Servers": {"server_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern_id": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
+            "Servers": {"server_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {"usage_pattern_id": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"networks_id": EmptyExplainableObject()}
         }
         expected_dict = {
@@ -226,14 +220,14 @@ class TestSystem(TestCase):
 
     def test_energy_footprint_sum_over_period(self):
         test_footprints = {
-            "Servers": {"server": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"networks": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
+            "Servers": {"server": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {"usage_pattern": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Network": {"networks": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
         }
         expected_dict = {
             "Servers": {"server": ExplainableQuantity(6 * u.kg, label="server")},
@@ -251,12 +245,12 @@ class TestSystem(TestCase):
 
     def test_total_fabrication_footprint_sum_over_period(self):
         fab_footprints = {
-            "Servers": {"server": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
+            "Servers": {"server": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {"usage_pattern": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"networks": EmptyExplainableObject()}
         }
 
@@ -274,14 +268,14 @@ class TestSystem(TestCase):
 
     def test_total_energy_footprint_sum_over_period(self):
         energy_footprints = {
-            "Servers": {"server": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Storage": {"storage": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Devices": {"usage_pattern": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))},
-            "Network": {"networks": SourceHourlyValues(
-                create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.kg))}
+            "Servers": {"server": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {"storage": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {"usage_pattern": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Network": {"networks": 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
         }
 
         expected_dict = {

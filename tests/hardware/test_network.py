@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.network import Network
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 
 
 class TestNetwork(TestCase):
@@ -19,7 +19,7 @@ class TestNetwork(TestCase):
 
         job1 = MagicMock()
         job1.hourly_data_transferred_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
+            usage_pattern: create_source_hourly_values_from_list([2, 4, 10], pint_unit=u.GB)}
         job1.usage_patterns = [usage_pattern]
 
         with patch.object(Network, "jobs", new_callable=PropertyMock) as mock_jobs,\
@@ -51,7 +51,7 @@ class TestNetwork(TestCase):
 
         job1 = MagicMock()
         job1.hourly_data_transferred_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
+            usage_pattern: create_source_hourly_values_from_list([2, 4, 10], pint_unit=u.GB)}
         job1.usage_patterns = [usage_pattern]
 
         usage_pattern2 = MagicMock()
@@ -59,10 +59,10 @@ class TestNetwork(TestCase):
         usage_pattern3 = MagicMock()
         job2 = MagicMock()
         job2.hourly_data_transferred_per_usage_pattern = {
-            usage_pattern: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB)),
-            usage_pattern2: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB)),
+            usage_pattern: create_source_hourly_values_from_list([2, 4, 10], pint_unit=u.GB),
+            usage_pattern2: create_source_hourly_values_from_list([2, 4, 10], pint_unit=u.GB),
             # Should be ignored in the calculation as usage_pattern3 will not be linked to the network
-            usage_pattern3: SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 10], pint_unit=u.GB))}
+            usage_pattern3: create_source_hourly_values_from_list([2, 4, 10], pint_unit=u.GB)}
         job2.usage_patterns = [usage_pattern, usage_pattern2, usage_pattern3]
 
         with patch.object(Network, "usage_patterns", new_callable=PropertyMock) as mock_ups, \

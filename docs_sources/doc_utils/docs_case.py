@@ -20,7 +20,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_hourly_usage_df
+from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
@@ -108,7 +108,7 @@ usage_pattern = UsagePattern(
     network=network,
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-    hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year)))
+    hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year))
 
 system = System("system", usage_patterns=[usage_pattern])
 

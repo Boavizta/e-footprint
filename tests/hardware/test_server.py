@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch, PropertyMock
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.video_streaming import VideoStreaming
 from efootprint.builders.services.web_application import WebApplication
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.constants.units import u
@@ -41,10 +41,8 @@ class TestServer(TestCase):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([20, 15, 5, 3]))
+        job1.hourly_avg_occurrences_across_usage_patterns = create_source_hourly_values_from_list([10, 20, 1, 0])
+        job2.hourly_avg_occurrences_across_usage_patterns = create_source_hourly_values_from_list([20, 15, 5, 3])
         job1.compute_needed = SourceValue(2 * u.cpu_core)
         job2.compute_needed = SourceValue(3 * u.cpu_core)
 
@@ -58,10 +56,8 @@ class TestServer(TestCase):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([20, 15, 5, 3]))
+        job1.hourly_avg_occurrences_across_usage_patterns = create_source_hourly_values_from_list([10, 20, 1, 0])
+        job2.hourly_avg_occurrences_across_usage_patterns = create_source_hourly_values_from_list([20, 15, 5, 3])
         job1.ram_needed = SourceValue(2 * u.GB)
         job2.ram_needed = SourceValue(3 * u.GB)
 
@@ -123,8 +119,8 @@ class TestServer(TestCase):
             self.assertEqual(expected_value.value, self.server_base.occupied_ram_per_instance.value)
 
     def test_raw_nb_of_instances_autoscaling_simple_case(self):
-        ram_need = SourceHourlyValues(create_hourly_usage_df_from_list([0, 1, 3, 3, 10], pint_unit=u.GB))
-        cpu_need = SourceHourlyValues(create_hourly_usage_df_from_list([2, 4, 2, 6, 3], pint_unit=u.cpu_core))
+        ram_need = create_source_hourly_values_from_list([0, 1, 3, 3, 10], pint_unit=u.GB)
+        cpu_need = create_source_hourly_values_from_list([2, 4, 2, 6, 3], pint_unit=u.cpu_core)
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=ram_need), \
                 patch.object(self.server_base, "hour_by_hour_compute_need", new=cpu_need), \
@@ -138,18 +134,14 @@ class TestServer(TestCase):
         start_date_a = datetime.strptime("2025-01-01", "%Y-%m-%d")
         start_date_b = datetime.strptime("2025-01-02", "%Y-%m-%d")
 
-        ram_need_a = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_a, pint_unit=u.GB), label="ram_need_a")
-        ram_need_b = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0, 1, 3, 3, 10], start_date_b, pint_unit=u.GB), label="ram_need_b")
-        cpu_need_a = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.cpu_core), label="cpu_need_a")
-        cpu_need_b = SourceHourlyValues(
-            create_hourly_usage_df_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.cpu_core), label="cpu_need_b")
+        ram_need_a = create_source_hourly_values_from_list([0, 1, 3, 3, 10], start_date_a, pint_unit=u.GB)
+        ram_need_b = create_source_hourly_values_from_list([0, 1, 3, 3, 10], start_date_b, pint_unit=u.GB)
+        cpu_need_a = create_source_hourly_values_from_list([2, 4, 2, 6, 3], start_date_a, pint_unit=u.cpu_core)
+        cpu_need_b = create_source_hourly_values_from_list([2, 4, 2, 6, 3], start_date_b, pint_unit=u.cpu_core)
         all_ram_need = (ram_need_a + ram_need_b).set_label("all_ram_need")
         all_cpu_need = (cpu_need_a + cpu_need_b).set_label("all_cpu_need")
 
-        expected_data = [0.5, 1, 1.5, 1.5, 5, 0.5, 1, 1.5, 1.5, 5]
+        expected_data = [0.5, 1, 1.5, 1.5, 5] + [0] * 19 + [0.5, 1, 1.5, 1.5, 5]
         expected_max_date = start_date_b + timedelta(hours=(len(ram_need_b)-1))
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=all_ram_need), \
@@ -159,14 +151,13 @@ class TestServer(TestCase):
             self.server_base.update_raw_nb_of_instances()
 
             self.assertEqual(expected_data, self.server_base.raw_nb_of_instances.value_as_float_list)
-            self.assertEqual(start_date_a, self.server_base.raw_nb_of_instances.value.index.min())
-            self.assertEqual(expected_max_date, self.server_base.raw_nb_of_instances.value.index.max())
+            self.assertEqual(start_date_a, self.server_base.raw_nb_of_instances.start_date)
 
     def test_compute_instances_energy_simple_case(self):
         with patch.object(self.server_base, "nb_of_instances",
-                          SourceHourlyValues(create_hourly_usage_df_from_list([1, 0, 2]))), \
+                          create_source_hourly_values_from_list([1, 0, 2])), \
                 patch.object(self.server_base, "raw_nb_of_instances",
-                             SourceHourlyValues(create_hourly_usage_df_from_list([1, 0, 2]))), \
+                             create_source_hourly_values_from_list([1, 0, 2])), \
                 patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
@@ -176,9 +167,9 @@ class TestServer(TestCase):
 
     def test_compute_instances_energy_complex_case(self):
         with patch.object(self.server_base, "nb_of_instances",
-                          SourceHourlyValues(create_hourly_usage_df_from_list([1, 0, 2]))), \
+                          create_source_hourly_values_from_list([1, 0, 2])), \
                 patch.object(self.server_base, "raw_nb_of_instances",
-                             SourceHourlyValues(create_hourly_usage_df_from_list([1, 0, 1.5]))), \
+                             create_source_hourly_values_from_list([1, 0, 1.5])), \
                 patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
@@ -187,8 +178,7 @@ class TestServer(TestCase):
             self.assertEqual([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.value_as_float_list)
 
     def test_energy_footprints(self):
-        instance_energy = SourceHourlyValues(
-            create_hourly_usage_df_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh))
+        instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
         average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
 
         with patch.object(self.server_base, "instances_energy", new=instance_energy), \
@@ -203,7 +193,7 @@ class TestServer(TestCase):
         raw_data = [0.5, 1, 1.5, 1.5, 5]
         expected_data = [1, 1, 2, 2, 5]
 
-        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.dimensionless)
         with patch.object(self.server_base, "raw_nb_of_instances", hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.autoscaling()):
             self.server_base.update_nb_of_instances()
@@ -214,7 +204,7 @@ class TestServer(TestCase):
         raw_data = [0.5, 1, 1.5, 1.5, 5.5]
         expected_data = [6, 6, 6, 6, 6]
 
-        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.dimensionless)
         with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.on_premise()):
             self.server_base.update_nb_of_instances()
@@ -224,7 +214,7 @@ class TestServer(TestCase):
         raw_data = [0.5, 1, 1.5, 1.5, 5.5]
         expected_data = [12, 12, 12, 12, 12]
 
-        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.dimensionless)
 
         with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
@@ -237,7 +227,7 @@ class TestServer(TestCase):
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
         raw_data = [0.5, 1, 1.5, 1.5, 14]
 
-        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.dimensionless)
 
         with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
@@ -255,7 +245,7 @@ class TestServer(TestCase):
         raw_data = [0.5, 1, 1.5, 1.5, 5]
         expected_data = [0.5, 1, 1.5, 1.5, 5]
 
-        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        hourly_raw_data = create_source_hourly_values_from_list(raw_data, pint_unit=u.dimensionless)
         with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.serverless()):
             self.server_base.update_nb_of_instances()

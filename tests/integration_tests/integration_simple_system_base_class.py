@@ -23,7 +23,7 @@ from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list, create_hourly_usage_from_frequency
+from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -82,8 +82,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
             "Youtube usage in France", uj, [Device.laptop()], network, Countries.FRANCE(),
-            SourceHourlyValues(create_hourly_usage_df_from_list(
-                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date)))
+            create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
         # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
         # calculations
@@ -174,7 +174,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.uj)
         self._test_variations_on_obj_inputs(self.network)
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(self.streaming_job)
+        self._test_variations_on_obj_inputs(self.streaming_job, special_mult={"data_stored": 1000000})
 
     def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
@@ -183,41 +183,41 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             previous_user_time_spents.append(uj_step.user_time_spent)
             uj_step.user_time_spent = SourceValue(0 * u.min)
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         logger.info("Setting user journey steps user_time_spent back to previous values")
 
         for uj_step, previous_user_time_spent in zip(self.uj.uj_steps, previous_user_time_spents):
             uj_step.user_time_spent = previous_user_time_spent
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_hourly_usage_journey_starts_update(self):
         logger.warning("Updating hourly user journey starts")
         initial_hourly_uj_starts = self.usage_pattern.hourly_usage_journey_starts
-        self.usage_pattern.hourly_usage_journey_starts = SourceHourlyValues(
-            create_hourly_usage_df_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]))
+        self.usage_pattern.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+            [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.usage_pattern.hourly_usage_journey_starts = initial_hourly_uj_starts
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
         self.uj.uj_steps = [self.streaming_step]
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
         self.usage_pattern.devices = [Device.laptop(), Device.screen()]
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         up_laptop_with_normalized_id = Device.laptop()
         up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
         logger.warning("Setting devices back to laptop with normalized id")
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_server(self):
         new_storage = Storage(
@@ -257,7 +257,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.upload_job.server = new_server
         self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, self.server.energy_footprint.magnitude)
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Changing back to initial job server")
         self.streaming_job.server = self.server
@@ -265,7 +265,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(0, new_server.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_server.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.server])
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_storage(self):
         new_storage = Storage(
@@ -288,14 +288,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Changing back to initial jobs storage")
         self.server.storage = self.storage
         self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.storage])
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
@@ -305,14 +305,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.streaming_step.jobs += [new_job]
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.usage_pattern])
         self.footprint_has_changed([self.storage, self.server, self.network])
 
         logger.warning("Changing back to previous jobs")
         self.streaming_step.jobs = [self.streaming_job]
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
     def run_test_update_uj_steps(self):
@@ -325,13 +325,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         )
         self.uj.uj_steps = [new_step]
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.storage, self.server, self.network], system=self.system)
 
         logger.warning("Changing back to previous uj steps")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
     def run_test_update_usage_journey(self):
@@ -339,13 +339,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
         self.usage_pattern.usage_journey = new_uj
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern], system=self.system)
 
         logger.warning("Changing back to previous uj")
         self.usage_pattern.usage_journey = self.uj
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
 
     def run_test_update_country_in_usage_pattern(self):
@@ -353,13 +353,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.usage_pattern.country = Countries.MALAYSIA()
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.network, self.usage_pattern])
 
         logger.warning("Changing back to initial usage pattern country")
         self.usage_pattern.country = Countries.FRANCE()
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.network, self.usage_pattern])
 
     def run_test_update_network(self):
@@ -370,13 +370,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(0, self.network.energy_footprint.max().magnitude)
         self.footprint_has_changed([self.network], system=self.system)
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Changing back to initial network")
         self.usage_pattern.network = self.network
         self.assertEqual(0, new_network.energy_footprint.max().magnitude)
         self.footprint_has_not_changed([self.network])
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_add_uj_step_without_job(self):
         logger.warning("Add uj step without job")
@@ -388,18 +388,18 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.footprint_has_changed([self.usage_pattern])
-        self.assertFalse(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Setting user time spent of the new step to 0s")
         step_without_job.user_time_spent = SourceValue(0 * u.min)
         self.footprint_has_not_changed([self.server, self.storage])
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Deleting the new uj step")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
         step_without_job.self_delete()
         self.footprint_has_not_changed([self.server, self.storage])
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_add_usage_pattern(self):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
@@ -424,7 +424,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         logger.warning(f"Adding usage pattern {usage_pattern.name} to system")
         self.system.usage_patterns += [usage_pattern]
 
-        self.assertFalse(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Removing the new usage pattern from the system")
         self.system.usage_patterns = self.system.usage_patterns[:-1]
@@ -435,7 +435,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         for direct_child in self.usage_pattern.country.average_carbon_intensity.direct_children_with_id:
             self.assertNotEqual(direct_child.modeling_obj_container.id, usage_pattern_id)
 
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_system_to_json(self):
         self.run_system_to_json_test(self.system)
@@ -479,7 +479,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Network"].values())))
         self._test_variations_on_obj_inputs(
             next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Job"].values())))
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["Job"].values())), special_mult={"data_stored": 1000000})
 
     def run_test_update_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
@@ -495,13 +496,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         storage = next(iter(class_obj_dict["Storage"].values()))
         server = next(iter(class_obj_dict["Server"].values()))
         network = next(iter(class_obj_dict["Network"].values()))
-        self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_changed([storage, server, network, usage_pattern])
 
         logger.warning("Changing back to previous uj")
         usage_pattern.usage_journey = previous_uj
 
-        self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
     def run_test_update_jobs_after_json_to_system(self):
@@ -523,14 +524,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         streaming_step.jobs += [new_job]
 
-        self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_not_changed([usage_pattern])
         self.footprint_has_changed([storage, server, network])
 
         logger.warning("Changing back to previous jobs")
         streaming_step.jobs = previous_jobs
 
-        self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
     def run_test_modeling_object_prints(self):
@@ -547,18 +548,18 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         initial_upload_data_stored = self.upload_job.data_stored
         initial_storage_need = self.storage.storage_needed
         initial_storage_freed = self.storage.storage_freed
-        self.assertGreaterEqual(self.storage.storage_needed.value.min().iloc[0].magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.value.max().iloc[0].magnitude, 0)
+        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
         # data_stored is positive so storage_freed will be an EmptyExplainableObject
 
         self.upload_job.data_stored = SourceValue(-initial_upload_data_stored.value)
 
         self.assertNotEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
         self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
-        self.assertGreaterEqual(self.storage.storage_needed.value.min().iloc[0].magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.value.max().iloc[0].magnitude, 0)
+        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
         self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
 
@@ -570,7 +571,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
         self.assertEqual(initial_storage_freed, self.storage.storage_freed)
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
@@ -579,7 +580,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.usage_pattern.devices_energy_footprint.plot(plt_show=False, cumsum=False)
         self.usage_pattern.devices_energy_footprint.plot(plt_show=False, cumsum=True)
@@ -597,7 +598,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
                  self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(simulation.old_sourcevalues, [self.streaming_step.user_time_spent, self.server.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
@@ -616,7 +617,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         simulation = ModelingUpdate([[self.upload_step.jobs, self.upload_step.jobs + [new_job]]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
@@ -631,7 +632,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         initial_upload_step_jobs = copy(self.upload_step.jobs)
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
@@ -656,7 +657,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 [self.upload_step.jobs, self.upload_step.jobs + [new_job, new_job2, self.streaming_job]]],
             self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
@@ -682,7 +683,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 [self.streaming_step.user_time_spent, SourceValue(25 * u.min)],
                 [self.server.compute, SourceValue(42 * u.cpu_core, Sources.USER_DATA)]],
                 self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
-        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
@@ -698,11 +699,11 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         ModelingUpdate([
             [self.usage_pattern.network, new_network],
-            [self.usage_pattern.hourly_usage_journey_starts, SourceHourlyValues(
-            create_hourly_usage_df_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]))]
+            [self.usage_pattern.hourly_usage_journey_starts, create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])]
         ])
 
-        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.network, self.usage_pattern], system=self.system)
         for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
             self.assertIsNotNone(ancestor.modeling_obj_container)
@@ -714,7 +715,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             [self.usage_pattern.hourly_usage_journey_starts, initial_usage_journey_starts]
         ])
 
-        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.network, self.usage_pattern])
 
         for ancestor in self.network.energy_footprint.direct_ancestors_with_id:

@@ -2,10 +2,8 @@ import math
 from typing import List, Type
 
 import numpy as np
-import pandas as pd
-import pint_pandas
+from pint import Quantity
 
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -175,20 +173,20 @@ class Storage(InfraHardware):
             return EmptyExplainableObject(left_parent=self.storage_needed)
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-            automatic_storage_dumps_after_storage_duration_df = - self.storage_needed.value.copy().shift(
-                periods=storage_duration_in_hours, freq='h')
-            automatic_storage_dumps_after_storage_duration_df = automatic_storage_dumps_after_storage_duration_df[
-                automatic_storage_dumps_after_storage_duration_df.index <= self.storage_needed.value.index.max()]
+            automatic_storage_dumps_after_storage_duration_np = - np.pad(
+                self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=0
+            )[:len(self.storage_needed.value)]
+            automatic_storage_dumps_after_storage_duration_np = automatic_storage_dumps_after_storage_duration_np[
+                :len(self.storage_needed.value)]
 
-            if len(automatic_storage_dumps_after_storage_duration_df) == 0:
-                storage_needs_start_date = self.storage_needed.value.index.min()
-                storage_needs_end_date = self.storage_needed.value.index.max()
-                storage_needs_nb_of_hours = int((storage_needs_end_date - storage_needs_start_date).seconds / 3600)
-                automatic_storage_dumps_after_storage_duration_df = create_hourly_usage_df_from_list(
-                    [0] * (storage_needs_nb_of_hours + 1), start_date=storage_needs_start_date)
+            if len(automatic_storage_dumps_after_storage_duration_np) == 0:
+                storage_needs_nb_of_hours = len(self.storage_needed.value)
+                automatic_storage_dumps_after_storage_duration_np = Quantity(
+                    np.array([0] * (storage_needs_nb_of_hours + 1)), self.storage_needed.unit)
 
             return ExplainableHourlyQuantities(
-                automatic_storage_dumps_after_storage_duration_df, label=f"Storage dumps for {self.name}",
+                automatic_storage_dumps_after_storage_duration_np, self.storage_needed.start_date,
+                label=f"Storage dumps for {self.name}",
                 left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
@@ -202,25 +200,38 @@ class Storage(InfraHardware):
         if isinstance(self.storage_delta, EmptyExplainableObject):
             self.full_cumulative_storage_need = EmptyExplainableObject(left_parent=self.storage_delta)
         else:
-            storage_delta_df = self.storage_delta.value.copy()
-            storage_delta_df.iat[0, 0] += self.base_storage_need.value
-            full_cumulative_storage_need = storage_delta_df.cumsum()
+            delta_values = self.storage_delta.value
 
-            if full_cumulative_storage_need.value.min().magnitude < 0:
+            delta_array = np.copy(delta_values.magnitude)
+            delta_unit = delta_values.units
+
+            # Add base storage need to first hour
+            delta_array[0] += self.base_storage_need.value.to(delta_unit).magnitude
+
+            # Compute cumulative storage
+            cumulative_array = np.cumsum(delta_array)
+            cumulative_quantity = Quantity(cumulative_array, delta_unit)
+
+            if np.min(cumulative_quantity.magnitude) < 0:
                 jobs_in_errors = [
                     f"name: {job.name} - value: {job.data_stored}"
-                    for job in self.jobs if job.data_stored.magnitude < 0]
+                    for job in self.jobs if job.data_stored.magnitude < 0
+                ]
                 raise ValueError(
                     f"In Storage object {self.name}, negative cumulative storage need detected: "
-                    f"{full_cumulative_storage_need.min().value}."
-                    f"Please verify your jobs that delete data: {jobs_in_errors}"
+                    f"{np.min(cumulative_quantity):~P}."
+                    f" Please verify your jobs that delete data: {jobs_in_errors}"
                     f" or increase the base_storage_need value, currently set to {self.base_storage_need.value}"
                 )
 
             self.full_cumulative_storage_need = ExplainableHourlyQuantities(
-                full_cumulative_storage_need, label=f"Full cumulative storage need for {self.name}",
-                left_parent=self.storage_delta, right_parent=self.base_storage_need,
-                operator="cumulative sum of storage delta with initial storage need")
+                cumulative_quantity,
+                start_date=self.storage_delta.start_date,
+                label=f"Full cumulative storage need for {self.name}",
+                left_parent=self.storage_delta,
+                right_parent=self.base_storage_need,
+                operator="cumulative sum of storage delta with initial storage need"
+            )
 
     def update_raw_nb_of_instances(self):
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)
@@ -241,25 +252,20 @@ class Storage(InfraHardware):
                         f"number of instances specified by the user/server "
                         f"({max_nb_of_instances} > {self.fixed_nb_of_instances})")
                 else:
-                    fixed_nb_of_instances_df = pd.DataFrame(
-                        {"value": pint_pandas.PintArray(
-                            np.full(len(self.raw_nb_of_instances),
-                                    self.fixed_nb_of_instances.to(u.dimensionless).magnitude),
-                            dtype=u.dimensionless
-                        )},
-                        index=self.raw_nb_of_instances.value.index
-                    )
+                    fixed_nb_of_instances_quantity = Quantity(
+                        np.full(
+                            len(self.raw_nb_of_instances),
+                            float(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
+                        ),
+                        u.dimensionless)
                     fixed_nb_of_instances = ExplainableHourlyQuantities(
-                        fixed_nb_of_instances_df,
-                        "Nb of instances",
-                        left_parent=self.raw_nb_of_instances,
-                        right_parent=self.fixed_nb_of_instances
-                    )
+                        fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date,"Nb of instances",
+                        left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
                 self.nb_of_instances = fixed_nb_of_instances.set_label(
                     f"Hourly fixed number of instances for {self.name}")
             else:
                 nb_of_instances = ExplainableHourlyQuantities(
-                    nb_of_instances.value, left_parent=nb_of_instances,
+                    nb_of_instances.value, self.raw_nb_of_instances.start_date, left_parent=nb_of_instances,
                     right_parent=self.fixed_nb_of_instances, operator="depending on being empty")
                 self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 

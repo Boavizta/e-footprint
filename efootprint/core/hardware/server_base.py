@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 import pandas as pd
 import pint_pandas
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -239,33 +240,20 @@ class ServerBase(InfraHardware):
                         f"number of instances specified by the user "
                         f"({max_nb_of_instances.value} > {self.fixed_nb_of_instances})")
                 else:
-                    fixed_nb_of_instances_df = pd.DataFrame(
-                        {"value": pint_pandas.PintArray(
-                            np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.value),
-                            dtype=u.dimensionless
-                        )},
-                        index=self.raw_nb_of_instances.value.index
-                    )
+                    fixed_nb_of_instances_np = Quantity(
+                        np.full(len(self.raw_nb_of_instances), float(self.fixed_nb_of_instances.magnitude)),
+                        u.dimensionless)
                     nb_of_instances = ExplainableHourlyQuantities(
-                        fixed_nb_of_instances_df,
-                        "Nb of instances",
-                        left_parent=self.raw_nb_of_instances,
-                        right_parent=self.fixed_nb_of_instances
-                    )
+                        fixed_nb_of_instances_np, self.raw_nb_of_instances.start_date, "Nb of instances",
+                        left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
             else:
-                nb_of_instances_df = pd.DataFrame(
-                    {"value": pint_pandas.PintArray(
-                        max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), dtype=u.dimensionless)},
-                    index=self.raw_nb_of_instances.value.index
-                )
+                nb_of_instances_np = Quantity(
+                    max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), u.dimensionless)
 
                 nb_of_instances = ExplainableHourlyQuantities(
-                    nb_of_instances_df,
-                    f"Hourly number of {self.name} instances",
-                    left_parent=self.raw_nb_of_instances,
-                    right_parent=self.fixed_nb_of_instances,
-                    operator="depending on not being empty"
-                )
+                    nb_of_instances_np, self.raw_nb_of_instances.start_date,f"Hourly number of {self.name} instances",
+                    left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances,
+                    operator="depending on not being empty")
 
         self.nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
             self.server_type).set_label(f"Hourly number of {self.name} instances")
