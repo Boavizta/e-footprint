@@ -9,18 +9,15 @@ from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
 
 
-def create_random_hourly_usage_df(
+def create_random_source_hourly_values(
         timespan: pint.Quantity = 1 * u.day, min_val: int = 1, max_val: int = 10,
         start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
         pint_unit: pint.Unit = u.dimensionless):
     nb_days = timespan.to(u.day).magnitude
-    end_date = start_date + timedelta(days=nb_days)
-    period_index = pd.date_range(start=start_date, end=end_date, freq='h')
+    data = pint.Quantity(np.random.randint(min_val, max_val, size=int(nb_days * 24)).astype(float), pint_unit)
+    shv = SourceHourlyValues(data, start_date=start_date)
 
-    data = np.random.randint(min_val, max_val, size=len(period_index))
-    df = pd.DataFrame(data, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
-
-    return df
+    return shv
 
 
 def create_hourly_usage_df_from_list(

@@ -10,7 +10,7 @@ from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.builders.time_builders import create_random_hourly_usage_df, create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 
 
@@ -43,8 +43,8 @@ class TestUsagePattern(unittest.TestCase):
 
         self.usage_pattern = UsagePattern(
             "usage_pattern", usage_journey, [self.device1, self.device2], network, country,
-            hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df())
-        )
+            hourly_usage_journey_starts=create_random_source_hourly_values())
+
         self.usage_pattern.trigger_modeling_updates = False
 
     def test_jobs(self):
@@ -98,7 +98,7 @@ class TestUsagePattern(unittest.TestCase):
             usage_pattern = UsagePattern(
                 "usage_pattern", self.usage_pattern.usage_journey, [wrong_device], self.usage_pattern.network,
                 self.usage_pattern.country,
-                hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df())
+                hourly_usage_journey_starts=SourceHourlyValues(create_random_source_hourly_values())
             )
         self.assertEqual(
             str(context.exception),
@@ -111,7 +111,7 @@ class TestUsagePattern(unittest.TestCase):
             usage_pattern = UsagePattern(
                 "usage_pattern", wrong_usage_journey, [self.device1], self.usage_pattern.network,
                 self.usage_pattern.country,
-                hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df())
+                hourly_usage_journey_starts=create_random_source_hourly_values()
             )
         self.assertEqual(
             str(context.exception),

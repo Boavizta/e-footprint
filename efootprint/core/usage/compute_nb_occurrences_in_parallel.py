@@ -1,7 +1,8 @@
 import math
 from copy import copy
 
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities, \
+    shift_np_array, align_temporally_quantity_arrays
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.constants.units import u
@@ -19,22 +20,20 @@ def compute_nb_avg_hourly_occurrences(
 
     for hour_shift in range(0, nb_of_full_hours_in_event_duration):
         if nb_avg_hourly_occurrences_in_parallel is None:
-            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value.shift(hour_shift, freq="h")
+            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value
         else:
-            nb_avg_hourly_occurrences_in_parallel = nb_avg_hourly_occurrences_in_parallel.add(
-                hourly_occurrences_starts.value.shift(hour_shift, freq="h"), fill_value=0)
+            nb_avg_hourly_occurrences_in_parallel += shift_np_array(nb_avg_hourly_occurrences_in_parallel, hour_shift)
 
     nonfull_duration_rest = event_duration_in_nb_of_hours - nb_of_full_hours_in_event_duration
     if nonfull_duration_rest > 0:
         if nb_avg_hourly_occurrences_in_parallel is None:
-            nb_avg_hourly_occurrences_in_parallel = hourly_occurrences_starts.value.shift(
-                nb_of_full_hours_in_event_duration, freq="h") * nonfull_duration_rest
+            nb_avg_hourly_occurrences_in_parallel = shift_np_array(
+                hourly_occurrences_starts.value, nb_of_full_hours_in_event_duration) * nonfull_duration_rest
         else:
-            nb_avg_hourly_occurrences_in_parallel = nb_avg_hourly_occurrences_in_parallel.add(
-                hourly_occurrences_starts.value.shift(nb_of_full_hours_in_event_duration, freq="h")
-                * nonfull_duration_rest,
-                fill_value=0)
-        
+            nb_avg_hourly_occurrences_in_parallel += (
+                    shift_np_array(hourly_occurrences_starts.value, nb_of_full_hours_in_event_duration)
+                    * nonfull_duration_rest)
+
     return ExplainableHourlyQuantities(
-            nb_avg_hourly_occurrences_in_parallel, left_parent=hourly_occurrences_starts, right_parent=event_duration,
-            operator=f"hourly occurrences average")
+        nb_avg_hourly_occurrences_in_parallel, start_date=hourly_occurrences_starts.start_date,
+        left_parent=hourly_occurrences_starts, right_parent=event_duration, operator=f"hourly occurrences average")

@@ -5,21 +5,21 @@ import pandas as pd
 
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
 from efootprint.builders.time_builders import (
-    create_random_hourly_usage_df, create_hourly_usage_df_from_list, linear_growth_hourly_values,
+    create_random_source_hourly_values, create_hourly_usage_df_from_list, linear_growth_hourly_values,
     sinusoidal_fluct_hourly_values, daily_fluct_hourly_values, create_hourly_usage_from_frequency,
     create_hourly_usage_from_daily_volume_and_list_of_hours)
 from efootprint.constants.units import u
 
 
 class TestTimeBuilders(unittest.TestCase):
-    def test_create_random_hourly_usage_df(self):
+    def test_create_random_source_hourly_values(self):
         nb_days = 2
         timespan = nb_days * u.day
         min_val = 1
         max_val = 27
         start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
         pint_unit = u.dimensionless
-        df = create_random_hourly_usage_df(timespan, min_val, max_val, start_date, pint_unit)
+        df = create_random_source_hourly_values(timespan, min_val, max_val, start_date, pint_unit)
 
         self.assertEqual(start_date, datetime.strptime(df.index.min().strftime("%Y-%m-%d"), "%Y-%m-%d"))
         self.assertEqual(nb_days * 24 + 1, len(df))

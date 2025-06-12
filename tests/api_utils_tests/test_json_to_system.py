@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.api_utils.system_to_json import system_to_json
-from efootprint.builders.time_builders import create_random_hourly_usage_df
+from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
@@ -99,7 +99,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         uj = UsageJourney("Usage journey", uj_steps=[])
         up = UsagePattern(
             "usage pattern", usage_journey=uj, devices=[], network=Network.wifi_network(), country=Countries.FRANCE(),
-            hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=1 * u.year)))
+            hourly_usage_journey_starts=create_random_source_hourly_values(timespan=1 * u.year))
 
         system = System("system", usage_patterns=[up])
 

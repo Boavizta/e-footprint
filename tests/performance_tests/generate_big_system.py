@@ -23,7 +23,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_hourly_usage_df
+from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
@@ -77,19 +77,22 @@ for server_index in range(1, nb_of_servers_of_each_type + 1):
                 "network",
                 bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
 
-        usage_patterns.append(UsagePattern(
-            "usage pattern",
-            usage_journey=usage_journey,
-            devices=[
-                Device(name="device on which the user journey is made",
-                         carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
-                         power=SourceValue(50 * u.W, source=None),
-                         lifespan=SourceValue(6 * u.year, source=None),
-                         fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
-            network=network,
-            country=country_generator(
-                    "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-            hourly_usage_journey_starts=SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year)))
+        usage_patterns.append(
+            UsagePattern(
+                "usage pattern",
+                usage_journey=usage_journey,
+                devices=[
+                    Device(name="device on which the user journey is made",
+                             carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
+                             power=SourceValue(50 * u.W, source=None),
+                             lifespan=SourceValue(6 * u.year, source=None),
+                             fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
+                network=network,
+                country=country_generator(
+                        "devices country", "its 3 letter shortname, for example FRA",
+                    SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
+                hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year)
+            )
         )
 
 system = System("system", usage_patterns=usage_patterns)
@@ -119,7 +122,7 @@ logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on avera
 start = time()
 
 for i in range(edition_iterations):
-    usage_patterns[0].hourly_usage_journey_starts = SourceHourlyValues(create_random_hourly_usage_df(timespan=3 * u.year))
+    usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
 end = time()
 compute_time_per_edition = (end - start) / edition_iterations
 logger.info(f"edition took {round(compute_time_per_edition, 3)} seconds on average per hourly usage journey starts edition")

@@ -1,4 +1,6 @@
-import pandas as pd
+from datetime import datetime
+
+import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
@@ -25,5 +27,6 @@ class SourceValue(ExplainableQuantity):
 
 
 class SourceHourlyValues(ExplainableHourlyQuantities):
-    def __init__(self, value: pd.DataFrame, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=label, source=source)
+    def __init__(self, value: np.array, start_date: datetime, source: Source = Sources.HYPOTHESIS,
+                 label: str = SOURCE_VALUE_DEFAULT_NAME):
+        super().__init__(value, start_date=start_date, label=label, source=source)
