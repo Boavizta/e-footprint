@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.8] - 2025-06-13
+
+### Changed
+- Use numpy instead of pandas for time series calculations to improve performance and reduce memory usage. About 20x performance gains 🙌!!
+- Cache ObjectLinkedToModelingObj attributes like id or dict_container to avoid recomputing them each time they are accessed and speed up calculus graph parsing. 2x performance gain on complex edits.
+
 ## [10.1.7] - 2025-06-11
 
 ### Fixed

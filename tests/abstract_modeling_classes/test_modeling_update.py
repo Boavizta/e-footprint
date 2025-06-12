@@ -2,7 +2,6 @@ import unittest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch, PropertyMock
 
-import pandas as pd
 import pytz
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute

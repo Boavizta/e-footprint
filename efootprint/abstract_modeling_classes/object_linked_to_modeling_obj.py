@@ -8,6 +8,7 @@ class ObjectLinkedToModelingObj:
         # kept in memory just for easier debugging and error messages
         self.former_modeling_obj_container_id = None
         self.former_attr_name_in_mod_obj_container = None
+        self.cached_values = {}
 
     def set_modeling_obj_container(
             self, new_parent_modeling_object: Type["ModelingObject"] | None, attr_name: str | None):
@@ -26,6 +27,7 @@ class ObjectLinkedToModelingObj:
         self.former_attr_name_in_mod_obj_container = self.attr_name_in_mod_obj_container
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
+        self.cached_values = {}
 
     def raise_error_if_modeling_obj_container_is_none(self):
         if self.modeling_obj_container is None:
@@ -39,10 +41,14 @@ class ObjectLinkedToModelingObj:
     @property
     def id(self):
         self.raise_error_if_modeling_obj_container_is_none()
+        if "id" in self.cached_values:
+            return self.cached_values["id"]
         if self.dict_container is None:
-            return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+            self.cached_values["id"] = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
         else:
-            return f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
+            self.cached_values["id"] = \
+                f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
+        return self.cached_values["id"]
 
     @property
     def full_tuple_id(self):
@@ -58,6 +64,8 @@ class ObjectLinkedToModelingObj:
 
     @property
     def dict_container(self):
+        if "dict_container" in self.cached_values:
+            return self.cached_values["dict_container"]
         output = None
         if (
                 self.modeling_obj_container is not None
@@ -65,11 +73,14 @@ class ObjectLinkedToModelingObj:
                 and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
         ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        self.cached_values["dict_container"] = output
 
         return output
 
     @property
     def key_in_dict(self):
+        if "key_in_dict" in self.cached_values:
+            return self.cached_values["key_in_dict"]
         dict_container = self.dict_container
         if dict_container is None:
             raise ValueError(f"{self} is not linked to a ModelingObject through a dictionary attribute.")
@@ -81,11 +92,14 @@ class ObjectLinkedToModelingObj:
                         output_key = key
                     else:
                         raise ValueError(f"Multiple keys found for {self} in {dict_container}.")
+        self.cached_values["key_in_dict"] = output_key
 
         return output_key
 
     @property
     def list_container(self):
+        if "list_container" in self.cached_values:
+            return self.cached_values["list_container"]
         output = None
         if (
                 not isinstance(self, list)
@@ -93,11 +107,14 @@ class ObjectLinkedToModelingObj:
                 and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), list)
         ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
+        self.cached_values["list_container"] = output
 
         return output
 
     @property
     def indexes_in_list(self):
+        if "indexes_in_list" in self.cached_values:
+            return self.cached_values["indexes_in_list"]
         if self.list_container is None:
             raise ValueError(f"{self} is not linked to a ModelingObject through a list attribute.")
         else:
@@ -105,6 +122,7 @@ class ObjectLinkedToModelingObj:
             for index, value in enumerate(self.list_container):
                 if id(value) == id(self):
                     output_indexes.append(index)
+        self.cached_values["indexes_in_list"] = output_indexes
 
         return output_indexes
 

@@ -2,8 +2,6 @@ from abc import abstractmethod
 from typing import List
 
 import numpy as np
-import pandas as pd
-import pint_pandas
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
