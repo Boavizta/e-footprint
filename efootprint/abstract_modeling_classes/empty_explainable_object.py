@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
 import pint_pandas
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs
+from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and_simulation_data, prepare_data
 
 
 @ExplainableObject.register_subclass(lambda d: "value" in d and d["value"] is None)
@@ -129,27 +130,27 @@ class EmptyExplainableObject(ExplainableObject):
 
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
         import matplotlib.pyplot as plt
-        assert self.simulation_twin is not None, "Cannot plot EmptyExplainableObject if simulation twin is None"
-        simulated_values_df = self.simulation_twin.value
-        assert not isinstance(simulated_values_df, EmptyExplainableObject), \
+
+        assert self.simulation_twin is not None, \
+            "Cannot plot EmptyExplainableObject if simulation twin is None"
+
+        sim_obj = self.simulation_twin
+        assert not isinstance(sim_obj, EmptyExplainableObject), \
             "Cannot plot EmptyExplainableObject if simulation twin is EmptyExplainableObject"
 
-        baseline_df = pd.DataFrame(
-            {"value": pint_pandas.PintArray(
-                np.zeros(len(simulated_values_df.index)),
-                dtype=simulated_values_df.dtypes.value.units)},
-            index=simulated_values_df.index)
+        time_sim, simulated_q = prepare_data(sim_obj.value, sim_obj.start_date, apply_cumsum=cumsum)
+        unit = simulated_q.units
 
-        if cumsum:
-            simulated_values_df = simulated_values_df.cumsum()
+        # Create a baseline of zeros with the same time index and unit
+        baseline_q = Quantity(np.zeros_like(simulated_q.magnitude), unit)
+        time_baseline = time_sim
 
-        ax = plot_baseline_and_simulation_dfs(baseline_df, simulated_values_df, figsize, xlims)
+        fig, ax = plot_baseline_and_simulation_data(
+            baseline_q, time_baseline, simulated_q, time_sim, figsize=figsize, xlims=xlims)
 
         if self.label:
-            if not cumsum:
-                ax.set_title(self.label)
-            else:
-                ax.set_title("Cumulative " + self.label[:1].lower() + self.label[1:])
+            title = self.label if not cumsum else f"Cumulative {self.label[0].lower()}{self.label[1:]}"
+            ax.set_title(title)
 
         if filepath is not None:
             plt.savefig(filepath, bbox_inches='tight')

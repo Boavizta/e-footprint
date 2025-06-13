@@ -94,8 +94,7 @@ class TestJob(TestCase):
 
         self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
-        self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
-        self.assertEqual(hourly_uj_starts.value.index.max(), job_occurrences.value.index.max())
+        self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -117,8 +116,7 @@ class TestJob(TestCase):
 
         self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
-        self.assertEqual(hourly_uj_starts.value.index.min(), job_occurrences.value.index.min())
-        self.assertEqual(hourly_uj_starts.value.index.max(), job_occurrences.value.index.max())
+        self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -140,10 +138,8 @@ class TestJob(TestCase):
 
         self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
-        self.assertEqual(hourly_uj_starts.value.index.min() + timedelta(hours=1),
-        job_occurrences.value.index.min())
-        self.assertEqual(hourly_uj_starts.value.index.max() + timedelta(hours=1),
-                         job_occurrences.value.index.max())
+        self.assertEqual(hourly_uj_starts.start_date + timedelta(hours=1),
+        job_occurrences.start_date)
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
@@ -169,11 +165,8 @@ class TestJob(TestCase):
         self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
         job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
         self.assertEqual(
-            hourly_uj_starts.value.index.min() + timedelta(hours=1),
-            job_occurrences.value.index.min())
-        self.assertEqual(
-            hourly_uj_starts.value.index.max() + timedelta(hours=1),
-            job_occurrences.value.index.max())
+            hourly_uj_starts.start_date + timedelta(hours=1),
+            job_occurrences.start_date)
         self.assertEqual([elt * 2 for elt in hourly_uj_starts.value_as_float_list],
                          job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()

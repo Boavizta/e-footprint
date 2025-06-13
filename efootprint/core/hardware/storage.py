@@ -2,15 +2,11 @@ import math
 from typing import List, Type
 
 import numpy as np
-import pandas as pd
-import pint_pandas
 from pint import Quantity
 
-from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.infra_hardware import InfraHardware
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities, \
-    shift_np_array
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -177,8 +173,9 @@ class Storage(InfraHardware):
             return EmptyExplainableObject(left_parent=self.storage_needed)
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-            automatic_storage_dumps_after_storage_duration_np = - shift_np_array(
-                self.storage_needed.value, storage_duration_in_hours)
+            automatic_storage_dumps_after_storage_duration_np = - np.pad(
+                self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=0
+            )[:len(self.storage_needed.value)]
             automatic_storage_dumps_after_storage_duration_np = automatic_storage_dumps_after_storage_duration_np[
                 :len(self.storage_needed.value)]
 

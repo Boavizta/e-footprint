@@ -174,7 +174,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.uj)
         self._test_variations_on_obj_inputs(self.network)
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(self.streaming_job)
+        self._test_variations_on_obj_inputs(self.streaming_job, special_mult={"data_stored": 1000000})
 
     def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
@@ -479,7 +479,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Network"].values())))
         self._test_variations_on_obj_inputs(
             next(iter(class_obj_dict["UsagePattern"].values())), attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(next(iter(class_obj_dict["Job"].values())))
+        self._test_variations_on_obj_inputs(
+            next(iter(class_obj_dict["Job"].values())), special_mult={"data_stored": 1000000})
 
     def run_test_update_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:

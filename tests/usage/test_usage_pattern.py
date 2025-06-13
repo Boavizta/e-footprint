@@ -59,7 +59,7 @@ class TestUsagePattern(unittest.TestCase):
 
         with patch.object(self.usage_pattern, "devices", new=[test_device1, test_device2]), \
              patch.object(self.usage_pattern, "nb_usage_journeys_in_parallel",
-                          create_source_hourly_values_from_list(nb_uj_in_parallel))):
+                          create_source_hourly_values_from_list(nb_uj_in_parallel)):
             self.usage_pattern.update_devices_energy()
 
             self.assertEqual(u.kWh, self.usage_pattern.devices_energy.unit)
@@ -98,7 +98,7 @@ class TestUsagePattern(unittest.TestCase):
             usage_pattern = UsagePattern(
                 "usage_pattern", self.usage_pattern.usage_journey, [wrong_device], self.usage_pattern.network,
                 self.usage_pattern.country,
-                hourly_usage_journey_starts=SourceHourlyValues(create_random_source_hourly_values())
+                hourly_usage_journey_starts=create_random_source_hourly_values()
             )
         self.assertEqual(
             str(context.exception),

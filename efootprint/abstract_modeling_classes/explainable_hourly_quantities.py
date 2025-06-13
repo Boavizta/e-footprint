@@ -6,8 +6,6 @@ from copy import copy
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
-import pandas as pd
-import pint_pandas
 import pytz
 from pint import Unit, Quantity
 import numpy as np
@@ -17,23 +15,11 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.constants.units import u, get_unit
-from efootprint.utils.plot_baseline_and_simulation_dfs import plot_baseline_and_simulation_dfs, \
-    plot_baseline_and_simulation_data
+from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and_simulation_data, prepare_data
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
     from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-    
-
-def shift_np_array(input_array: np.array, shift: int) -> np.array:
-    """Shift a numpy array by a given number of positions."""
-    if shift > 0:
-        return np.pad(input_array, (shift, 0), constant_values=0)[:len(input_array)]
-    elif shift < 0:
-        shift_abs = abs(shift)
-        return np.pad(input_array, (0, shift_abs), constant_values=0)[shift_abs:]
-    else:
-        return input_array
 
 
 def align_temporally_quantity_arrays(
@@ -77,9 +63,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
             value = {k: d[k] for k in ["compressed_values", "unit"]}
         else:
             raise ValueError("Invalid hourly quantity format")
+        start_date = datetime.strptime(d["start_date"], "%Y-%m-%d %H:%M:%S")
+        if d.get("timezone", None) is not None:
+            start_date = pytz.timezone(d["timezone"]).localize(start_date)
 
-        return cls(value, start_date=datetime.strptime(d["start_date"], "%Y-%m-%d %H:%M:%S"), label=d["label"], 
-                   source=source)
+        return cls(value, start_date=start_date, label=d["label"], source=source)
 
     def __init__(
             self, value: Quantity | dict, start_date: datetime, label: str = None,
@@ -143,13 +131,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def return_shifted_hourly_quantities(self, shift_duration: "ExplainableQuantity"):
         shift_hours = math.floor(shift_duration.to(u.hour).magnitude)
 
-        original_values = self.value.magnitude  # this is a numpy array
-        unit = self.value.units
-        
-        shifted_values = shift_np_array(original_values, shift_hours)
-
         return ExplainableHourlyQuantities(
-            Quantity(shifted_values, unit),
+            copy(self.value),  # Use copy to avoid modifying the original value
             start_date=self.start_date + timedelta(hours=shift_hours),
             label=f"{self.label} shifted by {shift_hours}h" if self.label else None,
             left_parent=self,
@@ -170,7 +153,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return [float(elt) for elt in self.magnitude]
 
     def convert_to_utc(self, local_timezone: ExplainableTimezone):
-        localized_dt = local_timezone.value.localize(self.start_date)
+        if self.start_date.tzinfo is None:
+            localized_dt = local_timezone.value.localize(self.start_date)
+        else:
+            localized_dt = self.start_date
 
         return ExplainableHourlyQuantities(
             self.value, start_date=localized_dt.astimezone(pytz.utc),
@@ -242,7 +228,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
 
-            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-05, atol=1e-08)
+            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-08, atol=1e-08)
         else:
             raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
 
@@ -403,13 +389,6 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None, cumsum=False):
         import matplotlib.pyplot as plt
 
-        def get_time_axis(start_date: datetime, length: int) -> np.ndarray:
-            return np.array([start_date + timedelta(hours=i) for i in range(length)])
-
-        def prepare_data(q: Quantity, start: datetime, apply_cumsum=False) -> tuple[np.ndarray, Quantity]:
-            magnitudes = np.cumsum(q.magnitude) if apply_cumsum else q.magnitude
-            return get_time_axis(start, len(magnitudes)), Quantity(magnitudes, q.units)
-
         if self.baseline_twin is None and self.simulation_twin is None:
             baseline_q = self.value
             baseline_start = self.start_date
@@ -459,6 +438,3 @@ class ExplainableHourlyQuantities(ExplainableObject):
             plt.savefig(filepath, bbox_inches='tight')
         if plt_show:
             plt.show()
-        plt.close(fig)
-
-        return ax
