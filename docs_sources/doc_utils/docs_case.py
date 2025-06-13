@@ -2,7 +2,7 @@ from time import time
 
 start = time()
 
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob

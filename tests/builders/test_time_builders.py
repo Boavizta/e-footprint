@@ -1,7 +1,5 @@
 import unittest
-from datetime import datetime, timedelta
-
-import pandas as pd
+from datetime import datetime
 
 from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues
 from efootprint.builders.time_builders import (
