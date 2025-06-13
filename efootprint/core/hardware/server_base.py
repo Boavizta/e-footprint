@@ -241,7 +241,8 @@ class ServerBase(InfraHardware):
                         f"({max_nb_of_instances.value} > {self.fixed_nb_of_instances})")
                 else:
                     fixed_nb_of_instances_np = Quantity(
-                        np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.value), u.dimensionless)
+                        np.full(len(self.raw_nb_of_instances), float(self.fixed_nb_of_instances.magnitude)),
+                        u.dimensionless)
                     nb_of_instances = ExplainableHourlyQuantities(
                         fixed_nb_of_instances_np, self.raw_nb_of_instances.start_date, "Nb of instances",
                         left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)

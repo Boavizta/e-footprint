@@ -57,11 +57,11 @@ def daily_fluct_hourly_values(
     hour_of_day = [(start_date.hour + x) % 24 for x in time]
 
     daily_fluctuation = (
-            np.full(shape=len(hour_of_day), fill_value=1)
+            np.full(shape=len(hour_of_day), fill_value=1.0)
             + fluct_scale * np.sin(
                 (3 * np.pi / 2)
                 + (2 * np.pi
-                    * (hour_of_day - np.full(shape=len(hour_of_day), fill_value=hour_of_day_for_min_value, dtype=int))
+                    * (hour_of_day - np.full(shape=len(hour_of_day), fill_value=float(hour_of_day_for_min_value), dtype=int))
                     / 24
                 )
             )

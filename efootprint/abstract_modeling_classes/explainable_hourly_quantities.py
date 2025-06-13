@@ -201,7 +201,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, self._EmptyExplainableObject):
-            compared_values = np.full(len(self.value), fill_value=0)
+            compared_values = np.full(len(self.value), fill_value=0.0)
             right_parent = compared_object
         elif isinstance(compared_object, ExplainableHourlyQuantities):
             compared_values = compared_object.value

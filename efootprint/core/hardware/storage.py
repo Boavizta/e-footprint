@@ -256,7 +256,10 @@ class Storage(InfraHardware):
                         f"({max_nb_of_instances} > {self.fixed_nb_of_instances})")
                 else:
                     fixed_nb_of_instances_quantity = Quantity(
-                        np.full(len(self.raw_nb_of_instances), self.fixed_nb_of_instances.to(u.dimensionless).magnitude),
+                        np.full(
+                            len(self.raw_nb_of_instances),
+                            float(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
+                        ),
                         u.dimensionless)
                     fixed_nb_of_instances = ExplainableHourlyQuantities(
                         fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date,"Nb of instances",
