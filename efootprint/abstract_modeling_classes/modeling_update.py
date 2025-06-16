@@ -24,7 +24,8 @@ def compute_attr_updates_chain_from_mod_objs_computation_chain(mod_objs_computat
 
 class ModelingUpdate:
     def __init__(
-            self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None):
+            self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None,
+            compute_previous_footprints=True):
         start = time()
         self.updated_values_set = False
         self.system = None
@@ -35,7 +36,7 @@ class ModelingUpdate:
                 break
         self.changes_list = changes_list
         self.parse_changes_list()
-        if self.changes_list and self.system:
+        if self.changes_list and self.system and compute_previous_footprints:
             self.system.previous_total_energy_footprints_sum_over_period = (
                 self.system.total_energy_footprint_sum_over_period)
             self.system.previous_total_fabrication_footprints_sum_over_period = \
