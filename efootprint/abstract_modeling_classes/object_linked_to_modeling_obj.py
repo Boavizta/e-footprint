@@ -50,16 +50,23 @@ class ObjectLinkedToModelingObj:
         return self.cached_values["id"]
 
     @property
-    def full_tuple_id(self):
-        self.raise_error_if_modeling_obj_container_is_none()
-        return (self.modeling_obj_container.id,
-                self.attr_name_in_mod_obj_container,
-                self.key_in_dict.id if self.dict_container is not None else None)
+    def full_str_tuple_id(self):
+        if "full_str_tuple_id" not in self.cached_values:
+            self.raise_error_if_modeling_obj_container_is_none()
+            self.cached_values["full_str_tuple_id"] = str((self.modeling_obj_container.id,
+                    self.attr_name_in_mod_obj_container,
+                    self.key_in_dict.id if self.dict_container is not None else None))
+
+        return self.cached_values["full_str_tuple_id"]
 
     @property
     def attribute_id(self):
-        self.raise_error_if_modeling_obj_container_is_none()
-        return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+        if "attribute_id" not in self.cached_values:
+            self.raise_error_if_modeling_obj_container_is_none()
+            self.cached_values["attribute_id"] =\
+                f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+
+        return self.cached_values["attribute_id"]
 
     @property
     def dict_container(self):
