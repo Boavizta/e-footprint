@@ -132,7 +132,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._keys_of_direct_children_with_id_loaded_from_json = None
         self.flat_obj_dict = None
         self.ancestor_and_children_have_been_loaded_from_json = False
-        self.json_children_keys_have_been_loaded = False
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
         self.explain_nested_tuples_from_json = None
@@ -544,10 +543,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
 
         if with_calculated_attributes_data:
-            output_dict["direct_ancestors_with_id"] = [
-                ancestor.full_str_tuple_id for ancestor in self.direct_ancestors_with_id]
-            output_dict["direct_children_with_id"] = [
-                child.full_str_tuple_id for child in self.direct_children_with_id]
+            if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None and not
+                self.ancestor_and_children_have_been_loaded_from_json):
+                output_dict["direct_ancestors_with_id"] = self._keys_of_direct_ancestors_with_id_loaded_from_json
+                output_dict["direct_children_with_id"] = self._keys_of_direct_children_with_id_loaded_from_json
+            else:
+                output_dict["direct_ancestors_with_id"] = [
+                    ancestor.full_str_tuple_id for ancestor in self.direct_ancestors_with_id]
+                output_dict["direct_children_with_id"] = [
+                    child.full_str_tuple_id for child in self.direct_children_with_id]
 
             if self._explain_nested_tuples is None and self.explain_nested_tuples_from_json is not None:
                 output_dict["explain_nested_tuples"] = self.explain_nested_tuples_from_json
