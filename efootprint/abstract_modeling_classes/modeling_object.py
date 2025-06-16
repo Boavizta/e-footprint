@@ -1,6 +1,5 @@
 import uuid
 from abc import ABCMeta, abstractmethod
-from inspect import signature
 from typing import List, Type, get_origin, get_args
 import os
 import re
@@ -16,6 +15,7 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.utils.tools import get_init_signature_params
 
 
 def get_instance_attributes(obj, target_class):
@@ -202,7 +202,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return type(self)
 
     def check_input_value_type_positivity_and_unit(self, name, input_value, default_values):
-        init_sig_params = signature(self.__init__).parameters
+        init_sig_params = get_init_signature_params(type(self))
         if name in init_sig_params:
             annotation = init_sig_params[name].annotation
             if get_origin(annotation):

@@ -1,16 +1,16 @@
 from copy import copy
-from inspect import signature, _empty as empty_annotation, isabstract
+from inspect import _empty as empty_annotation, isabstract
 from types import UnionType
 from typing import List, get_origin, get_args
 
 import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
+from efootprint.utils.tools import get_init_signature_params
 
 
 def compute_classes_generation_order(efootprint_classes_dict):
@@ -20,7 +20,7 @@ def compute_classes_generation_order(efootprint_classes_dict):
     while len(classes_to_order_dict) > 0:
         classes_to_append_to_generation_order = []
         for efootprint_class_name, efootprint_class in classes_to_order_dict.items():
-            init_sig_params = signature(efootprint_class.__init__).parameters
+            init_sig_params = get_init_signature_params(efootprint_class)
             classes_needed_to_generate_current_class = []
             for init_sig_param_key in init_sig_params:
                 annotation = init_sig_params[init_sig_param_key].annotation

@@ -1,6 +1,14 @@
 import time
 
+from functools import lru_cache
+from inspect import signature
+
 from efootprint.logger import logger
+
+
+@lru_cache(maxsize=None)
+def get_init_signature_params(cls):
+    return signature(cls.__init__).parameters
 
 
 def round_dict(my_dict, round_level):

@@ -1,9 +1,9 @@
 from abc import abstractmethod
-from inspect import signature
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.utils.tools import get_init_signature_params
 
 if TYPE_CHECKING:
     from efootprint.core.hardware.server_base import ServerBase
@@ -17,7 +17,7 @@ class Service(ModelingObject):
 
     @classmethod
     def installable_on(cls) -> List:
-        init_sig_params = signature(cls.__init__).parameters
+        init_sig_params = get_init_signature_params(cls)
         server_annotation = init_sig_params["server"].annotation
 
         return [server_annotation]

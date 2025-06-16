@@ -1,5 +1,4 @@
 import os
-from inspect import signature
 
 from jinja2 import Template
 import ruamel.yaml
@@ -15,6 +14,7 @@ from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, web_application, genai_model,
     video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job)
+from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
 
@@ -104,7 +104,7 @@ def write_object_reference_file(mod_obj):
     mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
         set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
 
-    init_sig_params = signature(mod_obj.__init__).parameters
+    init_sig_params = get_init_signature_params(type(mod_obj))
     mod_obj_dict["params"] = []
     mod_obj_dict["calculated_attrs"] = []
 

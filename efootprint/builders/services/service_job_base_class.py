@@ -1,11 +1,11 @@
 from abc import abstractmethod
-from inspect import signature
 from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.usage.job import JobBase
+from efootprint.utils.tools import get_init_signature_params
 
 
 class ServiceJob(JobBase):
@@ -16,7 +16,7 @@ class ServiceJob(JobBase):
 
     @classmethod
     def compatible_services(cls):
-        init_sig_params = signature(cls.__init__).parameters
+        init_sig_params = get_init_signature_params(cls)
         service_annotation = init_sig_params["service"].annotation
 
         return [service_annotation]
