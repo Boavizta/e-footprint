@@ -12,23 +12,41 @@ from efootprint.constants.units import get_unit
 class ExplainableQuantity(ExplainableObject):
     @classmethod
     def from_json_dict(cls, d):
-        value = Quantity(d["value"], get_unit(d["unit"]))
+        value = {key: d[key] for key in ["value", "unit"]}
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None
         return cls(value, label=d["label"], source=source)
 
     def __init__(
-            self, value: Quantity, label: str = None, left_parent: ExplainableObject = None,
+            self, value: Quantity | dict, label: str = None, left_parent: ExplainableObject = None,
             right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
         from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
         from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
         self._ExplainableHourlyQuantities = ExplainableHourlyQuantities
         self._EmptyExplainableObject = EmptyExplainableObject
-        if not isinstance(value, Quantity):
-            raise ValueError(
-                f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
-                "it is indeed mandatory to define a unit"
-            )
-        super().__init__(value, label, left_parent, right_parent, operator, source)
+        if isinstance(value, Quantity):
+            super().__init__(value, label, left_parent, right_parent, operator, source)
+        elif isinstance(value, dict):
+            self.json_value_data = value
+            super().__init__(None, label, left_parent, right_parent, operator, source)
+        else:
+            raise ValueError(f"Variable 'value' of type {type(value)} isn’t a Quantity or a dict")
+
+    @property
+    def value(self):
+        if self._value is None and self.json_value_data is not None:
+            self._value = Quantity(
+                self.json_value_data["value"], get_unit(self.json_value_data["unit"]))
+
+        return self._value
+
+    @value.setter
+    def value(self, new_value):
+        self._value = new_value
+
+    @value.deleter
+    def value(self):
+        self._value = None
+        self.json_value_data = None
 
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)
@@ -150,8 +168,10 @@ class ExplainableQuantity(ExplainableObject):
             operator=f"rounded to {round_level} decimals", source=self.source)
 
     def to_json(self, with_calculated_attributes_data=False):
-        output_dict = {
-            "value": float(self.value.magnitude), "unit": str(self.value.units)}
+        if self._value is not None:
+            output_dict = {"value": float(self.value.magnitude), "unit": str(self.value.units)}
+        else:
+            output_dict = self.json_value_data
 
         output_dict.update(super().to_json(with_calculated_attributes_data))
 
