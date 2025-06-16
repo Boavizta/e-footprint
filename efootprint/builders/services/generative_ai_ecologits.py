@@ -28,19 +28,19 @@ class GenAIModel(Service):
             "bits_per_token": SourceValue(24 * u.dimensionless)
             }
 
-    @classmethod
-    def list_values(cls):
-        sorted_provider_names = sorted(list(set([model.provider.name for model in models.list_models()])))
-        return {"provider": [SourceObject(provider_name) for provider_name in sorted_provider_names]}
+    sorted_provider_names = sorted(list(set([model.provider.name for model in models.list_models()])))
+    list_values = {"provider": [SourceObject(provider_name) for provider_name in sorted_provider_names]}
 
-    @classmethod
-    def conditional_list_values(cls):
+    @staticmethod
+    def generate_conditional_list_values(list_values):
         values = {}
-        for provider in cls.list_values()["provider"]:
+        for provider in list_values["provider"]:
             values[provider] = [SourceObject(model.name) for model in models.list_models()
                                 if model.provider.name == provider.value]
 
         return {"model_name": {"depends_on": "provider", "conditional_list_values": values}}
+
+    conditional_list_values = generate_conditional_list_values(list_values)
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         if name == "provider" and self.trigger_modeling_updates:
@@ -82,7 +82,7 @@ class GenAIModel(Service):
 
         self.active_params = ExplainableQuantity(
             model_active_params_in_billion * 1e9 * u.dimensionless,
-            f"{self.model_name} from {self.provider} nb of active parameters", 
+            f"{self.model_name} from {self.provider} nb of active parameters",
             left_parent=self.provider, right_parent=self.model_name, operator="query EcoLogits data with",
             source=ecologits_source)
 

@@ -11,6 +11,9 @@ from efootprint.core.hardware.storage import Storage
 
 
 class BoaviztaServerFromConfig(ServerBase):
+    def _abc_marker(self):
+        pass  # silent override
+
     default_values = {
             "server_type": ServerTypes.on_premise(),
             "nb_of_cpu_units": SourceValue(1 * u.dimensionless),

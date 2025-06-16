@@ -38,9 +38,7 @@ class VideoStreamingJob(ServiceJob):
             "data_stored": SourceValue(0 * u.MB),
         }
 
-    @classmethod
-    def list_values(cls):
-        return {"resolution": [
+    list_values =  {"resolution": [
             SourceObject("480p (640 x 480)"), SourceObject("720p (1280 x 720)"), SourceObject("1080p (1920 x 1080)"),
             SourceObject("1440p (2560 x 1440)"), SourceObject("2K (2048 x 1080)"),
             SourceObject("4K (3840 x 2160)"), SourceObject("8K (7680 x 4320)")]

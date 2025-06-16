@@ -10,10 +10,7 @@ if TYPE_CHECKING:
 
 
 class Service(ModelingObject):
-    @classmethod
-    @abstractmethod
-    def default_values(cls):
-        pass
+    default_values = {}
 
     @classmethod
     def installable_on(cls) -> List:

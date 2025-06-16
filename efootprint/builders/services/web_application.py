@@ -27,13 +27,9 @@ def get_implementation_details() -> List[str]:
 class WebApplication(Service):
     default_values =  {"technology": SourceObject("php-symfony")}
 
-    @classmethod
-    def list_values(cls):
-        return {"technology": [SourceObject(technology) for technology in get_ecobenchmark_technologies()]}
+    list_values =  {"technology": [SourceObject(technology) for technology in get_ecobenchmark_technologies()]}
 
-    @classmethod
-    def conditional_list_values(cls):
-        return {}
+    conditional_list_values =  {}
 
     def __init__(self, name:str, server: Server, technology: ExplainableObject):
         super().__init__(name, server)
@@ -47,9 +43,7 @@ class WebApplicationJob(ServiceJob):
             "implementation_details": SourceObject("default"),
         }
 
-    @classmethod
-    def list_values(cls):
-        return {"implementation_details": [
+    list_values =  {"implementation_details": [
             SourceObject(implementation_detail) for implementation_detail in get_implementation_details()]}
 
     def __init__(self, name: str, service: WebApplication, data_transferred: ExplainableQuantity,

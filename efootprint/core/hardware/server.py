@@ -9,6 +9,9 @@ from efootprint.core.hardware.server_base import ServerBase, ServerTypes
 
 
 class Server(ServerBase):
+    def _abc_marker(self):
+        pass  # silent override
+
     default_values =  {
             "server_type": ServerTypes.autoscaling(),
             "carbon_footprint_fabrication": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),

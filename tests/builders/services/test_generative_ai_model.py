@@ -73,8 +73,8 @@ class TestGenAIModel(unittest.TestCase):
         self.assertEqual(expected_ram.to(u.GB), self.genai_model.base_ram_consumption.value)
 
     def test_active_and_total_params_for_all_possible_list_input_values(self):
-        for provider in GenAIModel.list_values()["provider"]:
-            for model_name in GenAIModel.conditional_list_values()["model_name"]["conditional_list_values"][provider]:
+        for provider in GenAIModel.list_values["provider"]:
+            for model_name in GenAIModel.conditional_list_values["model_name"]["conditional_list_values"][provider]:
                 with patch.object(self.genai_model.provider, "value", provider.value), \
                     patch.object(self.genai_model.model_name, "value", model_name.value):
                         self.genai_model.update_total_params()

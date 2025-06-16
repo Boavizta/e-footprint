@@ -1,3 +1,4 @@
+from copy import deepcopy
 from time import time
 
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
@@ -45,19 +46,16 @@ class BoaviztaCloudServer(Server):
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
 
-    @classmethod
-    def list_values(cls):
-        server_list_values = super().list_values()
-        server_list_values.update({"provider": all_boavizta_cloud_providers})
 
-        return server_list_values
+    server_list_values = deepcopy(Server.list_values)
+    server_list_values.update({"provider": all_boavizta_cloud_providers})
 
-    @classmethod
-    def conditional_list_values(cls):
-        server_conditional_list_values = super().conditional_list_values()
-        server_conditional_list_values.update({"instance_type": instance_types_conditional_list_values_dict})
+    list_values = server_list_values
 
-        return server_conditional_list_values
+    server_conditional_list_values = deepcopy(Server.conditional_list_values)
+    server_conditional_list_values.update({"instance_type": instance_types_conditional_list_values_dict})
+
+    conditional_list_values = server_conditional_list_values
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         if name == "provider" and self.trigger_modeling_updates:

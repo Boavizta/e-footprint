@@ -97,7 +97,11 @@ for server_index in range(1, nb_of_servers_of_each_type + 1):
 
 system = System("system", usage_patterns=usage_patterns)
 
-logger.info(f"computation took {round((time() - start), 3)} seconds")
+all_objects = system.all_linked_objects
+nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
+
+logger.info(f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)}"
+            f" in {round((time() - start), 3)} seconds")
 
 @time_it
 def timed_system_to_json(system, *args, **kwargs):
@@ -106,7 +110,7 @@ def timed_system_to_json(system, *args, **kwargs):
 timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")
 timed_system_to_json(system, save_calculated_attributes=True, output_filepath="big_system_with_calc_attr.json")
 
-edition_iterations = 20
+edition_iterations = 10
 
 from time import time
 start = time()

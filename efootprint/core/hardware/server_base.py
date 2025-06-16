@@ -1,5 +1,5 @@
-from abc import abstractmethod
 from typing import List
+from abc import abstractmethod
 
 import numpy as np
 from pint import Quantity
@@ -34,18 +34,15 @@ class ServerTypes:
 
 
 class ServerBase(InfraHardware):
-    @classmethod
     @abstractmethod
-    def default_values(cls):
+    def _abc_marker(self):  # private abstract method so that this class is considered abstract
         pass
 
-    @classmethod
-    def list_values(cls):
-        return {"server_type": ServerTypes.all()}
+    default_values = {}
 
-    @classmethod
-    def conditional_list_values(cls):
-        return {
+    list_values =  {"server_type": ServerTypes.all()}
+
+    conditional_list_values =  {
             "fixed_nb_of_instances": {
                 "depends_on": "server_type",
                 "conditional_list_values": {

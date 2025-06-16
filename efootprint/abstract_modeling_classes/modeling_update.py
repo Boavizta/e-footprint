@@ -73,8 +73,8 @@ class ModelingUpdate:
         for new_sourcevalue in self.new_sourcevalues:
             mod_obj_container = new_sourcevalue.modeling_obj_container
             mod_obj_container.check_belonging_to_authorized_values(
-                new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue, mod_obj_container.list_values(),
-                mod_obj_container.conditional_list_values(), mod_obj_container.attributes_with_depending_values())
+                new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
+                mod_obj_container.attributes_with_depending_values())
         self.recomputed_values = self.recompute_attributes()
         self.updated_values_set = True
 
@@ -107,8 +107,7 @@ class ModelingUpdate:
                 self.changes_list[index][1] = EmptyExplainableObject()
             else:
                 mod_obj_container = old_value.modeling_obj_container
-                mod_obj_container.check_input_value_type_positivity_and_unit(
-                    old_value.attr_name_in_mod_obj_container, new_value, mod_obj_container.default_values)
+                mod_obj_container.check_input_value_type_positivity_and_unit(old_value.attr_name_in_mod_obj_container, new_value)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
