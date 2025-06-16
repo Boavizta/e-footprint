@@ -40,14 +40,13 @@ class ObjectLinkedToModelingObj:
 
     @property
     def id(self):
-        self.raise_error_if_modeling_obj_container_is_none()
-        if "id" in self.cached_values:
-            return self.cached_values["id"]
-        if self.dict_container is None:
-            self.cached_values["id"] = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
-        else:
-            self.cached_values["id"] = \
-                f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
+        if "id" not in self.cached_values:
+            self.raise_error_if_modeling_obj_container_is_none()
+            if self.dict_container is None:
+                self.cached_values["id"] = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+            else:
+                self.cached_values[
+                    "id"] = f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
         return self.cached_values["id"]
 
     @property

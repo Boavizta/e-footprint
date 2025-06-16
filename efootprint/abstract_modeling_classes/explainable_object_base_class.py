@@ -327,34 +327,40 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def attr_updates_chain(self):
         attr_updates_chain = []
         descendants = self.all_descendants_with_id
-        has_been_added_to_chain_dict = {descendant.id: False for descendant in descendants if descendant.id != self.id}
+        descendant_ids = {desc.id for desc in descendants if desc.id != self.id}
+        has_been_added_to_chain_dict = {desc.id: False for desc in descendants if desc.id != self.id}
 
-        added_parents_with_children_to_add = [self]
+        parents_with_children_to_add = [self]
 
-        while len(added_parents_with_children_to_add) > 0:
-            for added_parent in added_parents_with_children_to_add:
-                drop_added_parent_from_list = True
-                for child in added_parent.direct_children_with_id:
+        # Precompute ancestor ids for each child
+        ancestor_ids_map = {
+            child.id: [ancestor.id for ancestor in child.direct_ancestors_with_id]
+            for child in descendants
+        }
+
+        while parents_with_children_to_add:
+            for parent in parents_with_children_to_add:
+                drop_from_list = True
+
+                for child in parent.direct_children_with_id:
                     if not has_been_added_to_chain_dict[child.id]:
-                        ancestors_that_belong_to_self_descendants = [
-                            ancestor for ancestor in child.direct_ancestors_with_id
-                            if ancestor.id in [ancestor.id for ancestor in descendants]]
-                        if all([has_been_added_to_chain_dict[ancestor.id]
-                                for ancestor in ancestors_that_belong_to_self_descendants]):
+                        child_ancestor_ids = ancestor_ids_map.get(child.id, [])
+                        all_child_ancestors_that_need_to_be_updated_are_already_in_chain = all(
+                            has_been_added_to_chain_dict[ancestor_id] for ancestor_id in child_ancestor_ids if
+                               ancestor_id in descendant_ids)
+                        if all_child_ancestors_that_need_to_be_updated_are_already_in_chain:
                             attr_updates_chain.append(child)
                             has_been_added_to_chain_dict[child.id] = True
-                            if len(child.direct_children_with_id) > 0:
-                                added_parents_with_children_to_add.append(child)
+
+                            if child.direct_children_with_id:
+                                parents_with_children_to_add.append(child)
                         else:
-                            # Wait for next iteration
-                            drop_added_parent_from_list = False
-                if drop_added_parent_from_list:
-                    added_parents_with_children_to_add = [
-                        child for child in added_parents_with_children_to_add
-                        if child.id != added_parent.id]
+                            drop_from_list = False
+
+                if drop_from_list:
+                    parents_with_children_to_add = [c for c in parents_with_children_to_add if c.id != parent.id]
 
         optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
-
         return optimized_chain
 
     @property
