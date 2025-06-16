@@ -10,6 +10,7 @@ import pytz
 from pint import Unit, Quantity
 import numpy as np
 import zstandard as zstd
+import ciso8601
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
@@ -63,7 +64,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             value = {k: d[k] for k in ["compressed_values", "unit"]}
         else:
             raise ValueError("Invalid hourly quantity format")
-        start_date = datetime.strptime(d["start_date"], "%Y-%m-%d %H:%M:%S")
+        start_date = ciso8601.parse_datetime(d["start_date"])
         if d.get("timezone", None) is not None:
             start_date = pytz.timezone(d["timezone"]).localize(start_date)
 
