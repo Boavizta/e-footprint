@@ -513,23 +513,22 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return None
 
     def serialize_explain_nested_tuples(self):
-        def recursively_serialize_explain_nested_tuple(explain_nested_tuple):
-            if isinstance(explain_nested_tuple, tuple):
-                return (recursively_serialize_explain_nested_tuple(explain_nested_tuple[0]),
-                        explain_nested_tuple[1],
-                        recursively_serialize_explain_nested_tuple(explain_nested_tuple[2]))
-            elif explain_nested_tuple is not None:
-                assert isinstance(explain_nested_tuple, ExplainableObject), \
-                    (f"{explain_nested_tuple} should be an ExplainableObject but is of "
-                     f"type {type(explain_nested_tuple)}")
-                if explain_nested_tuple.modeling_obj_container is not None:
-                    return explain_nested_tuple.full_str_tuple_id
-                else:
-                    return explain_nested_tuple.to_json()
+        localized_explainable_object_type = ExplainableObject  # Localize for faster isinstance
 
-            return None
+        def recurse(node):
+            if node is None:
+                return None
+            if isinstance(node, tuple):
+                left = recurse(node[0])
+                right = recurse(node[2])
+                return left, node[1], right
 
-        return recursively_serialize_explain_nested_tuple(self.explain_nested_tuples)
+            if not isinstance(node, localized_explainable_object_type):
+                raise TypeError(f"{node} should be an ExplainableObject but is of type {type(node)}")
+
+            return node.full_str_tuple_id if node.modeling_obj_container is not None else node.to_json()
+
+        return recurse(self.explain_nested_tuples)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {}
