@@ -10,9 +10,7 @@ BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https:/
 
 
 class GPUServer(ServerBase):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "server_type": ServerTypes.serverless(),
             "gpu_power": SourceValue(400 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU Power"),
             "gpu_idle_power": SourceValue(50 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU idle power"),

@@ -108,7 +108,7 @@ class ModelingUpdate:
             else:
                 mod_obj_container = old_value.modeling_obj_container
                 mod_obj_container.check_input_value_type_positivity_and_unit(
-                    old_value.attr_name_in_mod_obj_container, new_value, mod_obj_container.default_values())
+                    old_value.attr_name_in_mod_obj_container, new_value, mod_obj_container.default_values)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj

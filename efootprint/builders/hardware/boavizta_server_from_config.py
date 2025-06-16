@@ -11,9 +11,7 @@ from efootprint.core.hardware.storage import Storage
 
 
 class BoaviztaServerFromConfig(ServerBase):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values = {
             "server_type": ServerTypes.on_premise(),
             "nb_of_cpu_units": SourceValue(1 * u.dimensionless),
             "nb_of_cores_per_cpu_unit": SourceValue(1 * u.dimensionless),
@@ -155,9 +153,7 @@ class BoaviztaServerFromConfig(ServerBase):
         
 
 class BoaviztaStorageFromConfig(Storage):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "idle_power": SourceValue(0 * u.W),
             "data_replication_factor": SourceValue(1 * u.dimensionless),
             "data_storage_duration": SourceValue(1 * u.year),

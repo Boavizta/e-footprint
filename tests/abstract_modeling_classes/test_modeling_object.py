@@ -18,9 +18,7 @@ MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
 class ModelingObjectForTesting(ModelingObject):
-    @classmethod
-    def default_values(cls):
-        return {}
+    default_values =  {}
 
     def __init__(self, name, custom_input: ObjectLinkedToModelingObj=None,
                  custom_input2: ObjectLinkedToModelingObj=None, custom_list_input: list=None,

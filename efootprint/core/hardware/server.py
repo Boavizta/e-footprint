@@ -9,9 +9,7 @@ from efootprint.core.hardware.server_base import ServerBase, ServerTypes
 
 
 class Server(ServerBase):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "server_type": ServerTypes.autoscaling(),
             "carbon_footprint_fabrication": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             "power": SourceValue(300 * u.W, Sources.HYPOTHESIS),

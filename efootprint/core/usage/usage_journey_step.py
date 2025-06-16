@@ -8,9 +8,7 @@ from efootprint.core.usage.job import JobBase
 
 
 class UsageJourneyStep(ModelingObject):
-    @classmethod
-    def default_values(cls):
-        return {"user_time_spent": SourceValue(1 * u.min)}
+    default_values =  {"user_time_spent": SourceValue(1 * u.min)}
 
     def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: List[JobBase]):
         super().__init__(name)

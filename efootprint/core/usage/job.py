@@ -208,9 +208,7 @@ class DirectServerJob(JobBase):
 
 
 class Job(DirectServerJob):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),
@@ -226,9 +224,7 @@ class Job(DirectServerJob):
 
 
 class GPUJob(DirectServerJob):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),

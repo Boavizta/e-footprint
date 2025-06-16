@@ -9,9 +9,7 @@ from efootprint.constants.units import u
 
 
 class Network(ModelingObject):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values = {
             "bandwidth_energy_intensity": SourceValue(0.1 * u.kWh / u.GB)
         }
 

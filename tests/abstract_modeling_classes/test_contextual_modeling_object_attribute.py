@@ -7,9 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class ModelingObjectForTesting(ModelingObject):
-    @classmethod
-    def default_values(cls):
-        return {}
+    default_values =  {}
 
     def __init__(self, name, custom_input: ObjectLinkedToModelingObj = None, mod_obj_input: ModelingObject = None):
         super().__init__(name)

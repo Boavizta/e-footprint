@@ -31,9 +31,7 @@ for cloud_provider in boavizta_cloud_providers_request_result:
 
 
 class BoaviztaCloudServer(Server):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values = {
             "provider": SourceObject("scaleway"),
             "instance_type": SourceObject("ent1-s"),
             "server_type": ServerTypes.autoscaling(),

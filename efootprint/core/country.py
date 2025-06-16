@@ -10,9 +10,7 @@ from efootprint.constants.units import u
 
 
 class Country(ModelingObject):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "average_carbon_intensity": SourceValue(50 * u.g / u.kWh, label="Average carbon intensity of the country"),
             "timezone": SourceObject(pytz.timezone('Europe/Paris'), label="Country timezone")
         }

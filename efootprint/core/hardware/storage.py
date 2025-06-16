@@ -14,9 +14,7 @@ from efootprint.constants.units import u
 
 
 class Storage(InfraHardware):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
             "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
             "lifespan": SourceValue(6 * u.years),

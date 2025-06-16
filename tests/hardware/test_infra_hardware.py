@@ -14,9 +14,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 class TestInfraHardware(TestCase):
     def setUp(self):
         class InfraHardwareTestClass(InfraHardware):
-            @classmethod
-            def default_values(cls):
-                return {
+            default_values = {
                     "carbon_footprint_fabrication": SourceValue(100 * u.kg),
                     "power": SourceValue(100 * u.W),
                     "lifespan": SourceValue(5 * u.year)

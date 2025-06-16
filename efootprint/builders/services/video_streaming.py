@@ -12,9 +12,7 @@ from efootprint.core.hardware.server import Server
 
 
 class VideoStreaming(Service):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "base_ram_consumption": SourceValue(2 * u.GB, source=Sources.HYPOTHESIS),
             "bits_per_pixel": SourceValue(0.1 * u.dimensionless, source=Sources.HYPOTHESIS),
             "static_delivery_cpu_cost": SourceValue(4 * u.cpu_core / (u.GB / u.s), source=Sources.HYPOTHESIS),
@@ -33,9 +31,7 @@ class VideoStreaming(Service):
 
 
 class VideoStreamingJob(ServiceJob):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "resolution": SourceObject("1080p (1920 x 1080)"),
             "video_duration": SourceValue(1 * u.hour),
             "refresh_rate": SourceValue(30 * u.dimensionless / u.s),

@@ -25,9 +25,7 @@ def get_implementation_details() -> List[str]:
 
 
 class WebApplication(Service):
-    @classmethod
-    def default_values(cls):
-        return {"technology": SourceObject("php-symfony")}
+    default_values =  {"technology": SourceObject("php-symfony")}
 
     @classmethod
     def list_values(cls):
@@ -43,9 +41,7 @@ class WebApplication(Service):
 
 
 class WebApplicationJob(ServiceJob):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "data_transferred": SourceValue(2.2 * u.MB),
             "data_stored": SourceValue(100 * u.kB),
             "implementation_details": SourceObject("default"),

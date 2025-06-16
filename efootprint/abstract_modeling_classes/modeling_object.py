@@ -153,9 +153,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return new_obj, explainable_object_dicts_to_create_after_objects_creation
 
-    @classmethod
-    def default_values(cls):
-        return {}
+    default_values = {}
 
     @classmethod
     def list_values(cls):
@@ -178,7 +176,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @classmethod
     def from_defaults(cls, name, **kwargs):
-        output_kwargs = cls.default_values()
+        from copy import deepcopy
+        output_kwargs = deepcopy(cls.default_values)
         output_kwargs.update(kwargs)
 
         return cls(name, **output_kwargs)
@@ -341,7 +340,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             super().__setattr__(name, input_value)
         elif name in self.calculated_attributes or not self.trigger_modeling_updates:
             if check_input_validity and name not in self.calculated_attributes:
-                self.check_input_value_type_positivity_and_unit(name, input_value, self.default_values())
+                self.check_input_value_type_positivity_and_unit(name, input_value, self.default_values)
                 self.check_belonging_to_authorized_values(
                     name, input_value, self.list_values(), self.conditional_list_values(),
                     self.attributes_with_depending_values())

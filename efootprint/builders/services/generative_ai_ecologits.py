@@ -18,9 +18,7 @@ ecologits_source = Source("Ecologits", "https://github.com/genai-impact/ecologit
 
 
 class GenAIModel(Service):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "provider": SourceObject("mistralai"),
             "model_name": SourceObject("open-mistral-7b"),
             "nb_of_bits_per_parameter": SourceValue(16 * u.dimensionless, source=Sources.HYPOTHESIS),
@@ -114,9 +112,7 @@ class GenAIModel(Service):
 
 
 class GenAIJob(ServiceJob):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "output_token_count": SourceValue(1000 * u.dimensionless)
         }
 

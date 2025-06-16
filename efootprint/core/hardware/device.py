@@ -6,9 +6,7 @@ from efootprint.core.hardware.hardware_base import HardwareBase
 
 
 class Device(HardwareBase):
-    @classmethod
-    def default_values(cls):
-        return {
+    default_values =  {
             "carbon_footprint_fabrication": SourceValue(150 * u.kg),
             "power": SourceValue(50 * u.W),
             "lifespan": SourceValue(6 * u.year),
