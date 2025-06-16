@@ -153,7 +153,7 @@ class TestExplainableObjectBaseClass(TestCase):
         descendants_labels = [descendant.label for descendant in descendants]
 
         self.assertEqual(len(descendants), 4)
-        self.assertListEqual(descendants_labels, ['child1', 'grandchild1', 'child2', 'grandchild2'])
+        self.assertListEqual(descendants_labels, ["child1", "child2", "grandchild2", "grandchild1"])
 
     def test_all_ancestors_with_id(self):
         descendant = ExplainableObject(0, "descendant")
@@ -179,7 +179,7 @@ class TestExplainableObjectBaseClass(TestCase):
         ancestors_labels = [ancestor.label for ancestor in ancestors]
 
         self.assertEqual(len(ancestors), 4)
-        self.assertListEqual(ancestors_labels, ['parent1', 'grandparent1', 'parent2', 'grandparent2'])
+        self.assertListEqual(ancestors_labels, ["parent1", "grandparent1", "parent2", "grandparent2"])
 
     def test_direct_children(self):
         left_parent = ExplainableObject(value=3, label="Label L")
@@ -200,12 +200,12 @@ class TestExplainableObjectBaseClass(TestCase):
         parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
-        child1.id = 'child1_id'
+        child1.id = "child1_id"
         child1.direct_children_with_id = []
         child1.direct_ancestors_with_id = [parent]
 
         child2 = MagicMock()
-        child2.id = 'child2_id'
+        child2.id = "child2_id"
         child2.direct_children_with_id = []
         child2.direct_ancestors_with_id = [parent]
 
@@ -233,16 +233,16 @@ class TestExplainableObjectBaseClass(TestCase):
         parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
-        child1.id = 'child1_id'
+        child1.id = "child1_id"
         child1.direct_ancestors_with_id = [parent]
 
         grandchild1 = MagicMock()
-        grandchild1.id = 'grandchild1_id'
+        grandchild1.id = "grandchild1_id"
         grandchild1.direct_children_with_id = []
         grandchild1.direct_ancestors_with_id = [child1]
 
         grandchild2 = MagicMock()
-        grandchild2.id = 'grandchild2_id'
+        grandchild2.id = "grandchild2_id"
         grandchild2.direct_children_with_id = []
         grandchild2.direct_ancestors_with_id = [child1]
 
@@ -271,22 +271,22 @@ class TestExplainableObjectBaseClass(TestCase):
         parent.attr_name_in_mod_obj_container = "parent_attr"
 
         child1 = MagicMock()
-        child1.id = 'child1_id'
+        child1.id = "child1_id"
         child1.direct_ancestors_with_id = [parent]
 
         child2 = MagicMock()
-        child2.id = 'child2_id'
+        child2.id = "child2_id"
         child2.direct_ancestors_with_id = [parent]
         child2.dict_container = None
         child2.update_function = MagicMock()
 
         grandchild1 = MagicMock()
-        grandchild1.id = 'grandchild1_id'
+        grandchild1.id = "grandchild1_id"
         grandchild1.direct_children_with_id = []
         grandchild1.direct_ancestors_with_id = [child1, child2]
 
         grandchild2 = MagicMock()
-        grandchild2.id = 'grandchild2_id'
+        grandchild2.id = "grandchild2_id"
         grandchild2.direct_children_with_id = []
         grandchild2.direct_ancestors_with_id = [child1]
 
@@ -354,7 +354,7 @@ class TestExplainableObjectBaseClass(TestCase):
         i = ExplainableObject(2, None, h, self.g, "*")
         j = ExplainableObject(-1, "k", i, self.c, "-")
         j.set_modeling_obj_container(MagicMock(), "attr_name")
-        self.assertEqual('k = ((a + b) / (a + b)) * g - (a + b) = ((1 + 2) / (1 + 2)) * 2 - (1 + 2) = -1', j.explain(
+        self.assertEqual("k = ((a + b) / (a + b)) * g - (a + b) = ((1 + 2) / (1 + 2)) * 2 - (1 + 2) = -1", j.explain(
             pretty_print=False))
         self.d.set_modeling_obj_container(MagicMock(), "attr_name")
         self.c.set_modeling_obj_container(MagicMock(), "attr_name")
@@ -370,7 +370,7 @@ class TestExplainableObjectBaseClass(TestCase):
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent",
                                operator="+")
         result = eo.compute_explain_nested_tuples()
-        self.assertEqual(result, (left_parent, '+', right_parent))
+        self.assertEqual(result, (left_parent, "+", right_parent))
 
     def test_print_tuple_element(self):
         left_parent = ExplainableObject(value=3, label="Label L")
@@ -378,8 +378,8 @@ class TestExplainableObjectBaseClass(TestCase):
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent",
                                operator="+")
 
-        self.assertEqual(eo.print_tuple_element((left_parent, '+', right_parent), False), "Label L + Label R")
-        self.assertEqual(eo.print_tuple_element((left_parent, '+', right_parent), True), "3 + 4")
+        self.assertEqual(eo.print_tuple_element((left_parent, "+", right_parent), False), "Label L + Label R")
+        self.assertEqual(eo.print_tuple_element((left_parent, "+", right_parent), True), "3 + 4")
 
     def test_pretty_print_calculation(self):
         calc_str = "Label A = Label L + Label R = 3 + 4 = 7"

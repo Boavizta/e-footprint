@@ -298,14 +298,17 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @property
     def all_descendants_with_id(self):
         all_descendants = []
+        visited_ids = set()
+        stack = [self]
 
-        def retrieve_descendants(expl_obj: ExplainableObject, descendants_list):
-            for child in expl_obj.direct_children_with_id:
-                if child.id not in [elt.id for elt in descendants_list]:
-                    descendants_list.append(child)
-                retrieve_descendants(child, descendants_list)
-
-        retrieve_descendants(self, all_descendants)
+        while stack:
+            parent = stack.pop()
+            for child in parent.direct_children_with_id:
+                cid = child.id
+                if cid not in visited_ids:
+                    visited_ids.add(cid)
+                    all_descendants.append(child)
+                    stack.append(child)
 
         return all_descendants
 
