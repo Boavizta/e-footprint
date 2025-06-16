@@ -1,3 +1,4 @@
+from collections import deque
 from typing import Type, Optional, TYPE_CHECKING
 from dataclasses import dataclass
 import os
@@ -333,7 +334,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         descendant_ids = {desc.id for desc in descendants if desc.id != self.id}
         has_been_added_to_chain_dict = {desc.id: False for desc in descendants if desc.id != self.id}
 
-        parents_with_children_to_add = [self]
+        # Use deque for efficient pops and removals
+        parents_with_children_to_add = deque([self])
 
         # Precompute ancestor ids for each child
         ancestor_ids_map = {
@@ -342,8 +344,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         }
 
         while parents_with_children_to_add:
-            for parent in parents_with_children_to_add:
-                drop_from_list = True
+            next_parents = deque()
+            while parents_with_children_to_add:
+                parent = parents_with_children_to_add.popleft()
+                keep_for_next_iteration = False
 
                 for child in parent.direct_children_with_id:
                     if not has_been_added_to_chain_dict[child.id]:
@@ -356,12 +360,14 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             has_been_added_to_chain_dict[child.id] = True
 
                             if child.direct_children_with_id:
-                                parents_with_children_to_add.append(child)
+                                next_parents.append(child)
                         else:
-                            drop_from_list = False
+                            keep_for_next_iteration = True
 
-                if drop_from_list:
-                    parents_with_children_to_add = [c for c in parents_with_children_to_add if c.id != parent.id]
+                if keep_for_next_iteration:
+                    next_parents.append(parent)
+
+            parents_with_children_to_add = next_parents
 
         optimized_chain = optimize_attr_updates_chain(attr_updates_chain)
         return optimized_chain
