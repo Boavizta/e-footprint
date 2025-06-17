@@ -1,8 +1,6 @@
 from datetime import timedelta
 from typing import Dict, List
 
-import pandas as pd
-
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
@@ -15,7 +13,6 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
-from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 
@@ -301,6 +298,7 @@ class System(ModelingObject):
                         "Type": color, "Category": category, "Object": obj_name, value_colname: magnitude_tonnes,
                         "Amount": amount_str})
 
+        import pandas as pd
         df = pd.DataFrame.from_records(rows_as_dicts)
 
         total_co2 = df[value_colname].sum()
@@ -384,7 +382,7 @@ class System(ModelingObject):
                                self.total_fabrication_footprint_sum_over_period]
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
-
+        from efootprint.utils.plot_emission_diffs import EmissionPlotter
         EmissionPlotter(
             ax, emissions_dict__old, emissions_dict__new, rounding_value=0).plot_emission_diffs()
 

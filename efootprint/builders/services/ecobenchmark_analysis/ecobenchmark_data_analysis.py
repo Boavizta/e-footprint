@@ -1,6 +1,5 @@
 import os
 
-import pandas as pd
 import requests
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
@@ -30,6 +29,7 @@ def download_file_from_url(url, file_path, overwrite=False):
 
 
 if __name__ == "__main__":
+    import pandas as pd
     ecobenchmark_raw_file = os.path.join(ROOT_PATH, "ecobenchmark_results__raw.csv")
     download_file_from_url(ECOBENCHMARK_RESULTS_LINK, ecobenchmark_raw_file)
     df = pd.read_csv(ecobenchmark_raw_file)

@@ -1,8 +1,6 @@
 import unittest
 from unittest.mock import Mock, patch
 
-import pandas as pd
-
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.constants.units import u
@@ -33,11 +31,11 @@ class TestWebApplicationJob(unittest.TestCase):
         self.assertEqual(WebApplicationJob.compatible_services(), [WebApplication])
 
     @patch("efootprint.builders.services.web_application.default_request_duration")
-    @patch("efootprint.builders.services.web_application.ECOBENCHMARK_DF")
-    def test_update_compute_needed(self, mock_ecobenchmark_df, mock_default_request_duration):
-        mock_ecobenchmark_df.__getitem__.side_effect = pd.DataFrame.from_dict(
-            {"service": ["php-symfony"], "use_case": ["default"],
-             "avg_cpu_core_per_request": [0.5], "avg_ram_per_request_in_MB": [512]}).__getitem__
+    @patch("efootprint.builders.services.web_application.ecobenchmark_data")
+    def test_update_compute_needed(self, mock_ecobenchmark_data, mock_default_request_duration):
+        mock_ecobenchmark_data.__iter__.return_value = [
+            {"service": "php-symfony", "use_case": "default",
+             "avg_cpu_core_per_request": 0.5, "avg_ram_per_request_in_MB": 512}]
         mock_default_request_duration.return_value = SourceValue(1 * u.s)
         service = Mock(spec=WebApplication)
         service.technology = SourceObject("php-symfony")
@@ -49,11 +47,11 @@ class TestWebApplicationJob(unittest.TestCase):
         self.assertEqual(job.compute_needed, SourceValue(0.5 * u.cpu_core))
 
     @patch("efootprint.builders.services.web_application.default_request_duration")
-    @patch("efootprint.builders.services.web_application.ECOBENCHMARK_DF")
-    def test_update_ram_needed(self, mock_ecobenchmark_df, mock_default_request_duration):
-        mock_ecobenchmark_df.__getitem__.side_effect = pd.DataFrame.from_dict(
-            {"service": ["php-symfony"], "use_case": ["default"],
-             "avg_cpu_core_per_request": [0.5], "avg_ram_per_request_in_MB": [512]}).__getitem__
+    @patch("efootprint.builders.services.web_application.ecobenchmark_data")
+    def test_update_ram_needed(self, mock_ecobenchmark_data, mock_default_request_duration):
+        mock_ecobenchmark_data.__iter__.return_value = [
+            {"service": "php-symfony", "use_case": "default",
+             "avg_cpu_core_per_request": 0.5, "avg_ram_per_request_in_MB": 512}]
         mock_default_request_duration.return_value = SourceValue(1 * u.s)
         service = Mock(spec=WebApplication)
         service.technology = SourceObject("php-symfony")

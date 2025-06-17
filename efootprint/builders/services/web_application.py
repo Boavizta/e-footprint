@@ -1,6 +1,5 @@
+import csv
 from typing import List
-
-import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -12,16 +11,22 @@ from efootprint.builders.services.ecobenchmark_analysis.ecobenchmark_data_analys
     ECOBENCHMARK_RESULTS_LINK, default_request_duration
 from efootprint.constants.units import u
 
-ECOBENCHMARK_DF = pd.read_csv(ECOBENCHMARK_DATA)
+
+with open(ECOBENCHMARK_DATA, newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile)
+    ecobenchmark_data = list(reader)
+
 ecobenchmark_source = Source(
     "e-footprint analysis of Boavizta’s Ecobenchmark data", ECOBENCHMARK_RESULTS_LINK)
 
 
 def get_ecobenchmark_technologies() -> List[str]:
-    return list(ECOBENCHMARK_DF["service"].unique())
+    technologies = [row['service'] for row in ecobenchmark_data if row['service']]
+    return list(set(technologies))
 
 def get_implementation_details() -> List[str]:
-    return list(ECOBENCHMARK_DF["use_case"].unique())
+    implementation_details = [row['use_case'] for row in ecobenchmark_data if row['use_case']]
+    return list(set(implementation_details))
 
 
 class WebApplication(Service):
@@ -61,10 +66,11 @@ class WebApplicationJob(ServiceJob):
         self.request_duration = default_request_duration().set_label(f"{self.name} request duration")
 
     def update_compute_needed(self):
-        filter_df = ECOBENCHMARK_DF[
-            (ECOBENCHMARK_DF['service'] == self.service.technology.value)
-            & (ECOBENCHMARK_DF['use_case'] == self.implementation_details.value)]
-        tech_row = filter_df.iloc[0]
+        tech_row = next(
+            row for row in ecobenchmark_data
+            if row['service'] == self.service.technology.value
+            and row['use_case'] == self.implementation_details.value
+        )
 
         self.compute_needed = ExplainableQuantity(
             tech_row['avg_cpu_core_per_request'] * u.cpu_core, "",
@@ -74,10 +80,11 @@ class WebApplicationJob(ServiceJob):
             source=ecobenchmark_source)
 
     def update_ram_needed(self):
-        filter_df = ECOBENCHMARK_DF[
-            (ECOBENCHMARK_DF['service'] == self.service.technology.value)
-            & (ECOBENCHMARK_DF['use_case'] == self.implementation_details.value)]
-        tech_row = filter_df.iloc[0]
+        tech_row = next(
+            row for row in ecobenchmark_data
+            if row['service'] == self.service.technology.value
+            and row['use_case'] == self.implementation_details.value
+        )
 
         self.ram_needed = ExplainableQuantity(
             tech_row['avg_ram_per_request_in_MB'] * u.MB, label="",

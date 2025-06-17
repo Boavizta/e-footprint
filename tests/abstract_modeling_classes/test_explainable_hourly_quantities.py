@@ -5,7 +5,6 @@ from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
 import numpy as np
-import pandas as pd
 import pytz
 from pint import Quantity
 
