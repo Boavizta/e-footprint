@@ -172,7 +172,7 @@ class Storage(InfraHardware):
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
             automatic_storage_dumps_after_storage_duration_np = - np.pad(
-                self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=0
+                self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
             )[:len(self.storage_needed.value)]
             automatic_storage_dumps_after_storage_duration_np = automatic_storage_dumps_after_storage_duration_np[
                 :len(self.storage_needed.value)]
@@ -180,7 +180,8 @@ class Storage(InfraHardware):
             if len(automatic_storage_dumps_after_storage_duration_np) == 0:
                 storage_needs_nb_of_hours = len(self.storage_needed.value)
                 automatic_storage_dumps_after_storage_duration_np = Quantity(
-                    np.array([0] * (storage_needs_nb_of_hours + 1)), self.storage_needed.unit)
+                    np.zeros(storage_needs_nb_of_hours + 1, dtype=np.float32),
+                    self.storage_needed.units)
 
             return ExplainableHourlyQuantities(
                 automatic_storage_dumps_after_storage_duration_np, self.storage_needed.start_date,
@@ -198,16 +199,14 @@ class Storage(InfraHardware):
         if isinstance(self.storage_delta, EmptyExplainableObject):
             self.full_cumulative_storage_need = EmptyExplainableObject(left_parent=self.storage_delta)
         else:
-            delta_values = self.storage_delta.value
-
-            delta_array = np.copy(delta_values.magnitude)
-            delta_unit = delta_values.units
+            delta_array = np.copy(self.storage_delta.value.magnitude)
+            delta_unit = self.storage_delta.value.units
 
             # Add base storage need to first hour
             delta_array[0] += self.base_storage_need.value.to(delta_unit).magnitude
 
             # Compute cumulative storage
-            cumulative_array = np.cumsum(delta_array)
+            cumulative_array = np.cumsum(delta_array, dtype=np.float32)
             cumulative_quantity = Quantity(cumulative_array, delta_unit)
 
             if np.min(cumulative_quantity.magnitude) < 0:
@@ -253,7 +252,7 @@ class Storage(InfraHardware):
                     fixed_nb_of_instances_quantity = Quantity(
                         np.full(
                             len(self.raw_nb_of_instances),
-                            float(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
+                            np.float32(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
                         ),
                         u.dimensionless)
                     fixed_nb_of_instances = ExplainableHourlyQuantities(

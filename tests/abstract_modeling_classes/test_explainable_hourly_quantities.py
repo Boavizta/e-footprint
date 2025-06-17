@@ -40,7 +40,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         hourly_usage2 = ExplainableHourlyQuantities(
             Quantity(np.array([10, 20, 30]), u.W), self.start_date, "Usage 2")
         sum_hourly_usage = hourly_usage1 + hourly_usage2
-        self.assertEqual([1.01, 2.02, 3.03], sum_hourly_usage.value_as_float_list)
+        self.assertTrue(np.allclose([1.01, 2.02, 3.03], sum_hourly_usage.magnitude))
 
     def test_addition_between_non_overlapping_hourly_quantities_with_same_units(self):
         hourly_usage1 = ExplainableHourlyQuantities(

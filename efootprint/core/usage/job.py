@@ -128,7 +128,7 @@ class JobBase(ModelingObject):
         data_exchange_per_hour = (getattr(self, data_exchange_type) / self.duration_in_full_hours).set_label(
             f"{data_exchange_type_no_underscore} per hour for job {self.name} in {usage_pattern.name}")
 
-        for hour_shift in range(0, self.duration_in_full_hours.magnitude):
+        for hour_shift in range(0, int(self.duration_in_full_hours.magnitude)):
             if not isinstance(self.hourly_occurrences_per_usage_pattern[usage_pattern], EmptyExplainableObject):
                 explainable_hour_shift = ExplainableQuantity(
                     hour_shift * u.hour, f"hour nb {hour_shift} within {self.duration_in_full_hours}",

@@ -2,6 +2,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 from datetime import datetime, timedelta
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
@@ -259,7 +261,7 @@ class TestStorage(TestCase):
             self.storage_base.update_instances_energy()
 
             self.assertEqual(u.kWh, self.storage_base.instances_energy.unit)
-            self.assertEqual([0.15, 0.3, 0.45], self.storage_base.instances_energy.value_as_float_list)
+            self.assertTrue(np.allclose([0.15, 0.3, 0.45], self.storage_base.instances_energy.magnitude))
 
     def test_update_energy_footprint(self):
         instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
@@ -275,5 +277,5 @@ class TestStorage(TestCase):
                 patch.object(Storage, "server", new_callable=PropertyMock) as mock_property:
             mock_property.return_value = server_mock
             self.storage_base.update_energy_footprint()
-            self.assertEqual(expected_footprint, self.storage_base.energy_footprint.value_as_float_list)
+            self.assertTrue(np.allclose(expected_footprint, self.storage_base.energy_footprint.magnitude))
             self.assertEqual(u.kg, self.storage_base.energy_footprint.unit)

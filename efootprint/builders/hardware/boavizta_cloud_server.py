@@ -1,6 +1,9 @@
 from copy import deepcopy
 from time import time
 
+import numpy as np
+from pint import Quantity
+
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 
 start = time()
@@ -104,7 +107,7 @@ class BoaviztaCloudServer(Server):
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = ExplainableQuantity(
-            self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
+            Quantity(np.float32(self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"]), u.kg),
             f"{self.name} fabrication carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
@@ -113,7 +116,7 @@ class BoaviztaCloudServer(Server):
         use_time_ratio = self.api_call_response.value["verbose"]["use_time_ratio"]["value"]
         assert average_power_unit == "W", f"Unexpected power unit {average_power_unit}"
         assert float(use_time_ratio) == 1, f"Unexpected use time ratio {use_time_ratio}"
-        average_power_value = self.api_call_response.value["verbose"]["avg_power"]["value"]
+        average_power_value = np.float32(self.api_call_response.value["verbose"]["avg_power"]["value"])
 
         self.power = ExplainableQuantity(
             average_power_value * u.W, f"{self.name} power", left_parent=self.api_call_response,
@@ -122,14 +125,14 @@ class BoaviztaCloudServer(Server):
     def update_ram(self):
         assert self.api_call_response.value["verbose"]["memory"]["unit"] == "GB", \
             f"Unexpected RAM unit {self.api_call_response.value['verbose']['memory']['unit']}"
-        ram_spec = self.api_call_response.value["verbose"]["memory"]["value"]
+        ram_spec = np.float32(self.api_call_response.value["verbose"]["memory"]["value"])
 
         self.ram = ExplainableQuantity(
             ram_spec * u.GB, f"{self.name} ram",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
     def update_compute(self):
-        nb_vcpu = self.api_call_response.value["verbose"]["vcpu"]["value"]
+        nb_vcpu = np.float32(self.api_call_response.value["verbose"]["vcpu"]["value"])
 
         self.compute = ExplainableQuantity(
             nb_vcpu * u.cpu_core, f"{self.name} compute",

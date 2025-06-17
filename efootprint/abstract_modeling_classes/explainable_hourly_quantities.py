@@ -16,6 +16,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source)
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.constants.units import u, get_unit
+from efootprint.logger import logger
 from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and_simulation_data, prepare_data
 
 if TYPE_CHECKING:
@@ -27,8 +28,8 @@ def align_temporally_quantity_arrays(
         first_array: Quantity, first_start_date: datetime, second_array: Quantity, second_start_date: datetime):
     second_array_value = second_array.to(first_array.units)
 
-    first_array_array = first_array.magnitude
-    second_array_array = second_array_value.magnitude
+    first_array_array = first_array.magnitude.astype(np.float32)
+    second_array_array = second_array_value.magnitude.astype(np.float32)
 
     # Align by start_date
     end1 = first_start_date + timedelta(hours=len(first_array_array))
@@ -40,8 +41,8 @@ def align_temporally_quantity_arrays(
     total_len = int((common_end - common_start).total_seconds() // 3600)
 
     # Create aligned zero arrays
-    aligned_first_array = np.zeros(total_len)
-    aligned_second_array = np.zeros(total_len)
+    aligned_first_array = np.zeros(total_len, dtype=np.float32)
+    aligned_second_array = np.zeros(total_len, dtype=np.float32)
 
     # Compute insertion positions
     offset_first_array = int((first_start_date - common_start).total_seconds() // 3600)
@@ -59,7 +60,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None
         if "values" in d:
-            value = Quantity(np.array(d["values"]), get_unit(d["unit"]))
+            value = Quantity(np.array(d["values"], dtype=np.float32), get_unit(d["unit"]))
         elif "compressed_values" in d:
             value = {k: d[k] for k in ["compressed_values", "unit"]}
         else:
@@ -80,6 +81,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         self._EmptyExplainableObject = EmptyExplainableObject
         self.start_date = start_date
         if isinstance(value, Quantity):
+            if value.magnitude.dtype != np.float32:
+                logger.info(
+                    f"converting value {label} to float32. This is surprising, a casting to np.float32 is proably "
+                    f"missing somewhere.")
+                value = value.magnitude.astype(np.float32, copy=False) * value.units
             super().__init__(value, label, left_parent, right_parent, operator, source)
         elif isinstance(value, dict):
             self.json_compressed_value_data = value
@@ -92,10 +98,9 @@ class ExplainableHourlyQuantities(ExplainableObject):
     @property
     def value(self):
         if self._value is None and self.json_compressed_value_data is not None:
+            decompressed_values = self.decompress_values(self.json_compressed_value_data["compressed_values"])
             self._value = Quantity(
-                np.array(self.decompress_values(self.json_compressed_value_data["compressed_values"])), 
-                get_unit(self.json_compressed_value_data["unit"])
-            )
+                np.array(decompressed_values, dtype=np.float32), get_unit(self.json_compressed_value_data["unit"]))
 
         return self._value
 
@@ -120,12 +125,12 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def __round__(self, round_level):
         return ExplainableHourlyQuantities(
-            np.round(self.value, round_level), start_date=self.start_date, label=self.label, left_parent=self,
-            operator=f"rounded to {round_level} decimals", source=self.source
+            np.round(self.value, round_level).astype(np.float32, copy=False), start_date=self.start_date, label=self.label,
+            left_parent=self, operator=f"rounded to {round_level} decimals", source=self.source
         )
 
     def round(self, round_level):
-        self.value = np.round(self.value, round_level)
+        self.value = np.round(self.value, round_level).astype(np.float32, copy=False)
 
         return self
 
@@ -151,7 +156,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     @property
     def value_as_float_list(self):
-        return [float(elt) for elt in self.magnitude]
+        return self.magnitude.tolist()
 
     def convert_to_utc(self, local_timezone: ExplainableTimezone):
         if self.start_date.tzinfo is None:
@@ -164,10 +169,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
     def sum(self):
-        return self._ExplainableQuantity(np.sum(self.value), left_parent=self, operator="sum")
+        return self._ExplainableQuantity(np.sum(self.value, dtype=np.float32), left_parent=self, operator="sum")
 
     def mean(self):
-        return self._ExplainableQuantity(np.mean(self.value), left_parent=self, operator="mean")
+        return self._ExplainableQuantity(np.mean(self.value, dtype=np.float32), left_parent=self, operator="mean")
 
     def max(self):
         return self._ExplainableQuantity(np.max(self.value), left_parent=self, operator="max")
@@ -188,7 +193,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, self._EmptyExplainableObject):
-            compared_values = np.full(len(self.value), fill_value=0.0)
+            compared_values = np.full(len(self.value), fill_value=np.float32(0))
             right_parent = compared_object
         elif isinstance(compared_object, ExplainableHourlyQuantities):
             compared_values = compared_object.value

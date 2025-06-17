@@ -38,8 +38,8 @@ class GPUServer(ServerBase):
                  average_carbon_intensity: ExplainableQuantity, compute: ExplainableQuantity,
                  carbon_footprint_fabrication_without_gpu: ExplainableQuantity, lifespan: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity, server_utilization_rate: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, base_ram_consumption: ExplainableQuantity, storage: Storage,
-                 fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
+                 base_compute_consumption: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 storage: Storage, fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power=SourceValue(0 * u.W), ram=SourceValue(0 * u.GB),

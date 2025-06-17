@@ -148,7 +148,7 @@ class TestGenAIJob(unittest.TestCase):
             self.assertEqual(self.job.data_transferred.value, 16000 * u.dimensionless + 100 * u.kB)
 
     def test_update_request_duration(self):
-        with patch.object(self.service, "gpu_latency_alpha", SourceValue(1e-11 * u.s)), \
+        with patch.object(self.service, "gpu_latency_alpha", SourceValue(1e-2 * u.ns)), \
                 patch.object(self.service, "gpu_latency_beta", SourceValue(0.1 * u.s)), \
                 patch.object(self.service, "active_params", SourceValue(100e9 * u.dimensionless)), \
                 patch.object(self.job, "output_token_count", SourceValue(1 * u.dimensionless)):

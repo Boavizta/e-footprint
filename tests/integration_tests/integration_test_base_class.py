@@ -57,11 +57,11 @@ class IntegrationTestBaseClass(TestCase):
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = round(self.initial_energy_footprints[obj], 4)
+                initial_energy_footprint = round(self.initial_energy_footprints[obj], 3)
                 if obj.class_as_simple_str != "Network":
-                    initial_fab_footprint = round(self.initial_fab_footprints[obj], 4)
-                    self.assertEqual(initial_fab_footprint, round(obj.instances_fabrication_footprint, 4))
-                self.assertEqual(initial_energy_footprint, round(obj.energy_footprint, 4))
+                    initial_fab_footprint = round(self.initial_fab_footprints[obj], 3)
+                    self.assertEqual(initial_fab_footprint, round(obj.instances_fabrication_footprint, 3))
+                self.assertEqual(initial_energy_footprint, round(obj.energy_footprint, 3))
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
@@ -100,7 +100,7 @@ class IntegrationTestBaseClass(TestCase):
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():
                 if isinstance(attr_value, ExplainableQuantity) or isinstance(attr_value, ExplainableHourlyQuantities):
-                    self.assertEqual(round(getattr(corresponding_obj, attr_key), 4), round(attr_value, 4),
+                    self.assertEqual(round(getattr(corresponding_obj, attr_key), 3), round(attr_value, 3),
                                      f"Attribute {attr_key} is not equal for {obj.name}")
                     self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label,
                                      f"Attribute {attr_key} label is not equal for {obj.name}")

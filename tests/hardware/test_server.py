@@ -2,6 +2,8 @@ from datetime import timedelta, datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.video_streaming import VideoStreaming
 from efootprint.builders.services.web_application import WebApplication
@@ -75,7 +77,7 @@ class TestServer(TestCase):
             self.server_base.update_available_compute_per_instance()
             expected_value = SourceValue((24 * 0.7 - 2) * u.cpu_core)
 
-            self.assertEqual(expected_value.value, self.server_base.available_compute_per_instance.value)
+            self.assertEqual(expected_value, self.server_base.available_compute_per_instance)
 
     def test_available_ram_per_instance(self):
         with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB)), \
@@ -84,7 +86,7 @@ class TestServer(TestCase):
             self.server_base.update_available_ram_per_instance()
             expected_value = SourceValue((24 * 0.7 - 2) * u.GB)
 
-            self.assertEqual(expected_value.value, self.server_base.available_ram_per_instance.value)
+            self.assertEqual(expected_value, self.server_base.available_ram_per_instance)
 
 
     def test_available_ram_per_instance_should_raise_value_error_when_demand_exceeds_server_capacity(self):
@@ -163,7 +165,7 @@ class TestServer(TestCase):
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
             self.server_base.update_instances_energy()
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
-            self.assertEqual([0.9, 0, 1.8], self.server_base.instances_energy.value_as_float_list)
+            self.assertTrue(np.allclose([0.9, 0, 1.8], self.server_base.instances_energy.magnitude))
 
     def test_compute_instances_energy_complex_case(self):
         with patch.object(self.server_base, "nb_of_instances",
@@ -175,7 +177,7 @@ class TestServer(TestCase):
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(3 * u.dimensionless)):
             self.server_base.update_instances_energy()
             self.assertEqual(u.kWh, self.server_base.instances_energy.unit)
-            self.assertEqual([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.value_as_float_list)
+            self.assertTrue(np.allclose([0.9, 0, 0.9 + 0.525], self.server_base.instances_energy.magnitude))
 
     def test_energy_footprints(self):
         instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
@@ -186,7 +188,7 @@ class TestServer(TestCase):
             self.server_base.update_energy_footprint()
 
             expected_footprint = [0.09, 0.18, 0.27]  # in kg
-            self.assertEqual(expected_footprint, self.server_base.energy_footprint.value_as_float_list)
+            self.assertTrue(np.allclose(expected_footprint, self.server_base.energy_footprint.magnitude))
             self.assertEqual(u.kg, self.server_base.energy_footprint.unit)
 
     def test_autoscaling_nb_of_instances(self):

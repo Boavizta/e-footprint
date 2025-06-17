@@ -1,6 +1,8 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.network import Network
@@ -30,7 +32,7 @@ class TestNetwork(TestCase):
             self.network.update_energy_footprint()
 
             self.assertEqual(u.kg, self.network.energy_footprint.unit)
-            self.assertEqual([0.2, 0.4, 1], self.network.energy_footprint.value_as_float_list)
+            self.assertTrue(np.allclose([0.2, 0.4, 1], self.network.energy_footprint.magnitude))
 
     def test_update_energy_footprint_job_with_no_up(self):
         job = MagicMock()
@@ -73,4 +75,4 @@ class TestNetwork(TestCase):
             self.network.update_energy_footprint()
 
             self.assertEqual(u.kg, self.network.energy_footprint.unit)
-            self.assertEqual([0.6, 1.2, 3], self.network.energy_footprint.value_as_float_list)
+            self.assertTrue(np.allclose([0.6, 1.2, 3], self.network.energy_footprint.magnitude))

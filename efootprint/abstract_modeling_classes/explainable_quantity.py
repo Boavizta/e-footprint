@@ -24,6 +24,8 @@ class ExplainableQuantity(ExplainableObject):
         self._ExplainableHourlyQuantities = ExplainableHourlyQuantities
         self._EmptyExplainableObject = EmptyExplainableObject
         if isinstance(value, Quantity):
+            if not isinstance(value.magnitude, np.float32):
+                value = Quantity(np.float32(value.magnitude), value.units)  # Ensure the magnitude is a float32 for perf
             super().__init__(value, label, left_parent, right_parent, operator, source)
         elif isinstance(value, dict):
             self.json_value_data = value
@@ -91,7 +93,9 @@ class ExplainableQuantity(ExplainableObject):
 
     def __eq__(self, other):
         if isinstance(other, ExplainableQuantity):
-            return self.value == other.value
+            converted_other_value = other.value.to(self.value.units)
+            return np.allclose(
+                np.asarray(self.magnitude), np.asarray(converted_other_value.magnitude), rtol=1e-4, atol=1e-6)
         elif isinstance(other, self._EmptyExplainableObject):
             return self.value == 0
         else:

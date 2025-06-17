@@ -14,7 +14,8 @@ def create_random_source_hourly_values(
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
         pint_unit: Unit = u.dimensionless):
     nb_days = timespan.to(u.day).magnitude
-    data = Quantity(np.random.randint(min_val, max_val, size=int(nb_days * 24)).astype(float), pint_unit)
+    data = Quantity(
+        np.random.randint(min_val, max_val, size=int(nb_days * 24)).astype(np.float32, copy=False), pint_unit)
     shv = SourceHourlyValues(data, start_date=start_date)
 
     return shv
@@ -23,7 +24,7 @@ def create_random_source_hourly_values(
 def create_source_hourly_values_from_list(
         input_list: List[float], start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
         pint_unit: Unit = u.dimensionless):
-    return SourceHourlyValues(Quantity(np.array(input_list), pint_unit), start_date)
+    return SourceHourlyValues(Quantity(np.array(input_list, dtype=np.float32), pint_unit), start_date)
 
 
 def linear_growth_hourly_values(
@@ -31,7 +32,7 @@ def linear_growth_hourly_values(
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
         pint_unit: Unit = u.dimensionless):
     nb_of_hours = int(timespan.to(u.hour).magnitude)
-    linear_growth = np.linspace(start_value, end_value, nb_of_hours)
+    linear_growth = np.linspace(start_value, end_value, nb_of_hours, dtype=np.float32)
 
     return create_source_hourly_values_from_list(linear_growth, start_date, pint_unit)
 
@@ -41,8 +42,9 @@ def sinusoidal_fluct_hourly_values(
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
         pint_unit: Unit = u.dimensionless):
     nb_of_hours = int(timespan.to(u.hour).magnitude)
-    time = np.arange(nb_of_hours)
-    sinusoidal_fluctuation = sin_fluct_amplitude * np.sin(2 * np.pi * time / sin_fluct_period_in_hours)
+    time = np.arange(nb_of_hours, dtype=np.float32)
+    sinusoidal_fluctuation = (
+            sin_fluct_amplitude * np.sin(2 * np.pi * time / sin_fluct_period_in_hours, dtype=np.float32))
 
     return create_source_hourly_values_from_list(sinusoidal_fluctuation, start_date, pint_unit)
 
@@ -54,17 +56,18 @@ def daily_fluct_hourly_values(
     assert fluct_scale > 0
     assert fluct_scale <= 1
     nb_of_hours = int(timespan.to(u.hour).magnitude)
-    time = np.arange(nb_of_hours)
+    time = np.arange(nb_of_hours, dtype=np.float32)
     hour_of_day = [(start_date.hour + x) % 24 for x in time]
 
     daily_fluctuation = (
-            np.full(shape=len(hour_of_day), fill_value=1.0)
+            np.full(shape=len(hour_of_day), fill_value=1.0, dtype=np.float32)
             + fluct_scale * np.sin(
                 (3 * np.pi / 2)
                 + (2 * np.pi
-                    * (hour_of_day - np.full(shape=len(hour_of_day), fill_value=float(hour_of_day_for_min_value), dtype=int))
+                    * (hour_of_day - np.full(
+                            shape=len(hour_of_day), fill_value=float(hour_of_day_for_min_value), dtype=np.float32))
                     / 24
-                )
+                ), dtype=np.float32
             )
         )
 
@@ -92,7 +95,7 @@ def create_hourly_usage_from_frequency(
 
     period_index = [start_date + timedelta(hours=i) for i in range(int(timespan.to(u.hour).magnitude) + 1)]
     # Important to have fill_value be 0.0 otherwise values will be cast to int
-    values = np.full(shape=len(period_index), fill_value=0.0)
+    values = np.full(shape=len(period_index), fill_value=0.0, dtype=np.float32)
 
     for i, period in enumerate(period_index):
         hour_of_day = period.hour  # Hour of the day, 0 to 23

@@ -2,6 +2,8 @@ from copy import deepcopy
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.hardware.infra_hardware import InfraHardware
@@ -74,16 +76,16 @@ class TestInfraHardware(TestCase):
         self.test_infra_hardware_single_job.update_nb_of_instances()
         self.test_infra_hardware_single_job.update_instances_fabrication_footprint()
         self.assertEqual(u.kg, self.test_infra_hardware_single_job.instances_fabrication_footprint.unit)
-        self.assertEqual(
-            [round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
-            round(self.test_infra_hardware_single_job.instances_fabrication_footprint, 3).value_as_float_list)
+        self.assertTrue(
+            np.allclose([round(2 * 20 / (365.25 * 24), 3), round(3 * 20 / (365.25 * 24), 3)],
+            round(self.test_infra_hardware_single_job.instances_fabrication_footprint, 3).magnitude))
 
     def test_energy_footprints(self):
         self.test_infra_hardware_single_job.average_carbon_intensity = SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS)
         self.test_infra_hardware_single_job.update_instances_energy()
         self.test_infra_hardware_single_job.update_energy_footprint()
         self.assertEqual(u.kg, self.test_infra_hardware_single_job.energy_footprint.unit)
-        self.assertEqual([0.2, 0.4],
-                         self.test_infra_hardware_single_job.energy_footprint.value_as_float_list)
+        self.assertTrue(np.allclose([0.2, 0.4],
+                         self.test_infra_hardware_single_job.energy_footprint.magnitude))
         del self.test_infra_hardware_single_job.average_carbon_intensity
         self.assertIsNone(getattr(self.test_infra_hardware_single_job, "average_carbon_intensity", None))

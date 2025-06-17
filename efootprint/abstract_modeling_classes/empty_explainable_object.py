@@ -140,7 +140,7 @@ class EmptyExplainableObject(ExplainableObject):
         unit = simulated_q.units
 
         # Create a baseline of zeros with the same time index and unit
-        baseline_q = Quantity(np.zeros_like(simulated_q.magnitude), unit)
+        baseline_q = Quantity(np.zeros_like(simulated_q.magnitude, dtype=np.float32), unit)
         time_baseline = time_sim
 
         fig, ax = plot_baseline_and_simulation_data(

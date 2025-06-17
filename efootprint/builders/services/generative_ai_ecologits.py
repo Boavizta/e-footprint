@@ -22,7 +22,7 @@ class GenAIModel(Service):
             "provider": SourceObject("mistralai"),
             "model_name": SourceObject("open-mistral-7b"),
             "nb_of_bits_per_parameter": SourceValue(16 * u.dimensionless, source=Sources.HYPOTHESIS),
-            "gpu_latency_alpha": SourceValue(8.02e-4 * 1e-9 * u.s, source=ecologits_source),
+            "gpu_latency_alpha": SourceValue(8.02e-4 * u.ns, source=ecologits_source),
             "gpu_latency_beta": SourceValue(2.23e-2 * u.s, source=ecologits_source),
             "llm_memory_factor": SourceValue(1.2 * u.dimensionless, source=ecologits_source),
             "bits_per_token": SourceValue(24 * u.dimensionless)

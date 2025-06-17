@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources
@@ -63,14 +65,14 @@ class TestUsagePattern(unittest.TestCase):
             self.usage_pattern.update_devices_energy()
 
             self.assertEqual(u.kWh, self.usage_pattern.devices_energy.unit)
-            self.assertEqual([0.15, 0.3, 0.45], self.usage_pattern.devices_energy.value_as_float_list)
+            self.assertTrue(np.allclose([0.15, 0.3, 0.45], self.usage_pattern.devices_energy.magnitude))
 
     def test_devices_energy_footprint(self):
         with patch.object(self.usage_pattern, "devices_energy",
                           create_source_hourly_values_from_list([10, 20, 30], pint_unit=u.kWh)):
             self.usage_pattern.update_devices_energy_footprint()
             self.assertEqual(u.kg, self.usage_pattern.devices_energy_footprint.unit)
-            self.assertEqual([1, 2, 3], self.usage_pattern.devices_energy_footprint.value_as_float_list)
+            self.assertTrue(np.allclose([1, 2, 3], self.usage_pattern.devices_energy_footprint.magnitude))
 
     def test_devices_fabrication_footprint(self):
         device1 = MagicMock(spec=Device)

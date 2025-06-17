@@ -81,7 +81,7 @@
             "name": "streaming",
             "id": "uuid-streaming",
             "data_transferred": {
-                "value": 0.8333333333333334,
+                "value": 0.8333333134651184,
                 "unit": "gigabyte",
                 "label": "Sum of all data uploads and downloads for request streaming from e-footprint hypothesis",
                 "source": {
@@ -254,7 +254,7 @@
                 }
             },
             "power_usage_effectiveness": {
-                "value": 1.2,
+                "value": 1.2000000476837158,
                 "unit": "dimensionless",
                 "label": "PUE of Default server from user data",
                 "source": {
@@ -272,7 +272,7 @@
                 }
             },
             "server_utilization_rate": {
-                "value": 0.9,
+                "value": 0.8999999761581421,
                 "unit": "dimensionless",
                 "label": "Default server utilization rate from e-footprint hypothesis",
                 "source": {
@@ -337,7 +337,7 @@
                 }
             },
             "power_per_storage_capacity": {
-                "value": 1.3,
+                "value": 1.2999999523162842,
                 "unit": "watt / terabyte",
                 "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "source": {
@@ -346,7 +346,7 @@
                 }
             },
             "idle_power": {
-                "value": 0.1,
+                "value": 0.10000000149011612,
                 "unit": "watt",
                 "label": "Idle power of Default SSD storage from e-footprint hypothesis",
                 "source": {
@@ -448,7 +448,7 @@
             "name": "Default network",
             "id": "uuid-Default-network",
             "bandwidth_energy_intensity": {
-                "value": 0.05,
+                "value": 0.05000000074505806,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity of Default network from Traficom study",
                 "source": {

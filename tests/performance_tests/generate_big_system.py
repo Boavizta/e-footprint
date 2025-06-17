@@ -60,36 +60,43 @@ for server_index in range(1, nb_of_servers_of_each_type + 1):
         for uj_step_index in range(1, nb_of_uj_steps_per_uj + 1):
             video_streaming_job = VideoStreamingJob.from_defaults(
                 f"Video streaming job", service=video_streaming, video_duration=SourceValue(20 * u.min))
-            web_application_job = WebApplicationJob.from_defaults(f"Web application job", service=web_application)
-            genai_model_job = GenAIJob.from_defaults(f"Generative AI model job", service=genai_model)
-            manually_written_job = Job.from_defaults(f"Manually defined job", server=autoscaling_server)
-            custom_gpu_job = GPUJob.from_defaults(f"Manually defined GPU job", server=on_premise_gpu_server)
+            web_application_job = WebApplicationJob.from_defaults(
+                f"Web application job uj {uj_index} uj_step {uj_step_index} server {server_index}",
+                service=web_application)
+            genai_model_job = GenAIJob.from_defaults(
+                f"Generative AI model job uj {uj_index} uj_step {uj_step_index} server {server_index}",
+                service=genai_model)
+            manually_written_job = Job.from_defaults(
+                f"Manually defined job uj {uj_index} uj_step {uj_step_index} server {server_index}",
+                server=autoscaling_server)
+            custom_gpu_job = GPUJob.from_defaults(
+                f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}", server=on_premise_gpu_server)
 
             uj_steps.append(UsageJourneyStep(
-                "20 min streaming",
+                f"20 min streaming {uj_index} step {uj_step_index}",
                 user_time_spent=SourceValue(20 * u.min, source=None),
                 jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
                 ))
 
-        usage_journey = UsageJourney("user journey", uj_steps=uj_steps)
+        usage_journey = UsageJourney(f"user journey {uj_index}", uj_steps=uj_steps)
 
         network = Network(
-                "network",
+                f"network {uj_index}",
                 bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
 
         usage_patterns.append(
             UsagePattern(
-                "usage pattern",
+                f"usage pattern {uj_index}",
                 usage_journey=usage_journey,
                 devices=[
-                    Device(name="device on which the user journey is made",
+                    Device(name=f"device on which the user journey {uj_index} is made",
                              carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
                              power=SourceValue(50 * u.W, source=None),
                              lifespan=SourceValue(6 * u.year, source=None),
                              fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
                 network=network,
                 country=country_generator(
-                        "devices country", "its 3 letter shortname, for example FRA",
+                        f"devices country {uj_index}", "its 3 letter shortname, for example FRA",
                     SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
                 hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year)
             )
@@ -100,7 +107,7 @@ system = System("system", usage_patterns=usage_patterns)
 all_objects = system.all_linked_objects
 nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
 
-logger.info(f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)}"
+logger.info(f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)} objects"
             f" in {round((time() - start), 3)} seconds")
 
 @time_it
