@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8e9891 {
+             #mynetwork_752d07 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8e9891" class="card-body"></div>
+            <div id="mynetwork_752d07" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8e9891');
+                  var container = document.getElementById('mynetwork_752d07');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of storage", "label": "Carbon footprint of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint of storage\n=\nFabrication carbon footprint of storage per storage capacity * Storage capacity\nof storage\n=\n160.0 kilogram / terabyte * 1 terabyte\n=\n160.0 kilogram", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of storage per storage capacity", "label": "Fabrication carbon\nfootprint of storage\nper storage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of storage per storage capacity = 160.0 kilogram /\nterabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of storage", "label": "Carbon footprint of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint of storage\n=\nFabrication carbon footprint of storage per storage capacity * Storage capacity\nof storage\n=\n160.0 kilogram / terabyte * 1.0 terabyte\n=\n160.0 kilogram", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of storage per storage capacity", "label": "Fabrication carbon\nfootprint of storage\nper storage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of storage per storage capacity = 160.0 kilogram /\nterabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1.0 terabyte", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication carbon footprint of storage per storage capacity", "to": "Carbon footprint of storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Carbon footprint of storage"}]);
 
                   nodeColors = {};

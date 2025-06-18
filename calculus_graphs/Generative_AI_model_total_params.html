@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_461bdf {
+             #mynetwork_b4c7e7 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_461bdf" class="card-body"></div>
+            <div id="mynetwork_b4c7e7" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_461bdf');
+                  var container = document.getElementById('mynetwork_b4c7e7');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "mistralai from e-footprint hypothesis", "label": "mistralai from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai from e-footprint hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from e-footprint hypothesis", "label": "mistralai model used\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from e-footprint hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "open-mistral-7b from mistralai total nb of parameters from Ecologits", "label": "open-mistral-7b from\nmistralai total nb\nof parameters from\nEcologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai total nb of parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7299999744.0 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "mistralai from e-footprint hypothesis", "label": "mistralai from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai from e-footprint hypothesis = mistralai", "x": -75.0, "y": 150}, {"color": "darkred", "id": "mistralai model used from e-footprint hypothesis", "label": "mistralai model used\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "mistralai model used from e-footprint hypothesis = open-mistral-7b", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "mistralai from e-footprint hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}, {"arrows": "to", "from": "mistralai model used from e-footprint hypothesis", "to": "open-mistral-7b from mistralai total nb of parameters from Ecologits"}]);
 
                   nodeColors = {};

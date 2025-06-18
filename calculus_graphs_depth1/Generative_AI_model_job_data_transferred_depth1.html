@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dc7279 {
+             #mynetwork_8cdff0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_dc7279" class="card-body"></div>
+            <div id="mynetwork_8cdff0" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dc7279');
+                  var container = document.getElementById('mynetwork_8cdff0');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "unnamed source from e-footprint hypothesis", "label": "unnamed source from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from e-footprint hypothesis = 100 kilobyte", "x": -75.0, "y": 300}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from e-footprint hypothesis * Number\nof bits per token from e-footprint hypothesis\n=\n1000 dimensionless * 24 dimensionless\n=\n3.0 kilobyte", "x": 75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from e-footprint hypothesis", "to": "Generative AI model job data transferred"}, {"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data transferred"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job data transferred", "label": "Generative AI model\njob data transferred", "shape": "dot", "size": 15, "title": "Generative AI model job data transferred\n=\nunnamed source from e-footprint hypothesis + Generative AI model job output\ntoken weights\n=\n100.0 kilobyte + 3.0 kilobyte\n=\n103.0 kilobyte", "x": 0.0, "y": 450}, {"color": null, "id": "Generative AI model job output token weights", "label": "Generative AI model\njob output token\nweights", "shape": "dot", "size": 15, "title": "Generative AI model job output token weights\n=\nGenerative AI model job output token count from e-footprint hypothesis * Number\nof bits per token from e-footprint hypothesis\n=\n1000.0 dimensionless * 24.0 dimensionless\n=\n3.0 kilobyte", "x": 0.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token weights", "to": "Generative AI model job data transferred"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

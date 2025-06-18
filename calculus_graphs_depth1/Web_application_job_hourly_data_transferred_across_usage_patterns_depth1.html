@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7dd50d {
+             #mynetwork_55ae59 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7dd50d" class="card-body"></div>
+            <div id="mynetwork_55ae59" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7dd50d');
+                  var container = document.getElementById('mynetwork_55ae59');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Web application job data transferred across usage patterns", "label": "Hourly Web\napplication job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Web application job data transferred across usage patterns\n=\nHourly data transferred for Web application job in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [15.4, 4.4, 4.4, 8.8, 4.4, 2.2, 2.2, 13.2, 15.4, 15.4],\nlast 10 vals [17.6, 8.8, 15.4, 17.6, 19.8, 4.4, 2.2, 2.2, 17.6, 17.6] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [15.4, 4.4, 4.4, 8.8, 4.4, 2.2, 2.2, 13.2, 15.4, 15.4],\nlast 10 vals [17.6, 8.8, 15.4, 17.6, 19.8, 4.4, 2.2, 2.2, 17.6, 17.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data transferred for Web application job in usage pattern", "label": "Hourly data\ntransferred for Web\napplication job in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Web application job in usage pattern\n=\n(Hourly Web application job occurrences in usage pattern shifted by hour nb 0\nwithin 1 dimensionless) * data transferred per hour for job Web application job\nin usage pattern + no value\n=\n(26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7, 2, 2, 4, 2, 1, 1, 6, 7, 7],\nlast 10 vals [8, 4, 7, 8, 9, 2, 1, 1, 8, 8] shifted by 0 hour) * 2.2 megabyte +\nno value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [15.4, 4.4, 4.4, 8.8, 4.4, 2.2, 2.2, 13.2, 15.4, 15.4],\nlast 10 vals [17.6, 8.8, 15.4, 17.6, 19.8, 4.4, 2.2, 2.2, 17.6, 17.6]", "x": -150.0, "y": 600}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": -75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Web application job in usage pattern", "to": "Hourly Web application job data transferred across usage patterns"}, {"arrows": "to", "from": "no value", "to": "Hourly Web application job data transferred across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Web application job data transferred across usage patterns", "label": "Hourly Web\napplication job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Web application job data transferred across usage patterns\n=\nHourly data transferred for Web application job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [8.8, 8.8, 4.4, 13.2, 11.0, 13.2, 17.6, 17.6, 8.8, 6.6],\nlast 10 vals [15.4, 6.6, 2.2, 19.8, 8.8, 15.4, 19.8, 4.4, 8.8, 17.6] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [8.8, 8.8, 4.4, 13.2, 11.0, 13.2, 17.6, 17.6, 8.8, 6.6],\nlast 10 vals [15.4, 6.6, 2.2, 19.8, 8.8, 15.4, 19.8, 4.4, 8.8, 17.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data transferred for Web application job in usage pattern", "label": "Hourly data\ntransferred for Web\napplication job in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Web application job in usage pattern\n=\n(Hourly Web application job occurrences in usage pattern shifted by hour nb 0\nwithin 1.0 dimensionless) * (Sum of all data uploads and downloads for request\nWeb application job from e-footprint hypothesis / Web application job duration\nin full hours) + no value\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4.0, 4.0, 2.0, 6.0, 5.0, 6.0, 8.0, 8.0, 4.0, 3.0],\nlast 10 vals [7.0, 3.0, 1.0, 9.0, 4.0, 7.0, 9.0, 2.0, 4.0, 8.0] shifted by 0.0\nhour) * (2.200000047683716 megabyte / 1.0 dimensionless) + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [8.8, 8.8, 4.4, 13.2, 11.0, 13.2, 17.6, 17.6, 8.8, 6.6],\nlast 10 vals [15.4, 6.6, 2.2, 19.8, 8.8, 15.4, 19.8, 4.4, 8.8, 17.6]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Web application job in usage pattern", "to": "Hourly Web application job data transferred across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

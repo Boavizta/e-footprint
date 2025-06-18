@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3eec9f {
+             #mynetwork_5945a3 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3eec9f" class="card-body"></div>
+            <div id="mynetwork_5945a3" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3eec9f');
+                  var container = document.getElementById('mynetwork_5945a3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per on premise GPU server instance", "label": "Available CPU per on\npremise GPU server\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per on premise GPU server instance\n=\nNb gpus of on premise GPU server from e-footprint hypothesis * on premise GPU\nserver utilization rate - Occupied CPU per on premise GPU server instance\nincluding services\n=\n4 gpu * 0.9 dimensionless - 0 gpu\n=\n3.6 gpu", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4 gpu", "x": -150.0, "y": 450}, {"color": null, "id": "on premise GPU server utilization rate", "label": "on premise GPU\nserver utilization\nrate", "shape": "dot", "size": 15, "title": "on premise GPU server utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied CPU per on premise GPU server instance including services", "label": "Occupied CPU per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied CPU per on premise GPU server instance including services\n=\nBase gpu consumption of on premise GPU server from e-footprint hypothesis + no\nvalue\n=\n0 gpu + no value\n=\n0 gpu", "x": 150.0, "y": 450}, {"color": "darkred", "id": "Base gpu consumption of on premise GPU server from e-footprint hypothesis", "label": "Base gpu consumption\nof on premise GPU\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base gpu consumption of on premise GPU server from e-footprint hypothesis = 0\ngpu", "x": 0.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\n+ 0 of (no value)\n=\n+ 0 of (no value)\n=\nno value", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "on premise GPU server utilization rate", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "Occupied CPU per on premise GPU server instance including services", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "Base gpu consumption of on premise GPU server from e-footprint hypothesis", "to": "Occupied CPU per on premise GPU server instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per on premise GPU server instance including services"}, {"arrows": "to", "from": "no value", "to": "no value"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per on premise GPU server instance", "label": "Available CPU per on\npremise GPU server\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per on premise GPU server instance\n=\nNb gpus of on premise GPU server from e-footprint hypothesis * on premise GPU\nserver utilization rate - Occupied CPU per on premise GPU server instance\nincluding services\n=\n4.0 gpu * 0.8999999761581421 dimensionless - 0.0 gpu\n=\n3.5999999046325684 gpu", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4.0 gpu", "x": -150.0, "y": 300}, {"color": null, "id": "on premise GPU server utilization rate", "label": "on premise GPU\nserver utilization\nrate", "shape": "dot", "size": 15, "title": "on premise GPU server utilization rate = 0.8999999761581421 dimensionless", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied CPU per on premise GPU server instance including services", "label": "Occupied CPU per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied CPU per on premise GPU server instance including services\n=\nBase gpu consumption of on premise GPU server from e-footprint hypothesis + + 0\nof (no value)\n=\n0.0 gpu + + 0 of (no value)\n=\n0.0 gpu", "x": 150.0, "y": 300}, {"color": "darkred", "id": "Base gpu consumption of on premise GPU server from e-footprint hypothesis", "label": "Base gpu consumption\nof on premise GPU\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base gpu consumption of on premise GPU server from e-footprint hypothesis = 0.0\ngpu", "x": -112.5, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 112.5, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "on premise GPU server utilization rate", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "Occupied CPU per on premise GPU server instance including services", "to": "Available CPU per on premise GPU server instance"}, {"arrows": "to", "from": "Base gpu consumption of on premise GPU server from e-footprint hypothesis", "to": "Occupied CPU per on premise GPU server instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per on premise GPU server instance including services"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

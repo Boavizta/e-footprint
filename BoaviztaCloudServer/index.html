@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
       
 
@@ -2286,8 +2286,8 @@
 <p>Example value: {'impacts': {'gwp': {'unit': 'kgCO2eq', 'description': 'Tota...  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#provider">unnamed source from e-footprint hypothesis</a></li>
-<li><a href="./#instance_type">unnamed source from e-footprint hypothesis</a>  </li>
+<li><a href="./#provider">serverless cloud functions cloud provider from e-footprint hypothesis</a></li>
+<li><a href="./#instance_type">serverless cloud functions instance type from e-footprint hypothesis</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -2323,7 +2323,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_95ddef {
+             #mynetwork_b70121 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2345,7 +2345,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_95ddef" class="card-body"></div>
+            <div id="mynetwork_b70121" class="card-body"></div>
         </div>
 
 
@@ -2375,13 +2375,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_95ddef');
+                  var container = document.getElementById('mynetwork_b70121');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from e-footprint hypothesis combined in Boavizta API call with\nunnamed source from e-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}, {"color": "darkred", "id": "unnamed source from e-footprint hypothesis", "label": "unnamed source from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "unnamed source from e-footprint hypothesis = scaleway", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source from e-footprint hypothesis", "to": "API call response from Boavizta API cloud instances"}, {"arrows": "to", "from": "unnamed source from e-footprint hypothesis", "to": "API call response from Boavizta API cloud instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nserverless cloud functions cloud provider from e-footprint hypothesis combined\nin Boavizta API call with serverless cloud functions instance type from\ne-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}, {"color": "darkred", "id": "serverless cloud functions cloud provider from e-footprint hypothesis", "label": "serverless cloud\nfunctions cloud\nprovider from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "serverless cloud functions cloud provider from e-footprint hypothesis = scaleway", "x": -75.0, "y": 150}, {"color": "darkred", "id": "serverless cloud functions instance type from e-footprint hypothesis", "label": "serverless cloud\nfunctions instance\ntype from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "serverless cloud functions instance type from e-footprint hypothesis = ent1-s", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions cloud provider from e-footprint hypothesis", "to": "API call response from Boavizta API cloud instances"}, {"arrows": "to", "from": "serverless cloud functions instance type from e-footprint hypothesis", "to": "API call response from Boavizta API cloud instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2488,7 +2488,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_aa6ebd {
+             #mynetwork_bbfbf0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2510,7 +2510,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_aa6ebd" class="card-body"></div>
+            <div id="mynetwork_bbfbf0" class="card-body"></div>
         </div>
 
 
@@ -2540,12 +2540,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_aa6ebd');
+                  var container = document.getElementById('mynetwork_bbfbf0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "label": "serverless cloud\nfunctions\nfabrication carbon\nfootprint from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud\ninstances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n80.0 kilogram", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from e-footprint hypothesis combined in Boavizta API call with\nunnamed source from e-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "label": "serverless cloud\nfunctions\nfabrication carbon\nfootprint from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud\ninstances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n80.0 kilogram", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nserverless cloud functions cloud provider from e-footprint hypothesis combined\nin Boavizta API call with serverless cloud functions instance type from\ne-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response from Boavizta API cloud instances", "to": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances"}]);
 
                   nodeColors = {};
@@ -2614,7 +2614,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_carbon_footprint_fabrication.html' target='_blank'>link to serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances’s full calculation graph</a>.</p>
 <h3 id="power">power</h3>
 <p>ExplainableQuantity in watt, representing the serverless cloud functions power from boavizta api cloud instances.  </p>
-<p>Example value: 40.07 watt  </p>
+<p>Example value: 40.06999969482422 watt  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#api_call_response">API call response from Boavizta API cloud instances</a>  </li>
@@ -2653,7 +2653,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fee700 {
+             #mynetwork_099384 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2675,7 +2675,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fee700" class="card-body"></div>
+            <div id="mynetwork_099384" class="card-body"></div>
         </div>
 
 
@@ -2705,12 +2705,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fee700');
+                  var container = document.getElementById('mynetwork_099384');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions power from Boavizta API cloud instances", "label": "serverless cloud\nfunctions power from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions power from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.07 watt", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from e-footprint hypothesis combined in Boavizta API call with\nunnamed source from e-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions power from Boavizta API cloud instances", "label": "serverless cloud\nfunctions power from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions power from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.06999969482422 watt", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nserverless cloud functions cloud provider from e-footprint hypothesis combined\nin Boavizta API call with serverless cloud functions instance type from\ne-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response from Boavizta API cloud instances", "to": "serverless cloud functions power from Boavizta API cloud instances"}]);
 
                   nodeColors = {};
@@ -2818,7 +2818,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a05c99 {
+             #mynetwork_51605b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2840,7 +2840,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a05c99" class="card-body"></div>
+            <div id="mynetwork_51605b" class="card-body"></div>
         </div>
 
 
@@ -2870,12 +2870,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a05c99');
+                  var container = document.getElementById('mynetwork_51605b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from e-footprint hypothesis combined in Boavizta API call with\nunnamed source from e-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nserverless cloud functions cloud provider from e-footprint hypothesis combined\nin Boavizta API call with serverless cloud functions instance type from\ne-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response from Boavizta API cloud instances", "to": "serverless cloud functions ram from Boavizta API cloud instances"}]);
 
                   nodeColors = {};
@@ -2983,7 +2983,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5c17db {
+             #mynetwork_304c98 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3005,7 +3005,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5c17db" class="card-body"></div>
+            <div id="mynetwork_304c98" class="card-body"></div>
         </div>
 
 
@@ -3035,12 +3035,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5c17db');
+                  var container = document.getElementById('mynetwork_304c98');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nunnamed source from e-footprint hypothesis combined in Boavizta API call with\nunnamed source from e-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "API call response from Boavizta API cloud instances", "label": "API call response\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "API call response from Boavizta API cloud instances\n=\nserverless cloud functions cloud provider from e-footprint hypothesis combined\nin Boavizta API call with serverless cloud functions instance type from\ne-footprint hypothesis\n=\nscaleway combined in Boavizta API call with ent1-s\n=\n{\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027: \u0027Tota...", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "API call response from Boavizta API cloud instances", "to": "serverless cloud functions compute from Boavizta API cloud instances"}]);
 
                   nodeColors = {};
@@ -3109,7 +3109,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_compute.html' target='_blank'>link to serverless cloud functions compute from Boavizta API cloud instances’s full calculation graph</a>.</p>
 <h3 id="hour_by_hour_ram_need">hour_by_hour_ram_need</h3>
 <p>serverless cloud functions hour by hour ram need in gigabyte.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -3151,7 +3151,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4ba98a {
+             #mynetwork_1faed7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3173,7 +3173,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4ba98a" class="card-body"></div>
+            <div id="mynetwork_1faed7" class="card-body"></div>
         </div>
 
 
@@ -3203,13 +3203,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4ba98a');
+                  var container = document.getElementById('mynetwork_1faed7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions hour by hour ram need", "label": "serverless cloud\nfunctions hour by\nhour ram need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour ram need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 6.15 megabyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Web application job average occurrences across usage patterns", "label": "Hourly Web\napplication job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Web application job average occurrences across usage patterns\n=\nAverage hourly Web application job occurrences in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -200.0, "y": 750}, {"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from e-footprint hypothesis query RAM\nEcobenchmark data with Technology used in Web application service from\ne-footprint hypothesis\n=\ndefault query RAM Ecobenchmark data with php-symfony\n=\n6.15 megabyte", "x": 0.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 150.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Web application job average occurrences across usage patterns", "to": "serverless cloud functions hour by hour ram need"}, {"arrows": "to", "from": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "to": "serverless cloud functions hour by hour ram need"}, {"arrows": "to", "from": "no value", "to": "serverless cloud functions hour by hour ram need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions hour by hour ram need", "label": "serverless cloud\nfunctions hour by\nhour ram need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour ram need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n6.150000095367432 megabyte + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Web application job average occurrences across usage patterns", "label": "Hourly Web\napplication job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Web application job average occurrences across usage patterns\n=\nAverage hourly Web application job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -112.5, "y": 750}, {"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from e-footprint hypothesis query RAM\nEcobenchmark data with Technology used in Web application service from\ne-footprint hypothesis\n=\ndefault query RAM Ecobenchmark data with php-symfony\n=\n6.150000095367432 megabyte", "x": 112.5, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Web application job average occurrences across usage patterns", "to": "serverless cloud functions hour by hour ram need"}, {"arrows": "to", "from": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "to": "serverless cloud functions hour by hour ram need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3277,7 +3277,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_hour_by_hour_ram_need.html' target='_blank'>link to serverless cloud functions hour by hour ram need’s full calculation graph</a>.</p>
 <h3 id="hour_by_hour_compute_need">hour_by_hour_compute_need</h3>
 <p>serverless cloud functions hour by hour compute need in cpu_core.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in cpu_core:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in cpu_core:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -3319,7 +3319,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_27f7a9 {
+             #mynetwork_7ca76d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3341,7 +3341,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_27f7a9" class="card-body"></div>
+            <div id="mynetwork_7ca76d" class="card-body"></div>
         </div>
 
 
@@ -3371,13 +3371,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_27f7a9');
+                  var container = document.getElementById('mynetwork_7ca76d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions hour by hour compute need", "label": "serverless cloud\nfunctions hour by\nhour compute need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour compute need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0.08 cpu_core\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Web application job average occurrences across usage patterns", "label": "Hourly Web\napplication job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Web application job average occurrences across usage patterns\n=\nAverage hourly Web application job occurrences in usage pattern + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -200.0, "y": 750}, {"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from e-footprint hypothesis query CPU\nEcobenchmark data with Technology used in Web application service from\ne-footprint hypothesis\n=\ndefault query CPU Ecobenchmark data with php-symfony\n=\n0.08 cpu_core", "x": 0.0, "y": 750}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 150.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Web application job average occurrences across usage patterns", "to": "serverless cloud functions hour by hour compute need"}, {"arrows": "to", "from": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "to": "serverless cloud functions hour by hour compute need"}, {"arrows": "to", "from": "no value", "to": "serverless cloud functions hour by hour compute need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "serverless cloud functions hour by hour compute need", "label": "serverless cloud\nfunctions hour by\nhour compute need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour compute need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n0.07999999821186066 cpu_core + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Web application job average occurrences across usage patterns", "label": "Hourly Web\napplication job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Web application job average occurrences across usage patterns\n=\nAverage hourly Web application job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -112.5, "y": 750}, {"color": null, "id": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "label": "from e-footprint\nanalysis of\nBoavizta\u2019s\nEcobenchmark data", "shape": "dot", "size": 15, "title": "from e-footprint analysis of Boavizta\u2019s Ecobenchmark data\n=\nWeb application job implementation details from e-footprint hypothesis query CPU\nEcobenchmark data with Technology used in Web application service from\ne-footprint hypothesis\n=\ndefault query CPU Ecobenchmark data with php-symfony\n=\n0.07999999821186066 cpu_core", "x": 112.5, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Web application job average occurrences across usage patterns", "to": "serverless cloud functions hour by hour compute need"}, {"arrows": "to", "from": " from e-footprint analysis of Boavizta\u2019s Ecobenchmark data", "to": "serverless cloud functions hour by hour compute need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3445,7 +3445,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_hour_by_hour_compute_need.html' target='_blank'>link to serverless cloud functions hour by hour compute need’s full calculation graph</a>.</p>
 <h3 id="occupied_ram_per_instance">occupied_ram_per_instance</h3>
 <p>ExplainableQuantity in gigabyte, representing the occupied ram per serverless cloud functions instance including services.  </p>
-<p>Example value: 0 gigabyte  </p>
+<p>Example value: 0.0 gigabyte  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#base_ram_consumption">Base RAM consumption of serverless cloud functions from e-footprint hypothesis</a></li>
@@ -3485,7 +3485,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fd8abc {
+             #mynetwork_e4f613 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3507,7 +3507,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fd8abc" class="card-body"></div>
+            <div id="mynetwork_e4f613" class="card-body"></div>
         </div>
 
 
@@ -3537,13 +3537,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fd8abc');
+                  var container = document.getElementById('mynetwork_e4f613');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\nno value\n=\n0 gigabyte + no value\n=\n0 gigabyte", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base RAM consumption\nof serverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis =\n0 gigabyte", "x": 0.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\n+ 0 of (no value)\n=\n+ 0 of (no value)\n=\nno value", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied RAM per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied RAM per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "no value"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\n+ 0 of (no value)\n=\n0.0 gigabyte + + 0 of (no value)\n=\n0.0 gigabyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base RAM consumption\nof serverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis =\n0.0 gigabyte", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied RAM per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied RAM per serverless cloud functions instance including services"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3611,7 +3611,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_occupied_ram_per_instance.html' target='_blank'>link to Occupied RAM per serverless cloud functions instance including services’s full calculation graph</a>.</p>
 <h3 id="occupied_compute_per_instance">occupied_compute_per_instance</h3>
 <p>ExplainableQuantity in cpu_core, representing the occupied cpu per serverless cloud functions instance including services.  </p>
-<p>Example value: 0 cpu_core  </p>
+<p>Example value: 0.0 cpu_core  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#base_compute_consumption">Base cpu core consumption of serverless cloud functions from e-footprint hypothesis</a></li>
@@ -3651,7 +3651,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_43a2a0 {
+             #mynetwork_3b2b9c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3673,7 +3673,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_43a2a0" class="card-body"></div>
+            <div id="mynetwork_3b2b9c" class="card-body"></div>
         </div>
 
 
@@ -3703,13 +3703,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_43a2a0');
+                  var container = document.getElementById('mynetwork_3b2b9c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + no value\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base cpu core\nconsumption of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base cpu core consumption of serverless cloud functions from e-footprint\nhypothesis = 0 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value\n=\n+ 0 of (no value)\n=\n+ 0 of (no value)\n=\nno value", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "no value"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + + 0 of (no value)\n=\n0.0 cpu_core + + 0 of (no value)\n=\n0.0 cpu_core", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base cpu core\nconsumption of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base cpu core consumption of serverless cloud functions from e-footprint\nhypothesis = 0.0 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per serverless cloud functions instance including services"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3777,7 +3777,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_occupied_compute_per_instance.html' target='_blank'>link to Occupied CPU per serverless cloud functions instance including services’s full calculation graph</a>.</p>
 <h3 id="available_ram_per_instance">available_ram_per_instance</h3>
 <p>ExplainableQuantity in gigabyte, representing the available ram per serverless cloud functions instance.  </p>
-<p>Example value: 28.8 gigabyte  </p>
+<p>Example value: 28.799999237060547 gigabyte  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#ram">serverless cloud functions ram from Boavizta API cloud instances</a></li>
@@ -3818,7 +3818,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cd3bbd {
+             #mynetwork_0f98ef {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3840,7 +3840,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cd3bbd" class="card-body"></div>
+            <div id="mynetwork_0f98ef" class="card-body"></div>
         </div>
 
 
@@ -3870,12 +3870,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cd3bbd');
+                  var container = document.getElementById('mynetwork_0f98ef');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.9 dimensionless - 0 gigabyte\n=\n28.8 gigabyte", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\nno value\n=\n0 gigabyte + no value\n=\n0 gigabyte", "x": 150.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.8999999761581421 dimensionless - 0.0 gigabyte\n=\n28.799999237060547 gigabyte", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.8999999761581421 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\n+ 0 of (no value)\n=\n0.0 gigabyte + + 0 of (no value)\n=\n0.0 gigabyte", "x": 150.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions ram from Boavizta API cloud instances", "to": "Available RAM per serverless cloud functions instance"}, {"arrows": "to", "from": "serverless cloud functions utilization rate", "to": "Available RAM per serverless cloud functions instance"}, {"arrows": "to", "from": "Occupied RAM per serverless cloud functions instance including services", "to": "Available RAM per serverless cloud functions instance"}]);
 
                   nodeColors = {};
@@ -3944,7 +3944,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_available_ram_per_instance.html' target='_blank'>link to Available RAM per serverless cloud functions instance’s full calculation graph</a>.</p>
 <h3 id="available_compute_per_instance">available_compute_per_instance</h3>
 <p>ExplainableQuantity in cpu_core, representing the available cpu per serverless cloud functions instance.  </p>
-<p>Example value: 7.2 cpu_core  </p>
+<p>Example value: 7.199999809265137 cpu_core  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#compute">serverless cloud functions compute from Boavizta API cloud instances</a></li>
@@ -3985,7 +3985,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_62de2a {
+             #mynetwork_541c87 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4007,7 +4007,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_62de2a" class="card-body"></div>
+            <div id="mynetwork_541c87" class="card-body"></div>
         </div>
 
 
@@ -4037,12 +4037,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_62de2a');
+                  var container = document.getElementById('mynetwork_541c87');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.9 dimensionless - 0 cpu_core\n=\n7.2 cpu_core", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + no value\n=\n0 cpu_core + no value\n=\n0 cpu_core", "x": 150.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.8999999761581421 dimensionless - 0.0 cpu_core\n=\n7.199999809265137 cpu_core", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions compute from Boavizta API cloud instances", "label": "serverless cloud\nfunctions compute\nfrom Boavizta API\ncloud instances", "shape": "dot", "size": 15, "title": "serverless cloud functions compute from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n8.0 cpu_core", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.8999999761581421 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + + 0 of (no value)\n=\n0.0 cpu_core + + 0 of (no value)\n=\n0.0 cpu_core", "x": 150.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions compute from Boavizta API cloud instances", "to": "Available CPU per serverless cloud functions instance"}, {"arrows": "to", "from": "serverless cloud functions utilization rate", "to": "Available CPU per serverless cloud functions instance"}, {"arrows": "to", "from": "Occupied CPU per serverless cloud functions instance including services", "to": "Available CPU per serverless cloud functions instance"}]);
 
                   nodeColors = {};
@@ -4111,7 +4111,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_available_compute_per_instance.html' target='_blank'>link to Available CPU per serverless cloud functions instance’s full calculation graph</a>.</p>
 <h3 id="raw_nb_of_instances">raw_nb_of_instances</h3>
 <p>hourly raw number of serverless cloud functions instances in dimensionless.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -4155,7 +4155,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2a6820 {
+             #mynetwork_a0dd23 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4177,7 +4177,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2a6820" class="card-body"></div>
+            <div id="mynetwork_a0dd23" class="card-body"></div>
         </div>
 
 
@@ -4207,13 +4207,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2a6820');
+                  var container = document.getElementById('mynetwork_a0dd23');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nRaw nb of serverless cloud functions instances based on RAM alone max compared\nwith Raw nb of serverless cloud functions instances based on CPU alone\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Raw nb of serverless cloud functions instances based on RAM alone", "label": "Raw nb of serverless\ncloud functions\ninstances based on\nRAM alone", "shape": "dot", "size": 15, "title": "Raw nb of serverless cloud functions instances based on RAM alone\n=\nserverless cloud functions hour by hour ram need / Available RAM per serverless\ncloud functions instance\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] / 28.8 gigabyte\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -262.5, "y": 1050}, {"color": null, "id": "serverless cloud functions hour by hour ram need", "label": "serverless cloud\nfunctions hour by\nhour ram need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour ram need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 6.15 megabyte\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -393.75, "y": 900}, {"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.9 dimensionless - 0 gigabyte\n=\n28.8 gigabyte", "x": -131.25, "y": 900}, {"color": null, "id": "Raw nb of serverless cloud functions instances based on CPU alone", "label": "Raw nb of serverless\ncloud functions\ninstances based on\nCPU alone", "shape": "dot", "size": 15, "title": "Raw nb of serverless cloud functions instances based on CPU alone\n=\nserverless cloud functions hour by hour compute need / Available CPU per\nserverless cloud functions instance\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] / 7.2 cpu_core\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 262.5, "y": 1050}, {"color": null, "id": "serverless cloud functions hour by hour compute need", "label": "serverless cloud\nfunctions hour by\nhour compute need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour compute need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0.08 cpu_core\n+ no value\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 131.25, "y": 900}, {"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.9 dimensionless - 0 cpu_core\n=\n7.2 cpu_core", "x": 393.75, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Raw nb of serverless cloud functions instances based on RAM alone", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions hour by hour ram need", "to": "Raw nb of serverless cloud functions instances based on RAM alone"}, {"arrows": "to", "from": "Available RAM per serverless cloud functions instance", "to": "Raw nb of serverless cloud functions instances based on RAM alone"}, {"arrows": "to", "from": "Raw nb of serverless cloud functions instances based on CPU alone", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions hour by hour compute need", "to": "Raw nb of serverless cloud functions instances based on CPU alone"}, {"arrows": "to", "from": "Available CPU per serverless cloud functions instance", "to": "Raw nb of serverless cloud functions instances based on CPU alone"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nserverless cloud functions hour by hour ram need / Available RAM per serverless\ncloud functions instance max compared with serverless cloud functions hour by\nhour compute need / Available CPU per serverless cloud functions instance\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n28.799999237060547 gigabyte max compared with 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in cpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n7.199999809265137 cpu_core\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "serverless cloud functions hour by hour ram need", "label": "serverless cloud\nfunctions hour by\nhour ram need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour ram need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n6.150000095367432 megabyte + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -393.75, "y": 900}, {"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.8999999761581421 dimensionless - 0.0 gigabyte\n=\n28.799999237060547 gigabyte", "x": -131.25, "y": 900}, {"color": null, "id": "serverless cloud functions hour by hour compute need", "label": "serverless cloud\nfunctions hour by\nhour compute need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour compute need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n0.07999999821186066 cpu_core + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 131.25, "y": 900}, {"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.8999999761581421 dimensionless - 0.0 cpu_core\n=\n7.199999809265137 cpu_core", "x": 393.75, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions hour by hour ram need", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "Available RAM per serverless cloud functions instance", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions hour by hour compute need", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "Available CPU per serverless cloud functions instance", "to": "Hourly raw number of serverless cloud functions instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4281,7 +4281,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_raw_nb_of_instances.html' target='_blank'>link to Hourly raw number of serverless cloud functions instances’s full calculation graph</a>.</p>
 <h3 id="nb_of_instances">nb_of_instances</h3>
 <p>hourly number of serverless cloud functions instances in dimensionless.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -4323,7 +4323,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_107841 {
+             #mynetwork_d09f3f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4345,7 +4345,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_107841" class="card-body"></div>
+            <div id="mynetwork_d09f3f" class="card-body"></div>
         </div>
 
 
@@ -4375,13 +4375,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_107841');
+                  var container = document.getElementById('mynetwork_d09f3f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nHourly raw number of serverless cloud functions instances logically dependent on\nServer type of serverless cloud functions from e-footprint hypothesis\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] logically\ndependent on serverless\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nduplicate of (Hourly raw number of serverless cloud functions instances)\n=\nduplicate of (26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": "darkred", "id": "Server type of serverless cloud functions from e-footprint hypothesis", "label": "Server type of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Server type of serverless cloud functions from e-footprint hypothesis =\nserverless", "x": 0.0, "y": 1350}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of serverless cloud functions instances", "to": "Hourly number of serverless cloud functions instances"}, {"arrows": "to", "from": "Hourly raw number of serverless cloud functions instances", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "Server type of serverless cloud functions from e-footprint hypothesis", "to": "Hourly number of serverless cloud functions instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nduplicate of (Hourly raw number of serverless cloud functions instances)\nlogically dependent on Server type of serverless cloud functions from\ne-footprint hypothesis\n=\nduplicate of (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) logically\ndependent on serverless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nserverless cloud functions hour by hour ram need / Available RAM per serverless\ncloud functions instance max compared with serverless cloud functions hour by\nhour compute need / Available CPU per serverless cloud functions instance\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n28.799999237060547 gigabyte max compared with 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in cpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n7.199999809265137 cpu_core\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -262.5, "y": 1050}, {"color": "darkred", "id": "Server type of serverless cloud functions from e-footprint hypothesis", "label": "Server type of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Server type of serverless cloud functions from e-footprint hypothesis =\nserverless", "x": 262.5, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of serverless cloud functions instances", "to": "Hourly number of serverless cloud functions instances"}, {"arrows": "to", "from": "Server type of serverless cloud functions from e-footprint hypothesis", "to": "Hourly number of serverless cloud functions instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4449,7 +4449,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_nb_of_instances.html' target='_blank'>link to Hourly number of serverless cloud functions instances’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>hourly serverless cloud functions instances fabrication footprint in kilogram.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -4492,7 +4492,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_62ec92 {
+             #mynetwork_9c4456 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4514,7 +4514,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_62ec92" class="card-body"></div>
+            <div id="mynetwork_9c4456" class="card-body"></div>
         </div>
 
 
@@ -4544,13 +4544,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_62ec92');
+                  var container = document.getElementById('mynetwork_9c4456');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless cloud functions instances fabrication footprint", "label": "Hourly serverless\ncloud functions\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly serverless cloud functions instances fabrication footprint\n=\nHourly number of serverless cloud functions instances * serverless cloud\nfunctions fabrication carbon footprint from Boavizta API cloud instances * one\nhour / Lifespan of serverless cloud functions from e-footprint hypothesis\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 80.0 kilogram\n* 1 hour / 6 year\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nHourly raw number of serverless cloud functions instances logically dependent on\nServer type of serverless cloud functions from e-footprint hypothesis\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] logically\ndependent on serverless\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -393.75, "y": 1500}, {"color": null, "id": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "label": "serverless cloud\nfunctions\nfabrication carbon\nfootprint from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud\ninstances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n80.0 kilogram", "x": -131.25, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 131.25, "y": 1500}, {"color": "darkred", "id": "Lifespan of serverless cloud functions from e-footprint hypothesis", "label": "Lifespan of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Lifespan of serverless cloud functions from e-footprint hypothesis = 6 year", "x": 393.75, "y": 1500}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of serverless cloud functions instances", "to": "Hourly serverless cloud functions instances fabrication footprint"}, {"arrows": "to", "from": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "to": "Hourly serverless cloud functions instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly serverless cloud functions instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of serverless cloud functions from e-footprint hypothesis", "to": "Hourly serverless cloud functions instances fabrication footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless cloud functions instances fabrication footprint", "label": "Hourly serverless\ncloud functions\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly serverless cloud functions instances fabrication footprint\n=\nHourly number of serverless cloud functions instances * serverless cloud\nfunctions fabrication carbon footprint from Boavizta API cloud instances * one\nhour / Lifespan of serverless cloud functions from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 80.0 kilogram\n* 1.0 hour / 6.0 year\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nduplicate of (Hourly raw number of serverless cloud functions instances)\nlogically dependent on Server type of serverless cloud functions from\ne-footprint hypothesis\n=\nduplicate of (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) logically\ndependent on serverless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -350.0, "y": 1200}, {"color": null, "id": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "label": "serverless cloud\nfunctions\nfabrication carbon\nfootprint from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud\ninstances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n80.0 kilogram", "x": 0.0, "y": 1200}, {"color": "darkred", "id": "Lifespan of serverless cloud functions from e-footprint hypothesis", "label": "Lifespan of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Lifespan of serverless cloud functions from e-footprint hypothesis = 6.0 year", "x": 350.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of serverless cloud functions instances", "to": "Hourly serverless cloud functions instances fabrication footprint"}, {"arrows": "to", "from": "serverless cloud functions fabrication carbon footprint from Boavizta API cloud instances", "to": "Hourly serverless cloud functions instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of serverless cloud functions from e-footprint hypothesis", "to": "Hourly serverless cloud functions instances fabrication footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4618,7 +4618,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_instances_fabrication_footprint.html' target='_blank'>link to Hourly serverless cloud functions instances fabrication footprint’s full calculation graph</a>.</p>
 <h3 id="instances_energy">instances_energy</h3>
 <p>hourly energy consumed by serverless cloud functions instances in kilowatt_hour.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -4663,7 +4663,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_33f8d1 {
+             #mynetwork_75155e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4685,7 +4685,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_33f8d1" class="card-body"></div>
+            <div id="mynetwork_75155e" class="card-body"></div>
         </div>
 
 
@@ -4715,13 +4715,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_33f8d1');
+                  var container = document.getElementById('mynetwork_75155e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by serverless cloud functions instances", "label": "Hourly energy\nconsumed by\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by serverless cloud functions instances\n=\nHourly number of serverless cloud functions instances * Idle power of serverless\ncloud functions from e-footprint hypothesis * PUE of serverless cloud functions\n* one hour + Hourly raw number of serverless cloud functions instances *\n(serverless cloud functions power from Boavizta API cloud instances - Idle power\nof serverless cloud functions from e-footprint hypothesis) * PUE of serverless\ncloud functions * one hour\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0 watt * 1.2\ndimensionless * 1 hour + 26296 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (40.07 watt -\n0 watt) * 1.2 dimensionless * 1 hour\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nHourly raw number of serverless cloud functions instances logically dependent on\nServer type of serverless cloud functions from e-footprint hypothesis\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] logically\ndependent on serverless\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -687.5, "y": 1500}, {"color": "darkred", "id": "Idle power of serverless cloud functions from e-footprint hypothesis", "label": "Idle power of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Idle power of serverless cloud functions from e-footprint hypothesis = 0 watt", "x": -412.5, "y": 1500}, {"color": null, "id": "PUE of serverless cloud functions", "label": "PUE of serverless\ncloud functions", "shape": "dot", "size": 15, "title": "PUE of serverless cloud functions = 1.2 dimensionless", "x": -137.5, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 137.5, "y": 1500}, {"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nRaw nb of serverless cloud functions instances based on RAM alone max compared\nwith Raw nb of serverless cloud functions instances based on CPU alone\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] max compared\nwith 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -687.5, "y": 1200}, {"color": null, "id": "serverless cloud functions power from Boavizta API cloud instances", "label": "serverless cloud\nfunctions power from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions power from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.07 watt", "x": 687.5, "y": 1500}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of serverless cloud functions instances", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "Idle power of serverless cloud functions from e-footprint hypothesis", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "PUE of serverless cloud functions", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "one hour", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "Hourly raw number of serverless cloud functions instances", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions power from Boavizta API cloud instances", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "Idle power of serverless cloud functions from e-footprint hypothesis", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "PUE of serverless cloud functions", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "one hour", "to": "Hourly energy consumed by serverless cloud functions instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by serverless cloud functions instances", "label": "Hourly energy\nconsumed by\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by serverless cloud functions instances\n=\nHourly number of serverless cloud functions instances * Idle power of serverless\ncloud functions from e-footprint hypothesis * PUE of serverless cloud functions\n* one hour + Hourly raw number of serverless cloud functions instances *\n(serverless cloud functions power from Boavizta API cloud instances - Idle power\nof serverless cloud functions from e-footprint hypothesis) * PUE of serverless\ncloud functions * one hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0.0 watt *\n1.2000000476837158 dimensionless * 1.0 hour + 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n(40.06999969482422 watt - 0.0 watt) * 1.2000000476837158 dimensionless * 1.0\nhour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly number of serverless cloud functions instances", "label": "Hourly number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless cloud functions instances\n=\nduplicate of (Hourly raw number of serverless cloud functions instances)\nlogically dependent on Server type of serverless cloud functions from\ne-footprint hypothesis\n=\nduplicate of (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) logically\ndependent on serverless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -840.0, "y": 1200}, {"color": "darkred", "id": "Idle power of serverless cloud functions from e-footprint hypothesis", "label": "Idle power of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Idle power of serverless cloud functions from e-footprint hypothesis = 0.0 watt", "x": -420.0, "y": 1200}, {"color": null, "id": "PUE of serverless cloud functions", "label": "PUE of serverless\ncloud functions", "shape": "dot", "size": 15, "title": "PUE of serverless cloud functions = 1.2000000476837158 dimensionless", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nserverless cloud functions hour by hour ram need / Available RAM per serverless\ncloud functions instance max compared with serverless cloud functions hour by\nhour compute need / Available CPU per serverless cloud functions instance\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in GB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n28.799999237060547 gigabyte max compared with 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in cpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] /\n7.199999809265137 cpu_core\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -900.0, "y": 1050}, {"color": null, "id": "serverless cloud functions power from Boavizta API cloud instances", "label": "serverless cloud\nfunctions power from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions power from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n40.06999969482422 watt", "x": 840.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of serverless cloud functions instances", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "Idle power of serverless cloud functions from e-footprint hypothesis", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "PUE of serverless cloud functions", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "Hourly raw number of serverless cloud functions instances", "to": "Hourly energy consumed by serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions power from Boavizta API cloud instances", "to": "Hourly energy consumed by serverless cloud functions instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4789,7 +4789,7 @@
 <p>You can also visit the <a href='../calculus_graphs/serverless_cloud_functions_instances_energy.html' target='_blank'>link to Hourly energy consumed by serverless cloud functions instances’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>hourly serverless cloud functions energy footprint in kilogram.  </p>
-<p>Example value: 26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -4831,7 +4831,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4fcbd8 {
+             #mynetwork_decc8b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4853,7 +4853,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4fcbd8" class="card-body"></div>
+            <div id="mynetwork_decc8b" class="card-body"></div>
         </div>
 
 
@@ -4883,12 +4883,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4fcbd8');
+                  var container = document.getElementById('mynetwork_decc8b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless cloud functions energy footprint", "label": "Hourly serverless\ncloud functions\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly serverless cloud functions energy footprint\n=\nHourly energy consumed by serverless cloud functions instances * Average carbon\nintensity of serverless cloud functions electricity\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 100.0 gram /\nkilowatt_hour\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly energy consumed by serverless cloud functions instances", "label": "Hourly energy\nconsumed by\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by serverless cloud functions instances\n=\nHourly number of serverless cloud functions instances * Idle power of serverless\ncloud functions from e-footprint hypothesis * PUE of serverless cloud functions\n* one hour + Hourly raw number of serverless cloud functions instances *\n(serverless cloud functions power from Boavizta API cloud instances - Idle power\nof serverless cloud functions from e-footprint hypothesis) * PUE of serverless\ncloud functions * one hour\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0 watt * 1.2\ndimensionless * 1 hour + 26296 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (40.07 watt -\n0 watt) * 1.2 dimensionless * 1 hour\n=\n26296 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -412.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of serverless cloud functions electricity", "label": "Average carbon\nintensity of\nserverless cloud\nfunctions\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of serverless cloud functions electricity = 100.0 gram\n/ kilowatt_hour", "x": 412.5, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless cloud functions energy footprint", "label": "Hourly serverless\ncloud functions\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly serverless cloud functions energy footprint\n=\nHourly energy consumed by serverless cloud functions instances * Average carbon\nintensity of serverless cloud functions electricity\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 100.0 gram /\nkilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly energy consumed by serverless cloud functions instances", "label": "Hourly energy\nconsumed by\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by serverless cloud functions instances\n=\nHourly number of serverless cloud functions instances * Idle power of serverless\ncloud functions from e-footprint hypothesis * PUE of serverless cloud functions\n* one hour + Hourly raw number of serverless cloud functions instances *\n(serverless cloud functions power from Boavizta API cloud instances - Idle power\nof serverless cloud functions from e-footprint hypothesis) * PUE of serverless\ncloud functions * one hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0.0 watt *\n1.2000000476837158 dimensionless * 1.0 hour + 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] *\n(40.06999969482422 watt - 0.0 watt) * 1.2000000476837158 dimensionless * 1.0\nhour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -525.0, "y": 1350}, {"color": null, "id": "Average carbon intensity of serverless cloud functions electricity", "label": "Average carbon\nintensity of\nserverless cloud\nfunctions\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of serverless cloud functions electricity = 100.0 gram\n/ kilowatt_hour", "x": 525.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by serverless cloud functions instances", "to": "Hourly serverless cloud functions energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of serverless cloud functions electricity", "to": "Hourly serverless cloud functions energy footprint"}]);
 
                   nodeColors = {};
@@ -5003,10 +5003,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>
