@@ -243,7 +243,7 @@ class ServerBase(InfraHardware):
                         left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
             else:
                 nb_of_instances_np = Quantity(
-                    max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances), dtype=np.float32),
+                    np.float32(max_nb_of_instances.magnitude) * np.ones(len(self.raw_nb_of_instances), dtype=np.float32),
                     u.dimensionless)
 
                 nb_of_instances = ExplainableHourlyQuantities(

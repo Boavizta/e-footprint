@@ -234,7 +234,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
 
-            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-08, atol=1e-08)
+            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-06, atol=1e-06)
         else:
             raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
 
@@ -300,7 +300,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         elif isinstance(other, self._EmptyExplainableObject):
             return self._EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
         elif isinstance(other, self._ExplainableQuantity):
-            return ExplainableHourlyQuantities(self.value * other.value, self.start_date, "", self, other, "*")
+            other_value_to_multiply = other.value
+            if not isinstance(other_value_to_multiply.magnitude, np.float32):
+                other_value_to_multiply = np.float32(other_value_to_multiply.magnitude) * other_value_to_multiply.units
+            return ExplainableHourlyQuantities(
+                self.value * other_value_to_multiply, self.start_date, "", self, other, "*")
         elif isinstance(other, ExplainableHourlyQuantities):
             aligned_self, aligned_other, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
@@ -321,7 +325,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
         elif isinstance(other, self._ExplainableQuantity):
-            return ExplainableHourlyQuantities(self.value / other.value, self.start_date,"", self, other, "/")
+            other_value_to_divide = other.value
+            if not isinstance(other_value_to_divide.magnitude, np.float32):
+                other_value_to_divide = np.float32(other_value_to_divide.magnitude) * other_value_to_divide.units
+            return ExplainableHourlyQuantities(self.value / other_value_to_divide, self.start_date,"", self, other, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
@@ -331,7 +338,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(other, ExplainableHourlyQuantities):
             raise NotImplementedError
         elif isinstance(other, self._ExplainableQuantity):
-            return ExplainableHourlyQuantities(other.value / self.value, self.start_date,"", other, self, "/")
+            other_value_to_divide = other.value
+            if not isinstance(other_value_to_divide.magnitude, np.float32):
+                other_value_to_divide = np.float32(other_value_to_divide.magnitude) * other_value_to_divide.units
+            return ExplainableHourlyQuantities(other_value_to_divide / self.value, self.start_date,"", other, self, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity,"

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.10] - 2025-06-18
+
+### Changed
+- Use float instead of np.float32 for ExplainableQuantity values to avoid decimal issues (like 1.2 turning into 1.1999999999999997).
+
 ## [10.1.9] - 2025-06-18
 
 ### Fixed

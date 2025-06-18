@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.1.9",
+    "efootprint_version": "10.1.10",
     "System": {
         "id-XXXXXX-system-1": {
             "name": "system 1",
@@ -154,7 +154,7 @@
                 }
             },
             "power_usage_effectiveness": {
-                "value": 1.2000000476837158,
+                "value": 1.2,
                 "unit": "dimensionless",
                 "label": "PUE of GPU server from e-footprint hypothesis",
                 "source": {
@@ -282,7 +282,7 @@
                 }
             },
             "power_per_storage_capacity": {
-                "value": 1.2999999523162842,
+                "value": 1.3,
                 "unit": "watt / terabyte",
                 "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "source": {
@@ -371,7 +371,7 @@
                 }
             },
             "power_per_storage_capacity": {
-                "value": 1.2999999523162842,
+                "value": 1.3,
                 "unit": "watt / terabyte",
                 "label": "Power of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "source": {
@@ -491,7 +491,7 @@
                 "label": "no value"
             },
             "bits_per_pixel": {
-                "value": 0.10000000149011612,
+                "value": 0.1,
                 "unit": "dimensionless",
                 "label": "Youtube streaming service bits per pixel from e-footprint hypothesis",
                 "source": {
@@ -559,7 +559,7 @@
                 }
             },
             "power_usage_effectiveness": {
-                "value": 1.2000000476837158,
+                "value": 1.2,
                 "unit": "dimensionless",
                 "label": "PUE of Web server from e-footprint hypothesis",
                 "source": {
@@ -577,7 +577,7 @@
                 }
             },
             "server_utilization_rate": {
-                "value": 0.8999999761581421,
+                "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Web server utilization rate from e-footprint hypothesis",
                 "source": {
@@ -632,7 +632,7 @@
             "name": "web app job",
             "id": "id-XXXXXX-web-app-job",
             "data_transferred": {
-                "value": 2.200000047683716,
+                "value": 2.2,
                 "unit": "megabyte",
                 "label": "Sum of all data uploads and downloads for request web app job from e-footprint hypothesis",
                 "source": {
@@ -734,7 +734,7 @@
                 }
             },
             "llm_memory_factor": {
-                "value": 1.2000000476837158,
+                "value": 1.2,
                 "unit": "dimensionless",
                 "label": "GenAI service ratio between GPU memory footprint and model size from Ecologits",
                 "source": {
@@ -743,7 +743,7 @@
                 }
             },
             "gpu_latency_alpha": {
-                "value": 0.0008019999950192869,
+                "value": 0.000802,
                 "unit": "nanosecond",
                 "label": "GPU latency per active parameter and output token from Ecologits",
                 "source": {
@@ -752,7 +752,7 @@
                 }
             },
             "gpu_latency_beta": {
-                "value": 0.022299999371170998,
+                "value": 0.0223,
                 "unit": "second",
                 "label": "Base GPU latency per output_token from Ecologits",
                 "source": {
@@ -818,7 +818,7 @@
             "name": "Default network",
             "id": "id-XXXXXX-Default-network",
             "bandwidth_energy_intensity": {
-                "value": 0.05000000074505806,
+                "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity of Default network from Traficom study",
                 "source": {
