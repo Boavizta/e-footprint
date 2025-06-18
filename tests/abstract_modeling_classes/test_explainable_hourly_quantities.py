@@ -156,14 +156,14 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
     def test_to_json(self):
         self.maxDiff = None
         self.assertDictEqual(
-            {"label": "Usage 1", "compressed_values": "KLUv/SDAlQAASAAAAAAAAPA/AAIArxUCLTgC", "unit": "watt",
+            {"label": "Usage 1", "compressed_values": "KLUv/SBgVQAAIAAAgD8BAPnkiA==", "unit": "watt",
              "start_date": "2025-01-01 00:00:00", "timezone": None},
             self.hourly_usage1.to_json())
 
     def test_to_json_with_compressed_data_from_json(self):
         self.maxDiff = None
         json_data = {
-            "compressed_values": "KLUv/SDAlQAASAAAAAAAAPA/AAIArxUCLTgC",
+            "compressed_values": "KLUv/SBgVQAAIAAAgD8BAPnkiA==",
             "unit": "watt",
             "start_date": "2025-01-01 00:00:00",
             "timezone": None

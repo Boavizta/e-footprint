@@ -3,9 +3,12 @@ import os
 from time import time
 from unittest import TestCase
 
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
+from efootprint.constants.units import u
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,6 +39,35 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         logger.info(
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
         self.assertLess(avg_writing_time, 0.075)
+
+        nb_system_loadings = 10
+        start = time()
+        for i in range(nb_system_loadings):
+            class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
+                system_dict, launch_system_computations=False)
+            first_up = next(iter(class_obj_dict_computed["UsagePattern"].values()))
+            first_up.hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
+            system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
+                           output_filepath=None)
+        avg_loading_editing_writing_time = (time() - start) / nb_system_loadings
+        logger.info(
+            f"deserializing then big editing then reserializing system took {round(avg_loading_editing_writing_time, 3)}"
+            f" seconds on average for {nb_system_loadings} times")
+        self.assertLess(avg_loading_editing_writing_time, 0.7)
+
+        start = time()
+        for i in range(nb_system_loadings):
+            class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
+                system_dict, launch_system_computations=False)
+            first_up = next(iter(class_obj_dict_computed["UsagePattern"].values()))
+            first_up.usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(100 * u.MB, source=None)
+            system_to_json(next(iter(class_obj_dict_computed["System"].values())), save_calculated_attributes=True,
+                           output_filepath=None)
+        avg_loading_editing_writing_time = (time() - start) / nb_system_loadings
+        logger.info(
+            f"deserializing then small editing then reserializing system took {round(avg_loading_editing_writing_time, 3)}"
+            f" seconds on average for {nb_system_loadings} times")
+        self.assertLess(avg_loading_editing_writing_time, 0.2)
 
 
 if __name__ == "__main__":

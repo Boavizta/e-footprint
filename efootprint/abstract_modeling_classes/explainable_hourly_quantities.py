@@ -99,8 +99,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def value(self):
         if self._value is None and self.json_compressed_value_data is not None:
             decompressed_values = self.decompress_values(self.json_compressed_value_data["compressed_values"])
-            self._value = Quantity(
-                np.array(decompressed_values, dtype=np.float32), get_unit(self.json_compressed_value_data["unit"]))
+            self._value = Quantity(decompressed_values, get_unit(self.json_compressed_value_data["unit"]))
 
         return self._value
 
@@ -338,21 +337,19 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 f" not with {type(other)}")
 
     @staticmethod
-    def compress_values(values: np.array):
-        arr = array.array("d", values)  # "d" is double-precision float
-        cctx = zstd.ZstdCompressor(level=1)
-        compressed = cctx.compress(arr.tobytes())
+    def compress_values(values: np.ndarray) -> str:
+        if values.dtype != np.float32:
+            values = values.astype(np.float32, copy=False)
+        cctx = zstd.ZstdCompressor(level=0)
+        compressed = cctx.compress(values.tobytes())
         return base64.b64encode(compressed).decode("utf-8")
 
     @staticmethod
-    def decompress_values(compressed_str: str):
-        """Decompress a base64-encoded, zstd-compressed array of doubles."""
+    def decompress_values(compressed_str: str) -> np.ndarray:
         compressed = base64.b64decode(compressed_str)
         dctx = zstd.ZstdDecompressor()
         decompressed = dctx.decompress(compressed)
-        arr = array.array("d")
-        arr.frombytes(decompressed)
-        return arr.tolist()
+        return np.frombuffer(decompressed, dtype=np.float32)
 
     def to_json(self, with_calculated_attributes_data=False):
         if self._value is not None:

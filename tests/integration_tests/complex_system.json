@@ -15,7 +15,7 @@
             "name": "Video watching in France in the morning",
             "id": "uuid-Video-watching-in-France-in-the-morning",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/SBIzQEAdAIAAAAAAECPQABAn0AAQK9AAIizQABAv0AAcMdAAJ9AAAAAAABwp0AHAEsVAEFAEBAEBAFBAnAE",
+                "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
@@ -36,7 +36,7 @@
             "name": "Video watching in France in the evening",
             "id": "uuid-Video-watching-in-France-in-the-evening",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/SBIjQEAFAIAAAAAAECvQABAn0AAQI9AAIizQABYu79AAAAAAABwp0AGACDDnRhAEBAEBAnAEQ==",
+                "compressed_values": "KLUv/SAk9QAAsAAAekUAAPpEAAB6RABAnMDaRQCAO0UCACBg30od",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,

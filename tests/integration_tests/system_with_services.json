@@ -14,7 +14,7 @@
             "name": "Youtube usage in France",
             "id": "id-XXXXXX-Youtube-usage-in-France",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/SBIzQEAdAIAAAAAAECPQABAn0AAQK9AAIizQABAv0AAcMdAAJ9AAAAAAABwp0AHAEsVAEFAEBAEBAFBAnAE",
+                "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,

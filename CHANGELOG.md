@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Use numpy instead of pandas for time series calculations to improve performance and reduce memory usage. About 20x performance gains 🙌!!
 - Cache ObjectLinkedToModelingObj attributes like id or dict_container to avoid recomputing them each time they are accessed and speed up calculus graph parsing. 2x performance gain on complex edits.
+- Use float32 instead of float64 for time series values to reduce memory usage and improve performance.
+- Various other performance improvements in e-footprint logic. Now about 95% of compute time is spent computing the calculations and not in the e-footprint logic itself.
 
 ## [10.1.7] - 2025-06-11
 
