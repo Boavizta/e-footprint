@@ -163,14 +163,13 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
     def test_to_json_with_compressed_data_from_json(self):
         self.maxDiff = None
         json_data = {
+            "label": "Usage 1",
             "compressed_values": "KLUv/SBgVQAAIAAAgD8BAPnkiA==",
             "unit": "watt",
             "start_date": "2025-01-01 00:00:00",
             "timezone": None
         }
-        obj = ExplainableHourlyQuantities(json_data, start_date=self.start_date, label="Usage 1")
-        expected_json = copy(json_data)
-        expected_json["label"] = "Usage 1"
+        obj = ExplainableHourlyQuantities.from_json_dict(json_data)
         self.assertDictEqual(json_data, obj.to_json())
 
     def test_ceil_dimensionless(self):

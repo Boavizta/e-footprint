@@ -62,7 +62,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if "values" in d:
             value = Quantity(np.array(d["values"], dtype=np.float32), get_unit(d["unit"]))
         elif "compressed_values" in d:
-            value = {k: d[k] for k in ["compressed_values", "unit"]}
+            # start_date and timezone are included to facilitate json dumping if object doesn’t rehydrate
+            value = {k: d[k] for k in ["compressed_values", "unit", "start_date", "timezone"]}
         else:
             raise ValueError("Invalid hourly quantity format")
         start_date = ciso8601.parse_datetime(d["start_date"])

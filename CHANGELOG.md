@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [10.1.8] - 2025-06-13
+## [10.1.9] - 2025-06-18
+
+### Fixed
+- Include start_date and timezone to ExplainableHourlyQuantity json dump even when object hasn’t been rehydrated.
+
+## [10.1.8] - 2025-06-18
 
 ### Changed
 - Use numpy instead of pandas for time series calculations to improve performance and reduce memory usage. About 20x performance gains 🙌!!
