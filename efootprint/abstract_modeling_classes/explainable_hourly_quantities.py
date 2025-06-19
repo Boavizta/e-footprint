@@ -25,15 +25,16 @@ if TYPE_CHECKING:
 
 
 def align_temporally_quantity_arrays(
-        first_array: Quantity, first_start_date: datetime, second_array: Quantity, second_start_date: datetime):
-    second_array_value = second_array.to(first_array.units)
+        first_quantity: Quantity, first_start_date: datetime, second_quantity: Quantity, second_start_date: datetime):
+    if first_quantity.units != second_quantity.units:
+        second_quantity = second_quantity.to(first_quantity.units)
 
-    first_array_array = first_array.magnitude.astype(np.float32)
-    second_array_array = second_array_value.magnitude.astype(np.float32)
+    first_quantity_array = first_quantity.magnitude.astype(np.float32)
+    second_quantity_array = second_quantity.magnitude.astype(np.float32)
 
     # Align by start_date
-    end1 = first_start_date + timedelta(hours=len(first_array_array))
-    end2 = second_start_date + timedelta(hours=len(second_array_array))
+    end1 = first_start_date + timedelta(hours=len(first_quantity_array))
+    end2 = second_start_date + timedelta(hours=len(second_quantity_array))
 
     # Compute common start and end
     common_start = min(first_start_date, second_start_date)
@@ -45,11 +46,12 @@ def align_temporally_quantity_arrays(
     aligned_second_array = np.zeros(total_len, dtype=np.float32)
 
     # Compute insertion positions
-    offset_first_array = int((first_start_date - common_start).total_seconds() // 3600)
-    offset_second_array = int((second_start_date - common_start).total_seconds() // 3600)
+    offset_first_quantity = int((first_start_date - common_start).total_seconds() // 3600)
+    offset_second_quantity = int((second_start_date - common_start).total_seconds() // 3600)
 
-    aligned_first_array[offset_first_array:offset_first_array + len(first_array_array)] = first_array_array
-    aligned_second_array[offset_second_array:offset_second_array + len(second_array_array)] = second_array_array
+    aligned_first_array[offset_first_quantity:offset_first_quantity + len(first_quantity_array)] = first_quantity_array
+    aligned_second_array[offset_second_quantity:offset_second_quantity + len(second_quantity_array)] = (
+        second_quantity_array)
 
     return aligned_first_array, aligned_second_array, common_start
 
@@ -302,11 +304,13 @@ class ExplainableHourlyQuantities(ExplainableObject):
         elif isinstance(other, self._EmptyExplainableObject):
             return self._EmptyExplainableObject(left_parent=self, right_parent=other, operator="*")
         elif isinstance(other, self._ExplainableQuantity):
-            other_value_to_multiply = other.value
-            if not isinstance(other_value_to_multiply.magnitude, np.float32):
-                other_value_to_multiply = np.float32(other_value_to_multiply.magnitude) * other_value_to_multiply.units
+            other_magnitude_to_multiply = other.magnitude
+            if not isinstance(other_magnitude_to_multiply, np.float32):
+                other_magnitude_to_multiply = np.float32(other_magnitude_to_multiply)
+            result_magnitude = self.value.magnitude * other_magnitude_to_multiply
+            result_quantity = Quantity(result_magnitude, self.unit * other.value.units)
             return ExplainableHourlyQuantities(
-                self.value * other_value_to_multiply, self.start_date, "", self, other, "*")
+                result_quantity, self.start_date, "", self, other, "*")
         elif isinstance(other, ExplainableHourlyQuantities):
             aligned_self, aligned_other, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
