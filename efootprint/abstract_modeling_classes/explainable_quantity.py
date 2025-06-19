@@ -23,6 +23,7 @@ class ExplainableQuantity(ExplainableObject):
         from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
         self._ExplainableHourlyQuantities = ExplainableHourlyQuantities
         self._EmptyExplainableObject = EmptyExplainableObject
+        self.json_value_data = None
         if isinstance(value, Quantity):
             if not isinstance(value.magnitude, float):
                 value = float(value.magnitude) * value.units
@@ -44,6 +45,7 @@ class ExplainableQuantity(ExplainableObject):
     @value.setter
     def value(self, new_value):
         self._value = new_value
+        self.json_value_data = None
 
     @value.deleter
     def value(self):
@@ -172,10 +174,10 @@ class ExplainableQuantity(ExplainableObject):
             operator=f"rounded to {round_level} decimals", source=self.source)
 
     def to_json(self, with_calculated_attributes_data=False):
-        if self._value is not None:
-            output_dict = {"value": float(self.value.magnitude), "unit": str(self.value.units)}
-        else:
+        if self.json_value_data is not None:
             output_dict = self.json_value_data
+        else:
+            output_dict = {"value": float(self.value.magnitude), "unit": str(self.value.units)}
 
         output_dict.update(super().to_json(with_calculated_attributes_data))
 

@@ -81,6 +81,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         self._ExplainableQuantity = ExplainableQuantity
         self._EmptyExplainableObject = EmptyExplainableObject
         self.start_date = start_date
+        self.json_compressed_value_data = None
         if isinstance(value, Quantity):
             if value.magnitude.dtype != np.float32:
                 logger.info(
@@ -107,6 +108,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
     @value.setter
     def value(self, new_value):
         self._value = new_value
+        self.json_compressed_value_data = None
 
     @value.deleter
     def value(self):
@@ -363,15 +365,16 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return np.frombuffer(decompressed, dtype=np.float32)
 
     def to_json(self, with_calculated_attributes_data=False):
-        if self._value is not None:
+        if self.json_compressed_value_data is not None:
+            output_dict = self.json_compressed_value_data
+        else:
             output_dict = {
                     "compressed_values": self.compress_values(self.magnitude),
                     "unit": str(self.unit),
                     "start_date": self.start_date.strftime("%Y-%m-%d %H:%M:%S"),
                     "timezone": str(self.start_date.tzinfo) if self.start_date.tzinfo is not None else None,
                 }
-        else:
-            output_dict = self.json_compressed_value_data
+
         output_dict.update(super().to_json(with_calculated_attributes_data))
 
         return output_dict
