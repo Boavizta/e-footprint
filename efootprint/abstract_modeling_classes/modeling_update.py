@@ -90,11 +90,11 @@ class ModelingUpdate:
 
         if simulation_date is not None:
             self.reset_values()
-        compute_time = round((time() - start), 3)
-        avg_compute_time_per_value = round(1000 * compute_time / len(self.values_to_recompute), 3)\
+        compute_time_ms = round(1000 * (time() - start), 1)
+        avg_compute_time_per_value = round(compute_time_ms / len(self.values_to_recompute), 2)\
             if self.values_to_recompute else 0
         logger.info(f"{len(self.changes_list)} changes lead to {len(self.values_to_recompute)} update computations "
-                    f"done in {compute_time} seconds (avg {avg_compute_time_per_value} ms per computation).")
+                    f"done in {compute_time_ms} ms (avg {avg_compute_time_per_value} ms per computation).")
 
     def parse_changes_list(self):
         indexes_to_skip = []

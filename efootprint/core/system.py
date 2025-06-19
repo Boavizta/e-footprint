@@ -82,7 +82,13 @@ class System(ModelingObject):
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
         self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
         self.compute_calculated_attributes()
-        logger.info(f"Finished computing {self.name} modeling in {round(time() - start, 3)} seconds")
+        all_objects = self.all_linked_objects
+        nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
+        compute_duration = round((time() - start), 3)
+        logger.info(
+            f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)} objects in "
+            f"{compute_duration} seconds or {round(1000 * compute_duration / nb_of_calculated_attributes, 2)} "
+            f"ms per computation")
         self.initial_total_energy_footprints_sum_over_period = self.total_energy_footprint_sum_over_period
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
         self.trigger_modeling_updates = True
