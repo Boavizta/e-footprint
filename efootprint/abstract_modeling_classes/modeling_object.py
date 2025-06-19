@@ -3,6 +3,8 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Type, get_origin, get_args
 import os
 import re
+import time
+from collections import defaultdict
 
 from IPython.display import HTML
 
@@ -16,6 +18,8 @@ from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwo
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import get_init_signature_params
+
+compute_times = defaultdict(float)
 
 
 def get_instance_attributes(obj, target_class):
@@ -283,8 +287,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
         for attr_name in self.calculated_attributes:
+            start = time.perf_counter()
             update_func = retrieve_update_function_from_mod_obj_and_attr_name(self, attr_name)
             update_func()
+            duration = time.perf_counter() - start
+            if attr_name in compute_times:
+                compute_times[attr_name]["total_duration"] += duration
+                compute_times[attr_name]["nb_calls"] += 1
+            else:
+                compute_times[attr_name] = {"total_duration": duration, "nb_calls": 1}
 
     @property
     def mod_objs_computation_chain(self) -> List[Type["ModelingObject"]]:

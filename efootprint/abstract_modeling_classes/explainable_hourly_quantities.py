@@ -1,7 +1,6 @@
 import math
 import numbers
 import base64
-import array
 from copy import copy
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING

@@ -1,6 +1,9 @@
 from time import time
 start = time()
 
+import os
+os.environ["USE_BOAVIZTAPI_PACKAGE"] = "true"
+
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -21,13 +24,14 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_from_frequency
+from efootprint.builders.time_builders import create_hourly_usage_from_frequency, create_random_source_hourly_values
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
 
 def generate_big_system(
-        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_years=5):
+        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
+        nb_years=5):
     """
     Generates a big system with the specified number of servers, user journeys, and steps per user journey.
     """
@@ -60,7 +64,7 @@ def generate_big_system(
             uj_steps = []
             for uj_step_index in range(1, nb_of_uj_steps_per_uj + 1):
                 video_streaming_job = VideoStreamingJob.from_defaults(
-                    f"Video streaming job", service=video_streaming, video_duration=SourceValue(20 * u.min))
+                    f"Video streaming job", service=video_streaming, video_duration=SourceValue(2.5 * u.hour))
                 web_application_job = WebApplicationJob.from_defaults(
                     f"Web application job uj {uj_index} uj_step {uj_step_index} server {server_index}",
                     service=web_application)
@@ -84,26 +88,26 @@ def generate_big_system(
             network = Network(
                     f"network {uj_index}",
                     bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
-
-            usage_patterns.append(
-                UsagePattern(
-                    f"usage pattern {uj_index}",
-                    usage_journey=usage_journey,
-                    devices=[
-                        Device(name=f"device on which the user journey {uj_index} is made",
-                                 carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
-                                 power=SourceValue(50 * u.W, source=None),
-                                 lifespan=SourceValue(6 * u.year, source=None),
-                                 fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
-                    network=network,
-                    country=country_generator(
+            for up_nb in range(1, nb_of_up_per_uj + 1):
+                usage_patterns.append(
+                    UsagePattern(
+                        f"usage pattern {up_nb} of {uj_index}",
+                        usage_journey=usage_journey,
+                        devices=[
+                            Device(name=f"device on which the user journey {uj_index} is made",
+                                   carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
+                                   power=SourceValue(50 * u.W, source=None),
+                                   lifespan=SourceValue(6 * u.year, source=None),
+                                   fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
+                        network=network,
+                        country=country_generator(
                             f"devices country {uj_index}", "its 3 letter shortname, for example FRA",
-                        SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-                    hourly_usage_journey_starts=create_hourly_usage_from_frequency(
-                        timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
-                        active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+                            SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
+                        hourly_usage_journey_starts=create_hourly_usage_from_frequency(
+                            timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
+                            active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+                    )
                 )
-            )
 
     system = System("system", usage_patterns=usage_patterns)
     logger.info(f"Finished generating system in {round((time() - start), 3)} seconds")
@@ -119,9 +123,9 @@ def timed_system_to_json(system, *args, **kwargs):
 
 if __name__ == "__main__":
     # Live system editions benchmarking
-    nb_years = 3
+    nb_years = 5
     system = generate_big_system(
-        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_years=nb_years)
+        nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()
@@ -139,3 +143,20 @@ if __name__ == "__main__":
     end = time()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
+
+    from efootprint.abstract_modeling_classes.modeling_object import compute_times
+    total_time = 0
+    for data in compute_times.values():
+        total_time += data["total_duration"]
+    nb_update_functions = len(compute_times)
+    print(f"Total time in update functions: {round(total_time, 3)}s, nb_update_functions: {nb_update_functions}, "
+          f"avg %: {round(100 / nb_update_functions, 2)}")
+    cumulated_time = 0
+    i = 0
+    for update_function_name, update_function_dict in sorted(compute_times.items(), key=lambda x: -x[1]["total_duration"]):
+        i += 1
+        update_function_time = update_function_dict.get("total_duration")
+        cumulated_time += update_function_time
+        time_pct = round(100 * update_function_time / total_time, 2)
+        cum_time_pct = round(100 * cumulated_time / total_time, 2)
+        print(f"{i}: {update_function_time:.3f}s ({time_pct}%, cum {cum_time_pct}%) for {update_function_dict["nb_calls"]} calls of {update_function_name}")

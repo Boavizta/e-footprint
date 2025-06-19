@@ -1,9 +1,13 @@
+import os
+
 import requests
 
 from efootprint.logger import logger
 
 
 def call_boaviztapi(url, method="GET", params={}):
+    if os.getenv("USE_BOAVIZTAPI_PACKAGE"):
+        return call_boaviztapi_from_package_dependency(url, method, params)
     try:
         return call_boaviztapi_from_web_request(url, method, params)
     except Exception as e:
