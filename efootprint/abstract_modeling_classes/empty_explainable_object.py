@@ -109,7 +109,7 @@ class EmptyExplainableObject(ExplainableObject):
     def __deepcopy__(self, memo):
         return EmptyExplainableObject(label=self.label, left_parent=self.left_parent, right_parent=self.right_parent,
                                       operator=self.operator)
-
+    @profile
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self, right_parent=compared_object,

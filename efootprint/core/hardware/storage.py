@@ -142,6 +142,7 @@ class Storage(InfraHardware):
     # By turning these three attributes into properties, we make all of them dependencies of the calculation of
     # storage_delta and solve the problem.
     @property
+    @profile
     def storage_needed(self):
         storage_needed = EmptyExplainableObject()
 
@@ -154,6 +155,7 @@ class Storage(InfraHardware):
         return storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
 
     @property
+    @profile
     def storage_freed(self):
         storage_freed = EmptyExplainableObject()
 
@@ -166,6 +168,7 @@ class Storage(InfraHardware):
         return storage_freed.to(u.TB).set_label(f"Hourly {self.name} storage freed")
 
     @property
+    @profile
     def automatic_storage_dumps_after_storage_duration(self):
         if isinstance(self.storage_needed, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self.storage_needed)
@@ -188,7 +191,7 @@ class Storage(InfraHardware):
                 label=f"Storage dumps for {self.name}",
                 left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
-
+    @profile
     def update_storage_delta(self):
         storage_delta = (self.storage_needed + self.storage_freed
                          + self.automatic_storage_dumps_after_storage_duration)
@@ -265,7 +268,7 @@ class Storage(InfraHardware):
                     nb_of_instances.value, self.raw_nb_of_instances.start_date, left_parent=nb_of_instances,
                     right_parent=self.fixed_nb_of_instances, operator="depending on being empty")
                 self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
-
+    @profile
     def update_nb_of_active_instances(self):
         tmp_nb_of_active_instances = (
                 (self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")

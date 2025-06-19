@@ -123,30 +123,7 @@ if __name__ == "__main__":
     # Live system editions benchmarking
     system = generate_big_system(nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4)
 
-    edition_iterations = 10
-    start = time()
-    for i in range(edition_iterations):
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(100 * u.MB)
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(30 * u.MB)
-    end = time()
-    compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
-    logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")
+    from efootprint.abstract_modeling_classes.modeling_object import compute_times
 
-    start = time()
-    for i in range(edition_iterations):
-        system.usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
-    end = time()
-    compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
-    logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
-
-    # System loaded from json edition benchmarking
-    with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file:
-        system_dict = json.load(file)
-
-    nb_system_loadings = 10
-    update_on_system(
-        nb_system_loadings, system_dict, "UsagePattern", "hourly_usage_journey_starts",
-        create_random_source_hourly_values(timespan=3 * u.year))
-
-    update_on_system(
-        nb_system_loadings, system_dict, "Storage", "data_storage_duration", SourceValue(3 * u.year))
+    for class_name, total_time in sorted(compute_times.items(), key=lambda x: -x[1]):
+        print(f"{class_name}: {total_time:.3f}s")

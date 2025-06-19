@@ -181,7 +181,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def min(self):
         return self._ExplainableQuantity(np.min(self.value), left_parent=self, operator="min")
-
+    @profile
     def abs(self):
         return ExplainableHourlyQuantities(
             np.abs(self.value), start_date=self.start_date, left_parent=self, operator="abs")
@@ -242,7 +242,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def __len__(self):
         return len(self.value)
-
+    @profile
     def __add__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
             return ExplainableHourlyQuantities(
