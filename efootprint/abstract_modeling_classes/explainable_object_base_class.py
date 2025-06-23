@@ -279,6 +279,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
             if self.left_parent is not None or self.right_parent is not None:
                 self.explain_nested_tuples = self.compute_explain_nested_tuples()
+                # Free up memory because left parent and right_parent aren’t needed anymore
+                self.left_parent = None
+                self.right_parent = None
 
     def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:

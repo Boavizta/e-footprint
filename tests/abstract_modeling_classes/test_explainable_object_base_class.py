@@ -350,6 +350,10 @@ class TestExplainableObjectBaseClass(TestCase):
     def test_explain_should_put_right_parenthesis_in_complex_calculations(self):
         self.d.set_modeling_obj_container(None, None)
         self.c.set_modeling_obj_container(None, None)
+        self.c.left_parent = self.a
+        self.c.right_parent = self.b
+        self.d.left_parent = self.c
+        self.d.right_parent = self.a
         h = ExplainableObject(1, None, self.c, self.c, "/")
         i = ExplainableObject(2, None, h, self.g, "*")
         j = ExplainableObject(-1, "k", i, self.c, "-")

@@ -303,6 +303,9 @@ class ModelingUpdate:
             # Replace all ancestors not in computation chain by their copy so that the original calculation graph
             # will remain unchanged when the simulation is over
             ancestor_copy = copy(ancestor_to_replace_by_copy)
+            ancestor_copy.left_parent = None
+            ancestor_copy.right_parent = None
+            ancestor_copy.operator = None
             ancestor_to_replace_by_copy.replace_in_mod_obj_container_without_recomputation(ancestor_copy)
             copies.append(ancestor_copy)
 

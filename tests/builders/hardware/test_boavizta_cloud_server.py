@@ -97,8 +97,9 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.assertEqual(self.test_server.api_call_response.value, mock_response_data)
         self.assertEqual(self.test_server.api_call_response.operator, "combined in Boavizta API call with")
         # Source checks
-        self.assertIn("scaleway", self.test_server.api_call_response.left_parent.value)
-        self.assertIn("dev1-s", self.test_server.api_call_response.right_parent.value)
+        ancestors_str_reprs = [str(elt) for elt in self.test_server.api_call_response.direct_ancestors_with_id]
+        self.assertIn("scaleway", ancestors_str_reprs)
+        self.assertIn("dev1-s", ancestors_str_reprs)
 
     def test_update_carbon_footprint_fabrication(self):
         """
