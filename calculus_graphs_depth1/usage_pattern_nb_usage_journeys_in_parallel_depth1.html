@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ff0ace {
+             #mynetwork_9068c1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ff0ace" class="card-body"></div>
+            <div id="mynetwork_9068c1" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ff0ace');
+                  var container = document.getElementById('mynetwork_9068c1');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4.0, 4.0, 2.0, 6.0, 5.0, 6.0, 8.0, 8.0, 4.0, 3.0],\nlast 10 vals [7.0, 3.0, 1.0, 9.0, 4.0, 7.0, 9.0, 2.0, 4.0, 8.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.33, 1.33, 0.67, 2.0, 1.67, 2.0, 2.67, 2.67, 1.33, 1.0],\nlast 10 vals [2.33, 1.0, 0.33, 3.0, 1.33, 2.33, 3.0, 0.67, 1.33, 2.67]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from e-footprint hypothesis converted to UTC\nfrom devices country timezone from user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [4.0, 4.0, 2.0, 6.0, 5.0, 6.0, 8.0, 8.0, 4.0, 3.0],\nlast 10 vals [7.0, 3.0, 1.0, 9.0, 4.0, 7.0, 9.0, 2.0, 4.0, 8.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4.0, 4.0, 2.0, 6.0, 5.0, 6.0, 8.0, 8.0, 4.0, 3.0],\nlast 10 vals [7.0, 3.0, 1.0, 9.0, 4.0, 7.0, 9.0, 2.0, 4.0, 8.0]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming + no value\n=\n20.0 minute + no value\n=\n20.0 minute", "x": 112.5, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.67, 3.0, 0.33, 1.33, 1.33, 2.67, 1.33, 2.0, 1.67, 1.67],\nlast 10 vals [2.67, 2.0, 3.0, 1.0, 3.0, 0.33, 1.67, 0.33, 3.0, 0.33]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits from e-footprint hypothesis converted to UTC\nfrom devices country timezone from user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming + no value\n=\n20.0 minute + no value\n=\n20.0 minute", "x": 112.5, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "usage pattern hourly nb of user journeys in parallel"}, {"arrows": "to", "from": "Duration of user journey", "to": "usage pattern hourly nb of user journeys in parallel"}]);
 
                   nodeColors = {};
