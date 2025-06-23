@@ -1,7 +1,14 @@
 import requests
-import os
 
 from efootprint.logger import logger
+
+
+def call_boaviztapi(url, method="GET", params={}):
+    try:
+        return call_boaviztapi_from_web_request(url, method, params)
+    except Exception as e:
+        logger.warning(f"Boavizta API call failed with error {e}. Trying to call Boavizta API via package dependency.")
+        return call_boaviztapi_from_package_dependency(url, method, params)
 
 
 def call_boaviztapi_from_web_request(url, method="GET", params={}):
@@ -55,14 +62,7 @@ def call_boaviztapi_from_package_dependency(url, method="GET", params={}):
     else:
         raise ValueError(
             f"URL {url} is not in the list of available urls: {list(url_method_mapping.keys())}. Please provide a valid "
-            f"URL, update the list of urls in call_boaviztapi_from_package_dependency or set environment variable "
-            f"CALL_BOAVIZTAPI_VIA_WEB to True to use the web API.")
-
-
-if not os.environ.get("CALL_BOAVIZTAPI_VIA_WEB"):
-    call_boaviztapi = call_boaviztapi_from_package_dependency
-else:
-    call_boaviztapi = call_boaviztapi_from_web_request
+            f"URL, update the list of urls in call_boaviztapi_from_package_dependency")
 
 
 def print_archetypes_and_their_configs():
