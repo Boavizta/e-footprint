@@ -1,11 +1,13 @@
 import json
 import os
-from time import time
+from time import time, sleep
 from unittest import TestCase
 import gc
+from collections import Counter
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -14,6 +16,24 @@ from efootprint.logger import logger
 from efootprint.constants.units import u
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def log_number_of_live_objects(sleep_duration=0.5):
+    gc.collect()
+    all_objects = gc.get_objects()
+    logger.info(f"# ModelingObjects after GC: {sum(1 for o in all_objects if isinstance(o, ModelingObject))}")
+    logger.info(
+        f"# ExplainableObjects after GC: {sum(1 for o in all_objects if isinstance(o, ExplainableObject))}")
+    logger.info(
+        f"# ObjectLinkedToModelingObj after GC: "
+        f"{sum(1 for o in all_objects if isinstance(o, ObjectLinkedToModelingObj))}")
+
+    type_counts = Counter(type(obj) for obj in all_objects)
+    for obj_type, count in type_counts.most_common(5):
+        logger.info(f"# {obj_type.__name__} after GC: {count}")
+
+    sleep(sleep_duration)
+
 
 def update_on_system(
         nb_system_loadings: 10, system_dict: dict, object_type: str, attr_to_change: str, new_value: ExplainableObject):
@@ -35,11 +55,6 @@ def update_on_system(
         f"deserializing system then editing {attr_to_change} in first {object_type} then reserializing system took\n"
         f"{avg_loading_editing_writing_time} ms on average for {nb_system_loadings} times, including "
         f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}% of total time)")
-    logger.info(
-        f"After updates: ModelingObjects alive: {sum(1 for o in gc.get_objects() if isinstance(o, ModelingObject))}")
-    logger.info(
-        f"After updates: ExplainableObjects alive: "
-        f"{sum(1 for o in gc.get_objects() if isinstance(o, ExplainableObject))}")
 
     return avg_loading_editing_writing_time
 

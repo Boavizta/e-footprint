@@ -21,12 +21,13 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_source_hourly_values
+from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_from_frequency
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
 
-def generate_big_system(nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4):
+def generate_big_system(
+        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_years=5):
     """
     Generates a big system with the specified number of servers, user journeys, and steps per user journey.
     """
@@ -98,7 +99,9 @@ def generate_big_system(nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_t
                     country=country_generator(
                             f"devices country {uj_index}", "its 3 letter shortname, for example FRA",
                         SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-                    hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year)
+                    hourly_usage_journey_starts=create_hourly_usage_from_frequency(
+                        timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
+                        active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
                 )
             )
 
@@ -116,7 +119,9 @@ def timed_system_to_json(system, *args, **kwargs):
 
 if __name__ == "__main__":
     # Live system editions benchmarking
-    system = generate_big_system(nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4)
+    nb_years = 10
+    system = generate_big_system(
+        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()
@@ -129,7 +134,8 @@ if __name__ == "__main__":
 
     start = time()
     for i in range(edition_iterations):
-        system.usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
+        system.usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(
+            timespan=nb_years * u.year)
     end = time()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
