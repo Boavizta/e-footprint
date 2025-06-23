@@ -37,6 +37,9 @@ def update_on_system(
         f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}% of total time)")
     logger.info(
         f"After updates: ModelingObjects alive: {sum(1 for o in gc.get_objects() if isinstance(o, ModelingObject))}")
+    logger.info(
+        f"After updates: ExplainableObjects alive: "
+        f"{sum(1 for o in gc.get_objects() if isinstance(o, ExplainableObject))}")
 
     return avg_loading_editing_writing_time
 
