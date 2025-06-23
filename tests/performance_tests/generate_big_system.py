@@ -1,12 +1,8 @@
-import json
-import os
 from time import time
+start = time()
 
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
-
-start = time()
-
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
@@ -27,7 +23,6 @@ from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
-from tests.performance_tests.test_big_system_from_and_to_json_performance import root_dir, update_on_system
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
 
@@ -138,15 +133,3 @@ if __name__ == "__main__":
     end = time()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
-
-    # System loaded from json edition benchmarking
-    with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file:
-        system_dict = json.load(file)
-
-    nb_system_loadings = 10
-    update_on_system(
-        nb_system_loadings, system_dict, "UsagePattern", "hourly_usage_journey_starts",
-        create_random_source_hourly_values(timespan=3 * u.year))
-
-    update_on_system(
-        nb_system_loadings, system_dict, "Storage", "data_storage_duration", SourceValue(3 * u.year))
