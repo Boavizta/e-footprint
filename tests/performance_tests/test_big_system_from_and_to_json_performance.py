@@ -2,8 +2,10 @@ import json
 import os
 from time import time
 from unittest import TestCase
+import gc
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -33,6 +35,8 @@ def update_on_system(
         f"deserializing system then editing {attr_to_change} in first {object_type} then reserializing system took\n"
         f"{avg_loading_editing_writing_time} ms on average for {nb_system_loadings} times, including "
         f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}% of total time)")
+    logger.info(
+        f"After updates: ModelingObjects alive: {sum(1 for o in gc.get_objects() if isinstance(o, ModelingObject))}")
 
     return avg_loading_editing_writing_time
 

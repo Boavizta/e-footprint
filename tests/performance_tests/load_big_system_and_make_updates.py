@@ -1,4 +1,9 @@
-from time import time
+import gc
+from copy import deepcopy
+from time import time, sleep
+
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+
 start = time()
 import json
 import os
@@ -17,8 +22,12 @@ with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file
 
 nb_system_loadings = 10
 update_on_system(
-    nb_system_loadings, system_dict, "UsagePattern", "hourly_usage_journey_starts",
+    nb_system_loadings, deepcopy(system_dict), "UsagePattern", "hourly_usage_journey_starts",
     create_random_source_hourly_values(timespan=3 * u.year))
 
 update_on_system(
-    nb_system_loadings, system_dict, "Storage", "data_storage_duration", SourceValue(3 * u.year))
+    nb_system_loadings, deepcopy(system_dict), "Storage", "data_storage_duration", SourceValue(3 * u.year))
+
+sleep(2)
+gc.collect()
+logger.info(f"After GC: {sum(1 for o in gc.get_objects() if isinstance(o, ModelingObject))}")
