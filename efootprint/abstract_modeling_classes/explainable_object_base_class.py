@@ -209,6 +209,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @direct_ancestors_with_id.setter
     def direct_ancestors_with_id(self, value):
         self._direct_ancestors_with_id = value
+        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
+        self._keys_of_direct_children_with_id_loaded_from_json = None
 
     @property
     def direct_children_with_id(self):
@@ -219,6 +221,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @direct_children_with_id.setter
     def direct_children_with_id(self, value):
         self._direct_children_with_id = value
+        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
+        self._keys_of_direct_children_with_id_loaded_from_json = None
 
     def __copy__(self):
         cls = self.__class__
@@ -545,8 +549,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
 
         if with_calculated_attributes_data:
-            if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None and not
-                self.ancestor_and_children_have_been_loaded_from_json):
+            if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:
                 output_dict["direct_ancestors_with_id"] = self._keys_of_direct_ancestors_with_id_loaded_from_json
                 output_dict["direct_children_with_id"] = self._keys_of_direct_children_with_id_loaded_from_json
             else:
@@ -555,7 +558,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 output_dict["direct_children_with_id"] = [
                     child.full_str_tuple_id for child in self.direct_children_with_id]
 
-            if self._explain_nested_tuples is None and self.explain_nested_tuples_from_json is not None:
+            if self.explain_nested_tuples_from_json is not None:
                 output_dict["explain_nested_tuples"] = self.explain_nested_tuples_from_json
             else:
                 output_dict["explain_nested_tuples"] = self.serialize_explain_nested_tuples()

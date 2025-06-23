@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.11] - 2025-06-23
+
+### Changed
+- Various optimizations that slightly increase speed and divide memory footprint by 2.
+- Boavizta API is now always call via web by default and only fallbacks to package call if web call fails.
+
 ## [10.1.10] - 2025-06-18
 
 ### Changed
