@@ -1,4 +1,5 @@
 from collections import deque
+from copy import copy
 from typing import Type, Optional, TYPE_CHECKING
 from dataclasses import dataclass
 import os
@@ -227,7 +228,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def __copy__(self):
         cls = self.__class__
         new_instance = cls.__new__(cls)
-        new_instance.__init__(value=self.value, label=self.label, source=getattr(self, "source", None))
+        new_instance.__init__(
+            value=copy(self.value), label=copy(self.label), source=copy(getattr(self, "source", None)))
 
         return new_instance
 

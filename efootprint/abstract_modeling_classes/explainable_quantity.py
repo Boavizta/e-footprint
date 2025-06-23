@@ -193,5 +193,4 @@ class ExplainableQuantity(ExplainableObject):
             return str(self.value)
 
     def __copy__(self):
-        return ExplainableQuantity(
-            self.value, label=self.label, source=self.source, left_parent=self, operator="duplicate")
+        return ExplainableQuantity(copy(self.value), label=copy(self.label), source=copy(self.source))

@@ -1,3 +1,5 @@
+from copy import copy
+
 import numpy as np
 from pint import Quantity
 
@@ -55,7 +57,7 @@ class EmptyExplainableObject(ExplainableObject):
         return 0
 
     def __copy__(self):
-        return EmptyExplainableObject(label=self.label, left_parent=self, operator="copy")
+        return EmptyExplainableObject(label=copy(self.label))
 
     def __eq__(self, other):
         if isinstance(other, EmptyExplainableObject):
