@@ -40,7 +40,7 @@ class TestExplainableQuantity(unittest.TestCase):
         self.assertRaises(ValueError, self.a.__add__, 1)
         self.assertRaises(ValueError, self.a.__gt__, 1)
         self.assertRaises(ValueError, self.a.__lt__, 1)
-        self.assertRaises(ValueError, self.a.__eq__, 1)
+        self.assertFalse(self.a == 1)
 
     def test_to(self):
         self.a.to(u.mW)

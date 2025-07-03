@@ -239,8 +239,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 self.value, self.start_date, other.value, other.start_date)
 
             return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-06, atol=1e-06)
-        else:
-            raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
+
+        return False
 
     def __len__(self):
         return len(self.value)

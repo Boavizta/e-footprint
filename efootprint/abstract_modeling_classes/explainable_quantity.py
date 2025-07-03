@@ -100,8 +100,8 @@ class ExplainableQuantity(ExplainableObject):
                 np.asarray(self.magnitude), np.asarray(converted_other_value.magnitude), rtol=1e-4, atol=1e-6)
         elif isinstance(other, self._EmptyExplainableObject):
             return self.value == 0
-        else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
+
+        return False
 
     def __add__(self, other):
         if isinstance(other, numbers.Number) and other == 0:

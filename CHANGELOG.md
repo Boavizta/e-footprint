@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.12] - 2025-07-03
+
+### Fixed
+- Make sure __copy__ doesn’t create links to copied objects, to allow for the automatic garbage collection of copied objects.
+
+### Changed
+- Introduce computation of ExplainableObject flat tuple formulas as intermediary step before printing explanation, to allow for different formattings in different contexts (notably web application).
+- Count number of live objects in performance tests to make sure that there are no memory leaks.
+
 ## [10.1.11] - 2025-06-23
 
 ### Changed

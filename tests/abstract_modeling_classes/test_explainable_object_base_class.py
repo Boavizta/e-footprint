@@ -345,7 +345,7 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual("f = c + b + a = 3 + 2 + 1 = 6", self.f.explain(pretty_print=False))
 
     def test_explain_without_right_parent(self):
-        self.assertEqual("g = root square of (d) = root square of (4) = 2", self.g.explain(pretty_print=False))
+        self.assertEqual("g = root square (d) = root square (4) = 2", self.g.explain(pretty_print=False))
 
     def test_explain_should_put_right_parenthesis_in_complex_calculations(self):
         self.d.set_modeling_obj_container(None, None)
@@ -376,14 +376,14 @@ class TestExplainableObjectBaseClass(TestCase):
         result = eo.compute_explain_nested_tuples()
         self.assertEqual(result, (left_parent, "+", right_parent))
 
-    def test_print_tuple_element(self):
+    def test_print_flat_tuple_formula(self):
         left_parent = ExplainableObject(value=3, label="Label L")
         right_parent = ExplainableObject(value=4, label="Label R")
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent",
                                operator="+")
-
-        self.assertEqual(eo.print_tuple_element((left_parent, "+", right_parent), False), "Label L + Label R")
-        self.assertEqual(eo.print_tuple_element((left_parent, "+", right_parent), True), "3 + 4")
+        
+        self.assertEqual(eo.print_flat_tuple_formula((left_parent, "+", right_parent), False), "Label L + Label R")
+        self.assertEqual(eo.print_flat_tuple_formula((left_parent, "+", right_parent), True), "3 + 4")
 
     def test_pretty_print_calculation(self):
         calc_str = "Label A = Label L + Label R = 3 + 4 = 7"

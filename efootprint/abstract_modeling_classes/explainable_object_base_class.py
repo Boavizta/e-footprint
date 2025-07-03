@@ -411,15 +411,17 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if len(self.direct_ancestors_with_id) == 0:
             return f"{self.label} = {element_value_to_print}"
 
+        flat_tuple_formula = self.compute_formula_as_flat_tuple(self.explain_nested_tuples)
+
         if pretty_print:
             return self.pretty_print_calculation(
-                f"{self.label} = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=False)}"
-                f" = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=True)}"
+                f"{self.label} = {self.print_flat_tuple_formula(flat_tuple_formula, print_values_instead_of_labels=False)}"
+                f" = {self.print_flat_tuple_formula(flat_tuple_formula, print_values_instead_of_labels=True)}"
                 f" = {element_value_to_print}")
         else:
-            return f"{self.label} = {self.print_tuple_element(
-                self.explain_nested_tuples, print_values_instead_of_labels=False)}" \
-                f" = {self.print_tuple_element(self.explain_nested_tuples, print_values_instead_of_labels=True)}" \
+            return f"{self.label} = {self.print_flat_tuple_formula(
+                flat_tuple_formula, print_values_instead_of_labels=False)}" \
+                f" = {self.print_flat_tuple_formula(flat_tuple_formula, print_values_instead_of_labels=True)}" \
                 f" = {element_value_to_print}"
 
     def compute_explain_nested_tuples(self, return_self_if_self_has_mod_obj_container_or_no_ancestors=False):
@@ -442,58 +444,86 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return left_explanation, self.operator, right_explanation
 
-    def print_tuple_element(self, tuple_element: object, print_values_instead_of_labels: bool):
+    def compute_formula_as_flat_tuple(self, tuple_element: object) -> tuple:
         if isinstance(tuple_element, ExplainableObject):
-            if print_values_instead_of_labels:
-                return str(tuple_element)
+            return (tuple_element,)
+        elif isinstance(tuple_element, str):
+            return (tuple_element,)
+        elif isinstance(tuple_element, tuple):
+            a, op, b = tuple_element
+
+            if op is None:
+                return self.compute_formula_as_flat_tuple(a)
+
+            # Handle unary ops like "X of (Y)"
+            if b is None:
+                if op is None or len(op) == 0:
+                    return self.compute_formula_as_flat_tuple(a)
+                return op, '(', *self.compute_formula_as_flat_tuple(a), ')'
+
+            # Determine if we need parentheses
+            left_parens = False
+            right_parens = False
+
+            if op == "/":
+                if isinstance(b, tuple):
+                    right_parens = True
+                if isinstance(a, tuple) and a[1] != "*":
+                    left_parens = True
+            elif op == "*":
+                if isinstance(a, tuple) and a[1] != "*":
+                    left_parens = True
+                if isinstance(b, tuple) and b[1] != "*":
+                    right_parens = True
+            elif op == "-":
+                if isinstance(b, tuple) and b[1] in ["+", "-"]:
+                    right_parens = True
+
+            left = self.compute_formula_as_flat_tuple(a)
+            right = self.compute_formula_as_flat_tuple(b)
+
+            result = []
+            if left_parens:
+                result += ('(', *left, ')')
             else:
-                return f"{tuple_element.label}"
-        elif type(tuple_element) == str:
-            return tuple_element
-        elif type(tuple_element) == tuple:
-            if tuple_element[1] is None:
-                return f"{self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)}"
-            if tuple_element[2] is None:
-                if tuple_element[1] is None or len(tuple_element[1])==0:
-                    return self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)
-                return f"{tuple_element[1]}" \
-                       f" of ({self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)})"
+                result += left
 
-            left_parenthesis = False
-            right_parenthesis = False
+            result += (op,)
 
-            if tuple_element[1] == "/":
-                if type(tuple_element[2]) == tuple:
-                    right_parenthesis = True
-                if type(tuple_element[0]) == tuple and tuple_element[0][1] != "*":
-                    left_parenthesis = True
-            elif tuple_element[1] == "*":
-                if type(tuple_element[0]) == tuple and tuple_element[0][1] != "*":
-                    left_parenthesis = True
-                if type(tuple_element[2]) == tuple and tuple_element[2][1] != "*":
-                    right_parenthesis = True
-            elif tuple_element[1] == "-":
-                if type(tuple_element[2]) == tuple and tuple_element[2][1] in ["+", "-"]:
-                    right_parenthesis = True
-            elif tuple_element[1] == "+":
-                pass
+            if right_parens:
+                result += ('(', *right, ')')
+            else:
+                result += right
 
-            lp_open = ""
-            lp_close = ""
-            rp_open = ""
-            rp_close = ""
+            return tuple(result)
+        return ()
 
-            if left_parenthesis:
-                lp_open = "("
-                lp_close = ")"
-            if right_parenthesis:
-                rp_open = "("
-                rp_close = ")"
+    @staticmethod
+    def print_flat_tuple_formula(flat_formula_tuple: tuple, print_values_instead_of_labels: bool) -> str:
+        result = ""
 
-            return f"{lp_open}{self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)}{lp_close}" \
-                   f" {tuple_element[1]}" \
-                   f" {rp_open}{self.print_tuple_element(tuple_element[2], print_values_instead_of_labels)}{rp_close}"
-        return None
+        for el in flat_formula_tuple:
+            is_left_paren = el == "("
+            is_right_paren = el == ")"
+            is_explainable = isinstance(el, ExplainableObject)
+            is_operator = not (is_left_paren or is_right_paren or is_explainable)
+
+            if is_explainable:
+                s = str(el) if print_values_instead_of_labels else el.label
+            else:
+                s = str(el)
+
+            # Append with proper spacing rules
+            if is_left_paren:
+                result += "("
+            elif is_right_paren:
+                result += ")"
+            elif is_operator:
+                result += f" {s} "
+            else:
+                result += s
+
+        return result.lstrip()
 
     @staticmethod
     def pretty_print_calculation(calc_str):
@@ -580,8 +610,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def __eq__(self, other):
         if isinstance(other, ExplainableObject):
             return self.value == other.value
-        else:
-            return False
+
+        return False
 
     def __hash__(self):
         return hash(self.value)
