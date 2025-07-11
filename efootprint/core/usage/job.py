@@ -40,7 +40,6 @@ class JobBase(ModelingObject):
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
         self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
-        self.hourly_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_avg_occurrences_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_transferred_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
@@ -55,8 +54,8 @@ class JobBase(ModelingObject):
     def calculated_attributes(self) -> List[str]:
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
                 "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
-                "hourly_occurrences_across_usage_patterns", "hourly_avg_occurrences_across_usage_patterns",
-                "hourly_data_transferred_across_usage_patterns", "hourly_data_stored_across_usage_patterns"]
+                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
+                "hourly_data_stored_across_usage_patterns"]
 
     @property
     def duration_in_full_hours(self):
@@ -168,10 +167,6 @@ class JobBase(ModelingObject):
 
         return hourly_calc_attr_summed_across_ups.set_label(
                 f"Hourly {self.name} {calculated_attribute_label} across usage patterns")
-
-    def update_hourly_occurrences_across_usage_patterns(self):
-        self.hourly_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
-            "hourly_occurrences_per_usage_pattern", "occurrences")
 
     def update_hourly_avg_occurrences_across_usage_patterns(self):
         self.hourly_avg_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(

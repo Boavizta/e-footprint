@@ -336,8 +336,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         # streaming has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
         self.assertIsNone(hour_occs_per_up.modeling_obj_container)
-        # streaming has 3 usage patterns so its hourly_occurrences_across_usage_patterns should have 3 ancestors
-        self.assertEqual(len(streaming.hourly_occurrences_across_usage_patterns.direct_ancestors_with_id), 3)
+        # streaming has 3 usage patterns so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
+        self.assertEqual(len(streaming.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 3)
 
         logger.warning("Editing the usage pattern network")
         new_up.hourly_usage_journey_starts = create_source_hourly_values_from_list(

@@ -119,7 +119,7 @@ def timed_system_to_json(system, *args, **kwargs):
 
 if __name__ == "__main__":
     # Live system editions benchmarking
-    nb_years = 10
+    nb_years = 3
     system = generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_years=nb_years)
 
