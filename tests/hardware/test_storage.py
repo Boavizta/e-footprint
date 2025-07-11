@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -10,8 +10,10 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
+from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
-from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.storage import Storage, NegativeCumulativeStorageNeedError
+from efootprint.core.usage.job import Job
 
 
 class TestStorage(TestCase):
@@ -157,6 +159,25 @@ class TestStorage(TestCase):
 
             self.assertEqual([7, 5, 9, 4, 10], self.storage_base.full_cumulative_storage_need.value_as_float_list)
 
+    def test_update_full_cumulative_storage_need_raises_negative_cumulative_storage_need_error(self):
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        delta_data = create_source_hourly_values_from_list([2, -2, 4, -5, -6], start_date, pint_unit=u.TB)
+        job = Mock(spec=Job)
+        job.data_stored = SourceValue(-10 * u.MB)
+        job.name = "job1"
+
+        with patch.object(self.storage_base, "storage_delta", delta_data), \
+                patch.object(self.storage_base, "base_storage_need", SourceValue(5 * u.TB)), \
+                patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock:
+            jobs_mock.return_value = [job]
+            with self.assertRaises(NegativeCumulativeStorageNeedError) as context:
+                self.storage_base.update_full_cumulative_storage_need()
+            self.assertEqual(
+                "In Storage object storage_base, negative cumulative storage need detected: -2.0 TB. "
+                "Please verify your jobs that delete data: ['name: job1 - value: -10.0 megabyte'] or "
+                "increase the base_storage_need value, currently set to 5.0 terabyte",
+            str(context.exception))
+
     def test_nb_of_active_instances(self):
         storage_capacity = SourceValue(1 * u.TB)
         storage_needed = create_source_hourly_values_from_list([-1, 1, 2, 3, 2], pint_unit=u.TB)
@@ -226,8 +247,11 @@ class TestStorage(TestCase):
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
-            with self.assertRaises(ValueError):
+            with self.assertRaises(InsufficientCapacityError) as context:
                 self.storage_base.update_nb_of_instances()
+            self.assertIn(
+                "storage_base has available number of instances capacity of 2.0 dimensionless but is asked for "
+                "4.0 dimensionless", str(context.exception))
 
     def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
         raw_nb_of_instances = EmptyExplainableObject()

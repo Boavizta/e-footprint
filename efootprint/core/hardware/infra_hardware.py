@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List
+from typing import List, Type
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -8,6 +8,21 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base import HardwareBase
+
+
+class InsufficientCapacityError(Exception):
+    def __init__(
+            self, overloaded_object: Type["InfraHardware"], capacity_type: str,
+            available_capacity: ExplainableQuantity|EmptyExplainableObject,
+            requested_capacity: ExplainableQuantity|EmptyExplainableObject):
+        self.overloaded_object = overloaded_object
+        self.capacity_type = capacity_type
+        self.available_capacity = available_capacity
+        self.requested_capacity = requested_capacity
+
+        message = (f"{self.overloaded_object.name} has available {capacity_type} capacity of "
+                   f"{available_capacity.value} but is asked for {requested_capacity.value}")
+        super().__init__(message)
 
 
 class InfraHardware(HardwareBase):

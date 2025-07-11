@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.13] - 2025-07-11
+
+### Added
+- Custom InsufficientCapacityError and NegativeCumulativeStorageNeedError for servers and storage so that insufficient capacity values can be captured for subsequent error handling.
+
+### Changed
+- Removed unnecessary hourly_occurrences_across_usage_patterns calculated attribute in Job class.
+
 ## [10.1.12] - 2025-07-03
 
 ### Fixed

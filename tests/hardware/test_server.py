@@ -11,6 +11,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
 from efootprint.constants.units import u
+from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 
@@ -93,8 +94,11 @@ class TestServer(TestCase):
         with patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
             patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(129 * u.GB)), \
             patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            with self.assertRaises(ValueError):
+            with self.assertRaises(InsufficientCapacityError) as context:
                 self.server_base.update_available_ram_per_instance()
+            self.assertIn(
+                "Test server has available RAM capacity of 89.6 gigabyte but is asked for 129.0 gigabyte",
+                str(context.exception))
 
     def test_occupied_compute_per_instance(self):
         service_1 = MagicMock()
@@ -234,8 +238,11 @@ class TestServer(TestCase):
         with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data), \
                 patch.object(self.server_base, "server_type", ServerTypes.on_premise()), \
                 patch.object(self.server_base, "fixed_nb_of_instances", SourceValue(12 * u.dimensionless)):
-            with self.assertRaises(ValueError):
+            with self.assertRaises(InsufficientCapacityError) as context:
                 self.server_base.update_nb_of_instances()
+            self.assertIn(
+                "Test server has available number of instances capacity of 12.0 dimensionless but is asked for 14.0 dimensionless",
+                str(context.exception))
 
     def test_nb_of_instances_returns_emptyexplainableobject_if_raw_nb_of_instances_is_emptyexplainableobject(self):
         with patch.object(self.server_base, "raw_nb_of_instances", new=EmptyExplainableObject()), \

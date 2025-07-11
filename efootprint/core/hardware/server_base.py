@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.hardware.infra_hardware import InfraHardware
+from efootprint.core.hardware.infra_hardware import InfraHardware, InsufficientCapacityError
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
@@ -160,23 +160,24 @@ class ServerBase(InfraHardware):
             f"Occupied CPU per {self.name} instance including services")
 
     def update_available_ram_per_instance(self):
-        available_ram_per_instance = self.ram * self.server_utilization_rate
-        available_ram_per_instance -= self.occupied_ram_per_instance
+        available_ram_per_instance_before_services_installation = self.ram * self.server_utilization_rate
+        available_ram_per_instance = (
+                available_ram_per_instance_before_services_installation - self.occupied_ram_per_instance)
         if available_ram_per_instance.value < 0 * u.B:
-            raise ValueError(
-                f"{self.name} has available capacity of {(self.ram * self.server_utilization_rate).value}"
-                f" but is asked {self.occupied_ram_per_instance.value}")
+            raise InsufficientCapacityError(
+                self, "RAM", available_ram_per_instance_before_services_installation, self.occupied_ram_per_instance)
 
         self.available_ram_per_instance = available_ram_per_instance.set_label(
             f"Available RAM per {self.name} instance")
 
     def update_available_compute_per_instance(self):
-        available_compute_per_instance = self.compute * self.server_utilization_rate
-        available_compute_per_instance -= self.occupied_compute_per_instance
+        available_compute_per_instance_before_services_installation = self.compute * self.server_utilization_rate
+        available_compute_per_instance = (
+                available_compute_per_instance_before_services_installation - self.occupied_compute_per_instance)
         if available_compute_per_instance.value < 0:
-            raise ValueError(
-                f"server has available capacity of {(self.compute * self.server_utilization_rate).value} "
-                f" but is asked {self.occupied_compute_per_instance.value}")
+            raise InsufficientCapacityError(
+                self, "compute", available_compute_per_instance_before_services_installation,
+                self.occupied_compute_per_instance)
 
         self.available_compute_per_instance = available_compute_per_instance.set_label(
             f"Available CPU per {self.name} instance")
@@ -230,10 +231,8 @@ class ServerBase(InfraHardware):
 
             if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 if max_nb_of_instances > self.fixed_nb_of_instances:
-                    raise ValueError(
-                        f"The number of {self.name} instances computed from its resources need is superior to the "
-                        f"number of instances specified by the user "
-                        f"({max_nb_of_instances.value} > {self.fixed_nb_of_instances})")
+                    raise InsufficientCapacityError(
+                        self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
                 else:
                     fixed_nb_of_instances_np = Quantity(
                         np.full(len(self.raw_nb_of_instances), np.float32(self.fixed_nb_of_instances.magnitude)),

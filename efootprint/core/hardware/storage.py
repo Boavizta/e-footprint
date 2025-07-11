@@ -5,12 +5,27 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.infra_hardware import InfraHardware
+from efootprint.core.hardware.infra_hardware import InfraHardware, InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+
+
+class NegativeCumulativeStorageNeedError(Exception):
+    def __init__(self, storage_obj: Type["Storage"], cumulative_quantity: Quantity):
+        self.storage_obj = storage_obj
+        self.cumulative_quantity = cumulative_quantity
+        self.jobs_that_delete_data = [job for job in self.storage_obj.jobs if job.data_stored.magnitude < 0]
+
+        job_msg_part = [f"name: {job.name} - value: {job.data_stored}" for job in self.jobs_that_delete_data]
+
+        message = (
+            f"In Storage object {self.storage_obj.name}, negative cumulative storage need detected: "
+            f"{np.min(cumulative_quantity):~P}. Please verify your jobs that delete data: {job_msg_part} "
+            f"or increase the base_storage_need value, currently set to {self.storage_obj.base_storage_need.value}")
+        super().__init__(message)
 
 
 class Storage(InfraHardware):
@@ -210,16 +225,7 @@ class Storage(InfraHardware):
             cumulative_quantity = Quantity(cumulative_array, delta_unit)
 
             if np.min(cumulative_quantity.magnitude) < 0:
-                jobs_in_errors = [
-                    f"name: {job.name} - value: {job.data_stored}"
-                    for job in self.jobs if job.data_stored.magnitude < 0
-                ]
-                raise ValueError(
-                    f"In Storage object {self.name}, negative cumulative storage need detected: "
-                    f"{np.min(cumulative_quantity):~P}."
-                    f" Please verify your jobs that delete data: {jobs_in_errors}"
-                    f" or increase the base_storage_need value, currently set to {self.base_storage_need.value}"
-                )
+                raise NegativeCumulativeStorageNeedError(self, cumulative_quantity)
 
             self.full_cumulative_storage_need = ExplainableHourlyQuantities(
                 cumulative_quantity,
@@ -244,10 +250,8 @@ class Storage(InfraHardware):
             if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 max_nb_of_instances = nb_of_instances.max()
                 if max_nb_of_instances > self.fixed_nb_of_instances:
-                    raise ValueError(
-                        f"The number of {self.name} instances computed from its resources need is superior to the "
-                        f"number of instances specified by the user/server "
-                        f"({max_nb_of_instances} > {self.fixed_nb_of_instances})")
+                    raise InsufficientCapacityError(
+                        self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
                 else:
                     fixed_nb_of_instances_quantity = Quantity(
                         np.full(

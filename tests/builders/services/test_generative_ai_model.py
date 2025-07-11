@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
@@ -105,11 +106,11 @@ class TestGenAIModel(unittest.TestCase):
 
     def test_installing_too_big_model_raises_error(self):
         server = GPUServer.from_defaults("Test Server", storage=Storage.ssd())
-        with self.assertRaises(ValueError) as context:
+        with self.assertRaises(InsufficientCapacityError) as context:
             GenAIModel.from_defaults(
                 name="Test GenAI", provider=SourceObject("openai"), model_name=SourceObject("gpt-4"), server=server)
         self.assertIn(
-            "Test Server has available capacity of 320.0 gigabyte but is asked 4224.0 gigabyte", str(context.exception))
+            "Test Server has available RAM capacity of 320.0 gigabyte but is asked for 4224.0 gigabyte", str(context.exception))
 
 
 class TestGenAIJob(unittest.TestCase):
