@@ -185,18 +185,16 @@ class Storage(InfraHardware):
         if isinstance(self.storage_needed, EmptyExplainableObject):
             return EmptyExplainableObject(left_parent=self.storage_needed)
         else:
-            storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-            automatic_storage_dumps_after_storage_duration_np = - np.pad(
-                self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
-            )[:len(self.storage_needed.value)]
-            automatic_storage_dumps_after_storage_duration_np = automatic_storage_dumps_after_storage_duration_np[
-                :len(self.storage_needed.value)]
-
-            if len(automatic_storage_dumps_after_storage_duration_np) == 0:
-                storage_needs_nb_of_hours = len(self.storage_needed.value)
+            storage_needs_nb_of_hours = len(self.storage_needed.value)
+            if storage_needs_nb_of_hours == 0:
                 automatic_storage_dumps_after_storage_duration_np = Quantity(
                     np.zeros(storage_needs_nb_of_hours + 1, dtype=np.float32),
                     self.storage_needed.units)
+            else:
+                storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
+                automatic_storage_dumps_after_storage_duration_np = - np.pad(
+                    self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
+                )[:storage_needs_nb_of_hours]
 
             return ExplainableHourlyQuantities(
                 automatic_storage_dumps_after_storage_duration_np, self.storage_needed.start_date,
@@ -271,13 +269,13 @@ class Storage(InfraHardware):
                 self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):
+        storage_needed = self.storage_needed
         tmp_nb_of_active_instances = (
-                (self.storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
+                (storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
                  + self.automatic_storage_dumps_after_storage_duration.abs())
                 / self.storage_capacity
         ).to(u.dimensionless)
         nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances.abs(), "min")
-
         self.nb_of_active_instances = nb_of_active_instances.set_label(
             f"Hourly number of active instances for {self.name}")
 
