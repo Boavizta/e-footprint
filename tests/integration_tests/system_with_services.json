@@ -163,7 +163,7 @@
                 }
             },
             "average_carbon_intensity": {
-                "value": 100.0,
+                "value": 400.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of GPU server electricity from e-footprint hypothesis",
                 "source": {
@@ -568,7 +568,7 @@
                 }
             },
             "average_carbon_intensity": {
-                "value": 233.0,
+                "value": 400.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of Web server electricity from e-footprint hypothesis",
                 "source": {

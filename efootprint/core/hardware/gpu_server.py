@@ -20,7 +20,7 @@ class GPUServer(ServerBase):
             "ram_per_gpu": SourceValue(80 * u.GB / u.gpu, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
             "carbon_footprint_fabrication_per_gpu": SourceValue(
                 150 * u.kg / u.gpu, BLOOM_PAPER_SOURCE, "Carbon footprint one GPU"),
-            "average_carbon_intensity": SourceValue(100 * u.g / u.kWh),
+            "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
             "carbon_footprint_fabrication_without_gpu": SourceValue(
             2500 * u.kg, BLOOM_PAPER_SOURCE, "Carbon footprint without GPU"),
             "compute": SourceValue(4 * u.gpu),

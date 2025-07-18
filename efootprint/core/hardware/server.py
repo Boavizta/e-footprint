@@ -21,7 +21,7 @@ class Server(ServerBase):
             "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
             "compute": SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
+            "average_carbon_intensity": SourceValue(400 * u.g / u.kWh, Sources.HYPOTHESIS),
             "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             "base_compute_consumption": SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
