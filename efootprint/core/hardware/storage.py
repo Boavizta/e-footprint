@@ -102,6 +102,9 @@ class Storage(InfraHardware):
         self.storage_delta = EmptyExplainableObject()
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.nb_of_active_instances = EmptyExplainableObject()
+        self.storage_needed = EmptyExplainableObject()
+        self.storage_freed = EmptyExplainableObject()
+        self.automatic_storage_dumps_after_storage_duration = EmptyExplainableObject()
 
     @property
     def server(self) -> Type["Server"]:
@@ -117,7 +120,8 @@ class Storage(InfraHardware):
     @property
     def calculated_attributes(self):
         return (
-            ["carbon_footprint_fabrication", "power", "storage_delta", "full_cumulative_storage_need",
+            ["carbon_footprint_fabrication", "power", "storage_needed", "storage_freed",
+             "automatic_storage_dumps_after_storage_duration", "storage_delta", "full_cumulative_storage_need",
              "raw_nb_of_instances", "nb_of_instances", "nb_of_active_instances", "instances_fabrication_footprint",
              "instances_energy", "energy_footprint"])
 
@@ -149,41 +153,41 @@ class Storage(InfraHardware):
     def update_power(self):
         self.power = (self.power_per_storage_capacity * self.storage_capacity).set_label(f"Power of {self.name}")
 
-    # If storage_needed, storage_freed and automatic_storage_dumps_after_storage_duration had their update function
-    # and were attributes of the storage class then the update of the data_stored attribute of a job from positive to
-    # negative or negative to positive would cause problem with the re-computation of modeling attributes.
-    # For example if the data_stored attribute of a job went from negative to positive then the storage_freed would be
-    # recomputed but not the storage_needed nor the automatic_storage_dumps_after_storage_duration.
-    # By turning these three attributes into properties, we make all of them dependencies of the calculation of
-    # storage_delta and solve the problem.
-    @property
-    def storage_needed(self):
+    def update_storage_needed(self):
         storage_needed = EmptyExplainableObject()
 
         for job in self.jobs:
             if job.data_stored.magnitude >= 0:
                 storage_needed += job.hourly_data_stored_across_usage_patterns
+            else:
+                # Necessary to keep relationship in calculation graph.
+                # For example if the data_stored attribute of a job went from negative to positive then the
+                # storage_needed needs to be recomputed but wouldn’t have been initially logically linked to the job
+                # with the above if condition.
+                storage_needed = storage_needed.generate_explainable_object_with_logical_dependency(
+                    job.hourly_data_stored_across_usage_patterns)
 
         storage_needed *= self.data_replication_factor
 
-        return storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
+        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
 
-    @property
-    def storage_freed(self):
+    def update_storage_freed(self):
         storage_freed = EmptyExplainableObject()
 
         for job in self.jobs:
             if job.data_stored.magnitude < 0:
                 storage_freed += job.hourly_data_stored_across_usage_patterns
+            else:
+                storage_freed = storage_freed.generate_explainable_object_with_logical_dependency(
+                    job.hourly_data_stored_across_usage_patterns)
 
         storage_freed *= self.data_replication_factor
 
-        return storage_freed.to(u.TB).set_label(f"Hourly {self.name} storage freed")
+        self.storage_freed = storage_freed.to(u.TB).set_label(f"Hourly {self.name} storage freed")
 
-    @property
-    def automatic_storage_dumps_after_storage_duration(self):
+    def update_automatic_storage_dumps_after_storage_duration(self):
         if isinstance(self.storage_needed, EmptyExplainableObject):
-            return EmptyExplainableObject(left_parent=self.storage_needed)
+            automatic_storage_dumps_after_storage_duration = EmptyExplainableObject(left_parent=self.storage_needed)
         else:
             storage_needs_nb_of_hours = len(self.storage_needed.value)
             if storage_needs_nb_of_hours == 0:
@@ -196,11 +200,13 @@ class Storage(InfraHardware):
                     self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
                 )[:storage_needs_nb_of_hours]
 
-            return ExplainableHourlyQuantities(
+            automatic_storage_dumps_after_storage_duration = ExplainableHourlyQuantities(
                 automatic_storage_dumps_after_storage_duration_np, self.storage_needed.start_date,
                 label=f"Storage dumps for {self.name}",
                 left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
+
+        self.automatic_storage_dumps_after_storage_duration = automatic_storage_dumps_after_storage_duration
 
     def update_storage_delta(self):
         storage_delta = (self.storage_needed + self.storage_freed

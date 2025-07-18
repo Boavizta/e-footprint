@@ -51,6 +51,7 @@ class TestStorage(TestCase):
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
             jobs_mock.return_value = [job1]
+            self.storage_base.update_storage_needed()
             self.assertEqual([3, 6, 9], self.storage_base.storage_needed.value_as_float_list)
             self.assertEqual(u.TB, self.storage_base.storage_needed.unit)
 
@@ -63,6 +64,7 @@ class TestStorage(TestCase):
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
             jobs_mock.return_value = [job1, job2]
+            self.storage_base.update_storage_needed()
             self.assertEqual([6, 12, 18], self.storage_base.storage_needed.value_as_float_list)
             self.assertEqual(u.TB, self.storage_base.storage_needed.unit)
 
@@ -75,6 +77,7 @@ class TestStorage(TestCase):
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
             jobs_mock.return_value = [job1, job2]
+            self.storage_base.update_storage_needed()
             self.assertEqual([3, 6, 9], self.storage_base.storage_needed.value_as_float_list)
             self.assertEqual(u.TB, self.storage_base.storage_needed.unit)
 
@@ -88,6 +91,7 @@ class TestStorage(TestCase):
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
             jobs_mock.return_value = [job1, job2]
+            self.storage_base.update_storage_freed()
             self.assertEqual([-3, -6, -9], self.storage_base.storage_freed.value_as_float_list)
             self.assertEqual(u.TB, self.storage_base.storage_freed.unit)
 
@@ -97,8 +101,9 @@ class TestStorage(TestCase):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
 
-        with patch.object(Storage, "storage_needed", all_needed_storage), \
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
+            self.storage_base.update_automatic_storage_dumps_after_storage_duration()
             self.assertEqual(
                 [0, -2, -4], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
             self.assertEqual(
@@ -111,8 +116,9 @@ class TestStorage(TestCase):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         all_needed_storage = create_source_hourly_values_from_list(input_data, start_date, pint_unit=u.TB)
 
-        with patch.object(Storage, "storage_needed", all_needed_storage), \
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
+            self.storage_base.update_automatic_storage_dumps_after_storage_duration()
             self.assertEqual([0, 0, 0], self.storage_base.automatic_storage_dumps_after_storage_duration.value_as_float_list)
             self.assertEqual(start_date,
                              self.storage_base.automatic_storage_dumps_after_storage_duration.start_date)
@@ -127,9 +133,9 @@ class TestStorage(TestCase):
         dump_min_date = start_date + timedelta(hours=1)
         dump_need_update = create_source_hourly_values_from_list(dumps_data, dump_min_date, pint_unit=u.TB)
 
-        with patch.object(Storage, "storage_needed", all_needed_storage), \
-            patch.object(Storage, "automatic_storage_dumps_after_storage_duration", dump_need_update), \
-            patch.object(Storage, "storage_freed", all_freed_storage):
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
+            patch.object(self.storage_base, "automatic_storage_dumps_after_storage_duration", dump_need_update), \
+            patch.object(self.storage_base, "storage_freed", all_freed_storage):
             self.storage_base.update_storage_delta()
             self.assertEqual([2, 2, 1], self.storage_base.storage_delta.value_as_float_list)
 
@@ -142,9 +148,9 @@ class TestStorage(TestCase):
         dump_need_update = create_source_hourly_values_from_list(dumps_data, dump_min_date, pint_unit=u.TB)
         all_freed_data = EmptyExplainableObject()
 
-        with patch.object(Storage, "storage_needed", all_needed_storage), \
-            patch.object(Storage, "automatic_storage_dumps_after_storage_duration", dump_need_update), \
-            patch.object(Storage, "storage_freed", all_freed_data):
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
+            patch.object(self.storage_base, "automatic_storage_dumps_after_storage_duration", dump_need_update), \
+            patch.object(self.storage_base, "storage_freed", all_freed_data):
             self.storage_base.update_storage_delta()
 
             self.assertEqual([2, 2, 2], self.storage_base.storage_delta.value_as_float_list)
@@ -186,9 +192,9 @@ class TestStorage(TestCase):
             [0, -0.5, -1, -0.5, 0], pint_unit=u.TB)
         nb_of_instances = create_source_hourly_values_from_list([3, 3, 3, 2, 6], pint_unit=u.dimensionless)
 
-        with patch.object(Storage, "storage_needed", storage_needed), \
-                patch.object(Storage, "storage_freed", storage_freed), \
-                patch.object(Storage, "automatic_storage_dumps_after_storage_duration",
+        with patch.object(self.storage_base, "storage_needed", storage_needed), \
+                patch.object(self.storage_base, "storage_freed", storage_freed), \
+                patch.object(self.storage_base, "automatic_storage_dumps_after_storage_duration",
                              automatic_storage_dumps_after_storage_duration), \
                 patch.object(self.storage_base, "nb_of_instances", nb_of_instances), \
                 patch.object(self.storage_base, "storage_capacity", storage_capacity):
@@ -202,9 +208,9 @@ class TestStorage(TestCase):
         automatic_storage_dumps_after_storage_duration = EmptyExplainableObject()
         nb_of_instances = create_source_hourly_values_from_list([1, 2, 2], pint_unit=u.dimensionless)
 
-        with patch.object(Storage, "storage_needed", storage_needed), \
-                patch.object(Storage, "storage_freed", storage_freed), \
-                patch.object(Storage, "automatic_storage_dumps_after_storage_duration",
+        with patch.object(self.storage_base, "storage_needed", storage_needed), \
+                patch.object(self.storage_base, "storage_freed", storage_freed), \
+                patch.object(self.storage_base, "automatic_storage_dumps_after_storage_duration",
                              automatic_storage_dumps_after_storage_duration), \
                 patch.object(self.storage_base, "nb_of_instances", nb_of_instances), \
                 patch.object(self.storage_base, "storage_capacity", storage_capacity):
