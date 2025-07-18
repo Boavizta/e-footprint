@@ -171,35 +171,19 @@ class TestJob(TestCase):
                          job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
-    def test_compute_job_hourly_data_exchange_simple_case(self):
+    def test_compute_job_hourly_data_exchange(self):
         data_exchange = "data_stored"
         usage_pattern = MagicMock()
-        hourly_occs_per_up = ExplainableObjectDict(
+        hourly_avg_occs_per_up = ExplainableObjectDict(
             {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
-        with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
+        with patch.object(self.job, "hourly_avg_occurrences_per_usage_pattern", hourly_avg_occs_per_up), \
                 patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
-                patch.object(Job, "duration_in_full_hours", new_callable=PropertyMock) as mock_full_hour_duration:
-            mock_full_hour_duration.return_value = SourceValue(1 * u.dimensionless)
+                patch.object(self.job, "request_duration", SourceValue(0.5 * u.hour)):
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
                 usage_pattern, data_exchange)
 
-            self.assertEqual([1, 3, 5], job_hourly_data_exchange.value_as_float_list)
-
-    def test_compute_job_hourly_data_exchange_complex_case(self):
-        data_exchange = "data_stored"
-        usage_pattern = MagicMock()
-        hourly_occs_per_up = ExplainableObjectDict(
-            {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
-
-        with patch.object(self.job, "hourly_occurrences_per_usage_pattern", hourly_occs_per_up), \
-                patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
-                patch.object(Job, "duration_in_full_hours", new_callable=PropertyMock) as mock_full_hour_duration:
-            mock_full_hour_duration.return_value = SourceValue(2 * u.dimensionless)
-            job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
-                usage_pattern, data_exchange)
-
-            self.assertEqual([0.5, 2, 4, 2.5], job_hourly_data_exchange.value_as_float_list)
+        self.assertEqual([2, 6, 10], job_hourly_data_exchange.value_as_float_list)
             
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
         usage_pattern1 = MagicMock()

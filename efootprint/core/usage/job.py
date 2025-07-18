@@ -123,18 +123,12 @@ class JobBase(ModelingObject):
     def compute_hourly_data_exchange_for_usage_pattern(self, usage_pattern, data_exchange_type: str):
         data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
 
-        hourly_data_exchange = EmptyExplainableObject()
-        data_exchange_per_hour = (getattr(self, data_exchange_type) / self.duration_in_full_hours).set_label(
-            f"{data_exchange_type_no_underscore} per hour for job {self.name} in {usage_pattern.name}")
+        data_exchange_per_hour = (
+                getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
+                / self.request_duration
+        ).set_label(f"{data_exchange_type_no_underscore} per hour for job {self.name} in {usage_pattern.name}")
 
-        for hour_shift in range(0, int(self.duration_in_full_hours.magnitude)):
-            if not isinstance(self.hourly_occurrences_per_usage_pattern[usage_pattern], EmptyExplainableObject):
-                explainable_hour_shift = ExplainableQuantity(
-                    hour_shift * u.hour, f"hour nb {hour_shift} within {self.duration_in_full_hours}",
-                    left_parent=self.duration_in_full_hours)
-                hourly_data_exchange += (
-                        self.hourly_occurrences_per_usage_pattern[usage_pattern].return_shifted_hourly_quantities(
-                            explainable_hour_shift) * data_exchange_per_hour)
+        hourly_data_exchange = self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] * data_exchange_per_hour
 
         return hourly_data_exchange.set_label(
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
