@@ -20,6 +20,8 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
 from efootprint.utils.tools import get_init_signature_params
 
 compute_times = defaultdict(float)
+time_spent_doing_sums = defaultdict(float)
+time_spent_doing_sums["value"] = 0
 
 
 def get_instance_attributes(obj, target_class):

@@ -272,12 +272,16 @@ class System(ModelingObject):
         return ExplainableObjectDict(energy_footprints)
 
     def update_total_footprint(self):
+        import time
+        start = time.perf_counter()
         total_footprint = (
             sum(
                 sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
                 for key in self.fabrication_footprints
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
+        from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+        time_spent_doing_sums["value"] += time.perf_counter() - start
 
         self.total_footprint = round(total_footprint, 4)
 

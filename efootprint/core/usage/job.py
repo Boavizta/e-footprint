@@ -89,15 +89,21 @@ class JobBase(ModelingObject):
         return self.networks
 
     def update_dict_element_in_hourly_occurrences_per_usage_pattern(self, usage_pattern: "UsagePattern"):
-        job_occurrences = EmptyExplainableObject()
         delay_between_uj_start_and_job_evt = EmptyExplainableObject()
+        elts_to_add = []
         for uj_step in usage_pattern.usage_journey.uj_steps:
             for uj_step_job in uj_step.jobs:
                 if uj_step_job == self:
-                    job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
-                        delay_between_uj_start_and_job_evt)
+                    elts_to_add.append(usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
+                        delay_between_uj_start_and_job_evt))
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent
+
+        import time
+        start = time.perf_counter()
+        job_occurrences = sum(elts_to_add, start=EmptyExplainableObject())
+        from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+        time_spent_doing_sums["value"] += time.perf_counter() - start
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.set_label(
             f"Hourly {self.name} occurrences in {usage_pattern.name}")
@@ -155,9 +161,15 @@ class JobBase(ModelingObject):
 
     def sum_calculated_attribute_across_usage_patterns(
             self, calculated_attribute_name: str, calculated_attribute_label: str):
-        hourly_calc_attr_summed_across_ups = EmptyExplainableObject()
+        elts_to_sum = []
         for usage_pattern in self.usage_patterns:
-            hourly_calc_attr_summed_across_ups += getattr(self, calculated_attribute_name)[usage_pattern]
+            elts_to_sum.append(getattr(self, calculated_attribute_name)[usage_pattern])
+
+        import time
+        start = time.perf_counter()
+        hourly_calc_attr_summed_across_ups = sum(elts_to_sum, start=EmptyExplainableObject())
+        from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+        time_spent_doing_sums["value"] += time.perf_counter() - start
 
         return hourly_calc_attr_summed_across_ups.set_label(
                 f"Hourly {self.name} {calculated_attribute_label} across usage patterns")

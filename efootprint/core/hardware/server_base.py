@@ -136,10 +136,16 @@ class ServerBase(InfraHardware):
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
-        hour_by_hour_resource_needs = EmptyExplainableObject()
+        elts_to_sum = []
         for job in self.jobs:
-            hour_by_hour_resource_needs += (
+            elts_to_sum.append(
                     job.hourly_avg_occurrences_across_usage_patterns * getattr(job, f"{resource}_needed"))
+
+        import time
+        start = time.perf_counter()
+        hour_by_hour_resource_needs = sum(elts_to_sum, start=EmptyExplainableObject())
+        from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+        time_spent_doing_sums["value"] += time.perf_counter() - start
 
         return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
 

@@ -151,6 +151,9 @@ if __name__ == "__main__":
     nb_update_functions = len(compute_times)
     print(f"Total time in update functions: {round(total_time, 3)}s, nb_update_functions: {nb_update_functions}, "
           f"avg %: {round(100 / nb_update_functions, 2)}")
+    from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+    print(f"Time spent doing sums: {round(time_spent_doing_sums["value"], 3)} "
+          f"({round(time_spent_doing_sums["value"] / total_time * 100, 2)}%)")
     cumulated_time = 0
     i = 0
     for update_function_name, update_function_dict in sorted(compute_times.items(), key=lambda x: -x[1]["total_duration"]):

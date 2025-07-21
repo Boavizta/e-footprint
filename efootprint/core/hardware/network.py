@@ -54,11 +54,18 @@ class Network(ModelingObject):
         return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
 
     def update_energy_footprint(self):
-        hourly_data_transferred_per_up = {up: EmptyExplainableObject() for up in self.usage_patterns}
+        elts_to_sum_per_up = {up: [] for up in self.usage_patterns}
         for job in self.jobs:
             job_ups_in_network_ups = [up for up in job.usage_patterns if up in self.usage_patterns]
             for up in job_ups_in_network_ups:
-                hourly_data_transferred_per_up[up] += job.hourly_data_transferred_per_usage_pattern[up]
+                elts_to_sum_per_up[up].append(job.hourly_data_transferred_per_usage_pattern[up])
+        import time
+        start = time.perf_counter()
+        hourly_data_transferred_per_up = {
+            up: sum(elts_to_sum_per_up[up], start=EmptyExplainableObject()) for up in self.usage_patterns
+        }
+        from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
+        time_spent_doing_sums["value"] += time.perf_counter() - start
 
         energy_footprint = EmptyExplainableObject()
         for up in self.usage_patterns:
