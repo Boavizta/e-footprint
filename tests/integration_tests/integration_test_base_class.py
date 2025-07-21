@@ -69,11 +69,6 @@ class IntegrationTestBaseClass(TestCase):
     def run_system_to_json_test(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
-        with open(tmp_filepath, 'r') as tmp_file:
-            file_content = tmp_file.read()
-        with open(tmp_filepath, 'w') as tmp_file:
-            file_content_without_random_ids = re.sub(r"\"id-[a-zA-Z0-9]{6}-", "\"id-XXXXXX-", file_content)
-            tmp_file.write(file_content_without_random_ids)
 
         with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), 'r') as ref_file,
               open(tmp_filepath, 'r') as tmp_file):

@@ -1,19 +1,19 @@
 {
     "efootprint_version": "10.1.13",
     "System": {
-        "uuid-system-1": {
+        "system-1": {
             "name": "system 1",
-            "id": "uuid-system-1",
+            "id": "system-1",
             "usage_patterns": [
-                "uuid-Video-watching-in-France-in-the-morning",
-                "uuid-Video-watching-in-France-in-the-evening"
+                "Video-watching-in-France-in-the-morning",
+                "Video-watching-in-France-in-the-evening"
             ]
         }
     },
     "UsagePattern": {
-        "uuid-Video-watching-in-France-in-the-morning": {
+        "Video-watching-in-France-in-the-morning": {
             "name": "Video watching in France in the morning",
-            "id": "uuid-Video-watching-in-France-in-the-morning",
+            "id": "Video-watching-in-France-in-the-morning",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
@@ -25,16 +25,16 @@
                     "link": null
                 }
             },
-            "usage_journey": "uuid-Daily-video-usage",
+            "usage_journey": "Daily-video-usage",
             "devices": [
-                "uuid-Default-laptop"
+                "Default-laptop"
             ],
-            "network": "uuid-network-1",
-            "country": "uuid-France"
+            "network": "network-1",
+            "country": "France"
         },
-        "uuid-Video-watching-in-France-in-the-evening": {
+        "Video-watching-in-France-in-the-evening": {
             "name": "Video watching in France in the evening",
-            "id": "uuid-Video-watching-in-France-in-the-evening",
+            "id": "Video-watching-in-France-in-the-evening",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAk9QAAsAAAekUAAPpEAAB6RABAnMDaRQCAO0UCACBg30od",
                 "unit": "dimensionless",
@@ -46,30 +46,30 @@
                     "link": null
                 }
             },
-            "usage_journey": "uuid-Daily-video-usage",
+            "usage_journey": "Daily-video-usage",
             "devices": [
-                "uuid-Default-laptop"
+                "Default-laptop"
             ],
-            "network": "uuid-network-2",
-            "country": "uuid-France"
+            "network": "network-2",
+            "country": "France"
         }
     },
     "UsageJourney": {
-        "uuid-Daily-video-usage": {
+        "Daily-video-usage": {
             "name": "Daily video usage",
-            "id": "uuid-Daily-video-usage",
+            "id": "Daily-video-usage",
             "uj_steps": [
-                "uuid-20-min-streaming-on-Youtube",
-                "uuid-02e4s-of-upload",
-                "uuid-Dailymotion-step",
-                "uuid-20-min-streaming-on-TikTok"
+                "20-min-streaming-on-Youtube",
+                "02e4s-of-upload",
+                "Dailymotion-step",
+                "20-min-streaming-on-TikTok"
             ]
         }
     },
     "UsageJourneyStep": {
-        "uuid-20-min-streaming-on-Youtube": {
+        "20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
-            "id": "uuid-20-min-streaming-on-Youtube",
+            "id": "20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
@@ -80,12 +80,12 @@
                 }
             },
             "jobs": [
-                "uuid-streaming"
+                "streaming"
             ]
         },
-        "uuid-02e4s-of-upload": {
+        "02e4s-of-upload": {
             "name": "0.4s of upload",
-            "id": "uuid-02e4s-of-upload",
+            "id": "02e4s-of-upload",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "second",
@@ -96,12 +96,12 @@
                 }
             },
             "jobs": [
-                "uuid-upload"
+                "upload"
             ]
         },
-        "uuid-Dailymotion-step": {
+        "Dailymotion-step": {
             "name": "Dailymotion step",
-            "id": "uuid-Dailymotion-step",
+            "id": "Dailymotion-step",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
@@ -112,12 +112,12 @@
                 }
             },
             "jobs": [
-                "uuid-dailymotion"
+                "dailymotion"
             ]
         },
-        "uuid-20-min-streaming-on-TikTok": {
+        "20-min-streaming-on-TikTok": {
             "name": "20 min streaming on TikTok",
-            "id": "uuid-20-min-streaming-on-TikTok",
+            "id": "20-min-streaming-on-TikTok",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
@@ -128,15 +128,15 @@
                 }
             },
             "jobs": [
-                "uuid-tiktok",
-                "uuid-tiktok-analytics"
+                "tiktok",
+                "tiktok-analytics"
             ]
         }
     },
     "Job": {
-        "uuid-streaming": {
+        "streaming": {
             "name": "streaming",
-            "id": "uuid-streaming",
+            "id": "streaming",
             "data_transferred": {
                 "value": 1.0,
                 "unit": "gigabyte",
@@ -182,11 +182,11 @@
                     "link": null
                 }
             },
-            "server": "uuid-Server-1"
+            "server": "Server-1"
         },
-        "uuid-upload": {
+        "upload": {
             "name": "upload",
-            "id": "uuid-upload",
+            "id": "upload",
             "data_transferred": {
                 "value": 300.0,
                 "unit": "kilobyte",
@@ -232,11 +232,11 @@
                     "link": null
                 }
             },
-            "server": "uuid-Server-1"
+            "server": "Server-1"
         },
-        "uuid-dailymotion": {
+        "dailymotion": {
             "name": "dailymotion",
-            "id": "uuid-dailymotion",
+            "id": "dailymotion",
             "data_transferred": {
                 "value": 3.3,
                 "unit": "megabyte",
@@ -282,11 +282,11 @@
                     "link": null
                 }
             },
-            "server": "uuid-Server-1"
+            "server": "Server-1"
         },
-        "uuid-tiktok": {
+        "tiktok": {
             "name": "tiktok",
-            "id": "uuid-tiktok",
+            "id": "tiktok",
             "data_transferred": {
                 "value": 0.8333333333333334,
                 "unit": "gigabyte",
@@ -332,11 +332,11 @@
                     "link": null
                 }
             },
-            "server": "uuid-Server-2"
+            "server": "Server-2"
         },
-        "uuid-tiktok-analytics": {
+        "tiktok-analytics": {
             "name": "tiktok analytics",
-            "id": "uuid-tiktok-analytics",
+            "id": "tiktok-analytics",
             "data_transferred": {
                 "value": 50.0,
                 "unit": "kilobyte",
@@ -382,13 +382,13 @@
                     "link": null
                 }
             },
-            "server": "uuid-TikTok-Analytics-server"
+            "server": "TikTok-Analytics-server"
         }
     },
     "Server": {
-        "uuid-Server-1": {
+        "Server-1": {
             "name": "Server 1",
-            "id": "uuid-Server-1",
+            "id": "Server-1",
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
@@ -509,11 +509,11 @@
                 "value": null,
                 "label": "User defined number of Server 1 instances"
             },
-            "storage": "uuid-Default-SSD-storage-1"
+            "storage": "Default-SSD-storage-1"
         },
-        "uuid-Server-2": {
+        "Server-2": {
             "name": "Server 2",
-            "id": "uuid-Server-2",
+            "id": "Server-2",
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
@@ -630,11 +630,11 @@
                 "value": null,
                 "label": "User defined number of Server 2 instances"
             },
-            "storage": "uuid-Default-SSD-storage-2"
+            "storage": "Default-SSD-storage-2"
         },
-        "uuid-TikTok-Analytics-server": {
+        "TikTok-Analytics-server": {
             "name": "TikTok Analytics server",
-            "id": "uuid-TikTok-Analytics-server",
+            "id": "TikTok-Analytics-server",
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
@@ -755,13 +755,13 @@
                 "value": null,
                 "label": "User defined number of TikTok Analytics server instances"
             },
-            "storage": "uuid-TikTok-Analytics-storage"
+            "storage": "TikTok-Analytics-storage"
         }
     },
     "Storage": {
-        "uuid-Default-SSD-storage-1": {
+        "Default-SSD-storage-1": {
             "name": "Default SSD storage 1",
-            "id": "uuid-Default-SSD-storage-1",
+            "id": "Default-SSD-storage-1",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -848,9 +848,9 @@
                 "label": "User defined number of Default SSD storage 1 instances"
             }
         },
-        "uuid-Default-SSD-storage-2": {
+        "Default-SSD-storage-2": {
             "name": "Default SSD storage 2",
-            "id": "uuid-Default-SSD-storage-2",
+            "id": "Default-SSD-storage-2",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -937,9 +937,9 @@
                 "label": "User defined number of Default SSD storage 2 instances"
             }
         },
-        "uuid-TikTok-Analytics-storage": {
+        "TikTok-Analytics-storage": {
             "name": "TikTok Analytics storage",
-            "id": "uuid-TikTok-Analytics-storage",
+            "id": "TikTok-Analytics-storage",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -1028,9 +1028,9 @@
         }
     },
     "Device": {
-        "uuid-Default-laptop": {
+        "Default-laptop": {
             "name": "Default laptop",
-            "id": "uuid-Default-laptop",
+            "id": "Default-laptop",
             "carbon_footprint_fabrication": {
                 "value": 156.0,
                 "unit": "kilogram",
@@ -1070,9 +1070,9 @@
         }
     },
     "Network": {
-        "uuid-network-1": {
+        "network-1": {
             "name": "network 1",
-            "id": "uuid-network-1",
+            "id": "network-1",
             "bandwidth_energy_intensity": {
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
@@ -1083,9 +1083,9 @@
                 }
             }
         },
-        "uuid-network-2": {
+        "network-2": {
             "name": "network 2",
-            "id": "uuid-network-2",
+            "id": "network-2",
             "bandwidth_energy_intensity": {
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
@@ -1098,9 +1098,9 @@
         }
     },
     "Country": {
-        "uuid-France": {
+        "France": {
             "name": "France",
-            "id": "uuid-France",
+            "id": "France",
             "short_name": "FRA",
             "average_carbon_intensity": {
                 "value": 85.0,

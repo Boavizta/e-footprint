@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
@@ -64,7 +65,13 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
+        usage_pattern.id = css_escape(usage_pattern.name)
+
         system = System("system 1", [usage_pattern])
+        mod_obj_list = [system] + system.all_linked_objects
+        for mod_obj in mod_obj_list:
+            if mod_obj != usage_pattern:
+                mod_obj.id = css_escape(mod_obj.name)
 
         return system, storage, server, gpu_server, video_streaming_service, web_application_service, genai_service, \
                 video_streaming_job, web_application_job, genai_job, direct_gpu_job, network, uj, start_date, \

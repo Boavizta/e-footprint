@@ -4,6 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
@@ -87,13 +88,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
         # calculations
-        usage_pattern.id = "uuid" + usage_pattern.id[9:]
+        usage_pattern.id = css_escape(usage_pattern.name)
 
         system = System("system 1", [usage_pattern])
         mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
             if mod_obj != usage_pattern:
-                mod_obj.id = "uuid" + mod_obj.id[9:]
+                mod_obj.id = css_escape(mod_obj.name)
 
         return (system, storage, server, streaming_job, streaming_step, upload_job, upload_step, uj, network,
                 start_date, usage_pattern)
@@ -214,7 +215,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.usage_pattern.devices = [Device.laptop(), Device.screen()]
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         up_laptop_with_normalized_id = Device.laptop()
-        up_laptop_with_normalized_id.id = "uuid" + up_laptop_with_normalized_id.id[9:]
+        up_laptop_with_normalized_id.id = css_escape(up_laptop_with_normalized_id.name)
         logger.warning("Setting devices back to laptop with normalized id")
         self.usage_pattern.devices = [up_laptop_with_normalized_id]
         self.assertEqual(self.initial_footprint, self.system.total_footprint)

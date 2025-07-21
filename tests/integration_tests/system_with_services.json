@@ -1,18 +1,18 @@
 {
     "efootprint_version": "10.1.13",
     "System": {
-        "id-XXXXXX-system-1": {
+        "system-1": {
             "name": "system 1",
-            "id": "id-XXXXXX-system-1",
+            "id": "system-1",
             "usage_patterns": [
-                "id-XXXXXX-Youtube-usage-in-France"
+                "Youtube-usage-in-France"
             ]
         }
     },
     "UsagePattern": {
-        "id-XXXXXX-Youtube-usage-in-France": {
+        "Youtube-usage-in-France": {
             "name": "Youtube usage in France",
-            "id": "id-XXXXXX-Youtube-usage-in-France",
+            "id": "Youtube-usage-in-France",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
@@ -24,27 +24,27 @@
                     "link": null
                 }
             },
-            "usage_journey": "id-XXXXXX-Daily-Youtube-usage",
+            "usage_journey": "Daily-Youtube-usage",
             "devices": [
-                "id-XXXXXX-Default-laptop"
+                "Default-laptop"
             ],
-            "network": "id-XXXXXX-Default-network",
-            "country": "id-XXXXXX-France"
+            "network": "Default-network",
+            "country": "France"
         }
     },
     "UsageJourney": {
-        "id-XXXXXX-Daily-Youtube-usage": {
+        "Daily-Youtube-usage": {
             "name": "Daily Youtube usage",
-            "id": "id-XXXXXX-Daily-Youtube-usage",
+            "id": "Daily-Youtube-usage",
             "uj_steps": [
-                "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat"
+                "20-min-streaming-on-Youtube-with-genAI-chat"
             ]
         }
     },
     "UsageJourneyStep": {
-        "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat": {
+        "20-min-streaming-on-Youtube-with-genAI-chat": {
             "name": "20 min streaming on Youtube with genAI chat",
-            "id": "id-XXXXXX-20-min-streaming-on-Youtube-with-genAI-chat",
+            "id": "20-min-streaming-on-Youtube-with-genAI-chat",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
@@ -55,17 +55,17 @@
                 }
             },
             "jobs": [
-                "id-XXXXXX-direct-GPU-server-job",
-                "id-XXXXXX-Streaming-job",
-                "id-XXXXXX-web-app-job",
-                "id-XXXXXX-GenAI-job"
+                "direct-GPU-server-job",
+                "Streaming-job",
+                "web-app-job",
+                "GenAI-job"
             ]
         }
     },
     "GPUJob": {
-        "id-XXXXXX-direct-GPU-server-job": {
+        "direct-GPU-server-job": {
             "name": "direct GPU server job",
-            "id": "id-XXXXXX-direct-GPU-server-job",
+            "id": "direct-GPU-server-job",
             "data_transferred": {
                 "value": 150.0,
                 "unit": "kilobyte",
@@ -111,13 +111,13 @@
                     "link": null
                 }
             },
-            "server": "id-XXXXXX-GPU-server"
+            "server": "GPU-server"
         }
     },
     "GPUServer": {
-        "id-XXXXXX-GPU-server": {
+        "GPU-server": {
             "name": "GPU server",
-            "id": "id-XXXXXX-GPU-server",
+            "id": "GPU-server",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -202,7 +202,7 @@
                 "value": null,
                 "label": "User defined number of GPU server instances"
             },
-            "storage": "id-XXXXXX-Default-SSD-storage",
+            "storage": "Default-SSD-storage",
             "gpu_power": {
                 "value": 400.0,
                 "unit": "watt / gpu",
@@ -251,9 +251,9 @@
         }
     },
     "Storage": {
-        "id-XXXXXX-Default-SSD-storage": {
+        "Default-SSD-storage": {
             "name": "Default SSD storage",
-            "id": "id-XXXXXX-Default-SSD-storage",
+            "id": "Default-SSD-storage",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -340,9 +340,9 @@
                 "label": "User defined number of Default SSD storage instances"
             }
         },
-        "id-XXXXXX-Web-server-SSD-storage": {
+        "Web-server-SSD-storage": {
             "name": "Web server SSD storage",
-            "id": "id-XXXXXX-Web-server-SSD-storage",
+            "id": "Web-server-SSD-storage",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -431,9 +431,9 @@
         }
     },
     "VideoStreamingJob": {
-        "id-XXXXXX-Streaming-job": {
+        "Streaming-job": {
             "name": "Streaming job",
-            "id": "id-XXXXXX-Streaming-job",
+            "id": "Streaming-job",
             "data_stored": {
                 "value": 0.0,
                 "unit": "megabyte",
@@ -443,7 +443,7 @@
                     "link": null
                 }
             },
-            "service": "id-XXXXXX-Youtube-streaming-service",
+            "service": "Youtube-streaming-service",
             "video_duration": {
                 "value": 20.0,
                 "unit": "minute",
@@ -473,10 +473,10 @@
         }
     },
     "VideoStreaming": {
-        "id-XXXXXX-Youtube-streaming-service": {
+        "Youtube-streaming-service": {
             "name": "Youtube streaming service",
-            "id": "id-XXXXXX-Youtube-streaming-service",
-            "server": "id-XXXXXX-Web-server",
+            "id": "Youtube-streaming-service",
+            "server": "Web-server",
             "base_ram_consumption": {
                 "value": 2.0,
                 "unit": "gigabyte",
@@ -520,9 +520,9 @@
         }
     },
     "BoaviztaCloudServer": {
-        "id-XXXXXX-Web-server": {
+        "Web-server": {
             "name": "Web server",
-            "id": "id-XXXXXX-Web-server",
+            "id": "Web-server",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -607,7 +607,7 @@
                 "value": null,
                 "label": "User defined number of Web server instances"
             },
-            "storage": "id-XXXXXX-Web-server-SSD-storage",
+            "storage": "Web-server-SSD-storage",
             "provider": {
                 "value": "scaleway",
                 "label": "Web server cloud provider from e-footprint hypothesis",
@@ -628,9 +628,9 @@
         }
     },
     "WebApplicationJob": {
-        "id-XXXXXX-web-app-job": {
+        "web-app-job": {
             "name": "web app job",
-            "id": "id-XXXXXX-web-app-job",
+            "id": "web-app-job",
             "data_transferred": {
                 "value": 2.2,
                 "unit": "megabyte",
@@ -649,7 +649,7 @@
                     "link": null
                 }
             },
-            "service": "id-XXXXXX-Web-application-service",
+            "service": "Web-application-service",
             "implementation_details": {
                 "value": "default",
                 "label": "web app job implementation details from e-footprint hypothesis",
@@ -661,10 +661,10 @@
         }
     },
     "WebApplication": {
-        "id-XXXXXX-Web-application-service": {
+        "Web-application-service": {
             "name": "Web application service",
-            "id": "id-XXXXXX-Web-application-service",
-            "server": "id-XXXXXX-Web-server",
+            "id": "Web-application-service",
+            "server": "Web-server",
             "base_ram_consumption": {
                 "value": null,
                 "label": "no value"
@@ -684,10 +684,10 @@
         }
     },
     "GenAIJob": {
-        "id-XXXXXX-GenAI-job": {
+        "GenAI-job": {
             "name": "GenAI job",
-            "id": "id-XXXXXX-GenAI-job",
-            "service": "id-XXXXXX-GenAI-service",
+            "id": "GenAI-job",
+            "service": "GenAI-service",
             "output_token_count": {
                 "value": 1000.0,
                 "unit": "dimensionless",
@@ -700,10 +700,10 @@
         }
     },
     "GenAIModel": {
-        "id-XXXXXX-GenAI-service": {
+        "GenAI-service": {
             "name": "GenAI service",
-            "id": "id-XXXXXX-GenAI-service",
-            "server": "id-XXXXXX-GPU-server",
+            "id": "GenAI-service",
+            "server": "GPU-server",
             "base_compute_consumption": {
                 "value": null,
                 "label": "no value"
@@ -772,9 +772,9 @@
         }
     },
     "Device": {
-        "id-XXXXXX-Default-laptop": {
+        "Default-laptop": {
             "name": "Default laptop",
-            "id": "id-XXXXXX-Default-laptop",
+            "id": "Default-laptop",
             "carbon_footprint_fabrication": {
                 "value": 156.0,
                 "unit": "kilogram",
@@ -814,9 +814,9 @@
         }
     },
     "Network": {
-        "id-XXXXXX-Default-network": {
+        "Default-network": {
             "name": "Default network",
-            "id": "id-XXXXXX-Default-network",
+            "id": "Default-network",
             "bandwidth_energy_intensity": {
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
@@ -829,9 +829,9 @@
         }
     },
     "Country": {
-        "id-XXXXXX-France": {
+        "France": {
             "name": "France",
-            "id": "id-XXXXXX-France",
+            "id": "France",
             "short_name": "FRA",
             "average_carbon_intensity": {
                 "value": 85.0,

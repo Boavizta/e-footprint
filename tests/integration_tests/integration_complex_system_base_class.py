@@ -3,6 +3,7 @@ import os.path
 from copy import copy
 from datetime import datetime, timedelta, timezone
 
+from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
@@ -148,14 +149,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date))
 
         # Normalize usage pattern ids before computation is made because it is used as dictionary key in intermediary calculations
-        usage_pattern1.id = "uuid" + usage_pattern1.id[9:]
-        usage_pattern2.id = "uuid" + usage_pattern2.id[9:]
+        usage_pattern1.id = css_escape(usage_pattern1.name)
+        usage_pattern2.id = css_escape(usage_pattern2.name)
 
         system = System("system 1", [usage_pattern1, usage_pattern2])
         mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
             if mod_obj not in [usage_pattern1, usage_pattern2]:
-                mod_obj.id = "uuid" + mod_obj.id[9:]
+                mod_obj.id = css_escape(mod_obj.name)
 
         return system, storage_1, storage_2, storage_3, server1, server2, server3, \
             streaming_job, upload_job, dailymotion_job, tiktok_job, tiktok_analytics_job, \

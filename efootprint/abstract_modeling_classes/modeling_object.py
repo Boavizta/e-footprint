@@ -193,8 +193,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.trigger_modeling_updates = False
         self.name = name
-        self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
+        self.id = str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
+
+    @property
+    def readable_id(self):
+        return f"id-{self.id}-{css_escape(self.name)}"
 
     @property
     def efootprint_class(self):

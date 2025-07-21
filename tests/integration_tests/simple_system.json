@@ -1,18 +1,18 @@
 {
     "efootprint_version": "10.1.13",
     "System": {
-        "uuid-system-1": {
+        "system-1": {
             "name": "system 1",
-            "id": "uuid-system-1",
+            "id": "system-1",
             "usage_patterns": [
-                "uuid-Youtube-usage-in-France"
+                "Youtube-usage-in-France"
             ]
         }
     },
     "UsagePattern": {
-        "uuid-Youtube-usage-in-France": {
+        "Youtube-usage-in-France": {
             "name": "Youtube usage in France",
-            "id": "uuid-Youtube-usage-in-France",
+            "id": "Youtube-usage-in-France",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
@@ -24,28 +24,28 @@
                     "link": null
                 }
             },
-            "usage_journey": "uuid-Daily-Youtube-usage",
+            "usage_journey": "Daily-Youtube-usage",
             "devices": [
-                "uuid-Default-laptop"
+                "Default-laptop"
             ],
-            "network": "uuid-Default-network",
-            "country": "uuid-France"
+            "network": "Default-network",
+            "country": "France"
         }
     },
     "UsageJourney": {
-        "uuid-Daily-Youtube-usage": {
+        "Daily-Youtube-usage": {
             "name": "Daily Youtube usage",
-            "id": "uuid-Daily-Youtube-usage",
+            "id": "Daily-Youtube-usage",
             "uj_steps": [
-                "uuid-20-min-streaming-on-Youtube",
-                "uuid-40s-of-upload"
+                "20-min-streaming-on-Youtube",
+                "40s-of-upload"
             ]
         }
     },
     "UsageJourneyStep": {
-        "uuid-20-min-streaming-on-Youtube": {
+        "20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
-            "id": "uuid-20-min-streaming-on-Youtube",
+            "id": "20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
@@ -56,12 +56,12 @@
                 }
             },
             "jobs": [
-                "uuid-streaming"
+                "streaming"
             ]
         },
-        "uuid-40s-of-upload": {
+        "40s-of-upload": {
             "name": "40s of upload",
-            "id": "uuid-40s-of-upload",
+            "id": "40s-of-upload",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
@@ -72,14 +72,14 @@
                 }
             },
             "jobs": [
-                "uuid-upload"
+                "upload"
             ]
         }
     },
     "Job": {
-        "uuid-streaming": {
+        "streaming": {
             "name": "streaming",
-            "id": "uuid-streaming",
+            "id": "streaming",
             "data_transferred": {
                 "value": 0.8333333333333334,
                 "unit": "gigabyte",
@@ -125,11 +125,11 @@
                     "link": null
                 }
             },
-            "server": "uuid-Default-server"
+            "server": "Default-server"
         },
-        "uuid-upload": {
+        "upload": {
             "name": "upload",
-            "id": "uuid-upload",
+            "id": "upload",
             "data_transferred": {
                 "value": 300.0,
                 "unit": "megabyte",
@@ -175,13 +175,13 @@
                     "link": null
                 }
             },
-            "server": "uuid-Default-server"
+            "server": "Default-server"
         }
     },
     "Server": {
-        "uuid-Default-server": {
+        "Default-server": {
             "name": "Default server",
-            "id": "uuid-Default-server",
+            "id": "Default-server",
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
@@ -302,13 +302,13 @@
                 "value": null,
                 "label": "User defined number of Default server instances"
             },
-            "storage": "uuid-Default-SSD-storage"
+            "storage": "Default-SSD-storage"
         }
     },
     "Storage": {
-        "uuid-Default-SSD-storage": {
+        "Default-SSD-storage": {
             "name": "Default SSD storage",
-            "id": "uuid-Default-SSD-storage",
+            "id": "Default-SSD-storage",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -402,9 +402,9 @@
         }
     },
     "Device": {
-        "uuid-Default-laptop": {
+        "Default-laptop": {
             "name": "Default laptop",
-            "id": "uuid-Default-laptop",
+            "id": "Default-laptop",
             "carbon_footprint_fabrication": {
                 "value": 156.0,
                 "unit": "kilogram",
@@ -444,9 +444,9 @@
         }
     },
     "Network": {
-        "uuid-Default-network": {
+        "Default-network": {
             "name": "Default network",
-            "id": "uuid-Default-network",
+            "id": "Default-network",
             "bandwidth_energy_intensity": {
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
@@ -459,9 +459,9 @@
         }
     },
     "Country": {
-        "uuid-France": {
+        "France": {
             "name": "France",
-            "id": "uuid-France",
+            "id": "France",
             "short_name": "FRA",
             "average_carbon_intensity": {
                 "value": 85.0,
