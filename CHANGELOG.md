@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.14] - 2025-07-22
+
+### Changed
+- Simplify compute_hourly_data_exchange_for_usage_pattern logic by using hourly_avg_occurrences_per_usage_pattern. About 30% speed increase.
+- Introduce update_storage_needed, update_storage_freed and update_automatic_storage_dumps_after_storage_duration instead of treating them as properties and recomputing them more than needed. About 10% speed increase.
+- Don’t include CSS escaped name in ModelingObject ids to reduce json size. About 15% json size reduction in big modeling.
+- Custom unit registry to optimize Pint’s unit conversions. About 5% speed increase.
+- Improved performance analysis tooling.
+
 ## [10.1.13] - 2025-07-11
 
 ### Added
