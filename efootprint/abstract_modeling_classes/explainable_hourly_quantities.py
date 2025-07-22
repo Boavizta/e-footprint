@@ -458,3 +458,25 @@ class ExplainableHourlyQuantities(ExplainableObject):
             plt.savefig(filepath, bbox_inches='tight')
         if plt_show:
             plt.show()
+
+
+def sum_explainable_hourly_quantities(quantities: list[ExplainableHourlyQuantities]) -> ExplainableHourlyQuantities:
+    from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+    quantities_without_emptys = [elt for elt in quantities if not isinstance(elt, EmptyExplainableObject)]
+
+    if not quantities_without_emptys:
+        return EmptyExplainableObject()
+
+    units = quantities_without_emptys[0].value.units
+    common_start = min(q.start_date for q in quantities_without_emptys)
+    common_end = max(q.start_date + timedelta(hours=len(q.value.magnitude)) for q in quantities_without_emptys)
+    total_len = int((common_end - common_start).total_seconds() // 3600)
+
+    result_array = np.zeros(total_len, dtype=np.float32)
+
+    for q in quantities_without_emptys:
+        offset = int((q.start_date - common_start).total_seconds() // 3600)
+        length = len(q.value.magnitude)
+        result_array[offset:offset+length] += q.value.to(units).magnitude.astype(np.float32)
+
+    return ExplainableHourlyQuantities(Quantity(result_array, units), common_start, label="Summed")

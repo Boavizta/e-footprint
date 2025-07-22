@@ -9,7 +9,8 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey import UsageJourney
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities, \
+    sum_explainable_hourly_quantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
@@ -275,9 +276,9 @@ class System(ModelingObject):
         import time
         start = time.perf_counter()
         total_footprint = (
-            sum(
-                sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
-                for key in self.fabrication_footprints
+            sum_explainable_hourly_quantities(
+                [sum_explainable_hourly_quantities(list(self.fabrication_footprints[key].values())) + sum_explainable_hourly_quantities(list(self.energy_footprints[key].values()))
+                for key in self.fabrication_footprints]
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
         from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums

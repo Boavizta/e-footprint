@@ -5,7 +5,8 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities, \
+    sum_explainable_hourly_quantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -143,7 +144,8 @@ class ServerBase(InfraHardware):
 
         import time
         start = time.perf_counter()
-        hour_by_hour_resource_needs = sum(elts_to_sum, start=EmptyExplainableObject())
+
+        hour_by_hour_resource_needs = sum_explainable_hourly_quantities(elts_to_sum)
         from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
         time_spent_doing_sums["value"] += time.perf_counter() - start
 

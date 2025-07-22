@@ -61,8 +61,9 @@ class Network(ModelingObject):
                 elts_to_sum_per_up[up].append(job.hourly_data_transferred_per_usage_pattern[up])
         import time
         start = time.perf_counter()
+        from efootprint.abstract_modeling_classes.explainable_hourly_quantities import sum_explainable_hourly_quantities
         hourly_data_transferred_per_up = {
-            up: sum(elts_to_sum_per_up[up], start=EmptyExplainableObject()) for up in self.usage_patterns
+            up: sum_explainable_hourly_quantities(elts_to_sum_per_up[up]) for up in self.usage_patterns
         }
         from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
         time_spent_doing_sums["value"] += time.perf_counter() - start

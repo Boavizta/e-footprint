@@ -101,7 +101,8 @@ class JobBase(ModelingObject):
 
         import time
         start = time.perf_counter()
-        job_occurrences = sum(elts_to_add, start=EmptyExplainableObject())
+        from efootprint.abstract_modeling_classes.explainable_hourly_quantities import sum_explainable_hourly_quantities
+        job_occurrences = sum_explainable_hourly_quantities(elts_to_add)
         from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
         time_spent_doing_sums["value"] += time.perf_counter() - start
 
@@ -167,7 +168,8 @@ class JobBase(ModelingObject):
 
         import time
         start = time.perf_counter()
-        hourly_calc_attr_summed_across_ups = sum(elts_to_sum, start=EmptyExplainableObject())
+        from efootprint.abstract_modeling_classes.explainable_hourly_quantities import sum_explainable_hourly_quantities
+        hourly_calc_attr_summed_across_ups = sum_explainable_hourly_quantities(elts_to_sum)
         from efootprint.abstract_modeling_classes.modeling_object import time_spent_doing_sums
         time_spent_doing_sums["value"] += time.perf_counter() - start
 
