@@ -11,6 +11,11 @@ poetry update
 
 ## Generate latest requirements files with poetry
 
+if not already done, install the export plugin:
+```shell
+poetry self add poetry-plugin-export
+```
+
 ```shell
 poetry export -f requirements.txt --without-hashes -o requirements.txt 
 poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 

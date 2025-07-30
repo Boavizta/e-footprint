@@ -28,7 +28,7 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
             return self._value.__dict__
         return super().__getattribute__(name)
 
-    def __setattr__(self, name, input_value):
+    def __setattr__(self, name, input_value, *args, **kwargs):
         if name in ["_value", "modeling_obj_container", "attr_name_in_mod_obj_container",
                     "former_modeling_obj_container_id", "former_attr_name_in_mod_obj_container", "cached_values"]:
             # If setting a class attribute, use the superclass’s __setattr__

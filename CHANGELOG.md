@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [10.1.15] - 2025-07-22
+
+### Fixed
+- Remove "a" alias for year in Pint units, keep only yr, year and julian_year.
+- Add *args and **kwargs to ContextualModelingObjectAttribute’s __setattr__.
+
 ## [10.1.14] - 2025-07-22
 
 ### Changed
