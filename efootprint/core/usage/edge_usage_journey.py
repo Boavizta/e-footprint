@@ -1,7 +1,6 @@
 from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
@@ -20,23 +19,21 @@ class EdgeUsageJourney(ModelingObject):
         self.edge_processes = edge_processes
         self.edge_device = edge_device
         self.usage_span = usage_span.set_label(f"Usage span of {self.name}")
-        
-        # Will store the duration that processes run during the edge device lifespan
-        self.duration = EmptyExplainableObject()
 
     @property
-    def calculated_attributes(self):
-        return ["duration"]
-
-    @property
-    def edge_usage_patterns(self):
-        # Returns EdgeUsagePattern objects that use this journey
-        from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-        return [obj for obj in self.modeling_obj_containers if isinstance(obj, EdgeUsagePattern)]
+    def edge_usage_pattern(self):
+        if self.modeling_obj_containers:
+            if len(self.modeling_obj_containers) > 1:
+                raise PermissionError(
+                    f"EdgeUsageJourney object can only be associated with one EdgeUsagePattern object but {self.name} is associated "
+                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+            return self.modeling_obj_containers[0]
+        else:
+            return None
 
     @property
     def systems(self) -> List:
-        return list(set(sum([eup.systems for eup in self.edge_usage_patterns], start=[])))
+        return self.edge_usage_pattern.systems
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -47,6 +44,7 @@ class EdgeUsageJourney(ModelingObject):
         Validate that the total resource consumption of all edge processes
         doesn't exceed the edge device capacity.
         """
+        # TODO: Move to EdgeDevice
         # Check each hour of the week
         for hour in range(168):  # 168 hours in a week
             total_cpu = sum(process.recurrent_cpu_compute[hour] for process in self.edge_processes)
@@ -67,12 +65,3 @@ class EdgeUsageJourney(ModelingObject):
                 raise ValueError(
                     f"Hour {hour}: Total RAM consumption ({total_ram} GB) exceeds available capacity ({available_ram} GB) "
                     f"on {self.edge_device.name}")
-
-    def update_duration(self):
-        # The duration is the usage_span - how long the processes run on the edge device
-        self.duration = self.usage_span.copy().set_label(f"Duration of {self.name}")
-
-    def after_init(self):
-        super().after_init()
-        self.validate_resource_consumption()
-        self.compute_calculated_attributes()

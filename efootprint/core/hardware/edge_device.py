@@ -62,6 +62,17 @@ class EdgeDevice(InfraHardware):
         ]
 
     @property
+    def edge_usage_journey(self):
+        if self.modeling_obj_containers:
+            if len(self.modeling_obj_containers) > 1:
+                raise PermissionError(
+                    f"EdgeDevice object can only be associated with one EdgeUsageJourney object but {self.name} is associated "
+                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+            return self.modeling_obj_containers[0]
+        else:
+            return None
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
 
