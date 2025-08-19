@@ -11,7 +11,7 @@ from efootprint.core.hardware.edge_device import EdgeDevice
 
 class EdgeUsageJourney(ModelingObject):
     default_values = {
-        "usage_span": SourceValue(2 * u.year, Sources.HYPOTHESIS)
+        "usage_span": SourceValue(6 * u.year, Sources.HYPOTHESIS)
     }
 
     def __init__(self, name: str, edge_processes: List[EdgeProcess], edge_device: EdgeDevice, usage_span: ExplainableQuantity):
@@ -38,30 +38,3 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return self.edge_processes + [self.edge_device]
-
-    def validate_resource_consumption(self):
-        """
-        Validate that the total resource consumption of all edge processes
-        doesn't exceed the edge device capacity.
-        """
-        # TODO: Move to EdgeDevice
-        # Check each hour of the week
-        for hour in range(168):  # 168 hours in a week
-            total_cpu = sum(process.recurrent_cpu_compute[hour] for process in self.edge_processes)
-            total_ram = sum(process.recurrent_ram_compute[hour] for process in self.edge_processes)
-            
-            # Check against available capacity (considering utilization rate and base consumption)
-            available_cpu = (self.edge_device.compute.value.magnitude * self.edge_device.server_utilization_rate.value.magnitude 
-                           - self.edge_device.base_compute_consumption.value.magnitude)
-            available_ram = (self.edge_device.ram.value.to(u.GB).magnitude * self.edge_device.server_utilization_rate.value.magnitude 
-                           - self.edge_device.base_ram_consumption.value.to(u.GB).magnitude)
-            
-            if total_cpu > available_cpu:
-                raise ValueError(
-                    f"Hour {hour}: Total CPU consumption ({total_cpu}) exceeds available capacity ({available_cpu}) "
-                    f"on {self.edge_device.name}")
-            
-            if total_ram > available_ram:
-                raise ValueError(
-                    f"Hour {hour}: Total RAM consumption ({total_ram} GB) exceeds available capacity ({available_ram} GB) "
-                    f"on {self.edge_device.name}")
