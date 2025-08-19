@@ -15,9 +15,7 @@ class EdgeUsagePattern(ModelingObject):
         super().__init__(name)
         self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
         self.nb_edge_usage_journeys_in_parallel = EmptyExplainableObject()
-        self.energy_footprint = EmptyExplainableObject()
-        self.instances_fabrication_footprint = EmptyExplainableObject()
-        
+
         self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.set_label(
             f"{self.name} hourly nb of edge device starts")
         self.edge_usage_journey = edge_usage_journey
@@ -25,8 +23,7 @@ class EdgeUsagePattern(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel", 
-                "energy_footprint", "instances_fabrication_footprint"]
+        return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -53,13 +50,3 @@ class EdgeUsagePattern(ModelingObject):
 
         self.nb_edge_usage_journeys_in_parallel = nb_of_edge_usage_journeys_in_parallel.set_label(
             f"{self.name} hourly nb of edge usage journeys in parallel")
-
-    def update_energy_footprint(self):
-        # EdgeUsagePattern energy footprint is the same as the edge device's energy footprint
-        self.energy_footprint = self.edge_usage_journey.edge_device.energy_footprint.copy().set_label(
-            f"{self.name} total energy footprint")
-
-    def update_instances_fabrication_footprint(self):
-        # EdgeUsagePattern fabrication footprint is the same as the edge device's fabrication footprint
-        self.instances_fabrication_footprint = self.edge_usage_journey.edge_device.instances_fabrication_footprint.copy().set_label(
-            f"{self.name} total fabrication footprint")

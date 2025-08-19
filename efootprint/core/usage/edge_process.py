@@ -13,8 +13,9 @@ from efootprint.constants.units import u
 
 class EdgeProcess(ModelingObject):
     default_values = {
-        "recurrent_cpu_compute": SourceValue([0.0] * 168, Sources.HYPOTHESIS),  # 168 hours in a week
-        "recurrent_ram_compute": SourceValue([0.0] * 168, Sources.HYPOTHESIS),
+        # TODO: create ad hoc object to hold recurrent data structure
+        "recurrent_cpu_compute": None,
+        "recurrent_ram_compute": None
     }
 
     def __init__(self, name: str, recurrent_cpu_compute: List[float], recurrent_ram_compute: List[float]):
