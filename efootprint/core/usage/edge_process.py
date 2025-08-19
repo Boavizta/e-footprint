@@ -2,19 +2,17 @@ from typing import List
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 
 
 class EdgeProcess(ModelingObject):
     default_values = {
-        "recurrent_cpu_compute": SourceValue([0.0] * 168, Sources.HYPOTHESIS),  # 168 hours in a week
-        "recurrent_ram_compute": SourceValue([0.0] * 168, Sources.HYPOTHESIS),
+        # TODO: create ad hoc object to hold recurrent data structure
+        "recurrent_cpu_compute": None,
+        "recurrent_ram_compute": None
     }
 
     def __init__(self, name: str, recurrent_cpu_compute: List[float], recurrent_ram_compute: List[float]):
@@ -38,10 +36,29 @@ class EdgeProcess(ModelingObject):
         return ["hourly_compute_consumption", "hourly_ram_consumption"]
 
     @property
-    def edge_usage_journeys(self):
-        # Returns EdgeUsageJourney objects that contain this process
-        from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-        return [obj for obj in self.modeling_obj_containers if isinstance(obj, EdgeUsageJourney)]
+    def edge_usage_journey(self):
+        if self.modeling_obj_containers:
+            if len(self.modeling_obj_containers) > 1:
+                raise PermissionError(
+                    f"EdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is associated "
+                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+            return self.modeling_obj_containers[0]
+        else:
+            return None
+
+    @property
+    def edge_usage_pattern(self):
+        if self.modeling_obj_containers:
+            return self.edge_usage_journey.edge_usage_pattern
+        else:
+            return None
+
+    @property
+    def edge_device(self):
+        if self.modeling_obj_containers:
+            return self.edge_usage_journey.edge_device
+        else:
+            return None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

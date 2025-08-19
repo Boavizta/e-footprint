@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import List, Type, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -6,6 +6,10 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.job import Job
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.system import System
 
 
 class UsageJourney(ModelingObject):
@@ -43,11 +47,11 @@ class UsageJourney(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def systems(self) -> List:
+    def systems(self) -> List["System"]:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["UsagePattern"] | List[Job]:
         if self.usage_patterns:
             return self.usage_patterns
         else:

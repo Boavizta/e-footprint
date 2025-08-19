@@ -62,14 +62,23 @@ class EdgeDevice(InfraHardware):
         ]
 
     @property
+    def edge_usage_journey(self):
+        if self.modeling_obj_containers:
+            if len(self.modeling_obj_containers) > 1:
+                raise PermissionError(
+                    f"EdgeDevice object can only be associated with one EdgeUsageJourney object but {self.name} is associated "
+                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+            return self.modeling_obj_containers[0]
+        else:
+            return None
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
 
     @property
     def edge_processes(self) -> List:
-        # Will return EdgeProcess objects that run on this device
-        from efootprint.core.usage.edge_process import EdgeProcess
-        return [obj for obj in self.modeling_obj_containers if isinstance(obj, EdgeProcess)]
+        return self.edge_usage_journey.edge_processes
 
     def update_hour_by_hour_ram_need(self):
         hour_by_hour_ram_needs = EmptyExplainableObject()
@@ -86,6 +95,34 @@ class EdgeDevice(InfraHardware):
             hour_by_hour_compute_needs += edge_process.hourly_compute_consumption
         
         self.hour_by_hour_compute_need = hour_by_hour_compute_needs.to(u.cpu_core).set_label(f"{self.name} hour by hour compute need")
+
+    def validate_resource_consumption(self):
+        """
+        Validate that the total resource consumption of all edge processes
+        doesn't exceed the edge device capacity.
+        """
+        # Check each hour of the week
+        for hour in range(168):  # 168 hours in a week
+            total_cpu = sum(process.recurrent_cpu_compute[hour] for process in self.edge_processes)
+            total_ram = sum(process.recurrent_ram_compute[hour] for process in self.edge_processes)
+
+            # Check against available capacity (considering utilization rate and base consumption)
+            available_cpu = (
+                        self.edge_device.compute.value.magnitude * self.edge_device.server_utilization_rate.value.magnitude
+                        - self.edge_device.base_compute_consumption.value.magnitude)
+            available_ram = (self.edge_device.ram.value.to(
+                u.GB).magnitude * self.edge_device.server_utilization_rate.value.magnitude
+                             - self.edge_device.base_ram_consumption.value.to(u.GB).magnitude)
+
+            if total_cpu > available_cpu:
+                raise ValueError(
+                    f"Hour {hour}: Total CPU consumption ({total_cpu}) exceeds available capacity ({available_cpu}) "
+                    f"on {self.edge_device.name}")
+
+            if total_ram > available_ram:
+                raise ValueError(
+                    f"Hour {hour}: Total RAM consumption ({total_ram} GB) exceeds available capacity ({available_ram} GB) "
+                    f"on {self.edge_device.name}")
 
     def update_occupied_ram_per_instance(self):
         self.occupied_ram_per_instance = self.base_ram_consumption.set_label(f"Occupied RAM per {self.name} instance")
