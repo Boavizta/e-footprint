@@ -187,7 +187,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Should exactly match the pattern since we start on Monday at hour 0
         np.testing.assert_array_equal(result.magnitude, self.weekly_recurring_pattern.magnitude)
@@ -204,7 +204,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Should start from Wednesday's pattern (index 2*24 = 48)
         expected_values = np.concatenate([
@@ -221,7 +221,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(25, dtype=np.float32), u.dimensionless)  # 25 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Should start from Tuesday hour 15 (index 1*24 + 15 = 39)
         expected_start_index = 1 * 24 + 15  # Tuesday at 3 PM
@@ -239,7 +239,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(420, dtype=np.float32), u.dimensionless)  # 2.5 weeks
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Pattern should repeat 2.5 times
         expected_values = np.tile(self.weekly_recurring_pattern.magnitude, 3)[:420]  # 2.5 weeks
@@ -258,7 +258,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
         with self.assertRaises(ValueError) as cm:
-            short_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+            short_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         self.assertIn("must have exactly 168 values", str(cm.exception))
 
@@ -269,7 +269,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
         with self.assertRaises(ValueError) as cm:
-            self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+            self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         self.assertIn("must be timezone aware", str(cm.exception))
 
@@ -279,7 +279,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(1, dtype=np.float32), u.dimensionless)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Should get value from Tuesday (weekday=1) hour 10: index = 1*24 + 10 = 34
         expected_index = 1 * 24 + 10
@@ -294,7 +294,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         timespan_values = Quantity(np.ones(10, dtype=np.float32), u.dimensionless)  # 10 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
         
-        result = self.weekly_recurring_pattern.generate_explainable_hourly_quantity_over_timespan(timespan_hourly)
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
         
         # Sunday is weekday 6, so index starts at 6*24 + 22 = 166
         expected_values = []

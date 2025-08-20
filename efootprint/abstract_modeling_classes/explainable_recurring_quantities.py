@@ -25,7 +25,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
         return cls(value, label=d["label"], source=source)
 
     def __init__(
-            self, value: Quantity | dict, label: str = None,
+            self, value: Quantity, label: str = None,
             left_parent: ExplainableObject = None, right_parent: ExplainableObject = None, operator: str = None,
             source: Source = None):
         from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -81,7 +81,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
         return ExplainableRecurringQuantities(
             self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
 
-    def generate_explainable_hourly_quantity_over_timespan(self, timespan_hourly_quantities: "ExplainableHourlyQuantities"):
+    def generate_hourly_quantities_over_timespan(self, timespan_hourly_quantities: "ExplainableHourlyQuantities"):
         """
         Generate an ExplainableHourlyQuantities over the timespan of the input ExplainableHourlyQuantities.
         
