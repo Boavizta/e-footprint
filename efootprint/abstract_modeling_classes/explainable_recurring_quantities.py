@@ -1,3 +1,4 @@
+from datetime import timezone
 from typing import TYPE_CHECKING
 
 from pint import Unit, Quantity
@@ -11,6 +12,7 @@ from efootprint.logger import logger
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
     from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+    from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 
 
 @ExplainableObject.register_subclass(lambda d: "recurring_values" in d and "unit" in d)
@@ -23,7 +25,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
         return cls(value, label=d["label"], source=source)
 
     def __init__(
-            self, value: Quantity | dict, label: str = None,
+            self, value: Quantity, label: str = None,
             left_parent: ExplainableObject = None, right_parent: ExplainableObject = None, operator: str = None,
             source: Source = None):
         from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -78,6 +80,54 @@ class ExplainableRecurringQuantities(ExplainableObject):
     def copy(self):
         return ExplainableRecurringQuantities(
             self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
+
+    def generate_hourly_quantities_over_timespan(self, timespan_hourly_quantities: "ExplainableHourlyQuantities"):
+        """
+        Generate an ExplainableHourlyQuantities over the timespan of the input ExplainableHourlyQuantities.
+        
+        The recurring values should represent a canonical UTC week (7 * 24 = 168 values).
+        The method aligns the canonical week pattern with the input timespan's start date and 
+        repeats it over the entire duration.
+        
+        Args:
+            timespan_hourly_quantities: ExplainableHourlyQuantities that defines the timespan and start date
+            
+        Returns:
+            ExplainableHourlyQuantities with values generated from the recurring pattern
+        """
+        from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+
+        # Validate canonical week length
+        if len(self.value) != 168:
+            raise ValueError(
+                f"ExplainableRecurringQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
+            )
+
+        # Validate UTC start_date
+        start_date = timespan_hourly_quantities.start_date
+        if start_date.tzinfo is None or start_date.tzinfo != timezone.utc:
+            raise ValueError("Input ExplainableHourlyQuantities start_date must be timezone aware (UTC)")
+
+        timespan_length = len(timespan_hourly_quantities.value)
+        start_offset_in_week = start_date.weekday() * 24 + start_date.hour
+
+        # Vectorized index mapping into canonical week (168 hours)
+        indices = (start_offset_in_week + np.arange(timespan_length)) % 168
+
+        # Vectorized extraction of values
+        week_values = self.value.magnitude  # is numpy array
+        output_values = np.take(week_values, indices)
+
+        result_quantity = Quantity(output_values.astype(np.float32), self.unit)
+
+        return ExplainableHourlyQuantities(
+            result_quantity,
+            start_date=start_date,
+            label=f"{self.label} expanded over {timespan_hourly_quantities.label} timespan" if self.label else None,
+            left_parent=self,
+            right_parent=timespan_hourly_quantities,
+            operator="expanded over timespan",
+        )
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {

@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -25,7 +25,7 @@ class EdgeUsageJourney(ModelingObject):
         self.usage_span = usage_span.set_label(f"Usage span of {self.name}")
 
     @property
-    def edge_usage_pattern(self):
+    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(

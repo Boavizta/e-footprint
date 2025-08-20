@@ -1,9 +1,11 @@
 import unittest
+from datetime import datetime, timezone
 
 import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.units import u
@@ -162,6 +164,145 @@ class TestExplainableRecurringQuantities(unittest.TestCase):
 
     def test_repr_equals_str(self):
         self.assertEqual(repr(self.recurring_quantity1), str(self.recurring_quantity1))
+
+
+class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
+    def setUp(self):
+        # Create a canonical week pattern (168 hours = 7 days * 24 hours)
+        # Pattern: Monday=10, Tuesday=20, ..., Sunday=70, then repeat hourly pattern within each day
+        week_values = []
+        for day in range(7):  # 0=Monday, 6=Sunday
+            for hour in range(24):
+                # Simple pattern: base value (day+1)*10 + hour offset
+                week_values.append((day + 1) * 10 + hour % 4)
+        
+        self.weekly_recurring_pattern = ExplainableRecurringQuantities(
+            Quantity(np.array(week_values, dtype=np.float32), u.W), 
+            "Weekly Pattern"
+        )
+
+    def test_generate_over_one_week_monday_start_and_calculation_dependencies_are_tracked(self):
+        # Start on Monday 2025-01-06 00:00:00 UTC (which is a Monday)
+        start_date = datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc)
+        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Should exactly match the pattern since we start on Monday at hour 0
+        np.testing.assert_array_equal(result.magnitude, self.weekly_recurring_pattern.magnitude)
+        self.assertEqual(result.start_date, start_date)
+        self.assertEqual(result.unit, self.weekly_recurring_pattern.unit)
+        self.assertIs(result.left_parent, self.weekly_recurring_pattern)
+        self.assertIs(result.right_parent, timespan_hourly)
+        self.assertEqual(result.operator, "expanded over timespan")
+        self.assertEqual(result.label, "Weekly Pattern expanded over test timespan timespan")
+
+    def test_generate_over_one_week_wednesday_start(self):
+        # Start on Wednesday 2025-01-08 00:00:00 UTC (which is a Wednesday)
+        start_date = datetime(2025, 1, 8, 0, 0, 0, tzinfo=timezone.utc)  # Wednesday = weekday 2
+        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Should start from Wednesday's pattern (index 2*24 = 48)
+        expected_values = np.concatenate([
+            self.weekly_recurring_pattern.magnitude[48:],  # Wed-Sun
+            self.weekly_recurring_pattern.magnitude[:48]   # Mon-Tue
+        ])
+        
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(result.start_date, start_date)
+
+    def test_generate_over_partial_week_with_hour_offset(self):
+        # Start on Tuesday 2025-01-07 15:00:00 UTC (Tuesday at 3 PM)
+        start_date = datetime(2025, 1, 7, 15, 0, 0, tzinfo=timezone.utc)  # Tuesday=1, hour=15
+        timespan_values = Quantity(np.ones(25, dtype=np.float32), u.dimensionless)  # 25 hours
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Should start from Tuesday hour 15 (index 1*24 + 15 = 39)
+        expected_start_index = 1 * 24 + 15  # Tuesday at 3 PM
+        expected_values = []
+        for i in range(25):
+            week_index = (expected_start_index + i) % 168
+            expected_values.append(self.weekly_recurring_pattern.magnitude[week_index])
+        
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(len(result.value), 25)
+
+    def test_generate_over_multiple_weeks(self):
+        # Start on Monday and span 2.5 weeks (420 hours)
+        start_date = datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc)
+        timespan_values = Quantity(np.ones(420, dtype=np.float32), u.dimensionless)  # 2.5 weeks
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Pattern should repeat 2.5 times
+        expected_values = np.tile(self.weekly_recurring_pattern.magnitude, 3)[:420]  # 2.5 weeks
+        
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(len(result.value), 420)
+
+    def test_invalid_recurring_pattern_length_raises_error(self):
+        # Create pattern with wrong length (not 168)
+        short_pattern = ExplainableRecurringQuantities(
+            Quantity(np.array([1, 2, 3], dtype=np.float32), u.W), "Short"
+        )
+        
+        start_date = datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc)
+        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.dimensionless)
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        with self.assertRaises(ValueError) as cm:
+            short_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        self.assertIn("must have exactly 168 values", str(cm.exception))
+
+    def test_naive_datetime_raises_error(self):
+        # Create timespan with naive datetime (no timezone)
+        start_date = datetime(2025, 1, 6, 0, 0, 0)  # No timezone
+        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.dimensionless)
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        with self.assertRaises(ValueError) as cm:
+            self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        self.assertIn("must be timezone aware", str(cm.exception))
+
+    def test_edge_case_single_hour_timespan(self):
+        # Test with single hour timespan
+        start_date = datetime(2025, 1, 7, 10, 0, 0, tzinfo=timezone.utc)  # Tuesday 10 AM
+        timespan_values = Quantity(np.ones(1, dtype=np.float32), u.dimensionless)
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Should get value from Tuesday (weekday=1) hour 10: index = 1*24 + 10 = 34
+        expected_index = 1 * 24 + 10
+        expected_value = self.weekly_recurring_pattern.magnitude[expected_index]
+        
+        self.assertEqual(len(result.value), 1)
+        self.assertEqual(result.magnitude[0], expected_value)
+
+    def test_cross_week_boundary_alignment(self):
+        # Start near end of week and cross into next week
+        start_date = datetime(2025, 1, 12, 22, 0, 0, tzinfo=timezone.utc)  # Sunday 10 PM
+        timespan_values = Quantity(np.ones(10, dtype=np.float32), u.dimensionless)  # 10 hours
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date, "test timespan")
+        
+        result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(timespan_hourly)
+        
+        # Sunday is weekday 6, so index starts at 6*24 + 22 = 166
+        expected_values = []
+        for i in range(10):
+            week_index = (166 + i) % 168
+            expected_values.append(self.weekly_recurring_pattern.magnitude[week_index])
+        
+        np.testing.assert_array_equal(result.magnitude, expected_values)
 
 
 if __name__ == "__main__":

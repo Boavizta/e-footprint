@@ -1,93 +1,80 @@
-from typing import List
+from typing import List, TYPE_CHECKING, Optional
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
 from efootprint.constants.units import u
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+    from efootprint.core.hardware.edge_device import EdgeDevice
+    from efootprint.core.system import System
 
 
 class EdgeProcess(ModelingObject):
     default_values = {
-        # TODO: create ad hoc object to hold recurrent data structure
-        "recurrent_cpu_compute": None,
-        "recurrent_ram_compute": None
+        "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168), u.cpu_core)),
+        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168), u.GB))
     }
 
-    def __init__(self, name: str, recurrent_cpu_compute: List[float], recurrent_ram_compute: List[float]):
+    def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurringQuantities, 
+                 recurrent_ram_needed: ExplainableRecurringQuantities):
         super().__init__(name)
+        self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
+        self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
         
-        # Validate weekly template (168 hours = 7 days * 24 hours)
-        if len(recurrent_cpu_compute) != 168:
-            raise ValueError(f"recurrent_cpu_compute must have exactly 168 values (one per hour of the week), got {len(recurrent_cpu_compute)}")
-        if len(recurrent_ram_compute) != 168:
-            raise ValueError(f"recurrent_ram_compute must have exactly 168 values (one per hour of the week), got {len(recurrent_ram_compute)}")
-        
-        self.recurrent_cpu_compute = recurrent_cpu_compute
-        self.recurrent_ram_compute = recurrent_ram_compute
-        
-        # These will be computed based on the recurrent patterns and usage span
-        self.hourly_compute_consumption = EmptyExplainableObject()
-        self.hourly_ram_consumption = EmptyExplainableObject()
+        self.recurrent_compute_needed = recurrent_compute_needed
+        self.recurrent_ram_needed = recurrent_ram_needed
 
     @property
     def calculated_attributes(self):
-        return ["hourly_compute_consumption", "hourly_ram_consumption"]
+        return ["unitary_hourly_compute_need_over_full_timespan", "unitary_hourly_ram_need_over_full_timespan"]
 
     @property
-    def edge_usage_journey(self):
+    def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
-                    f"EdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is associated "
-                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+                    f"EdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is "
+                    f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         else:
             return None
 
     @property
-    def edge_usage_pattern(self):
+    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_usage_pattern
         else:
             return None
 
     @property
-    def edge_device(self):
+    def edge_device(self) -> Optional["EdgeDevice"]:
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_device
         else:
             return None
+        
+    @property
+    def systems(self) -> List["System"]:
+        if self.modeling_obj_containers:
+            return self.edge_usage_journey.systems
+        return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.edge_device]
 
-    def update_hourly_compute_consumption(self):
-        # For now, assume a simple weekly pattern repeated over time
-        # In a full implementation, this would consider the usage_span from EdgeUsageJourney
-        weekly_pattern = np.array(self.recurrent_cpu_compute, dtype=np.float32)
-        
-        # Create an ExplainableHourlyQuantities object with the weekly pattern
-        # This is a simplified implementation - in reality you'd need to handle the full timespan
-        compute_quantity = Quantity(weekly_pattern, u.cpu_core)
-        
-        # For now, use a basic start date - this should be coordinated with the system timeframe
-        from datetime import datetime
-        start_date = datetime(2023, 1, 2)  # Start on a Monday
-        
-        self.hourly_compute_consumption = ExplainableHourlyQuantities(
-            compute_quantity, start_date, f"{self.name} hourly CPU consumption")
+    def update_unitary_hourly_compute_need_over_full_timespan(self):        
+        self.unitary_hourly_compute_need_over_full_timespan = (
+            self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
+                self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts))
 
-    def update_hourly_ram_consumption(self):
-        # Similar to compute consumption
-        weekly_pattern = np.array(self.recurrent_ram_compute, dtype=np.float32)
-        
-        ram_quantity = Quantity(weekly_pattern, u.GB)
-        
-        from datetime import datetime
-        start_date = datetime(2023, 1, 2)  # Start on a Monday
-        
-        self.hourly_ram_consumption = ExplainableHourlyQuantities(
-            ram_quantity, start_date, f"{self.name} hourly RAM consumption")
+    def update_unitary_hourly_ram_need_over_full_timespan(self):
+        self.unitary_hourly_ram_need_over_full_timespan = (
+            self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
+                self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts))

@@ -75,7 +75,7 @@ All quantities use Pint for unit handling. Custom units are defined in `efootpri
 
 ### Code Style
 - Python 3.12+ required
-- Black formatter with 120 character line length. Try to keep the number of lines low.
+- Black formatter with 120 character line length. Try to keep the number of lines low. In particular, avoid creating a new line to close a parenthesis.
 - Poetry for dependency management
 - Type hints encouraged but not strictly enforced
 - Only use comments in code if there is a non-intuitive logic at play. If code is easy to understand, don’t comment. 

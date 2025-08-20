@@ -1,7 +1,11 @@
+When fixing tests, try to fix all tests at once.
+
 # Good to know
 - default_values defined in ModelingObject classes don’t mean that the parameters can be omitted when defining a ModelingObject. It means that they can be omitted when creating the object from the ChildModelingObjectClass.from_defaults method.
-- No need to test default values structure.
+- No need to test ModelingObject’s default values.
+- No need to test ModelingObject’s calculated_attributes list.
 - No need to test inheritance. In general, avoid implementing super obvious tests that don’t bring much value.
+- ExplainableObjects without parents should have a label.
 
 # Setting ExplainableObject parameters in ModelingObjects
 When setting ExplainableObject parameters of ModelingObjects in tests, always use real ExplainableObjects (like ExplainableQuantity or ExplainableHourlyQuantity) instead of mocks so that e-footprint’s type checks don’t raise errors.
