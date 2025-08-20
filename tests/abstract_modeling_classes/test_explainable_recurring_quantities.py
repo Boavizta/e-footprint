@@ -1,23 +1,21 @@
 import unittest
-from unittest.mock import MagicMock, PropertyMock
 
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.explainable_recurring_hourly_quantities import ExplainableRecurringHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.units import u
 
 
-class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
+class TestExplainableRecurringQuantities(unittest.TestCase):
     def setUp(self):
         self.recurring_values1 = [1, 2, 3, 4] * 6  # 24 values
         self.recurring_values2 = [2, 4, 6, 8] * 6  # 24 values
-        self.recurring_quantity1 = ExplainableRecurringHourlyQuantities(
+        self.recurring_quantity1 = ExplainableRecurringQuantities(
             Quantity(np.array(self.recurring_values1, dtype=np.float32), u.W), "Recurring 1")
-        self.recurring_quantity2 = ExplainableRecurringHourlyQuantities(
+        self.recurring_quantity2 = ExplainableRecurringQuantities(
             Quantity(np.array(self.recurring_values2, dtype=np.float32), u.W), "Recurring 2")
 
     def test_init_with_quantity(self):
@@ -27,13 +25,13 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
 
     def test_init_with_non_float32_array_logs_conversion(self):
         with self.assertLogs(level='INFO') as log:
-            recurring_quantity = ExplainableRecurringHourlyQuantities(
+            recurring_quantity = ExplainableRecurringQuantities(
                 Quantity(np.array([1, 2, 3]), u.W), "Test")
         self.assertIn("converting value Test to float32", log.output[0])
 
     def test_init_with_invalid_type_raises_error(self):
         with self.assertRaises(ValueError):
-            ExplainableRecurringHourlyQuantities([1, 2, 3], "Invalid")
+            ExplainableRecurringQuantities([1, 2, 3], "Invalid")
 
     def test_unit_property(self):
         self.assertEqual(self.recurring_quantity1.unit, u.W)
@@ -64,7 +62,7 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
 
     def test_round_method(self):
         values_with_decimals = [1.567, 2.234, 3.891]
-        recurring_quantity = ExplainableRecurringHourlyQuantities(
+        recurring_quantity = ExplainableRecurringQuantities(
             Quantity(np.array(values_with_decimals, dtype=np.float32), u.W), "Test")
         
         result = recurring_quantity.round(1)
@@ -76,13 +74,13 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
 
     def test_dunder_round(self):
         values_with_decimals = [1.567, 2.234, 3.891]
-        recurring_quantity = ExplainableRecurringHourlyQuantities(
+        recurring_quantity = ExplainableRecurringQuantities(
             Quantity(np.array(values_with_decimals, dtype=np.float32), u.W), "Test")
         
         result = round(recurring_quantity, 1)
         expected = [1.6, 2.2, 3.9]
         
-        self.assertIsInstance(result, ExplainableRecurringHourlyQuantities)
+        self.assertIsInstance(result, ExplainableRecurringQuantities)
         self.assertIs(result.left_parent, recurring_quantity)
         self.assertEqual(result.operator, "rounded to 1 decimals")
         self.assertAlmostEqual(result.value_as_float_list[0], expected[0], places=1)
@@ -91,7 +89,7 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
         condition = ExplainableQuantity(5 * u.dimensionless, "condition")
         result = self.recurring_quantity1.generate_explainable_object_with_logical_dependency(condition)
         
-        self.assertIsInstance(result, ExplainableRecurringHourlyQuantities)
+        self.assertIsInstance(result, ExplainableRecurringQuantities)
         self.assertIs(result.left_parent, self.recurring_quantity1)
         self.assertIs(result.right_parent, condition)
         self.assertEqual(result.operator, "logically dependent on")
@@ -135,7 +133,7 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
 
     def test_str_short_array(self):
         short_values = [1.567, 2.234]
-        recurring_quantity = ExplainableRecurringHourlyQuantities(
+        recurring_quantity = ExplainableRecurringQuantities(
             Quantity(np.array(short_values, dtype=np.float32), u.W), "Test")
         
         str_repr = str(recurring_quantity)
@@ -145,7 +143,7 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
 
     def test_str_long_array(self):
         long_values = list(range(50))
-        recurring_quantity = ExplainableRecurringHourlyQuantities(
+        recurring_quantity = ExplainableRecurringQuantities(
             Quantity(np.array(long_values, dtype=np.float32), u.W), "Test")
         
         str_repr = str(recurring_quantity)
@@ -155,7 +153,7 @@ class TestExplainableRecurringHourlyQuantities(unittest.TestCase):
         self.assertIn("last 10 vals", str_repr)
 
     def test_str_dimensionless_unit(self):
-        recurring_quantity = ExplainableRecurringHourlyQuantities(
+        recurring_quantity = ExplainableRecurringQuantities(
             Quantity(np.array([1, 2, 3], dtype=np.float32), u.dimensionless), "Test")
         
         str_repr = str(recurring_quantity)

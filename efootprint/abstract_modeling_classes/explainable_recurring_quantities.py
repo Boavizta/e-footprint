@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @ExplainableObject.register_subclass(lambda d: "recurring_values" in d and "unit" in d)
-class ExplainableRecurringHourlyQuantities(ExplainableObject):
+class ExplainableRecurringQuantities(ExplainableObject):
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None
@@ -39,7 +39,7 @@ class ExplainableRecurringHourlyQuantities(ExplainableObject):
             super().__init__(value, label, left_parent, right_parent, operator, source)
         else:
             raise ValueError(
-                f"ExplainableRecurringHourlyQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"
+                f"ExplainableRecurringQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"
             )
 
     def to(self, unit_to_convert_to: Unit):
@@ -53,7 +53,7 @@ class ExplainableRecurringHourlyQuantities(ExplainableObject):
             right_parent=explainable_condition, operator="logically dependent on")
 
     def __round__(self, round_level):
-        return ExplainableRecurringHourlyQuantities(
+        return ExplainableRecurringQuantities(
             np.round(self.value, round_level).astype(np.float32, copy=False), label=self.label,
             left_parent=self, operator=f"rounded to {round_level} decimals", source=self.source
         )
@@ -76,7 +76,7 @@ class ExplainableRecurringHourlyQuantities(ExplainableObject):
         return self.magnitude.tolist()
 
     def copy(self):
-        return ExplainableRecurringHourlyQuantities(
+        return ExplainableRecurringQuantities(
             self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
 
     def to_json(self, with_calculated_attributes_data=False):
