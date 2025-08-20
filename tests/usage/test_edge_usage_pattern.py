@@ -13,6 +13,7 @@ from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
 from efootprint.constants.units import u
+from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeUsagePattern(TestCase):
@@ -69,10 +70,8 @@ class TestEdgeUsagePattern(TestCase):
     def test_systems(self):
         """Test systems property returns modeling_obj_containers."""
         mock_system = MagicMock(spec=ModelingObject)
-        mock_contextual_mod_obj_container = MagicMock()
-        mock_contextual_mod_obj_container.modeling_obj_container = mock_system
-        self.edge_usage_pattern.contextual_modeling_obj_containers = [mock_contextual_mod_obj_container]
-        
+        set_modeling_obj_containers(self.edge_usage_pattern, [mock_system])
+
         self.assertEqual([mock_system], self.edge_usage_pattern.systems)
 
     @patch('efootprint.core.usage.edge_usage_pattern.compute_nb_avg_hourly_occurrences')
@@ -129,18 +128,9 @@ class TestEdgeUsagePattern(TestCase):
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2 = MagicMock() 
         mock_pattern_2.name = "Pattern 2"
-        
-        # Following CLAUDE.md guidance, set contextual_modeling_obj_containers properly
-        mock_contextual_container_1 = MagicMock()
-        mock_contextual_container_1.modeling_obj_container = mock_pattern_1
-        mock_contextual_container_2 = MagicMock()
-        mock_contextual_container_2.modeling_obj_container = mock_pattern_2
-        
-        # Set multiple containers to simulate multiple EdgeUsagePattern associations
-        real_journey.contextual_modeling_obj_containers = [
-            mock_contextual_container_1, mock_contextual_container_2
-        ]
-        
+
+        set_modeling_obj_containers(real_journey, [mock_pattern_1, mock_pattern_2])
+
         # This should raise a PermissionError due to the single-link restriction
         with self.assertRaises(PermissionError) as context:
             _ = real_journey.edge_usage_pattern

@@ -32,9 +32,7 @@ It is not possible to directly set the modeling_obj_containers attribute of a Mo
              if contextual_mod_obj_container.modeling_obj_container is not None]))
 
 
-For example, instead of doing self.edge_usage_pattern.modeling_obj_containers = mock_system, do something like:
+Instead, you should use the set_modeling_obj_containers utils function from @tests/utils.py, like so:
 
 mock_system = MagicMock(spec=ModelingObject)
-mock_contextual_mod_obj_container = MagicMock()
-mock_contextual_mod_obj_container.modeling_obj_container = mock_system
-self.edge_usage_pattern.contextual_modeling_obj_containers = [mock_contextual_mod_obj_container]
+set_modeling_obj_containers(self.edge_usage_pattern, [mock_system])

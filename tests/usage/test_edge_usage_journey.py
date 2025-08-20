@@ -7,6 +7,7 @@ from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.constants.units import u
+from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeUsageJourney(TestCase):
@@ -48,12 +49,9 @@ class TestEdgeUsageJourney(TestCase):
         """Test edge_usage_pattern property with single container."""
         mock_pattern = MagicMock()
         mock_pattern.name = "Mock Pattern"
-        
-        mock_contextual_container = MagicMock()
-        mock_contextual_container.modeling_obj_container = mock_pattern
-        
-        self.edge_usage_journey.contextual_modeling_obj_containers = [mock_contextual_container]
-        
+
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
+
         self.assertEqual(mock_pattern, self.edge_usage_journey.edge_usage_pattern)
 
     def test_edge_usage_pattern_property_multiple_containers_raises_error(self):
@@ -62,16 +60,9 @@ class TestEdgeUsageJourney(TestCase):
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2 = MagicMock()
         mock_pattern_2.name = "Pattern 2"
-        
-        mock_contextual_container_1 = MagicMock()
-        mock_contextual_container_1.modeling_obj_container = mock_pattern_1
-        mock_contextual_container_2 = MagicMock()
-        mock_contextual_container_2.modeling_obj_container = mock_pattern_2
-        
-        self.edge_usage_journey.contextual_modeling_obj_containers = [
-            mock_contextual_container_1, mock_contextual_container_2
-        ]
-        
+
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
+
         with self.assertRaises(PermissionError) as context:
             _ = self.edge_usage_journey.edge_usage_pattern
         
@@ -84,11 +75,8 @@ class TestEdgeUsageJourney(TestCase):
         mock_system_1 = MagicMock()
         mock_system_2 = MagicMock()
         mock_pattern.systems = [mock_system_1, mock_system_2]
-        
-        mock_contextual_container = MagicMock()
-        mock_contextual_container.modeling_obj_container = mock_pattern
-        
-        self.edge_usage_journey.contextual_modeling_obj_containers = [mock_contextual_container]
+
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
         
         self.assertEqual([mock_system_1, mock_system_2], self.edge_usage_journey.systems)
 
@@ -104,10 +92,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_pattern = MagicMock()
         mock_pattern.name = "Mock Pattern"
 
-        mock_contextual_container = MagicMock()
-        mock_contextual_container.modeling_obj_container = mock_pattern
-
-        self.edge_usage_journey.contextual_modeling_obj_containers = [mock_contextual_container]
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
 
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
         expected_objects = [mock_pattern]
