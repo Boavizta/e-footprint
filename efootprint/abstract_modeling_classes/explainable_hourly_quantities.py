@@ -86,7 +86,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(value, Quantity):
             if value.magnitude.dtype != np.float32:
                 logger.info(
-                    f"converting value {label} to float32. This is surprising, a casting to np.float32 is proably "
+                    f"converting value {label} to float32. This is surprising, a casting to np.float32 is probably "
                     f"missing somewhere.")
                 value = value.magnitude.astype(np.float32, copy=False) * value.units
             super().__init__(value, label, left_parent, right_parent, operator, source)
