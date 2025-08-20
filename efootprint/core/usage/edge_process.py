@@ -62,12 +62,7 @@ class EdgeProcess(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        # EdgeDevice will depend on this process for resource calculation
-        edge_devices = []
-        for journey in self.edge_usage_journeys:
-            if hasattr(journey, 'edge_usage') and hasattr(journey.edge_usage, 'edge_device'):
-                edge_devices.append(journey.edge_usage.edge_device)
-        return edge_devices
+        return [self.edge_device]
 
     def update_hourly_compute_consumption(self):
         # For now, assume a simple weekly pattern repeated over time

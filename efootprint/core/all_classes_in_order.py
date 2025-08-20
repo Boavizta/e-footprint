@@ -1,6 +1,10 @@
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
+from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.server_base import ServerBase
+from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.hardware.device import Device
@@ -24,8 +28,11 @@ SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 
 
 ALL_EFOOTPRINT_CLASSES = (
-        [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern] + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
-        + [Job, GPUJob] + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES + [Storage, System])
+        [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
+        + [EdgeUsageJourney, EdgeUsagePattern, EdgeDevice]
+        + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
+        + [Job, GPUJob, EdgeProcess] + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES + [Storage, System])
 
-CANONICAL_COMPUTATION_ORDER = [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, Service, JobBase,
+CANONICAL_COMPUTATION_ORDER = [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney,
+                               EdgeUsagePattern, EdgeProcess, EdgeDevice, Service, JobBase,
                                Network, ServerBase, Storage, System]
