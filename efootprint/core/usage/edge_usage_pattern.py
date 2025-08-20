@@ -46,7 +46,7 @@ class EdgeUsagePattern(ModelingObject):
 
     def update_nb_edge_usage_journeys_in_parallel(self):
         nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
-            self.utc_hourly_edge_usage_journey_starts, self.edge_usage_journey.duration)
+            self.utc_hourly_edge_usage_journey_starts, self.edge_usage_journey.usage_span)
 
         self.nb_edge_usage_journeys_in_parallel = nb_of_edge_usage_journeys_in_parallel.set_label(
             f"{self.name} hourly nb of edge usage journeys in parallel")

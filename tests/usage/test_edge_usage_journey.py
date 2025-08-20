@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -92,10 +92,25 @@ class TestEdgeUsageJourney(TestCase):
         
         self.assertEqual([mock_system_1, mock_system_2], self.edge_usage_journey.systems)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
+    def test_modeling_objects_whose_attributes_depend_directly_on_me_no_edge_usage_pattern(self):
         """Test that edge_processes and edge_device are returned as dependent objects."""
+        self.assertIsNone(self.edge_usage_journey.edge_usage_pattern)
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2, self.mock_edge_device]
+        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2]
+        self.assertEqual(expected_objects, dependent_objects)
+
+    def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_pattern(self):
+        """Test that edge_usage_pattern is returned as dependent object when present."""
+        mock_pattern = MagicMock()
+        mock_pattern.name = "Mock Pattern"
+
+        mock_contextual_container = MagicMock()
+        mock_contextual_container.modeling_obj_container = mock_pattern
+
+        self.edge_usage_journey.contextual_modeling_obj_containers = [mock_contextual_container]
+
+        dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
+        expected_objects = [mock_pattern]
         self.assertEqual(expected_objects, dependent_objects)
 
 

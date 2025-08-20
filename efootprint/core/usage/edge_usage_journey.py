@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -7,6 +7,10 @@ from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.hardware.edge_device import EdgeDevice
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.system import System
 
 
 class EdgeUsageJourney(ModelingObject):
@@ -32,9 +36,11 @@ class EdgeUsageJourney(ModelingObject):
             return None
 
     @property
-    def systems(self) -> List:
+    def systems(self) -> List["System"]:
         return self.edge_usage_pattern.systems
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return self.edge_processes + [self.edge_device]
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeProcess]:
+        if self.edge_usage_pattern:
+            return [self.edge_usage_pattern]
+        return self.edge_processes

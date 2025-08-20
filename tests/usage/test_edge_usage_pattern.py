@@ -82,7 +82,7 @@ class TestEdgeUsagePattern(TestCase):
         mock_compute_nb_avg.return_value = mock_result
         
         mock_duration = SourceValue(30 * u.min)
-        self.mock_edge_usage_journey.duration = mock_duration
+        self.mock_edge_usage_journey.usage_span = mock_duration
         
         utc_starts = ExplainableHourlyQuantities(
             np.array([1.0, 2.0, 3.0]) * u.dimensionless,
