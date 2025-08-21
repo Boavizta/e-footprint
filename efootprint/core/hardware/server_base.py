@@ -204,11 +204,11 @@ class ServerBase(InfraHardware):
                 (self.power - self.idle_power) * self.power_usage_effectiveness
                 * ExplainableQuantity(1 * u.hour, "one hour"))
 
-        server_power = (
+        server_energy = (
                 energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
                 + extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances)
 
-        self.instances_energy = server_power.to(u.kWh).set_label(
+        self.instances_energy = server_energy.to(u.kWh).set_label(
             f"Hourly energy consumed by {self.name} instances")
 
     def autoscaling_update_nb_of_instances(self):

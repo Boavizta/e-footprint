@@ -37,11 +37,11 @@ class EdgeDevice(InfraHardware):
                  base_compute_consumption: ExplainableQuantity, storage: Storage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         del self.raw_nb_of_instances
-        del self.nb_of_instances # overwritten by nb_of_instances_property
         self.available_compute_per_instance = EmptyExplainableObject()
         self.available_ram_per_instance = EmptyExplainableObject()
         self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
         self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
+        self.unitary_power_over_full_timespan = EmptyExplainableObject()
 
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
@@ -57,7 +57,8 @@ class EdgeDevice(InfraHardware):
         return super().calculated_attributes + [
             "available_ram_per_instance", "available_compute_per_instance",
             "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
-            "instances_fabrication_footprint", "instances_energy", "energy_footprint"
+            "unitary_power_over_full_timespan", "instances_energy",
+            "instances_fabrication_footprint", "energy_footprint"
         ]
 
     @property
@@ -143,5 +144,23 @@ class EdgeDevice(InfraHardware):
         self.unitary_hourly_compute_need_over_full_timespan = unitary_hourly_compute_need_over_full_timespan.to(
             u.cpu_core).set_label(f"{self.name} hour by hour compute need")
 
+    def update_unitary_power_over_full_timespan(self):
+        unitary_compute_workload_over_full_timespan = (
+                self.unitary_hourly_compute_need_over_full_timespan / self.compute)
+
+        unitary_power_over_full_timespan = (
+                (self.idle_power + (self.power - self.idle_power) * unitary_compute_workload_over_full_timespan)
+                * self.power_usage_effectiveness)
+
+        self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
+            f"{self.name} unitary power over full timespan.")
+
     def update_instances_energy(self):
-        pass
+        unitary_energy_over_full_timespan = (
+            self.unitary_power_over_full_timespan * ExplainableQuantity(1 * u.hour, "one hour")
+        )
+
+        instances_energy = unitary_energy_over_full_timespan * self.nb_of_instances
+
+        self.instances_energy = instances_energy.to(u.kWh).set_label(
+            f"Hourly energy consumed by {self.name} instances")
