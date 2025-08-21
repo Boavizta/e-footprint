@@ -64,9 +64,22 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual(shifted_hour_usage.value_as_float_list[-nb_hours_shifted:],
                          sum_hourly_usage.value_as_float_list[-nb_hours_shifted:])
 
-    def test_addition_with_quantity_fails(self):
-        with self.assertRaises(ValueError):
-            addition_result = self.hourly_usage1 + ExplainableQuantity(4 * u.W, "4W")
+    def test_addition_with_quantity(self):
+        addition_result = self.hourly_usage1 + ExplainableQuantity(4 * u.W, "4W")
+        self.assertTrue(isinstance(addition_result, ExplainableHourlyQuantities))
+        self.assertEqual([5] * 24, addition_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage1.start_date, addition_result.start_date)
+        self.assertEqual(self.hourly_usage1, addition_result.left_parent)
+        self.assertEqual("+", addition_result.operator)
+        
+    def test_quantity_addition_with_hourly_quantities(self):
+        quantity = ExplainableQuantity(3 * u.W, "3W")
+        addition_result = quantity + self.hourly_usage1
+        self.assertTrue(isinstance(addition_result, ExplainableHourlyQuantities))
+        self.assertEqual([4] * 24, addition_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage1.start_date, addition_result.start_date)
+        self.assertEqual(self.hourly_usage1, addition_result.left_parent)
+        self.assertEqual("+", addition_result.operator)
 
     def test_mul_with_quantity(self):
         mul_result = self.hourly_usage1 * ExplainableQuantity(4 * u.h, "4 hours")
@@ -100,9 +113,22 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         result = self.hourly_usage2 - self.hourly_usage1
         self.assertEqual([1] * 24, result.value_as_float_list)
 
-    def test_subtraction_with_quantity_fails(self):
-        with self.assertRaises(ValueError):
-            subtraction_result = self.hourly_usage1 - ExplainableQuantity(4 * u.W, "4W")
+    def test_subtraction_with_quantity(self):
+        subtraction_result = self.hourly_usage2 - ExplainableQuantity(1 * u.W, "1W")
+        self.assertTrue(isinstance(subtraction_result, ExplainableHourlyQuantities))
+        self.assertEqual([1] * 24, subtraction_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage2.start_date, subtraction_result.start_date)
+        self.assertEqual(self.hourly_usage2, subtraction_result.left_parent)
+        self.assertEqual("-", subtraction_result.operator)
+        
+    def test_quantity_subtraction_with_hourly_quantities(self):
+        quantity = ExplainableQuantity(3 * u.W, "3W")
+        subtraction_result = quantity - self.hourly_usage1
+        self.assertTrue(isinstance(subtraction_result, ExplainableHourlyQuantities))
+        self.assertEqual([2] * 24, subtraction_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage1.start_date, subtraction_result.start_date)
+        self.assertEqual(quantity, subtraction_result.left_parent)
+        self.assertEqual("-", subtraction_result.operator)
 
     def test_convert_to_utc(self):
         start_date = datetime(2023, 10, 1)

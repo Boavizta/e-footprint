@@ -139,7 +139,8 @@ class TestModelingUpdate(unittest.TestCase):
 
         self.assertEqual(modeling_update.compute_ancestors_not_in_computation_chain(), [])
 
-    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate.old_sourcevalues")
+    @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate.old_sourcevalues",
+           new_callable=PropertyMock)
     def test_compute_ancestors_not_in_computation_chain_with_ancestors(self, mock_old_sourcevalues):
         modeling_update = ModelingUpdate.__new__(ModelingUpdate)  # Bypass __init__
         mock_old_sourcevalues.return_value = []
@@ -154,10 +155,7 @@ class TestModelingUpdate(unittest.TestCase):
         value_4.id = 4
 
         value_1.all_ancestors_with_id = [value_2, value_3, value_4]
-
-
         value_2.all_ancestors_with_id = [value_1, value_4]
-
 
         modeling_update.values_to_recompute = [value_1, value_2]
 

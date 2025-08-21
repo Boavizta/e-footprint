@@ -13,3 +13,5 @@ dist
 docs
 !docs_sources/*
 .trees
+litellm-config.yaml
+litellm-commands.md

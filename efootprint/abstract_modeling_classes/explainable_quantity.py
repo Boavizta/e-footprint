@@ -111,8 +111,12 @@ class ExplainableQuantity(ExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="+")
         elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
+        elif isinstance(other, self._ExplainableHourlyQuantities):
+            return other.__add__(self)
         else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
+            raise ValueError(
+                f"Can only make operation with another ExplainableQuantity or ExplainableHourlyQuantities, "
+                f"not with {type(other)}")
 
     def __sub__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
@@ -121,6 +125,8 @@ class ExplainableQuantity(ExplainableObject):
             return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="-")
         elif isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
+        elif isinstance(other, self._ExplainableHourlyQuantities):
+            return other.__rsub__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
@@ -150,8 +156,11 @@ class ExplainableQuantity(ExplainableObject):
     def __rsub__(self, other):
         if isinstance(other, ExplainableQuantity):
             return ExplainableQuantity(other.value - self.value, "", other, self, "-")
+        elif isinstance(other, self._ExplainableHourlyQuantities):
+            return other.__sub__(self)
         else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
+            raise ValueError(f"Can only make operation with another ExplainableQuantity or ExplainableHourlyQuantities,"
+                             f" not with {type(other)}")
 
     def __rmul__(self, other):
         return self.__mul__(other)

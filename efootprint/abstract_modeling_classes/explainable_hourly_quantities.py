@@ -24,8 +24,9 @@ if TYPE_CHECKING:
 
 
 def align_temporally_quantity_arrays(
-        first_quantity: Quantity, first_start_date: datetime, second_quantity: Quantity, second_start_date: datetime):
-    if first_quantity.units != second_quantity.units:
+        first_quantity: Quantity, first_start_date: datetime, second_quantity: Quantity, second_start_date: datetime,
+        equalize_units: bool = True):
+    if equalize_units and first_quantity.units != second_quantity.units:
         second_quantity = second_quantity.to(first_quantity.units)
 
     first_quantity_array = first_quantity.magnitude.astype(np.float32)
@@ -263,8 +264,13 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(
                 Quantity(result_array, self.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="+")
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                self.value + other.value, start_date=self.start_date, label=None,
+                left_parent=self, right_parent=other, operator="+")
         else:
-            raise ValueError(f"Can only add another ExplainableHourlyQuantities or scalar 0, not {type(other)}")
+            raise ValueError(f"Can only add another ExplainableHourlyQuantities or scalar 0 or ExplainableQuantity, "
+                             f"not {type(other)}")
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -288,14 +294,24 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(
                 Quantity(result_array, self.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="-")
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                self.value - other.value, start_date=self.start_date, label=None,
+                left_parent=self, right_parent=other, operator="-")
         else:
-            raise ValueError(f"Can only subtract another ExplainableHourlyQuantities or scalar 0, not {type(other)}")
+            raise ValueError(f"Can only subtract another ExplainableHourlyQuantities or scalar 0 or ExplainableQuantity,"
+                             f" not {type(other)}")
 
     def __rsub__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
             return other.__sub__(self)
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                other.value - self.value, start_date=self.start_date, label=None,
+                left_parent=other, right_parent=self, operator="-")
         else:
-            raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
+            raise ValueError(f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
+                             f"not with {type(other)}")
 
     def __mul__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
@@ -312,11 +328,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 result_quantity, self.start_date, "", self, other, "*")
         elif isinstance(other, ExplainableHourlyQuantities):
             aligned_self, aligned_other, common_start = align_temporally_quantity_arrays(
-                self.value, self.start_date, other.value, other.start_date)
+                self.value, self.start_date, other.value, other.start_date, equalize_units=False)
             result_array = aligned_self * aligned_other
 
             return ExplainableHourlyQuantities(
-                Quantity(result_array, self.unit), start_date=common_start, label=None,
+                Quantity(result_array, self.unit * other.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="*")
         else:
             raise ValueError(

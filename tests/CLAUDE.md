@@ -1,4 +1,6 @@
 When fixing tests, try to fix all tests at once.
+When using patchs, favor the @patch syntax and make sure you use new_callable=PropertyMock when mocking properties.
+If in one test changing a value of an object that is reused in other tests (i.e. objects linked to the class itself, like self.my_tested_efootprint_object), make sure to reset that value at the end of the test, or use a patch.
 
 # Good to know
 - default_values defined in ModelingObject classes don’t mean that the parameters can be omitted when defining a ModelingObject. It means that they can be omitted when creating the object from the ChildModelingObjectClass.from_defaults method.
