@@ -24,8 +24,9 @@ if TYPE_CHECKING:
 
 
 def align_temporally_quantity_arrays(
-        first_quantity: Quantity, first_start_date: datetime, second_quantity: Quantity, second_start_date: datetime):
-    if first_quantity.units != second_quantity.units:
+        first_quantity: Quantity, first_start_date: datetime, second_quantity: Quantity, second_start_date: datetime,
+        equalize_units: bool = True):
+    if equalize_units and first_quantity.units != second_quantity.units:
         second_quantity = second_quantity.to(first_quantity.units)
 
     first_quantity_array = first_quantity.magnitude.astype(np.float32)
@@ -312,11 +313,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 result_quantity, self.start_date, "", self, other, "*")
         elif isinstance(other, ExplainableHourlyQuantities):
             aligned_self, aligned_other, common_start = align_temporally_quantity_arrays(
-                self.value, self.start_date, other.value, other.start_date)
+                self.value, self.start_date, other.value, other.start_date, equalize_units=False)
             result_array = aligned_self * aligned_other
 
             return ExplainableHourlyQuantities(
-                Quantity(result_array, self.unit), start_date=common_start, label=None,
+                Quantity(result_array, self.unit * other.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="*")
         else:
             raise ValueError(

@@ -12,7 +12,6 @@ from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 
 
 class EdgeDevice(InfraHardware):
@@ -87,16 +86,7 @@ class EdgeDevice(InfraHardware):
     def edge_processes(self) -> List:
         return self.edge_usage_journey.edge_processes
 
-    @property
-    def nb_of_instances(self) -> "ExplainableHourlyQuantities" | EmptyExplainableObject:
-        if self.edge_usage_pattern:
-            return self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel
-        return EmptyExplainableObject()
-
     def update_raw_nb_of_instances(self):
-        pass
-
-    def update_nb_of_instances(self):
         pass
 
     def update_available_ram_per_instance(self):
@@ -123,7 +113,7 @@ class EdgeDevice(InfraHardware):
         unitary_hourly_ram_need_over_full_timespan = sum(
             edge_process.unitary_hourly_ram_need_over_full_timespan for edge_process in self.edge_processes)
 
-        max_ram_need = self.unitary_hourly_ram_need_over_full_timespan.max().to(u.GB)
+        max_ram_need = unitary_hourly_ram_need_over_full_timespan.max().to(u.GB)
         if max_ram_need.value > self.available_ram_per_instance.value:
             raise InsufficientCapacityError(
                 self, "RAM", self.available_ram_per_instance, max_ram_need)
@@ -135,8 +125,7 @@ class EdgeDevice(InfraHardware):
         unitary_hourly_compute_need_over_full_timespan = sum(
             edge_process.unitary_hourly_compute_need_over_full_timespan for edge_process in self.edge_processes)
 
-        max_compute_need = self.unitary_hourly_compute_need_over_full_timespan.max().to(u.cpu_core)
-
+        max_compute_need = unitary_hourly_compute_need_over_full_timespan.max().to(u.cpu_core)
         if max_compute_need.value > self.available_compute_per_instance.value:
             raise InsufficientCapacityError(
                 self, "compute", self.available_compute_per_instance, max_compute_need)
@@ -154,6 +143,15 @@ class EdgeDevice(InfraHardware):
 
         self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
             f"{self.name} unitary power over full timespan.")
+
+    def update_nb_of_instances(self):
+        if self.edge_usage_pattern:
+            nb_of_instances = self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel.copy()
+        else:
+            nb_of_instances = EmptyExplainableObject()
+
+        self.nb_of_instances = nb_of_instances.set_label(
+            f"{self.name} nb_of_instances")
 
     def update_instances_energy(self):
         unitary_energy_over_full_timespan = (

@@ -1,4 +1,5 @@
 When fixing tests, try to fix all tests at once.
+When using patchs, favor the @patch syntax and make sure you use new_callable=PropertyMock when mocking properties.
 
 # Good to know
 - default_values defined in ModelingObject classes don’t mean that the parameters can be omitted when defining a ModelingObject. It means that they can be omitted when creating the object from the ChildModelingObjectClass.from_defaults method.
