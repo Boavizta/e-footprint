@@ -48,17 +48,12 @@ class EdgeDevice(InfraHardware):
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
         self.storage = storage
-        
-        # These will be set dynamically by EdgeUsagePattern
-        self.average_carbon_intensity = EmptyExplainableObject()
-        self.fixed_nb_of_instances = EmptyExplainableObject()
 
     @property
     def calculated_attributes(self):
         return super().calculated_attributes + [
-            "hour_by_hour_ram_need", "hour_by_hour_compute_need",
-            "occupied_ram_per_instance", "occupied_compute_per_instance",
             "available_ram_per_instance", "available_compute_per_instance"
+            "hour_by_hour_ram_need", "hour_by_hour_compute_need",
         ]
 
     @property
@@ -149,24 +144,3 @@ class EdgeDevice(InfraHardware):
                 self, "compute", self.compute * self.server_utilization_rate, self.occupied_compute_per_instance)
 
         self.available_compute_per_instance = available_compute_per_instance.set_label(f"Available compute per {self.name} instance")
-
-    def update_raw_nb_of_instances(self):
-        # EdgeDevice instances are fixed by the EdgeUsagePattern volume, so raw = fixed
-        self.raw_nb_of_instances = self.fixed_nb_of_instances.copy().set_label(f"Raw nb of {self.name} instances")
-
-    def update_nb_of_instances(self):
-        # For edge devices, nb_of_instances = fixed_nb_of_instances (from volume)
-        self.nb_of_instances = self.fixed_nb_of_instances.copy().set_label(f"Number of {self.name} instances")
-
-    def update_instances_energy(self):
-        energy_spent_by_one_idle_instance_over_one_hour = (
-            self.idle_power * self.power_usage_effectiveness * ExplainableQuantity(1 * u.hour, "one hour"))
-        extra_energy_spent_by_one_fully_active_instance_over_one_hour = (
-            (self.power - self.idle_power) * self.power_usage_effectiveness
-            * ExplainableQuantity(1 * u.hour, "one hour"))
-
-        device_power = (
-            energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
-            + extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.nb_of_instances)
-
-        self.instances_energy = device_power.to(u.kWh).set_label(f"Hourly energy consumed by {self.name} instances")
