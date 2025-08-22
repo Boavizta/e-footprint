@@ -103,7 +103,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             "usage pattern", usage_journey=uj, devices=[], network=Network.wifi_network(), country=Countries.FRANCE(),
             hourly_usage_journey_starts=create_random_source_hourly_values(timespan=1 * u.year))
 
-        system = System("system", usage_patterns=[up])
+        system = System("system", usage_patterns=[up], edge_usage_patterns=[])
 
         system_filepath = os.path.join(
             root_test_dir, "api_utils_tests", "unique_uj_without_uj_step_and_linked_to_up.json")

@@ -1,12 +1,13 @@
 {
-    "efootprint_version": "10.1.15",
+    "efootprint_version": "11.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
             "id": "system-1",
             "usage_patterns": [
                 "Youtube-usage-in-France"
-            ]
+            ],
+            "edge_usage_patterns": []
         }
     },
     "UsagePattern": {

@@ -1,12 +1,15 @@
 from datetime import timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
+from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -17,11 +20,12 @@ from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 
 class System(ModelingObject):
-    def __init__(self, name: str, usage_patterns: List[UsagePattern]):
+    def __init__(self, name: str, usage_patterns: List[UsagePattern], edge_usage_patterns: List[EdgeUsagePattern],):
         super().__init__(name)
         self.total_footprint = EmptyExplainableObject()
-        self.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
         self.usage_patterns = usage_patterns
+        self.edge_usage_patterns = edge_usage_patterns
+        self.check_no_object_to_link_is_already_linked_to_another_system()
         self.simulation = None
         self.set_initial_and_previous_footprints()
 
@@ -34,7 +38,7 @@ class System(ModelingObject):
         self.initial_total_fabrication_footprints_sum_over_period = ExplainableObjectDict()
 
     def compute_calculated_attributes(self):
-        self.check_no_object_to_link_is_already_linked_to_another_system(self.usage_patterns)
+        self.check_no_object_to_link_is_already_linked_to_another_system()
         super().compute_calculated_attributes()
 
     @property
@@ -49,8 +53,8 @@ class System(ModelingObject):
                    "initial_total_energy_footprints_sum_over_period",
                    "initial_total_fabrication_footprints_sum_over_period", "simulation"])
 
-    def check_no_object_to_link_is_already_linked_to_another_system(self, usage_patterns: List[UsagePattern]):
-        for mod_obj in self.get_objects_linked_to_usage_patterns(usage_patterns):
+    def check_no_object_to_link_is_already_linked_to_another_system(self):
+        for mod_obj in self.all_linked_objects:
             mod_obj_systems = mod_obj.systems
             if mod_obj_systems and mod_obj_systems[0].id != self.id:
                 raise PermissionError(f"{mod_obj.name} is already linked to {mod_obj_systems[0].name}, so it is "
@@ -60,16 +64,8 @@ class System(ModelingObject):
                                  f" e-footprint bug at https://github.com/Boavizta/e-footprint/issues")
 
     @property
-    def usage_journeys(self) -> List[UsageJourney]:
-        output_set = set()
-        for usage_pattern in self.usage_patterns:
-            output_set.update({usage_pattern.usage_journey})
-
-        return list(output_set)
-
-    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_patterns
+        return self.usage_patterns + self.edge_usage_patterns
 
     @property
     def systems(self) -> List:
@@ -94,74 +90,75 @@ class System(ModelingObject):
         self.initial_total_fabrication_footprints_sum_over_period = self.total_fabrication_footprint_sum_over_period
         self.trigger_modeling_updates = True
 
-    def get_objects_linked_to_usage_patterns(self, usage_patterns: List[UsagePattern]):
-        output_list =  self.storages_from_usage_patterns(usage_patterns) + usage_patterns + \
-                      self.networks_from_usage_patterns(usage_patterns)
-        usage_journeys = list(set([up.usage_journey for up in usage_patterns]))
+    def get_objects_linked_to_usage_patterns(
+            self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
+        output_list =  self.storages_from_usage_patterns + usage_patterns + self.networks
+        usage_journeys = self.usage_journeys
         uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
-        servers = self.servers_from_usage_patterns(usage_patterns)
+        servers = self.servers
         services = list(set(sum([server.installed_services for server in servers], start=[])))
         all_modeling_objects = output_list + usage_journeys + uj_steps + jobs + devices + countries + servers + services
 
         return all_modeling_objects
 
+    def get_objects_linked_to_edge_usage_patterns(
+            self, edge_usage_patterns: List[EdgeUsagePattern]) -> List[ModelingObject]:
+        output_list = self.storages_from_edge_usage_patterns + edge_usage_patterns
+        edge_usage_journeys = self.edge_usage_journeys
+        edge_processes = list(set(sum([euj.edge_processes for euj in edge_usage_journeys], start=[])))
+        edge_devices = self.edge_devices
+        countries = list(set([up.country for up in edge_usage_patterns]))
+        all_modeling_objects = output_list + edge_usage_journeys + edge_processes + edge_devices + countries
+
+        return all_modeling_objects
+
     @property
     def all_linked_objects(self):
-        return self.get_objects_linked_to_usage_patterns(self.usage_patterns)
+        return (self.get_objects_linked_to_usage_patterns(self.usage_patterns)
+                + self.get_objects_linked_to_edge_usage_patterns(self.edge_usage_patterns))
 
-    @staticmethod
-    def servers_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Server]:
-        output_set = set()
-        for usage_pattern in usage_patterns:
-            output_set.update(usage_pattern.usage_journey.servers)
+    @property
+    def usage_journeys(self) -> List[UsageJourney]:
+        return list(set([up.usage_journey for up in self.usage_patterns]))
 
-        return list(output_set)
+    @property
+    def edge_usage_journeys(self) -> List[EdgeUsageJourney]:
+        return list(set([eup.edge_usage_journey for eup in self.edge_usage_patterns]))
 
     @property
     def servers(self) -> List[Server]:
-        return self.servers_from_usage_patterns(self.usage_patterns)
+        return list(set(sum([usage_pattern.usage_journey.servers for usage_pattern in self.usage_patterns], start=[])))
 
-    @staticmethod
-    def storages_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Storage]:
-        output_set = set()
-        for usage_pattern in usage_patterns:
-            output_set.update(usage_pattern.usage_journey.storages)
+    @property
+    def edge_devices(self) -> List[EdgeDevice]:
+        return list(set([euj.edge_device for euj in self.edge_usage_journeys]))
 
-        return list(output_set)
+    @property
+    def storages_from_usage_patterns(self) -> List[Storage]:
+        return list(set(sum([usage_pattern.usage_journey.storages for usage_pattern in self.usage_patterns], start=[])))
+
+    @property
+    def storages_from_edge_usage_patterns(self) -> List[Storage]:
+        return list(set([eup.edge_usage_journey.edge_device.storage for eup in self.edge_usage_patterns]))
 
     @property
     def storages(self) -> List[Storage]:
-        return self.storages_from_usage_patterns(self.usage_patterns)
-
-    @staticmethod
-    def networks_from_usage_patterns(usage_patterns: List[UsagePattern]) -> List[Network]:
-        output_set = set()
-        for usage_pattern in usage_patterns:
-            output_set.update({usage_pattern.network})
-
-        return list(output_set)
+        return self.storages_from_usage_patterns + self.storages_from_edge_usage_patterns
 
     @property
     def networks(self) -> List[Network]:
-        return self.networks_from_usage_patterns(self.usage_patterns)
+        return list(set([up.network for up in self.usage_patterns]))
 
-    def get_storage_by_name(self, storage_name) -> Storage:
-        for storage in self.storages:
-            if storage.name == storage_name:
-                return storage
-
-    def get_server_by_name(self, server_name) -> Server:
-        for server in self.servers:
-            if server.name == server_name:
-                return server
-
-    def get_usage_pattern_by_name(self, usage_pattern_name) -> UsagePattern:
-        for usage_pattern in self.usage_patterns:
-            if usage_pattern.name == usage_pattern_name:
-                return usage_pattern
+    @staticmethod
+    def get_efootprint_obj_by_name(
+            efootprint_obj_name: str, efootprint_obj_list: List[ModelingObject]) -> Optional[ModelingObject]:
+        for efootprint_obj in efootprint_obj_list:
+            if efootprint_obj.name == efootprint_obj_name:
+                return efootprint_obj
+        return None
 
     @property
     def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
@@ -171,6 +168,8 @@ class System(ModelingObject):
             "Network": {"networks": EmptyExplainableObject()},
             "Devices": {usage_pattern.id: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
+            "EdgeDevices": {edge_device.id: edge_device.instances_fabrication_footprint
+                            for edge_device in self.edge_devices},
         }
 
         return fab_footprints
@@ -183,6 +182,7 @@ class System(ModelingObject):
             "Network": {network.id: network.energy_footprint for network in self.networks},
             "Devices": {usage_pattern.id: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
+            "EdgeDevices": {edge_device.id: edge_device.energy_footprint for edge_device in self.edge_devices},
         }
 
         return energy_footprints
@@ -199,7 +199,10 @@ class System(ModelingObject):
             "Network": EmptyExplainableObject(),
             "Devices": sum([usage_pattern.instances_fabrication_footprint
                            for usage_pattern in self.usage_patterns], start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Devices total fabrication footprint")
+                "Devices total fabrication footprint"),
+            "EdgeDevices": sum([edge_device.instances_fabrication_footprint for edge_device in self.edge_devices],
+                               start=EmptyExplainableObject()).to(u.kg).set_label(
+                "EdgeDevices total fabrication footprint")
         }
 
         return fab_footprints
@@ -214,7 +217,9 @@ class System(ModelingObject):
             "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
                            ).to(u.kg).set_label("Network total energy footprint"),
             "Devices": sum([usage_pattern.energy_footprint for usage_pattern in self.usage_patterns],
-                           start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint")
+                           start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint"),
+            "EdgeDevices": sum([edge_device.energy_footprint for edge_device in self.edge_devices],
+                               start=EmptyExplainableObject()).to(u.kg).set_label("EdgeDevices total energy footprint")
         }
 
         return energy_footprints

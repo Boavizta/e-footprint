@@ -16,7 +16,14 @@ def upgrade_version_9_to_10(system_dict):
 
     return system_dict
 
+def upgrade_version_10_to_11(system_dict):
+    for system_key in system_dict["System"]:
+        system_dict["System"][system_key]["edge_usage_patterns"] = []
+
+    return system_dict
+
 
 VERSION_UPGRADE_HANDLERS = {
-    9: upgrade_version_9_to_10
+    9: upgrade_version_9_to_10,
+    10: upgrade_version_10_to_11,
 }

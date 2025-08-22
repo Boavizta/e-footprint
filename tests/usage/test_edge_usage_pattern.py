@@ -9,6 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
@@ -21,6 +22,9 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         self.mock_edge_usage_journey.id = "mock_edge_journey"
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
+        self.mock_edge_process = MagicMock(spec=EdgeProcess)
+        self.mock_edge_process.name = "Mock Edge Processes"
+        self.mock_edge_usage_journey.edge_processes = [self.mock_edge_process]
         
         self.mock_country = MagicMock(spec=Country)
         self.mock_country.name = "Mock Country"
@@ -57,15 +61,11 @@ class TestEdgeUsagePattern(TestCase):
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that edge_usage_journey is returned as dependent object."""
         dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_usage_journey], dependent_objects)
+        self.assertEqual([self.mock_edge_process], dependent_objects)
 
     def test_edge_processes(self):
         """Test edge_processes property delegates to edge_usage_journey."""
-        mock_process_1 = MagicMock()
-        mock_process_2 = MagicMock()
-        self.mock_edge_usage_journey.edge_processes = [mock_process_1, mock_process_2]
-        
-        self.assertEqual([mock_process_1, mock_process_2], self.edge_usage_pattern.edge_processes)
+        self.assertEqual([self.mock_edge_process], self.edge_usage_pattern.edge_processes)
 
     def test_systems(self):
         """Test systems property returns modeling_obj_containers."""

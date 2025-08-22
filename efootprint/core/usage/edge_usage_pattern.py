@@ -27,7 +27,7 @@ class EdgeUsagePattern(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.edge_usage_journey]
+        return self.edge_processes
 
     @property
     def edge_processes(self) -> List:

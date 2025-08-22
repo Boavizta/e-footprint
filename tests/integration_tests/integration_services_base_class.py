@@ -67,7 +67,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         usage_pattern.id = css_escape(usage_pattern.name)
 
-        system = System("system 1", [usage_pattern])
+        system = System("system 1", [usage_pattern], edge_usage_patterns=[])
         mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
             if mod_obj != usage_pattern:
