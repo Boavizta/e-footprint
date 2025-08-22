@@ -2,6 +2,7 @@ import json
 from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
+import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
@@ -18,6 +19,10 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
+from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
@@ -25,6 +30,7 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
@@ -90,23 +96,79 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         # calculations
         usage_pattern.id = css_escape(usage_pattern.name)
 
-        system = System("system 1", [usage_pattern], edge_usage_patterns=[])
+        # Create edge objects
+        edge_storage = Storage(
+            "Edge SSD storage",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            data_replication_factor=SourceValue(3 * u.dimensionless),
+            data_storage_duration=SourceValue(3 * u.hours),
+            base_storage_need=SourceValue(10 * u.GB),
+            fixed_nb_of_instances=SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS)
+        )
+
+        edge_device = EdgeDevice(
+            "Default edge device",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
+            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
+            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            storage=edge_storage
+        )
+
+        edge_process = EdgeProcess(
+            "Default edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                u.Quantity(np.array([2] * 168), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                u.Quantity(np.array([2] * 168), u.GB))
+        )
+
+        edge_usage_journey = EdgeUsageJourney(
+            "Default edge usage journey",
+            edge_processes=[edge_process],
+            edge_device=edge_device,
+            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+        )
+
+        edge_usage_pattern = EdgeUsagePattern(
+            "Default edge usage pattern",
+            edge_usage_journey=edge_usage_journey,
+            country=Countries.FRANCE(),
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [elt for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
+        )
+
+        system = System("system 1", [usage_pattern], edge_usage_patterns=[edge_usage_pattern])
         mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
-            if mod_obj != usage_pattern:
+            if mod_obj != usage_pattern and mod_obj != edge_usage_pattern:
                 mod_obj.id = css_escape(mod_obj.name)
 
         return (system, storage, server, streaming_job, streaming_step, upload_job, upload_step, uj, network,
-                start_date, usage_pattern)
+                start_date, usage_pattern, edge_storage, edge_device, edge_process, edge_usage_journey, 
+                edge_usage_pattern)
 
     @classmethod
-    def initialize_footprints(cls, system, storage, server, usage_pattern, network):
+    def initialize_footprints(cls, system, storage, server, usage_pattern, network, edge_storage, edge_device):
         cls.initial_footprint = system.total_footprint
 
         cls.initial_fab_footprints = {
             storage: storage.instances_fabrication_footprint,
             server: server.instances_fabrication_footprint,
             usage_pattern: usage_pattern.devices_fabrication_footprint,
+            edge_storage: edge_storage.instances_fabrication_footprint,
+            edge_device: edge_device.instances_fabrication_footprint,
         }
 
         cls.initial_energy_footprints = {
@@ -114,6 +176,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             server: server.energy_footprint,
             network: network.energy_footprint,
             usage_pattern: usage_pattern.devices_energy_footprint,
+            edge_storage: edge_storage.energy_footprint,
+            edge_device: edge_device.energy_footprint,
         }
 
         cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
@@ -121,18 +185,26 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, cls.upload_step,
-         cls.uj, cls.network, cls.start_date, cls.usage_pattern) = cls.generate_simple_system()
+        (cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, 
+         cls.upload_step, cls.uj, cls.network, cls.start_date, cls.usage_pattern, cls.edge_storage, 
+         cls.edge_device, cls.edge_process, cls.edge_usage_journey, cls.edge_usage_pattern) = cls.generate_simple_system()
 
-        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
+        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network,
+                                  cls.edge_storage, cls.edge_device)
 
         cls.ref_json_filename = "simple_system"
 
     def run_test_all_objects_linked_to_system(self):
-        self.assertEqual(
-            {self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
-             self.upload_step, self.streaming_job, self.upload_job, self.usage_pattern.devices[0],
-             self.usage_pattern.country}, set(self.system.all_linked_objects))
+        expected_objects = {
+            self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
+            self.upload_step, self.streaming_job, self.upload_job, self.usage_pattern.devices[0],
+            self.usage_pattern.country, self.edge_storage, self.edge_device, self.edge_process,
+            self.edge_usage_journey, self.edge_usage_pattern
+        }
+        # Add the edge usage pattern country if it's different from the regular usage pattern country
+        if self.edge_usage_pattern.country != self.usage_pattern.country:
+            expected_objects.add(self.edge_usage_pattern.country)
+        self.assertEqual(expected_objects, set(self.system.all_linked_objects))
 
     def run_test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
@@ -157,13 +229,15 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 "base_ram_consumption": 380,
                 "base_compute_consumption": 10
             })
-        self._test_input_change(self.server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), self.server,
-                                "fixed_nb_of_instances")
+        self._test_input_change(
+            self.server.fixed_nb_of_instances, SourceValue(10000 * u.dimensionless), self.server,
+            "fixed_nb_of_instances")
         self._test_input_change(self.server.server_type, ServerTypes.serverless(), self.server, "server_type")
         self._test_input_change(self.server.server_type, ServerTypes.autoscaling(), self.server, "server_type")
         self._test_variations_on_obj_inputs(
             self.storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
-        self._test_input_change(self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
+        self._test_input_change(
+            self.storage.fixed_nb_of_instances, EmptyExplainableObject(), self.storage, "fixed_nb_of_instances")
         self.storage.fixed_nb_of_instances = EmptyExplainableObject()
         old_initial_footprint = self.initial_footprint
         self.initial_footprint = self.system.total_footprint
@@ -176,6 +250,16 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.network)
         self._test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(self.streaming_job, special_mult={"data_stored": 1000000})
+        # Test edge object variations
+        self._test_variations_on_obj_inputs(
+            self.edge_device, attrs_to_skip=["fraction_of_usage_time", "server_utilization_rate"],
+            special_mult={"ram": 0.01, "server_utilization_rate": 0.9})
+        self._test_variations_on_obj_inputs(
+            self.edge_storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"])
+        self._test_variations_on_obj_inputs(self.edge_process)
+        self._test_variations_on_obj_inputs(self.edge_usage_journey)
+        self._test_variations_on_obj_inputs(
+            self.edge_usage_pattern, attrs_to_skip=["hourly_edge_usage_journey_starts"])
 
     def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
@@ -721,6 +805,28 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
             self.assertIsNotNone(ancestor.modeling_obj_container)
+
+    def run_test_update_edge_device_compute(self):
+        logger.warning("Changing edge device compute")
+        initial_compute = self.edge_device.compute
+        self.edge_device.compute = SourceValue(8 * u.cpu_core, Sources.USER_DATA)
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_changed([self.edge_device])
+        
+        logger.warning("Changing back to initial edge device compute")
+        self.edge_device.compute = initial_compute
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.edge_device])
+
+    def run_test_update_edge_usage_pattern_hourly_starts(self):
+        logger.warning("Updating edge usage pattern hourly starts")
+        initial_hourly_starts = self.edge_usage_pattern.hourly_edge_usage_journey_starts
+        self.edge_usage_pattern.hourly_edge_usage_journey_starts = create_source_hourly_values_from_list(
+            [elt for elt in [2, 3, 4, 5, 6, 7, 2, 3, 4]], self.start_date)
+        
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.edge_usage_pattern.hourly_edge_usage_journey_starts = initial_hourly_starts
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_delete_job(self):
         logger.info("Removing upload job from upload step")

@@ -1,4 +1,4 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING, Union
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -12,6 +12,7 @@ from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.usage.edge_process import EdgeProcess
 
 
 class EdgeDevice(InfraHardware):
@@ -68,23 +69,31 @@ class EdgeDevice(InfraHardware):
                     f"EdgeDevice object can only be associated with one EdgeUsageJourney object but {self.name} is "
                     f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
-        else:
-            return None
+        return None
 
     @property
     def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_usage_pattern
-        else:
-            return None
+        return None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
 
     @property
-    def edge_processes(self) -> List:
-        return self.edge_usage_journey.edge_processes
+    def edge_processes(self) -> Optional[List["EdgeProcess"]]:
+        if self.modeling_obj_containers:
+            return self.edge_usage_journey.edge_processes
+        return None
+
+    @property
+    def average_carbon_intensity(self) -> Union[ExplainableQuantity, EmptyExplainableObject]:
+        # TODO: add corresponding test
+        edge_usage_pattern = self.edge_usage_pattern
+        if edge_usage_pattern is not None:
+            return edge_usage_pattern.country.average_carbon_intensity
+        return EmptyExplainableObject()
 
     def update_raw_nb_of_instances(self):
         pass
