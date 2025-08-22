@@ -264,8 +264,13 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(
                 Quantity(result_array, self.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="+")
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                self.value + other.value, start_date=self.start_date, label=None,
+                left_parent=self, right_parent=other, operator="+")
         else:
-            raise ValueError(f"Can only add another ExplainableHourlyQuantities or scalar 0, not {type(other)}")
+            raise ValueError(f"Can only add another ExplainableHourlyQuantities or scalar 0 or ExplainableQuantity, "
+                             f"not {type(other)}")
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -289,14 +294,24 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(
                 Quantity(result_array, self.unit), start_date=common_start, label=None,
                 left_parent=self, right_parent=other, operator="-")
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                self.value - other.value, start_date=self.start_date, label=None,
+                left_parent=self, right_parent=other, operator="-")
         else:
-            raise ValueError(f"Can only subtract another ExplainableHourlyQuantities or scalar 0, not {type(other)}")
+            raise ValueError(f"Can only subtract another ExplainableHourlyQuantities or scalar 0 or ExplainableQuantity,"
+                             f" not {type(other)}")
 
     def __rsub__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
             return other.__sub__(self)
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableHourlyQuantities(
+                other.value - self.value, start_date=self.start_date, label=None,
+                left_parent=other, right_parent=self, operator="-")
         else:
-            raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
+            raise ValueError(f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
+                             f"not with {type(other)}")
 
     def __mul__(self, other):
         if isinstance(other, numbers.Number) and other == 0:
