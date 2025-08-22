@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
     from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
     from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+    from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 
 
 @ExplainableObject.register_subclass(lambda d: "recurring_values" in d and "unit" in d)
@@ -81,19 +82,22 @@ class ExplainableRecurringQuantities(ExplainableObject):
         return ExplainableRecurringQuantities(
             self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
 
-    def generate_hourly_quantities_over_timespan(self, timespan_hourly_quantities: "ExplainableHourlyQuantities"):
+    def generate_hourly_quantities_over_timespan(
+            self, timespan_hourly_quantities: "ExplainableHourlyQuantities", 
+            local_timezone: "ExplainableTimezone"):
         """
         Generate an ExplainableHourlyQuantities over the timespan of the input ExplainableHourlyQuantities.
         
-        The recurring values should represent a canonical UTC week (7 * 24 = 168 values).
-        The method aligns the canonical week pattern with the input timespan's start date and 
-        repeats it over the entire duration.
+        The recurring values represent a canonical local timezone week (7 * 24 = 168 values).
+        The timespan_hourly_quantities start_date is expressed in the local timezone but its start_date is not timezone aware.
+        The method aligns the canonical week pattern with the local timespan and outputs in UTC.
         
         Args:
-            timespan_hourly_quantities: ExplainableHourlyQuantities that defines the timespan and start date
+            timespan_hourly_quantities: ExplainableHourlyQuantities that defines the timespan and start date (local timezone)
+            local_timezone: ExplainableTimezone that defines the local timezone
             
         Returns:
-            ExplainableHourlyQuantities with values generated from the recurring pattern
+            ExplainableHourlyQuantities with values generated from the recurring pattern (UTC)
         """
         from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 
@@ -102,17 +106,15 @@ class ExplainableRecurringQuantities(ExplainableObject):
             raise ValueError(
                 f"ExplainableRecurringQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
             )
+        assert timespan_hourly_quantities.start_date.tzinfo is None, \
+            f"start_date of {timespan_hourly_quantities.label} should be None"
 
-        # Validate UTC start_date
-        start_date = timespan_hourly_quantities.start_date
-        if start_date.tzinfo is None or start_date.tzinfo != timezone.utc:
-            raise ValueError("Input ExplainableHourlyQuantities start_date must be timezone aware (UTC)")
-
+        start_date_local = timespan_hourly_quantities.start_date
         timespan_length = len(timespan_hourly_quantities.value)
-        start_offset_in_week = start_date.weekday() * 24 + start_date.hour
+        start_offset_in_local_week = start_date_local.weekday() * 24 + start_date_local.hour
 
-        # Vectorized index mapping into canonical week (168 hours)
-        indices = (start_offset_in_week + np.arange(timespan_length)) % 168
+        # Vectorized index mapping into canonical local week (168 hours)
+        indices = (start_offset_in_local_week + np.arange(timespan_length)) % 168
 
         # Vectorized extraction of values
         week_values = self.value.magnitude  # is numpy array
@@ -120,13 +122,16 @@ class ExplainableRecurringQuantities(ExplainableObject):
 
         result_quantity = Quantity(output_values.astype(np.float32), self.unit)
 
-        return ExplainableHourlyQuantities(
+        local_timezone_expanded = ExplainableHourlyQuantities(
             result_quantity,
-            start_date=start_date,
-            label=f"{self.label} expanded over {timespan_hourly_quantities.label} timespan" if self.label else None,
+            start_date=start_date_local,
             left_parent=self,
             right_parent=timespan_hourly_quantities,
             operator="expanded over timespan",
+        )
+
+        return local_timezone_expanded.convert_to_utc(local_timezone).set_label(
+            f"{self.label} expanded over {timespan_hourly_quantities.label} timespan (UTC)" if self.label else None,
         )
 
     def to_json(self, with_calculated_attributes_data=False):

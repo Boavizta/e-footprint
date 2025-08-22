@@ -123,12 +123,16 @@ class TestEdgeProcess(TestCase):
 
     def test_update_unitary_hourly_compute_need_over_full_timespan(self):
         """Test update_unitary_hourly_compute_need_over_full_timespan method."""
-        # Mock the edge usage pattern and its utc_hourly_edge_usage_journey_starts
+        # Mock the edge usage pattern and its hourly_edge_usage_journey_starts and country timezone
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_country = MagicMock()
+        mock_timezone = MagicMock()
         
-        mock_pattern.utc_hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.country = mock_country
+        mock_country.timezone = mock_timezone
         mock_journey.edge_usage_pattern = mock_pattern
         
         # Mock the generate_hourly_quantities_over_timespan method
@@ -141,7 +145,7 @@ class TestEdgeProcess(TestCase):
         self.edge_process.update_unitary_hourly_compute_need_over_full_timespan()
         
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
-            mock_hourly_starts)
+            mock_hourly_starts, mock_timezone)
         
         self.assertEqual(expected_result, self.edge_process.unitary_hourly_compute_need_over_full_timespan)
 
@@ -150,8 +154,12 @@ class TestEdgeProcess(TestCase):
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_country = MagicMock()
+        mock_timezone = MagicMock()
         
-        mock_pattern.utc_hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.country = mock_country
+        mock_country.timezone = mock_timezone
         mock_journey.edge_usage_pattern = mock_pattern
         
         expected_result = MagicMock(spec=ExplainableHourlyQuantities)
@@ -164,7 +172,7 @@ class TestEdgeProcess(TestCase):
         self.edge_process.update_unitary_hourly_ram_need_over_full_timespan()
         
         self.edge_process.recurrent_ram_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
-            mock_hourly_starts)
+            mock_hourly_starts, mock_timezone)
         
         self.assertEqual(expected_result, self.edge_process.unitary_hourly_ram_need_over_full_timespan)
 

@@ -72,9 +72,11 @@ class EdgeProcess(ModelingObject):
     def update_unitary_hourly_compute_need_over_full_timespan(self):        
         self.unitary_hourly_compute_need_over_full_timespan = (
             self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
-                self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts))
+                self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
+                self.edge_usage_pattern.country.timezone))
 
     def update_unitary_hourly_ram_need_over_full_timespan(self):
         self.unitary_hourly_ram_need_over_full_timespan = (
             self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
-                self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts))
+                self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
+                self.edge_usage_pattern.country.timezone))
