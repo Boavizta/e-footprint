@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from abc import abstractmethod
 
 import numpy as np
@@ -8,11 +8,14 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.infra_hardware import InfraHardware, InsufficientCapacityError
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.job import JobBase
+    from efootprint.builders.services.service_base_class import Service
 
 
 class ServerTypes:
@@ -115,7 +118,7 @@ class ServerBase(InfraHardware):
         return {"ram": "GB", "compute": self.compute_type}
 
     @property
-    def jobs(self) -> List[ModelingObject]:
+    def jobs(self) -> List["JobBase"]:
         from efootprint.core.usage.job import JobBase
 
         return (
@@ -125,7 +128,7 @@ class ServerBase(InfraHardware):
 
 
     @property
-    def installed_services(self) -> List[ModelingObject]:
+    def installed_services(self) -> List["Service"]:
         from efootprint.builders.services.service_base_class import Service
 
         return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Service)]

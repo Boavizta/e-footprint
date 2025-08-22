@@ -1,5 +1,5 @@
 import math
-from typing import List, Type
+from typing import List, Type, TYPE_CHECKING, Optional
 
 import numpy as np
 from pint import Quantity
@@ -11,6 +11,10 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.job import JobBase
+    from efootprint.core.hardware.server_base import ServerBase
 
 
 class NegativeCumulativeStorageNeedError(Exception):
@@ -107,7 +111,7 @@ class Storage(InfraHardware):
         self.automatic_storage_dumps_after_storage_duration = EmptyExplainableObject()
 
     @property
-    def server(self) -> Type["Server"]:
+    def server(self) -> Optional["ServerBase"]:
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
@@ -126,10 +130,13 @@ class Storage(InfraHardware):
              "instances_energy", "energy_footprint"])
 
     @property
-    def jobs(self) -> List[Type["Job"]]:
-        return list(set(
-            job for serv in self.modeling_obj_containers for job in serv.jobs
-        ))
+    def jobs(self) -> List["JobBase"]:
+        # TODO: test
+        from efootprint.core.hardware.server_base import ServerBase
+        server = self.server
+        if server is not None and isinstance(server, ServerBase):
+            return server.jobs
+        return []
 
     @property
     def power_usage_effectiveness(self):
