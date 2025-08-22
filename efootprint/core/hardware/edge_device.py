@@ -53,7 +53,7 @@ class EdgeDevice(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return super().calculated_attributes + [
+        return [
             "available_ram_per_instance", "available_compute_per_instance",
             "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
             "unitary_power_over_full_timespan", "instances_energy",
@@ -135,7 +135,7 @@ class EdgeDevice(InfraHardware):
 
     def update_unitary_power_over_full_timespan(self):
         unitary_compute_workload_over_full_timespan = (
-                self.unitary_hourly_compute_need_over_full_timespan / self.compute)
+                (self.unitary_hourly_compute_need_over_full_timespan + self.base_compute_consumption) / self.compute)
 
         unitary_power_over_full_timespan = (
                 (self.idle_power + (self.power - self.idle_power) * unitary_compute_workload_over_full_timespan)

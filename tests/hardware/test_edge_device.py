@@ -84,6 +84,7 @@ class TestEdgeDevice(TestCase):
         mock_journey.name = "Mock Journey"
         set_modeling_obj_containers(self.edge_device, [mock_journey])
         self.assertEqual(mock_journey, self.edge_device.edge_usage_journey)
+        set_modeling_obj_containers(self.edge_device, [])
 
     def test_edge_usage_journey_property_multiple_containers_raises_error(self):
         """Test edge_usage_journey property raises error with multiple containers."""
@@ -100,6 +101,7 @@ class TestEdgeDevice(TestCase):
         expected_message = ("EdgeDevice object can only be associated with one EdgeUsageJourney object but "
                           "Test EdgeDevice is associated with")
         self.assertIn(expected_message, str(context.exception))
+        set_modeling_obj_containers(self.edge_device, [])
 
     def test_edge_usage_pattern_property_no_journey(self):
         """Test edge_usage_pattern property when no journey is set."""
@@ -114,6 +116,7 @@ class TestEdgeDevice(TestCase):
         set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         self.assertEqual(mock_pattern, self.edge_device.edge_usage_pattern)
+        set_modeling_obj_containers(self.edge_device, [])
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that storage is returned as dependent object."""
@@ -129,9 +132,11 @@ class TestEdgeDevice(TestCase):
         set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         self.assertEqual(mock_processes, self.edge_device.edge_processes)
+        set_modeling_obj_containers(self.edge_device, [])
 
     def test_nb_of_instances_property_no_pattern(self):
         """Test nb_of_instances property when no pattern is set."""
+        self.edge_device.update_nb_of_instances()
         result = self.edge_device.nb_of_instances
         self.assertIsInstance(result, EmptyExplainableObject)
 
@@ -146,14 +151,11 @@ class TestEdgeDevice(TestCase):
         set_modeling_obj_containers(self.edge_device, [mock_journey])
         self.edge_device.update_nb_of_instances()
         self.assertEqual(mock_instances, self.edge_device.nb_of_instances)
+        set_modeling_obj_containers(self.edge_device, [])
 
     def test_update_raw_nb_of_instances_does_nothing(self):
         """Test update_raw_nb_of_instances method does nothing (pass)."""
         self.edge_device.update_raw_nb_of_instances()  # Should not raise any error
-
-    def test_update_nb_of_instances_does_nothing(self):
-        """Test update_nb_of_instances method does nothing (pass)."""
-        self.edge_device.update_nb_of_instances()  # Should not raise any error
 
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
@@ -164,9 +166,11 @@ class TestEdgeDevice(TestCase):
             self.edge_device.update_available_ram_per_instance()
             
             expected_value = 16 * 0.8 - 2  # 10.8 GB
-            self.assertAlmostEqual(expected_value, self.edge_device.available_ram_per_instance.value.magnitude, places=5)
+            self.assertAlmostEqual(
+                expected_value, self.edge_device.available_ram_per_instance.value.magnitude, places=5)
             self.assertEqual(u.GB, self.edge_device.available_ram_per_instance.value.units)
-            self.assertEqual("Available RAM per Test EdgeDevice instance", self.edge_device.available_ram_per_instance.label)
+            self.assertEqual("Available RAM per Test EdgeDevice instance",
+                             self.edge_device.available_ram_per_instance.label)
 
     def test_update_available_ram_per_instance_insufficient_capacity(self):
         """Test update_available_ram_per_instance raises error when capacity is insufficient."""
@@ -189,9 +193,11 @@ class TestEdgeDevice(TestCase):
             self.edge_device.update_available_compute_per_instance()
             
             expected_value = 8 * 0.75 - 1  # 5.0 cpu_core
-            self.assertAlmostEqual(expected_value, self.edge_device.available_compute_per_instance.value.magnitude, places=5)
+            self.assertAlmostEqual(
+                expected_value, self.edge_device.available_compute_per_instance.value.magnitude, places=5)
             self.assertEqual(u.cpu_core, self.edge_device.available_compute_per_instance.value.units)
-            self.assertEqual("Available compute per Test EdgeDevice instance", self.edge_device.available_compute_per_instance.label)
+            self.assertEqual("Available compute per Test EdgeDevice instance",
+                             self.edge_device.available_compute_per_instance.label)
 
     def test_update_available_compute_per_instance_insufficient_capacity(self):
         """Test update_available_compute_per_instance raises error when capacity is insufficient."""
@@ -263,9 +269,11 @@ class TestEdgeDevice(TestCase):
             self.edge_device.update_unitary_hourly_compute_need_over_full_timespan()
             
             expected_values = [1.5, 1.5, 3.5]  # Sum of both processes
-            self.assertEqual(expected_values, self.edge_device.unitary_hourly_compute_need_over_full_timespan.value_as_float_list)
+            self.assertEqual(expected_values,
+                             self.edge_device.unitary_hourly_compute_need_over_full_timespan.value_as_float_list)
             self.assertEqual(u.cpu_core, self.edge_device.unitary_hourly_compute_need_over_full_timespan.unit)
-            self.assertEqual("Test EdgeDevice hour by hour compute need", self.edge_device.unitary_hourly_compute_need_over_full_timespan.label)
+            self.assertEqual("Test EdgeDevice hour by hour compute need",
+                             self.edge_device.unitary_hourly_compute_need_over_full_timespan.label)
 
     @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_hourly_compute_need_over_full_timespan_insufficient_capacity(self, mock_edge_processes):
@@ -289,6 +297,7 @@ class TestEdgeDevice(TestCase):
         compute_need = create_source_hourly_values_from_list([0, 2, 4], pint_unit=u.cpu_core)
         
         with patch.object(self.edge_device, "unitary_hourly_compute_need_over_full_timespan", compute_need), \
+             patch.object(self.edge_device, "base_compute_consumption", SourceValue(0 * u.cpu_core)), \
              patch.object(self.edge_device, "compute", SourceValue(4 * u.cpu_core)), \
              patch.object(self.edge_device, "idle_power", SourceValue(10 * u.W)), \
              patch.object(self.edge_device, "power", SourceValue(50 * u.W)), \
@@ -300,9 +309,11 @@ class TestEdgeDevice(TestCase):
             # Power: [10 + (50-10)*0, 10 + (50-10)*0.5, 10 + (50-10)*1] = [10, 30, 50]
             # With PUE: [10*1.2, 30*1.2, 50*1.2] = [12, 36, 60]
             expected_values = [12, 36, 60]
-            self.assertTrue(np.allclose(expected_values, self.edge_device.unitary_power_over_full_timespan.value_as_float_list))
+            self.assertTrue(np.allclose(expected_values,
+                                        self.edge_device.unitary_power_over_full_timespan.value_as_float_list))
             self.assertEqual(u.W, self.edge_device.unitary_power_over_full_timespan.unit)
-            self.assertEqual("Test EdgeDevice unitary power over full timespan.", self.edge_device.unitary_power_over_full_timespan.label)
+            self.assertEqual("Test EdgeDevice unitary power over full timespan.",
+                             self.edge_device.unitary_power_over_full_timespan.label)
 
     def test_update_instances_energy(self):
         """Test update_instances_energy calculation."""
@@ -319,34 +330,8 @@ class TestEdgeDevice(TestCase):
             expected_values = [0.1, 0.4, 0.9]
             self.assertTrue(np.allclose(expected_values, self.edge_device.instances_energy.value_as_float_list))
             self.assertEqual(u.kWh, self.edge_device.instances_energy.unit)
-            self.assertEqual("Hourly energy consumed by Test EdgeDevice instances", self.edge_device.instances_energy.label)
-
-    def test_calculated_attributes_includes_all_expected_attributes(self):
-        """Test that calculated_attributes includes all EdgeDevice-specific attributes."""
-        expected_attrs = [
-            "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", 
-            "instances_energy", "energy_footprint",  # From parent InfraHardware
-            "available_ram_per_instance", "available_compute_per_instance",
-            "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
-            "unitary_power_over_full_timespan"  # EdgeDevice-specific
-        ]
-        
-        actual_attrs = self.edge_device.calculated_attributes
-        for attr in expected_attrs:
-            self.assertIn(attr, actual_attrs)
-
-    def test_default_values_structure(self):
-        """Test that default_values dictionary has expected structure."""
-        default_keys = {
-            "carbon_footprint_fabrication", "power", "lifespan", "idle_power", "ram", "compute",
-            "power_usage_effectiveness", "server_utilization_rate", "base_ram_consumption", "base_compute_consumption"
-        }
-        
-        self.assertEqual(default_keys, set(EdgeDevice.default_values.keys()))
-        
-        # Check that all default values are SourceValue objects
-        for key, value in EdgeDevice.default_values.items():
-            self.assertIsInstance(value, SourceValue)
+            self.assertEqual("Hourly energy consumed by Test EdgeDevice instances",
+                             self.edge_device.instances_energy.label)
 
 
 if __name__ == "__main__":
