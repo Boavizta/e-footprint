@@ -8,9 +8,14 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.system import System
 from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.storage import Storage
+from efootprint.core.usage.edge_process import EdgeProcess
 from tests import root_test_dir
 
 
@@ -51,8 +56,8 @@ class TestSystem(TestCase):
         self.network.id = "network_id"
         self.network.systems = []
 
-        self.usage_pattern.usage_journey.servers = {self.server}
-        self.usage_pattern.usage_journey.storages = {self.storage}
+        self.usage_pattern.usage_journey.servers = [self.server]
+        self.usage_pattern.usage_journey.storages = [self.storage]
         self.usage_pattern.network = self.network
 
         self.server.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
@@ -66,8 +71,9 @@ class TestSystem(TestCase):
         self.network.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
 
         self.system = System(
-            "Non cloud system",
-            usage_patterns=[self.usage_pattern]
+            "Test system",
+            usage_patterns=[self.usage_pattern],
+            edge_usage_patterns=[]
         )
         self.system.trigger_modeling_updates = False
 
@@ -89,12 +95,10 @@ class TestSystem(TestCase):
         obj2 = MagicMock()
         obj2.systems = []
 
-        usage_patterns = MagicMock()
-
-        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
-            as mock_get_objects_linked_to_usage_patterns:
-            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [obj1, obj2]
-            self.system.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) \
+            as mock_all_linked_objects:
+            mock_all_linked_objects.return_value = [obj1, obj2]
+            self.system.check_no_object_to_link_is_already_linked_to_another_system()
 
     def test_check_no_object_to_link_is_already_linked_to_another_system_fail_case(self):
         obj1 = MagicMock()
@@ -105,13 +109,11 @@ class TestSystem(TestCase):
         obj2 = MagicMock()
         obj2.systems = []
 
-        usage_patterns = MagicMock()
-
-        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
-            as mock_get_objects_linked_to_usage_patterns:
-            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [obj1, obj2]
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) \
+            as mock_all_linked_objects:
+            mock_all_linked_objects.return_value = [obj1, obj2]
             with self.assertRaises(PermissionError):
-                self.system.check_no_object_to_link_is_already_linked_to_another_system(usage_patterns)
+                self.system.check_no_object_to_link_is_already_linked_to_another_system()
 
     def test_an_object_cant_be_linked_to_several_systems(self):
         new_server = MagicMock()
@@ -119,16 +121,13 @@ class TestSystem(TestCase):
         other_system.id = "other id"
         new_server.systems = [other_system]
 
-        with patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock) \
-                as mock_get_objects_linked_to_usage_patterns:
-            mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_server]
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) \
+                as mock_all_linked_objects:
+            mock_all_linked_objects.return_value = [new_server]
             with self.assertRaises(PermissionError):
-                new_system = System("new system", usage_patterns=[self.usage_pattern])
+                new_system = System("new system", usage_patterns=[self.usage_pattern], edge_usage_patterns=[])
 
-    @patch.object(System, "get_objects_linked_to_usage_patterns", new_callable=PropertyMock)
-    def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(
-            self, mock_get_objects_linked_to_usage_patterns):
-        mock_get_objects_linked_to_usage_patterns.return_value = lambda x: [new_up]
+    def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(self):
         new_up = MagicMock(spec=UsagePattern)
         new_up.name = "new up"
         other_system = MagicMock(spec=System)
@@ -136,9 +135,11 @@ class TestSystem(TestCase):
         other_system.name = "other system"
         new_up.systems = [other_system]
 
-        with self.assertRaises(PermissionError):
-            self.system.usage_patterns = [new_up]
-            self.system.compute_calculated_attributes()
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all_linked_objects:
+            mock_all_linked_objects.return_value = [new_up]
+            with self.assertRaises(PermissionError):
+                self.system.usage_patterns = [new_up]
+                self.system.compute_calculated_attributes()
         
     def test_fabrication_footprints(self):
         expected_dict = {
@@ -148,7 +149,8 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"networks": EmptyExplainableObject()},
             "Devices": {"usage_pattern_id": 
-                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "EdgeDevices": {}
         }
         
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
@@ -162,7 +164,8 @@ class TestSystem(TestCase):
             "Devices": {"usage_pattern_id": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"network_id": 
-                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)}
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "EdgeDevices": {}
         }
 
         self.assertDictEqual(expected_dict, self.system.energy_footprints)
@@ -175,7 +178,8 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
             "Devices": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
-            "Network": EmptyExplainableObject()
+            "Network": EmptyExplainableObject(),
+            "EdgeDevices": EmptyExplainableObject()
         }
         self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
 
@@ -189,7 +193,8 @@ class TestSystem(TestCase):
             "Devices": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
             "Network": 
-                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
+            "EdgeDevices": EmptyExplainableObject()
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)
@@ -258,7 +263,8 @@ class TestSystem(TestCase):
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
-            "Network": ExplainableQuantity(0 * u.kg, "null value")
+            "Network": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
         with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
@@ -282,7 +288,8 @@ class TestSystem(TestCase):
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
-            "Network": ExplainableQuantity(6 * u.kg, "null value")
+            "Network": ExplainableQuantity(6 * u.kg, "null value"),
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
         }
 
         with patch.object(System, "energy_footprints", new_callable=PropertyMock) as energy_mock:
@@ -320,6 +327,7 @@ class TestSystem(TestCase):
         system2 = System.__new__(System)
         system2.trigger_modeling_updates = False
         system2.usage_patterns = [usage_pattern, usage_pattern2]
+        system2.edge_usage_patterns = []
 
         for category in ["Servers", "Storage", "Devices"]:
             self.assertEqual(
@@ -363,6 +371,7 @@ class TestSystem(TestCase):
         system2 = System.__new__(System)
         system2.trigger_modeling_updates = False
         system2.usage_patterns = [usage_pattern, usage_pattern2]
+        system2.edge_usage_patterns = []
 
         for category in ["Servers", "Storage", "Devices", "Network"]:
             self.assertEqual(
@@ -432,7 +441,265 @@ class TestSystem(TestCase):
             self.system.plot_emission_diffs(filepath=os.path.join(root_test_dir, "test_system_diff_plot.png"))
 
     def test_creating_system_with_empty_up_list_is_possible(self):
-        system = System("Test system", usage_patterns=[])
+        system = System("Test system", usage_patterns=[], edge_usage_patterns=[])
+
+    def test_creating_system_with_edge_usage_patterns(self):
+        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.name = "edge_usage_pattern"
+        edge_usage_pattern.id = "edge_usage_pattern_id" 
+        edge_usage_pattern.systems = []
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.name = "edge_device"
+        edge_device.id = "edge_device_id"
+        edge_device.systems = []
+        
+        edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        edge_usage_journey.systems = []
+        edge_usage_journey.edge_device = edge_device
+        edge_usage_pattern.edge_usage_journey = edge_usage_journey
+        
+        edge_process = MagicMock(spec=EdgeProcess)
+        edge_process.systems = []
+        edge_usage_journey.edge_processes = [edge_process]
+        edge_usage_pattern.edge_processes = [edge_process]
+        
+        storage_from_edge = MagicMock(spec=Storage)
+        storage_from_edge.name = "storage_from_edge"
+        storage_from_edge.id = "storage_from_edge_id"
+        storage_from_edge.systems = []
+        storage_from_edge.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
+        storage_from_edge.energy_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
+        edge_device.storage = storage_from_edge
+        
+        country = MagicMock()
+        country.systems = []
+        edge_usage_pattern.country = country
+        
+        edge_usage_pattern.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        edge_device.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        edge_usage_pattern.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
+        edge_device.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        system = System("Test system with edge patterns", usage_patterns=[], edge_usage_patterns=[edge_usage_pattern])
+        system.trigger_modeling_updates = False
+        
+        self.assertEqual([edge_usage_pattern], system.edge_usage_patterns)
+        self.assertEqual([edge_device], system.edge_devices)
+        self.assertEqual([storage_from_edge], system.storages_from_edge_usage_patterns)
+        self.assertEqual([edge_usage_journey], system.edge_usage_journeys)
+
+    def test_fabrication_footprints_includes_edge_devices(self):
+        expected_dict = {
+            "Servers": {self.server.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {self.storage.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Network": {"networks": EmptyExplainableObject()},
+            "Devices": {self.usage_pattern.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "EdgeDevices": {}
+        }
+        
+        self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.id = "edge_device_id"
+        edge_device.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            fab_footprints = self.system.fabrication_footprints
+            
+            expected_dict["EdgeDevices"] = {edge_device.id: edge_device.instances_fabrication_footprint}
+            self.assertDictEqual(expected_dict, fab_footprints)
+
+    def test_energy_footprints_includes_edge_devices(self):
+        expected_dict = {
+            "Servers": {self.server.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Storage": {self.storage.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Devices": {self.usage_pattern.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "Network": {self.network.id: 
+                create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
+            "EdgeDevices": {}
+        }
+
+        self.assertDictEqual(expected_dict, self.system.energy_footprints)
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.id = "edge_device_id"
+        edge_device.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            energy_footprints = self.system.energy_footprints
+            
+            expected_dict["EdgeDevices"] = {edge_device.id: edge_device.energy_footprint}
+            self.assertDictEqual(expected_dict, energy_footprints)
+
+    def test_total_fabrication_footprints_includes_edge_devices(self):
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            total_fab_footprints = self.system.total_fabrication_footprints
+
+            self.assertEqual("EdgeDevices total fabrication footprint", total_fab_footprints["EdgeDevices"].label)
+            self.assertEqual(edge_device.instances_fabrication_footprint, total_fab_footprints["EdgeDevices"])
+
+    def test_total_energy_footprints_includes_edge_devices(self):
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            total_energy_footprints = self.system.total_energy_footprints
+            
+            self.assertEqual("EdgeDevices total energy footprint", total_energy_footprints["EdgeDevices"].label)
+            self.assertEqual(edge_device.energy_footprint, total_energy_footprints["EdgeDevices"])
+
+    def test_total_fabrication_footprint_sum_over_period_includes_edge_devices(self):
+        expected_dict = {
+            "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "Storage": ExplainableQuantity(6 * u.kg, "null value"),
+            "Devices": ExplainableQuantity(6 * u.kg, "null value"),
+            "Network": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+        }
+        
+        total_fab_sum = self.system.total_fabrication_footprint_sum_over_period
+        self.assertDictEqual(expected_dict, total_fab_sum)
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            total_fab_sum = self.system.total_fabrication_footprint_sum_over_period
+            
+            self.assertIn("EdgeDevices", total_fab_sum)
+            self.assertEqual(ExplainableQuantity(9 * u.kg, "sum"), total_fab_sum["EdgeDevices"])
+
+    def test_total_energy_footprint_sum_over_period_includes_edge_devices(self):
+        expected_dict = {
+            "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "Storage": ExplainableQuantity(6 * u.kg, "null value"),
+            "Devices": ExplainableQuantity(6 * u.kg, "null value"),
+            "Network": ExplainableQuantity(6 * u.kg, "null value"),
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+        }
+        
+        total_energy_sum = self.system.total_energy_footprint_sum_over_period
+        self.assertDictEqual(expected_dict, total_energy_sum)
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
+            mock_edge_devices.return_value = [edge_device]
+            total_energy_sum = self.system.total_energy_footprint_sum_over_period
+            
+            self.assertIn("EdgeDevices", total_energy_sum)
+            self.assertEqual(ExplainableQuantity(9 * u.kg, "sum"), total_energy_sum["EdgeDevices"])
+
+    def test_system_with_both_usage_patterns_and_edge_usage_patterns(self):
+        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.name = "edge_usage_pattern"
+        edge_usage_pattern.id = "edge_usage_pattern_id"
+        edge_usage_pattern.systems = []
+        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.name = "edge_device"
+        edge_device.id = "edge_device_id"
+        edge_device.systems = []
+        
+        edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        edge_usage_journey.systems = []
+        edge_usage_journey.edge_device = edge_device
+        edge_usage_pattern.edge_usage_journey = edge_usage_journey
+        
+        edge_process = MagicMock(spec=EdgeProcess)
+        edge_process.systems = []
+        edge_usage_journey.edge_processes = [edge_process]
+        edge_usage_pattern.edge_processes = [edge_process]
+        
+        storage_from_edge = MagicMock(spec=Storage)
+        storage_from_edge.name = "storage_from_edge"
+        storage_from_edge.id = "storage_from_edge_id"
+        storage_from_edge.systems = []
+        storage_from_edge.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
+        storage_from_edge.energy_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
+        edge_device.storage = storage_from_edge
+        
+        country = MagicMock()
+        country.systems = []
+        edge_usage_pattern.country = country
+        
+        edge_usage_pattern.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        edge_device.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        edge_usage_pattern.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        edge_device.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        
+        system = System("Test system with both patterns", 
+                       usage_patterns=[self.usage_pattern], 
+                       edge_usage_patterns=[edge_usage_pattern])
+        system.trigger_modeling_updates = False
+        
+        # Test that both regular and edge components are included
+        self.assertEqual([self.usage_pattern], system.usage_patterns)
+        self.assertEqual([edge_usage_pattern], system.edge_usage_patterns)
+        self.assertEqual([self.server], system.servers)
+        self.assertEqual([edge_device], system.edge_devices)
+        
+        # Test combined storages
+        combined_storages = system.storages
+        self.assertIn(self.storage, combined_storages)
+        self.assertIn(storage_from_edge, combined_storages)
+        
+        # Test footprints include both types
+        fab_footprints = system.fabrication_footprints
+        self.assertIn("Devices", fab_footprints)
+        self.assertIn("EdgeDevices", fab_footprints)
+        self.assertIn(self.usage_pattern.id, fab_footprints["Devices"])
+        self.assertIn(edge_device.id, fab_footprints["EdgeDevices"])
+        
+        energy_footprints = system.energy_footprints  
+        self.assertIn("Devices", energy_footprints)
+        self.assertIn("EdgeDevices", energy_footprints)
+        self.assertIn(self.usage_pattern.id, energy_footprints["Devices"])
+        self.assertIn(edge_device.id, energy_footprints["EdgeDevices"])
+
+    def test_get_objects_linked_to_edge_usage_patterns(self):
+        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.country = MagicMock()
+        edge_device = MagicMock(spec=EdgeDevice)
+        storage = MagicMock(spec=Storage)
+        edge_device.storage = storage
+        edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        edge_usage_journey.edge_device = edge_device
+        edge_process = MagicMock(spec=EdgeProcess)
+        edge_usage_journey.edge_processes = [edge_process]
+        edge_usage_pattern.edge_usage_journey = edge_usage_journey
+        
+        system = System.__new__(System)
+        system.trigger_modeling_updates = False
+        system.usage_patterns = []
+        system.edge_usage_patterns = [edge_usage_pattern]
+        
+        linked_objects = system.get_objects_linked_to_edge_usage_patterns([edge_usage_pattern])
+        
+        # Check that all expected objects are in the linked objects list
+        self.assertIn(edge_usage_pattern, linked_objects)
+        self.assertIn(edge_usage_journey, linked_objects)
+        self.assertIn(edge_process, linked_objects)
+        self.assertIn(edge_device, linked_objects)
+        self.assertIn(edge_usage_pattern.country, linked_objects)
+        self.assertIn(storage, linked_objects)
+        self.assertEqual(6, len(linked_objects))
 
 
 if __name__ == '__main__':

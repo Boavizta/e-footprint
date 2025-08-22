@@ -109,7 +109,7 @@ def generate_big_system(
                     )
                 )
 
-    system = System("system", usage_patterns=usage_patterns)
+    system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=[])
     logger.info(f"Finished generating system in {round((time() - start), 3)} seconds")
 
     timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")

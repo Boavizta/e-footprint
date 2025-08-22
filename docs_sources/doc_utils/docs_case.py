@@ -110,6 +110,6 @@ usage_pattern = UsagePattern(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
     hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year))
 
-system = System("system", usage_patterns=[usage_pattern])
+system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[])
 
 logger.info(f"computation took {round((time() - start), 3)} seconds")

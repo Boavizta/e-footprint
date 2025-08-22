@@ -152,7 +152,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         usage_pattern1.id = css_escape(usage_pattern1.name)
         usage_pattern2.id = css_escape(usage_pattern2.name)
 
-        system = System("system 1", [usage_pattern1, usage_pattern2])
+        system = System("system 1", [usage_pattern1, usage_pattern2], edge_usage_patterns=[])
         mod_obj_list = [system] + system.all_linked_objects
         for mod_obj in mod_obj_list:
             if mod_obj not in [usage_pattern1, usage_pattern2]:

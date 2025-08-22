@@ -1,13 +1,12 @@
 {
-    "efootprint_version": "11.0.0",
+    "efootprint_version": "10.1.15",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
             "id": "uuid-system-1",
             "usage_patterns": [
                 "uuid-Youtube-usage-in-France"
-            ],
-            "edge_usage_patterns": []
+            ]
         }
     },
     "UsagePattern": {
@@ -65,7 +64,9 @@
                     "link": null
                 }
             },
-            "jobs": []
+            "jobs": [
+                "uuid-streaming"
+            ]
         },
         "uuid-40s-of-upload": {
             "name": "40s of upload",
@@ -79,7 +80,111 @@
                     "link": null
                 }
             },
-            "jobs": []
+            "jobs": [
+                "uuid-upload"
+            ]
+        }
+    },
+    "Job": {
+        "uuid-streaming": {
+            "name": "streaming",
+            "id": "uuid-streaming",
+            "server": "uuid-Default-server",
+            "data_transferred": {
+                "label": "Data upload of request streaming from hypothesis",
+                "value": 50,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored of request streaming from hypothesis",
+                "value": 50,
+                "unit": "kilobyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to Youtube in streaming from hypothesis",
+                "value": 0.06666666666666667,
+                "unit": "hour",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Default server to process streaming from hypothesis",
+                "value": 100,
+                "unit": "megabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_needed": {
+                "label": "CPU needed on server Default server to process streaming from hypothesis",
+                "value": 1,
+                "unit": "cpu_core",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        },
+        "uuid-upload": {
+            "name": "upload",
+            "id": "uuid-upload",
+            "server": "uuid-Default-server",
+            "data_transferred": {
+                "label": "Data upload of request upload from hypothesis",
+                "value": 300,
+                "unit": "megabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "label": "Data stored of request upload from hypothesis",
+                "value": 300,
+                "unit": "megabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to Youtube in upload from hypothesis",
+                "value": 0.011111111111111112,
+                "unit": "hour",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Default server to process upload from hypothesis",
+                "value": 100,
+                "unit": "megabyte",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_needed": {
+                "label": "CPU needed on server Default server to process upload from hypothesis",
+                "value": 1,
+                "unit": "cpu_core",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
         }
     },
     "Server": {
