@@ -238,14 +238,12 @@ class TestStorage(TestCase):
 
     def test_nb_of_instances_with_fixed_nb_of_instances(self):
         raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
-        expected_data = [5, 5, 5]
         fixed_nb_of_instances = SourceValue(5 * u.dimensionless, Sources.HYPOTHESIS)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
             self.storage_base.update_nb_of_instances()
-            self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
-            self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
+            self.assertEqual(fixed_nb_of_instances, self.storage_base.nb_of_instances)
 
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
         raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
@@ -259,14 +257,24 @@ class TestStorage(TestCase):
                 "storage_base has available number of instances capacity of 2.0 dimensionless but is asked for "
                 "4.0 dimensionless", str(context.exception))
 
-    def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
+    def test_nb_of_instances_returns_fixed_nb_of_instances_if_raw_nb_of_instances_is_empty_case_fixed_nb_non_empty(
+            self):
         raw_nb_of_instances = EmptyExplainableObject()
         fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
                 patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
             self.storage_base.update_nb_of_instances()
-            self.assertIsInstance(self.storage_base.nb_of_instances, EmptyExplainableObject)
+            self.assertEqual(self.storage_base.nb_of_instances, fixed_nb_of_instances)
+
+    def test_nb_of_instances_returns_fixed_nb_of_instances_if_raw_nb_of_instances_is_empty_case_fixed_nb_empty(self):
+        raw_nb_of_instances = EmptyExplainableObject()
+        fixed_nb_of_instances = EmptyExplainableObject()
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+                patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
+            self.storage_base.update_nb_of_instances()
+            self.assertEqual(self.storage_base.nb_of_instances, fixed_nb_of_instances)
 
     def test_update_instances_energy(self):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")

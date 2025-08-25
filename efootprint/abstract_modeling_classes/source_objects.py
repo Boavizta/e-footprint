@@ -25,6 +25,11 @@ class SourceValue(ExplainableQuantity):
     def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=label, source=source)
 
+    def generate_explainable_object_with_logical_dependency(self, explainable_condition: ExplainableObject):
+        return ExplainableQuantity(
+            value=self.value, label=self.label, left_parent=self, right_parent=explainable_condition,
+            operator="logically dependent on")
+
 class SourceHourlyValues(ExplainableHourlyQuantities):
     def __init__(self, value: Quantity, start_date: datetime, source: Source = Sources.HYPOTHESIS,
                  label: str = SOURCE_VALUE_DEFAULT_NAME):
