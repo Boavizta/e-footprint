@@ -288,7 +288,7 @@ class Storage(InfraHardware):
                  + self.automatic_storage_dumps_after_storage_duration.abs())
                 / self.storage_capacity
         ).to(u.dimensionless)
-        nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances.abs(), "min")
+        nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances, "min")
         self.nb_of_active_instances = nb_of_active_instances.set_label(
             f"Hourly number of active instances for {self.name}")
 

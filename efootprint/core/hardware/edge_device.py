@@ -57,8 +57,8 @@ class EdgeDevice(InfraHardware):
         return [
             "available_ram_per_instance", "available_compute_per_instance",
             "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
-            "unitary_power_over_full_timespan", "instances_energy",
-            "instances_fabrication_footprint", "energy_footprint"
+            "unitary_power_over_full_timespan", "nb_of_instances", "instances_energy",
+            "energy_footprint", "instances_fabrication_footprint"
         ]
 
     @property
