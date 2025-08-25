@@ -153,10 +153,6 @@ class TestEdgeDevice(TestCase):
         self.assertEqual(mock_instances, self.edge_device.nb_of_instances)
         set_modeling_obj_containers(self.edge_device, [])
 
-    def test_update_raw_nb_of_instances_does_nothing(self):
-        """Test update_raw_nb_of_instances method does nothing (pass)."""
-        self.edge_device.update_raw_nb_of_instances()  # Should not raise any error
-
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
         with patch.object(self.edge_device, "ram", SourceValue(16 * u.GB)), \

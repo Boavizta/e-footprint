@@ -5,7 +5,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.infra_hardware import InfraHardware
+from efootprint.core.hardware.edge_hardware import EdgeHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -31,7 +31,7 @@ class NegativeCumulativeStorageNeedError(Exception):
         super().__init__(message)
 
 
-class EdgeStorage(InfraHardware):
+class EdgeStorage(EdgeHardware):
     default_values =  {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
             "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
@@ -83,7 +83,6 @@ class EdgeStorage(InfraHardware):
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity):
         super().__init__(
             name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
-        del self.raw_nb_of_instances
         self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
         .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
         self.power_per_storage_capacity = power_per_storage_capacity.set_label(
@@ -135,16 +134,6 @@ class EdgeStorage(InfraHardware):
             return self.edge_device.power_usage_effectiveness
         else:
             return EmptyExplainableObject()
-
-    @property
-    def average_carbon_intensity(self):
-        if self.edge_device is not None:
-            return self.edge_device.average_carbon_intensity
-        else:
-            return EmptyExplainableObject()
-
-    def update_raw_nb_of_instances(self):
-        pass
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
@@ -203,14 +192,6 @@ class EdgeStorage(InfraHardware):
                 operator="cumulative sum of storage delta with initial storage need"
             )
 
-    def update_nb_of_instances(self):
-        if self.edge_usage_pattern:
-            nb_of_instances = self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel.copy()
-        else:
-            nb_of_instances = EmptyExplainableObject()
-
-        self.nb_of_instances = nb_of_instances.set_label(f"{self.name} nb_of_instances")
-
     def update_unitary_power_over_full_timespan(self):
         unitary_activity_level = (
                 self.unitary_storage_delta_over_full_timespan.abs() / self.storage_capacity).to(u.dimensionless)
@@ -221,13 +202,3 @@ class EdgeStorage(InfraHardware):
         
         self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
             f"Hourly number of active instances for {self.name}")
-
-    def update_instances_energy(self):
-        unitary_energy_over_full_timespan = (
-                self.unitary_power_over_full_timespan * ExplainableQuantity(1 * u.hour, "one hour")
-        )
-
-        instances_energy = unitary_energy_over_full_timespan * self.nb_of_instances
-
-        self.instances_energy = instances_energy.to(u.kWh).set_label(
-            f"Hourly energy consumed by {self.name} instances")
