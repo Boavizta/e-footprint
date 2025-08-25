@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob

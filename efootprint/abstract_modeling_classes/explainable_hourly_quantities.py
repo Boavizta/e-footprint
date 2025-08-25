@@ -199,6 +199,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if isinstance(compared_object, self._EmptyExplainableObject):
             compared_values = np.full(len(self.value), fill_value=np.float32(0))
         elif isinstance(compared_object, ExplainableHourlyQuantities):
+            assert compared_object.unit == self.unit, f"{compared_object.unit} != {self.unit}"
             compared_values = compared_object.value
             assert self.start_date == compared_object.start_date, \
                 f"Cannot compare ExplainableHourlyQuantities with different start dates: " \

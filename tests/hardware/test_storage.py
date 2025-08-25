@@ -8,9 +8,9 @@ from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute i
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage, NegativeCumulativeStorageNeedError
 from efootprint.core.usage.job import Job

@@ -10,8 +10,8 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
-from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -20,7 +20,7 @@ from tests.utils import set_modeling_obj_containers
 
 class TestEdgeDevice(TestCase):
     def setUp(self):
-        self.mock_storage = MagicMock(spec=Storage)
+        self.mock_storage = MagicMock(spec=EdgeStorage)
         self.edge_device = EdgeDevice(
             name="Test EdgeDevice",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
@@ -133,29 +133,6 @@ class TestEdgeDevice(TestCase):
         
         self.assertEqual(mock_processes, self.edge_device.edge_processes)
         set_modeling_obj_containers(self.edge_device, [])
-
-    def test_nb_of_instances_property_no_pattern(self):
-        """Test nb_of_instances property when no pattern is set."""
-        self.edge_device.update_nb_of_instances()
-        result = self.edge_device.nb_of_instances
-        self.assertIsInstance(result, EmptyExplainableObject)
-
-    def test_nb_of_instances_property_with_pattern(self):
-        """Test nb_of_instances property delegates to pattern."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_instances = create_source_hourly_values_from_list([1, 2, 3])
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_instances
-        mock_journey.edge_usage_pattern = mock_pattern
-        
-        set_modeling_obj_containers(self.edge_device, [mock_journey])
-        self.edge_device.update_nb_of_instances()
-        self.assertEqual(mock_instances, self.edge_device.nb_of_instances)
-        set_modeling_obj_containers(self.edge_device, [])
-
-    def test_update_raw_nb_of_instances_does_nothing(self):
-        """Test update_raw_nb_of_instances method does nothing (pass)."""
-        self.edge_device.update_raw_nb_of_instances()  # Should not raise any error
 
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
@@ -314,24 +291,6 @@ class TestEdgeDevice(TestCase):
             self.assertEqual(u.W, self.edge_device.unitary_power_over_full_timespan.unit)
             self.assertEqual("Test EdgeDevice unitary power over full timespan.",
                              self.edge_device.unitary_power_over_full_timespan.label)
-
-    def test_update_instances_energy(self):
-        """Test update_instances_energy calculation."""
-        power_values = create_source_hourly_values_from_list([100, 200, 300], pint_unit=u.W)
-        nb_instances = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.dimensionless)
-        
-        with patch.object(self.edge_device, "unitary_power_over_full_timespan", power_values), \
-             patch.object(self.edge_device, "nb_of_instances", nb_instances):
-            
-            self.edge_device.update_instances_energy()
-            
-            # Energy = power (W) * 1 hour * nb_instances, converted to kWh
-            # [100*1*1, 200*1*2, 300*1*3] Wh = [100, 400, 900] Wh = [0.1, 0.4, 0.9] kWh
-            expected_values = [0.1, 0.4, 0.9]
-            self.assertTrue(np.allclose(expected_values, self.edge_device.instances_energy.value_as_float_list))
-            self.assertEqual(u.kWh, self.edge_device.instances_energy.unit)
-            self.assertEqual("Hourly energy consumed by Test EdgeDevice instances",
-                             self.edge_device.instances_energy.label)
 
 
 if __name__ == "__main__":

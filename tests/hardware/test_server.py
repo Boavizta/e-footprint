@@ -9,9 +9,9 @@ from efootprint.builders.services.video_streaming import VideoStreaming
 from efootprint.builders.services.web_application import WebApplication
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.constants.units import u
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.hardware.storage import Storage
 

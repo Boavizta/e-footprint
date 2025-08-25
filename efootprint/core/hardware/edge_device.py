@@ -5,9 +5,9 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.storage import Storage
-from efootprint.core.hardware.infra_hardware import InfraHardware
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
+from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_process import EdgeProcess
 
 
-class EdgeDevice(InfraHardware):
+class EdgeDevice(EdgeHardware):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg, Sources.HYPOTHESIS),
         "power": SourceValue(30 * u.W, Sources.HYPOTHESIS),
@@ -34,9 +34,8 @@ class EdgeDevice(InfraHardware):
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity,
                  server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, storage: Storage):
+                 base_compute_consumption: ExplainableQuantity, storage: EdgeStorage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        del self.raw_nb_of_instances
         self.available_compute_per_instance = EmptyExplainableObject()
         self.available_ram_per_instance = EmptyExplainableObject()
         self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
@@ -58,8 +57,7 @@ class EdgeDevice(InfraHardware):
             "available_ram_per_instance", "available_compute_per_instance",
             "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
             "unitary_power_over_full_timespan", "nb_of_instances", "instances_energy",
-            "energy_footprint", "instances_fabrication_footprint"
-        ]
+            "energy_footprint", "instances_fabrication_footprint"]
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
@@ -86,17 +84,6 @@ class EdgeDevice(InfraHardware):
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_processes
         return None
-
-    @property
-    def average_carbon_intensity(self) -> Union[ExplainableQuantity, EmptyExplainableObject]:
-        # TODO: add corresponding test
-        edge_usage_pattern = self.edge_usage_pattern
-        if edge_usage_pattern is not None:
-            return edge_usage_pattern.country.average_carbon_intensity
-        return EmptyExplainableObject()
-
-    def update_raw_nb_of_instances(self):
-        pass
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram * self.server_utilization_rate - self.base_ram_consumption)
@@ -152,22 +139,3 @@ class EdgeDevice(InfraHardware):
 
         self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
             f"{self.name} unitary power over full timespan.")
-
-    def update_nb_of_instances(self):
-        if self.edge_usage_pattern:
-            nb_of_instances = self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel.copy()
-        else:
-            nb_of_instances = EmptyExplainableObject()
-
-        self.nb_of_instances = nb_of_instances.set_label(
-            f"{self.name} nb_of_instances")
-
-    def update_instances_energy(self):
-        unitary_energy_over_full_timespan = (
-            self.unitary_power_over_full_timespan * ExplainableQuantity(1 * u.hour, "one hour")
-        )
-
-        instances_energy = unitary_energy_over_full_timespan * self.nb_of_instances
-
-        self.instances_energy = instances_energy.to(u.kWh).set_label(
-            f"Hourly energy consumed by {self.name} instances")
