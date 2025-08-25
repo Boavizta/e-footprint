@@ -131,10 +131,8 @@ class Storage(InfraHardware):
 
     @property
     def jobs(self) -> List["JobBase"]:
-        # TODO: test
-        from efootprint.core.hardware.server_base import ServerBase
         server = self.server
-        if server is not None and isinstance(server, ServerBase):
+        if server is not None:
             return server.jobs
         return []
 
@@ -255,31 +253,29 @@ class Storage(InfraHardware):
     def update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
-        else:
-            nb_of_instances = self.raw_nb_of_instances.ceil()
+            return
 
-            if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
-                max_nb_of_instances = nb_of_instances.max()
-                if max_nb_of_instances > self.fixed_nb_of_instances:
-                    raise InsufficientCapacityError(
-                        self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
-                else:
-                    fixed_nb_of_instances_quantity = Quantity(
-                        np.full(
-                            len(self.raw_nb_of_instances),
-                            np.float32(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
-                        ),
-                        u.dimensionless)
-                    fixed_nb_of_instances = ExplainableHourlyQuantities(
-                        fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date,"Nb of instances",
-                        left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
-                self.nb_of_instances = fixed_nb_of_instances.set_label(
-                    f"Hourly fixed number of instances for {self.name}")
+        ceiled_nb_of_instances = self.raw_nb_of_instances.ceil()
+
+        if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
+            max_nb_of_instances = ceiled_nb_of_instances.max()
+            if max_nb_of_instances > self.fixed_nb_of_instances:
+                raise InsufficientCapacityError(
+                    self, "number of instances", self.fixed_nb_of_instances, max_nb_of_instances)
             else:
-                nb_of_instances = ExplainableHourlyQuantities(
-                    nb_of_instances.value, self.raw_nb_of_instances.start_date, left_parent=nb_of_instances,
-                    right_parent=self.fixed_nb_of_instances, operator="depending on being empty")
-                self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
+                fixed_nb_of_instances_quantity = Quantity(
+                    np.full(
+                        len(self.raw_nb_of_instances),
+                        np.float32(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
+                    ), u.dimensionless)
+                fixed_nb_of_instances = ExplainableHourlyQuantities(
+                    fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date,"Nb of instances",
+                    left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
+            self.nb_of_instances = fixed_nb_of_instances.set_label(f"Hourly fixed number of instances for {self.name}")
+        else:
+            nb_of_instances = ceiled_nb_of_instances.generate_explainable_object_with_logical_dependency(
+                self.fixed_nb_of_instances)
+            self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 
     def update_nb_of_active_instances(self):
         storage_needed = self.storage_needed
