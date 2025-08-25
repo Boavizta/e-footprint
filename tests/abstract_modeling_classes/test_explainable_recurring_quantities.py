@@ -106,11 +106,12 @@ class TestExplainableRecurringQuantities(unittest.TestCase):
         self.assertIn("label", json_data)
         self.assertEqual(json_data["unit"], "watt")
         self.assertEqual(json_data["label"], "Recurring 1")
-        np.testing.assert_array_equal(json_data["recurring_values"], self.recurring_quantity1.magnitude)
+        np.testing.assert_array_equal(
+            json_data["recurring_values"], str([float(elt) for elt in self.recurring_values1]))
 
     def test_from_json_dict(self):
         json_data = {
-            "recurring_values": [1.0, 2.0, 3.0],
+            "recurring_values": "[1.0, 2.0, 3.0]",
             "unit": "watt",
             "label": "Test Recurring"
         }
@@ -124,7 +125,7 @@ class TestExplainableRecurringQuantities(unittest.TestCase):
     def test_from_json_dict_with_source(self):
         from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
         json_data = {
-            "recurring_values": [1.0, 2.0],
+            "recurring_values": "[1.0, 2.0]",
             "unit": "watt",
             "label": "Test",
             "source": {"name": "test_source", "link": "http://test.com"}
