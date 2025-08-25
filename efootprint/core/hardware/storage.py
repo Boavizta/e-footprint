@@ -5,7 +5,8 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.infra_hardware import InfraHardware, InsufficientCapacityError
+from efootprint.core.hardware.infra_hardware import InfraHardware
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject

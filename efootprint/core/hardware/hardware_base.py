@@ -1,6 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
@@ -27,3 +28,18 @@ class HardwareBase(ModelingObject):
     @property
     def systems(self) -> List:
         return list(set(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
+
+
+class InsufficientCapacityError(Exception):
+    def __init__(
+            self, overloaded_object: HardwareBase, capacity_type: str,
+            available_capacity: ExplainableQuantity|EmptyExplainableObject,
+            requested_capacity: ExplainableQuantity|EmptyExplainableObject):
+        self.overloaded_object = overloaded_object
+        self.capacity_type = capacity_type
+        self.available_capacity = available_capacity
+        self.requested_capacity = requested_capacity
+
+        message = (f"{self.overloaded_object.name} has available {capacity_type} capacity of "
+                   f"{available_capacity.value} but is asked for {requested_capacity.value}")
+        super().__init__(message)

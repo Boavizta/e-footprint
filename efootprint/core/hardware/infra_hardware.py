@@ -9,21 +9,6 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base import HardwareBase
 
 
-class InsufficientCapacityError(Exception):
-    def __init__(
-            self, overloaded_object: "InfraHardware", capacity_type: str,
-            available_capacity: ExplainableQuantity|EmptyExplainableObject,
-            requested_capacity: ExplainableQuantity|EmptyExplainableObject):
-        self.overloaded_object = overloaded_object
-        self.capacity_type = capacity_type
-        self.available_capacity = available_capacity
-        self.requested_capacity = requested_capacity
-
-        message = (f"{self.overloaded_object.name} has available {capacity_type} capacity of "
-                   f"{available_capacity.value} but is asked for {requested_capacity.value}")
-        super().__init__(message)
-
-
 class InfraHardware(HardwareBase):
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity):

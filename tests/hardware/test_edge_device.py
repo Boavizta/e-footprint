@@ -11,7 +11,7 @@ from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
