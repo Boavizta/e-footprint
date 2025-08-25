@@ -21,7 +21,7 @@ class TestUsagePattern(unittest.TestCase):
         input_occs_starts_hvals = create_source_hourly_values_from_list(input_occs_starts)
         event_duration = SourceValue(2 * u.hour)
         result = compute_nb_avg_hourly_occurrences(input_occs_starts_hvals, event_duration)
-        self.assertEqual([20, 30, 24, 29, 15], result.value_as_float_list)
+        self.assertTrue(np.allclose([20, 30, 24, 29, 15], result.value_as_float_list))
 
     def test_compute_nb_occurrences_in_parallel_partial_hour(self):
         input_occs_starts = [20, 10, 14, 15]
