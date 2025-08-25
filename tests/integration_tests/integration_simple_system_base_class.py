@@ -3,6 +3,7 @@ from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
 import numpy as np
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
@@ -129,9 +130,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         edge_process = EdgeProcess(
             "Default edge process",
             recurrent_compute_needed=SourceRecurringValues(
-                u.Quantity(np.array([2] * 168), u.cpu_core)),
+                Quantity(np.array([2] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurringValues(
-                u.Quantity(np.array([2] * 168), u.GB))
+                Quantity(np.array([2] * 168, dtype=np.float32), u.GB))
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -146,8 +147,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             edge_usage_journey=edge_usage_journey,
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
-                [elt for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
+                [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
+        edge_usage_pattern.id = css_escape(edge_usage_pattern.name)
 
         system = System("system 1", [usage_pattern], edge_usage_patterns=[edge_usage_pattern])
         mod_obj_list = [system] + system.all_linked_objects
@@ -252,8 +254,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.streaming_job, special_mult={"data_stored": 1000000})
         # Test edge object variations
         self._test_variations_on_obj_inputs(
-            self.edge_device, attrs_to_skip=["fraction_of_usage_time", "server_utilization_rate"],
-            special_mult={"ram": 0.01, "server_utilization_rate": 0.9})
+            self.edge_device,
+            # fraction_of_usage_time is an Hardware paramater not used in EdgeDevice
+            # ram, base_ram_consumption and server_utilization_rate only matter to raise InsufficientCapacityError
+            # and this behavior is already unit tested.
+            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption", "server_utilization_rate"],
+            special_mult={"base_compute_consumption": 10}
+        )
         self._test_variations_on_obj_inputs(
             self.edge_storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"])
         self._test_variations_on_obj_inputs(self.edge_process)

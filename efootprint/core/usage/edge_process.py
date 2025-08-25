@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
 class EdgeProcess(ModelingObject):
     default_values = {
-        "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168), u.cpu_core)),
-        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168), u.GB))
+        "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB))
     }
 
     def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurringQuantities, 

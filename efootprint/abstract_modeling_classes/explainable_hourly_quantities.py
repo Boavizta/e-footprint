@@ -198,10 +198,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, self._EmptyExplainableObject):
             compared_values = np.full(len(self.value), fill_value=np.float32(0))
-            right_parent = compared_object
         elif isinstance(compared_object, ExplainableHourlyQuantities):
             compared_values = compared_object.value
-            right_parent = compared_object
             assert self.start_date == compared_object.start_date, \
                 f"Cannot compare ExplainableHourlyQuantities with different start dates: " \
                 f"{self.start_date} and {compared_object.start_date}"
@@ -221,7 +219,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             start_date=self.start_date,
             label=f"{self.label} compared with {compared_object.label}",
             left_parent=self,
-            right_parent=right_parent,
+            right_parent=compared_object,
             operator=f"{comparator} compared with"
         )
 

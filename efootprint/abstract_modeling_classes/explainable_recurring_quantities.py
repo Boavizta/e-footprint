@@ -1,4 +1,3 @@
-from datetime import timezone
 from typing import TYPE_CHECKING
 
 from pint import Unit, Quantity
@@ -21,7 +20,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None
-        value = Quantity(np.array(d["recurring_values"], dtype=np.float32), get_unit(d["unit"]))
+        value = Quantity(np.array(eval(d["recurring_values"]), dtype=np.float32), get_unit(d["unit"]))
 
         return cls(value, label=d["label"], source=source)
 
@@ -136,7 +135,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
-                "recurring_values": self.magnitude,
+                "recurring_values": str(self.magnitude.tolist()),
                 "unit": str(self.unit),
             }
 

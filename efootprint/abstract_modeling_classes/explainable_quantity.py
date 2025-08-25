@@ -52,6 +52,10 @@ class ExplainableQuantity(ExplainableObject):
         self._value = None
         self.json_value_data = None
 
+    @property
+    def unit(self):
+        return self.value.units
+
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)
 
@@ -71,8 +75,10 @@ class ExplainableQuantity(ExplainableObject):
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def ceil(self):
-        self.value = np.ceil(self.value)
-        return self
+        return ExplainableQuantity(np.ceil(self.value), left_parent=self, operator="ceil")
+
+    def abs(self):
+        return ExplainableQuantity(np.abs(self.value), left_parent=self, operator="abs")
 
     def copy(self):
         return ExplainableQuantity(copy(self.value), label=self.label, left_parent=self, operator="duplicate")
