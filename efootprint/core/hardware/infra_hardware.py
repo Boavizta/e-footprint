@@ -1,9 +1,8 @@
 from abc import abstractmethod
-from typing import List, Type
+from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
@@ -12,7 +11,7 @@ from efootprint.core.hardware.hardware_base import HardwareBase
 
 class InsufficientCapacityError(Exception):
     def __init__(
-            self, overloaded_object: Type["InfraHardware"], capacity_type: str,
+            self, overloaded_object: "InfraHardware", capacity_type: str,
             available_capacity: ExplainableQuantity|EmptyExplainableObject,
             requested_capacity: ExplainableQuantity|EmptyExplainableObject):
         self.overloaded_object = overloaded_object
@@ -57,10 +56,6 @@ class InfraHardware(HardwareBase):
     @abstractmethod
     def update_instances_energy(self):
         pass
-
-    @property
-    def jobs(self) -> List[ModelingObject]:
-        return self.modeling_obj_containers
 
     @property
     def systems(self) -> List:

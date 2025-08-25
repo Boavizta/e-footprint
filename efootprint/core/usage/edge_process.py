@@ -18,21 +18,26 @@ if TYPE_CHECKING:
 class EdgeProcess(ModelingObject):
     default_values = {
         "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB))
+        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+        "recurrent_storage_needed": SourceRecurringValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
     def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurringQuantities, 
-                 recurrent_ram_needed: ExplainableRecurringQuantities):
+                 recurrent_ram_needed: ExplainableRecurringQuantities,
+                 recurrent_storage_needed: ExplainableRecurringQuantities):
         super().__init__(name)
         self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
         self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
+        self.unitary_hourly_storage_need_over_full_timespan = EmptyExplainableObject()
         
         self.recurrent_compute_needed = recurrent_compute_needed
         self.recurrent_ram_needed = recurrent_ram_needed
+        self.recurrent_storage_needed = recurrent_storage_needed
 
     @property
     def calculated_attributes(self):
-        return ["unitary_hourly_compute_need_over_full_timespan", "unitary_hourly_ram_need_over_full_timespan"]
+        return ["unitary_hourly_compute_need_over_full_timespan", "unitary_hourly_ram_need_over_full_timespan",
+                "unitary_hourly_storage_need_over_full_timespan"]
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
@@ -79,4 +84,10 @@ class EdgeProcess(ModelingObject):
         self.unitary_hourly_ram_need_over_full_timespan = (
             self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
                 self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
+                self.edge_usage_pattern.country.timezone))
+
+    def update_unitary_hourly_storage_need_over_full_timespan(self):
+        self.unitary_hourly_storage_need_over_full_timespan = (
+            self.recurrent_storage_needed.generate_hourly_quantities_over_timespan(
+                self.edge_usage_pattern.hourly_edge_usage_journey_starts,
                 self.edge_usage_pattern.country.timezone))

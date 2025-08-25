@@ -25,11 +25,14 @@ class TestEdgeProcess(TestCase):
             Quantity(np.array([2.5] * 168, dtype=np.float32), u.cpu_core))
         self.recurrent_ram_needed = SourceRecurringValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
+        self.recurrent_storage_needed = SourceRecurringValues(
+            Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
         
         self.edge_process = EdgeProcess(
             "test edge process",
             recurrent_compute_needed=self.recurrent_compute_needed,
-            recurrent_ram_needed=self.recurrent_ram_needed)
+            recurrent_ram_needed=self.recurrent_ram_needed,
+            recurrent_storage_needed=self.recurrent_storage_needed)
 
     def test_init(self):
         """Test EdgeProcess initialization."""
@@ -175,6 +178,33 @@ class TestEdgeProcess(TestCase):
             mock_hourly_starts, mock_timezone)
         
         self.assertEqual(expected_result, self.edge_process.unitary_hourly_ram_need_over_full_timespan)
+
+    def test_update_unitary_hourly_storage_need_over_full_timespan(self):
+        """Test update_unitary_hourly_storage_need_over_full_timespan method."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_country = MagicMock()
+        mock_timezone = MagicMock()
+
+        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.country = mock_country
+        mock_country.timezone = mock_timezone
+        mock_journey.edge_usage_pattern = mock_pattern
+
+        expected_result = MagicMock(spec=ExplainableHourlyQuantities)
+        self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan = MagicMock(
+            return_value=expected_result
+        )
+
+        set_modeling_obj_containers(self.edge_process, [mock_journey])
+
+        self.edge_process.update_unitary_hourly_storage_need_over_full_timespan()
+
+        self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
+            mock_hourly_starts, mock_timezone)
+
+        self.assertEqual(expected_result, self.edge_process.unitary_hourly_storage_need_over_full_timespan)
 
     def test_from_defaults_class_method(self):
         """Test EdgeProcess can be created using from_defaults class method."""

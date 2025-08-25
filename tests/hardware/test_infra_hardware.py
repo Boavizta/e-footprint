@@ -63,15 +63,6 @@ class TestInfraHardware(TestCase):
             ContextualModelingObjectAttribute(self.test_infra_hardware_multiple_jobs, self.job3, "server")
             ]
 
-    def test_jobs(self):
-        job1 = MagicMock()
-        job2 = MagicMock()
-
-        with patch.object(self.test_infra_hardware, "contextual_modeling_obj_containers",
-                          new=[ContextualModelingObjectAttribute(self.test_infra_hardware, job1, "server"),
-                               ContextualModelingObjectAttribute(self.test_infra_hardware, job2, "server")]):
-            self.assertEqual({job1, job2}, set(self.test_infra_hardware.jobs))
-
     def test_instances_fabrication_footprint(self):
         self.test_infra_hardware_single_job.update_nb_of_instances()
         self.test_infra_hardware_single_job.update_instances_fabrication_footprint()

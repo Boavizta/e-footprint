@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.storage import Storage
+from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
 
@@ -34,7 +34,7 @@ class EdgeDevice(InfraHardware):
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity,
                  server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, storage: Storage):
+                 base_compute_consumption: ExplainableQuantity, storage: EdgeStorage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         del self.raw_nb_of_instances
         self.available_compute_per_instance = EmptyExplainableObject()
@@ -58,8 +58,7 @@ class EdgeDevice(InfraHardware):
             "available_ram_per_instance", "available_compute_per_instance",
             "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
             "unitary_power_over_full_timespan", "nb_of_instances", "instances_energy",
-            "energy_footprint", "instances_fabrication_footprint"
-        ]
+            "energy_footprint", "instances_fabrication_footprint"]
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
@@ -159,8 +158,7 @@ class EdgeDevice(InfraHardware):
         else:
             nb_of_instances = EmptyExplainableObject()
 
-        self.nb_of_instances = nb_of_instances.set_label(
-            f"{self.name} nb_of_instances")
+        self.nb_of_instances = nb_of_instances.set_label(f"{self.name} nb_of_instances")
 
     def update_instances_energy(self):
         unitary_energy_over_full_timespan = (

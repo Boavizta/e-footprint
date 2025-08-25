@@ -10,8 +10,8 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.infra_hardware import InsufficientCapacityError
-from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge_process import EdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -20,7 +20,7 @@ from tests.utils import set_modeling_obj_containers
 
 class TestEdgeDevice(TestCase):
     def setUp(self):
-        self.mock_storage = MagicMock(spec=Storage)
+        self.mock_storage = MagicMock(spec=EdgeStorage)
         self.edge_device = EdgeDevice(
             name="Test EdgeDevice",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),

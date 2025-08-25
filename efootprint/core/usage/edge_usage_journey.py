@@ -18,7 +18,8 @@ class EdgeUsageJourney(ModelingObject):
         "usage_span": SourceValue(6 * u.year, Sources.HYPOTHESIS)
     }
 
-    def __init__(self, name: str, edge_processes: List[EdgeProcess], edge_device: EdgeDevice, usage_span: ExplainableQuantity):
+    def __init__(self, name: str, edge_processes: List[EdgeProcess], edge_device: EdgeDevice,
+                 usage_span: ExplainableQuantity):
         super().__init__(name)
         self.edge_processes = edge_processes
         self.edge_device = edge_device
@@ -29,8 +30,8 @@ class EdgeUsageJourney(ModelingObject):
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
-                    f"EdgeUsageJourney object can only be associated with one EdgeUsagePattern object but {self.name} is associated "
-                    f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
+                    f"EdgeUsageJourney object can only be associated with one EdgeUsagePattern object but {self.name} "
+                    f"is associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         else:
             return None

@@ -1,5 +1,5 @@
 import math
-from typing import List, Type, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING, Optional
 
 import numpy as np
 from pint import Quantity
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class NegativeCumulativeStorageNeedError(Exception):
-    def __init__(self, storage_obj: Type["Storage"], cumulative_quantity: Quantity):
+    def __init__(self, storage_obj: "Storage", cumulative_quantity: Quantity):
         self.storage_obj = storage_obj
         self.cumulative_quantity = cumulative_quantity
         self.jobs_that_delete_data = [job for job in self.storage_obj.jobs if job.data_stored.magnitude < 0]
@@ -123,11 +123,11 @@ class Storage(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return (
-            ["carbon_footprint_fabrication", "power", "storage_needed", "storage_freed",
-             "automatic_storage_dumps_after_storage_duration", "storage_delta", "full_cumulative_storage_need",
-             "raw_nb_of_instances", "nb_of_instances", "nb_of_active_instances", "instances_fabrication_footprint",
-             "instances_energy", "energy_footprint"])
+        return [
+            "carbon_footprint_fabrication", "power", "storage_needed", "storage_freed",
+            "automatic_storage_dumps_after_storage_duration", "storage_delta", "full_cumulative_storage_need",
+            "raw_nb_of_instances", "nb_of_instances", "nb_of_active_instances", "instances_fabrication_footprint",
+            "instances_energy", "energy_footprint"]
 
     @property
     def jobs(self) -> List["JobBase"]:
