@@ -26,6 +26,7 @@ def call_boaviztapi_from_web_request(url, method="GET", params={}):
         response = requests.post(url, headers=headers, params=params)
 
     if response.status_code == 200:
+        logger.info(f"Boavizta API call succeeded.")
         return response.json()
     else:
         raise ValueError(

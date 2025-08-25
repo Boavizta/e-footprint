@@ -3,6 +3,7 @@ from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
 import numpy as np
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
@@ -129,9 +130,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         edge_process = EdgeProcess(
             "Default edge process",
             recurrent_compute_needed=SourceRecurringValues(
-                u.Quantity(np.array([2] * 168), u.cpu_core)),
+                Quantity(np.array([2] * 168), u.cpu_core)),
             recurrent_ram_needed=SourceRecurringValues(
-                u.Quantity(np.array([2] * 168), u.GB))
+                Quantity(np.array([2] * 168), u.GB))
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -146,7 +147,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             edge_usage_journey=edge_usage_journey,
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
-                [elt for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
+                [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
 
         system = System("system 1", [usage_pattern], edge_usage_patterns=[edge_usage_pattern])
