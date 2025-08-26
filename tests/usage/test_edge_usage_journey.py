@@ -84,7 +84,7 @@ class TestEdgeUsageJourney(TestCase):
         """Test that edge_processes and edge_device are returned as dependent objects."""
         self.assertIsNone(self.edge_usage_journey.edge_usage_pattern)
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2]
+        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2, self.mock_edge_device]
         self.assertEqual(expected_objects, dependent_objects)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_pattern(self):

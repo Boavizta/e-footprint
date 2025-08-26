@@ -38,10 +38,12 @@ class EdgeUsageJourney(ModelingObject):
 
     @property
     def systems(self) -> List["System"]:
-        return self.edge_usage_pattern.systems
+        if self.modeling_obj_containers:
+            return self.edge_usage_pattern.systems
+        return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeProcess]:
         if self.edge_usage_pattern:
             return [self.edge_usage_pattern]
-        return self.edge_processes
+        return self.edge_processes + [self.edge_device]

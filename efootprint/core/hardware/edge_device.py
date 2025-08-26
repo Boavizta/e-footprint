@@ -80,10 +80,10 @@ class EdgeDevice(EdgeHardware):
         return [self.storage]
 
     @property
-    def edge_processes(self) -> Optional[List["EdgeProcess"]]:
+    def edge_processes(self) -> List["EdgeProcess"]:
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_processes
-        return None
+        return []
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram * self.server_utilization_rate - self.base_ram_consumption)
@@ -107,10 +107,11 @@ class EdgeDevice(EdgeHardware):
 
     def update_unitary_hourly_ram_need_over_full_timespan(self):
         unitary_hourly_ram_need_over_full_timespan = sum(
-            edge_process.unitary_hourly_ram_need_over_full_timespan for edge_process in self.edge_processes)
+            [edge_process.unitary_hourly_ram_need_over_full_timespan for edge_process in self.edge_processes],
+            start=EmptyExplainableObject())
 
         max_ram_need = unitary_hourly_ram_need_over_full_timespan.max().to(u.GB)
-        if max_ram_need.value > self.available_ram_per_instance.value:
+        if max_ram_need > self.available_ram_per_instance:
             raise InsufficientCapacityError(
                 self, "RAM", self.available_ram_per_instance, max_ram_need)
 
@@ -119,10 +120,11 @@ class EdgeDevice(EdgeHardware):
 
     def update_unitary_hourly_compute_need_over_full_timespan(self):
         unitary_hourly_compute_need_over_full_timespan = sum(
-            edge_process.unitary_hourly_compute_need_over_full_timespan for edge_process in self.edge_processes)
+            [edge_process.unitary_hourly_compute_need_over_full_timespan for edge_process in self.edge_processes],
+            start=EmptyExplainableObject())
 
         max_compute_need = unitary_hourly_compute_need_over_full_timespan.max().to(u.cpu_core)
-        if max_compute_need.value > self.available_compute_per_instance.value:
+        if max_compute_need > self.available_compute_per_instance:
             raise InsufficientCapacityError(
                 self, "compute", self.available_compute_per_instance, max_compute_need)
         

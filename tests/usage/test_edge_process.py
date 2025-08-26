@@ -114,15 +114,9 @@ class TestEdgeProcess(TestCase):
         self.assertEqual([mock_system_1, mock_system_2], self.edge_process.systems)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test modeling_objects_whose_attributes_depend_directly_on_me returns edge_device."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_journey.edge_device = mock_device
-        
-        set_modeling_obj_containers(self.edge_process, [mock_journey])
-        
+        """Test modeling_objects_whose_attributes_depend_directly_on_me returns empty list."""
         dependent_objects = self.edge_process.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([mock_device], dependent_objects)
+        self.assertEqual([], dependent_objects)
 
     def test_update_unitary_hourly_compute_need_over_full_timespan(self):
         """Test update_unitary_hourly_compute_need_over_full_timespan method."""

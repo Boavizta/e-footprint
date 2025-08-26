@@ -207,6 +207,360 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.edge_usage_pattern.hourly_edge_usage_journey_starts = initial_hourly_starts
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
+    # OBJECT LINKS UPDATES TESTING
+
+    def run_test_update_edge_process(self):
+        logger.warning("Changing edge processes in edge usage journey")
+        self.edge_usage_journey.edge_processes = []
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        logger.warning("Putting back initial edge processes")
+        self.edge_usage_journey.edge_processes = [self.edge_process]
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_update_edge_storage(self):
+        new_edge_storage = EdgeStorage(
+            "New Edge SSD storage, identical to default one",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+        logger.warning("Changing edge device storage")
+        self.edge_device.storage = new_edge_storage
+        self.footprint_has_changed([self.edge_storage], system=self.system)
+        self.assertEqual(0, self.edge_storage.instances_fabrication_footprint.max().magnitude)
+        self.assertEqual(0, self.edge_storage.energy_footprint.max().magnitude)
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+
+        logger.warning("Changing back to initial edge storage")
+        self.edge_device.storage = self.edge_storage
+        self.assertEqual(0, new_edge_storage.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, new_edge_storage.energy_footprint.magnitude)
+        self.footprint_has_not_changed([self.edge_storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_update_edge_device(self):
+        new_edge_storage = EdgeStorage(
+            "storage for new edge device",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+
+        new_edge_device = EdgeDevice(
+            "New edge device, identical to default one",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
+            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
+            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            storage=new_edge_storage
+        )
+
+        logger.warning("Changing edge usage journey device")
+        self.edge_usage_journey.edge_device = new_edge_device
+        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
+        self.assertEqual(0, self.edge_device.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, self.edge_device.energy_footprint.magnitude)
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+
+        logger.warning("Changing back to initial edge device")
+        self.edge_usage_journey.edge_device = self.edge_device
+        self.assertEqual(0, new_edge_device.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, new_edge_device.energy_footprint.magnitude)
+        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_add_edge_process(self):
+        logger.warning("Adding new edge process")
+        new_edge_process = EdgeProcess(
+            "Additional edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
+        )
+        
+        self.edge_usage_journey.edge_processes.append(new_edge_process)
+        
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_changed([self.edge_device, self.edge_storage])
+        
+        logger.warning("Removing the new edge process")
+        self.edge_usage_journey.edge_processes = self.edge_usage_journey.edge_processes[:-1]
+        new_edge_process.self_delete()
+        
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+
+    def run_test_update_edge_processes(self):
+        logger.warning("Modifying edge processes list")
+        new_edge_process = EdgeProcess(
+            "Replacement edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([2] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([300] * 168, dtype=np.float32), u.MB))
+        )
+        self.edge_usage_journey.edge_processes = [new_edge_process]
+        
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
+        
+        logger.warning("Changing back to previous edge processes")
+        self.edge_usage_journey.edge_processes = [self.edge_process]
+        
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+
+    def run_test_update_edge_usage_journey(self):
+        logger.warning("Changing edge usage journey")
+        new_edge_storage = EdgeStorage(
+            "New edge SSD storage",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+
+        new_edge_device = EdgeDevice(
+            "New edge device",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
+            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
+            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            storage=new_edge_storage
+        )
+
+        new_edge_process = EdgeProcess(
+            "New edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+        )
+
+        new_edge_usage_journey = EdgeUsageJourney(
+            "New edge usage journey",
+            edge_processes=[new_edge_process],
+            edge_device=new_edge_device,
+            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+        )
+        self.edge_usage_pattern.edge_usage_journey = new_edge_usage_journey
+        
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
+        
+        logger.warning("Changing back to previous edge usage journey")
+        self.edge_usage_pattern.edge_usage_journey = self.edge_usage_journey
+        
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+
+    def run_test_update_country_in_edge_usage_pattern(self):
+        logger.warning("Changing edge usage pattern country")
+        
+        self.edge_usage_pattern.country = Countries.MALAYSIA()
+        
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_changed([self.edge_device, self.edge_storage])
+        
+        logger.warning("Changing back to initial edge usage pattern country")
+        self.edge_usage_pattern.country = Countries.FRANCE()
+        
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+
+    def run_test_add_edge_usage_pattern(self):
+        new_edge_storage = EdgeStorage(
+            "storage for additional edge usage pattern",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+
+        new_edge_device = EdgeDevice(
+            "additional edge device",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
+            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
+            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            storage=new_edge_storage
+        )
+
+        new_edge_process = EdgeProcess(
+            "additional edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+        )
+
+        new_edge_usage_journey = EdgeUsageJourney(
+            "additional edge usage journey",
+            edge_processes=[new_edge_process],
+            edge_device=new_edge_device,
+            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+        )
+
+        new_edge_usage_pattern = EdgeUsagePattern(
+            "Additional edge usage pattern",
+            edge_usage_journey=new_edge_usage_journey,
+            country=self.edge_usage_pattern.country,
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
+        )
+
+        logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
+        self.system.edge_usage_patterns += [new_edge_usage_pattern]
+        
+        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+        
+        logger.warning("Removing the new edge usage pattern from the system")
+        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
+        logger.warning("Deleting the edge usage pattern")
+        edge_usage_pattern_id = new_edge_usage_pattern.id
+        new_edge_usage_pattern.self_delete()
+        # Make sure that calculus graph references to the deleted usage pattern are removed
+        for direct_child in self.edge_usage_pattern.country.average_carbon_intensity.direct_children_with_id:
+            self.assertNotEqual(direct_child.modeling_obj_container.id, edge_usage_pattern_id)
+        
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+
+    def run_test_update_edge_usage_journey_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        new_edge_storage = EdgeStorage(
+            "New edge SSD storage",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
+                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+
+        new_edge_device = EdgeDevice(
+            "New edge device",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
+            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
+            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
+            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            storage=new_edge_storage
+        )
+
+        new_edge_process = EdgeProcess(
+            "New edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+        )
+
+        new_edge_usage_journey = EdgeUsageJourney(
+            "New edge usage journey",
+            edge_processes=[new_edge_process],
+            edge_device=new_edge_device,
+            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+        )
+
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        edge_usage_pattern = next(iter(class_obj_dict["EdgeUsagePattern"].values()))
+        previous_edge_usage_journey = edge_usage_pattern.edge_usage_journey
+        edge_usage_pattern.edge_usage_journey = new_edge_usage_journey
+
+        system = next(iter(class_obj_dict["System"].values()))
+        edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
+        edge_device = next(iter(class_obj_dict["EdgeDevice"].values()))
+        self.assertEqual(self.initial_footprint, system.total_footprint)
+        self.footprint_has_changed([edge_device, edge_storage], system=system)
+
+        logger.warning("Changing back to previous edge usage journey")
+        edge_usage_pattern.edge_usage_journey = previous_edge_usage_journey
+
+        self.assertEqual(self.initial_footprint, system.total_footprint)
+        self.footprint_has_not_changed([edge_storage, edge_device])
+
+    def run_test_update_edge_processes_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
+            full_dict = json.load(file)
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        edge_usage_pattern = next(iter(class_obj_dict["EdgeUsagePattern"].values()))
+        edge_usage_journey = edge_usage_pattern.edge_usage_journey
+        previous_edge_processes = copy(edge_usage_journey.edge_processes)
+        system = next(iter(class_obj_dict["System"].values()))
+        edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
+        edge_device = next(iter(class_obj_dict["EdgeDevice"].values()))
+        logger.warning("Modifying edge processes")
+        new_edge_process = EdgeProcess(
+            "new edge process",
+            recurrent_compute_needed=SourceRecurringValues(
+                Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurringValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurringValues(
+                Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
+        )
+
+        edge_usage_journey.edge_processes += [new_edge_process]
+
+        self.assertNotEqual(self.initial_footprint, system.total_footprint)
+        self.footprint_has_changed([edge_storage, edge_device])
+
+        logger.warning("Changing back to previous edge processes")
+        edge_usage_journey.edge_processes = previous_edge_processes
+
+        self.assertEqual(self.initial_footprint, system.total_footprint)
+        self.footprint_has_not_changed([edge_storage, edge_device])
+
     # SIMULATION TESTING
 
     def run_test_simulation_input_change(self):

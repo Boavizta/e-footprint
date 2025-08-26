@@ -72,21 +72,30 @@ class EdgeProcess(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.edge_device] if self.edge_device else []
+        return []
 
-    def update_unitary_hourly_compute_need_over_full_timespan(self):        
+    def update_unitary_hourly_compute_need_over_full_timespan(self):
+        if self.edge_usage_pattern is None:
+            self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
+            return
         self.unitary_hourly_compute_need_over_full_timespan = (
             self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
                 self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
                 self.edge_usage_pattern.country.timezone))
 
     def update_unitary_hourly_ram_need_over_full_timespan(self):
+        if self.edge_usage_pattern is None:
+            self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
+            return
         self.unitary_hourly_ram_need_over_full_timespan = (
             self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
                 self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
                 self.edge_usage_pattern.country.timezone))
 
     def update_unitary_hourly_storage_need_over_full_timespan(self):
+        if self.edge_usage_pattern is None:
+            self.unitary_hourly_storage_need_over_full_timespan = EmptyExplainableObject()
+            return
         self.unitary_hourly_storage_need_over_full_timespan = (
             self.recurrent_storage_needed.generate_hourly_quantities_over_timespan(
                 self.edge_usage_pattern.hourly_edge_usage_journey_starts,

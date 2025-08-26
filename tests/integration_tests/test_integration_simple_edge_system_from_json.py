@@ -76,6 +76,38 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
         self.run_test_update_edge_usage_pattern_hourly_starts()
         self.run_test_update_edge_usage_pattern_hourly_starts()
 
+    # OBJECT LINKS UPDATES TESTING
+
+    def test_update_edge_process(self):
+        self.run_test_update_edge_process()
+
+    def test_update_edge_storage(self):
+        self.run_test_update_edge_storage()
+
+    def test_update_edge_device(self):
+        self.run_test_update_edge_device()
+
+    def test_add_edge_process(self):
+        self.run_test_add_edge_process()
+
+    def test_update_edge_processes(self):
+        self.run_test_update_edge_processes()
+
+    def test_update_edge_usage_journey(self):
+        self.run_test_update_edge_usage_journey()
+
+    def test_update_country_in_edge_usage_pattern(self):
+        self.run_test_update_country_in_edge_usage_pattern()
+
+    def test_add_edge_usage_pattern(self):
+        self.run_test_add_edge_usage_pattern()
+
+    def test_update_edge_usage_journey_after_json_to_system(self):
+        self.run_test_update_edge_usage_journey_after_json_to_system()
+
+    def test_update_edge_processes_after_json_to_system(self):
+        self.run_test_update_edge_processes_after_json_to_system()
+
     # SIMULATION TESTING
 
     def test_simulation_input_change(self):

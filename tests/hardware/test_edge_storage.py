@@ -1,7 +1,6 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
-from copy import copy
 
 import numpy as np
 
