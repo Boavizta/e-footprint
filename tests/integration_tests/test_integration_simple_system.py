@@ -100,9 +100,6 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()
 
-    def test_update_edge_device_compute(self):
-        self.run_test_update_edge_device_compute()
-
     def test_update_edge_usage_pattern_hourly_starts(self):
         self.run_test_update_edge_usage_pattern_hourly_starts()
 

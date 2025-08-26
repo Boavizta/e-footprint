@@ -402,100 +402,6 @@
                     "link": null
                 }
             }
-        },
-        "Edge-SSD-storage": {
-            "name": "Edge SSD storage",
-            "id": "Edge-SSD-storage",
-            "lifespan": {
-                "value": 6.0,
-                "unit": "year",
-                "label": "Lifespan of Edge SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Edge SSD storage fraction of usage time from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "carbon_footprint_fabrication_per_storage_capacity": {
-                "value": 160.0,
-                "unit": "kilogram / terabyte",
-                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_per_storage_capacity": {
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "label": "Power of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "idle_power": {
-                "value": 0.1,
-                "unit": "watt",
-                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "storage_capacity": {
-                "value": 1.0,
-                "unit": "terabyte",
-                "label": "Storage capacity of Edge SSD storage from Dirty secret of SSDs: embodied carbon",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "data_replication_factor": {
-                "value": 3.0,
-                "unit": "dimensionless",
-                "label": "Data replication factor of Edge SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "data_storage_duration": {
-                "value": 3.0,
-                "unit": "hour",
-                "label": "Data storage duration of Edge SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "base_storage_need": {
-                "value": 10.0,
-                "unit": "gigabyte",
-                "label": "Edge SSD storage initial storage need from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fixed_nb_of_instances": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "User defined number of Edge SSD storage instances from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            }
         }
     },
     "Device": {
@@ -622,7 +528,7 @@
             "name": "Default edge process",
             "id": "Default-edge-process",
             "recurrent_compute_needed": {
-                "recurring_values": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
                 "label": "unnamed source from e-footprint hypothesis",
                 "source": {
@@ -633,6 +539,15 @@
             "recurrent_ram_needed": {
                 "recurring_values": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
                 "unit": "gigabyte",
+                "label": "unnamed source from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "recurrent_storage_needed": {
+                "recurring_values": "[200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0]",
+                "unit": "megabyte",
                 "label": "unnamed source from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -745,6 +660,75 @@
                 }
             },
             "storage": "Edge-SSD-storage"
+        }
+    },
+    "EdgeStorage": {
+        "Edge-SSD-storage": {
+            "name": "Edge SSD storage",
+            "id": "Edge-SSD-storage",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Edge SSD storage fraction of usage time from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "value": 160.0,
+                "unit": "kilogram / terabyte",
+                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "power_per_storage_capacity": {
+                "value": 1.3,
+                "unit": "watt / terabyte",
+                "label": "Power of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "idle_power": {
+                "value": 0.1,
+                "unit": "watt",
+                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "storage_capacity": {
+                "value": 1.0,
+                "unit": "terabyte",
+                "label": "Storage capacity of Edge SSD storage from Dirty secret of SSDs: embodied carbon",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                }
+            },
+            "base_storage_need": {
+                "value": 10.0,
+                "unit": "gigabyte",
+                "label": "Edge SSD storage initial storage need from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
         }
     }
 }

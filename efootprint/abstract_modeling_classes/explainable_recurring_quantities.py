@@ -44,6 +44,11 @@ class ExplainableRecurringQuantities(ExplainableObject):
                 f"ExplainableRecurringQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"
             )
 
+    def __eq__(self, other):
+        if isinstance(other, ExplainableRecurringQuantities):
+            return np.allclose(self.value, other.value, rtol=1e-06, atol=1e-06)
+        return False
+
     def to(self, unit_to_convert_to: Unit):
         self.value = self.value.to(unit_to_convert_to)
 

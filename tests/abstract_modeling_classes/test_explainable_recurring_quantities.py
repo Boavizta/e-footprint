@@ -37,6 +37,15 @@ class TestExplainableRecurringQuantities(unittest.TestCase):
         with self.assertRaises(ValueError):
             ExplainableRecurringQuantities([1, 2, 3], "Invalid")
 
+    def test_equality_with_non_equal_recurring_quantity(self):
+        self.assertFalse(self.recurring_quantity1 == self.recurring_quantity2)
+
+    def test_equality_with_equal_recurring_quantity(self):
+        self.assertTrue(self.recurring_quantity1 == self.recurring_quantity1)
+
+    def test_equality_is_false_if_compared_with_other_type(self):
+        self.assertTrue(self.recurring_quantity1 != "Recurring 1")
+
     def test_unit_property(self):
         self.assertEqual(self.recurring_quantity1.unit, u.W)
 
