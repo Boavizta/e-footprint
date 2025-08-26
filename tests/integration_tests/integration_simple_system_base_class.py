@@ -196,6 +196,21 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
+    def run_test_modeling_object_prints(self):
+        str(self.usage_pattern)
+        str(self.usage_pattern)
+        str(self.server)
+        str(self.storage)
+        str(self.upload_step)
+        str(self.uj)
+        str(self.network)
+        str(self.system)
+        str(self.edge_storage)
+        str(self.edge_device)
+        str(self.edge_process)
+        str(self.edge_usage_journey)
+        str(self.edge_usage_pattern)
+
     def run_test_all_objects_linked_to_system(self):
         expected_objects = {
             self.server, self.storage, self.usage_pattern, self.network, self.uj, self.streaming_step,
@@ -221,6 +236,16 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
+
+    # SYSTEM <=> JSON
+
+    def run_test_system_to_json(self):
+        self.run_system_to_json_test(self.system)
+
+    def run_test_json_to_system(self):
+        self.run_json_to_system_test(self.system)
+
+    # INPUT VARIATION TESTING
 
     def _run_test_variations_on_inputs_from_object_list(
             self, streaming_step, server, storage, uj, network, usage_pattern, streaming_job, edge_device,
@@ -338,6 +363,40 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.edge_usage_pattern.hourly_edge_usage_journey_starts = initial_hourly_starts
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+        initial_upload_data_stored = self.upload_job.data_stored
+        initial_storage_need = self.storage.storage_needed
+        initial_storage_freed = self.storage.storage_freed
+        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
+        # data_stored is positive so storage_freed will be an EmptyExplainableObject
+
+        self.upload_job.data_stored = SourceValue(-initial_upload_data_stored.value)
+
+        self.assertNotEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
+        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
+        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
+        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
+
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
+        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
+
+        self.footprint_has_changed([self.storage])
+
+        logger.warning("Changing back to previous datastored value")
+        self.upload_job.data_stored = initial_upload_data_stored
+
+        self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
+        self.assertEqual(initial_storage_freed, self.storage.storage_freed)
+
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        self.assertEqual(initial_storage_need, self.storage.storage_needed)
+        self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
+
+    # OBJECT LINKS UPDATES TESTING
 
     def run_test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
@@ -574,12 +633,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
-    def run_test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
-
-    def run_test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
-
     def run_test_update_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
@@ -632,52 +685,45 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
-    def run_test_modeling_object_prints(self):
-        str(self.usage_pattern)
-        str(self.usage_pattern)
-        str(self.server)
-        str(self.storage)
-        str(self.upload_step)
-        str(self.uj)
-        str(self.network)
-        str(self.system)
-        str(self.edge_storage)
-        str(self.edge_device)
-        str(self.edge_process)
-        str(self.edge_usage_journey)
-        str(self.edge_usage_pattern)
+    def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+        logger.warning("Changing network and hourly usage journey starts simultaneously")
+        new_network = Network(
+            "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        initial_usage_journey_starts = self.usage_pattern.hourly_usage_journey_starts
 
-    def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
-        initial_upload_data_stored = self.upload_job.data_stored
-        initial_storage_need = self.storage.storage_needed
-        initial_storage_freed = self.storage.storage_freed
-        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
-        # data_stored is positive so storage_freed will be an EmptyExplainableObject
-
-        self.upload_job.data_stored = SourceValue(-initial_upload_data_stored.value)
-
-        self.assertNotEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
-        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
-        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
+        ModelingUpdate([
+            [self.usage_pattern.network, new_network],
+            [self.usage_pattern.hourly_usage_journey_starts, create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])]
+        ])
 
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
-        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
+        self.footprint_has_changed([self.network, self.usage_pattern], system=self.system)
+        for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
+            self.assertIsNotNone(ancestor.modeling_obj_container)
 
-        self.footprint_has_changed([self.storage])
+        logger.warning("Changing back to initial network and hourly usage journey starts")
 
-        logger.warning("Changing back to previous datastored value")
-        self.upload_job.data_stored = initial_upload_data_stored
-
-        self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
-        self.assertEqual(initial_storage_freed, self.storage.storage_freed)
+        ModelingUpdate([
+            [self.usage_pattern.network, self.network],
+            [self.usage_pattern.hourly_usage_journey_starts, initial_usage_journey_starts]
+        ])
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
-        self.assertEqual(initial_storage_need, self.storage.storage_needed)
-        self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
+        self.footprint_has_not_changed([self.network, self.usage_pattern])
+
+        for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
+            self.assertIsNotNone(ancestor.modeling_obj_container)
+
+    def run_test_delete_job(self):
+        logger.info("Removing upload job from upload step")
+        self.upload_step.jobs = []
+        logger.info("Deleting upload job")
+        self.upload_job.self_delete()
+        logger.info("Reinitialize system")
+        self.setUpClass()
+
+    # SIMULATION TESTING
 
     def run_test_simulation_input_change(self):
         simulation = ModelingUpdate([[self.streaming_step.user_time_spent, SourceValue(25 * u.min)]],
@@ -793,42 +839,4 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         for job in [new_job, new_job2, self.streaming_job]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertIn(self.upload_step.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
-
-    def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
-        logger.warning("Changing network and hourly usage journey starts simultaneously")
-        new_network = Network(
-            "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
-        initial_usage_journey_starts = self.usage_pattern.hourly_usage_journey_starts
-
-        ModelingUpdate([
-            [self.usage_pattern.network, new_network],
-            [self.usage_pattern.hourly_usage_journey_starts, create_source_hourly_values_from_list(
-                [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])]
-        ])
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.network, self.usage_pattern], system=self.system)
-        for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
-            self.assertIsNotNone(ancestor.modeling_obj_container)
-
-        logger.warning("Changing back to initial network and hourly usage journey starts")
-
-        ModelingUpdate([
-            [self.usage_pattern.network, self.network],
-            [self.usage_pattern.hourly_usage_journey_starts, initial_usage_journey_starts]
-        ])
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.network, self.usage_pattern])
-
-        for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
-            self.assertIsNotNone(ancestor.modeling_obj_container)
-
-    def run_test_delete_job(self):
-        logger.info("Removing upload job from upload step")
-        self.upload_step.jobs = []
-        logger.info("Deleting upload job")
-        self.upload_job.self_delete()
-        logger.info("Reinitialize system")
-        self.setUpClass()
     

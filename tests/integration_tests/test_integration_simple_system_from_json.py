@@ -34,12 +34,6 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
-    def test_all_objects_linked_to_system(self):
-        self.run_test_all_objects_linked_to_system()
-
-    def test_calculation_graph(self):
-        self.run_test_calculation_graph()
-
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:
             system_dict = json.load(file)
@@ -53,17 +47,47 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
             content = f.read()
         self.assertGreater(len(content), 50000)
 
+    def test_modeling_object_prints(self):
+        self.run_test_modeling_object_prints()
+
+    def test_all_objects_linked_to_system(self):
+        self.run_test_all_objects_linked_to_system()
+
+    def test_calculation_graph(self):
+        self.run_test_calculation_graph()
+
     def test_object_relationship_graph(self):
         self.run_test_object_relationship_graph()
 
+    # SYSTEM <=> JSON
+
+    def test_system_to_json(self):
+        self.run_system_to_json_test(self.system)
+
+    def test_json_to_system(self):
+        self.run_json_to_system_test(self.system)
+
+    # INPUT VARIATION TESTING
+
     def test_variations_on_inputs(self):
         self.run_test_variations_on_inputs()
+
+    def test_variations_on_inputs_after_json_to_system(self):
+        self.run_test_variations_on_inputs_after_json_to_system()
+
+    def test_update_edge_usage_pattern_hourly_starts(self):
+        self.run_test_update_edge_usage_pattern_hourly_starts()
 
     def test_set_uj_duration_to_0_and_back_to_previous_value(self):
         self.run_test_set_uj_duration_to_0_and_back_to_previous_value()
 
     def test_hourly_usage_journey_starts_update(self):
         self.run_test_hourly_usage_journey_starts_update()
+
+    def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+        self.run_test_update_footprint_job_datastored_from_positive_value_to_negative_value()
+
+    # OBJECT LINKS UPDATES TESTING
 
     def test_uj_step_update(self):
         self.run_test_uj_step_update()
@@ -98,26 +122,19 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
     def test_add_usage_pattern(self):
         self.run_test_add_usage_pattern()
 
-    def test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
-
-    def test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
-
-    def test_variations_on_inputs_after_json_to_system(self):
-        self.run_test_variations_on_inputs_after_json_to_system()
-
     def test_update_usage_journey_after_json_to_system(self):
         self.run_test_update_usage_journey_after_json_to_system()
 
     def test_update_jobs_after_json_to_system(self):
         self.run_test_update_jobs_after_json_to_system()
 
-    def test_modeling_object_prints(self):
-        self.run_test_modeling_object_prints()
+    def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+        self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()
 
-    def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
-        self.run_test_update_footprint_job_datastored_from_positive_value_to_negative_value()
+    def test_delete_job(self):
+        self.run_test_delete_job()
+
+    # SIMULATION TESTING
 
     def test_simulation_input_change(self):
         self.run_test_simulation_input_change()
@@ -136,9 +153,3 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
 
     def test_simulation_add_objects_and_make_input_changes(self):
         self.run_test_simulation_add_objects_and_make_input_changes()
-
-    def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
-        self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()
-
-    def test_delete_job(self):
-        self.run_test_delete_job()
