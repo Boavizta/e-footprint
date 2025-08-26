@@ -196,6 +196,11 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         cls.ref_json_filename = "simple_system"
 
+    def run_test_system_calculation_graph_right_after_json_to_system(self):
+        # Created just because it exists in the IntegrationTestSimpleSystem class and another test makes sure that both
+        # classes have the same methods.
+        pass
+
     def run_test_modeling_object_prints(self):
         str(self.usage_pattern)
         str(self.usage_pattern)
@@ -240,10 +245,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     # SYSTEM <=> JSON
 
     def run_test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def run_test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     # INPUT VARIATION TESTING
 

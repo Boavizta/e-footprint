@@ -62,10 +62,10 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
     # SYSTEM <=> JSON
 
     def test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     # INPUT VARIATION TESTING
 
@@ -128,7 +128,7 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
     def test_update_jobs_after_json_to_system(self):
         self.run_test_update_jobs_after_json_to_system()
 
-    def test_run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
+    def test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()
 
     def test_delete_job(self):

@@ -110,10 +110,10 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         cls.ref_json_filename = "system_with_services"
 
     def run_test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def run_test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     def run_test_variations_on_services_inputs(self):
         self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],

@@ -66,7 +66,7 @@ class IntegrationTestBaseClass(TestCase):
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
 
-    def run_system_to_json_test(self, input_system):
+    def run_test_system_to_json(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
 
@@ -79,7 +79,7 @@ class IntegrationTestBaseClass(TestCase):
 
         os.remove(tmp_filepath)
 
-    def run_json_to_system_test(self, input_system):
+    def run_test_json_to_system(self, input_system):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
 

@@ -354,10 +354,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def run_test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     def run_test_add_usage_pattern_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR,  f"{self.ref_json_filename}.json"), "rb") as file:

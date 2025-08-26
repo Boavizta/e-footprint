@@ -30,10 +30,10 @@ class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
         self.run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts()
 
     def test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     def test_add_usage_pattern_after_json_to_system(self):
         self.run_test_add_usage_pattern_after_json_to_system()

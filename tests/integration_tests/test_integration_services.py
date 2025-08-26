@@ -3,10 +3,10 @@ from tests.integration_tests.integration_services_base_class import IntegrationT
 
 class IntegrationTestServices(IntegrationTestServicesBaseClass):
     def test_system_to_json(self):
-        self.run_system_to_json_test(self.system)
+        self.run_test_system_to_json(self.system)
 
     def test_json_to_system(self):
-        self.run_json_to_system_test(self.system)
+        self.run_test_json_to_system(self.system)
 
     def test_variations_on_services_inputs(self):
         self.run_test_variations_on_services_inputs()
