@@ -72,7 +72,7 @@ class EdgeProcess(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.edge_device]
+        return [self.edge_device] if self.edge_device else []
 
     def update_unitary_hourly_compute_need_over_full_timespan(self):        
         self.unitary_hourly_compute_need_over_full_timespan = (

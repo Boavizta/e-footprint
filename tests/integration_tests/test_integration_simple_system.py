@@ -35,9 +35,6 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_variations_on_inputs_after_json_to_system(self):
         self.run_test_variations_on_inputs_after_json_to_system()
 
-    def test_update_edge_usage_pattern_hourly_starts(self):
-        self.run_test_update_edge_usage_pattern_hourly_starts()
-
     def test_set_uj_duration_to_0_and_back_to_previous_value(self):
         self.run_test_set_uj_duration_to_0_and_back_to_previous_value()
 

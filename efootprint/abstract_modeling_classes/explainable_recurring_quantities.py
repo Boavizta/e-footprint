@@ -110,10 +110,11 @@ class ExplainableRecurringQuantities(ExplainableObject):
             raise ValueError(
                 f"ExplainableRecurringQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
             )
-        assert timespan_hourly_quantities.start_date.tzinfo is None, \
-            f"start_date of {timespan_hourly_quantities.label} should be None"
 
-        start_date_local = timespan_hourly_quantities.start_date
+        if timespan_hourly_quantities.start_date.tzinfo is None:
+            start_date_local = local_timezone.value.localize(timespan_hourly_quantities.start_date)
+        else:
+            start_date_local = timespan_hourly_quantities.start_date.astimezone(local_timezone.value)
         timespan_length = len(timespan_hourly_quantities.value)
         start_offset_in_local_week = start_date_local.weekday() * 24 + start_date_local.hour
 
