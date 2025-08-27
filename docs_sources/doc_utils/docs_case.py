@@ -48,7 +48,7 @@ autoscaling_server = Server(
     compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     base_ram_consumption=SourceValue(300 * u.MB, source=None),
     base_compute_consumption=SourceValue(2 * u.cpu_core, source=None),
     storage=storage
@@ -59,7 +59,7 @@ serverless_server = BoaviztaCloudServer.from_defaults(
     server_type=ServerTypes.serverless(),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     storage=Storage.ssd()
 )
 
@@ -69,7 +69,7 @@ on_premise_gpu_server = GPUServer.from_defaults(
     lifespan=SourceValue(6 * u.year, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
     storage=Storage.ssd()
 )
 

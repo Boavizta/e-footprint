@@ -30,7 +30,7 @@ class TestServer(TestCase):
             compute=SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-            server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
+            utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
             storage=MagicMock(spec=Storage)
@@ -74,7 +74,7 @@ class TestServer(TestCase):
     def test_available_compute_per_instance(self):
         with patch.object(self.server_base, "occupied_compute_per_instance", SourceValue(2 * u.cpu_core)), \
                 patch.object(self.server_base, "compute", SourceValue(24 * u.cpu_core)), \
-                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
             self.server_base.update_available_compute_per_instance()
             expected_value = SourceValue((24 * 0.7 - 2) * u.cpu_core)
 
@@ -83,7 +83,7 @@ class TestServer(TestCase):
     def test_available_ram_per_instance(self):
         with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB)), \
                 patch.object(self.server_base, "ram", SourceValue(24 * u.GB)), \
-                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
             self.server_base.update_available_ram_per_instance()
             expected_value = SourceValue((24 * 0.7 - 2) * u.GB)
 
@@ -93,7 +93,7 @@ class TestServer(TestCase):
     def test_available_ram_per_instance_should_raise_value_error_when_demand_exceeds_server_capacity(self):
         with patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
             patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(129 * u.GB)), \
-            patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
+            patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
             with self.assertRaises(InsufficientCapacityError) as context:
                 self.server_base.update_available_ram_per_instance()
             self.assertIn(

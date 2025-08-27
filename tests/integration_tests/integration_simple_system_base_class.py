@@ -56,7 +56,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             compute=SourceValue(24 * u.cpu_core, Sources.USER_DATA),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
             storage=storage
@@ -173,7 +173,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(
             server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={
-                "ram": 0.01, "server_utilization_rate": 0.5,
+                "ram": 0.01, "utilization_rate": 0.5,
                 "base_ram_consumption": 380,
                 "base_compute_consumption": 10
             })
@@ -352,7 +352,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             compute=SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
             storage=new_storage

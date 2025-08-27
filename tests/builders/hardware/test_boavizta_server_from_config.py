@@ -28,7 +28,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             lifespan=SourceValue(6 * u.year),
             idle_power=SourceValue(0 * u.W),
             power_usage_effectiveness=SourceValue(1.4 * u.dimensionless),
-            server_utilization_rate=SourceValue(0.7 * u.dimensionless),
+            utilization_rate=SourceValue(0.7 * u.dimensionless),
             base_ram_consumption=SourceValue(0 * u.GB),
             base_compute_consumption=SourceValue(0 * u.cpu_core),
             storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),

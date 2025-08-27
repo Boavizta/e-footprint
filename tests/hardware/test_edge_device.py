@@ -47,7 +47,7 @@ class TestEdgeDevice(TestCase):
         self.assertEqual(8 * u.GB, self.edge_device.ram.value)
         self.assertEqual(4 * u.cpu_core, self.edge_device.compute.value)
         self.assertEqual(1.0 * u.dimensionless, self.edge_device.power_usage_effectiveness.value)
-        self.assertEqual(0.8 * u.dimensionless, self.edge_device.server_utilization_rate.value)
+        self.assertEqual(0.8 * u.dimensionless, self.edge_device.utilization_rate.value)
         self.assertEqual(1 * u.GB, self.edge_device.base_ram_consumption.value)
         self.assertEqual(0.1 * u.cpu_core, self.edge_device.base_compute_consumption.value)
         self.assertEqual(self.mock_storage, self.edge_device.storage)
@@ -70,7 +70,7 @@ class TestEdgeDevice(TestCase):
         self.assertIn("RAM of Test EdgeDevice", self.edge_device.ram.label)
         self.assertIn("Compute of Test EdgeDevice", self.edge_device.compute.label)
         self.assertIn("PUE of Test EdgeDevice", self.edge_device.power_usage_effectiveness.label)
-        self.assertIn("Test EdgeDevice utilization rate", self.edge_device.server_utilization_rate.label)
+        self.assertIn("Test EdgeDevice utilization rate", self.edge_device.utilization_rate.label)
         self.assertIn("Base RAM consumption of Test EdgeDevice", self.edge_device.base_ram_consumption.label)
         self.assertIn("Base compute consumption of Test EdgeDevice", self.edge_device.base_compute_consumption.label)
 
@@ -137,7 +137,7 @@ class TestEdgeDevice(TestCase):
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
         with patch.object(self.edge_device, "ram", SourceValue(16 * u.GB)), \
-             patch.object(self.edge_device, "server_utilization_rate", SourceValue(0.8 * u.dimensionless)), \
+             patch.object(self.edge_device, "utilization_rate", SourceValue(0.8 * u.dimensionless)), \
              patch.object(self.edge_device, "base_ram_consumption", SourceValue(2 * u.GB)):
             
             self.edge_device.update_available_ram_per_instance()
@@ -152,7 +152,7 @@ class TestEdgeDevice(TestCase):
     def test_update_available_ram_per_instance_insufficient_capacity(self):
         """Test update_available_ram_per_instance raises error when capacity is insufficient."""
         with patch.object(self.edge_device, "ram", SourceValue(8 * u.GB)), \
-             patch.object(self.edge_device, "server_utilization_rate", SourceValue(0.5 * u.dimensionless)), \
+             patch.object(self.edge_device, "utilization_rate", SourceValue(0.5 * u.dimensionless)), \
              patch.object(self.edge_device, "base_ram_consumption", SourceValue(5 * u.GB)):
             
             with self.assertRaises(InsufficientCapacityError) as context:
@@ -164,7 +164,7 @@ class TestEdgeDevice(TestCase):
     def test_update_available_compute_per_instance(self):
         """Test update_available_compute_per_instance calculation."""
         with patch.object(self.edge_device, "compute", SourceValue(8 * u.cpu_core)), \
-             patch.object(self.edge_device, "server_utilization_rate", SourceValue(0.75 * u.dimensionless)), \
+             patch.object(self.edge_device, "utilization_rate", SourceValue(0.75 * u.dimensionless)), \
              patch.object(self.edge_device, "base_compute_consumption", SourceValue(1 * u.cpu_core)):
             
             self.edge_device.update_available_compute_per_instance()
@@ -179,7 +179,7 @@ class TestEdgeDevice(TestCase):
     def test_update_available_compute_per_instance_insufficient_capacity(self):
         """Test update_available_compute_per_instance raises error when capacity is insufficient."""
         with patch.object(self.edge_device, "compute", SourceValue(4 * u.cpu_core)), \
-             patch.object(self.edge_device, "server_utilization_rate", SourceValue(0.5 * u.dimensionless)), \
+             patch.object(self.edge_device, "utilization_rate", SourceValue(0.5 * u.dimensionless)), \
              patch.object(self.edge_device, "base_compute_consumption", SourceValue(3 * u.cpu_core)):
             
             with self.assertRaises(InsufficientCapacityError) as context:

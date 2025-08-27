@@ -26,7 +26,7 @@ class GPUServer(ServerBase):
             "compute": SourceValue(4 * u.gpu),
             "lifespan": SourceValue(6 * u.year),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
-            "server_utilization_rate": SourceValue(1 * u.dimensionless),
+            "utilization_rate": SourceValue(1 * u.dimensionless),
             "base_compute_consumption": SourceValue(0 * u.gpu),
             "base_ram_consumption": SourceValue(0 * u.GB),
             "fixed_nb_of_instances": EmptyExplainableObject()
@@ -37,14 +37,14 @@ class GPUServer(ServerBase):
                  carbon_footprint_fabrication_per_gpu: ExplainableQuantity,
                  average_carbon_intensity: ExplainableQuantity, compute: ExplainableQuantity,
                  carbon_footprint_fabrication_without_gpu: ExplainableQuantity, lifespan: ExplainableQuantity,
-                 power_usage_effectiveness: ExplainableQuantity, server_utilization_rate: ExplainableQuantity,
+                 power_usage_effectiveness: ExplainableQuantity, utilization_rate: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  storage: Storage, fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power=SourceValue(0 * u.W), ram=SourceValue(0 * u.GB),
             compute=compute, power_usage_effectiveness=power_usage_effectiveness,
-            average_carbon_intensity=average_carbon_intensity, server_utilization_rate=server_utilization_rate,
+            average_carbon_intensity=average_carbon_intensity, utilization_rate=utilization_rate,
             base_compute_consumption=base_compute_consumption, base_ram_consumption=base_ram_consumption,
             storage=storage, fixed_nb_of_instances=fixed_nb_of_instances)
         self.gpu_power = gpu_power.set_label(f"{self.name} GPU power")

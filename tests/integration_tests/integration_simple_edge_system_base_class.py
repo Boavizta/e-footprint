@@ -160,9 +160,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(
             edge_device,
             # fraction_of_usage_time is an Hardware parameter not used in EdgeDevice
-            # ram, base_ram_consumption and server_utilization_rate only matter to raise InsufficientCapacityError
+            # ram, base_ram_consumption and utilization_rate only matter to raise InsufficientCapacityError
             # and this behavior is already unit tested.
-            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption", "server_utilization_rate"],
+            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption", "utilization_rate"],
             special_mult={"base_compute_consumption": 10}
         )
         self._test_variations_on_obj_inputs(

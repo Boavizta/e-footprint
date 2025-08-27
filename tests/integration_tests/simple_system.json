@@ -272,7 +272,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Default server utilization rate from e-footprint hypothesis",

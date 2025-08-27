@@ -43,7 +43,7 @@ class BoaviztaCloudServer(Server):
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
-            "server_utilization_rate": SourceValue(0.9 * u.dimensionless),
+            "utilization_rate": SourceValue(0.9 * u.dimensionless),
             "base_ram_consumption": SourceValue(0 * u.GB),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "fixed_nb_of_instances": EmptyExplainableObject()
@@ -70,14 +70,14 @@ class BoaviztaCloudServer(Server):
             self, name: str, provider: ExplainableObject, instance_type: ExplainableObject, server_type: ExplainableObject,
             lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
             power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
-            server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+            utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
             base_compute_consumption: ExplainableQuantity, storage: Storage,
             fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB), compute=SourceValue(0 * u.cpu_core),
             power_usage_effectiveness=power_usage_effectiveness, average_carbon_intensity=average_carbon_intensity,
-            server_utilization_rate=server_utilization_rate, base_ram_consumption=base_ram_consumption,
+            utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, storage=storage,
             fixed_nb_of_instances=fixed_nb_of_instances)
         self.provider = provider.set_label(f"{self.name} cloud provider")
@@ -155,7 +155,7 @@ if __name__ == "__main__":
                                     idle_power=SourceValue(0 * u.W),
                                     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
                                     average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
-                                    server_utilization_rate=SourceValue(0.9 * u.dimensionless),
+                                    utilization_rate=SourceValue(0.9 * u.dimensionless),
                                     base_ram_consumption=SourceValue(0 * u.GB),
                                     base_compute_consumption=SourceValue(0 * u.cpu_core),
                                     storage=Storage.ssd())

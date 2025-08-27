@@ -172,7 +172,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "GPU server utilization rate from e-footprint hypothesis",
@@ -577,7 +577,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Web server utilization rate from e-footprint hypothesis",

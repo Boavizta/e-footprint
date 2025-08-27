@@ -24,7 +24,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.4 * u.dimensionless),
-            "server_utilization_rate": SourceValue(0.7 * u.dimensionless),
+            "utilization_rate": SourceValue(0.7 * u.dimensionless),
             "base_ram_consumption": SourceValue(0 * u.GB),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
@@ -36,7 +36,7 @@ class BoaviztaServerFromConfig(ServerBase):
                  nb_of_ram_units: ExplainableQuantity, ram_quantity_per_unit: ExplainableQuantity,
                  average_carbon_intensity: ExplainableQuantity, lifespan: ExplainableQuantity,
                  idle_power: ExplainableQuantity, power_usage_effectiveness: ExplainableQuantity,
-                 server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
         super().__init__(
@@ -44,7 +44,7 @@ class BoaviztaServerFromConfig(ServerBase):
             power=SourceValue(0 * u.kg), lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB),
             compute=SourceValue(0 * u.cpu_core), power_usage_effectiveness=power_usage_effectiveness,
             average_carbon_intensity=average_carbon_intensity,
-            server_utilization_rate=server_utilization_rate, base_ram_consumption=base_ram_consumption,
+            utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, fixed_nb_of_instances=fixed_nb_of_instances,
             storage=storage)
         self.nb_of_cpu_units = nb_of_cpu_units

@@ -20,6 +20,13 @@ def upgrade_version_10_to_11(system_dict):
     for system_key in system_dict["System"]:
         system_dict["System"][system_key]["edge_usage_patterns"] = []
 
+    for server_type in ["Server", "GPUServer", "BoaviztaCloudServer"]:
+        if server_type not in system_dict:
+            continue
+        for server_key in system_dict[server_type]:
+            system_dict[server_type][server_key]["utilization_rate"] = system_dict[server_type][server_key].pop(
+                "server_utilization_rate")
+
     return system_dict
 
 

@@ -22,7 +22,7 @@ class Server(ServerBase):
             "compute": SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             "average_carbon_intensity": SourceValue(400 * u.g / u.kWh, Sources.HYPOTHESIS),
-            "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            "utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
             "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             "base_compute_consumption": SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
             "fixed_nb_of_instances": EmptyExplainableObject()
@@ -32,10 +32,10 @@ class Server(ServerBase):
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
-                 server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication, power, lifespan, idle_power, ram, compute,
-            power_usage_effectiveness, average_carbon_intensity, server_utilization_rate, base_ram_consumption,
+            power_usage_effectiveness, average_carbon_intensity, utilization_rate, base_ram_consumption,
             base_compute_consumption, storage, fixed_nb_of_instances)

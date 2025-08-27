@@ -481,7 +481,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Server 1 utilization rate from e-footprint hypothesis",
@@ -602,7 +602,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Server 2 utilization rate from e-footprint hypothesis",
@@ -727,7 +727,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Server 3 utilization rate from e-footprint hypothesis",
@@ -1271,7 +1271,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.8,
                 "unit": "dimensionless",
                 "label": "Edge device utilization rate from e-footprint hypothesis",

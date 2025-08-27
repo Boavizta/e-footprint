@@ -157,7 +157,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "value": 0.8,
                 "unit": "dimensionless",
                 "label": "Default edge device utilization rate from e-footprint hypothesis",

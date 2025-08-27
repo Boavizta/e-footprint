@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "10.1.15",
+    "efootprint_version": "11.0.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -245,7 +245,7 @@
                     "link": null
                 }
             },
-            "server_utilization_rate": {
+            "utilization_rate": {
                 "label": "Default server utilization rate from hypothesis",
                 "value": 0.9,
                 "unit": "dimensionless",

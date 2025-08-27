@@ -73,7 +73,7 @@ class ServerBase(InfraHardware):
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity, average_carbon_intensity: ExplainableQuantity,
-                 server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
@@ -94,7 +94,7 @@ class ServerBase(InfraHardware):
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
-        self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
+        self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_compute_consumption = base_compute_consumption.set_label(
             f"Base {self.compute_type.replace("_", " ")} consumption of {self.name}")
@@ -164,7 +164,7 @@ class ServerBase(InfraHardware):
             f"Occupied CPU per {self.name} instance including services")
 
     def update_available_ram_per_instance(self):
-        available_ram_per_instance_before_services_installation = self.ram * self.server_utilization_rate
+        available_ram_per_instance_before_services_installation = self.ram * self.utilization_rate
         available_ram_per_instance = (
                 available_ram_per_instance_before_services_installation - self.occupied_ram_per_instance)
         if available_ram_per_instance.value < 0 * u.B:
@@ -175,7 +175,7 @@ class ServerBase(InfraHardware):
             f"Available RAM per {self.name} instance")
 
     def update_available_compute_per_instance(self):
-        available_compute_per_instance_before_services_installation = self.compute * self.server_utilization_rate
+        available_compute_per_instance_before_services_installation = self.compute * self.utilization_rate
         available_compute_per_instance = (
                 available_compute_per_instance_before_services_installation - self.occupied_compute_per_instance)
         if available_compute_per_instance.value < 0:

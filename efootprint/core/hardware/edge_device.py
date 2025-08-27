@@ -46,7 +46,7 @@ class EdgeDevice(EdgeHardware):
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.compute = compute.set_label(f"Compute of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
-        self.server_utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
+        self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
         self.storage = storage
@@ -86,21 +86,21 @@ class EdgeDevice(EdgeHardware):
         return []
 
     def update_available_ram_per_instance(self):
-        available_ram_per_instance = (self.ram * self.server_utilization_rate - self.base_ram_consumption)
+        available_ram_per_instance = (self.ram * self.utilization_rate - self.base_ram_consumption)
         
         if available_ram_per_instance.value < 0 * u.B:
             raise InsufficientCapacityError(
-                self, "RAM", self.ram * self.server_utilization_rate, self.base_ram_consumption)
+                self, "RAM", self.ram * self.utilization_rate, self.base_ram_consumption)
 
         self.available_ram_per_instance = available_ram_per_instance.set_label(
             f"Available RAM per {self.name} instance")
 
     def update_available_compute_per_instance(self):
-        available_compute_per_instance = (self.compute * self.server_utilization_rate - self.base_compute_consumption)
+        available_compute_per_instance = (self.compute * self.utilization_rate - self.base_compute_consumption)
 
         if available_compute_per_instance.value < 0 * u.cpu_core:
             raise InsufficientCapacityError(
-                self, "compute", self.compute * self.server_utilization_rate, self.base_compute_consumption)
+                self, "compute", self.compute * self.utilization_rate, self.base_compute_consumption)
 
         self.available_compute_per_instance = available_compute_per_instance.set_label(
             f"Available compute per {self.name} instance")
