@@ -12,7 +12,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import set_modeling_obj_containers
@@ -126,7 +126,7 @@ class TestEdgeDevice(TestCase):
     def test_edge_processes_property(self):
         """Test edge_processes property delegates to journey."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_processes = [MagicMock(spec=EdgeProcess), MagicMock(spec=EdgeProcess)]
+        mock_processes = [MagicMock(spec=RecurrentEdgeProcess), MagicMock(spec=RecurrentEdgeProcess)]
         mock_journey.edge_processes = mock_processes
         
         set_modeling_obj_containers(self.edge_device, [mock_journey])
@@ -191,8 +191,8 @@ class TestEdgeDevice(TestCase):
     @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_hourly_ram_need_over_full_timespan(self, mock_edge_processes):
         """Test update_unitary_hourly_ram_need_over_full_timespan calculation."""
-        mock_process_1 = MagicMock(spec=EdgeProcess)
-        mock_process_2 = MagicMock(spec=EdgeProcess)
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
         ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)
@@ -215,7 +215,7 @@ class TestEdgeDevice(TestCase):
     @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_hourly_ram_need_over_full_timespan_insufficient_capacity(self, mock_edge_processes):
         """Test update_unitary_hourly_ram_need_over_full_timespan raises error when capacity is exceeded."""
-        mock_process = MagicMock(spec=EdgeProcess)
+        mock_process = MagicMock(spec=RecurrentEdgeProcess)
         ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB)  # Peak of 15 GB
         mock_process.unitary_hourly_ram_need_over_full_timespan = ram_need
 
@@ -231,8 +231,8 @@ class TestEdgeDevice(TestCase):
     @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_hourly_compute_need_over_full_timespan(self, mock_edge_processes):
         """Test update_unitary_hourly_compute_need_over_full_timespan calculation."""
-        mock_process_1 = MagicMock(spec=EdgeProcess)
-        mock_process_2 = MagicMock(spec=EdgeProcess)
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         compute_need_1 = create_source_hourly_values_from_list([0.5, 1.0, 1.5], pint_unit=u.cpu_core)
         compute_need_2 = create_source_hourly_values_from_list([1.0, 0.5, 2.0], pint_unit=u.cpu_core)
@@ -255,7 +255,7 @@ class TestEdgeDevice(TestCase):
     @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_hourly_compute_need_over_full_timespan_insufficient_capacity(self, mock_edge_processes):
         """Test update_unitary_hourly_compute_need_over_full_timespan raises error when capacity is exceeded."""
-        mock_process = MagicMock(spec=EdgeProcess)
+        mock_process = MagicMock(spec=RecurrentEdgeProcess)
         compute_need = create_source_hourly_values_from_list([0.5, 1.0, 8.0], pint_unit=u.cpu_core)  # Peak of 8.0 cpu_core
         mock_process.unitary_hourly_compute_need_over_full_timespan = compute_need
 

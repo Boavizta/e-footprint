@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
@@ -12,11 +12,11 @@ from tests.utils import set_modeling_obj_containers
 
 class TestEdgeUsageJourney(TestCase):
     def setUp(self):
-        self.mock_edge_process_1 = MagicMock(spec=EdgeProcess)
+        self.mock_edge_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         self.mock_edge_process_1.id = "mock_process_1"
         self.mock_edge_process_1.name = "Mock Process 1"
         
-        self.mock_edge_process_2 = MagicMock(spec=EdgeProcess)
+        self.mock_edge_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         self.mock_edge_process_2.id = "mock_process_2"
         self.mock_edge_process_2.name = "Mock Process 2"
         

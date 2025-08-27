@@ -14,7 +14,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.edge_process import EdgeProcess
+    from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
     from efootprint.core.hardware.edge_device import EdgeDevice
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
@@ -115,7 +115,7 @@ class EdgeStorage(EdgeHardware):
             "energy_footprint", "instances_fabrication_footprint"]
 
     @property
-    def edge_processes(self) -> List["EdgeProcess"]:
+    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
         edge_device = self.edge_device
         if edge_device is not None:
             return edge_device.edge_processes

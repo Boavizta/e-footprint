@@ -15,7 +15,7 @@ from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from tests import root_test_dir
 
 
@@ -459,7 +459,7 @@ class TestSystem(TestCase):
         edge_usage_journey.edge_device = edge_device
         edge_usage_pattern.edge_usage_journey = edge_usage_journey
         
-        edge_process = MagicMock(spec=EdgeProcess)
+        edge_process = MagicMock(spec=RecurrentEdgeProcess)
         edge_process.systems = []
         edge_usage_journey.edge_processes = [edge_process]
         edge_usage_pattern.edge_processes = [edge_process]
@@ -622,7 +622,7 @@ class TestSystem(TestCase):
         edge_usage_journey.edge_device = edge_device
         edge_usage_pattern.edge_usage_journey = edge_usage_journey
         
-        edge_process = MagicMock(spec=EdgeProcess)
+        edge_process = MagicMock(spec=RecurrentEdgeProcess)
         edge_process.systems = []
         edge_usage_journey.edge_processes = [edge_process]
         edge_usage_pattern.edge_processes = [edge_process]
@@ -681,7 +681,7 @@ class TestSystem(TestCase):
         edge_device.storage = storage
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         edge_usage_journey.edge_device = edge_device
-        edge_process = MagicMock(spec=EdgeProcess)
+        edge_process = MagicMock(spec=RecurrentEdgeProcess)
         edge_usage_journey.edge_processes = [edge_process]
         edge_usage_pattern.edge_usage_journey = edge_usage_journey
         

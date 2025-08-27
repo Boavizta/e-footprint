@@ -12,7 +12,7 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.countries import Countries
@@ -56,7 +56,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             storage=edge_storage
         )
 
-        edge_process = EdgeProcess(
+        edge_process = RecurrentEdgeProcess(
             "Default edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -189,7 +189,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         system = next(iter(class_obj_dict["System"].values()))
         edge_device = next(iter(class_obj_dict.get("EdgeDevice", {}).values()))
         edge_storage = next(iter(class_obj_dict.get("EdgeStorage", {}).values()))
-        edge_process = next(iter(class_obj_dict.get("EdgeProcess", {}).values()))
+        edge_process = next(iter(class_obj_dict.get("RecurrentEdgeProcess", {}).values()))
         edge_usage_journey = next(iter(class_obj_dict.get("EdgeUsageJourney", {}).values()))
         edge_usage_pattern = next(iter(class_obj_dict.get("EdgeUsagePattern", {}).values()))
 
@@ -284,7 +284,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_edge_process(self):
         logger.warning("Adding new edge process")
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "Additional edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
@@ -308,7 +308,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_processes(self):
         logger.warning("Modifying edge processes list")
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "Replacement edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.cpu_core)),
@@ -356,7 +356,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             storage=new_edge_storage
         )
 
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "New edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -424,7 +424,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             storage=new_edge_storage
         )
 
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "additional edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -494,7 +494,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             storage=new_edge_storage
         )
 
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "New edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -539,7 +539,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
         edge_device = next(iter(class_obj_dict["EdgeDevice"].values()))
         logger.warning("Modifying edge processes")
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "new edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
@@ -588,7 +588,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertIn(self.edge_device.energy_footprint.id, recomputed_elements_ids)
 
     def run_test_simulation_add_new_edge_process(self):
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "New edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),

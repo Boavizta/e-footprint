@@ -5,7 +5,7 @@ from pint import Quantity
 
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
@@ -144,7 +144,7 @@ def generate_big_system(
         )
         edge_processes = []
         for edge_process_index in range(1, nb_of_edge_processes_per_edge_device + 1):
-            edge_process = EdgeProcess(
+            edge_process = RecurrentEdgeProcess(
                 f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
                 recurrent_compute_needed=SourceRecurringValues(
                     Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),

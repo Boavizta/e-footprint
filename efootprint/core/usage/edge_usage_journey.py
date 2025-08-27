@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.hardware.edge_device import EdgeDevice
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ class EdgeUsageJourney(ModelingObject):
         "usage_span": SourceValue(6 * u.year, Sources.HYPOTHESIS)
     }
 
-    def __init__(self, name: str, edge_processes: List[EdgeProcess], edge_device: EdgeDevice,
+    def __init__(self, name: str, edge_processes: List[RecurrentEdgeProcess], edge_device: EdgeDevice,
                  usage_span: ExplainableQuantity):
         super().__init__(name)
         self.edge_processes = edge_processes
@@ -43,7 +43,7 @@ class EdgeUsageJourney(ModelingObject):
         return []
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeProcess]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[RecurrentEdgeProcess]:
         if self.edge_usage_pattern:
             return [self.edge_usage_pattern]
         return self.edge_processes + [self.edge_device]

@@ -9,7 +9,7 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge_device import EdgeDevice
@@ -18,7 +18,7 @@ from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
 
-class TestEdgeProcess(TestCase):
+class TestRecurrentEdgeProcess(TestCase):
     def setUp(self):
         """Set up test fixtures."""
         self.recurrent_compute_needed = SourceRecurringValues(
@@ -28,14 +28,14 @@ class TestEdgeProcess(TestCase):
         self.recurrent_storage_needed = SourceRecurringValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
         
-        self.edge_process = EdgeProcess(
+        self.edge_process = RecurrentEdgeProcess(
             "test edge process",
             recurrent_compute_needed=self.recurrent_compute_needed,
             recurrent_ram_needed=self.recurrent_ram_needed,
             recurrent_storage_needed=self.recurrent_storage_needed)
 
     def test_init(self):
-        """Test EdgeProcess initialization."""
+        """Test RecurrentEdgeProcess initialization."""
         self.assertEqual("test edge process", self.edge_process.name)
         self.assertIs(self.recurrent_compute_needed, self.edge_process.recurrent_compute_needed)
         self.assertIs(self.recurrent_ram_needed, self.edge_process.recurrent_ram_needed)
@@ -67,7 +67,7 @@ class TestEdgeProcess(TestCase):
         with self.assertRaises(PermissionError) as context:
             _ = self.edge_process.edge_usage_journey
         
-        expected_message_part = ("EdgeProcess object can only be associated with one EdgeUsageJourney object but ")
+        expected_message_part = ("RecurrentEdgeProcess object can only be associated with one EdgeUsageJourney object but ")
         self.assertIn(expected_message_part, str(context.exception))
 
     def test_edge_usage_pattern_property_no_containers(self):
@@ -201,8 +201,8 @@ class TestEdgeProcess(TestCase):
         self.assertEqual(expected_result, self.edge_process.unitary_hourly_storage_need_over_full_timespan)
 
     def test_from_defaults_class_method(self):
-        """Test EdgeProcess can be created using from_defaults class method."""
-        edge_process_from_defaults = EdgeProcess.from_defaults("default process")
+        """Test RecurrentEdgeProcess can be created using from_defaults class method."""
+        edge_process_from_defaults = RecurrentEdgeProcess.from_defaults("default process")
         
         self.assertEqual("default process", edge_process_from_defaults.name)
         self.assertIsInstance(edge_process_from_defaults.recurrent_compute_needed, SourceRecurringValues)
@@ -215,14 +215,14 @@ class TestEdgeProcess(TestCase):
     def test_recurrent_values_parameters_validation(self):
         """Test that recurrent values parameters must be ExplainableRecurringQuantities."""
         with self.assertRaises(TypeError):
-            EdgeProcess(
+            RecurrentEdgeProcess(
                 "invalid process",
                 recurrent_compute_needed="invalid",
                 recurrent_ram_needed=copy(self.recurrent_ram_needed)
             )
         
         with self.assertRaises(TypeError):
-            EdgeProcess(
+            RecurrentEdgeProcess(
                 "invalid process", 
                 recurrent_compute_needed=copy(self.recurrent_compute_needed.copy()),
                 recurrent_ram_needed=123

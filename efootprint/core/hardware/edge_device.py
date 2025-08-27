@@ -12,7 +12,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.usage.edge_process import EdgeProcess
+    from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
 
 class EdgeDevice(EdgeHardware):
@@ -80,7 +80,7 @@ class EdgeDevice(EdgeHardware):
         return [self.storage]
 
     @property
-    def edge_processes(self) -> List["EdgeProcess"]:
+    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
         if self.modeling_obj_containers:
             return self.edge_usage_journey.edge_processes
         return []

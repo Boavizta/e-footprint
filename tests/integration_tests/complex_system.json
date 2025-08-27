@@ -1162,7 +1162,7 @@
             }
         }
     },
-    "EdgeProcess": {
+    "RecurrentEdgeProcess": {
         "Edge-process": {
             "name": "Edge process",
             "id": "Edge-process",

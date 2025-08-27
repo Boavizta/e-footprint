@@ -48,7 +48,7 @@
             }
         }
     },
-    "EdgeProcess": {
+    "RecurrentEdgeProcess": {
         "Default-edge-process": {
             "name": "Default edge process",
             "id": "Default-edge-process",

@@ -12,7 +12,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage, NegativeCumulativeStorageNeedError
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import set_modeling_obj_containers
@@ -148,7 +148,7 @@ class TestEdgeStorage(TestCase):
     def test_edge_processes_property_with_device(self):
         """Test edge_processes property delegates to device."""
         mock_device = MagicMock(spec=EdgeDevice)
-        mock_processes = [MagicMock(spec=EdgeProcess), MagicMock(spec=EdgeProcess)]
+        mock_processes = [MagicMock(spec=RecurrentEdgeProcess), MagicMock(spec=RecurrentEdgeProcess)]
         mock_device.edge_processes = mock_processes
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
@@ -230,8 +230,8 @@ class TestEdgeStorage(TestCase):
     @patch("efootprint.core.hardware.edge_storage.EdgeStorage.edge_processes", new_callable=PropertyMock)
     def test_update_unitary_storage_delta_over_full_timespan_with_processes(self, mock_edge_processes):
         """Test update_unitary_storage_delta_over_full_timespan with processes."""
-        mock_process_1 = MagicMock(spec=EdgeProcess)
-        mock_process_2 = MagicMock(spec=EdgeProcess)
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         storage_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
         storage_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)

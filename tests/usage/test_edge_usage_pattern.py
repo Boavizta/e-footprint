@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
@@ -22,7 +22,7 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         self.mock_edge_usage_journey.id = "mock_edge_journey"
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
-        self.mock_edge_process = MagicMock(spec=EdgeProcess)
+        self.mock_edge_process = MagicMock(spec=RecurrentEdgeProcess)
         self.mock_edge_process.name = "Mock Edge Processes"
         self.mock_edge_device = MagicMock(spec=EdgeDevice)
         self.mock_edge_usage_journey.edge_processes = [self.mock_edge_process]

@@ -23,7 +23,7 @@ from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
@@ -180,7 +180,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             storage=edge_storage
         )
 
-        edge_process = EdgeProcess(
+        edge_process = RecurrentEdgeProcess(
             "Edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -418,7 +418,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             storage=new_edge_storage
         )
 
-        new_edge_process = EdgeProcess(
+        new_edge_process = RecurrentEdgeProcess(
             "New edge process",
             recurrent_compute_needed=SourceRecurringValues(
                 Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),

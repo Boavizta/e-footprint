@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from efootprint.core.system import System
 
 
-class EdgeProcess(ModelingObject):
+class RecurrentEdgeProcess(ModelingObject):
     default_values = {
         "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
         "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
@@ -44,7 +44,7 @@ class EdgeProcess(ModelingObject):
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
-                    f"EdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is "
+                    f"RecurrentEdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is "
                     f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         else:
