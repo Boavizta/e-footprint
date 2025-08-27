@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.hardware.edge_device import EdgeDevice
@@ -23,6 +24,7 @@ class TestEdgeUsageJourney(TestCase):
         self.mock_edge_device = MagicMock(spec=EdgeDevice)
         self.mock_edge_device.id = "mock_device"
         self.mock_edge_device.name = "Mock Device"
+        self.mock_edge_device.lifespan = SourceValue(4 * u.year)
         
         self.usage_span = SourceValue(2 * u.year)
         
@@ -40,6 +42,42 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual(self.mock_edge_device, self.edge_usage_journey.edge_device)
         self.assertEqual("Usage span of test edge usage journey from e-footprint hypothesis", self.edge_usage_journey.usage_span.label)
         self.assertEqual(2 * u.year, self.edge_usage_journey.usage_span.value)
+
+    def test_usage_span_superior_to_lifespan_raises_error(self):
+        mock_edge_device = MagicMock(spec=EdgeDevice)
+        mock_edge_device.id = "mock_device"
+        mock_edge_device.name = "Mock Device"
+        mock_edge_device.lifespan = SourceValue(2 * u.year)
+
+        usage_span = SourceValue(4 * u.year)
+        with self.assertRaises(InsufficientCapacityError) as context:
+            EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+
+        self.assertEqual(mock_edge_device, context.exception.overloaded_object)
+        self.assertEqual("lifespan", context.exception.capacity_type)
+        self.assertEqual(mock_edge_device.lifespan, context.exception.available_capacity)
+        self.assertEqual(usage_span, context.exception.requested_capacity)
+
+    def test_changing_to_usage_span_superior_to_edge_device_lifespan_raises_error(self):
+        mock_edge_device = MagicMock(spec=EdgeDevice)
+        mock_edge_device.id = "mock_device"
+        mock_edge_device.name = "Mock Device"
+        mock_edge_device.lifespan = SourceValue(2 * u.year)
+        usage_span = SourceValue(1 * u.year)
+        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+
+        with self.assertRaises(InsufficientCapacityError):
+            euj.usage_span = SourceValue(3 * u.year)
+
+    def test_changing_to_usage_span_not_superior_to_edge_device_lifespan_doesnt_raise_error(self):
+        mock_edge_device = MagicMock(spec=EdgeDevice)
+        mock_edge_device.id = "mock_device"
+        mock_edge_device.name = "Mock Device"
+        mock_edge_device.lifespan = SourceValue(2 * u.year)
+        usage_span = SourceValue(1 * u.year)
+        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+
+        euj.usage_span = SourceValue(2 * u.year)
 
     def test_edge_usage_pattern_property_no_containers(self):
         """Test edge_usage_pattern property when no containers are set."""

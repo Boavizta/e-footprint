@@ -38,6 +38,8 @@ from efootprint.builders.time_builders import create_hourly_usage_from_frequency
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
+root_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 def generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
@@ -132,7 +134,7 @@ def generate_big_system(
             f"Default edge device {edge_usage_pattern_index}",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
-            lifespan=SourceValue(4 * u.year),
+            lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(16 * u.GB),
             compute=SourceValue(8 * u.cpu_core),
@@ -175,8 +177,10 @@ def generate_big_system(
     system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=edge_usage_patterns)
     logger.info(f"Finished generating system in {round((time() - start), 3)} seconds")
 
-    timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")
-    timed_system_to_json(system, save_calculated_attributes=True, output_filepath="big_system_with_calc_attr.json")
+    timed_system_to_json(system, save_calculated_attributes=False,
+                         output_filepath=os.path.join(root_dir, "big_system.json"))
+    timed_system_to_json(system, save_calculated_attributes=True,
+                         output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"))
 
     return system
 

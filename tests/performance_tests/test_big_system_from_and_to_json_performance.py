@@ -14,9 +14,7 @@ from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
 from efootprint.constants.units import u
-from tests.performance_tests.generate_big_system import generate_big_system
-
-root_dir = os.path.dirname(os.path.abspath(__file__))
+from tests.performance_tests.generate_big_system import generate_big_system, root_dir
 
 
 def log_number_of_live_objects(sleep_duration=0.5):

@@ -25,7 +25,7 @@ class TestEdgeDevice(TestCase):
             name="Test EdgeDevice",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
@@ -42,7 +42,7 @@ class TestEdgeDevice(TestCase):
         self.assertEqual("Test EdgeDevice", self.edge_device.name)
         self.assertEqual(60 * u.kg, self.edge_device.carbon_footprint_fabrication.value)
         self.assertEqual(30 * u.W, self.edge_device.power.value)
-        self.assertEqual(4 * u.year, self.edge_device.lifespan.value)
+        self.assertEqual(8 * u.year, self.edge_device.lifespan.value)
         self.assertEqual(5 * u.W, self.edge_device.idle_power.value)
         self.assertEqual(8 * u.GB, self.edge_device.ram.value)
         self.assertEqual(4 * u.cpu_core, self.edge_device.compute.value)

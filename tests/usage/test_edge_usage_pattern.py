@@ -117,11 +117,13 @@ class TestEdgeUsagePattern(TestCase):
         """Test that edge_usage_journey enforces single-link restriction."""
         # Create a real EdgeUsageJourney to test the property implementation
         from efootprint.abstract_modeling_classes.source_objects import SourceValue
-        
+        edge_device = MagicMock(spec=EdgeDevice)
+        edge_device.lifespan = SourceValue(2 * u.year)
+
         real_journey = EdgeUsageJourney(
             "test journey", 
             edge_processes=[], 
-            edge_device=MagicMock(spec=EdgeDevice),
+            edge_device=edge_device,
             usage_span=SourceValue(1 * u.year)
         )
         

@@ -1218,7 +1218,7 @@
                 }
             },
             "lifespan": {
-                "value": 4.0,
+                "value": 8.0,
                 "unit": "year",
                 "label": "Lifespan of Edge device from e-footprint hypothesis",
                 "source": {

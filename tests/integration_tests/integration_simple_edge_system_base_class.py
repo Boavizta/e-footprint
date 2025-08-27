@@ -45,7 +45,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "Default edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
@@ -172,7 +172,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             # and this behavior is already unit tested.
             edge_process, attrs_to_skip=["recurrent_ram_needed"],
             special_mult={"recurrent_compute_needed": 2, "recurrent_storage_needed": 2})
-        self._test_variations_on_obj_inputs(edge_usage_journey)
+        self._test_variations_on_obj_inputs(edge_usage_journey, special_mult={"usage_span": 1.1})
         self._test_variations_on_obj_inputs(
             edge_usage_pattern, attrs_to_skip=["hourly_edge_usage_journey_starts"])
 
@@ -257,7 +257,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "New edge device, identical to default one",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
@@ -345,7 +345,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "New edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
@@ -413,7 +413,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "additional edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
@@ -483,7 +483,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "New edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
             power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(4 * u.year, Sources.HYPOTHESIS),
+            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
