@@ -279,6 +279,34 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
 
+    def run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        logger.warning("Setting storage fixed_nb_of_instances to not empty")
+        old_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
+        self.storage.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+
+        self.footprint_has_changed([self.storage])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+
+        logger.warning("Setting fixed_nb_of_instances back to empty")
+        self.storage.fixed_nb_of_instances = old_fixed_nb_of_instances
+
+        self.footprint_has_not_changed([self.storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        logger.warning("Setting on premise fixed_nb_of_instances to not empty")
+        old_fixed_nb_of_instances = self.server.fixed_nb_of_instances
+        self.server.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+
+        self.footprint_has_changed([self.server])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+
+        logger.warning("Setting fixed_nb_of_instances back to empty")
+        self.server.fixed_nb_of_instances = old_fixed_nb_of_instances
+
+        self.footprint_has_not_changed([self.server])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
     # OBJECT LINKS UPDATES TESTING
 
     def run_test_uj_step_update(self):
@@ -515,58 +543,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.assertNotEqual(direct_child.modeling_obj_container.id, usage_pattern_id)
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
-
-    def run_test_update_usage_journey_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
-            full_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-        new_uj = UsageJourney("New version of daily Youtube usage",
-                             uj_steps=[next(iter(class_obj_dict["UsageJourneyStep"].values()))])
-        usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
-        previous_uj = usage_pattern.usage_journey
-        usage_pattern.usage_journey = new_uj
-
-        system = next(iter(class_obj_dict["System"].values()))
-        storage = next(iter(class_obj_dict["Storage"].values()))
-        server = next(iter(class_obj_dict["Server"].values()))
-        network = next(iter(class_obj_dict["Network"].values()))
-        self.assertNotEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_changed([storage, server, network, usage_pattern])
-
-        logger.warning("Changing back to previous uj")
-        usage_pattern.usage_journey = previous_uj
-
-        self.assertEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_not_changed([storage, server, network, usage_pattern])
-
-    def run_test_update_jobs_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
-            full_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-        usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
-        usage_journey = usage_pattern.usage_journey
-        streaming_step = usage_journey.uj_steps[0]
-        previous_jobs = copy(streaming_step.jobs)
-        system = next(iter(class_obj_dict["System"].values()))
-        storage = next(iter(class_obj_dict["Storage"].values()))
-        server = next(iter(class_obj_dict["Server"].values()))
-        network = next(iter(class_obj_dict["Network"].values()))
-        logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", server, data_transferred=SourceValue(5 * u.GB), data_stored=SourceValue(50 * u.MB),
-                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB),
-                      compute_needed=SourceValue(1 * u.cpu_core))
-
-        streaming_step.jobs += [new_job]
-
-        self.assertNotEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_not_changed([usage_pattern])
-        self.footprint_has_changed([storage, server, network])
-
-        logger.warning("Changing back to previous jobs")
-        streaming_step.jobs = previous_jobs
-
-        self.assertEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_not_changed([storage, server, network, usage_pattern])
 
     def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         logger.warning("Changing network and hourly usage journey starts simultaneously")

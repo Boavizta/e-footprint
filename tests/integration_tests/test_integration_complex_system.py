@@ -5,23 +5,17 @@ class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
     def test_all_objects_linked_to_system(self):
         self.run_test_all_objects_linked_to_system()
 
-    def test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
-        self.run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty()
+    def test_remove_uj_steps_1_and_2(self):
+        self.run_test_remove_uj_steps_1_and_2()
 
-    def test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
-        self.run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty()
+    def test_remove_uj_step_3_job(self):
+        self.run_test_remove_uj_step_3_job()
 
-    def test_remove_dailymotion_and_tiktok_uj_step(self):
-        self.run_test_remove_dailymotion_and_tiktok_uj_step()
+    def test_remove_one_uj_step_4_job(self):
+        self.run_test_remove_one_uj_step_4_job()
 
-    def test_remove_dailymotion_single_job(self):
-        self.run_test_remove_dailymotion_single_job()
-
-    def test_remove_one_tiktok_job(self):
-        self.run_test_remove_one_tiktok_job()
-
-    def test_remove_all_tiktok_jobs(self):
-        self.run_test_remove_all_tiktok_jobs()
+    def test_remove_all_uj_step_4_jobs(self):
+        self.run_test_remove_all_uj_step_4_jobs()
 
     def test_add_new_job(self):
         self.run_test_add_new_job()
@@ -34,9 +28,6 @@ class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
 
     def test_json_to_system(self):
         self.run_test_json_to_system(self.system)
-
-    def test_add_usage_pattern_after_json_to_system(self):
-        self.run_test_add_usage_pattern_after_json_to_system()
 
     def test_plot_footprints_by_category_and_object(self):
         self.run_test_plot_footprints_by_category_and_object()

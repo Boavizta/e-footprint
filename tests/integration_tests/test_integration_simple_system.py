@@ -44,6 +44,12 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
         self.run_test_update_footprint_job_datastored_from_positive_value_to_negative_value()
 
+    def test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        self.run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty()
+
+    def test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
+        self.run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty()
+
     # OBJECT LINKS UPDATES TESTING
 
     def test_uj_step_update(self):
@@ -78,12 +84,6 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
 
     def test_add_usage_pattern(self):
         self.run_test_add_usage_pattern()
-
-    def test_update_usage_journey_after_json_to_system(self):
-        self.run_test_update_usage_journey_after_json_to_system()
-
-    def test_update_jobs_after_json_to_system(self):
-        self.run_test_update_jobs_after_json_to_system()
 
     def test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         self.run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order()

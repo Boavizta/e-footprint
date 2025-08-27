@@ -5,49 +5,49 @@
             "name": "system 1",
             "id": "system-1",
             "usage_patterns": [
-                "Video-watching-in-France-in-the-morning",
-                "Video-watching-in-France-in-the-evening"
+                "Usage-pattern-1",
+                "Usage-pattern-2"
             ],
             "edge_usage_patterns": []
         }
     },
     "UsagePattern": {
-        "Video-watching-in-France-in-the-morning": {
-            "name": "Video watching in France in the morning",
-            "id": "Video-watching-in-France-in-the-morning",
+        "Usage-pattern-1": {
+            "name": "Usage pattern 1",
+            "id": "Usage-pattern-1",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Video watching in France in the morning hourly nb of visits from e-footprint hypothesis",
+                "label": "Usage pattern 1 hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "usage_journey": "Daily-video-usage",
+            "usage_journey": "Usage-journey",
             "devices": [
                 "Default-laptop"
             ],
             "network": "network-1",
             "country": "France"
         },
-        "Video-watching-in-France-in-the-evening": {
-            "name": "Video watching in France in the evening",
-            "id": "Video-watching-in-France-in-the-evening",
+        "Usage-pattern-2": {
+            "name": "Usage pattern 2",
+            "id": "Usage-pattern-2",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAk9QAAsAAAekUAAPpEAAB6RABAnMDaRQCAO0UCACBg30od",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Video watching in France in the evening hourly nb of visits from e-footprint hypothesis",
+                "label": "Usage pattern 2 hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "usage_journey": "Daily-video-usage",
+            "usage_journey": "Usage-journey",
             "devices": [
                 "Default-laptop"
             ],
@@ -56,92 +56,92 @@
         }
     },
     "UsageJourney": {
-        "Daily-video-usage": {
-            "name": "Daily video usage",
-            "id": "Daily-video-usage",
+        "Usage-journey": {
+            "name": "Usage journey",
+            "id": "Usage-journey",
             "uj_steps": [
-                "20-min-streaming-on-Youtube",
-                "02e4s-of-upload",
-                "Dailymotion-step",
-                "20-min-streaming-on-TikTok"
+                "UJ-step-1",
+                "UJ-step-2",
+                "UJ-step-3",
+                "UJ-step-4"
             ]
         }
     },
     "UsageJourneyStep": {
-        "20-min-streaming-on-Youtube": {
-            "name": "20 min streaming on Youtube",
-            "id": "20-min-streaming-on-Youtube",
+        "UJ-step-1": {
+            "name": "UJ step 1",
+            "id": "UJ-step-1",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
-                "label": "Time spent on step 20 min streaming on Youtube from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "streaming"
+                "server-1-job-1"
             ]
         },
-        "02e4s-of-upload": {
-            "name": "0.4s of upload",
-            "id": "02e4s-of-upload",
+        "UJ-step-2": {
+            "name": "UJ step 2",
+            "id": "UJ-step-2",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "second",
-                "label": "Time spent on step 0.4s of upload from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "upload"
+                "server-1-job-2"
             ]
         },
-        "Dailymotion-step": {
-            "name": "Dailymotion step",
-            "id": "Dailymotion-step",
+        "UJ-step-3": {
+            "name": "UJ step 3",
+            "id": "UJ-step-3",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
-                "label": "Time spent on step Dailymotion step from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "dailymotion"
+                "server-1-job-3"
             ]
         },
-        "20-min-streaming-on-TikTok": {
-            "name": "20 min streaming on TikTok",
-            "id": "20-min-streaming-on-TikTok",
+        "UJ-step-4": {
+            "name": "UJ step 4",
+            "id": "UJ-step-4",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
-                "label": "Time spent on step 20 min streaming on TikTok from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 4 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "tiktok",
-                "tiktok-analytics"
+                "server-2-job",
+                "server-3-job"
             ]
         }
     },
     "Job": {
-        "streaming": {
-            "name": "streaming",
-            "id": "streaming",
+        "server-1-job-1": {
+            "name": "server 1 job 1",
+            "id": "server-1-job-1",
             "data_transferred": {
                 "value": 1.0,
                 "unit": "gigabyte",
-                "label": "Sum of all data uploads and downloads for request streaming from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -150,7 +150,7 @@
             "data_stored": {
                 "value": 50.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request streaming from e-footprint hypothesis",
+                "label": "Data stored by request server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -159,7 +159,7 @@
             "request_duration": {
                 "value": 4.0,
                 "unit": "minute",
-                "label": "Request duration of streaming from e-footprint hypothesis",
+                "label": "Request duration of server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -168,7 +168,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Server 1 to process streaming from e-footprint hypothesis",
+                "label": "RAM needed on server Server 1 to process server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -177,7 +177,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process streaming from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -185,13 +185,13 @@
             },
             "server": "Server-1"
         },
-        "upload": {
-            "name": "upload",
-            "id": "upload",
+        "server-1-job-2": {
+            "name": "server 1 job 2",
+            "id": "server-1-job-2",
             "data_transferred": {
                 "value": 300.0,
                 "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads for request upload from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -200,7 +200,7 @@
             "data_stored": {
                 "value": 300.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request upload from e-footprint hypothesis",
+                "label": "Data stored by request server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -209,7 +209,7 @@
             "request_duration": {
                 "value": 0.4,
                 "unit": "second",
-                "label": "Request duration of upload from e-footprint hypothesis",
+                "label": "Request duration of server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -218,7 +218,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Server 1 to process upload from e-footprint hypothesis",
+                "label": "RAM needed on server Server 1 to process server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -227,7 +227,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process upload from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -235,13 +235,13 @@
             },
             "server": "Server-1"
         },
-        "dailymotion": {
-            "name": "dailymotion",
-            "id": "dailymotion",
+        "server-1-job-3": {
+            "name": "server 1 job 3",
+            "id": "server-1-job-3",
             "data_transferred": {
                 "value": 3.3,
                 "unit": "megabyte",
-                "label": "Sum of all data uploads and downloads for request dailymotion from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -250,7 +250,7 @@
             "data_stored": {
                 "value": 300.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request dailymotion from e-footprint hypothesis",
+                "label": "Data stored by request server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -259,7 +259,7 @@
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
-                "label": "Request duration of dailymotion from e-footprint hypothesis",
+                "label": "Request duration of server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -268,7 +268,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Server 1 to process dailymotion from e-footprint hypothesis",
+                "label": "RAM needed on server Server 1 to process server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -277,7 +277,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process dailymotion from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 1 to process server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -285,13 +285,13 @@
             },
             "server": "Server-1"
         },
-        "tiktok": {
-            "name": "tiktok",
-            "id": "tiktok",
+        "server-2-job": {
+            "name": "server 2 job",
+            "id": "server-2-job",
             "data_transferred": {
                 "value": 0.8333333333333334,
                 "unit": "gigabyte",
-                "label": "Sum of all data uploads and downloads for request tiktok from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -300,7 +300,7 @@
             "data_stored": {
                 "value": 0.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request tiktok from e-footprint hypothesis",
+                "label": "Data stored by request server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -309,7 +309,7 @@
             "request_duration": {
                 "value": 4.0,
                 "unit": "minute",
-                "label": "Request duration of tiktok from e-footprint hypothesis",
+                "label": "Request duration of server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -318,7 +318,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Server 2 to process tiktok from e-footprint hypothesis",
+                "label": "RAM needed on server Server 2 to process server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -327,7 +327,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 2 to process tiktok from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 2 to process server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -335,13 +335,13 @@
             },
             "server": "Server-2"
         },
-        "tiktok-analytics": {
-            "name": "tiktok analytics",
-            "id": "tiktok-analytics",
+        "server-3-job": {
+            "name": "server 3 job",
+            "id": "server-3-job",
             "data_transferred": {
                 "value": 50.0,
                 "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads for request tiktok analytics from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -350,7 +350,7 @@
             "data_stored": {
                 "value": 50.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request tiktok analytics from e-footprint hypothesis",
+                "label": "Data stored by request server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -359,7 +359,7 @@
             "request_duration": {
                 "value": 4.0,
                 "unit": "minute",
-                "label": "Request duration of tiktok analytics from e-footprint hypothesis",
+                "label": "Request duration of server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -368,7 +368,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server TikTok Analytics server to process tiktok analytics from e-footprint hypothesis",
+                "label": "RAM needed on server Server 3 to process server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -377,13 +377,13 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server TikTok Analytics server to process tiktok analytics from e-footprint hypothesis",
+                "label": "cpu cores needed on server Server 3 to process server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "server": "TikTok-Analytics-server"
+            "server": "Server-3"
         }
     },
     "Server": {
@@ -633,13 +633,13 @@
             },
             "storage": "Default-SSD-storage-2"
         },
-        "TikTok-Analytics-server": {
-            "name": "TikTok Analytics server",
-            "id": "TikTok-Analytics-server",
+        "Server-3": {
+            "name": "Server 3",
+            "id": "Server-3",
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
+                "label": "Carbon footprint fabrication of Server 3 from Base ADEME_V19",
                 "source": {
                     "name": "Base ADEME_V19",
                     "link": "https://data.ademe.fr/datasets/base-carbone(r)"
@@ -648,7 +648,7 @@
             "power": {
                 "value": 300.0,
                 "unit": "watt",
-                "label": "Power of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Power of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -657,7 +657,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Lifespan of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -666,7 +666,7 @@
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "TikTok Analytics server fraction of usage time from e-footprint hypothesis",
+                "label": "Server 3 fraction of usage time from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -674,7 +674,7 @@
             },
             "server_type": {
                 "value": "serverless",
-                "label": "Server type of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Server type of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -683,7 +683,7 @@
             "idle_power": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Idle power of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Idle power of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -692,7 +692,7 @@
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte",
-                "label": "RAM of TikTok Analytics server from e-footprint hypothesis",
+                "label": "RAM of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -701,7 +701,7 @@
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
-                "label": "Nb cpu cores of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Nb cpu cores of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -710,7 +710,7 @@
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
-                "label": "PUE of TikTok Analytics server from e-footprint hypothesis",
+                "label": "PUE of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -719,7 +719,7 @@
             "average_carbon_intensity": {
                 "value": 400.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of TikTok Analytics server electricity from e-footprint hypothesis",
+                "label": "Average carbon intensity of Server 3 electricity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -728,7 +728,7 @@
             "server_utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
-                "label": "TikTok Analytics server utilization rate from e-footprint hypothesis",
+                "label": "Server 3 utilization rate from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -737,7 +737,7 @@
             "base_ram_consumption": {
                 "value": 300.0,
                 "unit": "megabyte",
-                "label": "Base RAM consumption of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Base RAM consumption of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -746,7 +746,7 @@
             "base_compute_consumption": {
                 "value": 2.0,
                 "unit": "cpu_core",
-                "label": "Base cpu core consumption of TikTok Analytics server from e-footprint hypothesis",
+                "label": "Base cpu core consumption of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -754,9 +754,9 @@
             },
             "fixed_nb_of_instances": {
                 "value": null,
-                "label": "User defined number of TikTok Analytics server instances"
+                "label": "User defined number of Server 3 instances"
             },
-            "storage": "TikTok-Analytics-storage"
+            "storage": "Default-SSD-storage-3"
         }
     },
     "Storage": {
@@ -938,13 +938,13 @@
                 "label": "User defined number of Default SSD storage 2 instances"
             }
         },
-        "TikTok-Analytics-storage": {
-            "name": "TikTok Analytics storage",
-            "id": "TikTok-Analytics-storage",
+        "Default-SSD-storage-3": {
+            "name": "Default SSD storage 3",
+            "id": "Default-SSD-storage-3",
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of TikTok Analytics storage from e-footprint hypothesis",
+                "label": "Lifespan of Default SSD storage 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -953,7 +953,7 @@
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "TikTok Analytics storage fraction of usage time from e-footprint hypothesis",
+                "label": "Default SSD storage 3 fraction of usage time from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -962,7 +962,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte",
-                "label": "Fabrication carbon footprint of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Fabrication carbon footprint of Default SSD storage 3 per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -971,7 +971,7 @@
             "power_per_storage_capacity": {
                 "value": 1.3,
                 "unit": "watt / terabyte",
-                "label": "Power of TikTok Analytics storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Power of Default SSD storage 3 per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -980,7 +980,7 @@
             "idle_power": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power of TikTok Analytics storage from e-footprint hypothesis",
+                "label": "Idle power of Default SSD storage 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -989,7 +989,7 @@
             "storage_capacity": {
                 "value": 1.0,
                 "unit": "terabyte",
-                "label": "Storage capacity of TikTok Analytics storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Storage capacity of Default SSD storage 3 from Dirty secret of SSDs: embodied carbon",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -998,7 +998,7 @@
             "data_replication_factor": {
                 "value": 3.0,
                 "unit": "dimensionless",
-                "label": "Data replication factor of TikTok Analytics storage from e-footprint hypothesis",
+                "label": "Data replication factor of Default SSD storage 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1007,7 +1007,7 @@
             "data_storage_duration": {
                 "value": 43830.0,
                 "unit": "hour",
-                "label": "Data storage duration of TikTok Analytics storage from e-footprint hypothesis",
+                "label": "Data storage duration of Default SSD storage 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1016,7 +1016,7 @@
             "base_storage_need": {
                 "value": 0.0,
                 "unit": "terabyte",
-                "label": "TikTok Analytics storage initial storage need from e-footprint hypothesis",
+                "label": "Default SSD storage 3 initial storage need from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1024,7 +1024,7 @@
             },
             "fixed_nb_of_instances": {
                 "value": null,
-                "label": "User defined number of TikTok Analytics storage instances"
+                "label": "User defined number of Default SSD storage 3 instances"
             }
         }
     },
