@@ -2,7 +2,9 @@
 
 A toolkit for exhaustively modeling the environmental impact of digital services.
 
-The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end-user devices necessary for the existence of a digital service. Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
+The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end-user devices necessary for the existence of a web digital service. It is also now possible to model the production of edge devices (like video game consoles, smartphones, servers, etc.) and describe the unitary usage by device over its usage phase, to get the environmental footprint of the deployed fleet.
+
+Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
 
 # Getting started
 
@@ -16,7 +18,7 @@ Here is the link to the [e-footprint documentation](https://boavizta.github.io/e
 
 ## Graphical interface
 
-You can explore the model’s [graphical interface](hhttps://e-footprint-interface.nw.r.appspot.com/). This interface allows for a powerful use of the model but is still in beta for now. Please send an email to e-footprint’s main maintainer, [Vincent Villet](mailto:vincent.villet@publicissapient.com) if you wish to give feedback and / or be notified when the interface gets to a first stable version !
+You can explore the model’s [graphical interface](hhttps://e-footprint-interface.nw.r.appspot.com/), which is also open source and found in the [Boavizta e-footprint interface repository](https://github.com/Boavizta/e-footprint-interface). This interface allows for a powerful use of the model but is still in beta for now. Please send an email to e-footprint’s main maintainer, [Vincent Villet](mailto:vincent.villet@publicissapient.com) if you wish to give feedback and / or be notified when the interface gets to a first stable version !
 
 ## Modeling examples
 
@@ -55,9 +57,9 @@ Check out [INSTALL.md](./INSTALL.md).
 
 The code has been architectured to separate modeling from optimization from API logic. The goal is to make contribution to the modeling logic as straightforward as possible.
 
-- Scripts that deal with modeling logic are located in [efootprint/core](./efootprint/core).
+- Modules that deal with modeling logic are located in [efootprint/core](./efootprint/core).
 - Optimizations (having the model rerun the right calculations whenever an input attribute or a link between objects changes) are dealt with in [efootprint/abstract_modeling_classes](./efootprint/abstract_modeling_classes).
-- The API doesn’t exist yet but will be also decoupled from the modeling and optimization logics.
+- All json serialization / deserialization logic, that is essential for making the web interface work, are found in [efootprint/api_utils](/efootprint/api_utils).
 
 # Contributing
 

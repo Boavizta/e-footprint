@@ -1,8 +1,11 @@
 from time import time
 
+import numpy as np
+from pint import Quantity
+
 start = time()
 
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -17,10 +20,15 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
+from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_source_hourly_values
+from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_from_frequency
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
 
@@ -95,7 +103,8 @@ usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])
 network = Network(
         "network",
         bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
-
+random_hourly_usage_journey_starts = create_random_source_hourly_values(timespan=3 * u.year)
+random_hourly_usage_journey_starts.source = None
 usage_pattern = UsagePattern(
     "usage pattern",
     usage_journey=usage_journey,
@@ -108,8 +117,61 @@ usage_pattern = UsagePattern(
     network=network,
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-    hourly_usage_journey_starts=create_random_source_hourly_values(timespan=3 * u.year))
+    hourly_usage_journey_starts=random_hourly_usage_journey_starts)
 
-system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[])
+edge_storage = EdgeStorage(
+    "edge SSD storage",
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
+    lifespan=SourceValue(6 * u.years, source=None),
+    idle_power=SourceValue(0.1 * u.W, source=None),
+    storage_capacity=SourceValue(256 * u.GB, source=None),
+    base_storage_need=SourceValue(10 * u.GB, source=None),
+)
+
+edge_device = EdgeDevice(
+    "edge device",
+    carbon_footprint_fabrication=SourceValue(60 * u.kg, source=None),
+    power=SourceValue(30 * u.W, source=None),
+    lifespan=SourceValue(8 * u.year, source=None),
+    idle_power=SourceValue(5 * u.W, source=None),
+    ram=SourceValue(16 * u.GB, source=None),
+    compute=SourceValue(8 * u.cpu_core, source=None),
+    power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, source=None),
+    utilization_rate=SourceValue(0.8 * u.dimensionless, source=None),
+    base_ram_consumption=SourceValue(1 * u.GB, source=None),
+    base_compute_consumption=SourceValue(0.1 * u.cpu_core, source=None),
+    storage=edge_storage
+)
+
+edge_process = RecurrentEdgeProcess(
+    "edge process",
+    recurrent_compute_needed=SourceRecurringValues(
+        Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None),
+    recurrent_ram_needed=SourceRecurringValues(
+        Quantity(np.array([2] * 168, dtype=np.float32), u.GB), source=None),
+    recurrent_storage_needed=SourceRecurringValues(
+        Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
+)
+
+edge_usage_journey = EdgeUsageJourney(
+    "edge usage journey",
+    edge_processes=[edge_process],
+    edge_device=edge_device,
+    usage_span=SourceValue(6 * u.year, source=None)
+)
+
+edge_usage_pattern = EdgeUsagePattern(
+    "Default edge usage pattern",
+    edge_usage_journey=edge_usage_journey,
+    country=country_generator(
+            "devices country", "its 3 letter shortname, for example FRA",
+        SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
+    hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
+        timespan=6 * u.year, input_volume=1000, frequency='weekly',
+        active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+        )
+
+system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 
 logger.info(f"computation took {round((time() - start), 3)} seconds")

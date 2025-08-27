@@ -42,6 +42,8 @@ nav:
       - Devices: Device.md
       - Network: Network.md
       - Storage: Storage.md
+      - Edge devices: EdgeDevice.md
+      - Edge storage: EdgeStorage.md
   - Services:
       - Web application:
           - Web application service: WebApplication.md
@@ -53,11 +55,14 @@ nav:
           - Gen AI service: GenAIModel.md
           - Gen AI job: GenAIJob.md
   - Usage:
-      - UsagePattern: UsagePattern.md
-      - UsageJourney: UsageJourney.md
-      - UsageJourneyStep: UsageJourneyStep.md
+      - Usage pattern: UsagePattern.md
+      - Usage journey: UsageJourney.md
+      - Usage journey step: UsageJourneyStep.md
       - Job: Job.md
-      - GPUJob: GPUJob.md
+      - GPU job: GPUJob.md
+      - Edge usage pattern: EdgeUsagePattern.md
+      - Edge usage journey: EdgeUsageJourney.md
+      - Recurrent edge process: RecurrentEdgeProcess.md
   - System: System.md
   - Country: Country.md
 - FAQ:

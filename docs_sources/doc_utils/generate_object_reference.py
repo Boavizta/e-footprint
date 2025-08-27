@@ -9,11 +9,13 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, web_application, genai_model,
-    video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job)
+    video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job, edge_device,
+    edge_usage_pattern, edge_usage_journey, edge_storage, edge_process)
 from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
@@ -32,18 +34,24 @@ def obj_to_md(input_obj, attr_name):
         obj_class = return_class_str(input_obj)
         return f"### {attr_name}\nAn instance of [{obj_class}]({obj_class}.md)."
     elif isinstance(input_obj, ExplainableQuantity):
-        return f"### {attr_name}\n{input_obj.label.lower()} in {input_obj.value.units}."
-    elif type(input_obj) == list:
+        return f"### {attr_name}\n{input_obj.label.capitalize()} in {input_obj.value.units}."
+    elif isinstance(input_obj, list):
         if isinstance(input_obj[0], ModelingObject):
             obj_class = return_class_str(input_obj[0])
             return f"### {attr_name}\nA list of [{obj_class}s]({obj_class}.md)."
         else:
             return "this shouldn’t happen"
     elif isinstance(input_obj, EmptyExplainableObject):
-        return (f"### {attr_name}\n{input_obj.label.lower()}. "
+        return (f"### {attr_name}\n{input_obj.label.capitalize()}. "
                 f"Can be an EmptyExplainableObject in which case the optimum number of instances will be computed,"
                 f" or an ExplainableQuantity with a dimensionless value, in which case e-footprint will raise an error "
                 f"if the object needs more instances than available.")
+    elif isinstance(input_obj, ExplainableHourlyQuantities):
+        return f"### {attr_name}\n{input_obj.label.capitalize()}, in hourly timeseries data."
+    elif isinstance(input_obj, ExplainableRecurringQuantities):
+        return (f"### {attr_name}\n{input_obj.label.capitalize()}, in typical week of hourly timeseries data, "
+                f"starting on Monday at midnight.\n\n"
+                f"For example, {input_obj}")
 
     return f"### {attr_name}\ndescription to be done"
 
@@ -52,14 +60,14 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return_str = f"### {attr_name}"
     calculation_graph_obj = input_obj
     if isinstance(input_obj, ExplainableQuantity):
-        return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
+        return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.capitalize()}."
     elif isinstance(input_obj, ExplainableHourlyQuantities):
-        return_str += f"""  \n{input_obj.label.lower()} in {input_obj.unit}."""
+        return_str += f"""  \n{input_obj.label.capitalize()} in {input_obj.unit}."""
     elif isinstance(input_obj, ExplainableObjectDict):
         dict_value = list(input_obj.values())[0]
         dict_key = list(input_obj.keys())[0]
         return_str += f"""  \nDictionary with {dict_key.class_as_simple_str} as keys and 
-                        {dict_value.label.lower()} as values, in {dict_value.unit}."""
+                        {dict_value.label.capitalize()} as values, in {dict_value.unit}."""
         calculation_graph_obj = dict_value
 
     str_input_obj_for_md = str(input_obj).replace("\n", "  \n")
@@ -137,7 +145,7 @@ def generate_object_reference(automatically_update_yaml=False):
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
             video_streaming, web_application, genai_model, video_streaming_job, web_application_job, genai_model_job,
-            storage):
+            storage, edge_usage_pattern, edge_usage_journey, edge_device, edge_storage, edge_process):
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)
 

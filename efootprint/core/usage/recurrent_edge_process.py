@@ -30,9 +30,9 @@ class RecurrentEdgeProcess(ModelingObject):
         self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
         self.unitary_hourly_storage_need_over_full_timespan = EmptyExplainableObject()
         
-        self.recurrent_compute_needed = recurrent_compute_needed
-        self.recurrent_ram_needed = recurrent_ram_needed
-        self.recurrent_storage_needed = recurrent_storage_needed
+        self.recurrent_compute_needed = recurrent_compute_needed.set_label(f"{self.name} recurrent compute needed")
+        self.recurrent_ram_needed = recurrent_ram_needed.set_label(f"{self.name} recurrent ram needed")
+        self.recurrent_storage_needed = recurrent_storage_needed.set_label(f"{self.name} recurrent storage needed")
 
     @property
     def calculated_attributes(self):

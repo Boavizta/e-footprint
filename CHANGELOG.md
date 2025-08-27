@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.0.0] - 2025-08-28
+
+### Added
+- EdgeStorage, EdgeDevice, RecurrentEdgeProcess, EdgeUsageJourney and EdgeUsagePattern objects, to be able to model a usage that depends on a number of devices sold / produced, in addition to the existing possibility of modeling an absolute usage with a web centralized infrastructure that has to be sized to meet the demand. System object now takes an edge_usage_patterns parameter as input, but older json files remain compatible.
+
+### Changed
+- Optimized speed of compute_nb_avg_hourly_occurrences function by a order of magnitude of 1000x.
+
 ## [10.1.15] - 2025-07-22
 
 ### Fixed

@@ -43,6 +43,8 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
     tutorial_images_dir = os.path.join(generated_mkdocs_sourcefiles_path, tutorial_image_dirname)
     if not os.path.exists(tutorial_images_dir):
         os.makedirs(tutorial_images_dir)
+    if not os.path.exists(images_path):
+        os.makedirs(images_path)
     for image in os.listdir(images_path):
         shutil.copy(os.path.join(images_path, image), os.path.join(tutorial_images_dir, image))
 
