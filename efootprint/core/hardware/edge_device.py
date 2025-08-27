@@ -24,7 +24,7 @@ class EdgeDevice(EdgeHardware):
         "ram": SourceValue(8 * u.GB, Sources.HYPOTHESIS),
         "compute": SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
-        "server_utilization_rate": SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+        "utilization_rate": SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
         "base_ram_consumption": SourceValue(1 * u.GB, Sources.HYPOTHESIS),
         "base_compute_consumption": SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
     }
@@ -33,7 +33,7 @@ class EdgeDevice(EdgeHardware):
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  power_usage_effectiveness: ExplainableQuantity,
-                 server_utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
+                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: EdgeStorage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         self.available_compute_per_instance = EmptyExplainableObject()
@@ -46,7 +46,7 @@ class EdgeDevice(EdgeHardware):
         self.ram = ram.set_label(f"RAM of {self.name}")
         self.compute = compute.set_label(f"Compute of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
-        self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
+        self.server_utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
         self.storage = storage

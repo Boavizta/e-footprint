@@ -30,7 +30,7 @@ class TestEdgeDevice(TestCase):
             ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
             compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
-            server_utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
+            utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
             base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
             storage=self.mock_storage

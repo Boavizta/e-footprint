@@ -137,7 +137,7 @@ def generate_big_system(
             ram=SourceValue(16 * u.GB),
             compute=SourceValue(8 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            server_utilization_rate=SourceValue(0.8 * u.dimensionless),
+            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
