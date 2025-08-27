@@ -14,7 +14,7 @@ ECOBENCHMARK_DATA = os.path.join(ROOT_PATH, "ecobenchmark_data_for_job_defaults.
 average_request_duration_in_s_hypothesis = 1  # TODO: Get a better number from next eco-benchmark analysis
 
 def default_request_duration():
-    return SourceValue(average_request_duration_in_s_hypothesis * u.s, Sources.HYPOTHESIS)
+    return SourceValue(average_request_duration_in_s_hypothesis * u.s)
 
 
 def download_file_from_url(url, file_path, overwrite=False):

@@ -15,16 +15,16 @@ class Server(ServerBase):
     default_values =  {
             "server_type": ServerTypes.autoscaling(),
             "carbon_footprint_fabrication": SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            "power": SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            "idle_power": SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-            "compute": SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
-            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            "average_carbon_intensity": SourceValue(400 * u.g / u.kWh, Sources.HYPOTHESIS),
-            "utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            "base_compute_consumption": SourceValue(0 * u.cpu_core, Sources.HYPOTHESIS),
+            "power": SourceValue(300 * u.W),
+            "lifespan": SourceValue(6 * u.year),
+            "idle_power": SourceValue(50 * u.W),
+            "ram": SourceValue(128 * u.GB),
+            "compute": SourceValue(24 * u.cpu_core),
+            "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
+            "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
+            "utilization_rate": SourceValue(0.9 * u.dimensionless),
+            "base_ram_consumption": SourceValue(0 * u.GB),
+            "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
 

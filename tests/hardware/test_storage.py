@@ -22,12 +22,12 @@ class TestStorage(TestCase):
             "storage_base",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg/u.TB),
             power_per_storage_capacity=SourceValue(0 * u.W / u.TB),
-            lifespan=SourceValue(0 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(0 * u.years),
+            idle_power=SourceValue(0 * u.W),
             storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
-            data_storage_duration=SourceValue(0 * u.years, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(0 * u.dimensionless),
+            data_storage_duration=SourceValue(0 * u.years),
+            base_storage_need=SourceValue(0 * u.TB)
         )
 
         self.storage_base.trigger_modeling_updates = False
@@ -239,7 +239,7 @@ class TestStorage(TestCase):
     def test_nb_of_instances_with_fixed_nb_of_instances(self):
         raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
         expected_data = [5, 5, 5]
-        fixed_nb_of_instances = SourceValue(5 * u.dimensionless, Sources.HYPOTHESIS)
+        fixed_nb_of_instances = SourceValue(5 * u.dimensionless)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
@@ -249,7 +249,7 @@ class TestStorage(TestCase):
 
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
         raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
-        fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
+        fixed_nb_of_instances = SourceValue(2 * u.dimensionless)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
@@ -261,7 +261,7 @@ class TestStorage(TestCase):
 
     def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
         raw_nb_of_instances = EmptyExplainableObject()
-        fixed_nb_of_instances = SourceValue(2 * u.dimensionless, Sources.HYPOTHESIS)
+        fixed_nb_of_instances = SourceValue(2 * u.dimensionless)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
                 patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):

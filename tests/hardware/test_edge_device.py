@@ -23,16 +23,16 @@ class TestEdgeDevice(TestCase):
         self.mock_storage = MagicMock(spec=EdgeStorage)
         self.edge_device = EdgeDevice(
             name="Test EdgeDevice",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
-            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
-            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            power=SourceValue(30 * u.W),
+            lifespan=SourceValue(8 * u.year),
+            idle_power=SourceValue(5 * u.W),
+            ram=SourceValue(8 * u.GB),
+            compute=SourceValue(4 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
+            utilization_rate=SourceValue(0.8 * u.dimensionless),
+            base_ram_consumption=SourceValue(1 * u.GB),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=self.mock_storage
         )
         self.edge_device.trigger_modeling_updates = False

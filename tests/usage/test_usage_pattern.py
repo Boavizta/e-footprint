@@ -33,11 +33,11 @@ class TestUsagePattern(unittest.TestCase):
         country = MagicMock(spec=Country)
         country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         self.device1 = MagicMock(spec=Device)
-        self.device1.lifespan = SourceValue(1 * u.year, Sources.HYPOTHESIS)
+        self.device1.lifespan = SourceValue(1 * u.year)
         self.device1.carbon_footprint_fabrication = SourceValue(10 * u.kg, Sources.BASE_ADEME_V19)
         self.device1.fraction_of_usage_time = SourceValue(2 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
         self.device2 = MagicMock(spec=Device)
-        self.device2.lifespan = SourceValue(1 * u.year, Sources.HYPOTHESIS)
+        self.device2.lifespan = SourceValue(1 * u.year)
         self.device2.carbon_footprint_fabrication = SourceValue(10 * u.kg, Sources.BASE_ADEME_V19)
         self.device2.fraction_of_usage_time = SourceValue(2 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
 
@@ -77,12 +77,12 @@ class TestUsagePattern(unittest.TestCase):
     def test_devices_fabrication_footprint(self):
         device1 = MagicMock(spec=Device)
         device1.name = "device1"
-        device1.lifespan = SourceValue(1 * u.year, Sources.HYPOTHESIS)
+        device1.lifespan = SourceValue(1 * u.year)
         device1.carbon_footprint_fabrication = SourceValue(365.25 * 24 * u.kg, Sources.BASE_ADEME_V19)
         device1.fraction_of_usage_time = SourceValue(12 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
         device2 = MagicMock(spec=Device)
         device2.name = "device2"
-        device2.lifespan = SourceValue(1 * u.year, Sources.HYPOTHESIS)
+        device2.lifespan = SourceValue(1 * u.year)
         device2.carbon_footprint_fabrication = SourceValue(365.25 * 24 * 3 * u.kg, Sources.BASE_ADEME_V19)
         device2.fraction_of_usage_time = SourceValue(8 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
         with patch.object(

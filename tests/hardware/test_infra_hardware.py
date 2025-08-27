@@ -37,7 +37,7 @@ class TestInfraHardware(TestCase):
 
         self.test_infra_hardware = InfraHardwareTestClass(
             "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS))
+            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years))
 
     def test_instances_fabrication_footprint(self):
         self.test_infra_hardware.update_nb_of_instances()
@@ -48,7 +48,7 @@ class TestInfraHardware(TestCase):
             round(self.test_infra_hardware.instances_fabrication_footprint, 3).magnitude))
 
     def test_energy_footprints(self):
-        self.test_infra_hardware.average_carbon_intensity = SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS)
+        self.test_infra_hardware.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         self.test_infra_hardware.update_instances_energy()
         self.test_infra_hardware.update_energy_footprint()
         self.assertEqual(u.kg, self.test_infra_hardware.energy_footprint.unit)

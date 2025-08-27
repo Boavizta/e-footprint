@@ -16,7 +16,7 @@ class EdgeHardware(HardwareBase):
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity):
         super().__init__(
-            name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
+            name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless))
         self.nb_of_instances = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.unitary_power_over_full_timespan = EmptyExplainableObject()

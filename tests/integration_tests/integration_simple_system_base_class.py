@@ -36,29 +36,29 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
         )
 
         server = Server(
             "Default server",
             ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
+            power=SourceValue(300 * u.W),
+            lifespan=SourceValue(6 * u.year),
+            idle_power=SourceValue(50 * u.W),
             ram=SourceValue(128 * u.GB, Sources.USER_DATA),
             compute=SourceValue(24 * u.cpu_core, Sources.USER_DATA),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
-            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
+            utilization_rate=SourceValue(0.9 * u.dimensionless),
+            base_ram_consumption=SourceValue(300 * u.MB),
+            base_compute_consumption=SourceValue(2 * u.cpu_core),
             storage=storage
         )
 
@@ -191,7 +191,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.initial_footprint = system.total_footprint
         self._test_input_change(
             storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
-        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless)
         self.assertEqual(old_initial_footprint, system.total_footprint)
         self.initial_footprint = old_initial_footprint
         self._test_variations_on_obj_inputs(uj)
@@ -282,7 +282,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         logger.warning("Setting storage fixed_nb_of_instances to not empty")
         old_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
-        self.storage.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+        self.storage.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless)
 
         self.footprint_has_changed([self.storage])
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
@@ -296,7 +296,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         logger.warning("Setting on premise fixed_nb_of_instances to not empty")
         old_fixed_nb_of_instances = self.server.fixed_nb_of_instances
-        self.server.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless, Sources.HYPOTHESIS)
+        self.server.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless)
 
         self.footprint_has_changed([self.server])
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
@@ -332,29 +332,29 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
         )
 
         new_server = Server(
             "New server, identical in specs to default one",
             server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-            compute=SourceValue(24 * u.cpu_core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
+            power=SourceValue(300 * u.W),
+            lifespan=SourceValue(6 * u.year),
+            idle_power=SourceValue(50 * u.W),
+            ram=SourceValue(128 * u.GB),
+            compute=SourceValue(24 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
+            utilization_rate=SourceValue(0.9 * u.dimensionless),
+            base_ram_consumption=SourceValue(300 * u.MB),
+            base_compute_consumption=SourceValue(2 * u.cpu_core),
             storage=new_storage
         )
 
@@ -380,13 +380,13 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless, Sources.HYPOTHESIS)
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
         )
         logger.warning("Changing jobs storage")
 

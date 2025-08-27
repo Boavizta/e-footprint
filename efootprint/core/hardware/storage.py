@@ -51,12 +51,12 @@ class Storage(InfraHardware):
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "lifespan": SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            "lifespan": SourceValue(6 * u.years),
+            "idle_power": SourceValue(0 * u.W),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-            "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
-            "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
+            "data_replication_factor": SourceValue(3 * u.dimensionless),
+            "base_storage_need": SourceValue(0 * u.TB),
+            "data_storage_duration": SourceValue(5 * u.year)
         }
 
         output_args.update(kwargs)
@@ -69,12 +69,12 @@ class Storage(InfraHardware):
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
                 20 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "power_per_storage_capacity": SourceValue(4.2 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "lifespan": SourceValue(4 * u.years, Sources.HYPOTHESIS),
-            "idle_power": SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            "lifespan": SourceValue(4 * u.years),
+            "idle_power": SourceValue(0 * u.W),
             "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-            "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
-            "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
+            "data_replication_factor": SourceValue(3 * u.dimensionless),
+            "base_storage_need": SourceValue(0 * u.TB),
+            "data_storage_duration": SourceValue(5 * u.year)
         }
 
         output_args.update(kwargs)

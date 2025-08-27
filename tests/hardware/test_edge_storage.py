@@ -22,12 +22,12 @@ class TestEdgeStorage(TestCase):
     def setUp(self):
         self.edge_storage = EdgeStorage(
             name="Test EdgeStorage",
-            storage_capacity=SourceValue(1 * u.TB, Sources.HYPOTHESIS),
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, Sources.HYPOTHESIS),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS)
+            storage_capacity=SourceValue(1 * u.TB),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB),
+            idle_power=SourceValue(0 * u.W),
+            base_storage_need=SourceValue(0 * u.TB),
+            lifespan=SourceValue(6 * u.years)
         )
         self.edge_storage.trigger_modeling_updates = False
 
@@ -72,8 +72,8 @@ class TestEdgeStorage(TestCase):
         """Test SSD factory method with custom parameters."""
         ssd = EdgeStorage.ssd(
             name="Custom SSD",
-            storage_capacity=SourceValue(2 * u.TB, Sources.HYPOTHESIS),
-            lifespan=SourceValue(8 * u.years, Sources.HYPOTHESIS)
+            storage_capacity=SourceValue(2 * u.TB),
+            lifespan=SourceValue(8 * u.years)
         )
         self.assertEqual("Custom SSD", ssd.name)
         self.assertEqual(2 * u.TB, ssd.storage_capacity.value)
@@ -96,8 +96,8 @@ class TestEdgeStorage(TestCase):
         """Test HDD factory method with custom parameters."""
         hdd = EdgeStorage.hdd(
             name="Custom HDD",
-            storage_capacity=SourceValue(4 * u.TB, Sources.HYPOTHESIS),
-            idle_power=SourceValue(2 * u.W, Sources.HYPOTHESIS)
+            storage_capacity=SourceValue(4 * u.TB),
+            idle_power=SourceValue(2 * u.W)
         )
         self.assertEqual("Custom HDD", hdd.name)
         self.assertEqual(4 * u.TB, hdd.storage_capacity.value)
@@ -179,7 +179,7 @@ class TestEdgeStorage(TestCase):
     def test_power_usage_effectiveness_property_with_device(self):
         """Test power_usage_effectiveness property delegates to device."""
         mock_device = MagicMock(spec=EdgeDevice)
-        mock_pue = SourceValue(1.4 * u.dimensionless, Sources.HYPOTHESIS)
+        mock_pue = SourceValue(1.4 * u.dimensionless)
         mock_device.power_usage_effectiveness = mock_pue
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
@@ -190,9 +190,9 @@ class TestEdgeStorage(TestCase):
     def test_update_carbon_footprint_fabrication(self):
         """Test update_carbon_footprint_fabrication calculation."""
         with patch.object(self.edge_storage, "carbon_footprint_fabrication_per_storage_capacity",
-                         SourceValue(100 * u.kg / u.TB, Sources.HYPOTHESIS)), \
+                         SourceValue(100 * u.kg / u.TB)), \
              patch.object(self.edge_storage, "storage_capacity",
-                         SourceValue(2 * u.TB, Sources.HYPOTHESIS)):
+                         SourceValue(2 * u.TB)):
             
             self.edge_storage.update_carbon_footprint_fabrication()
             
@@ -206,8 +206,8 @@ class TestEdgeStorage(TestCase):
     def test_update_power(self):
         """Test update_power calculation."""
         with patch.object(self.edge_storage, "power_per_storage_capacity",
-                          SourceValue(2.0 * u.W / u.TB, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(3 * u.TB, Sources.HYPOTHESIS)):
+                          SourceValue(2.0 * u.W / u.TB)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(3 * u.TB)):
             
             self.edge_storage.update_power()
             
@@ -266,7 +266,7 @@ class TestEdgeStorage(TestCase):
         # Create mock edge device and usage journey
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_journey.usage_span = SourceValue(3 * u.hour, Sources.HYPOTHESIS)
+        mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
@@ -275,8 +275,8 @@ class TestEdgeStorage(TestCase):
         self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
         
         # Set base storage need and storage capacity
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(20 * u.GB, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB, Sources.HYPOTHESIS)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(20 * u.GB)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
             
             self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
             
@@ -295,7 +295,7 @@ class TestEdgeStorage(TestCase):
         """Test update_cumulative_unitary_storage_need raises error on negative cumulative storage."""
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_journey.usage_span = SourceValue(3 * u.hour, Sources.HYPOTHESIS)
+        mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
@@ -303,8 +303,8 @@ class TestEdgeStorage(TestCase):
         storage_delta = create_source_hourly_values_from_list([10, -20, 5], pint_unit=u.GB)
         self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
         
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB, Sources.HYPOTHESIS)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
             
             with self.assertRaises(NegativeCumulativeStorageNeedError) as context:
                 self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
@@ -318,7 +318,7 @@ class TestEdgeStorage(TestCase):
         """Test update_cumulative_unitary_storage_need raises error when capacity exceeded."""
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_journey.usage_span = SourceValue(2 * u.hour, Sources.HYPOTHESIS)
+        mock_journey.usage_span = SourceValue(2 * u.hour)
         mock_device.edge_usage_journey = mock_journey
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
@@ -326,8 +326,8 @@ class TestEdgeStorage(TestCase):
         storage_delta = create_source_hourly_values_from_list([40, 60], pint_unit=u.GB)
         self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
         
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB, Sources.HYPOTHESIS)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB)):
             
             with self.assertRaises(InsufficientCapacityError) as context:
                 self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
@@ -345,11 +345,11 @@ class TestEdgeStorage(TestCase):
         storage_delta = create_source_hourly_values_from_list([0, 500, -250], pint_unit=u.GB)
         
         with patch.object(self.edge_storage, "unitary_storage_delta_over_full_timespan", storage_delta), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(1 * u.TB, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "idle_power", SourceValue(5 * u.W, Sources.HYPOTHESIS)), \
-             patch.object(self.edge_storage, "power", SourceValue(25 * u.W, Sources.HYPOTHESIS)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(1 * u.TB)), \
+             patch.object(self.edge_storage, "idle_power", SourceValue(5 * u.W)), \
+             patch.object(self.edge_storage, "power", SourceValue(25 * u.W)), \
              patch.object(EdgeStorage, "power_usage_effectiveness", new_callable=PropertyMock) as mock_pue:
-            mock_pue.return_value = SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS)
+            mock_pue.return_value = SourceValue(1.2 * u.dimensionless)
             self.edge_storage.update_unitary_power_over_full_timespan()
             
             # Activity levels: [0/1000, 500/1000, 250/1000] = [0, 0.5, 0.25]

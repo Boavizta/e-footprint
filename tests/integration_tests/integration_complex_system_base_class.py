@@ -37,12 +37,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(3 * u.dimensionless),
+            data_storage_duration=SourceValue(4 * u.hour),
+            base_storage_need=SourceValue(100 * u.TB)
         )
 
         storage_2 = Storage(
@@ -50,53 +50,53 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(3 * u.dimensionless),
+            data_storage_duration=SourceValue(4 * u.hour),
+            base_storage_need=SourceValue(100 * u.TB)
         )
 
         server1 = Server(
             "Server 1",
             server_type=ServerTypes.autoscaling(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(12 * u.GB, Sources.HYPOTHESIS),
-            compute=SourceValue(6 * u.cpu_core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
+            power=SourceValue(300 * u.W),
+            lifespan=SourceValue(6 * u.year),
+            idle_power=SourceValue(50 * u.W),
+            ram=SourceValue(12 * u.GB),
+            compute=SourceValue(6 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
+            utilization_rate=SourceValue(0.9 * u.dimensionless),
+            base_ram_consumption=SourceValue(300 * u.MB),
+            base_compute_consumption=SourceValue(2 * u.cpu_core),
             storage=storage_1
         )
-        cores_per_cpu_units = SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS)
-        nb_cpu_units = SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+        cores_per_cpu_units = SourceValue(2 * u.cpu_core)
+        nb_cpu_units = SourceValue(3 * u.dimensionless)
         server2 = Server(
             "Server 2",
             server_type=ServerTypes.on_premise(),
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(12 * u.GB, Sources.HYPOTHESIS),
+            power=SourceValue(300 * u.W),
+            lifespan=SourceValue(6 * u.year),
+            idle_power=SourceValue(50 * u.W),
+            ram=SourceValue(12 * u.GB),
             compute=cores_per_cpu_units * nb_cpu_units,
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
+            utilization_rate=SourceValue(0.9 * u.dimensionless),
+            base_ram_consumption=SourceValue(300 * u.MB),
+            base_compute_consumption=SourceValue(2 * u.cpu_core),
             storage=storage_2
         )
         server3 = Server.from_defaults(
             "Server 3", server_type=ServerTypes.serverless(),
             storage=Storage.ssd("Default SSD storage 3"),
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(2 * u.cpu_core, Sources.HYPOTHESIS))
+            base_ram_consumption=SourceValue(300 * u.MB),
+            base_compute_consumption=SourceValue(2 * u.cpu_core))
         storage_3 = server3.storage
 
         server1_job1 = Job("server 1 job 1", server1, data_transferred=SourceValue(1 * u.GB),
@@ -159,24 +159,24 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB, Sources.HYPOTHESIS)
+            base_storage_need=SourceValue(10 * u.GB)
         )
 
         edge_device = EdgeDevice(
             "Edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
-            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
-            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            power=SourceValue(30 * u.W),
+            lifespan=SourceValue(8 * u.year),
+            idle_power=SourceValue(5 * u.W),
+            ram=SourceValue(8 * u.GB),
+            compute=SourceValue(4 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
+            utilization_rate=SourceValue(0.8 * u.dimensionless),
+            base_ram_consumption=SourceValue(1 * u.GB),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
         )
 
@@ -194,7 +194,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "Edge usage journey",
             edge_processes=[edge_process],
             edge_device=edge_device,
-            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+            usage_span=SourceValue(6 * u.year)
         )
 
         edge_usage_pattern = EdgeUsagePattern(
@@ -397,24 +397,24 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
                 160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-            idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB, Sources.HYPOTHESIS)
+            base_storage_need=SourceValue(10 * u.GB)
         )
 
         new_edge_device = EdgeDevice(
             "New edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.HYPOTHESIS),
-            power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-            lifespan=SourceValue(8 * u.year, Sources.HYPOTHESIS),
-            idle_power=SourceValue(5 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(8 * u.GB, Sources.HYPOTHESIS),
-            compute=SourceValue(4 * u.cpu_core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, Sources.HYPOTHESIS),
-            utilization_rate=SourceValue(0.8 * u.dimensionless, Sources.HYPOTHESIS),
-            base_ram_consumption=SourceValue(1 * u.GB, Sources.HYPOTHESIS),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core, Sources.HYPOTHESIS),
+            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            power=SourceValue(30 * u.W),
+            lifespan=SourceValue(8 * u.year),
+            idle_power=SourceValue(5 * u.W),
+            ram=SourceValue(8 * u.GB),
+            compute=SourceValue(4 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
+            utilization_rate=SourceValue(0.8 * u.dimensionless),
+            base_ram_consumption=SourceValue(1 * u.GB),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
         )
 
@@ -432,7 +432,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "New edge usage journey",
             edge_processes=[new_edge_process],
             edge_device=new_edge_device,
-            usage_span=SourceValue(6 * u.year, Sources.HYPOTHESIS)
+            usage_span=SourceValue(6 * u.year)
         )
 
         new_edge_usage_pattern = EdgeUsagePattern(

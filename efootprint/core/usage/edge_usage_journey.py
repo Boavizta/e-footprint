@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class EdgeUsageJourney(ModelingObject):
     default_values = {
-        "usage_span": SourceValue(6 * u.year, Sources.HYPOTHESIS)
+        "usage_span": SourceValue(6 * u.year)
     }
 
     def __init__(self, name: str, edge_processes: List[RecurrentEdgeProcess], edge_device: EdgeDevice,

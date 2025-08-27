@@ -51,14 +51,14 @@ class TestEdgeHardware(TestCase):
 
         self.test_edge_hardware = EdgeHardwareTestClass(
             "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
             edge_usage_pattern=mock_edge_usage_pattern)
         
     def test_nb_of_instances_property_no_pattern(self):
         """Test nb_of_instances property when no pattern is set."""
         test_edge_hardware = EdgeHardwareTestClass(
             "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
             edge_usage_pattern=None)
         test_edge_hardware.update_nb_of_instances()
         self.assertIsInstance(test_edge_hardware.nb_of_instances, EmptyExplainableObject)
@@ -76,7 +76,7 @@ class TestEdgeHardware(TestCase):
         """Test average_carbon_intensity property."""
         test_edge_hardware = EdgeHardwareTestClass(
             "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
             edge_usage_pattern=None)
         self.assertEqual(EmptyExplainableObject(), test_edge_hardware.average_carbon_intensity)
         
