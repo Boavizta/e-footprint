@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
@@ -92,7 +93,7 @@ class System(ModelingObject):
 
     def get_objects_linked_to_usage_patterns(
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
-        output_list =  self.storages_from_usage_patterns + usage_patterns + self.networks
+        output_list =  self.storages + usage_patterns + self.networks
         usage_journeys = self.usage_journeys
         uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
@@ -106,7 +107,7 @@ class System(ModelingObject):
 
     def get_objects_linked_to_edge_usage_patterns(
             self, edge_usage_patterns: List[EdgeUsagePattern]) -> List[ModelingObject]:
-        output_list = self.storages_from_edge_usage_patterns + edge_usage_patterns
+        output_list = self.edge_storages + edge_usage_patterns
         edge_usage_journeys = self.edge_usage_journeys
         edge_processes = list(set(sum([euj.edge_processes for euj in edge_usage_journeys], start=[])))
         edge_devices = self.edge_devices
@@ -137,16 +138,12 @@ class System(ModelingObject):
         return list(set([euj.edge_device for euj in self.edge_usage_journeys]))
 
     @property
-    def storages_from_usage_patterns(self) -> List[Storage]:
+    def storages(self) -> List[Storage]:
         return list(set(sum([usage_pattern.usage_journey.storages for usage_pattern in self.usage_patterns], start=[])))
 
     @property
-    def storages_from_edge_usage_patterns(self) -> List[Storage]:
+    def edge_storages(self) -> List[EdgeStorage]:
         return list(set([eup.edge_usage_journey.edge_device.storage for eup in self.edge_usage_patterns]))
-
-    @property
-    def storages(self) -> List[Storage]:
-        return self.storages_from_usage_patterns + self.storages_from_edge_usage_patterns
 
     @property
     def networks(self) -> List[Network]:
@@ -165,11 +162,13 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": {server.id: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.id: storage.instances_fabrication_footprint for storage in self.storages},
-            "Network": {"networks": EmptyExplainableObject()},
+            "Network": {},
             "Devices": {usage_pattern.id: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
             "EdgeDevices": {edge_device.id: edge_device.instances_fabrication_footprint
                             for edge_device in self.edge_devices},
+            "EdgeStorage": {edge_storage.id: edge_storage.instances_fabrication_footprint
+                             for edge_storage in self.edge_storages},
         }
 
         return fab_footprints
@@ -183,6 +182,7 @@ class System(ModelingObject):
             "Devices": {usage_pattern.id: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
             "EdgeDevices": {edge_device.id: edge_device.energy_footprint for edge_device in self.edge_devices},
+            "EdgeStorage": {edge_storage.id: edge_storage.energy_footprint for edge_storage in self.edge_storages},
         }
 
         return energy_footprints
@@ -202,7 +202,10 @@ class System(ModelingObject):
                 "Devices total fabrication footprint"),
             "EdgeDevices": sum([edge_device.instances_fabrication_footprint for edge_device in self.edge_devices],
                                start=EmptyExplainableObject()).to(u.kg).set_label(
-                "EdgeDevices total fabrication footprint")
+                "EdgeDevices total fabrication footprint"),
+            "EdgeStorage": sum([edge_storage.instances_fabrication_footprint for edge_storage in self.edge_storages],
+                                start=EmptyExplainableObject()).to(u.kg).set_label(
+                "EdgeStorage total fabrication footprint")
         }
 
         return fab_footprints
@@ -219,7 +222,9 @@ class System(ModelingObject):
             "Devices": sum([usage_pattern.energy_footprint for usage_pattern in self.usage_patterns],
                            start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint"),
             "EdgeDevices": sum([edge_device.energy_footprint for edge_device in self.edge_devices],
-                               start=EmptyExplainableObject()).to(u.kg).set_label("EdgeDevices total energy footprint")
+                               start=EmptyExplainableObject()).to(u.kg).set_label("EdgeDevices total energy footprint"),
+            "EdgeStorage": sum([edge_storage.energy_footprint for edge_storage in self.edge_storages],
+                               start=EmptyExplainableObject()).to(u.kg).set_label("EdgeStorage total energy footprint")
         }
 
         return energy_footprints
@@ -279,8 +284,8 @@ class System(ModelingObject):
     def update_total_footprint(self):
         total_footprint = (
             sum(
-                sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
-                for key in self.fabrication_footprints
+                [sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
+                for key in self.fabrication_footprints], start=EmptyExplainableObject()
             )
         ).to(u.kg).set_label(f"{self.name} total carbon footprint")
 

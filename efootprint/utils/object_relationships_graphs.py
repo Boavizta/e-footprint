@@ -11,7 +11,12 @@ COLOR_MAP = {
     "UsagePattern": "blue",
     "UsageJourney": "dodgerblue",
     "UsageJourneyStep": "deepskyblue",
+    "EdgeDevice": "red",
+    "EdgeStorage": "red",
+    "EdgeUsagePattern": "blue",
+    "EdgeUsageJourney": "dodgerblue",
     "Job": "palegoldenrod",
+    "RecurrentEdgeProcess": "palegoldenrod",
     "VideoStreamingJob": "palegoldenrod",
     "GenAIJob": "palegoldenrod",
     "WebApplicationJob": "palegoldenrod",
@@ -21,10 +26,10 @@ COLOR_MAP = {
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
-    "System", "Network", "Device", "Country", "Job", "Storage", "VideoStreaming", "GenAIModel", "WebApplication",
-    "VideoStreamingJob", "GenAIJob", "WebApplicationJob"]
+    "System", "Network", "Device", "Country", "Job", "RecurrentEdgeProcess", "Storage", "EdgeStorage",
+    "VideoStreaming", "GenAIModel", "WebApplication", "VideoStreamingJob", "GenAIJob", "WebApplicationJob"]
 INFRA_VIEW_CLASSES_TO_IGNORE = [
-    "UsagePattern", "Network", "Device", "System", "UsageJourney", "UsageJourneyStep", "Country"]
+    "UsagePattern", "EdgeUsagePattern", "Network", "Device", "System", "UsageJourneyStep", "Country"]
 
 
 def build_object_relationships_graph(
@@ -43,8 +48,8 @@ def build_object_relationships_graph(
     if id(input_mod_obj) in visited_python_ids:
         return input_graph
     # Python ids are used to track visited objects because there can be multiple ContextualModelingObjectAttributes
-    # pointing to the same ModelingObject instance, and their ids will be the same in this case, whereas the Python ids
-    # will always be different.
+    # pointing to the same ModelingObject instance, and their e-footprint ids will be the same in this case, whereas
+    # the Python ids will always be different.
     visited_python_ids.add(id(input_mod_obj))
 
     input_mod_obj_type = input_mod_obj.class_as_simple_str

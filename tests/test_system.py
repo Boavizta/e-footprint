@@ -147,10 +147,11 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Storage": {"storage_id": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Network": {"networks": EmptyExplainableObject()},
+            "Network": {},
             "Devices": {"usage_pattern_id": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "EdgeDevices": {}
+            "EdgeDevices": {},
+            "EdgeStorage": {}
         }
         
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
@@ -165,7 +166,8 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"network_id": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "EdgeDevices": {}
+            "EdgeDevices": {},
+            "EdgeStorage": {}
         }
 
         self.assertDictEqual(expected_dict, self.system.energy_footprints)
@@ -179,7 +181,8 @@ class TestSystem(TestCase):
             "Devices": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
             "Network": EmptyExplainableObject(),
-            "EdgeDevices": EmptyExplainableObject()
+            "EdgeDevices": EmptyExplainableObject(),
+            "EdgeStorage": EmptyExplainableObject()
         }
         self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
 
@@ -194,7 +197,8 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
             "Network": 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg),
-            "EdgeDevices": EmptyExplainableObject()
+            "EdgeDevices": EmptyExplainableObject(),
+            "EdgeStorage": EmptyExplainableObject()
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)
@@ -264,7 +268,8 @@ class TestSystem(TestCase):
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(0 * u.kg, "null value"),
-            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeStorage": ExplainableQuantity(0 * u.kg, "null value")
         }
 
         with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
@@ -289,7 +294,8 @@ class TestSystem(TestCase):
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(6 * u.kg, "null value"),
-            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeStorage": ExplainableQuantity(0 * u.kg, "null value")
         }
 
         with patch.object(System, "energy_footprints", new_callable=PropertyMock) as energy_mock:
@@ -486,7 +492,7 @@ class TestSystem(TestCase):
         
         self.assertEqual([edge_usage_pattern], system.edge_usage_patterns)
         self.assertEqual([edge_device], system.edge_devices)
-        self.assertEqual([storage_from_edge], system.storages_from_edge_usage_patterns)
+        self.assertEqual([storage_from_edge], system.edge_storages)
         self.assertEqual([edge_usage_journey], system.edge_usage_journeys)
 
     def test_fabrication_footprints_includes_edge_devices(self):
@@ -495,10 +501,11 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Storage": {self.storage.id: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Network": {"networks": EmptyExplainableObject()},
+            "Network": {},
             "Devices": {self.usage_pattern.id: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "EdgeDevices": {}
+            "EdgeDevices": {},
+            "EdgeStorage": {}
         }
         
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints)
@@ -524,7 +531,8 @@ class TestSystem(TestCase):
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {self.network.id: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "EdgeDevices": {}
+            "EdgeDevices": {},
+            "EdgeStorage": {}
         }
 
         self.assertDictEqual(expected_dict, self.system.energy_footprints)
@@ -568,7 +576,8 @@ class TestSystem(TestCase):
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(0 * u.kg, "null value"),
-            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeStorage": ExplainableQuantity(0 * u.kg, "null value")
         }
         
         total_fab_sum = self.system.total_fabrication_footprint_sum_over_period
@@ -590,7 +599,8 @@ class TestSystem(TestCase):
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(6 * u.kg, "null value"),
-            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value")
+            "EdgeDevices": ExplainableQuantity(0 * u.kg, "null value"),
+            "EdgeStorage": ExplainableQuantity(0 * u.kg, "null value")
         }
         
         total_energy_sum = self.system.total_energy_footprint_sum_over_period
@@ -656,7 +666,7 @@ class TestSystem(TestCase):
         self.assertEqual([edge_device], system.edge_devices)
         
         # Test combined storages
-        combined_storages = system.storages
+        combined_storages = system.storages + system.edge_storages
         self.assertIn(self.storage, combined_storages)
         self.assertIn(storage_from_edge, combined_storages)
         

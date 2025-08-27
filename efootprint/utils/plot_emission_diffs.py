@@ -3,6 +3,7 @@ from typing import List, Dict
 import matplotlib.pyplot as plt
 import numpy as np
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 
@@ -16,7 +17,13 @@ class EmissionPlotter:
         self.formatted_input_dicts__new = formatted_input_dicts__new
         self.rounding_value = rounding_value
         self.legend_labels = legend_labels
-        self.elements = ["Servers", "Storage", "Network", "Devices"]
+        all_elements = ["Servers", "Storage", "Network", "Devices", "EdgeDevices", "EdgeStorage"]
+        elements = []
+        for elt in all_elements:
+            for dict in formatted_input_dicts__old + formatted_input_dicts__new:
+                if elt in dict and dict[elt] != EmptyExplainableObject() and elt not in elements:
+                    elements.append(elt)
+        self.elements = elements
         self.index = np.arange(len(self.elements))
         self.bar_width = 0.4
         self.total_emissions_in_kg__new = self.calculate_total_emissions(formatted_input_dicts__new)
