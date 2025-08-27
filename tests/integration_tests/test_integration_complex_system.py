@@ -23,6 +23,9 @@ class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
     def test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
         self.run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts()
 
+    def test_add_edge_usage_pattern(self):
+        self.run_test_add_edge_usage_pattern()
+
     def test_system_to_json(self):
         self.run_test_system_to_json(self.system)
 
