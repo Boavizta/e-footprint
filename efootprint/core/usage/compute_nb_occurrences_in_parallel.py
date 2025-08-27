@@ -2,6 +2,7 @@ import numpy as np
 from copy import copy
 
 from pint import Quantity
+from scipy.signal import fftconvolve
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -37,14 +38,13 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
     # Convert duration to number of hours
     event_duration_in_hours = copy(event_duration.value).to(u.hour).magnitude
     nb_full_hours = int(np.floor(event_duration_in_hours))
-    frac_hour = event_duration_in_hours - nb_full_hours
 
     values = hourly_occurrences_starts.value.astype(np.float32, copy=False).magnitude
 
     # --- Full-hour contribution ---
     if nb_full_hours > 0:
         kernel = np.ones(nb_full_hours, dtype=np.float32)
-        result = np.convolve(values, kernel, mode="full")
+        result = fftconvolve(values, kernel, mode="full")
     else:
         result = None
 
