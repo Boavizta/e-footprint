@@ -1,4 +1,14 @@
 from time import time
+
+import numpy as np
+from pint import Quantity
+
+from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.usage.edge_process import EdgeProcess
+from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+
 start = time()
 
 import os
@@ -6,7 +16,7 @@ os.environ["USE_BOAVIZTAPI_PACKAGE"] = "true"
 
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -22,7 +32,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
-from efootprint.constants.countries import country_generator, tz
+from efootprint.constants.countries import country_generator, tz, Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_hourly_usage_from_frequency, create_random_source_hourly_values
 from efootprint.logger import logger
@@ -31,29 +41,26 @@ logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds
 
 def generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_years=5):
-    """
-    Generates a big system with the specified number of servers, user journeys, and steps per user journey.
-    """
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_device=3, nb_years=5):
     start = time()
     usage_patterns = []
     for server_index in range(1, nb_of_servers_of_each_type + 1):
         autoscaling_server = Server.from_defaults(
             f"server {server_index}",
             server_type=ServerTypes.autoscaling(),
-            storage=Storage.ssd()
+            storage=Storage.ssd(f"storage of autoscaling server {server_index}")
         )
 
         serverless_server = BoaviztaCloudServer.from_defaults(
             f"serverless cloud functions {server_index}",
             server_type=ServerTypes.serverless(),
-            storage=Storage.ssd()
+            storage=Storage.ssd(f"storage of serverless server {server_index}")
         )
 
         on_premise_gpu_server = GPUServer.from_defaults(
             f"on premise GPU server {server_index}",
             server_type=ServerTypes.on_premise(),
-            storage=Storage.ssd()
+            storage=Storage.ssd(f"storage of on-premise GPU server {server_index}")
         )
 
         video_streaming = VideoStreaming.from_defaults(f"Video streaming service {server_index}", server=autoscaling_server)
@@ -91,7 +98,7 @@ def generate_big_system(
             for up_nb in range(1, nb_of_up_per_uj + 1):
                 usage_patterns.append(
                     UsagePattern(
-                        f"usage pattern {up_nb} of {uj_index}",
+                        f"usage pattern {up_nb} of uj {uj_index}",
                         usage_journey=usage_journey,
                         devices=[
                             Device(name=f"device on which the user journey {uj_index} is made",
@@ -109,7 +116,63 @@ def generate_big_system(
                     )
                 )
 
-    system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=[])
+    edge_usage_patterns = []
+    for edge_usage_pattern_index in range(1, nb_of_edge_usage_patterns + 1):
+        edge_storage = EdgeStorage(
+            f"Edge SSD storage {edge_usage_pattern_index}",
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB),
+            lifespan=SourceValue(6 * u.years),
+            idle_power=SourceValue(0.1 * u.W),
+            storage_capacity=SourceValue(1 * u.TB),
+            base_storage_need=SourceValue(10 * u.GB),
+        )
+
+        edge_device = EdgeDevice(
+            f"Default edge device {edge_usage_pattern_index}",
+            carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            power=SourceValue(30 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power=SourceValue(5 * u.W),
+            ram=SourceValue(16 * u.GB),
+            compute=SourceValue(8 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
+            server_utilization_rate=SourceValue(0.8 * u.dimensionless),
+            base_ram_consumption=SourceValue(1 * u.GB),
+            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
+            storage=edge_storage
+        )
+        edge_processes = []
+        for edge_process_index in range(1, nb_of_edge_processes_per_edge_device + 1):
+            edge_process = EdgeProcess(
+                f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
+                recurrent_compute_needed=SourceRecurringValues(
+                    Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+                recurrent_ram_needed=SourceRecurringValues(
+                    Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+                recurrent_storage_needed=SourceRecurringValues(
+                    Quantity(np.array([200] * 168, dtype=np.float32), u.kB))
+            )
+            edge_processes.append(edge_process)
+
+        edge_usage_journey = EdgeUsageJourney(
+            f"Default edge usage journey {edge_usage_pattern_index}",
+            edge_processes=edge_processes,
+            edge_device=edge_device,
+            usage_span=SourceValue(6 * u.year)
+        )
+
+        edge_usage_pattern = EdgeUsagePattern(
+            f"Default edge usage pattern {edge_usage_pattern_index}",
+            edge_usage_journey=edge_usage_journey,
+            country=Countries.FRANCE(),
+            hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
+                timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
+                active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+                )
+        edge_usage_patterns.append(edge_usage_pattern)
+
+    system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=edge_usage_patterns)
     logger.info(f"Finished generating system in {round((time() - start), 3)} seconds")
 
     timed_system_to_json(system, save_calculated_attributes=False, output_filepath="big_system.json")
@@ -125,7 +188,8 @@ if __name__ == "__main__":
     # Live system editions benchmarking
     nb_years = 5
     system = generate_big_system(
-        nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3, nb_years=nb_years)
+        nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
+        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_device=5, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()
@@ -143,6 +207,14 @@ if __name__ == "__main__":
     end = time()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
+
+    start = time()
+    for i in range(edition_iterations):
+        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = create_random_source_hourly_values(
+            timespan=nb_years * u.year)
+    end = time()
+    compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
+    logger.info(f"edition took {compute_time_per_edition} ms on average per edge hourly usage journey starts edition")
 
     from efootprint.abstract_modeling_classes.modeling_object import compute_times
     total_time = 0

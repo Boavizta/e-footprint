@@ -39,10 +39,13 @@ def log_number_of_live_objects(sleep_duration=0.5):
 def update_on_system(
         nb_system_loadings: 10, system_dict: dict, object_type: str, attr_to_change: str, new_value: ExplainableObject):
     start = time()
+    json_to_system_duration = 0
     system_to_json_duration = 0
     for i in range(nb_system_loadings):
+        json_to_system_start = time()
         class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
             system_dict, launch_system_computations=False)
+        json_to_system_duration += time() - json_to_system_start
         first_object = next(iter(class_obj_dict_computed[object_type].values()))
         first_object.__setattr__(attr_to_change, new_value)
         system_to_json_start = time()
@@ -50,12 +53,15 @@ def update_on_system(
                        output_filepath=None)
         system_to_json_duration += time() - system_to_json_start
     avg_loading_editing_writing_time = round(1000 * (time() - start) / nb_system_loadings, 1)
+    avg_json_to_system_time = round(1000 * json_to_system_duration / nb_system_loadings, 1)
+    avg_json_to_system_time_percentage = round(100 * avg_json_to_system_time / avg_loading_editing_writing_time, 1)
     avg_system_to_json_time = round(1000 * system_to_json_duration / nb_system_loadings, 1)
     avg_system_to_json_time_percentage = round(100 * avg_system_to_json_time / avg_loading_editing_writing_time, 1)
     logger.info(
         f"deserializing system then editing {attr_to_change} in first {object_type} then reserializing system took\n"
         f"{avg_loading_editing_writing_time} ms on average for {nb_system_loadings} times, including "
-        f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}% of total time)")
+        f"{avg_system_to_json_time} ms of system_to_json ({avg_system_to_json_time_percentage}%) "
+        f"and {avg_json_to_system_time} ms of json_to_system ({avg_json_to_system_time_percentage}%) ")
 
     return avg_loading_editing_writing_time
 
@@ -65,7 +71,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         os.environ.pop("USE_BOAVIZTAPI_PACKAGE")
         generate_big_system(
             nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-            nb_years=5)
+            nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_device=5, nb_years=5)
         start = time()
         with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file:
             system_dict = json.load(file)
@@ -73,7 +79,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
 
 
         start = time()
-        nb_system_loadings = 50
+        nb_system_loadings = 10
         for i in range(nb_system_loadings):
             class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
                 system_dict, launch_system_computations=False)
@@ -91,10 +97,15 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
         self.assertLess(avg_writing_time, 0.075)
 
-        nb_system_loadings = 10
+        nb_system_loadings = 5
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_usage_journey_starts",
-            create_random_source_hourly_values(timespan=3 * u.year))
+            create_random_source_hourly_values(timespan=5 * u.year))
+        self.assertLess(avg_loading_editing_writing_time, 800)
+
+        avg_loading_editing_writing_time = update_on_system(
+            nb_system_loadings, system_dict, "EdgeUsagePattern", "hourly_edge_usage_journey_starts",
+            create_random_source_hourly_values(timespan=5 * u.year))
         self.assertLess(avg_loading_editing_writing_time, 800)
 
         avg_loading_editing_writing_time = update_on_system(

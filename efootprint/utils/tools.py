@@ -24,8 +24,8 @@ def time_it(func):
         result = func(*args, **kwargs)
         end_time = time.time()
         diff = end_time - start_time
-        if diff > 0.001:
-            logger.info(f"Function {func.__name__} took {diff:.5f} seconds to execute.")
+        if diff > 0.000001:
+            logger.info(f"Function {func.__name__} took {diff*1000:.3f} ms to execute.")
         return result
     return wrapper
 

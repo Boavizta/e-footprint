@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system

@@ -195,7 +195,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.name = name
         self.id = str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
-        logger.info(f"Created new modeling object {self.name}")
 
     @property
     def readable_id(self):
