@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cb41ad {
+             #mynetwork_68fa8d {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_cb41ad" class="card-body"></div>
+            <div id="mynetwork_68fa8d" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cb41ad');
+                  var container = document.getElementById('mynetwork_68fa8d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per server instance including services", "label": "Occupied CPU per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per server instance including services\n=\nBase cpu core consumption of server + + 0 of (no value)\n=\n2.0 cpu_core + + 0 of (no value)\n=\n2.0 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "Base cpu core consumption of server", "label": "Base cpu core\nconsumption of\nserver", "shape": "dot", "size": 15, "title": "Base cpu core consumption of server = 2.0 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per server instance including services", "label": "Occupied CPU per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per server instance including services\n=\nBase cpu core consumption of server + + 0 (no value)\n=\n2.0 cpu_core + + 0 (no value)\n=\n2.0 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "Base cpu core consumption of server", "label": "Base cpu core\nconsumption of\nserver", "shape": "dot", "size": 15, "title": "Base cpu core consumption of server = 2.0 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of server", "to": "Occupied CPU per server instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per server instance including services"}]);
 
                   nodeColors = {};

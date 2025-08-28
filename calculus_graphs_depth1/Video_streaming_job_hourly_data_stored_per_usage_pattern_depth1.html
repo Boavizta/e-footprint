@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_71fb2e {
+             #mynetwork_a28476 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_71fb2e" class="card-body"></div>
+            <div id="mynetwork_a28476" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_71fb2e');
+                  var container = document.getElementById('mynetwork_a28476');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\n(Hourly Video streaming job occurrences in usage pattern shifted by hour nb 0\nwithin 1.0 dimensionless) * (Data stored by request Video streaming job from\ne-footprint hypothesis / Video streaming job duration in full hours) + no value\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0] shifted by 0.0\nhour) * (0.0 megabyte / 1.0 dimensionless) + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Video streaming job occurrences in usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [5.0, 9.0, 1.0, 4.0, 4.0, 8.0, 4.0, 6.0, 5.0, 5.0],\nlast 10 vals [8.0, 6.0, 9.0, 3.0, 9.0, 1.0, 5.0, 1.0, 9.0, 1.0]", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Data stored by request Video streaming job from e-footprint hypothesis", "label": "Data stored by\nrequest Video\nstreaming job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Video streaming job from e-footprint hypothesis = 0.0\nmegabyte", "x": 75.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Video streaming job occurrences in usage pattern", "to": "Hourly data stored for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Video streaming job from e-footprint hypothesis", "to": "Hourly data stored for Video streaming job in usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Data stored\nby request Video streaming job from e-footprint hypothesis * one hour / Video\nstreaming job request duration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.33, 2.33, 1.67, 3.0, 2.33, 2.0, 2.0, 1.67, 2.33, 2.67],\nlast 10 vals [1.0, 2.0, 2.67, 3.0, 0.67, 2.33, 1.33, 0.67, 2.33, 3.0] * (0.0\nmegabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nMB / min:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in usage pattern hourly occurrences\naverage Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [4.0, 7.0, 5.0, 9.0, 7.0, 6.0, 6.0, 5.0, 7.0, 8.0],\nlast 10 vals [3.0, 6.0, 8.0, 9.0, 2.0, 7.0, 4.0, 2.0, 7.0, 9.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.33, 2.33, 1.67, 3.0, 2.33, 2.0, 2.0, 1.67, 2.33, 2.67],\nlast 10 vals [1.0, 2.0, 2.67, 3.0, 0.67, 2.33, 1.33, 0.67, 2.33, 3.0]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Video streaming job from e-footprint hypothesis", "label": "Data stored by\nrequest Video\nstreaming job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Video streaming job from e-footprint hypothesis = 0.0\nmegabyte", "x": 0.0, "y": 600}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": 0.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Video streaming job occurrences in usage pattern", "to": "Hourly data stored for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Video streaming job from e-footprint hypothesis", "to": "Hourly data stored for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Video streaming job request duration", "to": "Hourly data stored for Video streaming job in usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

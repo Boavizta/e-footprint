@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_54eebc {
+             #mynetwork_6a54ec {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_54eebc" class="card-body"></div>
+            <div id="mynetwork_6a54ec" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_54eebc');
+                  var container = document.getElementById('mynetwork_6a54ec');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per server instance", "label": "Available CPU per\nserver instance", "shape": "dot", "size": 15, "title": "Available CPU per server instance\n=\nNb cpu cores of server * server utilization rate - Occupied CPU per server\ninstance including services\n=\n24.0 cpu_core * 0.9 dimensionless - 2.0 cpu_core\n=\n19.6 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Nb cpu cores of server", "label": "Nb cpu cores of\nserver", "shape": "dot", "size": 15, "title": "Nb cpu cores of server = 24.0 cpu_core", "x": -150.0, "y": 300}, {"color": null, "id": "server utilization rate", "label": "server utilization\nrate", "shape": "dot", "size": 15, "title": "server utilization rate = 0.9 dimensionless", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied CPU per server instance including services", "label": "Occupied CPU per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per server instance including services\n=\nBase cpu core consumption of server + + 0 of (no value)\n=\n2.0 cpu_core + + 0 of (no value)\n=\n2.0 cpu_core", "x": 150.0, "y": 300}, {"color": null, "id": "Base cpu core consumption of server", "label": "Base cpu core\nconsumption of\nserver", "shape": "dot", "size": 15, "title": "Base cpu core consumption of server = 2.0 cpu_core", "x": -112.5, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per server instance", "label": "Available CPU per\nserver instance", "shape": "dot", "size": 15, "title": "Available CPU per server instance\n=\nNb cpu cores of server * server utilization rate - Occupied CPU per server\ninstance including services\n=\n24.0 cpu_core * 0.9 dimensionless - 2.0 cpu_core\n=\n19.6 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Nb cpu cores of server", "label": "Nb cpu cores of\nserver", "shape": "dot", "size": 15, "title": "Nb cpu cores of server = 24.0 cpu_core", "x": -150.0, "y": 300}, {"color": null, "id": "server utilization rate", "label": "server utilization\nrate", "shape": "dot", "size": 15, "title": "server utilization rate = 0.9 dimensionless", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied CPU per server instance including services", "label": "Occupied CPU per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per server instance including services\n=\nBase cpu core consumption of server + + 0 (no value)\n=\n2.0 cpu_core + + 0 (no value)\n=\n2.0 cpu_core", "x": 150.0, "y": 300}, {"color": null, "id": "Base cpu core consumption of server", "label": "Base cpu core\nconsumption of\nserver", "shape": "dot", "size": 15, "title": "Base cpu core consumption of server = 2.0 cpu_core", "x": -112.5, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Nb cpu cores of server", "to": "Available CPU per server instance"}, {"arrows": "to", "from": "server utilization rate", "to": "Available CPU per server instance"}, {"arrows": "to", "from": "Occupied CPU per server instance including services", "to": "Available CPU per server instance"}, {"arrows": "to", "from": "Base cpu core consumption of server", "to": "Occupied CPU per server instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per server instance including services"}]);
 
                   nodeColors = {};

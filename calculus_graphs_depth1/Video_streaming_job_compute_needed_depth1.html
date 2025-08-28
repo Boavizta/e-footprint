@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_326aaf {
+             #mynetwork_62f26e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_326aaf" class="card-body"></div>
+            <div id="mynetwork_62f26e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_326aaf');
+                  var container = document.getElementById('mynetwork_62f26e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job CPU needed", "label": "Video streaming job\nCPU needed", "shape": "dot", "size": 15, "title": "Video streaming job CPU needed\n=\nVideo streaming service CPU cost per static stream from e-footprint hypothesis *\nVideo streaming job dynamic bitrate\n=\n4.0 cpu_core * second / gigabyte * 0.78 megabyte / second\n=\n0.0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "label": "Video streaming\nservice CPU cost per\nstatic stream from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service CPU cost per static stream from e-footprint hypothesis =\n4.0 cpu_core * second / gigabyte", "x": -112.5, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n(pixel count computation of (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n(pixel count computation of (1080p (1920 x 1080))) * 0.1 dimensionless * 30.0 /\nsecond\n=\n0.78 megabyte / second", "x": 112.5, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job CPU needed", "label": "Video streaming job\nCPU needed", "shape": "dot", "size": 15, "title": "Video streaming job CPU needed\n=\nVideo streaming service CPU cost per static stream from e-footprint hypothesis *\nVideo streaming job dynamic bitrate\n=\n4.0 cpu_core * second / gigabyte * 0.78 megabyte / second\n=\n0.0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "label": "Video streaming\nservice CPU cost per\nstatic stream from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service CPU cost per static stream from e-footprint hypothesis =\n4.0 cpu_core * second / gigabyte", "x": -112.5, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 dimensionless * 30.0 /\nsecond\n=\n0.78 megabyte / second", "x": 112.5, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "to": "Video streaming job CPU needed"}, {"arrows": "to", "from": "Video streaming job dynamic bitrate", "to": "Video streaming job CPU needed"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_df2743 {
+             #mynetwork_75fe98 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_df2743" class="card-body"></div>
+            <div id="mynetwork_75fe98" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_df2743');
+                  var container = document.getElementById('mynetwork_75fe98');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.9 dimensionless - 0.0 gigabyte\n=\n28.8 gigabyte", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from of (API call response from Boavizta API cloud instances)\n=\ndata extraction from of ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\n+ 0 of (no value)\n=\n0.0 gigabyte + + 0 of (no value)\n=\n0.0 gigabyte", "x": 150.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte * 0.9 dimensionless - 0.0 gigabyte\n=\n28.8 gigabyte", "x": 0.0, "y": 600}, {"color": null, "id": "serverless cloud functions ram from Boavizta API cloud instances", "label": "serverless cloud\nfunctions ram from\nBoavizta API cloud\ninstances", "shape": "dot", "size": 15, "title": "serverless cloud functions ram from Boavizta API cloud instances\n=\ndata extraction from (API call response from Boavizta API cloud instances)\n=\ndata extraction from ({\u0027impacts\u0027: {\u0027gwp\u0027: {\u0027unit\u0027: \u0027kgCO2eq\u0027, \u0027description\u0027:\n\u0027Tota...)\n=\n32.0 gigabyte", "x": -150.0, "y": 450}, {"color": null, "id": "serverless cloud functions utilization rate", "label": "serverless cloud\nfunctions\nutilization rate", "shape": "dot", "size": 15, "title": "serverless cloud functions utilization rate = 0.9 dimensionless", "x": 0.0, "y": 450}, {"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\n+ 0 (no value)\n=\n0.0 gigabyte + + 0 (no value)\n=\n0.0 gigabyte", "x": 150.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions ram from Boavizta API cloud instances", "to": "Available RAM per serverless cloud functions instance"}, {"arrows": "to", "from": "serverless cloud functions utilization rate", "to": "Available RAM per serverless cloud functions instance"}, {"arrows": "to", "from": "Occupied RAM per serverless cloud functions instance including services", "to": "Available RAM per serverless cloud functions instance"}]);
 
                   nodeColors = {};

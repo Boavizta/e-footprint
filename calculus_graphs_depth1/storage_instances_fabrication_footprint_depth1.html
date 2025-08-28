@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_211d56 {
+             #mynetwork_dcf02f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_211d56" class="card-body"></div>
+            <div id="mynetwork_dcf02f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_211d56');
+                  var container = document.getElementById('mynetwork_dcf02f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage instances fabrication footprint", "label": "Hourly storage\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly storage instances fabrication footprint\n=\nHourly number of instances for storage * Carbon footprint of storage * one hour\n/ Lifespan of storage\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 160.0 kilogram\n* 1.0 hour / 6.0 year\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage) depending on being empty\nUser defined number of storage instances\n=\nceil of (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\ndepending on being empty no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -200.0, "y": 1350}, {"color": null, "id": "Carbon footprint of storage", "label": "Carbon footprint of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint of storage\n=\nFabrication carbon footprint of storage per storage capacity * Storage capacity\nof storage\n=\n160.0 kilogram / terabyte * 1.0 terabyte\n=\n160.0 kilogram", "x": 0.0, "y": 1350}, {"color": null, "id": "Lifespan of storage", "label": "Lifespan of storage", "shape": "dot", "size": 15, "title": "Lifespan of storage = 6.0 year", "x": 200.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage instances fabrication footprint", "label": "Hourly storage\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly storage instances fabrication footprint\n=\nHourly number of instances for storage * Carbon footprint of storage * one hour\n/ Lifespan of storage\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 160.0 kilogram\n* 1.0 hour / 6.0 year\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1950}, {"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil (Hourly raw number of instances for storage) logically dependent on User\ndefined number of storage instances\n=\nceil (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00\nin dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03, 0.03])\nlogically dependent on no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -300.0, "y": 1800}, {"color": null, "id": "Carbon footprint of storage", "label": "Carbon footprint of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint of storage\n=\nFabrication carbon footprint of storage per storage capacity * Storage capacity\nof storage\n=\n160.0 kilogram / terabyte * 1.0 terabyte\n=\n160.0 kilogram", "x": 0.0, "y": 1800}, {"color": null, "id": "Lifespan of storage", "label": "Lifespan of storage", "shape": "dot", "size": 15, "title": "Lifespan of storage = 6.0 year", "x": 300.0, "y": 1800}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances for storage", "to": "Hourly storage instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint of storage", "to": "Hourly storage instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of storage", "to": "Hourly storage instances fabrication footprint"}]);
 
                   nodeColors = {};

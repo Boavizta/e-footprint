@@ -1,0 +1,3718 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../EdgeDevice/">
+      
+      
+        <link rel="next" href="../WebApplication/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Edge storage - e-footprint documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#edgestorage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="e-footprint documentation" class="md-header__button md-logo" aria-label="e-footprint documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            e-footprint documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Edge storage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="e-footprint documentation" class="md-nav__button md-logo" aria-label="e-footprint documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    e-footprint documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Introduction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorial/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tutorial
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Explanation
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Explanation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../explanation_overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Explanation overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../efootprint_scope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    e-footprint scope
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../why_efootprint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Why e-footprint ?
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to get started
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../methodology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    The e-footprint methodology
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../design_deep_dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    e-footprint design choices deep dive
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    How-to guides
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            How-to guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../machine_learning_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to model a machine learning workflow
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../database_modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to model a database
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evolution_across_time/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to model the evolution of a system across time
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../server_to_server_interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to model server to server interaction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    e-footprint objects reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            e-footprint objects reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object_reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to read the object reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Hardware
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            Hardware
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_2_1" id="__nav_5_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Servers
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Servers
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Server/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GPUServer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPU Server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../BoaviztaCloudServer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Boavizta cloud server
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Device/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Devices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Network
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Storage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Storage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EdgeDevice/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge devices
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Edge storage
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge storage
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#params" class="md-nav__link">
+    <span class="md-ellipsis">
+      Params
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Params">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name" class="md-nav__link">
+    <span class="md-ellipsis">
+      name
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbon_footprint_fabrication_per_storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      carbon_footprint_fabrication_per_storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#power_per_storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      power_per_storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idle_power" class="md-nav__link">
+    <span class="md-ellipsis">
+      idle_power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base_storage_need" class="md-nav__link">
+    <span class="md-ellipsis">
+      base_storage_need
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      lifespan
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backwards-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backwards links
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calculated-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Calculated attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Calculated attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#carbon_footprint_fabrication" class="md-nav__link">
+    <span class="md-ellipsis">
+      carbon_footprint_fabrication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#power" class="md-nav__link">
+    <span class="md-ellipsis">
+      power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unitary_storage_delta_over_full_timespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      unitary_storage_delta_over_full_timespan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cumulative_unitary_storage_need_over_single_usage_span" class="md-nav__link">
+    <span class="md-ellipsis">
+      cumulative_unitary_storage_need_over_single_usage_span
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unitary_power_over_full_timespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      unitary_power_over_full_timespan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_of_instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      nb_of_instances
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instances_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      instances_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#energy_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      energy_footprint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instances_fabrication_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      instances_fabrication_footprint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Services
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            Services
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_1" id="__nav_5_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Web application
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Web application
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WebApplication/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Web application service
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../WebApplicationJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Web application job
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_2" id="__nav_5_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Video streaming
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Video streaming
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VideoStreaming/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Video streaming service
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../VideoStreamingJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Video streaming job
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_3_3" id="__nav_5_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Gen AI
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Gen AI
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GenAIModel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gen AI service
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GenAIJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Gen AI job
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Usage
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UsagePattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UsageJourney/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage journey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UsageJourneyStep/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Usage journey step
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Job
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../GPUJob/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    GPU job
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EdgeUsagePattern/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge usage pattern
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EdgeUsageJourney/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge usage journey
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RecurrentEdgeProcess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recurrent edge process
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../System/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    System
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Country/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Country
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            FAQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../best_practices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What about best practices ?
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../measurement_tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What about measurement tools ?
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_process/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What about the build process of the service ?
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../only_CO2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Why only CO2 ?
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../links/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    External links
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Changelog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#params" class="md-nav__link">
+    <span class="md-ellipsis">
+      Params
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Params">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#name" class="md-nav__link">
+    <span class="md-ellipsis">
+      name
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#carbon_footprint_fabrication_per_storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      carbon_footprint_fabrication_per_storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#power_per_storage_capacity" class="md-nav__link">
+    <span class="md-ellipsis">
+      power_per_storage_capacity
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#idle_power" class="md-nav__link">
+    <span class="md-ellipsis">
+      idle_power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#base_storage_need" class="md-nav__link">
+    <span class="md-ellipsis">
+      base_storage_need
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      lifespan
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backwards-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backwards links
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#calculated-attributes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Calculated attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Calculated attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#carbon_footprint_fabrication" class="md-nav__link">
+    <span class="md-ellipsis">
+      carbon_footprint_fabrication
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#power" class="md-nav__link">
+    <span class="md-ellipsis">
+      power
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unitary_storage_delta_over_full_timespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      unitary_storage_delta_over_full_timespan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cumulative_unitary_storage_need_over_single_usage_span" class="md-nav__link">
+    <span class="md-ellipsis">
+      cumulative_unitary_storage_need_over_single_usage_span
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unitary_power_over_full_timespan" class="md-nav__link">
+    <span class="md-ellipsis">
+      unitary_power_over_full_timespan
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nb_of_instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      nb_of_instances
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instances_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      instances_energy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#energy_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      energy_footprint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instances_fabrication_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      instances_fabrication_footprint
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="edgestorage">EdgeStorage</h1>
+<h2 id="params">Params</h2>
+<h3 id="name">name</h3>
+<p>A human readable description of the object.</p>
+<h3 id="storage_capacity">storage_capacity</h3>
+<p>Storage capacity of edge ssd storage in gigabyte.</p>
+<h3 id="carbon_footprint_fabrication_per_storage_capacity">carbon_footprint_fabrication_per_storage_capacity</h3>
+<p>Fabrication carbon footprint of edge ssd storage per storage capacity in kilogram / terabyte.</p>
+<h3 id="power_per_storage_capacity">power_per_storage_capacity</h3>
+<p>Power of edge ssd storage per storage capacity in watt / terabyte.</p>
+<h3 id="idle_power">idle_power</h3>
+<p>Idle power of edge ssd storage in watt.</p>
+<h3 id="base_storage_need">base_storage_need</h3>
+<p>Edge ssd storage initial storage need in gigabyte.</p>
+<h3 id="lifespan">lifespan</h3>
+<p>Lifespan of edge ssd storage in year.</p>
+<h2 id="backwards-links">Backwards links</h2>
+<ul>
+<li><a href="../EdgeDevice/">EdgeDevice</a></li>
+</ul>
+<h2 id="calculated-attributes">Calculated attributes</h2>
+<h3 id="carbon_footprint_fabrication">carbon_footprint_fabrication</h3>
+<p>ExplainableQuantity in gigabyte * kilogram / terabyte, representing the Carbon footprint of edge ssd storage.  </p>
+<p>Example value: 40960.0 gigabyte * kilogram / terabyte  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#carbon_footprint_fabrication_per_storage_capacity">Fabrication carbon footprint of edge SSD storage per storage capacity</a></li>
+<li><a href="./#storage_capacity">Storage capacity of edge SSD storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_ab5c4d {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_ab5c4d" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_ab5c4d');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n160.0 kilogram / terabyte * 256.0 gigabyte\n=\n40960.0 gigabyte * kilogram / terabyte", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of edge SSD storage per storage capacity", "label": "Fabrication carbon\nfootprint of edge\nSSD storage per\nstorage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of edge SSD storage per storage capacity = 160.0\nkilogram / terabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication carbon footprint of edge SSD storage per storage capacity", "to": "Carbon footprint of edge SSD storage"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "Carbon footprint of edge SSD storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_carbon_footprint_fabrication.html' target='_blank'>link to Carbon footprint of edge SSD storage’s full calculation graph</a>.</p>
+<h3 id="power">power</h3>
+<p>ExplainableQuantity in gigabyte * watt / terabyte, representing the Power of edge ssd storage.  </p>
+<p>Example value: 332.8 gigabyte * watt / terabyte  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#power_per_storage_capacity">Power of edge SSD storage per storage capacity</a></li>
+<li><a href="./#storage_capacity">Storage capacity of edge SSD storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_632ad8 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_632ad8" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_632ad8');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Power of edge SSD storage", "label": "Power of edge SSD\nstorage", "shape": "dot", "size": 15, "title": "Power of edge SSD storage\n=\nPower of edge SSD storage per storage capacity * Storage capacity of edge SSD\nstorage\n=\n1.3 watt / terabyte * 256.0 gigabyte\n=\n332.8 gigabyte * watt / terabyte", "x": 0.0, "y": 300}, {"color": null, "id": "Power of edge SSD storage per storage capacity", "label": "Power of edge SSD\nstorage per storage\ncapacity", "shape": "dot", "size": 15, "title": "Power of edge SSD storage per storage capacity = 1.3 watt / terabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of edge SSD storage per storage capacity", "to": "Power of edge SSD storage"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "Power of edge SSD storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_power.html' target='_blank'>link to Power of edge SSD storage’s full calculation graph</a>.</p>
+<h3 id="unitary_storage_delta_over_full_timespan">unitary_storage_delta_over_full_timespan</h3>
+<p>Hourly unitary storage delta for edge ssd storage in kilobyte.  </p>
+<p>Example value: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:<br />
+    first 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0],<br />
+    last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../RecurrentEdgeProcess/#unitary_hourly_storage_need_over_full_timespan">edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_bdf1cb {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_bdf1cb" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_bdf1cb');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly unitary storage delta for edge SSD storage", "label": "Hourly unitary\nstorage delta for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly unitary storage delta for edge SSD storage\n=\nedge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC) + no\nvalue\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] + no value\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent storage\nneeded expanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 52597 values from 2025-01-01 00:00:00 to\n2031-01-01 13:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "to": "Hourly unitary storage delta for edge SSD storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_unitary_storage_delta_over_full_timespan.html' target='_blank'>link to Hourly unitary storage delta for edge SSD storage’s full calculation graph</a>.</p>
+<h3 id="cumulative_unitary_storage_need_over_single_usage_span">cumulative_unitary_storage_need_over_single_usage_span</h3>
+<p>Full cumulative storage need for edge ssd storage in kilobyte.  </p>
+<p>Example value: 52596 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 11:00:00+00:00 in kB:<br />
+    first 10 vals [1.00002e+07, 1.00004e+07, 1.00006e+07, 1.00008e+07, 1.0001e+07, 1.00012e+07, 1.00014e+07, 1.00016e+07, 1.00018e+07, 1.0002e+07],<br />
+    last 10 vals [2.05174e+07, 2.05176e+07, 2.05178e+07, 2.0518e+07, 2.05182e+07, 2.05184e+07, 2.05186e+07, 2.05188e+07, 2.0519e+07, 2.05192e+07]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#unitary_storage_delta_over_full_timespan">Hourly unitary storage delta for edge SSD storage</a></li>
+<li><a href="../EdgeUsageJourney/#usage_span">Usage span of edge usage journey</a></li>
+<li><a href="./#base_storage_need">edge SSD storage initial storage need</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_304c4f {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_304c4f" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_304c4f');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Full cumulative storage need for edge SSD storage", "label": "Full cumulative\nstorage need for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Full cumulative storage need for edge SSD storage\n=\nHourly unitary storage delta for edge SSD storage truncated by Usage span of\nedge usage journey cumulative sum of storage delta with initial storage need\nedge SSD storage initial storage need\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] truncated by 6.0 year cumulative sum of storage delta with initial\nstorage need 10.0 gigabyte\n=\n52596 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 11:00:00+00:00 in kB:\nfirst 10 vals [1.00002e+07, 1.00004e+07, 1.00006e+07, 1.00008e+07, 1.0001e+07,\n1.00012e+07, 1.00014e+07, 1.00016e+07, 1.00018e+07, 1.0002e+07],\nlast 10 vals [2.05174e+07, 2.05176e+07, 2.05178e+07, 2.0518e+07, 2.05182e+07,\n2.05184e+07, 2.05186e+07, 2.05188e+07, 2.0519e+07, 2.05192e+07]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly unitary storage delta for edge SSD storage", "label": "Hourly unitary\nstorage delta for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly unitary storage delta for edge SSD storage\n=\nedge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC) + no\nvalue\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] + no value\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Usage span of edge usage journey", "label": "Usage span of edge\nusage journey", "shape": "dot", "size": 15, "title": "Usage span of edge usage journey = 6.0 year", "x": 0.0, "y": 450}, {"color": null, "id": "edge SSD storage initial storage need", "label": "edge SSD storage\ninitial storage need", "shape": "dot", "size": 15, "title": "edge SSD storage initial storage need = 10.0 gigabyte", "x": 150.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly unitary storage delta for edge SSD storage", "to": "Full cumulative storage need for edge SSD storage"}, {"arrows": "to", "from": "Usage span of edge usage journey", "to": "Full cumulative storage need for edge SSD storage"}, {"arrows": "to", "from": "edge SSD storage initial storage need", "to": "Full cumulative storage need for edge SSD storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_cumulative_unitary_storage_need_over_single_usage_span.html' target='_blank'>link to Full cumulative storage need for edge SSD storage’s full calculation graph</a>.</p>
+<h3 id="unitary_power_over_full_timespan">unitary_power_over_full_timespan</h3>
+<p>Hourly number of active instances for edge ssd storage in gigabyte * watt / terabyte.  </p>
+<p>Example value: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB * W / TB:<br />
+    first 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0],<br />
+    last 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#unitary_storage_delta_over_full_timespan">Hourly unitary storage delta for edge SSD storage</a></li>
+<li><a href="./#storage_capacity">Storage capacity of edge SSD storage</a></li>
+<li><a href="./#power">Power of edge SSD storage</a></li>
+<li><a href="./#idle_power">Idle power of edge SSD storage</a></li>
+<li><a href="../EdgeDevice/#power_usage_effectiveness">PUE of edge device</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_039f8b {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_039f8b" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_039f8b');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of active instances for edge SSD storage", "label": "Hourly number of\nactive instances for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly number of active instances for edge SSD storage\n=\n((( abs (Hourly unitary storage delta for edge SSD storage)) / Storage capacity\nof edge SSD storage) * (Power of edge SSD storage - Idle power of edge SSD\nstorage) + Idle power of edge SSD storage) * PUE of edge device\n=\n((( abs (52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01\n12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0])) / 256.0 gigabyte) * (332.8 gigabyte * watt / terabyte - 0.1 watt) + 0.1\nwatt) * 1.0 dimensionless\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB *\nW / TB:\nfirst 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0],\nlast 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly unitary storage delta for edge SSD storage", "label": "Hourly unitary\nstorage delta for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly unitary storage delta for edge SSD storage\n=\nedge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC) + no\nvalue\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] + no value\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -225.0, "y": 450}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 200.0, "y": 300}, {"color": null, "id": "Power of edge SSD storage", "label": "Power of edge SSD\nstorage", "shape": "dot", "size": 15, "title": "Power of edge SSD storage\n=\nPower of edge SSD storage per storage capacity * Storage capacity of edge SSD\nstorage\n=\n1.3 watt / terabyte * 256.0 gigabyte\n=\n332.8 gigabyte * watt / terabyte", "x": -75.0, "y": 450}, {"color": null, "id": "Idle power of edge SSD storage", "label": "Idle power of edge\nSSD storage", "shape": "dot", "size": 15, "title": "Idle power of edge SSD storage = 0.1 watt", "x": 75.0, "y": 450}, {"color": null, "id": "PUE of edge device", "label": "PUE of edge device", "shape": "dot", "size": 15, "title": "PUE of edge device = 1.0 dimensionless", "x": 225.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly unitary storage delta for edge SSD storage", "to": "Hourly number of active instances for edge SSD storage"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "Hourly number of active instances for edge SSD storage"}, {"arrows": "to", "from": "Power of edge SSD storage", "to": "Hourly number of active instances for edge SSD storage"}, {"arrows": "to", "from": "Idle power of edge SSD storage", "to": "Hourly number of active instances for edge SSD storage"}, {"arrows": "to", "from": "PUE of edge device", "to": "Hourly number of active instances for edge SSD storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_unitary_power_over_full_timespan.html' target='_blank'>link to Hourly number of active instances for edge SSD storage’s full calculation graph</a>.</p>
+<h3 id="nb_of_instances">nb_of_instances</h3>
+<p>Edge ssd storage nb_of_instances in dimensionless.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in dimensionless:<br />
+    first 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35, 1997.48],<br />
+    last 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88, 2996.45, 1997.63, 997.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../EdgeUsagePattern/#nb_edge_usage_journeys_in_parallel">Default edge usage pattern hourly nb of edge usage journeys in parallel</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_5e6011 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_5e6011" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_5e6011');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage nb_of_instances", "label": "edge SSD storage\nnb_of_instances", "shape": "dot", "size": 15, "title": "edge SSD storage nb_of_instances\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge SSD storage nb_of_instances"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_nb_of_instances.html' target='_blank'>link to edge SSD storage nb_of_instances’s full calculation graph</a>.</p>
+<h3 id="instances_energy">instances_energy</h3>
+<p>Hourly energy consumed by edge ssd storage instances in kilowatt_hour.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kWh:<br />
+    first 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.1, 0.2],<br />
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#unitary_power_over_full_timespan">Hourly number of active instances for edge SSD storage</a></li>
+<li><a href="./#nb_of_instances">edge SSD storage nb_of_instances</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_0cda33 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_0cda33" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_0cda33');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge SSD storage instances", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances\n=\nHourly number of active instances for edge SSD storage * one hour * edge SSD\nstorage nb_of_instances\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB *\nW / TB:\nfirst 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0],\nlast 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0] * 1.0 hour * 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkWh:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.1, 0.2],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly number of active instances for edge SSD storage", "label": "Hourly number of\nactive instances for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly number of active instances for edge SSD storage\n=\n((( abs (Hourly unitary storage delta for edge SSD storage)) / Storage capacity\nof edge SSD storage) * (Power of edge SSD storage - Idle power of edge SSD\nstorage) + Idle power of edge SSD storage) * PUE of edge device\n=\n((( abs (52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01\n12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0])) / 256.0 gigabyte) * (332.8 gigabyte * watt / terabyte - 0.1 watt) + 0.1\nwatt) * 1.0 dimensionless\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB *\nW / TB:\nfirst 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0],\nlast 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0]", "x": -187.5, "y": 600}, {"color": null, "id": "edge SSD storage nb_of_instances", "label": "edge SSD storage\nnb_of_instances", "shape": "dot", "size": 15, "title": "edge SSD storage nb_of_instances\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 187.5, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of active instances for edge SSD storage", "to": "Hourly energy consumed by edge SSD storage instances"}, {"arrows": "to", "from": "edge SSD storage nb_of_instances", "to": "Hourly energy consumed by edge SSD storage instances"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_instances_energy.html' target='_blank'>link to Hourly energy consumed by edge SSD storage instances’s full calculation graph</a>.</p>
+<h3 id="energy_footprint">energy_footprint</h3>
+<p>Hourly edge ssd storage energy footprint in kilogram.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.01, 0.02],<br />
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#instances_energy">Hourly energy consumed by edge SSD storage instances</a></li>
+<li><a href="../Country/#average_carbon_intensity">Average carbon intensity of devices country</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_470924 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_470924" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_470924');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge SSD storage energy footprint", "label": "Hourly edge SSD\nstorage energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage energy footprint\n=\nHourly energy consumed by edge SSD storage instances * Average carbon intensity\nof devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkWh:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.1, 0.2],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 85.0 gram /\nkilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.01, 0.02],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly energy consumed by edge SSD storage instances", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances\n=\nHourly number of active instances for edge SSD storage * one hour * edge SSD\nstorage nb_of_instances\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB *\nW / TB:\nfirst 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0],\nlast 10 vals [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0,\n100.0] * 1.0 hour * 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkWh:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.1, 0.2],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -187.5, "y": 750}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 187.5, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge SSD storage instances", "to": "Hourly edge SSD storage energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Hourly edge SSD storage energy footprint"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_energy_footprint.html' target='_blank'>link to Hourly edge SSD storage energy footprint’s full calculation graph</a>.</p>
+<h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
+<p>Hourly edge ssd storage instances fabrication footprint in kilogram.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.78, 1.56],<br />
+    last 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#nb_of_instances">edge SSD storage nb_of_instances</a></li>
+<li><a href="./#carbon_footprint_fabrication">Carbon footprint of edge SSD storage</a></li>
+<li><a href="./#lifespan">Lifespan of edge SSD storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_0db4c1 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_0db4c1" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_0db4c1');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge SSD storage instances fabrication footprint", "label": "Hourly edge SSD\nstorage instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage instances fabrication footprint\n=\nedge SSD storage nb_of_instances * Carbon footprint of edge SSD storage * one\nhour / Lifespan of edge SSD storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 40960.0 gigabyte * kilogram / terabyte * 1.0 hour /\n6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.78, 1.56],\nlast 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]", "x": 0.0, "y": 750}, {"color": null, "id": "edge SSD storage nb_of_instances", "label": "edge SSD storage\nnb_of_instances", "shape": "dot", "size": 15, "title": "edge SSD storage nb_of_instances\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -150.0, "y": 600}, {"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n160.0 kilogram / terabyte * 256.0 gigabyte\n=\n40960.0 gigabyte * kilogram / terabyte", "x": 0.0, "y": 600}, {"color": null, "id": "Lifespan of edge SSD storage", "label": "Lifespan of edge SSD\nstorage", "shape": "dot", "size": 15, "title": "Lifespan of edge SSD storage = 6.0 year", "x": 150.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge SSD storage nb_of_instances", "to": "Hourly edge SSD storage instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint of edge SSD storage", "to": "Hourly edge SSD storage instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of edge SSD storage", "to": "Hourly edge SSD storage instances fabrication footprint"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_instances_fabrication_footprint.html' target='_blank'>link to Hourly edge SSD storage instances fabrication footprint’s full calculation graph</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
