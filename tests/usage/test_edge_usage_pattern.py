@@ -113,35 +113,6 @@ class TestEdgeUsagePattern(TestCase):
             
             self.assertEqual(self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts, mock_utc_result)
 
-    def test_edge_usage_journey_single_link_restriction(self):
-        """Test that edge_usage_journey enforces single-link restriction."""
-        # Create a real EdgeUsageJourney to test the property implementation
-        from efootprint.abstract_modeling_classes.source_objects import SourceValue
-        edge_device = MagicMock(spec=EdgeDevice)
-        edge_device.lifespan = SourceValue(2 * u.year)
-
-        real_journey = EdgeUsageJourney(
-            "test journey", 
-            edge_processes=[], 
-            edge_device=edge_device,
-            usage_span=SourceValue(1 * u.year)
-        )
-        
-        # Create mock patterns
-        mock_pattern_1 = MagicMock()
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_2 = MagicMock() 
-        mock_pattern_2.name = "Pattern 2"
-
-        set_modeling_obj_containers(real_journey, [mock_pattern_1, mock_pattern_2])
-
-        # This should raise a PermissionError due to the single-link restriction
-        with self.assertRaises(PermissionError) as context:
-            _ = real_journey.edge_usage_pattern
-        
-        self.assertIn("EdgeUsageJourney object can only be associated with one EdgeUsagePattern object", 
-                      str(context.exception))
-
 
 if __name__ == "__main__":
     unittest.main()

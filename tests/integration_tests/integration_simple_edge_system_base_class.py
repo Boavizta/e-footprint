@@ -397,7 +397,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.edge_device, self.edge_storage])
 
-    def run_test_add_edge_usage_pattern(self):
+    def run_test_add_edge_usage_pattern_to_system(self):
         new_edge_storage = EdgeStorage(
             "storage for additional edge usage pattern",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
@@ -464,6 +464,32 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             self.assertNotEqual(direct_child.modeling_obj_container.id, edge_usage_pattern_id)
         
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
+
+    def run_test_add_edge_usage_pattern_to_edge_usage_journey(self):
+        new_edge_usage_pattern = EdgeUsagePattern(
+            "Additional edge usage pattern",
+            edge_usage_journey=self.edge_usage_journey,
+            country=self.edge_usage_pattern.country,
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
+        )
+        logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
+        self.system.edge_usage_patterns += [new_edge_usage_pattern]
+
+        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+        self.footprint_has_changed([self.edge_device])
+
+        logger.warning("Removing the new edge usage pattern from the system")
+        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
+        logger.warning("Deleting the edge usage pattern")
+        edge_usage_pattern_id = new_edge_usage_pattern.id
+        new_edge_usage_pattern.self_delete()
+        # Make sure that calculus graph references to the deleted usage pattern are removed
+        for direct_child in self.edge_usage_pattern.country.average_carbon_intensity.direct_children_with_id:
+            self.assertNotEqual(direct_child.modeling_obj_container.id, edge_usage_pattern_id)
+
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+        self.footprint_has_not_changed([self.edge_device])
 
     def run_test_update_edge_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:

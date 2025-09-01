@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING, Optional
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
@@ -26,9 +26,9 @@ class RecurrentEdgeProcess(ModelingObject):
                  recurrent_ram_needed: ExplainableRecurringQuantities,
                  recurrent_storage_needed: ExplainableRecurringQuantities):
         super().__init__(name)
-        self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
-        self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
-        self.unitary_hourly_storage_need_over_full_timespan = EmptyExplainableObject()
+        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
+        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
+        self.unitary_hourly_storage_need_per_usage_pattern = ExplainableObjectDict()
         
         self.recurrent_compute_needed = recurrent_compute_needed.set_label(f"{self.name} recurrent compute needed")
         self.recurrent_ram_needed = recurrent_ram_needed.set_label(f"{self.name} recurrent ram needed")
@@ -36,8 +36,8 @@ class RecurrentEdgeProcess(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["unitary_hourly_compute_need_over_full_timespan", "unitary_hourly_ram_need_over_full_timespan",
-                "unitary_hourly_storage_need_over_full_timespan"]
+        return ["unitary_hourly_compute_need_per_usage_pattern", "unitary_hourly_ram_need_per_usage_pattern",
+                "unitary_hourly_storage_need_per_usage_pattern"]
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
@@ -51,11 +51,11 @@ class RecurrentEdgeProcess(ModelingObject):
             return None
 
     @property
-    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_usage_pattern
+            return self.edge_usage_journey.edge_usage_patterns
         else:
-            return None
+            return []
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
@@ -74,29 +74,35 @@ class RecurrentEdgeProcess(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
 
-    def update_unitary_hourly_compute_need_over_full_timespan(self):
-        if self.edge_usage_pattern is None:
-            self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
-            return
-        self.unitary_hourly_compute_need_over_full_timespan = (
-            self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
-                self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
-                self.edge_usage_pattern.country.timezone))
+    def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_hourly_compute_need = self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
+            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+        self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.set_label(
+            f"{self.name} unitary hourly compute need for {usage_pattern.name}")
 
-    def update_unitary_hourly_ram_need_over_full_timespan(self):
-        if self.edge_usage_pattern is None:
-            self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
-            return
-        self.unitary_hourly_ram_need_over_full_timespan = (
-            self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
-                self.edge_usage_pattern.hourly_edge_usage_journey_starts, 
-                self.edge_usage_pattern.country.timezone))
+    def update_unitary_hourly_compute_need_per_usage_pattern(self):
+        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)
 
-    def update_unitary_hourly_storage_need_over_full_timespan(self):
-        if self.edge_usage_pattern is None:
-            self.unitary_hourly_storage_need_over_full_timespan = EmptyExplainableObject()
-            return
-        self.unitary_hourly_storage_need_over_full_timespan = (
-            self.recurrent_storage_needed.generate_hourly_quantities_over_timespan(
-                self.edge_usage_pattern.hourly_edge_usage_journey_starts,
-                self.edge_usage_pattern.country.timezone))
+    def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_hourly_ram_need = self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
+            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+        self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.set_label(
+            f"{self.name} unitary hourly ram need for {usage_pattern.name}")
+
+    def update_unitary_hourly_ram_need_per_usage_pattern(self):
+        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
+
+    def update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_hourly_storage_need = self.recurrent_storage_needed.generate_hourly_quantities_over_timespan(
+            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+        self.unitary_hourly_storage_need_per_usage_pattern[usage_pattern] = unitary_hourly_storage_need.set_label(
+            f"{self.name} unitary hourly storage need for {usage_pattern.name}")
+
+    def update_unitary_hourly_storage_need_per_usage_pattern(self):
+        self.unitary_hourly_storage_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(usage_pattern)

@@ -6,7 +6,6 @@ from unittest.mock import MagicMock
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
@@ -39,8 +38,10 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertEqual("test edge process", self.edge_process.name)
         self.assertIs(self.recurrent_compute_needed, self.edge_process.recurrent_compute_needed)
         self.assertIs(self.recurrent_ram_needed, self.edge_process.recurrent_ram_needed)
-        self.assertIsInstance(self.edge_process.unitary_hourly_compute_need_over_full_timespan, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_process.unitary_hourly_ram_need_over_full_timespan, EmptyExplainableObject)
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        self.assertIsInstance(self.edge_process.unitary_hourly_compute_need_per_usage_pattern, ExplainableObjectDict)
+        self.assertIsInstance(self.edge_process.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
+        self.assertIsInstance(self.edge_process.unitary_hourly_storage_need_per_usage_pattern, ExplainableObjectDict)
 
     def test_edge_usage_journey_property_no_containers(self):
         """Test edge_usage_journey property when no containers are set."""
@@ -70,19 +71,20 @@ class TestRecurrentEdgeProcess(TestCase):
         expected_message_part = ("RecurrentEdgeProcess object can only be associated with one EdgeUsageJourney object but ")
         self.assertIn(expected_message_part, str(context.exception))
 
-    def test_edge_usage_pattern_property_no_containers(self):
-        """Test edge_usage_pattern property when no containers are set."""
-        self.assertIsNone(self.edge_process.edge_usage_pattern)
+    def test_edge_usage_patterns_property_no_containers(self):
+        """Test edge_usage_patterns property when no containers are set."""
+        self.assertEqual([], self.edge_process.edge_usage_patterns)
 
-    def test_edge_usage_pattern_property_with_journey(self):
-        """Test edge_usage_pattern property delegates to edge_usage_journey."""
+    def test_edge_usage_patterns_property_with_journey(self):
+        """Test edge_usage_patterns property delegates to edge_usage_journey."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_journey.edge_usage_pattern = mock_pattern
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual(mock_pattern, self.edge_process.edge_usage_pattern)
+        self.assertEqual([mock_pattern_1, mock_pattern_2], self.edge_process.edge_usage_patterns)
 
     def test_edge_device_property_no_containers(self):
         """Test edge_device property when no containers are set."""
@@ -118,11 +120,55 @@ class TestRecurrentEdgeProcess(TestCase):
         dependent_objects = self.edge_process.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual([], dependent_objects)
 
-    def test_update_unitary_hourly_compute_need_over_full_timespan(self):
-        """Test update_unitary_hourly_compute_need_over_full_timespan method."""
-        # Mock the edge usage pattern and its hourly_edge_usage_journey_starts and country timezone
+    def test_update_unitary_hourly_compute_need_per_usage_pattern(self):
+        """Test update_unitary_hourly_compute_need_per_usage_pattern method."""
+        # Mock the edge usage patterns and their properties
         mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1.name = "Pattern 1"
+        mock_pattern_2.name = "Pattern 2"
+
+        mock_hourly_starts_1 = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_hourly_starts_2 = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_country_1 = MagicMock()
+        mock_country_2 = MagicMock()
+        mock_timezone_1 = MagicMock()
+        mock_timezone_2 = MagicMock()
+
+        mock_pattern_1.hourly_edge_usage_journey_starts = mock_hourly_starts_1
+        mock_pattern_1.country = mock_country_1
+        mock_country_1.timezone = mock_timezone_1
+        mock_pattern_2.hourly_edge_usage_journey_starts = mock_hourly_starts_2
+        mock_pattern_2.country = mock_country_2
+        mock_country_2.timezone = mock_timezone_2
+
+        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+        
+        # Mock the generate_hourly_quantities_over_timespan method
+        expected_result_1 = MagicMock(spec=ExplainableHourlyQuantities)
+        expected_result_2 = MagicMock(spec=ExplainableHourlyQuantities)
+        expected_result_1.set_label = MagicMock(return_value=expected_result_1)
+        expected_result_2.set_label = MagicMock(return_value=expected_result_2)
+        
+        self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan = MagicMock(
+            side_effect=[expected_result_1, expected_result_2])
+        
+        set_modeling_obj_containers(self.edge_process, [mock_journey])
+        
+        self.edge_process.update_unitary_hourly_compute_need_per_usage_pattern()
+        
+        self.assertEqual(
+            2, self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan.call_count)
+        self.assertDictEqual(
+            {mock_pattern_1: expected_result_1, mock_pattern_2: expected_result_2},
+            self.edge_process.unitary_hourly_compute_need_per_usage_pattern
+        )
+
+    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern method."""
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
         mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
         mock_country = MagicMock()
         mock_timezone = MagicMock()
@@ -130,53 +176,25 @@ class TestRecurrentEdgeProcess(TestCase):
         mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
-        mock_journey.edge_usage_pattern = mock_pattern
         
-        # Mock the generate_hourly_quantities_over_timespan method
         expected_result = MagicMock(spec=ExplainableHourlyQuantities)
+        expected_result.set_label = MagicMock(return_value=expected_result)
+        
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan = MagicMock(
             return_value=expected_result)
         
-        set_modeling_obj_containers(self.edge_process, [mock_journey])
-        
-        self.edge_process.update_unitary_hourly_compute_need_over_full_timespan()
+        self.edge_process.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
         
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
             mock_hourly_starts, mock_timezone)
         
-        self.assertEqual(expected_result, self.edge_process.unitary_hourly_compute_need_over_full_timespan)
+        self.assertDictEqual(
+            {mock_pattern: expected_result}, self.edge_process.unitary_hourly_compute_need_per_usage_pattern)
 
-    def test_update_unitary_hourly_ram_need_over_full_timespan(self):
-        """Test update_unitary_hourly_ram_need_over_full_timespan method."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
+    def test_update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern method."""
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
-        mock_country = MagicMock()
-        mock_timezone = MagicMock()
-        
-        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
-        mock_pattern.country = mock_country
-        mock_country.timezone = mock_timezone
-        mock_journey.edge_usage_pattern = mock_pattern
-        
-        expected_result = MagicMock(spec=ExplainableHourlyQuantities)
-        self.edge_process.recurrent_ram_needed.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=expected_result
-        )
-        
-        set_modeling_obj_containers(self.edge_process, [mock_journey])
-        
-        self.edge_process.update_unitary_hourly_ram_need_over_full_timespan()
-        
-        self.edge_process.recurrent_ram_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
-            mock_hourly_starts, mock_timezone)
-        
-        self.assertEqual(expected_result, self.edge_process.unitary_hourly_ram_need_over_full_timespan)
-
-    def test_update_unitary_hourly_storage_need_over_full_timespan(self):
-        """Test update_unitary_hourly_storage_need_over_full_timespan method."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
         mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
         mock_country = MagicMock()
         mock_timezone = MagicMock()
@@ -184,21 +202,21 @@ class TestRecurrentEdgeProcess(TestCase):
         mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
-        mock_journey.edge_usage_pattern = mock_pattern
 
         expected_result = MagicMock(spec=ExplainableHourlyQuantities)
+        expected_result.set_label = MagicMock(return_value=expected_result)
+        
         self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan = MagicMock(
             return_value=expected_result
         )
 
-        set_modeling_obj_containers(self.edge_process, [mock_journey])
-
-        self.edge_process.update_unitary_hourly_storage_need_over_full_timespan()
+        self.edge_process.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(mock_pattern)
 
         self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
             mock_hourly_starts, mock_timezone)
 
-        self.assertEqual(expected_result, self.edge_process.unitary_hourly_storage_need_over_full_timespan)
+        self.assertEqual(
+            {mock_pattern: expected_result}, self.edge_process.unitary_hourly_storage_need_per_usage_pattern)
 
     def test_from_defaults_class_method(self):
         """Test RecurrentEdgeProcess can be created using from_defaults class method."""

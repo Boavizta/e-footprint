@@ -1,8 +1,8 @@
-from typing import List, Optional, TYPE_CHECKING, Union
+from typing import List, Optional, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_hardware import EdgeHardware
@@ -36,11 +36,6 @@ class EdgeDevice(EdgeHardware):
                  utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
                  base_compute_consumption: ExplainableQuantity, storage: EdgeStorage):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.available_compute_per_instance = EmptyExplainableObject()
-        self.available_ram_per_instance = EmptyExplainableObject()
-        self.unitary_hourly_compute_need_over_full_timespan = EmptyExplainableObject()
-        self.unitary_hourly_ram_need_over_full_timespan = EmptyExplainableObject()
-        self.unitary_power_over_full_timespan = EmptyExplainableObject()
 
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
@@ -51,13 +46,17 @@ class EdgeDevice(EdgeHardware):
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
         self.storage = storage
 
+        self.available_compute_per_instance = EmptyExplainableObject()
+        self.available_ram_per_instance = EmptyExplainableObject()
+        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
+        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
+
     @property
     def calculated_attributes(self):
-        return [
+        return ([
             "available_ram_per_instance", "available_compute_per_instance",
-            "unitary_hourly_ram_need_over_full_timespan", "unitary_hourly_compute_need_over_full_timespan",
-            "unitary_power_over_full_timespan", "nb_of_instances", "instances_energy",
-            "energy_footprint", "instances_fabrication_footprint"]
+            "unitary_hourly_ram_need_per_usage_pattern", "unitary_hourly_compute_need_per_usage_pattern"]
+                + super().calculated_attributes)
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
@@ -70,10 +69,10 @@ class EdgeDevice(EdgeHardware):
         return None
 
     @property
-    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_usage_pattern
-        return None
+            return self.edge_usage_journey.edge_usage_patterns
+        return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -105,39 +104,56 @@ class EdgeDevice(EdgeHardware):
         self.available_compute_per_instance = available_compute_per_instance.set_label(
             f"Available compute per {self.name} instance")
 
-    def update_unitary_hourly_ram_need_over_full_timespan(self):
-        unitary_hourly_ram_need_over_full_timespan = sum(
-            [edge_process.unitary_hourly_ram_need_over_full_timespan for edge_process in self.edge_processes],
+    def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_hourly_ram_need = sum(
+            [edge_process.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] for edge_process in self.edge_processes],
             start=EmptyExplainableObject())
 
-        max_ram_need = unitary_hourly_ram_need_over_full_timespan.max().to(u.GB)
+        max_ram_need = unitary_hourly_ram_need.max().to(u.GB)
         if max_ram_need > self.available_ram_per_instance:
             raise InsufficientCapacityError(
                 self, "RAM", self.available_ram_per_instance, max_ram_need)
 
-        self.unitary_hourly_ram_need_over_full_timespan = unitary_hourly_ram_need_over_full_timespan.to(u.GB).set_label(
-            f"{self.name} hour by hour RAM need")
+        self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.to(u.GB).set_label(
+            f"{self.name} hourly RAM need for {usage_pattern.name}")
 
-    def update_unitary_hourly_compute_need_over_full_timespan(self):
-        unitary_hourly_compute_need_over_full_timespan = sum(
-            [edge_process.unitary_hourly_compute_need_over_full_timespan for edge_process in self.edge_processes],
+    def update_unitary_hourly_ram_need_per_usage_pattern(self):
+        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
+
+    def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_hourly_compute_need = sum(
+            [edge_process.unitary_hourly_compute_need_per_usage_pattern[usage_pattern]
+             for edge_process in self.edge_processes],
             start=EmptyExplainableObject())
 
-        max_compute_need = unitary_hourly_compute_need_over_full_timespan.max().to(u.cpu_core)
+        max_compute_need = unitary_hourly_compute_need.max().to(u.cpu_core)
         if max_compute_need > self.available_compute_per_instance:
             raise InsufficientCapacityError(
                 self, "compute", self.available_compute_per_instance, max_compute_need)
         
-        self.unitary_hourly_compute_need_over_full_timespan = unitary_hourly_compute_need_over_full_timespan.to(
-            u.cpu_core).set_label(f"{self.name} hour by hour compute need")
+        self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.to(
+            u.cpu_core).set_label(f"{self.name} hourly compute need for {usage_pattern.name}")
 
-    def update_unitary_power_over_full_timespan(self):
-        unitary_compute_workload_over_full_timespan = (
-                (self.unitary_hourly_compute_need_over_full_timespan + self.base_compute_consumption) / self.compute)
+    def update_unitary_hourly_compute_need_per_usage_pattern(self):
+        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)
 
-        unitary_power_over_full_timespan = (
-                (self.idle_power + (self.power - self.idle_power) * unitary_compute_workload_over_full_timespan)
+    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_compute_workload = (
+                (self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] + self.base_compute_consumption)
+                / self.compute)
+
+        unitary_power = (
+                (self.idle_power + (self.power - self.idle_power) * unitary_compute_workload)
                 * self.power_usage_effectiveness)
 
-        self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
-            f"{self.name} unitary power over full timespan.")
+        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
+            f"{self.name} unitary power for {usage_pattern.name}")
+
+    def update_unitary_power_per_usage_pattern(self):
+        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

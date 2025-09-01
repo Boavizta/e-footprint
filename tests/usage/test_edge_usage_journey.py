@@ -79,21 +79,8 @@ class TestEdgeUsageJourney(TestCase):
 
         euj.usage_span = SourceValue(2 * u.year)
 
-    def test_edge_usage_pattern_property_no_containers(self):
-        """Test edge_usage_pattern property when no containers are set."""
-        self.assertIsNone(self.edge_usage_journey.edge_usage_pattern)
-
-    def test_edge_usage_pattern_property_single_container(self):
-        """Test edge_usage_pattern property with single container."""
-        mock_pattern = MagicMock()
-        mock_pattern.name = "Mock Pattern"
-
-        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
-
-        self.assertEqual(mock_pattern, self.edge_usage_journey.edge_usage_pattern)
-
-    def test_edge_usage_pattern_property_multiple_containers_raises_error(self):
-        """Test edge_usage_pattern property raises error with multiple containers."""
+    def test_edge_usage_patterns_property_multiple_containers(self):
+        """Test edge_usage_patterns property returns all containers."""
         mock_pattern_1 = MagicMock()
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2 = MagicMock()
@@ -101,14 +88,14 @@ class TestEdgeUsageJourney(TestCase):
 
         set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
 
-        with self.assertRaises(PermissionError) as context:
-            _ = self.edge_usage_journey.edge_usage_pattern
-        
-        expected_message_part = ("EdgeUsageJourney object can only be associated with one EdgeUsagePattern object but ")
-        self.assertIn(expected_message_part, str(context.exception))
+        self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_usage_journey.edge_usage_patterns))
 
-    def test_systems_property(self):
-        """Test systems property delegates to edge_usage_pattern."""
+    def test_edge_usage_patterns_property_no_containers(self):
+        """Test edge_usage_patterns property when no containers are set."""
+        self.assertEqual([], self.edge_usage_journey.edge_usage_patterns)
+
+    def test_systems_property_single_pattern(self):
+        """Test systems property with single pattern."""
         mock_pattern = MagicMock()
         mock_system_1 = MagicMock()
         mock_system_2 = MagicMock()
@@ -116,25 +103,47 @@ class TestEdgeUsageJourney(TestCase):
 
         set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
         
-        self.assertEqual([mock_system_1, mock_system_2], self.edge_usage_journey.systems)
+        self.assertEqual({mock_system_1, mock_system_2}, set(self.edge_usage_journey.systems))
+
+    def test_systems_property_multiple_patterns(self):
+        """Test systems property aggregates across multiple patterns."""
+        mock_pattern_1 = MagicMock()
+        mock_pattern_2 = MagicMock()
+        mock_system_1 = MagicMock()
+        mock_system_2 = MagicMock()
+        mock_system_3 = MagicMock()
+        mock_pattern_1.systems = [mock_system_1, mock_system_2]
+        mock_pattern_2.systems = [mock_system_2, mock_system_3]  # mock_system_2 appears in both
+
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
+        
+        systems = self.edge_usage_journey.systems
+        # Should deduplicate mock_system_2
+        self.assertEqual(3, len(systems))
+        self.assertIn(mock_system_1, systems)
+        self.assertIn(mock_system_2, systems)
+        self.assertIn(mock_system_3, systems)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me_no_edge_usage_pattern(self):
         """Test that edge_processes and edge_device are returned as dependent objects."""
-        self.assertIsNone(self.edge_usage_journey.edge_usage_pattern)
+        self.assertEqual(len(self.edge_usage_journey.edge_usage_patterns), 0)
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
         expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2, self.mock_edge_device]
         self.assertEqual(expected_objects, dependent_objects)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_pattern(self):
-        """Test that edge_usage_pattern is returned as dependent object when present."""
-        mock_pattern = MagicMock()
-        mock_pattern.name = "Mock Pattern"
+    def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_patterns(self):
+        """Test that all edge_usage_patterns are returned as dependent objects when present."""
+        mock_pattern_1 = MagicMock()
+        mock_pattern_1.name = "Mock Pattern 1"
+        mock_pattern_2 = MagicMock()
+        mock_pattern_2.name = "Mock Pattern 2"
 
-        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern])
+        set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
 
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [mock_pattern]
-        self.assertEqual(expected_objects, dependent_objects)
+        expected_objects = [mock_pattern_1, mock_pattern_2]
+        self.assertEqual(set(expected_objects), set(dependent_objects))
+        self.assertEqual(len(expected_objects), len(dependent_objects))
 
 
 if __name__ == "__main__":

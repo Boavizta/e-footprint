@@ -9,6 +9,7 @@ from efootprint.core.hardware.edge_hardware import EdgeHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -91,9 +92,8 @@ class EdgeStorage(EdgeHardware):
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         
-        self.unitary_storage_delta_over_full_timespan = EmptyExplainableObject()
-        self.cumulative_unitary_storage_need_over_single_usage_span = EmptyExplainableObject()
-        self.unitary_power_over_full_timespan = EmptyExplainableObject()
+        self.unitary_storage_delta_per_usage_pattern = ExplainableObjectDict()
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
@@ -109,10 +109,8 @@ class EdgeStorage(EdgeHardware):
     @property
     def calculated_attributes(self):
         return [
-            "carbon_footprint_fabrication", "power", "unitary_storage_delta_over_full_timespan",
-            "cumulative_unitary_storage_need_over_single_usage_span",
-            "unitary_power_over_full_timespan", "nb_of_instances", "instances_energy",
-            "energy_footprint", "instances_fabrication_footprint"]
+            "carbon_footprint_fabrication", "power", "unitary_storage_delta_per_usage_pattern",
+            "cumulative_unitary_storage_need_per_usage_pattern"] + super().calculated_attributes
 
     @property
     def edge_processes(self) -> List["RecurrentEdgeProcess"]:
@@ -122,11 +120,11 @@ class EdgeStorage(EdgeHardware):
         return []
     
     @property
-    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         edge_device = self.edge_device
         if edge_device is not None:
-            return edge_device.edge_usage_pattern
-        return None
+            return edge_device.edge_usage_patterns
+        return []
 
     @property
     def power_usage_effectiveness(self):
@@ -143,29 +141,36 @@ class EdgeStorage(EdgeHardware):
     def update_power(self):
         self.power = (self.power_per_storage_capacity * self.storage_capacity).set_label(f"Power of {self.name}")
 
-    def update_unitary_storage_delta_over_full_timespan(self):
-        unitary_storage_delta_over_full_timespan = EmptyExplainableObject()
+    def update_dict_element_in_unitary_storage_delta_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_storage_delta = EmptyExplainableObject()
         
         for edge_process in self.edge_processes:
-            unitary_storage_delta_over_full_timespan += edge_process.unitary_hourly_storage_need_over_full_timespan
+            unitary_storage_delta += edge_process.unitary_hourly_storage_need_per_usage_pattern[usage_pattern]
         
-        self.unitary_storage_delta_over_full_timespan = unitary_storage_delta_over_full_timespan.set_label(
-            f"Hourly unitary storage delta for {self.name}")
+        self.unitary_storage_delta_per_usage_pattern[usage_pattern] = unitary_storage_delta.set_label(
+            f"Hourly storage delta for {self.name} in {usage_pattern.name}")
 
-    def update_cumulative_unitary_storage_need_over_single_usage_span(self):
-        if isinstance(self.unitary_storage_delta_over_full_timespan, EmptyExplainableObject):
-            self.cumulative_unitary_storage_need_over_single_usage_span = EmptyExplainableObject(
-                left_parent=self.unitary_storage_delta_over_full_timespan)
+    def update_unitary_storage_delta_per_usage_pattern(self):
+        self.unitary_storage_delta_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_storage_delta_per_usage_pattern(usage_pattern)
+
+    def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_storage_delta = self.unitary_storage_delta_per_usage_pattern[usage_pattern]
+        
+        if isinstance(unitary_storage_delta, EmptyExplainableObject):
+            self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = EmptyExplainableObject(
+                left_parent=unitary_storage_delta)
         else:
             edge_device_usage_span_in_hours = int(copy(
                 self.edge_device.edge_usage_journey.usage_span.value).to(u.hour).magnitude)
             unitary_storage_delta_over_single_usage_span = ExplainableHourlyQuantities(
                 Quantity(
-                    self.unitary_storage_delta_over_full_timespan.magnitude[:edge_device_usage_span_in_hours],
-                    self.unitary_storage_delta_over_full_timespan.unit
+                    unitary_storage_delta.magnitude[:edge_device_usage_span_in_hours],
+                    unitary_storage_delta.unit
                 ),
-                start_date=self.unitary_storage_delta_over_full_timespan.start_date,
-                left_parent=self.unitary_storage_delta_over_full_timespan,
+                start_date=unitary_storage_delta.start_date,
+                left_parent=unitary_storage_delta,
                 right_parent=self.edge_device.edge_usage_journey.usage_span,
                 operator="truncated by"
             )
@@ -185,24 +190,35 @@ class EdgeStorage(EdgeHardware):
             if np.max(cumulative_quantity) > self.storage_capacity.value:
                 raise InsufficientCapacityError(
                     self, "storage capacity", self.storage_capacity, 
-                    ExplainableQuantity(cumulative_quantity.max(), label=f"{self.name} unitary cumulative storage need"))
+                    ExplainableQuantity(cumulative_quantity.max(), label=f"{self.name} cumulative storage need for {usage_pattern.name}"))
             
-            self.cumulative_unitary_storage_need_over_single_usage_span = ExplainableHourlyQuantities(
+            self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = ExplainableHourlyQuantities(
                 cumulative_quantity,
                 start_date=unitary_storage_delta_over_single_usage_span.start_date,
-                label=f"Full cumulative storage need for {self.name}",
+                label=f"Cumulative storage need for {self.name} in {usage_pattern.name}",
                 left_parent=unitary_storage_delta_over_single_usage_span,
                 right_parent=self.base_storage_need,
                 operator="cumulative sum of storage delta with initial storage need"
             )
 
-    def update_unitary_power_over_full_timespan(self):
-        unitary_activity_level = (
-                self.unitary_storage_delta_over_full_timespan.abs() / self.storage_capacity).to(u.dimensionless)
+    def update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
-        unitary_power_over_full_timespan = (
+    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        unitary_storage_delta = self.unitary_storage_delta_per_usage_pattern[usage_pattern]
+        
+        unitary_activity_level = (unitary_storage_delta.abs() / self.storage_capacity).to(u.dimensionless)
+
+        unitary_power = (
                 (self.idle_power + (self.power - self.idle_power) * unitary_activity_level)
                 * self.power_usage_effectiveness)
         
-        self.unitary_power_over_full_timespan = unitary_power_over_full_timespan.set_label(
-            f"Hourly number of active instances for {self.name}")
+        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
+            f"Hourly power for {self.name} in {usage_pattern.name}")
+
+    def update_unitary_power_per_usage_pattern(self):
+        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

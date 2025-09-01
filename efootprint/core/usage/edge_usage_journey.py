@@ -1,9 +1,8 @@
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
@@ -33,26 +32,19 @@ class EdgeUsageJourney(ModelingObject):
             raise InsufficientCapacityError(edge_device, "lifespan", edge_device.lifespan, usage_span)
 
     @property
-    def edge_usage_pattern(self) -> Optional["EdgeUsagePattern"]:
-        if self.modeling_obj_containers:
-            if len(self.modeling_obj_containers) > 1:
-                raise PermissionError(
-                    f"EdgeUsageJourney object can only be associated with one EdgeUsagePattern object but {self.name} "
-                    f"is associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
-            return self.modeling_obj_containers[0]
-        else:
-            return None
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
+        return self.modeling_obj_containers
 
     @property
     def systems(self) -> List["System"]:
         if self.modeling_obj_containers:
-            return self.edge_usage_pattern.systems
+            return list(set(sum([eup.systems for eup in self.edge_usage_patterns], start=[])))
         return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[RecurrentEdgeProcess]:
-        if self.edge_usage_pattern:
-            return [self.edge_usage_pattern]
+        if self.edge_usage_patterns:
+            return self.edge_usage_patterns
         return self.edge_processes + [self.edge_device]
 
     def __setattr__(self, name, input_value, check_input_validity=True):

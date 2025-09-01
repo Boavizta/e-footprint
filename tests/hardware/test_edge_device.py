@@ -1,13 +1,12 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
-from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage
@@ -58,11 +57,11 @@ class TestEdgeDevice(TestCase):
 
     def test_init_sets_empty_explainable_objects(self):
         """Test that initialization sets proper empty explainable objects."""
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.assertIsInstance(self.edge_device.available_compute_per_instance, EmptyExplainableObject)
         self.assertIsInstance(self.edge_device.available_ram_per_instance, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_device.unitary_hourly_compute_need_over_full_timespan, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_device.unitary_hourly_ram_need_over_full_timespan, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_device.unitary_power_over_full_timespan, EmptyExplainableObject)
+        self.assertIsInstance(self.edge_device.unitary_hourly_compute_need_per_usage_pattern, ExplainableObjectDict)
+        self.assertIsInstance(self.edge_device.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
 
     def test_labels_are_set_correctly(self):
         """Test that all attributes have correct labels."""
@@ -103,19 +102,20 @@ class TestEdgeDevice(TestCase):
         self.assertIn(expected_message, str(context.exception))
         set_modeling_obj_containers(self.edge_device, [])
 
-    def test_edge_usage_pattern_property_no_journey(self):
-        """Test edge_usage_pattern property when no journey is set."""
-        self.assertIsNone(self.edge_device.edge_usage_pattern)
+    def test_edge_usage_patterns_property_no_journey(self):
+        """Test edge_usage_patterns property when no journey is set."""
+        self.assertEqual([], self.edge_device.edge_usage_patterns)
 
-    def test_edge_usage_pattern_property_with_journey(self):
-        """Test edge_usage_pattern property delegates to journey."""
+    def test_edge_usage_patterns_property_with_journey(self):
+        """Test edge_usage_patterns property delegates to journey."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_journey.edge_usage_pattern = mock_pattern
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
         
         set_modeling_obj_containers(self.edge_device, [mock_journey])
         
-        self.assertEqual(mock_pattern, self.edge_device.edge_usage_pattern)
+        self.assertEqual([mock_pattern_1, mock_pattern_2], self.edge_device.edge_usage_patterns)
         set_modeling_obj_containers(self.edge_device, [])
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -188,109 +188,154 @@ class TestEdgeDevice(TestCase):
             self.assertEqual("compute", context.exception.capacity_type)
             self.assertEqual(self.edge_device, context.exception.overloaded_object)
 
-    @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_hourly_ram_need_over_full_timespan(self, mock_edge_processes):
-        """Test update_unitary_hourly_ram_need_over_full_timespan calculation."""
+    def test_update_unitary_hourly_ram_need_per_usage_pattern(self):
+        """Test update_unitary_hourly_ram_need_per_usage_pattern aggregates all patterns."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1.name = "Pattern 1"
+        mock_pattern_2.name = "Pattern 2"
+        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+        
+        set_modeling_obj_containers(self.edge_device, [mock_journey])
+        
+        with patch.object(
+                EdgeDevice, "update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern") as mock_update:
+            self.edge_device.update_unitary_hourly_ram_need_per_usage_pattern()
+            
+            self.assertEqual(2, mock_update.call_count)
+            mock_update.assert_any_call(mock_pattern_1)
+            mock_update.assert_any_call(mock_pattern_2)
+        
+        set_modeling_obj_containers(self.edge_device, [])
+
+    def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern calculation."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
         ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)
         
-        mock_process_1.unitary_hourly_ram_need_over_full_timespan = ram_need_1
-        mock_process_2.unitary_hourly_ram_need_over_full_timespan = ram_need_2
-
-        mock_edge_processes.return_value = [mock_process_1, mock_process_2]
+        mock_process_1.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_1}
+        mock_process_2.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_2}
+        
+        mock_journey.edge_processes = [mock_process_1, mock_process_2]
+        set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         with patch.object(self.edge_device, "available_ram_per_instance", SourceValue(10 * u.GB)):
-            self.edge_device.update_unitary_hourly_ram_need_over_full_timespan()
+            self.edge_device.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
             
             expected_values = [3, 3, 7]  # Sum of both processes
-            self.assertEqual(expected_values,
-                             self.edge_device.unitary_hourly_ram_need_over_full_timespan.value_as_float_list)
-            self.assertEqual(u.GB, self.edge_device.unitary_hourly_ram_need_over_full_timespan.unit)
-            self.assertEqual("Test EdgeDevice hour by hour RAM need",
-                             self.edge_device.unitary_hourly_ram_need_over_full_timespan.label)
+            result = self.edge_device.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
+            self.assertEqual(expected_values, result.value_as_float_list)
+            self.assertEqual(u.GB, result.unit)
+            self.assertIn("Test EdgeDevice hourly RAM need for Test Pattern", result.label)
+        
+        set_modeling_obj_containers(self.edge_device, [])
 
-    @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_hourly_ram_need_over_full_timespan_insufficient_capacity(self, mock_edge_processes):
-        """Test update_unitary_hourly_ram_need_over_full_timespan raises error when capacity is exceeded."""
+    def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern_insufficient_capacity(self):
+        """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern raises error when capacity is exceeded."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
         mock_process = MagicMock(spec=RecurrentEdgeProcess)
         ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB)  # Peak of 15 GB
-        mock_process.unitary_hourly_ram_need_over_full_timespan = ram_need
-
-        mock_edge_processes.return_value = [mock_process]
+        mock_process.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need}
+        
+        mock_journey.edge_processes = [mock_process]
+        set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         with patch.object(self.edge_device, "available_ram_per_instance", SourceValue(10 * u.GB)):
             with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_device.update_unitary_hourly_ram_need_over_full_timespan()
+                self.edge_device.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
             
             self.assertEqual("RAM", context.exception.capacity_type)
             self.assertEqual(self.edge_device, context.exception.overloaded_object)
+        
+        set_modeling_obj_containers(self.edge_device, [])
 
-    @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_hourly_compute_need_over_full_timespan(self, mock_edge_processes):
-        """Test update_unitary_hourly_compute_need_over_full_timespan calculation."""
+    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         compute_need_1 = create_source_hourly_values_from_list([0.5, 1.0, 1.5], pint_unit=u.cpu_core)
         compute_need_2 = create_source_hourly_values_from_list([1.0, 0.5, 2.0], pint_unit=u.cpu_core)
         
-        mock_process_1.unitary_hourly_compute_need_over_full_timespan = compute_need_1
-        mock_process_2.unitary_hourly_compute_need_over_full_timespan = compute_need_2
-
-        mock_edge_processes.return_value = [mock_process_1, mock_process_2]
+        mock_process_1.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_1}
+        mock_process_2.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_2}
+        
+        mock_journey.edge_processes = [mock_process_1, mock_process_2]
+        set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         with patch.object(self.edge_device, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
-            self.edge_device.update_unitary_hourly_compute_need_over_full_timespan()
+            self.edge_device.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
             
             expected_values = [1.5, 1.5, 3.5]  # Sum of both processes
-            self.assertEqual(expected_values,
-                             self.edge_device.unitary_hourly_compute_need_over_full_timespan.value_as_float_list)
-            self.assertEqual(u.cpu_core, self.edge_device.unitary_hourly_compute_need_over_full_timespan.unit)
-            self.assertEqual("Test EdgeDevice hour by hour compute need",
-                             self.edge_device.unitary_hourly_compute_need_over_full_timespan.label)
+            result = self.edge_device.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
+            self.assertEqual(expected_values, result.value_as_float_list)
+            self.assertEqual(u.cpu_core, result.unit)
+            self.assertIn("Test EdgeDevice hourly compute need for Test Pattern", result.label)
+        
+        set_modeling_obj_containers(self.edge_device, [])
 
-    @patch("efootprint.core.hardware.edge_device.EdgeDevice.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_hourly_compute_need_over_full_timespan_insufficient_capacity(self, mock_edge_processes):
-        """Test update_unitary_hourly_compute_need_over_full_timespan raises error when capacity is exceeded."""
+    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
+        """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
+        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
         mock_process = MagicMock(spec=RecurrentEdgeProcess)
         compute_need = create_source_hourly_values_from_list([0.5, 1.0, 8.0], pint_unit=u.cpu_core)  # Peak of 8.0 cpu_core
-        mock_process.unitary_hourly_compute_need_over_full_timespan = compute_need
-
-        mock_edge_processes.return_value = [mock_process]
+        mock_process.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
+        
+        mock_journey.edge_processes = [mock_process]
+        set_modeling_obj_containers(self.edge_device, [mock_journey])
         
         with patch.object(self.edge_device, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
-            
             with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_device.update_unitary_hourly_compute_need_over_full_timespan()
+                self.edge_device.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
             
             self.assertEqual("compute", context.exception.capacity_type)
             self.assertEqual(self.edge_device, context.exception.overloaded_object)
-
-    def test_update_unitary_power_over_full_timespan(self):
-        """Test update_unitary_power_over_full_timespan calculation."""
-        compute_need = create_source_hourly_values_from_list([0, 2, 4], pint_unit=u.cpu_core)
         
-        with patch.object(self.edge_device, "unitary_hourly_compute_need_over_full_timespan", compute_need), \
-             patch.object(self.edge_device, "base_compute_consumption", SourceValue(0 * u.cpu_core)), \
+        set_modeling_obj_containers(self.edge_device, [])
+
+    def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_power_per_usage_pattern calculation."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test pattern id"
+        
+        compute_need = create_source_hourly_values_from_list([0, 2, 4], pint_unit=u.cpu_core)
+        self.edge_device.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
+        
+        with patch.object(self.edge_device, "base_compute_consumption", SourceValue(0 * u.cpu_core)), \
              patch.object(self.edge_device, "compute", SourceValue(4 * u.cpu_core)), \
              patch.object(self.edge_device, "idle_power", SourceValue(10 * u.W)), \
              patch.object(self.edge_device, "power", SourceValue(50 * u.W)), \
              patch.object(self.edge_device, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
             
-            self.edge_device.update_unitary_power_over_full_timespan()
+            self.edge_device.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
             
             # Workload ratios: [0/4, 2/4, 4/4] = [0, 0.5, 1]
             # Power: [10 + (50-10)*0, 10 + (50-10)*0.5, 10 + (50-10)*1] = [10, 30, 50]
             # With PUE: [10*1.2, 30*1.2, 50*1.2] = [12, 36, 60]
             expected_values = [12, 36, 60]
-            self.assertTrue(np.allclose(expected_values,
-                                        self.edge_device.unitary_power_over_full_timespan.value_as_float_list))
-            self.assertEqual(u.W, self.edge_device.unitary_power_over_full_timespan.unit)
-            self.assertEqual("Test EdgeDevice unitary power over full timespan.",
-                             self.edge_device.unitary_power_over_full_timespan.label)
+            result = self.edge_device.unitary_power_per_usage_pattern[mock_pattern]
+            self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
+            self.assertEqual(u.W, result.unit)
+            self.assertIn("Test EdgeDevice unitary power for Test Pattern", result.label)
 
 
 if __name__ == "__main__":

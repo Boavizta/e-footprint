@@ -7,7 +7,6 @@ import numpy as np
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
-from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage, NegativeCumulativeStorageNeedError
@@ -43,9 +42,9 @@ class TestEdgeStorage(TestCase):
 
     def test_init_sets_empty_explainable_objects(self):
         """Test that initialization sets proper empty explainable objects."""
-        self.assertIsInstance(self.edge_storage.unitary_storage_delta_over_full_timespan, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_storage.unitary_power_over_full_timespan, EmptyExplainableObject)
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        self.assertIsInstance(self.edge_storage.unitary_storage_delta_per_usage_pattern, ExplainableObjectDict)
+        self.assertIsInstance(self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern, ExplainableObjectDict)
 
     def test_labels_are_set_correctly(self):
         """Test that all attributes have correct labels."""
@@ -156,19 +155,20 @@ class TestEdgeStorage(TestCase):
         self.assertEqual(mock_processes, self.edge_storage.edge_processes)
         set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_edge_usage_pattern_property_no_device(self):
-        """Test edge_usage_pattern property when no device is set."""
-        self.assertIsNone(self.edge_storage.edge_usage_pattern)
+    def test_edge_usage_patterns_property_no_device(self):
+        """Test edge_usage_patterns property when no device is set."""
+        self.assertEqual([], self.edge_storage.edge_usage_patterns)
 
-    def test_edge_usage_pattern_property_with_device(self):
-        """Test edge_usage_pattern property delegates to device."""
+    def test_edge_usage_patterns_property_with_device(self):
+        """Test edge_usage_patterns property delegates to device."""
         mock_device = MagicMock(spec=EdgeDevice)
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_device.edge_usage_pattern = mock_pattern
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_device.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
-        self.assertEqual(mock_pattern, self.edge_storage.edge_usage_pattern)
+        self.assertEqual([mock_pattern_1, mock_pattern_2], self.edge_storage.edge_usage_patterns)
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_power_usage_effectiveness_property_no_device(self):
@@ -216,98 +216,139 @@ class TestEdgeStorage(TestCase):
             self.assertEqual(u.W, self.edge_storage.power.value.units)
             self.assertEqual("Power of Test EdgeStorage", self.edge_storage.power.label)
 
-    @patch("efootprint.core.hardware.edge_storage.EdgeStorage.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_storage_delta_over_full_timespan_empty(self, mock_edge_processes):
-        """Test update_unitary_storage_delta_over_full_timespan with no processes."""
-        mock_edge_processes.return_value = []
+    def test_update_unitary_storage_delta_per_usage_pattern(self):
+        """Test update_unitary_storage_delta_per_usage_pattern aggregates all patterns."""
+        mock_device = MagicMock(spec=EdgeDevice)
+        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1.name = "Pattern 1"
+        mock_pattern_2.name = "Pattern 2"
+        mock_device.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
         
-        self.edge_storage.update_unitary_storage_delta_over_full_timespan()
+        set_modeling_obj_containers(self.edge_storage, [mock_device])
         
-        self.assertIsInstance(self.edge_storage.unitary_storage_delta_over_full_timespan, EmptyExplainableObject)
-        self.assertEqual("Hourly unitary storage delta for Test EdgeStorage",
-                        self.edge_storage.unitary_storage_delta_over_full_timespan.label)
+        with patch.object(EdgeStorage, "update_dict_element_in_unitary_storage_delta_per_usage_pattern") as mock_update:
+            self.edge_storage.update_unitary_storage_delta_per_usage_pattern()
+            
+            self.assertEqual(2, mock_update.call_count)
+            mock_update.assert_any_call(mock_pattern_1)
+            mock_update.assert_any_call(mock_pattern_2)
+        
+        set_modeling_obj_containers(self.edge_storage, [])
 
-    @patch("efootprint.core.hardware.edge_storage.EdgeStorage.edge_processes", new_callable=PropertyMock)
-    def test_update_unitary_storage_delta_over_full_timespan_with_processes(self, mock_edge_processes):
-        """Test update_unitary_storage_delta_over_full_timespan with processes."""
+    def test_update_dict_element_in_unitary_storage_delta_per_usage_pattern_empty(self):
+        """Test update_dict_element_in_unitary_storage_delta_per_usage_pattern with no processes."""
+        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device.edge_processes = []
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
+        set_modeling_obj_containers(self.edge_storage, [mock_device])
+        
+        self.edge_storage.update_dict_element_in_unitary_storage_delta_per_usage_pattern(mock_pattern)
+        
+        result = self.edge_storage.unitary_storage_delta_per_usage_pattern[mock_pattern]
+        self.assertIsInstance(result, EmptyExplainableObject)
+        self.assertIn("Hourly storage delta for Test EdgeStorage in Test Pattern", result.label)
+        
+        set_modeling_obj_containers(self.edge_storage, [])
+
+    def test_update_dict_element_in_unitary_storage_delta_per_usage_pattern_with_processes(self):
+        """Test update_dict_element_in_unitary_storage_delta_per_usage_pattern with processes."""
+        mock_device = MagicMock(spec=EdgeDevice)
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
         
         storage_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
         storage_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)
         
-        mock_process_1.unitary_hourly_storage_need_over_full_timespan = storage_need_1
-        mock_process_2.unitary_hourly_storage_need_over_full_timespan = storage_need_2
+        mock_process_1.unitary_hourly_storage_need_per_usage_pattern = {mock_pattern: storage_need_1}
+        mock_process_2.unitary_hourly_storage_need_per_usage_pattern = {mock_pattern: storage_need_2}
         
-        mock_edge_processes.return_value = [mock_process_1, mock_process_2]
+        mock_device.edge_processes = [mock_process_1, mock_process_2]
+        set_modeling_obj_containers(self.edge_storage, [mock_device])
         
-        self.edge_storage.update_unitary_storage_delta_over_full_timespan()
+        self.edge_storage.update_dict_element_in_unitary_storage_delta_per_usage_pattern(mock_pattern)
         
         expected_values = [3, 3, 7]  # Sum of both processes
-        self.assertEqual(expected_values,
-                        self.edge_storage.unitary_storage_delta_over_full_timespan.value_as_float_list)
-        self.assertEqual(u.GB, self.edge_storage.unitary_storage_delta_over_full_timespan.unit)
-        self.assertEqual("Hourly unitary storage delta for Test EdgeStorage",
-                        self.edge_storage.unitary_storage_delta_over_full_timespan.label)
-
-    def test_update_cumulative_unitary_storage_need_over_single_usage_span_empty_delta(self):
-        """Test update_cumulative_unitary_storage_need_over_single_usage_span with empty delta."""
-        self.edge_storage.unitary_storage_delta_over_full_timespan = EmptyExplainableObject()
+        result = self.edge_storage.unitary_storage_delta_per_usage_pattern[mock_pattern]
+        self.assertEqual(expected_values, result.value_as_float_list)
+        self.assertEqual(u.GB, result.unit)
+        self.assertIn("Hourly storage delta for Test EdgeStorage in Test Pattern", result.label)
         
-        self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
-        
-        self.assertIsInstance(
-            self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span, EmptyExplainableObject)
-        self.assertIn(self.edge_storage.unitary_storage_delta_over_full_timespan,
-                      self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span.direct_ancestors_with_id)
+        set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_update_cumulative_unitary_storage_need_over_single_usage_span_with_data(self):
-        """Test update_cumulative_unitary_storage_need_over_single_usage_span with real data."""
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_empty_delta(self):
+        """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern with empty delta."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test pattern id"
+        
+        empty_delta = EmptyExplainableObject()
+        self.edge_storage.unitary_storage_delta_per_usage_pattern = {mock_pattern: empty_delta}
+        
+        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(mock_pattern)
+        
+        result = self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[mock_pattern]
+        self.assertIsInstance(result, EmptyExplainableObject)
+        self.assertIn(empty_delta, result.direct_ancestors_with_id)
+
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_data(self):
+        """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern with real data."""
         # Create mock edge device and usage journey
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test pattern id"
+        
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
         # Create storage delta data (5 hours of data, but usage span is only 3 hours)
         storage_delta = create_source_hourly_values_from_list([10, 5, -3, 2, 1], pint_unit=u.GB)
-        self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
+        self.edge_storage.unitary_storage_delta_per_usage_pattern = {mock_pattern: storage_delta}
         
         # Set base storage need and storage capacity
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(20 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
             
-            self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
+            self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(mock_pattern)
             
             # Expected: [20+10, 20+10+5, 20+10+5-3] = [30, 35, 32]
             expected_values = [30, 35, 32]
-            self.assertEqual(
-                expected_values,
-                self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span.value_as_float_list)
-            self.assertEqual(u.GB, self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span.unit)
-            self.assertIn("Full cumulative storage need for Test EdgeStorage",
-                         self.edge_storage.cumulative_unitary_storage_need_over_single_usage_span.label)
+            result = self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[mock_pattern]
+            self.assertEqual(expected_values, result.value_as_float_list)
+            self.assertEqual(u.GB, result.unit)
+            self.assertIn("Cumulative storage need for Test EdgeStorage in Test Pattern", result.label)
         
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_cumulative_unitary_storage_need_negative_cumulative_error(self):
-        """Test update_cumulative_unitary_storage_need raises error on negative cumulative storage."""
+        """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern raises error on negative cumulative storage."""
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test Pattern id"
+        
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
         # Create storage delta that will result in negative cumulative
         storage_delta = create_source_hourly_values_from_list([10, -20, 5], pint_unit=u.GB)
-        self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
+        self.edge_storage.unitary_storage_delta_per_usage_pattern = {mock_pattern: storage_delta}
         
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
             
             with self.assertRaises(NegativeCumulativeStorageNeedError) as context:
-                self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
+                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(mock_pattern)
             
             self.assertEqual(self.edge_storage, context.exception.storage_obj)
             self.assertIn("negative cumulative storage need detected", str(context.exception))
@@ -315,52 +356,60 @@ class TestEdgeStorage(TestCase):
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_cumulative_unitary_storage_need_insufficient_capacity_error(self):
-        """Test update_cumulative_unitary_storage_need raises error when capacity exceeded."""
+        """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern raises error when capacity exceeded."""
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(2 * u.hour)
         mock_device.edge_usage_journey = mock_journey
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test pattern id"
+        
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
         # Create storage delta that will exceed capacity
         storage_delta = create_source_hourly_values_from_list([40, 60], pint_unit=u.GB)
-        self.edge_storage.unitary_storage_delta_over_full_timespan = storage_delta
+        self.edge_storage.unitary_storage_delta_per_usage_pattern = {mock_pattern: storage_delta}
         
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB)):
             
             with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_storage.update_cumulative_unitary_storage_need_over_single_usage_span()
+                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(mock_pattern)
             
             self.assertEqual("storage capacity", context.exception.capacity_type)
             self.assertEqual(self.edge_storage, context.exception.overloaded_object)
             self.assertEqual(self.edge_storage.storage_capacity, context.exception.available_capacity)
             # Maximum required storage is 10 + 40 + 60 = 110 GB
             self.assertEqual(110 * u.GB, context.exception.requested_capacity.value)
+            self.assertIn("Test EdgeStorage cumulative storage need for Test Pattern", context.exception.requested_capacity.label)
         
         set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_update_unitary_power_over_full_timespan(self):
-        """Test update_unitary_power_over_full_timespan calculation."""
-        storage_delta = create_source_hourly_values_from_list([0, 500, -250], pint_unit=u.GB)
+    def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_power_per_usage_pattern calculation."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test pattern id"
         
-        with patch.object(self.edge_storage, "unitary_storage_delta_over_full_timespan", storage_delta), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(1 * u.TB)), \
+        storage_delta = create_source_hourly_values_from_list([0, 500, -250], pint_unit=u.GB)
+        self.edge_storage.unitary_storage_delta_per_usage_pattern = {mock_pattern: storage_delta}
+        
+        with patch.object(self.edge_storage, "storage_capacity", SourceValue(1 * u.TB)), \
              patch.object(self.edge_storage, "idle_power", SourceValue(5 * u.W)), \
              patch.object(self.edge_storage, "power", SourceValue(25 * u.W)), \
              patch.object(EdgeStorage, "power_usage_effectiveness", new_callable=PropertyMock) as mock_pue:
             mock_pue.return_value = SourceValue(1.2 * u.dimensionless)
-            self.edge_storage.update_unitary_power_over_full_timespan()
+            self.edge_storage.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
             
             # Activity levels: [0/1000, 500/1000, 250/1000] = [0, 0.5, 0.25]
             # Power: [5 + (25-5)*0, 5 + (25-5)*0.5, 5 + (25-5)*0.25] = [5, 15, 10]
             # With PUE: [5*1.2, 15*1.2, 10*1.2] = [6, 18, 12]
             expected_values = [6, 18, 12]
-            self.assertTrue(np.allclose(expected_values,
-                                       self.edge_storage.unitary_power_over_full_timespan.value_as_float_list))
-            self.assertEqual(u.W, self.edge_storage.unitary_power_over_full_timespan.unit)
-            self.assertEqual("Hourly number of active instances for Test EdgeStorage",
-                            self.edge_storage.unitary_power_over_full_timespan.label)
+            result = self.edge_storage.unitary_power_per_usage_pattern[mock_pattern]
+            self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
+            self.assertEqual(u.W, result.unit)
+            self.assertIn("Hourly power for Test EdgeStorage in Test Pattern", result.label)
 
     def test_negative_cumulative_storage_need_error_message(self):
         """Test NegativeCumulativeStorageNeedError message formatting."""
