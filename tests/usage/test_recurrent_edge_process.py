@@ -7,7 +7,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -20,11 +20,11 @@ from tests.utils import set_modeling_obj_containers
 class TestRecurrentEdgeProcess(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.recurrent_compute_needed = SourceRecurringValues(
+        self.recurrent_compute_needed = SourceRecurrentValues(
             Quantity(np.array([2.5] * 168, dtype=np.float32), u.cpu_core))
-        self.recurrent_ram_needed = SourceRecurringValues(
+        self.recurrent_ram_needed = SourceRecurrentValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
-        self.recurrent_storage_needed = SourceRecurringValues(
+        self.recurrent_storage_needed = SourceRecurrentValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
         
         self.edge_process = RecurrentEdgeProcess(
@@ -223,15 +223,15 @@ class TestRecurrentEdgeProcess(TestCase):
         edge_process_from_defaults = RecurrentEdgeProcess.from_defaults("default process")
         
         self.assertEqual("default process", edge_process_from_defaults.name)
-        self.assertIsInstance(edge_process_from_defaults.recurrent_compute_needed, SourceRecurringValues)
-        self.assertIsInstance(edge_process_from_defaults.recurrent_ram_needed, SourceRecurringValues)
+        self.assertIsInstance(edge_process_from_defaults.recurrent_compute_needed, SourceRecurrentValues)
+        self.assertIsInstance(edge_process_from_defaults.recurrent_ram_needed, SourceRecurrentValues)
         self.assertEqual(
             edge_process_from_defaults.recurrent_compute_needed.unit, u.cpu_core)
         self.assertEqual(
             edge_process_from_defaults.recurrent_ram_needed.unit, u.GB)
 
     def test_recurrent_values_parameters_validation(self):
-        """Test that recurrent values parameters must be ExplainableRecurringQuantities."""
+        """Test that recurrent values parameters must be ExplainableRecurrentQuantities."""
         with self.assertRaises(TypeError):
             RecurrentEdgeProcess(
                 "invalid process",

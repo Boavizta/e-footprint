@@ -16,7 +16,7 @@ os.environ["USE_BOAVIZTAPI_PACKAGE"] = "true"
 
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -148,11 +148,11 @@ def generate_big_system(
         for edge_process_index in range(1, nb_of_edge_processes_per_edge_device + 1):
             edge_process = RecurrentEdgeProcess(
                 f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
-                recurrent_compute_needed=SourceRecurringValues(
+                recurrent_compute_needed=SourceRecurrentValues(
                     Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-                recurrent_ram_needed=SourceRecurringValues(
+                recurrent_ram_needed=SourceRecurrentValues(
                     Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-                recurrent_storage_needed=SourceRecurringValues(
+                recurrent_storage_needed=SourceRecurrentValues(
                     Quantity(np.array([200] * 168, dtype=np.float32), u.kB))
             )
             edge_processes.append(edge_process)

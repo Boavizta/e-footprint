@@ -5,7 +5,7 @@ from pint import Quantity
 
 start = time()
 
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -146,11 +146,11 @@ edge_device = EdgeDevice(
 
 edge_process = RecurrentEdgeProcess(
     "edge process",
-    recurrent_compute_needed=SourceRecurringValues(
+    recurrent_compute_needed=SourceRecurrentValues(
         Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None),
-    recurrent_ram_needed=SourceRecurringValues(
+    recurrent_ram_needed=SourceRecurrentValues(
         Quantity(np.array([2] * 168, dtype=np.float32), u.GB), source=None),
-    recurrent_storage_needed=SourceRecurringValues(
+    recurrent_storage_needed=SourceRecurrentValues(
         Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
 )
 

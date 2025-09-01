@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
+from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
@@ -48,7 +48,7 @@ def obj_to_md(input_obj, attr_name):
                 f"if the object needs more instances than available.")
     elif isinstance(input_obj, ExplainableHourlyQuantities):
         return f"### {attr_name}\n{input_obj.label.capitalize()}, in hourly timeseries data."
-    elif isinstance(input_obj, ExplainableRecurringQuantities):
+    elif isinstance(input_obj, ExplainableRecurrentQuantities):
         return (f"### {attr_name}\n{input_obj.label.capitalize()}, in typical week of hourly timeseries data, "
                 f"starting on Monday at midnight.\n\n"
                 f"For example, {input_obj}")

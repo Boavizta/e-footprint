@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
@@ -182,11 +182,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         edge_process = RecurrentEdgeProcess(
             "Edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
         )
 
@@ -420,11 +420,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([300] * 168, dtype=np.float32), u.MB))
         )
 

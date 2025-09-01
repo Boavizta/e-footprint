@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @ExplainableObject.register_subclass(lambda d: "recurring_values" in d and "unit" in d)
-class ExplainableRecurringQuantities(ExplainableObject):
+class ExplainableRecurrentQuantities(ExplainableObject):
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None
@@ -41,11 +41,11 @@ class ExplainableRecurringQuantities(ExplainableObject):
             super().__init__(value, label, left_parent, right_parent, operator, source)
         else:
             raise ValueError(
-                f"ExplainableRecurringQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"
+                f"ExplainableRecurrentQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"
             )
 
     def __eq__(self, other):
-        if isinstance(other, ExplainableRecurringQuantities):
+        if isinstance(other, ExplainableRecurrentQuantities):
             return np.allclose(self.value, other.value, rtol=1e-06, atol=1e-06)
         return False
 
@@ -60,7 +60,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
             right_parent=explainable_condition, operator="logically dependent on")
 
     def __round__(self, round_level):
-        return ExplainableRecurringQuantities(
+        return ExplainableRecurrentQuantities(
             np.round(self.value, round_level).astype(np.float32, copy=False), label=self.label,
             left_parent=self, operator=f"rounded to {round_level} decimals", source=self.source
         )
@@ -83,7 +83,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
         return self.magnitude.tolist()
 
     def copy(self):
-        return ExplainableRecurringQuantities(
+        return ExplainableRecurrentQuantities(
             self.value.copy(), label=self.label, left_parent=self, operator="duplicate")
 
     def generate_hourly_quantities_over_timespan(
@@ -108,7 +108,7 @@ class ExplainableRecurringQuantities(ExplainableObject):
         # Validate canonical week length
         if len(self.value) != 168:
             raise ValueError(
-                f"ExplainableRecurringQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
+                f"ExplainableRecurrentQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
             )
 
         if timespan_hourly_quantities.start_date.tzinfo is None:

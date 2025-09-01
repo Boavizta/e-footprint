@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
@@ -58,11 +58,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         edge_process = RecurrentEdgeProcess(
             "Default edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
         )
 
@@ -286,11 +286,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Adding new edge process")
         new_edge_process = RecurrentEdgeProcess(
             "Additional edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
         )
         
@@ -310,11 +310,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Modifying edge processes list")
         new_edge_process = RecurrentEdgeProcess(
             "Replacement edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([300] * 168, dtype=np.float32), u.MB))
         )
         self.edge_usage_journey.edge_processes = [new_edge_process]
@@ -358,11 +358,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
         )
 
@@ -426,11 +426,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "additional edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
         )
 
@@ -522,11 +522,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
         )
 
@@ -567,11 +567,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Modifying edge processes")
         new_edge_process = RecurrentEdgeProcess(
             "new edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
         )
 
@@ -616,11 +616,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_simulation_add_new_edge_process(self):
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            recurrent_compute_needed=SourceRecurringValues(
+            recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurringValues(
+            recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurringValues(
+            recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
         )
 

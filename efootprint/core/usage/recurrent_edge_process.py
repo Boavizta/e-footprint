@@ -3,9 +3,9 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.explainable_recurring_quantities import ExplainableRecurringQuantities
+from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceRecurringValues
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
@@ -17,14 +17,14 @@ if TYPE_CHECKING:
 
 class RecurrentEdgeProcess(ModelingObject):
     default_values = {
-        "recurrent_compute_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-        "recurrent_ram_needed": SourceRecurringValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
-        "recurrent_storage_needed": SourceRecurringValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
+        "recurrent_compute_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
+        "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+        "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
-    def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurringQuantities, 
-                 recurrent_ram_needed: ExplainableRecurringQuantities,
-                 recurrent_storage_needed: ExplainableRecurringQuantities):
+    def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurrentQuantities, 
+                 recurrent_ram_needed: ExplainableRecurrentQuantities,
+                 recurrent_storage_needed: ExplainableRecurrentQuantities):
         super().__init__(name)
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
