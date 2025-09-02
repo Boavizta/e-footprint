@@ -1540,27 +1540,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_compute_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_compute_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_compute_need_over_full_timespan
+      unitary_hourly_compute_need_per_usage_pattern
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_ram_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_ram_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_ram_need_over_full_timespan
+      unitary_hourly_ram_need_per_usage_pattern
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_storage_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_storage_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_storage_need_over_full_timespan
+      unitary_hourly_storage_need_per_usage_pattern
     </span>
   </a>
   
@@ -1919,27 +1919,27 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_compute_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_compute_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_compute_need_over_full_timespan
+      unitary_hourly_compute_need_per_usage_pattern
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_ram_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_ram_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_ram_need_over_full_timespan
+      unitary_hourly_ram_need_per_usage_pattern
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#unitary_hourly_storage_need_over_full_timespan" class="md-nav__link">
+  <a href="#unitary_hourly_storage_need_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
-      unitary_hourly_storage_need_over_full_timespan
+      unitary_hourly_storage_need_per_usage_pattern
     </span>
   </a>
   
@@ -1990,11 +1990,14 @@
 <li><a href="../EdgeUsageJourney/">EdgeUsageJourney</a></li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
-<h3 id="unitary_hourly_compute_need_over_full_timespan">unitary_hourly_compute_need_over_full_timespan</h3>
-<p>Edge process recurrent compute needed expanded over default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (utc) in cpu_core.  </p>
-<p>Example value: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in cpu_core:<br />
+<h3 id="unitary_hourly_compute_need_per_usage_pattern">unitary_hourly_compute_need_per_usage_pattern</h3>
+<p>Dictionary with EdgeUsagePattern as keys and 
+                        Edge process unitary hourly compute need for default edge usage pattern as values, in cpu_core.  </p>
+<p>Example value: {<br />
+3bc8ec: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in cpu_core:<br />
     first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
-    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  </p>
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+}  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_compute_needed">edge process recurrent compute needed</a></li>
@@ -2035,7 +2038,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6312ca {
+             #mynetwork_a83858 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2057,7 +2060,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6312ca" class="card-body"></div>
+            <div id="mynetwork_a83858" class="card-body"></div>
         </div>
 
 
@@ -2087,13 +2090,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6312ca');
+                  var container = document.getElementById('mynetwork_a83858');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent compute\nneeded expanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent compute needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] expanded over\ntimespan 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent compute needed", "label": "edge process\nrecurrent compute\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed = 168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent compute needed", "to": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly compute need for Default edge usage pattern", "label": "edge process unitary\nhourly compute need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly compute need for Default edge usage pattern\n=\nedge process recurrent compute needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] expanded over\ntimespan 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent compute needed", "label": "edge process\nrecurrent compute\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed = 168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent compute needed", "to": "edge process unitary hourly compute need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process unitary hourly compute need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly compute need for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2158,12 +2161,15 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_compute_need_over_full_timespan.html' target='_blank'>link to edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)’s full calculation graph</a>.</p>
-<h3 id="unitary_hourly_ram_need_over_full_timespan">unitary_hourly_ram_need_over_full_timespan</h3>
-<p>Edge process recurrent ram needed expanded over default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (utc) in gigabyte.  </p>
-<p>Example value: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB:<br />
+<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_compute_need_per_usage_pattern.html' target='_blank'>link to edge process unitary hourly compute need for Default edge usage pattern’s full calculation graph</a>.</p>
+<h3 id="unitary_hourly_ram_need_per_usage_pattern">unitary_hourly_ram_need_per_usage_pattern</h3>
+<p>Dictionary with EdgeUsagePattern as keys and 
+                        Edge process unitary hourly ram need for default edge usage pattern as values, in gigabyte.  </p>
+<p>Example value: {<br />
+3bc8ec: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB:<br />
     first 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],<br />
-    last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]  </p>
+    last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], <br />
+}  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_ram_needed">edge process recurrent ram needed</a></li>
@@ -2204,7 +2210,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dc9cee {
+             #mynetwork_e7d335 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2226,7 +2232,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dc9cee" class="card-body"></div>
+            <div id="mynetwork_e7d335" class="card-body"></div>
         </div>
 
 
@@ -2256,13 +2262,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dc9cee');
+                  var container = document.getElementById('mynetwork_e7d335');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process recurrent ram needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent ram needed\nexpanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent ram needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent ram needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent ram needed", "label": "edge process\nrecurrent ram needed", "shape": "dot", "size": 15, "title": "edge process recurrent ram needed = 168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent ram needed", "to": "edge process recurrent ram needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process recurrent ram needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process recurrent ram needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly ram need for Default edge usage pattern", "label": "edge process unitary\nhourly ram need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly ram need for Default edge usage pattern\n=\nedge process recurrent ram needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent ram needed", "label": "edge process\nrecurrent ram needed", "shape": "dot", "size": 15, "title": "edge process recurrent ram needed = 168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent ram needed", "to": "edge process unitary hourly ram need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process unitary hourly ram need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly ram need for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2327,12 +2333,15 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_ram_need_over_full_timespan.html' target='_blank'>link to edge process recurrent ram needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)’s full calculation graph</a>.</p>
-<h3 id="unitary_hourly_storage_need_over_full_timespan">unitary_hourly_storage_need_over_full_timespan</h3>
-<p>Edge process recurrent storage needed expanded over default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (utc) in kilobyte.  </p>
-<p>Example value: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:<br />
+<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_ram_need_per_usage_pattern.html' target='_blank'>link to edge process unitary hourly ram need for Default edge usage pattern’s full calculation graph</a>.</p>
+<h3 id="unitary_hourly_storage_need_per_usage_pattern">unitary_hourly_storage_need_per_usage_pattern</h3>
+<p>Dictionary with EdgeUsagePattern as keys and 
+                        Edge process unitary hourly storage need for default edge usage pattern as values, in kilobyte.  </p>
+<p>Example value: {<br />
+3bc8ec: 52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:<br />
     first 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0],<br />
-    last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0]  </p>
+    last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], <br />
+}  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_storage_needed">edge process recurrent storage needed</a></li>
@@ -2373,7 +2382,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b7a325 {
+             #mynetwork_c114c7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2395,7 +2404,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b7a325" class="card-body"></div>
+            <div id="mynetwork_c114c7" class="card-body"></div>
         </div>
 
 
@@ -2425,13 +2434,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b7a325');
+                  var container = document.getElementById('mynetwork_c114c7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent storage\nneeded expanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 52597 values from 2025-01-01 00:00:00 to\n2031-01-01 13:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent storage needed", "label": "edge process\nrecurrent storage\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed = 168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent storage needed", "to": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly storage need for Default edge usage pattern", "label": "edge process unitary\nhourly storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly storage need for Default edge usage pattern\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 52597 values from 2025-01-01 00:00:00 to\n2031-01-01 13:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 300}, {"color": null, "id": "edge process recurrent storage needed", "label": "edge process\nrecurrent storage\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed = 168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent storage needed", "to": "edge process unitary hourly storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "edge process unitary hourly storage need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -2496,7 +2505,7 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_storage_need_over_full_timespan.html' target='_blank'>link to edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_storage_need_per_usage_pattern.html' target='_blank'>link to edge process unitary hourly storage need for Default edge usage pattern’s full calculation graph</a>.</p>
 
 
 

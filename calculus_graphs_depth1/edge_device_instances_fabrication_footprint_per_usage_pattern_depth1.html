@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bdf1cb {
+             #mynetwork_b9e769 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_bdf1cb" class="card-body"></div>
+            <div id="mynetwork_b9e769" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bdf1cb');
+                  var container = document.getElementById('mynetwork_b9e769');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly unitary storage delta for edge SSD storage", "label": "Hourly unitary\nstorage delta for\nedge SSD storage", "shape": "dot", "size": 15, "title": "Hourly unitary storage delta for edge SSD storage\n=\nedge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC) + no\nvalue\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] + no value\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent storage\nneeded expanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 52597 values from 2025-01-01 00:00:00 to\n2031-01-01 13:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent storage needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "to": "Hourly unitary storage delta for edge SSD storage"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge device instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge device\ninstances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge device instances fabrication footprint for Default edge usage\npattern\n=\nNumber of edge device instances for Default edge usage pattern * Carbon\nfootprint fabrication of edge device * (one hour / Lifespan of edge device)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 60.0 kilogram * (1.0 hour / 8.0 year)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}, {"color": null, "id": "Number of edge device instances for Default edge usage pattern", "label": "Number of edge\ndevice instances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Number of edge device instances for Default edge usage pattern\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -150.0, "y": 600}, {"color": null, "id": "Carbon footprint fabrication of edge device", "label": "Carbon footprint\nfabrication of edge\ndevice", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of edge device = 60.0 kilogram", "x": 0.0, "y": 600}, {"color": null, "id": "Lifespan of edge device", "label": "Lifespan of edge\ndevice", "shape": "dot", "size": 15, "title": "Lifespan of edge device = 8.0 year", "x": 150.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Number of edge device instances for Default edge usage pattern", "to": "Hourly edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint fabrication of edge device", "to": "Hourly edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of edge device", "to": "Hourly edge device instances fabrication footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

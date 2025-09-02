@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_433c3c {
+             #mynetwork_33af51 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_433c3c" class="card-body"></div>
+            <div id="mynetwork_33af51" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_433c3c');
+                  var container = document.getElementById('mynetwork_33af51');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge device hour by hour compute need", "label": "edge device hour by\nhour compute need", "shape": "dot", "size": 15, "title": "edge device hour by hour compute need\n=\nedge process recurrent compute needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC) + no\nvalue\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] + no value\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "label": "edge process\nrecurrent compute\nneeded expanded over\nDefault edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis timespan\n(UTC)", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed expanded over Default edge usage pattern\nhourly nb of edge device starts from e-footprint hypothesis timespan (UTC)\n=\nedge process recurrent compute needed expanded over timespan Default edge usage\npattern hourly nb of edge device starts from e-footprint hypothesis converted to\nUTC from devices country timezone from user data\n=\n168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] expanded over\ntimespan 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent compute needed expanded over Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis timespan (UTC)", "to": "edge device hour by hour compute need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of edge SSD storage instances for Default edge usage pattern", "label": "Number of edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Number of edge SSD storage instances for Default edge usage pattern\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "Number of edge SSD storage instances for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

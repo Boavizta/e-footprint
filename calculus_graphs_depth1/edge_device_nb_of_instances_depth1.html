@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e0780f {
+             #mynetwork_135147 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e0780f" class="card-body"></div>
+            <div id="mynetwork_135147" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e0780f');
+                  var container = document.getElementById('mynetwork_135147');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge device nb_of_instances", "label": "edge device\nnb_of_instances", "shape": "dot", "size": 15, "title": "edge device nb_of_instances\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge device nb_of_instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge device total instances across usage patterns", "label": "edge device total\ninstances across\nusage patterns", "shape": "dot", "size": 15, "title": "edge device total instances across usage patterns\n=\nNumber of edge device instances for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Number of edge device instances for Default edge usage pattern", "label": "Number of edge\ndevice instances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Number of edge device instances for Default edge usage pattern\n=\nduplicate (Default edge usage pattern hourly nb of edge usage journeys in\nparallel)\n=\nduplicate (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Number of edge device instances for Default edge usage pattern", "to": "edge device total instances across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
