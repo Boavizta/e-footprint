@@ -106,7 +106,8 @@ class EdgeDevice(EdgeHardware):
 
     def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_ram_need = sum(
-            [edge_process.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] for edge_process in self.edge_processes],
+            [edge_process.unitary_hourly_ram_need_per_usage_pattern[usage_pattern]
+             for edge_process in self.edge_processes],
             start=EmptyExplainableObject())
 
         max_ram_need = unitary_hourly_ram_need.max().to(u.GB)

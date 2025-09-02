@@ -397,7 +397,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.edge_device, self.edge_storage])
 
-    def run_test_add_edge_usage_pattern_to_system(self):
+    def run_test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process(self):
         new_edge_storage = EdgeStorage(
             "storage for additional edge usage pattern",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
@@ -424,19 +424,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             storage=new_edge_storage
         )
 
-        new_edge_process = RecurrentEdgeProcess(
-            "additional edge process",
-            recurrent_compute_needed=SourceRecurrentValues(
-                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurrentValues(
-                Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
-            recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
-        )
-
         new_edge_usage_journey = EdgeUsageJourney(
             "additional edge usage journey",
-            edge_processes=[new_edge_process],
+            edge_processes=[self.edge_process],
             edge_device=new_edge_device,
             usage_span=SourceValue(6 * u.year)
         )
@@ -448,11 +438,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
         )
-
+        self.assertEqual(1, len(self.edge_process.unitary_hourly_storage_need_per_usage_pattern))
         logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
         self.system.edge_usage_patterns += [new_edge_usage_pattern]
         
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+        self.assertEqual(2, len(self.edge_process.unitary_hourly_storage_need_per_usage_pattern))
         
         logger.warning("Removing the new edge usage pattern from the system")
         self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
@@ -462,7 +453,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Make sure that calculus graph references to the deleted usage pattern are removed
         for direct_child in self.edge_usage_pattern.country.average_carbon_intensity.direct_children_with_id:
             self.assertNotEqual(direct_child.modeling_obj_container.id, edge_usage_pattern_id)
-        
+        self.assertEqual(1, len(self.edge_process.unitary_hourly_storage_need_per_usage_pattern))
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_add_edge_usage_pattern_to_edge_usage_journey(self):

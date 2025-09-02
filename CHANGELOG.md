@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.1.0] - 2025-09-02
+
+### Changed
+- Removed single edge usage pattern to edge usage journey constraint. Now several edge usage pattern can have the same edge usage journey as parameter.
+- Removed single edge usage journey to edge process link constraint. Now edge usage journeys can be reused in different edge processes.
+- Renamed SourceRecurringValues and ExplainableRecurringQuantities into SourceRecurrentValues and ExplainableRecurrentQuantities, to keep consistency with RecurrentEdgeProcess.
+
 ## [11.0.0] - 2025-08-28
 
 ### Added

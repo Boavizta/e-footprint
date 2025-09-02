@@ -43,20 +43,20 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertIsInstance(self.edge_process.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_process.unitary_hourly_storage_need_per_usage_pattern, ExplainableObjectDict)
 
-    def test_edge_usage_journey_property_no_containers(self):
-        """Test edge_usage_journey property when no containers are set."""
-        self.assertIsNone(self.edge_process.edge_usage_journey)
+    def test_edge_usage_journeys_property_no_containers(self):
+        """Test edge_usage_journeys property when no containers are set."""
+        self.assertEqual([], self.edge_process.edge_usage_journeys)
 
-    def test_edge_usage_journey_property_single_container(self):
-        """Test edge_usage_journey property with single container."""
+    def test_edge_usage_journeys_property_single_container(self):
+        """Test edge_usage_journeys property with single container."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.name = "Mock Journey"
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual(mock_journey, self.edge_process.edge_usage_journey)
+        self.assertEqual([mock_journey], self.edge_process.edge_usage_journeys)
 
-    def test_edge_usage_journey_property_multiple_containers_raises_error(self):
+    def test_edge_usage_journeys_property_multiple_containers(self):
         """Test edge_usage_journey property raises error with multiple containers."""
         mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
         mock_journey_1.name = "Journey 1"
@@ -64,12 +64,8 @@ class TestRecurrentEdgeProcess(TestCase):
         mock_journey_2.name = "Journey 2"
         
         set_modeling_obj_containers(self.edge_process, [mock_journey_1, mock_journey_2])
-        
-        with self.assertRaises(PermissionError) as context:
-            _ = self.edge_process.edge_usage_journey
-        
-        expected_message_part = ("RecurrentEdgeProcess object can only be associated with one EdgeUsageJourney object but ")
-        self.assertIn(expected_message_part, str(context.exception))
+
+        self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_process.edge_usage_journeys))
 
     def test_edge_usage_patterns_property_no_containers(self):
         """Test edge_usage_patterns property when no containers are set."""
@@ -84,21 +80,21 @@ class TestRecurrentEdgeProcess(TestCase):
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual([mock_pattern_1, mock_pattern_2], self.edge_process.edge_usage_patterns)
+        self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_process.edge_usage_patterns))
 
-    def test_edge_device_property_no_containers(self):
-        """Test edge_device property when no containers are set."""
-        self.assertIsNone(self.edge_process.edge_device)
+    def test_edge_devices_property_no_containers(self):
+        """Test edge_devices property when no containers are set."""
+        self.assertEqual([], self.edge_process.edge_devices)
 
-    def test_edge_device_property_with_journey(self):
-        """Test edge_device property delegates to edge_usage_journey."""
+    def test_edge_devices_property_with_journey(self):
+        """Test edge_devices property delegates to edge_usage_journey."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_device = MagicMock(spec=EdgeDevice)
         mock_journey.edge_device = mock_device
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual(mock_device, self.edge_process.edge_device)
+        self.assertEqual([mock_device], self.edge_process.edge_devices)
 
     def test_systems_property_no_containers(self):
         """Test systems property when no containers are set."""
@@ -113,7 +109,7 @@ class TestRecurrentEdgeProcess(TestCase):
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual([mock_system_1, mock_system_2], self.edge_process.systems)
+        self.assertEqual({mock_system_1, mock_system_2}, set(self.edge_process.systems))
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test modeling_objects_whose_attributes_depend_directly_on_me returns empty list."""
@@ -150,9 +146,10 @@ class TestRecurrentEdgeProcess(TestCase):
         expected_result_2 = MagicMock(spec=ExplainableHourlyQuantities)
         expected_result_1.set_label = MagicMock(return_value=expected_result_1)
         expected_result_2.set_label = MagicMock(return_value=expected_result_2)
-        
+
+        mapping = {mock_hourly_starts_1: expected_result_1, mock_hourly_starts_2: expected_result_2}
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan = MagicMock(
-            side_effect=[expected_result_1, expected_result_2])
+            side_effect=lambda x, tz: mapping[x])
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         

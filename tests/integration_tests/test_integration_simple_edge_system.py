@@ -62,8 +62,8 @@ class IntegrationTestSimpleEdgeSystem(IntegrationTestSimpleEdgeSystemBaseClass):
     def test_update_country_in_edge_usage_pattern(self):
         self.run_test_update_country_in_edge_usage_pattern()
 
-    def test_add_edge_usage_pattern_to_system(self):
-        self.run_test_add_edge_usage_pattern_to_system()
+    def test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process(self):
+        self.run_test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process()
 
     def test_add_edge_usage_pattern_to_edge_usage_journey(self):
         self.run_test_add_edge_usage_pattern_to_edge_usage_journey()

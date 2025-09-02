@@ -40,35 +40,20 @@ class RecurrentEdgeProcess(ModelingObject):
                 "unitary_hourly_storage_need_per_usage_pattern"]
 
     @property
-    def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
-        if self.modeling_obj_containers:
-            if len(self.modeling_obj_containers) > 1:
-                raise PermissionError(
-                    f"RecurrentEdgeProcess object can only be associated with one EdgeUsageJourney object but {self.name} is "
-                    f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
-            return self.modeling_obj_containers[0]
-        else:
-            return None
+    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
+        return self.modeling_obj_containers
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_usage_patterns
-        else:
-            return []
+        return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
     @property
-    def edge_device(self) -> Optional["EdgeDevice"]:
-        if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_device
-        else:
-            return None
+    def edge_devices(self) -> List["EdgeDevice"]:
+        return [euj.edge_device for euj in self.edge_usage_journeys]
         
     @property
     def systems(self) -> List["System"]:
-        if self.modeling_obj_containers:
-            return self.edge_usage_journey.systems
-        return []
+        return list(set(sum([euj.systems for euj in self.edge_usage_journeys], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
