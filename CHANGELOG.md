@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.2.0] - 2025-09-09
+
+### Added
+- Possibility to add ExplainableRecurrentQuantities to another ExplainableRecurrentQuantities or an ExplainableQuantity.
+
+### Changed
+- Increased EdgeDevice default lifespan value to 6 years, to make it equal to default EdgeUsageJourney usage_span value and default EdgeStorage lifespan.
+
 ## [11.1.0] - 2025-09-02
 
 ### Changed

@@ -49,6 +49,25 @@ class ExplainableRecurrentQuantities(ExplainableObject):
             return np.allclose(self.value, other.value, rtol=1e-06, atol=1e-06)
         return False
 
+    def __add__(self, other):
+        if isinstance(other, (int, float)) and other == 0:
+            return ExplainableRecurrentQuantities(self.value, label=self.label, left_parent=self, operator="")
+        elif isinstance(other, self._EmptyExplainableObject):
+            return ExplainableRecurrentQuantities(
+                self.value, label=self.label, left_parent=self, right_parent=other, operator="+")
+        elif isinstance(other, ExplainableRecurrentQuantities):
+            if len(self.value) != len(other.value):
+                raise ValueError(f"Cannot add ExplainableRecurrentQuantities with different lengths: "
+                                 f"{len(self.value)} vs {len(other.value)}")
+            return ExplainableRecurrentQuantities(
+                self.value + other.value, label=None, left_parent=self, right_parent=other, operator="+")
+        elif isinstance(other, self._ExplainableQuantity):
+            return ExplainableRecurrentQuantities(
+                self.value + other.value, label=None, left_parent=self, right_parent=other, operator="+")
+        else:
+            raise ValueError(f"Can only add another ExplainableRecurrentQuantities, ExplainableQuantity, scalar 0, "
+                             f"or EmptyExplainableObject, not {type(other)}")
+
     def to(self, unit_to_convert_to: Unit):
         self.value = self.value.to(unit_to_convert_to)
 

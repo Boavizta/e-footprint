@@ -19,7 +19,7 @@ class EdgeDevice(EdgeHardware):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg),
         "power": SourceValue(30 * u.W),
-        "lifespan": SourceValue(4 * u.year),
+        "lifespan": SourceValue(6 * u.year),
         "idle_power": SourceValue(5 * u.W),
         "ram": SourceValue(8 * u.GB),
         "compute": SourceValue(4 * u.cpu_core),

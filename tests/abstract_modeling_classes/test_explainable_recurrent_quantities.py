@@ -177,6 +177,89 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
     def test_repr_equals_str(self):
         self.assertEqual(repr(self.recurring_quantity1), str(self.recurring_quantity1))
 
+    def test_add_with_zero(self):
+        result = self.recurring_quantity1 + 0
+        
+        self.assertIsInstance(result, ExplainableRecurrentQuantities)
+        self.assertEqual(result.label, "Recurrent 1")
+        np.testing.assert_array_equal(result.magnitude, self.recurring_quantity1.magnitude)
+        self.assertEqual(result.unit, self.recurring_quantity1.unit)
+        self.assertIs(result.left_parent, self.recurring_quantity1)
+        self.assertEqual(result.operator, "")
+
+    def test_add_with_float_zero(self):
+        result = self.recurring_quantity1 + 0.0
+        
+        self.assertIsInstance(result, ExplainableRecurrentQuantities)
+        self.assertEqual(result.label, "Recurrent 1")
+        np.testing.assert_array_equal(result.magnitude, self.recurring_quantity1.magnitude)
+        self.assertEqual(result.unit, self.recurring_quantity1.unit)
+        self.assertIs(result.left_parent, self.recurring_quantity1)
+        self.assertEqual(result.operator, "")
+
+    def test_add_with_empty_explainable_object(self):
+        from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+        empty_obj = EmptyExplainableObject()
+        result = self.recurring_quantity1 + empty_obj
+        
+        self.assertIsInstance(result, ExplainableRecurrentQuantities)
+        self.assertEqual(result.label, "Recurrent 1")
+        np.testing.assert_array_equal(result.magnitude, self.recurring_quantity1.magnitude)
+        self.assertEqual(result.unit, self.recurring_quantity1.unit)
+        self.assertIs(result.left_parent, self.recurring_quantity1)
+        self.assertIs(result.right_parent, empty_obj)
+        self.assertEqual(result.operator, "+")
+
+    def test_add_with_another_recurrent_quantities(self):
+        result = self.recurring_quantity1 + self.recurring_quantity2
+        
+        self.assertIsInstance(result, ExplainableRecurrentQuantities)
+        self.assertIsNone(result.label)
+        expected_values = np.array(self.recurring_values1, dtype=np.float32) + np.array(self.recurring_values2, dtype=np.float32)
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(result.unit, self.recurring_quantity1.unit)
+        self.assertIs(result.left_parent, self.recurring_quantity1)
+        self.assertIs(result.right_parent, self.recurring_quantity2)
+        self.assertEqual(result.operator, "+")
+
+    def test_add_with_explainable_quantity(self):
+        scalar_quantity = ExplainableQuantity(5 * u.W, "scalar")
+        result = self.recurring_quantity1 + scalar_quantity
+        
+        self.assertIsInstance(result, ExplainableRecurrentQuantities)
+        self.assertIsNone(result.label)
+        expected_values = np.array(self.recurring_values1, dtype=np.float32) + 5
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(result.unit, self.recurring_quantity1.unit)
+        self.assertIs(result.left_parent, self.recurring_quantity1)
+        self.assertIs(result.right_parent, scalar_quantity)
+        self.assertEqual(result.operator, "+")
+
+    def test_add_with_different_length_recurrent_quantities_raises_error(self):
+        different_length_values = [1, 2, 3]  # Different length
+        different_length_quantity = ExplainableRecurrentQuantities(
+            Quantity(np.array(different_length_values, dtype=np.float32), u.W), "Different Length")
+        
+        with self.assertRaises(ValueError) as cm:
+            self.recurring_quantity1 + different_length_quantity
+        
+        self.assertIn("Cannot add ExplainableRecurrentQuantities with different lengths", str(cm.exception))
+        self.assertIn("24 vs 3", str(cm.exception))
+
+    def test_add_with_invalid_type_raises_error(self):
+        with self.assertRaises(ValueError) as cm:
+            self.recurring_quantity1 + "invalid"
+        
+        self.assertIn("Can only add another ExplainableRecurrentQuantities, ExplainableQuantity, scalar 0, "
+                      "or EmptyExplainableObject", str(cm.exception))
+
+    def test_add_with_non_zero_number_raises_error(self):
+        with self.assertRaises(ValueError) as cm:
+            self.recurring_quantity1 + 5
+        
+        self.assertIn("Can only add another ExplainableRecurrentQuantities, ExplainableQuantity, scalar 0, "
+                      "or EmptyExplainableObject", str(cm.exception))
+
 
 class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def setUp(self):
