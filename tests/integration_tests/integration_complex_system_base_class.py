@@ -187,7 +187,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -400,7 +400,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB)
+            base_storage_need=SourceValue(100 * u.GB)
         )
 
         new_edge_device = EdgeDevice(
@@ -425,7 +425,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([300] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
@@ -527,9 +527,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def run_test_simulation_add_existing_object(self):
+        logger.info(f"Launching simulation")
         simulation = ModelingUpdate(
             [[self.uj_step_2.jobs, self.uj_step_2.jobs + [self.server1_job2]]],
             self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
+        logger.info("Simulation computed")
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         self.assertEqual(self.system.total_footprint, self.initial_footprint)

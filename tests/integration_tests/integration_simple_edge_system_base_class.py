@@ -38,7 +38,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
 
         edge_device = EdgeDevice(
@@ -63,7 +63,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -225,7 +225,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
         logger.warning("Changing edge device storage")
         self.edge_device.storage = new_edge_storage
@@ -250,7 +250,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
 
         new_edge_device = EdgeDevice(
@@ -291,7 +291,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
         
         self.edge_usage_journey.edge_processes.append(new_edge_process)
@@ -315,7 +315,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([300] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
         )
         self.edge_usage_journey.edge_processes = [new_edge_process]
         
@@ -338,7 +338,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
 
         new_edge_device = EdgeDevice(
@@ -363,7 +363,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
@@ -406,7 +406,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
 
         new_edge_device = EdgeDevice(
@@ -493,7 +493,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.years),
             idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB),
+            base_storage_need=SourceValue(100 * u.GB),
         )
 
         new_edge_device = EdgeDevice(
@@ -518,7 +518,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
@@ -563,7 +563,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
 
         edge_usage_journey.edge_processes += [new_edge_process]
@@ -612,7 +612,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 168, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
 
         initial_edge_processes = copy(self.edge_usage_journey.edge_processes)

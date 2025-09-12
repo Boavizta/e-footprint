@@ -68,6 +68,7 @@ class ModelingUpdate:
         self.replaced_ancestors_copies = []
         if self.simulation_date is not None:
             self.make_simulation_specific_operations()
+            logger.info("Simulation specific operations done.")
 
         self.apply_changes()
         for new_sourcevalue in self.new_sourcevalues:

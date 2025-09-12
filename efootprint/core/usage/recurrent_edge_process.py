@@ -61,7 +61,7 @@ class RecurrentEdgeProcess(ModelingObject):
 
     def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_compute_need = self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(
-            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+            usage_pattern.nb_edge_usage_journeys_in_parallel, usage_pattern.country.timezone)
         self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.set_label(
             f"{self.name} unitary hourly compute need for {usage_pattern.name}")
 
@@ -72,7 +72,7 @@ class RecurrentEdgeProcess(ModelingObject):
 
     def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_ram_need = self.recurrent_ram_needed.generate_hourly_quantities_over_timespan(
-            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+            usage_pattern.nb_edge_usage_journeys_in_parallel, usage_pattern.country.timezone)
         self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.set_label(
             f"{self.name} unitary hourly ram need for {usage_pattern.name}")
 
@@ -83,7 +83,7 @@ class RecurrentEdgeProcess(ModelingObject):
 
     def update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_storage_need = self.recurrent_storage_needed.generate_hourly_quantities_over_timespan(
-            usage_pattern.hourly_edge_usage_journey_starts, usage_pattern.country.timezone)
+            usage_pattern.nb_edge_usage_journeys_in_parallel, usage_pattern.country.timezone)
         self.unitary_hourly_storage_need_per_usage_pattern[usage_pattern] = unitary_hourly_storage_need.set_label(
             f"{self.name} unitary hourly storage need for {usage_pattern.name}")
 

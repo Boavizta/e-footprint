@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.2.1] - 2025-09-12
+
+### Fixed
+- In RecurrentEdgeProcess class, generate hourly quantities over number of parallel edge usage journeys from edge usage pattern instead of generating over number of hourly edge usage journey starts. In fact, the number of parallel edge usage journeys takes into account the usage span of the edge usage journey, while the number of hourly edge usage journey starts doesn’t. This bug fix leads to significant changes in the results when the edge usage journey duration is long compared to the length of edge usage journey starts (which can often be the case).
+
 ## [11.2.0] - 2025-09-09
 
 ### Added

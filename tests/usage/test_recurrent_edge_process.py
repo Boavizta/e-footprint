@@ -125,17 +125,17 @@ class TestRecurrentEdgeProcess(TestCase):
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2.name = "Pattern 2"
 
-        mock_hourly_starts_1 = MagicMock(spec=ExplainableHourlyQuantities)
-        mock_hourly_starts_2 = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_nb_euj_in_parallel_1 = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_nb_euj_in_parallel_2 = MagicMock(spec=ExplainableHourlyQuantities)
         mock_country_1 = MagicMock()
         mock_country_2 = MagicMock()
         mock_timezone_1 = MagicMock()
         mock_timezone_2 = MagicMock()
 
-        mock_pattern_1.hourly_edge_usage_journey_starts = mock_hourly_starts_1
+        mock_pattern_1.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel_1
         mock_pattern_1.country = mock_country_1
         mock_country_1.timezone = mock_timezone_1
-        mock_pattern_2.hourly_edge_usage_journey_starts = mock_hourly_starts_2
+        mock_pattern_2.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel_2
         mock_pattern_2.country = mock_country_2
         mock_country_2.timezone = mock_timezone_2
 
@@ -147,7 +147,7 @@ class TestRecurrentEdgeProcess(TestCase):
         expected_result_1.set_label = MagicMock(return_value=expected_result_1)
         expected_result_2.set_label = MagicMock(return_value=expected_result_2)
 
-        mapping = {mock_hourly_starts_1: expected_result_1, mock_hourly_starts_2: expected_result_2}
+        mapping = {mock_nb_euj_in_parallel_1: expected_result_1, mock_nb_euj_in_parallel_2: expected_result_2}
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan = MagicMock(
             side_effect=lambda x, tz: mapping[x])
         
@@ -166,11 +166,11 @@ class TestRecurrentEdgeProcess(TestCase):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern method."""
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         mock_country = MagicMock()
         mock_timezone = MagicMock()
         
-        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
         
@@ -183,7 +183,7 @@ class TestRecurrentEdgeProcess(TestCase):
         self.edge_process.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
         
         self.edge_process.recurrent_compute_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
-            mock_hourly_starts, mock_timezone)
+            mock_nb_euj_in_parallel, mock_timezone)
         
         self.assertDictEqual(
             {mock_pattern: expected_result}, self.edge_process.unitary_hourly_compute_need_per_usage_pattern)
@@ -192,11 +192,11 @@ class TestRecurrentEdgeProcess(TestCase):
         """Test update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern method."""
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        mock_hourly_starts = MagicMock(spec=ExplainableHourlyQuantities)
+        mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         mock_country = MagicMock()
         mock_timezone = MagicMock()
 
-        mock_pattern.hourly_edge_usage_journey_starts = mock_hourly_starts
+        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
@@ -210,7 +210,7 @@ class TestRecurrentEdgeProcess(TestCase):
         self.edge_process.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(mock_pattern)
 
         self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan.assert_called_once_with(
-            mock_hourly_starts, mock_timezone)
+            mock_nb_euj_in_parallel, mock_timezone)
 
         self.assertEqual(
             {mock_pattern: expected_result}, self.edge_process.unitary_hourly_storage_need_per_usage_pattern)
