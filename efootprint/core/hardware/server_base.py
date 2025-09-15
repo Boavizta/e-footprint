@@ -58,7 +58,7 @@ class ServerBase(InfraHardware):
 
     @classmethod
     def installable_services(cls) -> List:
-        from efootprint.core.all_classes_in_order import SERVICE_CLASSES
+        from efootprint.all_classes_in_order import SERVICE_CLASSES
         installable_services = []
         for service_class in SERVICE_CLASSES:
             for installable_on_class in service_class.installable_on():

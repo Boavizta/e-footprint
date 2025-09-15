@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
 

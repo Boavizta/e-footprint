@@ -8,7 +8,7 @@ from unittest import TestCase
 
 from efootprint import core
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 
 
 def get_subclasses_in_package(package: ModuleType, base_class: Type) -> List[Type]:

@@ -3,13 +3,13 @@ import os.path
 from copy import deepcopy
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.core.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.core.usage.usage_journey import UsageJourney

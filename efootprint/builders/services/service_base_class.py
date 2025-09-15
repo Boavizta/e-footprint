@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -21,7 +20,7 @@ class Service(ModelingObject):
 
     @classmethod
     def compatible_jobs(cls) -> List:
-        from efootprint.core.all_classes_in_order import SERVICE_JOB_CLASSES
+        from efootprint.all_classes_in_order import SERVICE_JOB_CLASSES
         compatible_jobs = []
         for service_job_class in SERVICE_JOB_CLASSES:
             if cls in service_job_class.compatible_services():

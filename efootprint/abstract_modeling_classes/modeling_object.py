@@ -73,7 +73,7 @@ def css_escape(input_string):
 
 
 def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
-    from efootprint.core.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
+    from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
     initial_chain_len = len(mod_objs_computation_chain)
     # Keep only last occurrence of each mod_obj
     optimized_chain = []
