@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.2.2] - 2025-09-19
+
+### Fixed
+- When generating recurrent edge process storage need over edge usage pattern timespan, if the timespan doesn’t start on a Monday 00:00, set the first values of the storage need to 0 until the first Monday 00:00, so that if storage need increases during beginning of the week then decreases at the end of the week, it doesn’t go negative.
+
 ## [11.2.1] - 2025-09-12
 
 ### Fixed

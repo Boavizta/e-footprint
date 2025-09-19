@@ -39,7 +39,7 @@ class EdgeStorage(EdgeHardware):
             "lifespan": SourceValue(6 * u.years),
             "idle_power": SourceValue(0 * u.W),
             "storage_capacity": SourceValue(1 * u.TB),
-            "base_storage_need": SourceValue(0 * u.TB),
+            "base_storage_need": SourceValue(30 * u.GB),
         }
 
     @classmethod
