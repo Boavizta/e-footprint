@@ -132,7 +132,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._keys_of_direct_ancestors_with_id_loaded_from_json = None
         self._keys_of_direct_children_with_id_loaded_from_json = None
         self.flat_obj_dict = None
-        self.ancestor_and_children_have_been_loaded_from_json = False
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
         self.explain_nested_tuples_from_json = None
@@ -189,17 +188,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     def load_ancestors_and_children_from_json(self):
         if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
-                and self._keys_of_direct_children_with_id_loaded_from_json is not None
-                and not self.ancestor_and_children_have_been_loaded_from_json):
-            self._direct_ancestors_with_id = [
+                and self._keys_of_direct_children_with_id_loaded_from_json is not None):
+            self.direct_ancestors_with_id = [
                 get_attribute_from_flat_obj_dict(direct_ancestor_key, self.flat_obj_dict) for direct_ancestor_key in
                 self._keys_of_direct_ancestors_with_id_loaded_from_json
             ]
-            self._direct_children_with_id = [
+            self.direct_children_with_id = [
                 get_attribute_from_flat_obj_dict(direct_child_key, self.flat_obj_dict) for direct_child_key in
                 self._keys_of_direct_children_with_id_loaded_from_json
             ]
-            self.ancestor_and_children_have_been_loaded_from_json = True
 
     @property
     def direct_ancestors_with_id(self):
@@ -211,7 +208,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def direct_ancestors_with_id(self, value):
         self._direct_ancestors_with_id = value
         self._keys_of_direct_ancestors_with_id_loaded_from_json = None
-        self._keys_of_direct_children_with_id_loaded_from_json = None
 
     @property
     def direct_children_with_id(self):
@@ -222,7 +218,6 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @direct_children_with_id.setter
     def direct_children_with_id(self, value):
         self._direct_children_with_id = value
-        self._keys_of_direct_ancestors_with_id_loaded_from_json = None
         self._keys_of_direct_children_with_id_loaded_from_json = None
 
     def __copy__(self):

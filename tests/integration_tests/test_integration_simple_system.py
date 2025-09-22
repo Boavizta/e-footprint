@@ -29,6 +29,9 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
 
     # INPUT VARIATION TESTING
 
+    def test_generate_new_system_with_json_saving_halfway_keeps_calculation_graph_intact(self):
+        self.run_test_generate_new_system_with_json_saving_halfway_keeps_calculation_graph_intact()
+
     def test_variations_on_inputs(self):
         self.run_test_variations_on_inputs()
 
