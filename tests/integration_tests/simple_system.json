@@ -5,27 +5,27 @@
             "name": "system 1",
             "id": "system-1",
             "usage_patterns": [
-                "Youtube-usage-in-France"
+                "Usage-Pattern"
             ],
             "edge_usage_patterns": []
         }
     },
     "UsagePattern": {
-        "Youtube-usage-in-France": {
-            "name": "Youtube usage in France",
-            "id": "Youtube-usage-in-France",
+        "Usage-Pattern": {
+            "name": "Usage Pattern",
+            "id": "Usage-Pattern",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
                 "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Youtube usage in France hourly nb of visits from e-footprint hypothesis",
+                "label": "Usage Pattern hourly nb of visits from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "usage_journey": "Daily-Youtube-usage",
+            "usage_journey": "Usage-journey",
             "devices": [
                 "Default-laptop"
             ],
@@ -34,57 +34,57 @@
         }
     },
     "UsageJourney": {
-        "Daily-Youtube-usage": {
-            "name": "Daily Youtube usage",
-            "id": "Daily-Youtube-usage",
+        "Usage-journey": {
+            "name": "Usage journey",
+            "id": "Usage-journey",
             "uj_steps": [
-                "20-min-streaming-on-Youtube",
-                "40s-of-upload"
+                "UJ-step-1",
+                "UJ-step-2"
             ]
         }
     },
     "UsageJourneyStep": {
-        "20-min-streaming-on-Youtube": {
-            "name": "20 min streaming on Youtube",
-            "id": "20-min-streaming-on-Youtube",
+        "UJ-step-1": {
+            "name": "UJ step 1",
+            "id": "UJ-step-1",
             "user_time_spent": {
                 "value": 20.0,
                 "unit": "minute",
-                "label": "Time spent on step 20 min streaming on Youtube from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "streaming"
+                "job-1"
             ]
         },
-        "40s-of-upload": {
-            "name": "40s of upload",
-            "id": "40s-of-upload",
+        "UJ-step-2": {
+            "name": "UJ step 2",
+            "id": "UJ-step-2",
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
-                "label": "Time spent on step 40s of upload from e-footprint hypothesis",
+                "label": "Time spent on step UJ step 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "upload"
+                "job-2"
             ]
         }
     },
     "Job": {
-        "streaming": {
-            "name": "streaming",
-            "id": "streaming",
+        "job-1": {
+            "name": "job 1",
+            "id": "job-1",
             "data_transferred": {
                 "value": 0.8333333333333334,
                 "unit": "gigabyte",
-                "label": "Sum of all data uploads and downloads for request streaming from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -93,7 +93,7 @@
             "data_stored": {
                 "value": 50.0,
                 "unit": "kilobyte",
-                "label": "Data stored by request streaming from e-footprint hypothesis",
+                "label": "Data stored by request job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -102,7 +102,7 @@
             "request_duration": {
                 "value": 4.0,
                 "unit": "minute",
-                "label": "Request duration of streaming from e-footprint hypothesis",
+                "label": "Request duration of job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -111,7 +111,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Default server to process streaming from e-footprint hypothesis",
+                "label": "RAM needed on server Default server to process job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -120,7 +120,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process streaming from e-footprint hypothesis",
+                "label": "cpu cores needed on server Default server to process job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -128,13 +128,13 @@
             },
             "server": "Default-server"
         },
-        "upload": {
-            "name": "upload",
-            "id": "upload",
+        "job-2": {
+            "name": "job 2",
+            "id": "job-2",
             "data_transferred": {
                 "value": 300.0,
                 "unit": "megabyte",
-                "label": "Sum of all data uploads and downloads for request upload from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads for request job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -143,7 +143,7 @@
             "data_stored": {
                 "value": 300.0,
                 "unit": "megabyte",
-                "label": "Data stored by request upload from e-footprint hypothesis",
+                "label": "Data stored by request job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -152,7 +152,7 @@
             "request_duration": {
                 "value": 40.0,
                 "unit": "second",
-                "label": "Request duration of upload from e-footprint hypothesis",
+                "label": "Request duration of job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -161,7 +161,7 @@
             "ram_needed": {
                 "value": 100.0,
                 "unit": "megabyte",
-                "label": "RAM needed on server Default server to process upload from e-footprint hypothesis",
+                "label": "RAM needed on server Default server to process job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -170,7 +170,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process upload from e-footprint hypothesis",
+                "label": "cpu cores needed on server Default server to process job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

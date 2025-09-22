@@ -10,7 +10,7 @@ from tests.integration_tests.integration_simple_system_base_class import Integra
 class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        (system, storage, server, streaming_job, streaming_step, upload_job, upload_step, uj, network,
+        (system, storage, server, job_1, uj_step_1, job_2, uj_step_2, uj, network,
          start_date, usage_pattern) = cls.generate_simple_system()
 
         cls.system_json_filepath = "system_with_calculated_attributes.json"
@@ -19,11 +19,11 @@ class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
             system_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(system_dict)
 
-        cls.system, cls.storage, cls.server, cls.streaming_job, cls.streaming_step, cls.upload_job, cls.upload_step, \
+        cls.system, cls.storage, cls.server, cls.job_1, cls.uj_step_1, cls.job_2, cls.uj_step_2, \
             cls.uj, cls.start_date, cls.network, cls.usage_pattern = \
             flat_obj_dict[system.id], flat_obj_dict[storage.id], flat_obj_dict[server.id], \
-            flat_obj_dict[streaming_job.id], flat_obj_dict[streaming_step.id], flat_obj_dict[upload_job.id], \
-            flat_obj_dict[upload_step.id], flat_obj_dict[uj.id], start_date, flat_obj_dict[network.id], \
+            flat_obj_dict[job_1.id], flat_obj_dict[uj_step_1.id], flat_obj_dict[job_2.id], \
+            flat_obj_dict[uj_step_2.id], flat_obj_dict[uj.id], start_date, flat_obj_dict[network.id], \
             flat_obj_dict[usage_pattern.id]
 
         cls.initialize_footprints(
