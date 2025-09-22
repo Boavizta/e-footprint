@@ -170,6 +170,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def _run_test_variations_on_inputs_from_object_list(
             self, streaming_step, server, storage, uj, network, usage_pattern, streaming_job, system):
         self._test_variations_on_obj_inputs(streaming_step)
+        self._test_input_change(
+            streaming_step.user_time_spent, SourceValue(10 * u.min), streaming_step, "user_time_spent",
+            calculated_attributes_that_should_be_updated=[uj.duration, usage_pattern.energy_footprint])
         self._test_variations_on_obj_inputs(
             server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={

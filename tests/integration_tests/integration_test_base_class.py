@@ -1,6 +1,6 @@
 import re
 from copy import copy
-from typing import List
+from typing import List, Optional
 from unittest import TestCase
 import os
 import json
@@ -102,14 +102,33 @@ class IntegrationTestBaseClass(TestCase):
 
             logger.info(f"All ExplainableQuantities have right values for generated object {obj.name}")
 
-    def _test_input_change(self, expl_attr, expl_attr_new_value, input_object, expl_attr_name):
+    def _test_input_change(
+            self, expl_attr, expl_attr_new_value, input_object, expl_attr_name,
+            calculated_attributes_that_should_be_updated:Optional[List[ExplainableObject]]=None):
         expl_attr_new_value.label = expl_attr.label
         logger.info(f"{expl_attr_new_value.label} changing from {expl_attr} to {expl_attr_new_value.value}")
+        calc_attrs_that_should_change_metadata = []
+        if calculated_attributes_that_should_be_updated is not None:
+            for calc_attr in calculated_attributes_that_should_be_updated:
+                calc_attrs_that_should_change_metadata.append(
+                    {"mod_obj_container": calc_attr.modeling_obj_container,
+                     "attr_name": calc_attr.attr_name_in_mod_obj_container,
+                     "initial_calc_attr": calc_attr}
+                )
         system = input_object.systems[0]
         input_object.__setattr__(expl_attr_name, expl_attr_new_value)
         new_footprint = system.total_footprint
         logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
         self.assertNotEqual(self.initial_footprint, new_footprint)
+        for calc_attr_metadata in calc_attrs_that_should_change_metadata:
+            new_calc_attr = getattr(calc_attr_metadata["mod_obj_container"], calc_attr_metadata["attr_name"])
+            self.assertNotEqual(
+                calc_attr_metadata["initial_calc_attr"], new_calc_attr,
+                f"Calculated attribute {calc_attr_metadata['attr_name']} of "
+                f"{calc_attr_metadata['mod_obj_container'].name} did not change")
+            logger.info(f"Calculated attribute {calc_attr_metadata['attr_name']} of "
+                        f"{calc_attr_metadata['mod_obj_container'].name} changed from "
+                        f"{calc_attr_metadata['initial_calc_attr']} to {new_calc_attr}")
         logger.info(f"Setting back {expl_attr_new_value.label} to {expl_attr}")
         input_object.__setattr__(expl_attr_name, expl_attr)
         self.assertEqual(system.total_footprint, self.initial_footprint)

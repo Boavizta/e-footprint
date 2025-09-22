@@ -56,7 +56,7 @@ class ModelingUpdate:
         self.mod_objs_computation_chain = self.compute_mod_objs_computation_chain()
         if self.mod_objs_computation_chain:
             logger.info(f"{len(self.mod_objs_computation_chain)} recomputed objects: "
-                        f"{[mod_obj.id for mod_obj in self.mod_objs_computation_chain]}")
+                        f"{[mod_obj.name for mod_obj in self.mod_objs_computation_chain]}")
         self.attr_updates_chain_from_mod_objs_computation_chains = (
             compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
         self.values_to_recompute = self.generate_optimized_attr_updates_chain()
