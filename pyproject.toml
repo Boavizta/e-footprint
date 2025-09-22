@@ -5,7 +5,7 @@
 
 [tool.poetry]
 name = "efootprint"
-version = "11.2.2"
+version = "11.2.3"
 description = "Digital service environmental footprint model"
 authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"

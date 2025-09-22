@@ -112,11 +112,14 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
         logger.debug(f"Reordered modeling object computation chain from \n{ordered_chain_ids} to "
                     f"\n{optimized_chain_ids}")
 
-    for mod_obj in ordered_chain:
-        if mod_obj.systems:
-            ordered_chain.append(mod_obj.systems[0])
-            logger.debug("Added system to optimized chain")
-            break
+    # In case system isn’t naturally present in chain, add it at the end
+    from efootprint.core.system import System
+    if ordered_chain and not isinstance(ordered_chain[-1], System):
+        for mod_obj in ordered_chain:
+            if mod_obj.systems:
+                ordered_chain.append(mod_obj.systems[0])
+                logger.debug("Added system to optimized chain")
+                break
 
     return ordered_chain
 

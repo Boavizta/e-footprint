@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.2.3] - 2025-09-22
+
+### Fixed
+- Don’t add system to mod objs computation chain when it is already naturally present.
+- Children and ancestors loading logic from json. When a usage pattern was added to a system, a job object loaded from json that was part of the calculation wouldn’t rightly save its calculation graph logic to json, which would then compromise subsequent recomputations.
+
 ## [11.2.2] - 2025-09-19
 
 ### Fixed
