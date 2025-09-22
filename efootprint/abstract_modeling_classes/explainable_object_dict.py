@@ -52,14 +52,14 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         output_dict = {}
 
         for key, value in self.items():
             if isinstance(key, ModelingObject):
-                output_dict[key.id] = value.to_json(with_calculated_attributes_data)
+                output_dict[key.id] = value.to_json(save_calculated_attributes)
             elif isinstance(key, str):
-                output_dict[key] = value.to_json(with_calculated_attributes_data)
+                output_dict[key] = value.to_json(save_calculated_attributes)
             else:
                 raise ValueError(f"Key {key} is not a ModelingObject or a string")
 

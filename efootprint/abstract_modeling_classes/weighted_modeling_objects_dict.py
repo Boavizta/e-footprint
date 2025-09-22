@@ -63,11 +63,11 @@ class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABC
                 copied_dict[contextual_modeling_object_attribute_key] = value_to_set
                 ModelingUpdate([[self, copied_dict]])
                 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         output_dict = {}
 
         for key, value in self.items():
-            output_dict[key.id] = value.to_json(with_calculated_attributes_data)
+            output_dict[key.id] = value.to_json(save_calculated_attributes)
 
         return output_dict
 

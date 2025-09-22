@@ -330,7 +330,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
         system = System("System", [usage_pattern], edge_usage_patterns=[])
         # job data transferred should save its children calculated attributes to json
-        children_data = job_from_json.data_transferred.to_json(with_calculated_attributes_data=True)[
+        children_data = job_from_json.data_transferred.to_json(save_calculated_attributes=True)[
             "direct_children_with_id"]
         self.assertGreater(len(children_data), 0)
 

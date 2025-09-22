@@ -564,7 +564,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return recurse(self.explain_nested_tuples)
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         output_dict = {}
 
         if isinstance(self._value, str):  # Case of technology in WebApplication
@@ -575,7 +575,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if self.source is not None:
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
 
-        if with_calculated_attributes_data:
+        if save_calculated_attributes:
             if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:
                 output_dict["direct_ancestors_with_id"] = self._keys_of_direct_ancestors_with_id_loaded_from_json
                 output_dict["direct_children_with_id"] = self._keys_of_direct_children_with_id_loaded_from_json

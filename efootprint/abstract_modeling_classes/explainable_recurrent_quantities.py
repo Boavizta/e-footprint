@@ -158,13 +158,13 @@ class ExplainableRecurrentQuantities(ExplainableObject):
             f"{self.label} expanded over {timespan_hourly_quantities.label} timespan (UTC)" if self.label else None,
         )
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         output_dict = {
                 "recurring_values": str(self.magnitude.tolist()),
                 "unit": str(self.unit),
             }
 
-        output_dict.update(super().to_json(with_calculated_attributes_data))
+        output_dict.update(super().to_json(save_calculated_attributes))
 
         return output_dict
 

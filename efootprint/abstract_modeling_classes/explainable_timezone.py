@@ -10,8 +10,8 @@ class ExplainableTimezone(ExplainableObject):
         source = Source.from_json_dict(d["source"]) if "source" in d else None
         return cls(pytz.timezone(d["zone"]), label=d["label"], source=source)
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         output_dict = {"zone": self.value.zone}
-        output_dict.update(super().to_json(with_calculated_attributes_data))
+        output_dict.update(super().to_json(save_calculated_attributes))
 
         return output_dict

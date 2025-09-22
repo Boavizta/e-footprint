@@ -188,13 +188,13 @@ class ExplainableQuantity(ExplainableObject):
             round(self.value, round_level), label=self.label, left_parent=self,
             operator=f"rounded to {round_level} decimals", source=self.source)
 
-    def to_json(self, with_calculated_attributes_data=False):
+    def to_json(self, save_calculated_attributes=False):
         if self.json_value_data is not None:
             output_dict = self.json_value_data
         else:
             output_dict = {"value": float(self.value.magnitude), "unit": str(self.value.units)}
 
-        output_dict.update(super().to_json(with_calculated_attributes_data))
+        output_dict.update(super().to_json(save_calculated_attributes))
 
         return output_dict
 
