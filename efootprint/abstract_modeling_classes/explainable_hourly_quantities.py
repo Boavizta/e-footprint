@@ -224,6 +224,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
             operator=f"{comparator} compared with"
         )
 
+    def __copy__(self):
+        return ExplainableHourlyQuantities(
+            self.value.copy(), copy(self.start_date), label=copy(self.label), source=copy(self.source))
+
     def copy(self):
         return ExplainableHourlyQuantities(
             self.value.copy(), copy(self.start_date), label=self.label, left_parent=self, operator="duplicate")
@@ -473,3 +477,5 @@ class ExplainableHourlyQuantities(ExplainableObject):
             plt.savefig(filepath, bbox_inches='tight')
         if plt_show:
             plt.show()
+
+        return fig, ax

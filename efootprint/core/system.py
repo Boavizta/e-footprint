@@ -291,7 +291,7 @@ class System(ModelingObject):
 
         self.total_footprint = round(total_footprint, 4)
 
-    def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
+    def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, notebook=True):
         import plotly.express as px
         import plotly
 
@@ -367,10 +367,7 @@ class System(ModelingObject):
                 xshift=x_shift
             )
 
-        if return_only_html:
-            return fig.to_html(full_html=False, include_plotlyjs=False)
-
-        else:
+        if notebook:
             from IPython.display import HTML
 
             if filename is None:
@@ -379,6 +376,8 @@ class System(ModelingObject):
             plotly.offline.plot(fig, filename=filename, auto_open=False)
 
             return HTML(filename)
+        else:
+            return fig
 
     def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
         from matplotlib import pyplot as plt
@@ -408,3 +407,5 @@ class System(ModelingObject):
 
         if plt_show:
             plt.show()
+
+        return fig, ax

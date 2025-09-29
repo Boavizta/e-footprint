@@ -157,3 +157,5 @@ class EmptyExplainableObject(ExplainableObject):
 
         if plt_show:
             plt.show()
+
+        return fig, ax

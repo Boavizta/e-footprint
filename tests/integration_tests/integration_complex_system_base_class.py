@@ -457,8 +457,9 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
 
-    def run_test_plot_footprints_by_category_and_object_return_only_html(self):
-        html = self.system.plot_footprints_by_category_and_object(width=400, height=100, return_only_html=True)
+    def run_test_plot_footprints_by_category_and_object_notebook_false(self):
+        fig = self.system.plot_footprints_by_category_and_object(width=400, height=100, notebook=False)
+        html = fig.to_html(full_html=False, include_plotlyjs=False)
         self.assertTrue(len(html) > 1000)
 
     def run_test_plot_emission_diffs(self):

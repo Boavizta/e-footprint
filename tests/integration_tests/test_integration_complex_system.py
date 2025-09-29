@@ -35,8 +35,8 @@ class IntegrationTestComplexSystem(IntegrationTestComplexSystemBaseClass):
     def test_plot_footprints_by_category_and_object(self):
         self.run_test_plot_footprints_by_category_and_object()
 
-    def test_plot_footprints_by_category_and_object_return_only_html(self):
-        self.run_test_plot_footprints_by_category_and_object_return_only_html()
+    def test_plot_footprints_by_category_and_object_notebook_false(self):
+        self.run_test_plot_footprints_by_category_and_object_notebook_false()
 
     def test_plot_emission_diffs(self):
         self.run_test_plot_emission_diffs()
