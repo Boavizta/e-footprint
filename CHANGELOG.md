@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [11.2.4] - 2025-09-30
+
+### Changed
+- Update graphical interface link to https://e-footprint.boavizta.org/.
+- When plotting, return figure object from plot method, so that the figure is editable outside e-footprint.
+
 ## [11.2.3] - 2025-09-22
 
 ### Fixed

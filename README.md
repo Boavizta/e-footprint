@@ -18,7 +18,7 @@ Here is the link to the [e-footprint documentation](https://boavizta.github.io/e
 
 ## Graphical interface
 
-You can explore the model’s [graphical interface](hhttps://e-footprint-interface.nw.r.appspot.com/), which is also open source and found in the [Boavizta e-footprint interface repository](https://github.com/Boavizta/e-footprint-interface). This interface allows for a powerful use of the model but is still in beta for now. Please send an email to e-footprint’s main maintainer, [Vincent Villet](mailto:vincent.villet@publicissapient.com) if you wish to give feedback and / or be notified when the interface gets to a first stable version !
+You can explore the model’s [graphical interface](https://e-footprint.boavizta.org/), which is also open source and found in the [Boavizta e-footprint interface repository](https://github.com/Boavizta/e-footprint-interface). Please send an email to e-footprint’s main maintainer, [Vincent Villet](mailto:vincent.villet@publicissapient.com) if you wish to give feedback !
 
 ## Modeling examples
 
