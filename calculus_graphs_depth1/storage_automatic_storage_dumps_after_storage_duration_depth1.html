@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8ead32 {
+             #mynetwork_056ca4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8ead32" class="card-body"></div>
+            <div id="mynetwork_056ca4" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8ead32');
+                  var container = document.getElementById('mynetwork_056ca4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Manually defined job data stored across usage patterns + no value +\nHourly Video streaming job data stored across usage patterns) * Data replication\nfactor of storage\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.19, 0.25, 0.17, 0.08, 0.17, 0.22, 0.25, 0.08, 0.11, 0.17],\nlast 10 vals [0.17, 0.19, 0.14, 0.06, 0.22, 0.14, 0.17, 0.11, 0.25, 0.08] + no\nvalue + 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00\nin h * MB / min:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * 3.0\ndimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nHourly storage storage need shift by storage duration and negate Data storage\nduration of storage\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly storage storage need", "label": "Hourly storage\nstorage need", "shape": "dot", "size": 15, "title": "Hourly storage storage need\n=\n(Hourly Manually defined job data stored across usage patterns + no value +\nHourly Video streaming job data stored across usage patterns) * Data replication\nfactor of storage\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.06, 0.06, 0.25, 0.14, 0.25, 0.25, 0.14, 0.14, 0.06, 0.11],\nlast 10 vals [0.06, 0.25, 0.14, 0.08, 0.17, 0.22, 0.08, 0.03, 0.08, 0.25] + no\nvalue + 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00\nin h * MB / min:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * 3.0\ndimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -225.0, "y": 1050}, {"color": null, "id": "Data storage duration of storage", "label": "Data storage\nduration of storage", "shape": "dot", "size": 15, "title": "Data storage duration of storage = 17532.0 hour", "x": 225.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly storage storage need", "to": "Storage dumps for storage"}, {"arrows": "to", "from": "Data storage duration of storage", "to": "Storage dumps for storage"}]);
 
                   nodeColors = {};
