@@ -1,3 +1,4 @@
+from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.hardware.edge_device import EdgeDevice
@@ -22,7 +23,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 
 
-SERVICE_CLASSES = [WebApplication, VideoStreaming, GenAIModel]
+SERVICE_CLASSES = [WebApplication, VideoStreaming]
 SERVICE_JOB_CLASSES = [WebApplicationJob, VideoStreamingJob, GenAIJob]
 SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
@@ -36,4 +37,4 @@ ALL_EFOOTPRINT_CLASSES = (
 
 CANONICAL_COMPUTATION_ORDER = [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney,
                                EdgeUsagePattern, RecurrentEdgeProcess, EdgeDevice, EdgeStorage, Service, JobBase,
-                               Network, ServerBase, Storage, System]
+                               Network, ExternalAPI, ServerBase, Storage, System]
