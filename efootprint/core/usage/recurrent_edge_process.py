@@ -1,30 +1,31 @@
-from typing import List, TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 import numpy as np
+
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.hardware.edge_computer import EdgeComputer
 
 
-class RecurrentEdgeProcess(ModelingObject):
+class RecurrentEdgeProcess(RecurrentEdgeResourceNeeded):
     default_values = {
         "recurrent_compute_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
         "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
         "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
-    def __init__(self, name: str, recurrent_compute_needed: ExplainableRecurrentQuantities, 
+    def __init__(self, name: str, edge_computer: "EdgeComputer",
+                 recurrent_compute_needed: ExplainableRecurrentQuantities,
                  recurrent_ram_needed: ExplainableRecurrentQuantities,
                  recurrent_storage_needed: ExplainableRecurrentQuantities):
-        super().__init__(name)
+        super().__init__(name, edge_computer)
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
         self.unitary_hourly_storage_need_per_usage_pattern = ExplainableObjectDict()
@@ -37,22 +38,6 @@ class RecurrentEdgeProcess(ModelingObject):
     def calculated_attributes(self):
         return ["unitary_hourly_compute_need_per_usage_pattern", "unitary_hourly_ram_need_per_usage_pattern",
                 "unitary_hourly_storage_need_per_usage_pattern"]
-
-    @property
-    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return self.modeling_obj_containers
-
-    @property
-    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
-
-    @property
-    def edge_computers(self) -> List["EdgeComputer"]:
-        return [euj.edge_computer for euj in self.edge_usage_journeys]
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return []
 
     def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_compute_need = self.recurrent_compute_needed.generate_hourly_quantities_over_timespan(

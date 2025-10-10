@@ -60,6 +60,7 @@ def upgrade_version_11_to_12(system_dict):
         for usage_journey_key in system_dict["EdgeUsageJourney"]:
             if "edge_device" in system_dict["EdgeUsageJourney"][usage_journey_key]:
                 rename_dict_key(system_dict["EdgeUsageJourney"][usage_journey_key], "edge_device", "edge_computer")
+    # TODO: complete version upgrading logic
 
     return system_dict
 

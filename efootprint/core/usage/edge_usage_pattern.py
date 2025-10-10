@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from efootprint.core.country import Country
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -7,6 +7,9 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
     ExplainableHourlyQuantities)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
 
 
 class EdgeUsagePattern(ModelingObject):
@@ -26,12 +29,12 @@ class EdgeUsagePattern(ModelingObject):
         return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return self.edge_processes + [self.edge_usage_journey.edge_computer]
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeeded"]:
+        return self.edge_needs
 
     @property
-    def edge_processes(self) -> List:
-        return self.edge_usage_journey.edge_processes
+    def edge_needs(self) -> List["RecurrentEdgeResourceNeeded"]:
+        return self.edge_usage_journey.edge_needs
 
     def update_utc_hourly_edge_usage_journey_starts(self):
         utc_hourly_edge_usage_journey_starts = self.hourly_edge_usage_journey_starts.convert_to_utc(

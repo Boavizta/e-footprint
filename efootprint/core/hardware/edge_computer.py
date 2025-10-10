@@ -10,7 +10,6 @@ from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
@@ -59,20 +58,21 @@ class EdgeComputer(EdgeHardware):
                 + super().calculated_attributes)
 
     @property
-    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
+    def edge_processes(self) -> Optional["RecurrentEdgeProcess"]:
         return self.modeling_obj_containers
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([journey.edge_usage_patterns for journey in self.edge_usage_journeys], start=[])))
+        # TODO: get unique usage patterns from edge_processes
+        pass
+
+    @property
+    def edge_usage_journeys(self) -> List:
+        return list(set(sum([ep.edge_usage_journeys for ep in self.edge_processes], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
-
-    @property
-    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
-        return list(set(sum([journey.edge_processes for journey in self.edge_usage_journeys], start=[])))
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram * self.utilization_rate - self.base_ram_consumption)
