@@ -60,13 +60,8 @@ class EdgeComputer(EdgeHardware):
 
     @property
     def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
-        if self.modeling_obj_containers:
-            if len(self.modeling_obj_containers) > 1:
-                raise PermissionError(
-                    f"EdgeComputer object can only be associated with one EdgeUsageJourney object but {self.name} is "
-                    f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
-            return self.modeling_obj_containers[0]
-        return None
+        # TODO: adapt other properties logic and tests to the fact that edge_usage_journey should now be a list called edge_usage_journeys
+        return self.modeling_obj_containers
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
