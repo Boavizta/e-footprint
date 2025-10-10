@@ -72,6 +72,7 @@ class TestEdgeUsagePattern(TestCase):
     def test_systems(self):
         """Test systems property returns modeling_obj_containers."""
         mock_system = MagicMock(spec=ModelingObject)
+        mock_system.systems = [mock_system]
         set_modeling_obj_containers(self.edge_usage_pattern, [mock_system])
 
         self.assertEqual([mock_system], self.edge_usage_pattern.systems)

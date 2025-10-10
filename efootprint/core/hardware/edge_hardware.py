@@ -39,10 +39,6 @@ class EdgeHardware(HardwareBase):
                 "instances_energy", "energy_footprint"]
 
     @property
-    def systems(self) -> List:
-        return list(set(sum([elt.systems for elt in self.modeling_obj_containers], start=[])))
-
-    @property
     @abstractmethod
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         pass

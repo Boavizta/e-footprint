@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
     from efootprint.core.usage.usage_journey import UsageJourney
     from efootprint.core.usage.usage_journey_step import UsageJourneyStep
-    from efootprint.core.system import System
     from efootprint.core.hardware.network import Network
 
 
@@ -75,10 +74,6 @@ class JobBase(ModelingObject):
     @property
     def usage_patterns(self) -> List["UsagePattern"]:
         return list(set(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
-
-    @property
-    def systems(self) -> List["System"]:
-        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
     def networks(self) -> List["Network"]:

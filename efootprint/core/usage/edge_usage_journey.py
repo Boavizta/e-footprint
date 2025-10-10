@@ -10,7 +10,6 @@ from efootprint.core.hardware.edge_device import EdgeDevice
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.system import System
 
 
 class EdgeUsageJourney(ModelingObject):
@@ -34,12 +33,6 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return self.modeling_obj_containers
-
-    @property
-    def systems(self) -> List["System"]:
-        if self.modeling_obj_containers:
-            return list(set(sum([eup.systems for eup in self.edge_usage_patterns], start=[])))
-        return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[RecurrentEdgeProcess]:

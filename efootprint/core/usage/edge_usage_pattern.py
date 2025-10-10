@@ -33,10 +33,6 @@ class EdgeUsagePattern(ModelingObject):
     def edge_processes(self) -> List:
         return self.edge_usage_journey.edge_processes
 
-    @property
-    def systems(self) -> List:
-        return self.modeling_obj_containers
-
     def update_utc_hourly_edge_usage_journey_starts(self):
         utc_hourly_edge_usage_journey_starts = self.hourly_edge_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)

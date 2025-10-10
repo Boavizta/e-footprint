@@ -287,9 +287,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     @property
-    @abstractmethod
     def systems(self) -> List:
-        pass
+        return list(set(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
 
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")

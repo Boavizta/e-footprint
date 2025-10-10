@@ -46,10 +46,6 @@ class Network(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def systems(self) -> List:
-        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
-
-    @property
     def jobs(self) -> List[ModelingObject]:
         return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
 

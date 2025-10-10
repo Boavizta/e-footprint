@@ -45,10 +45,6 @@ class UsagePattern(ModelingObject):
     def jobs(self) -> List[Job]:
         return self.usage_journey.jobs
 
-    @property
-    def systems(self) -> List:
-        return self.modeling_obj_containers
-
     def update_utc_hourly_usage_journey_starts(self):
         utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)

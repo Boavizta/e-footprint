@@ -32,9 +32,5 @@ class Country(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def systems(self) -> List:
-        return list(set(sum([usage_pattern.systems for usage_pattern in self.usage_patterns], start=[])))
-
-    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return self.usage_patterns

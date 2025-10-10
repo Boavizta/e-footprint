@@ -9,7 +9,6 @@ from efootprint.core.usage.job import Job
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
-    from efootprint.core.system import System
 
 
 class UsageJourney(ModelingObject):
@@ -45,10 +44,6 @@ class UsageJourney(ModelingObject):
     @property
     def usage_patterns(self):
         return self.modeling_obj_containers
-
-    @property
-    def systems(self) -> List["System"]:
-        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["UsagePattern"] | List[Job]:

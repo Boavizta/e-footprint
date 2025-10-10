@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.hardware.edge_device import EdgeDevice
-    from efootprint.core.system import System
 
 
 class RecurrentEdgeProcess(ModelingObject):
@@ -50,10 +49,6 @@ class RecurrentEdgeProcess(ModelingObject):
     @property
     def edge_devices(self) -> List["EdgeDevice"]:
         return [euj.edge_device for euj in self.edge_usage_journeys]
-        
-    @property
-    def systems(self) -> List["System"]:
-        return list(set(sum([euj.systems for euj in self.edge_usage_journeys], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
