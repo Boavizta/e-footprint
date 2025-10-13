@@ -59,15 +59,12 @@ class EdgeComputer(EdgeHardware):
                 + super().calculated_attributes)
 
     @property
-    def edge_usage_journey(self) -> Optional["EdgeUsageJourney"]:
-        # TODO: adapt other properties logic and tests to the fact that edge_usage_journey should now be a list called edge_usage_journeys
+    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
         return self.modeling_obj_containers
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_usage_patterns
-        return []
+        return list(set(sum([journey.edge_usage_patterns for journey in self.edge_usage_journeys], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -75,9 +72,7 @@ class EdgeComputer(EdgeHardware):
 
     @property
     def edge_processes(self) -> List["RecurrentEdgeProcess"]:
-        if self.modeling_obj_containers:
-            return self.edge_usage_journey.edge_processes
-        return []
+        return list(set(sum([journey.edge_processes for journey in self.edge_usage_journeys], start=[])))
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram * self.utilization_rate - self.base_ram_consumption)
@@ -102,7 +97,7 @@ class EdgeComputer(EdgeHardware):
     def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_ram_need = sum(
             [edge_process.unitary_hourly_ram_need_per_usage_pattern[usage_pattern]
-             for edge_process in self.edge_processes],
+             for edge_process in self.edge_processes if usage_pattern in edge_process.edge_usage_patterns],
             start=EmptyExplainableObject())
 
         max_ram_need = unitary_hourly_ram_need.max().to(u.GB)
@@ -121,7 +116,7 @@ class EdgeComputer(EdgeHardware):
     def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_compute_need = sum(
             [edge_process.unitary_hourly_compute_need_per_usage_pattern[usage_pattern]
-             for edge_process in self.edge_processes],
+             for edge_process in self.edge_processes if usage_pattern in edge_process.edge_usage_patterns],
             start=EmptyExplainableObject())
 
         max_compute_need = unitary_hourly_compute_need.max().to(u.cpu_core)

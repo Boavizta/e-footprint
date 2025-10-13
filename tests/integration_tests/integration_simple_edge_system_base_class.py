@@ -630,7 +630,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         simulation.reset_values()
 
     def run_test_simulation_add_existing_edge_process(self):
-        simulation = ModelingUpdate([[self.edge_usage_journey.edge_processes, 
+        simulation = ModelingUpdate([[self.edge_usage_journey.edge_processes,
                                     self.edge_usage_journey.edge_processes + [self.edge_process]]],
                                     copy(self.start_date).replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
@@ -643,3 +643,68 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(initial_edge_processes + [self.edge_process], self.edge_usage_journey.edge_processes)
         simulation.reset_values()
+
+    def run_test_add_edge_usage_journey_to_edge_computer(self):
+        logger.warning("Adding new edge usage journey to edge computer")
+
+        new_edge_process = RecurrentEdgeProcess(
+            "Additional edge process for second journey",
+            recurrent_compute_needed=SourceRecurrentValues(
+                Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
+            recurrent_ram_needed=SourceRecurrentValues(
+                Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+            recurrent_storage_needed=SourceRecurrentValues(
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
+        )
+
+        new_edge_usage_journey = EdgeUsageJourney(
+            "Second edge usage journey",
+            edge_processes=[new_edge_process],
+            edge_computer=self.edge_computer,
+            usage_span=SourceValue(6 * u.year)
+        )
+
+        new_edge_usage_pattern = EdgeUsagePattern(
+            "Second edge usage pattern",
+            edge_usage_journey=new_edge_usage_journey,
+            country=Countries.FRANCE(),
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
+        )
+
+        # Verify edge computer now has multiple journeys
+        self.assertEqual(2, len(self.edge_computer.edge_usage_journeys))
+        self.assertIn(self.edge_usage_journey, self.edge_computer.edge_usage_journeys)
+        self.assertIn(new_edge_usage_journey, self.edge_computer.edge_usage_journeys)
+
+        # Add the new pattern to the system
+        logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
+        self.system.edge_usage_patterns += [new_edge_usage_pattern]
+
+        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+        self.footprint_has_changed([self.edge_computer, self.edge_storage])
+
+        # Verify edge computer aggregates patterns from both journeys
+        self.assertEqual(2, len(self.edge_computer.edge_usage_patterns))
+        self.assertIn(self.edge_usage_pattern, self.edge_computer.edge_usage_patterns)
+        self.assertIn(new_edge_usage_pattern, self.edge_computer.edge_usage_patterns)
+
+        # Verify edge computer aggregates processes from both journeys
+        self.assertEqual(2, len(self.edge_computer.edge_processes))
+        self.assertIn(self.edge_process, self.edge_computer.edge_processes)
+        self.assertIn(new_edge_process, self.edge_computer.edge_processes)
+
+        logger.warning("Removing the new edge usage pattern from the system")
+        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
+        logger.warning("Deleting the edge usage pattern and journey")
+        new_edge_usage_pattern.self_delete()
+        new_edge_usage_journey.self_delete()
+        new_edge_process.self_delete()
+
+        # Verify edge computer is back to single journey
+        self.assertEqual(1, len(self.edge_computer.edge_usage_journeys))
+        self.assertEqual(1, len(self.edge_computer.edge_usage_patterns))
+        self.assertEqual(1, len(self.edge_computer.edge_processes))
+
+        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])

@@ -105,6 +105,9 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
     def test_add_edge_usage_pattern_to_edge_usage_journey(self):
         self.run_test_add_edge_usage_pattern_to_edge_usage_journey()
 
+    def test_add_edge_usage_journey_to_edge_computer(self):
+        self.run_test_add_edge_usage_journey_to_edge_computer()
+
     def test_update_edge_usage_journey_after_json_to_system(self):
         self.run_test_update_edge_usage_journey_after_json_to_system()
 

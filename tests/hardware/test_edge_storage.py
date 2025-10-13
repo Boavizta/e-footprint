@@ -267,6 +267,8 @@ class TestEdgeStorage(TestCase):
         
         mock_process_1.unitary_hourly_storage_need_per_usage_pattern = {mock_pattern: storage_need_1}
         mock_process_2.unitary_hourly_storage_need_per_usage_pattern = {mock_pattern: storage_need_2}
+        mock_process_1.edge_usage_patterns = [mock_pattern]
+        mock_process_2.edge_usage_patterns = [mock_pattern]
         
         mock_device.edge_processes = [mock_process_1, mock_process_2]
         set_modeling_obj_containers(self.edge_storage, [mock_device])
@@ -306,6 +308,7 @@ class TestEdgeStorage(TestCase):
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test pattern id"
+        mock_pattern.edge_usage_journey = mock_journey
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
@@ -337,6 +340,7 @@ class TestEdgeStorage(TestCase):
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test Pattern id"
+        mock_pattern.edge_usage_journey = mock_journey
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         
@@ -364,6 +368,7 @@ class TestEdgeStorage(TestCase):
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test pattern id"
+        mock_pattern.edge_usage_journey = mock_journey
         
         set_modeling_obj_containers(self.edge_storage, [mock_device])
         

@@ -145,7 +145,8 @@ class EdgeStorage(EdgeHardware):
         unitary_storage_delta = EmptyExplainableObject()
         
         for edge_process in self.edge_processes:
-            unitary_storage_delta += edge_process.unitary_hourly_storage_need_per_usage_pattern[usage_pattern]
+            if usage_pattern in edge_process.edge_usage_patterns:
+                unitary_storage_delta += edge_process.unitary_hourly_storage_need_per_usage_pattern[usage_pattern]
         
         self.unitary_storage_delta_per_usage_pattern[usage_pattern] = unitary_storage_delta.set_label(
             f"Hourly storage delta for {self.name} in {usage_pattern.name}")
@@ -163,7 +164,7 @@ class EdgeStorage(EdgeHardware):
                 left_parent=unitary_storage_delta)
         else:
             edge_computer_usage_span_in_hours = int(copy(
-                self.edge_computer.edge_usage_journey.usage_span.value).to(u.hour).magnitude)
+                usage_pattern.edge_usage_journey.usage_span.value).to(u.hour).magnitude)
             unitary_storage_delta_over_single_usage_span = ExplainableHourlyQuantities(
                 Quantity(
                     unitary_storage_delta.magnitude[:edge_computer_usage_span_in_hours],
@@ -171,7 +172,7 @@ class EdgeStorage(EdgeHardware):
                 ),
                 start_date=unitary_storage_delta.start_date,
                 left_parent=unitary_storage_delta,
-                right_parent=self.edge_computer.edge_usage_journey.usage_span,
+                right_parent=usage_pattern.edge_usage_journey.usage_span,
                 operator="truncated by"
             )
             delta_array = np.copy(unitary_storage_delta_over_single_usage_span.value.magnitude)
