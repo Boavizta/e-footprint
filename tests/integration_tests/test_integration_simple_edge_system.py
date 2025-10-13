@@ -47,8 +47,8 @@ class IntegrationTestSimpleEdgeSystem(IntegrationTestSimpleEdgeSystemBaseClass):
     def test_update_edge_storage(self):
         self.run_test_update_edge_storage()
 
-    def test_update_edge_device(self):
-        self.run_test_update_edge_device()
+    def test_update_edge_computer(self):
+        self.run_test_update_edge_computer()
 
     def test_add_edge_process(self):
         self.run_test_add_edge_process()

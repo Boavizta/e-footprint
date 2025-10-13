@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
 
-class EdgeDevice(EdgeHardware):
+class EdgeComputer(EdgeHardware):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg),
         "power": SourceValue(30 * u.W),
@@ -63,7 +63,7 @@ class EdgeDevice(EdgeHardware):
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
-                    f"EdgeDevice object can only be associated with one EdgeUsageJourney object but {self.name} is "
+                    f"EdgeComputer object can only be associated with one EdgeUsageJourney object but {self.name} is "
                     f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         return None

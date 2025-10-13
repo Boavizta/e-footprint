@@ -16,7 +16,7 @@ from efootprint.constants.units import u
 
 if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-    from efootprint.core.hardware.edge_device import EdgeDevice
+    from efootprint.core.hardware.edge_computer import EdgeComputer
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
@@ -96,11 +96,11 @@ class EdgeStorage(EdgeHardware):
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
     @property
-    def edge_device(self) -> Optional["EdgeDevice"]:
+    def edge_computer(self) -> Optional["EdgeComputer"]:
         if self.modeling_obj_containers:
             if len(self.modeling_obj_containers) > 1:
                 raise PermissionError(
-                    f"An EdgeStorage object can only be associated with one EdgeDevice object but {self.name} is "
+                    f"An EdgeStorage object can only be associated with one EdgeComputer object but {self.name} is "
                     f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
             return self.modeling_obj_containers[0]
         else:
@@ -114,22 +114,22 @@ class EdgeStorage(EdgeHardware):
 
     @property
     def edge_processes(self) -> List["RecurrentEdgeProcess"]:
-        edge_device = self.edge_device
-        if edge_device is not None:
-            return edge_device.edge_processes
+        edge_computer = self.edge_computer
+        if edge_computer is not None:
+            return edge_computer.edge_processes
         return []
     
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        edge_device = self.edge_device
-        if edge_device is not None:
-            return edge_device.edge_usage_patterns
+        edge_computer = self.edge_computer
+        if edge_computer is not None:
+            return edge_computer.edge_usage_patterns
         return []
 
     @property
     def power_usage_effectiveness(self):
-        if self.edge_device is not None:
-            return self.edge_device.power_usage_effectiveness
+        if self.edge_computer is not None:
+            return self.edge_computer.power_usage_effectiveness
         else:
             return EmptyExplainableObject()
 
@@ -162,16 +162,16 @@ class EdgeStorage(EdgeHardware):
             self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = EmptyExplainableObject(
                 left_parent=unitary_storage_delta)
         else:
-            edge_device_usage_span_in_hours = int(copy(
-                self.edge_device.edge_usage_journey.usage_span.value).to(u.hour).magnitude)
+            edge_computer_usage_span_in_hours = int(copy(
+                self.edge_computer.edge_usage_journey.usage_span.value).to(u.hour).magnitude)
             unitary_storage_delta_over_single_usage_span = ExplainableHourlyQuantities(
                 Quantity(
-                    unitary_storage_delta.magnitude[:edge_device_usage_span_in_hours],
+                    unitary_storage_delta.magnitude[:edge_computer_usage_span_in_hours],
                     unitary_storage_delta.unit
                 ),
                 start_date=unitary_storage_delta.start_date,
                 left_parent=unitary_storage_delta,
-                right_parent=self.edge_device.edge_usage_journey.usage_span,
+                right_parent=self.edge_computer.edge_usage_journey.usage_span,
                 operator="truncated by"
             )
             delta_array = np.copy(unitary_storage_delta_over_single_usage_span.value.magnitude)

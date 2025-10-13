@@ -20,7 +20,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
@@ -129,7 +129,7 @@ edge_storage = EdgeStorage(
     base_storage_need=SourceValue(10 * u.GB, source=None),
 )
 
-edge_device = EdgeDevice(
+edge_computer = EdgeComputer(
     "edge device",
     carbon_footprint_fabrication=SourceValue(60 * u.kg, source=None),
     power=SourceValue(30 * u.W, source=None),
@@ -157,7 +157,7 @@ edge_process = RecurrentEdgeProcess(
 edge_usage_journey = EdgeUsageJourney(
     "edge usage journey",
     edge_processes=[edge_process],
-    edge_device=edge_device,
+    edge_computer=edge_computer,
     usage_span=SourceValue(6 * u.year, source=None)
 )
 

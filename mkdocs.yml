@@ -42,7 +42,7 @@ nav:
       - Devices: Device.md
       - Network: Network.md
       - Storage: Storage.md
-      - Edge devices: EdgeDevice.md
+      - Edge computers: EdgeComputer.md
       - Edge storage: EdgeStorage.md
   - Services:
       - Web application:

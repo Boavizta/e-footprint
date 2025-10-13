@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage, NegativeCumulativeStorageNeedError
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
@@ -111,31 +111,31 @@ class TestEdgeStorage(TestCase):
         self.assertIn(EdgeStorage.ssd, archetypes)
         self.assertIn(EdgeStorage.hdd, archetypes)
 
-    def test_edge_device_property_no_containers(self):
-        """Test edge_device property when no containers are set."""
-        self.assertIsNone(self.edge_storage.edge_device)
+    def test_edge_computer_property_no_containers(self):
+        """Test edge_computer property when no containers are set."""
+        self.assertIsNone(self.edge_storage.edge_computer)
 
-    def test_edge_device_property_single_container(self):
-        """Test edge_device property with single container."""
-        mock_device = MagicMock(spec=EdgeDevice)
+    def test_edge_computer_property_single_container(self):
+        """Test edge_computer property with single container."""
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_device.name = "Mock Device"
         set_modeling_obj_containers(self.edge_storage, [mock_device])
-        self.assertEqual(mock_device, self.edge_storage.edge_device)
+        self.assertEqual(mock_device, self.edge_storage.edge_computer)
         set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_edge_device_property_multiple_containers_raises_error(self):
-        """Test edge_device property raises error with multiple containers."""
-        mock_device_1 = MagicMock(spec=EdgeDevice)
+    def test_edge_computer_property_multiple_containers_raises_error(self):
+        """Test edge_computer property raises error with multiple containers."""
+        mock_device_1 = MagicMock(spec=EdgeComputer)
         mock_device_1.name = "Device 1"
-        mock_device_2 = MagicMock(spec=EdgeDevice)
+        mock_device_2 = MagicMock(spec=EdgeComputer)
         mock_device_2.name = "Device 2"
         
         set_modeling_obj_containers(self.edge_storage, [mock_device_1, mock_device_2])
         
         with self.assertRaises(PermissionError) as context:
-            _ = self.edge_storage.edge_device
+            _ = self.edge_storage.edge_computer
         
-        expected_message = ("An EdgeStorage object can only be associated with one EdgeDevice object but "
+        expected_message = ("An EdgeStorage object can only be associated with one EdgeComputer object but "
                           "Test EdgeStorage is associated with")
         self.assertIn(expected_message, str(context.exception))
         set_modeling_obj_containers(self.edge_storage, [])
@@ -146,7 +146,7 @@ class TestEdgeStorage(TestCase):
 
     def test_edge_processes_property_with_device(self):
         """Test edge_processes property delegates to device."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_processes = [MagicMock(spec=RecurrentEdgeProcess), MagicMock(spec=RecurrentEdgeProcess)]
         mock_device.edge_processes = mock_processes
         
@@ -161,7 +161,7 @@ class TestEdgeStorage(TestCase):
 
     def test_edge_usage_patterns_property_with_device(self):
         """Test edge_usage_patterns property delegates to device."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_device.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -178,7 +178,7 @@ class TestEdgeStorage(TestCase):
 
     def test_power_usage_effectiveness_property_with_device(self):
         """Test power_usage_effectiveness property delegates to device."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_pue = SourceValue(1.4 * u.dimensionless)
         mock_device.power_usage_effectiveness = mock_pue
         
@@ -218,7 +218,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_unitary_storage_delta_per_usage_pattern(self):
         """Test update_unitary_storage_delta_per_usage_pattern aggregates all patterns."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_1.name = "Pattern 1"
@@ -238,7 +238,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_dict_element_in_unitary_storage_delta_per_usage_pattern_empty(self):
         """Test update_dict_element_in_unitary_storage_delta_per_usage_pattern with no processes."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_device.edge_processes = []
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
@@ -255,7 +255,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_dict_element_in_unitary_storage_delta_per_usage_pattern_with_processes(self):
         """Test update_dict_element_in_unitary_storage_delta_per_usage_pattern with processes."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         
@@ -299,7 +299,7 @@ class TestEdgeStorage(TestCase):
     def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_data(self):
         """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern with real data."""
         # Create mock edge device and usage journey
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
@@ -330,7 +330,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_cumulative_unitary_storage_need_negative_cumulative_error(self):
         """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern raises error on negative cumulative storage."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
@@ -357,7 +357,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_cumulative_unitary_storage_need_insufficient_capacity_error(self):
         """Test update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern raises error when capacity exceeded."""
-        mock_device = MagicMock(spec=EdgeDevice)
+        mock_device = MagicMock(spec=EdgeComputer)
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(2 * u.hour)
         mock_device.edge_usage_journey = mock_journey

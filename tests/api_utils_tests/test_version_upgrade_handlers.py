@@ -1,4 +1,5 @@
-from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11
+from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
+    upgrade_version_11_to_12
 
 from unittest import TestCase
 
@@ -68,5 +69,18 @@ class TestVersionUpgradeHandlers(TestCase):
         }
 
         output_dict = upgrade_version_10_to_11(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_11_to_12(self):
+        input_dict = {
+            "EdgeDevice": {"key": {"key": 1}}, "a": {"key": {"key": 2}},
+            "EdgeUsageJourney": {"key": {"edge_device": "uuid-EdgeDevice"}}
+        }
+        expected_output = {
+            "EdgeComputer": {"key": {"key": 1}}, "a": {"key": {"key": 2}},
+            "EdgeUsageJourney": {"key": {"edge_computer": "uuid-EdgeDevice"}}
+        }
+        output_dict = upgrade_version_11_to_12(input_dict)
 
         self.assertEqual(output_dict, expected_output)

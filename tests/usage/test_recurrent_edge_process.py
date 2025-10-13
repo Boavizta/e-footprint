@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentV
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
@@ -83,19 +83,19 @@ class TestRecurrentEdgeProcess(TestCase):
         
         self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_process.edge_usage_patterns))
 
-    def test_edge_devices_property_no_containers(self):
-        """Test edge_devices property when no containers are set."""
-        self.assertEqual([], self.edge_process.edge_devices)
+    def test_edge_computers_property_no_containers(self):
+        """Test edge_computers property when no containers are set."""
+        self.assertEqual([], self.edge_process.edge_computers)
 
-    def test_edge_devices_property_with_journey(self):
-        """Test edge_devices property delegates to edge_usage_journey."""
+    def test_edge_computers_property_with_journey(self):
+        """Test edge_computers property delegates to edge_usage_journey."""
         mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_journey.edge_device = mock_device
+        mock_device = MagicMock(spec=EdgeComputer)
+        mock_journey.edge_computer = mock_device
         
         set_modeling_obj_containers(self.edge_process, [mock_journey])
         
-        self.assertEqual([mock_device], self.edge_process.edge_devices)
+        self.assertEqual([mock_device], self.edge_process.edge_computers)
 
     def test_systems_property_no_containers(self):
         """Test systems property when no containers are set."""

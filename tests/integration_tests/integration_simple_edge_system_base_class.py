@@ -11,7 +11,7 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -41,7 +41,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
 
-        edge_device = EdgeDevice(
+        edge_computer = EdgeComputer(
             "Default edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -69,7 +69,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_usage_journey = EdgeUsageJourney(
             "Default edge usage journey",
             edge_processes=[edge_process],
-            edge_device=edge_device,
+            edge_computer=edge_computer,
             usage_span=SourceValue(6 * u.year)
         )
 
@@ -89,21 +89,21 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             if mod_obj != edge_usage_pattern:
                 mod_obj.id = css_escape(mod_obj.name)
 
-        return (system, edge_storage, edge_device, edge_process, edge_usage_journey, 
+        return (system, edge_storage, edge_computer, edge_process, edge_usage_journey, 
                 edge_usage_pattern, start_date)
 
     @classmethod
-    def initialize_footprints(cls, system, edge_storage, edge_device):
+    def initialize_footprints(cls, system, edge_storage, edge_computer):
         cls.initial_footprint = system.total_footprint
 
         cls.initial_fab_footprints = {
             edge_storage: edge_storage.instances_fabrication_footprint,
-            edge_device: edge_device.instances_fabrication_footprint,
+            edge_computer: edge_computer.instances_fabrication_footprint,
         }
 
         cls.initial_energy_footprints = {
             edge_storage: edge_storage.energy_footprint,
-            edge_device: edge_device.energy_footprint,
+            edge_computer: edge_computer.energy_footprint,
         }
 
         cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
@@ -111,10 +111,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.edge_storage, cls.edge_device, cls.edge_process, cls.edge_usage_journey,
+        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_usage_journey,
          cls.edge_usage_pattern, cls.start_date) = cls.generate_simple_edge_system()
 
-        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_device)
+        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer)
 
         cls.ref_json_filename = "simple_edge_system"
 
@@ -125,14 +125,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_modeling_object_prints(self):
         str(self.system)
         str(self.edge_storage)
-        str(self.edge_device)
+        str(self.edge_computer)
         str(self.edge_process)
         str(self.edge_usage_journey)
         str(self.edge_usage_pattern)
 
     def run_test_all_objects_linked_to_system(self):
         expected_objects = {
-            self.edge_storage, self.edge_device, self.edge_process,
+            self.edge_storage, self.edge_computer, self.edge_process,
             self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
         }
         self.assertEqual(expected_objects, set(self.system.all_linked_objects))
@@ -155,11 +155,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     # INPUT VARIATION TESTING
 
     def _run_test_variations_on_edge_inputs_from_object_list(
-            self, edge_device, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system):
+            self, edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system):
         # Test edge object variations
         self._test_variations_on_obj_inputs(
-            edge_device,
-            # fraction_of_usage_time is an Hardware parameter not used in EdgeDevice
+            edge_computer,
+            # fraction_of_usage_time is an Hardware parameter not used in EdgeComputer
             # ram, base_ram_consumption and utilization_rate only matter to raise InsufficientCapacityError
             # and this behavior is already unit tested.
             attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption", "utilization_rate"],
@@ -178,7 +178,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_variations_on_inputs(self):
         self._run_test_variations_on_edge_inputs_from_object_list(
-            self.edge_device, self.edge_storage, self.edge_process, self.edge_usage_journey,
+            self.edge_computer, self.edge_storage, self.edge_process, self.edge_usage_journey,
             self.edge_usage_pattern, self.system)
 
     def run_test_variations_on_inputs_after_json_to_system(self):
@@ -187,14 +187,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
         system = next(iter(class_obj_dict["System"].values()))
-        edge_device = next(iter(class_obj_dict.get("EdgeDevice", {}).values()))
+        edge_computer = next(iter(class_obj_dict.get("EdgeComputer", {}).values()))
         edge_storage = next(iter(class_obj_dict.get("EdgeStorage", {}).values()))
         edge_process = next(iter(class_obj_dict.get("RecurrentEdgeProcess", {}).values()))
         edge_usage_journey = next(iter(class_obj_dict.get("EdgeUsageJourney", {}).values()))
         edge_usage_pattern = next(iter(class_obj_dict.get("EdgeUsagePattern", {}).values()))
 
         self._run_test_variations_on_edge_inputs_from_object_list(
-            edge_device, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system)
+            edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system)
 
     def run_test_update_edge_usage_pattern_hourly_starts(self):
         logger.warning("Updating edge usage pattern hourly starts")
@@ -228,20 +228,20 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
         logger.warning("Changing edge device storage")
-        self.edge_device.storage = new_edge_storage
+        self.edge_computer.storage = new_edge_storage
         self.footprint_has_changed([self.edge_storage], system=self.system)
         self.assertEqual(0, self.edge_storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.edge_storage.energy_footprint.max().magnitude)
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Changing back to initial edge storage")
-        self.edge_device.storage = self.edge_storage
+        self.edge_computer.storage = self.edge_storage
         self.assertEqual(0, new_edge_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_edge_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.edge_storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
-    def run_test_update_edge_device(self):
+    def run_test_update_edge_computer(self):
         new_edge_storage = EdgeStorage(
             "storage for new edge device",
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(
@@ -253,7 +253,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
 
-        new_edge_device = EdgeDevice(
+        new_edge_computer = EdgeComputer(
             "New edge device, identical to default one",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -269,17 +269,17 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         )
 
         logger.warning("Changing edge usage journey device")
-        self.edge_usage_journey.edge_device = new_edge_device
-        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
-        self.assertEqual(0, self.edge_device.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, self.edge_device.energy_footprint.magnitude)
+        self.edge_usage_journey.edge_computer = new_edge_computer
+        self.footprint_has_changed([self.edge_computer, self.edge_storage], system=self.system)
+        self.assertEqual(0, self.edge_computer.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, self.edge_computer.energy_footprint.magnitude)
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Changing back to initial edge device")
-        self.edge_usage_journey.edge_device = self.edge_device
-        self.assertEqual(0, new_edge_device.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, new_edge_device.energy_footprint.magnitude)
-        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.edge_usage_journey.edge_computer = self.edge_computer
+        self.assertEqual(0, new_edge_computer.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, new_edge_computer.energy_footprint.magnitude)
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_add_edge_process(self):
@@ -297,14 +297,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.edge_usage_journey.edge_processes.append(new_edge_process)
         
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_changed([self.edge_computer, self.edge_storage])
         
         logger.warning("Removing the new edge process")
         self.edge_usage_journey.edge_processes = self.edge_usage_journey.edge_processes[:-1]
         new_edge_process.self_delete()
         
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_update_edge_processes(self):
         logger.warning("Modifying edge processes list")
@@ -320,13 +320,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.edge_usage_journey.edge_processes = [new_edge_process]
         
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
+        self.footprint_has_changed([self.edge_computer, self.edge_storage], system=self.system)
         
         logger.warning("Changing back to previous edge processes")
         self.edge_usage_journey.edge_processes = [self.edge_process]
         
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_update_edge_usage_journey(self):
         logger.warning("Changing edge usage journey")
@@ -341,7 +341,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
 
-        new_edge_device = EdgeDevice(
+        new_edge_computer = EdgeComputer(
             "New edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -369,19 +369,19 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_journey = EdgeUsageJourney(
             "New edge usage journey",
             edge_processes=[new_edge_process],
-            edge_device=new_edge_device,
+            edge_computer=new_edge_computer,
             usage_span=SourceValue(6 * u.year)
         )
         self.edge_usage_pattern.edge_usage_journey = new_edge_usage_journey
         
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.edge_device, self.edge_storage], system=self.system)
+        self.footprint_has_changed([self.edge_computer, self.edge_storage], system=self.system)
         
         logger.warning("Changing back to previous edge usage journey")
         self.edge_usage_pattern.edge_usage_journey = self.edge_usage_journey
         
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_update_country_in_edge_usage_pattern(self):
         logger.warning("Changing edge usage pattern country")
@@ -389,13 +389,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.edge_usage_pattern.country = Countries.MALAYSIA()
         
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_changed([self.edge_computer, self.edge_storage])
         
         logger.warning("Changing back to initial edge usage pattern country")
         self.edge_usage_pattern.country = Countries.FRANCE()
         
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_device, self.edge_storage])
+        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process(self):
         new_edge_storage = EdgeStorage(
@@ -409,7 +409,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
 
-        new_edge_device = EdgeDevice(
+        new_edge_computer = EdgeComputer(
             "additional edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -427,7 +427,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_journey = EdgeUsageJourney(
             "additional edge usage journey",
             edge_processes=[self.edge_process],
-            edge_device=new_edge_device,
+            edge_computer=new_edge_computer,
             usage_span=SourceValue(6 * u.year)
         )
 
@@ -468,7 +468,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.system.edge_usage_patterns += [new_edge_usage_pattern]
 
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.footprint_has_changed([self.edge_device])
+        self.footprint_has_changed([self.edge_computer])
 
         logger.warning("Removing the new edge usage pattern from the system")
         self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
@@ -480,7 +480,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             self.assertNotEqual(direct_child.modeling_obj_container.id, edge_usage_pattern_id)
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.footprint_has_not_changed([self.edge_device])
+        self.footprint_has_not_changed([self.edge_computer])
 
     def run_test_update_edge_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
@@ -496,7 +496,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             base_storage_need=SourceValue(100 * u.GB),
         )
 
-        new_edge_device = EdgeDevice(
+        new_edge_computer = EdgeComputer(
             "New edge device",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -524,7 +524,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_journey = EdgeUsageJourney(
             "New edge usage journey",
             edge_processes=[new_edge_process],
-            edge_device=new_edge_device,
+            edge_computer=new_edge_computer,
             usage_span=SourceValue(6 * u.year)
         )
 
@@ -535,15 +535,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         system = next(iter(class_obj_dict["System"].values()))
         edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
-        edge_device = next(iter(class_obj_dict["EdgeDevice"].values()))
+        edge_computer = next(iter(class_obj_dict["EdgeComputer"].values()))
         self.assertEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_changed([edge_device, edge_storage], system=system)
+        self.footprint_has_changed([edge_computer, edge_storage], system=system)
 
         logger.warning("Changing back to previous edge usage journey")
         edge_usage_pattern.edge_usage_journey = previous_edge_usage_journey
 
         self.assertEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_not_changed([edge_storage, edge_device])
+        self.footprint_has_not_changed([edge_storage, edge_computer])
 
     def run_test_update_edge_processes_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
@@ -554,7 +554,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         previous_edge_processes = copy(edge_usage_journey.edge_processes)
         system = next(iter(class_obj_dict["System"].values()))
         edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
-        edge_device = next(iter(class_obj_dict["EdgeDevice"].values()))
+        edge_computer = next(iter(class_obj_dict["EdgeComputer"].values()))
         logger.warning("Modifying edge processes")
         new_edge_process = RecurrentEdgeProcess(
             "new edge process",
@@ -569,40 +569,40 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_usage_journey.edge_processes += [new_edge_process]
 
         self.assertNotEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_changed([edge_storage, edge_device])
+        self.footprint_has_changed([edge_storage, edge_computer])
 
         logger.warning("Changing back to previous edge processes")
         edge_usage_journey.edge_processes = previous_edge_processes
 
         self.assertEqual(self.initial_footprint, system.total_footprint)
-        self.footprint_has_not_changed([edge_storage, edge_device])
+        self.footprint_has_not_changed([edge_storage, edge_computer])
 
     # SIMULATION TESTING
 
     def run_test_simulation_input_change(self):
-        simulation = ModelingUpdate([[self.edge_device.power, SourceValue(35 * u.W)]],
+        simulation = ModelingUpdate([[self.edge_computer.power, SourceValue(35 * u.W)]],
                                     self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
-        self.edge_device.energy_footprint.plot(plt_show=False, cumsum=False)
-        self.edge_device.energy_footprint.plot(plt_show=False, cumsum=True)
+        self.edge_computer.energy_footprint.plot(plt_show=False, cumsum=False)
+        self.edge_computer.energy_footprint.plot(plt_show=False, cumsum=True)
         self.system.total_footprint.plot(plt_show=False, cumsum=False)
         self.system.total_footprint.plot(plt_show=False, cumsum=True)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
 
     def run_test_simulation_multiple_input_changes(self):
         simulation = ModelingUpdate([
-                [self.edge_device.power, SourceValue(35 * u.W)],
-                [self.edge_device.compute, SourceValue(6 * u.cpu_core, Sources.USER_DATA)]],
+                [self.edge_computer.power, SourceValue(35 * u.W)],
+                [self.edge_computer.compute, SourceValue(6 * u.cpu_core, Sources.USER_DATA)]],
                  self.start_date.replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
-        self.assertEqual(simulation.old_sourcevalues, [self.edge_device.power, self.edge_device.compute])
+        self.assertEqual(simulation.old_sourcevalues, [self.edge_computer.power, self.edge_computer.compute])
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
-        self.assertIn(self.edge_device.energy_footprint.id, recomputed_elements_ids)
+        self.assertIn(self.edge_computer.energy_footprint.id, recomputed_elements_ids)
 
     def run_test_simulation_add_new_edge_process(self):
         new_edge_process = RecurrentEdgeProcess(

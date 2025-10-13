@@ -3,7 +3,7 @@ from time import time
 import numpy as np
 from pint import Quantity
 
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -43,7 +43,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 def generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_device=3, nb_years=5):
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=5):
     start = time()
     usage_patterns = []
     for server_index in range(1, nb_of_servers_of_each_type + 1):
@@ -130,7 +130,7 @@ def generate_big_system(
             base_storage_need=SourceValue(10 * u.GB),
         )
 
-        edge_device = EdgeDevice(
+        edge_computer = EdgeComputer(
             f"Default edge device {edge_usage_pattern_index}",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
@@ -145,7 +145,7 @@ def generate_big_system(
             storage=edge_storage
         )
         edge_processes = []
-        for edge_process_index in range(1, nb_of_edge_processes_per_edge_device + 1):
+        for edge_process_index in range(1, nb_of_edge_processes_per_edge_computer + 1):
             edge_process = RecurrentEdgeProcess(
                 f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
                 recurrent_compute_needed=SourceRecurrentValues(
@@ -160,7 +160,7 @@ def generate_big_system(
         edge_usage_journey = EdgeUsageJourney(
             f"Default edge usage journey {edge_usage_pattern_index}",
             edge_processes=edge_processes,
-            edge_device=edge_device,
+            edge_computer=edge_computer,
             usage_span=SourceValue(6 * u.year)
         )
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
     nb_years = 5
     system = generate_big_system(
         nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_device=5, nb_years=nb_years)
+        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_computer=5, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()

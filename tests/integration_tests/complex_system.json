@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "11.2.4",
+    "efootprint_version": "12.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -1150,7 +1150,7 @@
             "edge_processes": [
                 "Edge-process"
             ],
-            "edge_device": "Edge-device",
+            "edge_computer": "Edge-device",
             "usage_span": {
                 "value": 6.0,
                 "unit": "year",
@@ -1195,7 +1195,7 @@
             }
         }
     },
-    "EdgeDevice": {
+    "EdgeComputer": {
         "Edge-device": {
             "name": "Edge device",
             "id": "Edge-device",

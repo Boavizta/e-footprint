@@ -17,7 +17,7 @@ class EmissionPlotter:
         self.formatted_input_dicts__new = formatted_input_dicts__new
         self.rounding_value = rounding_value
         self.legend_labels = legend_labels
-        all_elements = ["Servers", "Storage", "Network", "Devices", "EdgeDevices", "EdgeStorage"]
+        all_elements = ["Servers", "Storage", "Network", "Devices", "EdgeComputers", "EdgeStorage"]
         elements = []
         for elt in all_elements:
             for dict in formatted_input_dicts__old + formatted_input_dicts__new:

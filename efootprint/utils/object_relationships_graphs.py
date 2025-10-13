@@ -11,7 +11,7 @@ COLOR_MAP = {
     "UsagePattern": "blue",
     "UsageJourney": "dodgerblue",
     "UsageJourneyStep": "deepskyblue",
-    "EdgeDevice": "red",
+    "EdgeComputer": "red",
     "EdgeStorage": "red",
     "EdgeUsagePattern": "blue",
     "EdgeUsageJourney": "dodgerblue",

@@ -69,6 +69,18 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
 
+    def test_loads_version_10_system(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v10.json"), "rb") as file:
+            base_system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
+    def test_loads_version_11_system(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v11.json"), "rb") as file:
+            base_system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
     def test_json_to_system_doesnt_update_input_dict(self):
         input_dict = deepcopy(self.base_system_dict)
 
@@ -83,7 +95,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         self.assertListEqual(
             ["Device", "Country", "EdgeStorage", "RecurrentEdgeProcess", "Network", "Storage",
-             "EdgeDevice", "BoaviztaCloudServer",
+             "EdgeComputer", "BoaviztaCloudServer",
              "Server", "GPUServer", "EdgeUsageJourney", "WebApplication",
              "VideoStreaming", "GenAIModel", "Job", "GPUJob", "EdgeUsagePattern",
              "WebApplicationJob", "VideoStreamingJob", "GenAIJob",

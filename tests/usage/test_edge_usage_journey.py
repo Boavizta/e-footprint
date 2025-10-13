@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
@@ -21,17 +21,17 @@ class TestEdgeUsageJourney(TestCase):
         self.mock_edge_process_2.id = "mock_process_2"
         self.mock_edge_process_2.name = "Mock Process 2"
         
-        self.mock_edge_device = MagicMock(spec=EdgeDevice)
-        self.mock_edge_device.id = "mock_device"
-        self.mock_edge_device.name = "Mock Device"
-        self.mock_edge_device.lifespan = SourceValue(4 * u.year)
+        self.mock_edge_computer = MagicMock(spec=EdgeComputer)
+        self.mock_edge_computer.id = "mock_device"
+        self.mock_edge_computer.name = "Mock Device"
+        self.mock_edge_computer.lifespan = SourceValue(4 * u.year)
         
         self.usage_span = SourceValue(2 * u.year)
         
         self.edge_usage_journey = EdgeUsageJourney(
             "test edge usage journey",
             edge_processes=[self.mock_edge_process_1, self.mock_edge_process_2],
-            edge_device=self.mock_edge_device,
+            edge_computer=self.mock_edge_computer,
             usage_span=self.usage_span
         )
 
@@ -39,43 +39,43 @@ class TestEdgeUsageJourney(TestCase):
         """Test EdgeUsageJourney initialization."""
         self.assertEqual("test edge usage journey", self.edge_usage_journey.name)
         self.assertEqual([self.mock_edge_process_1, self.mock_edge_process_2], self.edge_usage_journey.edge_processes)
-        self.assertEqual(self.mock_edge_device, self.edge_usage_journey.edge_device)
+        self.assertEqual(self.mock_edge_computer, self.edge_usage_journey.edge_computer)
         self.assertEqual("Usage span of test edge usage journey from e-footprint hypothesis", self.edge_usage_journey.usage_span.label)
         self.assertEqual(2 * u.year, self.edge_usage_journey.usage_span.value)
 
     def test_usage_span_superior_to_lifespan_raises_error(self):
-        mock_edge_device = MagicMock(spec=EdgeDevice)
-        mock_edge_device.id = "mock_device"
-        mock_edge_device.name = "Mock Device"
-        mock_edge_device.lifespan = SourceValue(2 * u.year)
+        mock_edge_computer = MagicMock(spec=EdgeComputer)
+        mock_edge_computer.id = "mock_device"
+        mock_edge_computer.name = "Mock Device"
+        mock_edge_computer.lifespan = SourceValue(2 * u.year)
 
         usage_span = SourceValue(4 * u.year)
         with self.assertRaises(InsufficientCapacityError) as context:
-            EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+            EdgeUsageJourney("test euj", edge_processes=[], edge_computer=mock_edge_computer, usage_span=usage_span)
 
-        self.assertEqual(mock_edge_device, context.exception.overloaded_object)
+        self.assertEqual(mock_edge_computer, context.exception.overloaded_object)
         self.assertEqual("lifespan", context.exception.capacity_type)
-        self.assertEqual(mock_edge_device.lifespan, context.exception.available_capacity)
+        self.assertEqual(mock_edge_computer.lifespan, context.exception.available_capacity)
         self.assertEqual(usage_span, context.exception.requested_capacity)
 
-    def test_changing_to_usage_span_superior_to_edge_device_lifespan_raises_error(self):
-        mock_edge_device = MagicMock(spec=EdgeDevice)
-        mock_edge_device.id = "mock_device"
-        mock_edge_device.name = "Mock Device"
-        mock_edge_device.lifespan = SourceValue(2 * u.year)
+    def test_changing_to_usage_span_superior_to_edge_computer_lifespan_raises_error(self):
+        mock_edge_computer = MagicMock(spec=EdgeComputer)
+        mock_edge_computer.id = "mock_device"
+        mock_edge_computer.name = "Mock Device"
+        mock_edge_computer.lifespan = SourceValue(2 * u.year)
         usage_span = SourceValue(1 * u.year)
-        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_computer=mock_edge_computer, usage_span=usage_span)
 
         with self.assertRaises(InsufficientCapacityError):
             euj.usage_span = SourceValue(3 * u.year)
 
-    def test_changing_to_usage_span_not_superior_to_edge_device_lifespan_doesnt_raise_error(self):
-        mock_edge_device = MagicMock(spec=EdgeDevice)
-        mock_edge_device.id = "mock_device"
-        mock_edge_device.name = "Mock Device"
-        mock_edge_device.lifespan = SourceValue(2 * u.year)
+    def test_changing_to_usage_span_not_superior_to_edge_computer_lifespan_doesnt_raise_error(self):
+        mock_edge_computer = MagicMock(spec=EdgeComputer)
+        mock_edge_computer.id = "mock_device"
+        mock_edge_computer.name = "Mock Device"
+        mock_edge_computer.lifespan = SourceValue(2 * u.year)
         usage_span = SourceValue(1 * u.year)
-        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_device=mock_edge_device, usage_span=usage_span)
+        euj = EdgeUsageJourney("test euj", edge_processes=[], edge_computer=mock_edge_computer, usage_span=usage_span)
 
         euj.usage_span = SourceValue(2 * u.year)
 
@@ -125,10 +125,10 @@ class TestEdgeUsageJourney(TestCase):
         self.assertIn(mock_system_3, systems)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me_no_edge_usage_pattern(self):
-        """Test that edge_processes and edge_device are returned as dependent objects."""
+        """Test that edge_processes and edge_computer are returned as dependent objects."""
         self.assertEqual(len(self.edge_usage_journey.edge_usage_patterns), 0)
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2, self.mock_edge_device]
+        expected_objects = [self.mock_edge_process_1, self.mock_edge_process_2, self.mock_edge_computer]
         self.assertEqual(expected_objects, dependent_objects)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_patterns(self):

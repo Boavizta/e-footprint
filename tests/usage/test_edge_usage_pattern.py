@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -24,9 +24,9 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
         self.mock_edge_process = MagicMock(spec=RecurrentEdgeProcess)
         self.mock_edge_process.name = "Mock Edge Processes"
-        self.mock_edge_device = MagicMock(spec=EdgeDevice)
+        self.mock_edge_computer = MagicMock(spec=EdgeComputer)
         self.mock_edge_usage_journey.edge_processes = [self.mock_edge_process]
-        self.mock_edge_usage_journey.edge_device = self.mock_edge_device
+        self.mock_edge_usage_journey.edge_computer = self.mock_edge_computer
         
         self.mock_country = MagicMock(spec=Country)
         self.mock_country.name = "Mock Country"
@@ -61,9 +61,9 @@ class TestEdgeUsagePattern(TestCase):
         self.assertEqual(expected_attributes, self.edge_usage_pattern.calculated_attributes)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge processes and edge_device are returned as dependent object."""
+        """Test that edge processes and edge_computer are returned as dependent object."""
         dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_process, self.mock_edge_device], dependent_objects)
+        self.assertEqual([self.mock_edge_process, self.mock_edge_computer], dependent_objects)
 
     def test_edge_processes(self):
         """Test edge_processes property delegates to edge_usage_journey."""
