@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+    from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 
 class EdgeUsagePattern(ModelingObject):
@@ -29,11 +29,11 @@ class EdgeUsagePattern(ModelingObject):
         return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeeded"]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeed"]:
         return self.edge_needs
 
     @property
-    def edge_needs(self) -> List["RecurrentEdgeResourceNeeded"]:
+    def edge_needs(self) -> List["RecurrentEdgeResourceNeed"]:
         return self.edge_usage_journey.edge_needs
 
     def update_utc_hourly_edge_usage_journey_starts(self):

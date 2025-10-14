@@ -1,14 +1,14 @@
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 
 
 class EdgeFunction(ModelingObject):
-    def __init__(self, name: str, edge_needs: List[RecurrentEdgeResourceNeeded]):
+    def __init__(self, name: str, edge_needs: List[RecurrentEdgeResourceNeed]):
         super().__init__(name)
         self.edge_needs = edge_needs
 
@@ -17,5 +17,5 @@ class EdgeFunction(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeeded"]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeed"]:
         return self.edge_needs

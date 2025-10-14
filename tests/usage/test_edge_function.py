@@ -3,18 +3,18 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeFunction(TestCase):
     def setUp(self):
-        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need_1.id = "mock_need_1"
         self.mock_edge_need_1.name = "Mock Need 1"
 
-        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need_2.id = "mock_need_2"
         self.mock_edge_need_2.name = "Mock Need 2"
 

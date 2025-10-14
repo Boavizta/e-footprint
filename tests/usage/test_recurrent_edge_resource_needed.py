@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -10,19 +10,19 @@ from efootprint.core.hardware.edge_hardware import EdgeHardware
 from tests.utils import set_modeling_obj_containers
 
 
-class TestRecurrentEdgeResourceNeeded(TestCase):
+class TestRecurrentEdgeResourceNeed(TestCase):
     def setUp(self):
         self.mock_edge_hardware = MagicMock(spec=EdgeHardware)
         self.mock_edge_hardware.id = "mock_hardware"
         self.mock_edge_hardware.name = "Mock Hardware"
 
-        self.edge_resource_needed = RecurrentEdgeResourceNeeded(
+        self.edge_resource_needed = RecurrentEdgeResourceNeed(
             "test edge resource needed",
             edge_hardware=self.mock_edge_hardware
         )
 
     def test_init(self):
-        """Test RecurrentEdgeResourceNeeded initialization."""
+        """Test RecurrentEdgeResourceNeed initialization."""
         self.assertEqual("test edge resource needed", self.edge_resource_needed.name)
         self.assertEqual(self.mock_edge_hardware, self.edge_resource_needed.edge_hardware)
 

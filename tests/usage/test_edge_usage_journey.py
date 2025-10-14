@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 from efootprint.core.hardware.edge_hardware import EdgeHardware
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
@@ -19,12 +19,12 @@ class TestEdgeUsageJourney(TestCase):
         self.mock_edge_hardware.name = "Mock Device"
         self.mock_edge_hardware.lifespan = SourceValue(4 * u.year)
 
-        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need_1.id = "mock_need_1"
         self.mock_edge_need_1.name = "Mock Need 1"
         self.mock_edge_need_1.edge_hardware = self.mock_edge_hardware
 
-        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need_2.id = "mock_need_2"
         self.mock_edge_need_2.name = "Mock Need 2"
         self.mock_edge_need_2.edge_hardware = self.mock_edge_hardware
@@ -70,7 +70,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)
 
-        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)
@@ -91,7 +91,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)
 
-        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)
@@ -109,7 +109,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)
 
-        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)

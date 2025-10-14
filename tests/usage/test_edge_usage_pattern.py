@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
@@ -21,7 +21,7 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         self.mock_edge_usage_journey.id = "mock_edge_journey"
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
-        self.mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeeded)
+        self.mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need.name = "Mock Edge Need"
         self.mock_edge_usage_journey.edge_needs = [self.mock_edge_need]
 

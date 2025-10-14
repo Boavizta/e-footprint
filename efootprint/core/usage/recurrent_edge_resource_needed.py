@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_function import EdgeFunction
 
 
-class RecurrentEdgeResourceNeeded(ModelingObject):
+class RecurrentEdgeResourceNeed(ModelingObject):
     def __init__(self, name: str, edge_hardware: EdgeHardware):
         super().__init__(name)
         self.edge_hardware = edge_hardware

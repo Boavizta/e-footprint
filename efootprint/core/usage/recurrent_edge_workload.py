@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.core.hardware.edge_hardware import EdgeHardware
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
-class RecurrentEdgeWorkload(RecurrentEdgeResourceNeeded):
+class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
     def __init__(self, name: str, edge_hardware: EdgeHardware, recurrent_workload: ExplainableRecurrentQuantities):
         super().__init__(name, edge_hardware)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()

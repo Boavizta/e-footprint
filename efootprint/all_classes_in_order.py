@@ -7,7 +7,7 @@ from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeeded
+from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -41,5 +41,5 @@ ALL_EFOOTPRINT_CLASSES = (
 
 CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
-    EdgeUsagePattern, RecurrentEdgeResourceNeeded, EdgeComputer, EdgeStorage, Service, JobBase,
+    EdgeUsagePattern, RecurrentEdgeResourceNeed, EdgeComputer, EdgeStorage, Service, JobBase,
     Network, ServerBase, Storage, System]
