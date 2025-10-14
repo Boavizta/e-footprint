@@ -1,16 +1,16 @@
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.core.hardware.edge_hardware import EdgeHardware
 
 if TYPE_CHECKING:
-    from efootprint.core.hardware.edge_hardware import EdgeHardware
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge_function import EdgeFunction
 
 
 class RecurrentEdgeResourceNeeded(ModelingObject):
-    def __init__(self, name: str, edge_hardware: "EdgeHardware"):
+    def __init__(self, name: str, edge_hardware: EdgeHardware):
         super().__init__(name)
         self.edge_hardware = edge_hardware
 
