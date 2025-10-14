@@ -20,13 +20,13 @@ class TestEdgeFunction(TestCase):
 
         self.edge_function = EdgeFunction(
             "test edge function",
-            edge_needs=[self.mock_edge_need_1, self.mock_edge_need_2]
+            recurrent_edge_resource_needs=[self.mock_edge_need_1, self.mock_edge_need_2]
         )
 
     def test_init(self):
         """Test EdgeFunction initialization."""
         self.assertEqual("test edge function", self.edge_function.name)
-        self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], self.edge_function.edge_needs)
+        self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], self.edge_function.recurrent_edge_resource_needs)
 
     def test_edge_usage_journeys_property_no_containers(self):
         """Test edge_usage_journeys property when no containers are set."""
@@ -53,7 +53,7 @@ class TestEdgeFunction(TestCase):
         self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_function.edge_usage_journeys))
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge_needs are returned as dependent objects."""
+        """Test that recurrent_edge_resource_needs are returned as dependent objects."""
         dependent_objects = self.edge_function.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], dependent_objects)
 

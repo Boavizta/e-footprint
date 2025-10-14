@@ -8,9 +8,9 @@ if TYPE_CHECKING:
 
 
 class EdgeFunction(ModelingObject):
-    def __init__(self, name: str, edge_needs: List[RecurrentEdgeResourceNeed]):
+    def __init__(self, name: str, recurrent_edge_resource_needs: List[RecurrentEdgeResourceNeed]):
         super().__init__(name)
-        self.edge_needs = edge_needs
+        self.recurrent_edge_resource_needs = recurrent_edge_resource_needs
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
@@ -18,4 +18,4 @@ class EdgeFunction(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeed"]:
-        return self.edge_needs
+        return self.recurrent_edge_resource_needs

@@ -30,11 +30,11 @@ class EdgeUsagePattern(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeed"]:
-        return self.edge_needs
+        return self.recurrent_edge_resource_needs
 
     @property
-    def edge_needs(self) -> List["RecurrentEdgeResourceNeed"]:
-        return self.edge_usage_journey.edge_needs
+    def recurrent_edge_resource_needs(self) -> List["RecurrentEdgeResourceNeed"]:
+        return self.edge_usage_journey.recurrent_edge_resource_needs
 
     def update_utc_hourly_edge_usage_journey_starts(self):
         utc_hourly_edge_usage_journey_starts = self.hourly_edge_usage_journey_starts.convert_to_utc(

@@ -36,12 +36,12 @@ class EdgeUsageJourney(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def edge_needs(self) -> List["RecurrentEdgeResourceNeed"]:
-        return list(set(sum([ef.edge_needs for ef in self.edge_functions], start=[])))
+    def recurrent_edge_resource_needs(self) -> List["RecurrentEdgeResourceNeed"]:
+        return list(set(sum([ef.recurrent_edge_resource_needs for ef in self.edge_functions], start=[])))
 
     @property
     def edge_hardwares(self) -> List["EdgeHardware"]:
-        return list(set([edge_need.edge_hardware for edge_need in self.edge_needs]))
+        return list(set([edge_need.edge_hardware for edge_need in self.recurrent_edge_resource_needs]))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:

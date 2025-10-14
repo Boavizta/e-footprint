@@ -23,7 +23,7 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
         self.mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
         self.mock_edge_need.name = "Mock Edge Need"
-        self.mock_edge_usage_journey.edge_needs = [self.mock_edge_need]
+        self.mock_edge_usage_journey.recurrent_edge_resource_needs = [self.mock_edge_need]
 
         self.mock_country = MagicMock(spec=Country)
         self.mock_country.name = "Mock Country"
@@ -53,13 +53,13 @@ class TestEdgeUsagePattern(TestCase):
         self.assertIsInstance(self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel, EmptyExplainableObject)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge_needs are returned as dependent objects."""
+        """Test that recurrent_edge_resource_needs are returned as dependent objects."""
         dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual([self.mock_edge_need], dependent_objects)
 
-    def test_edge_needs(self):
-        """Test edge_needs property delegates to edge_usage_journey."""
-        self.assertEqual([self.mock_edge_need], self.edge_usage_pattern.edge_needs)
+    def test_recurrent_edge_resource_needs(self):
+        """Test recurrent_edge_resource_needs property delegates to edge_usage_journey."""
+        self.assertEqual([self.mock_edge_need], self.edge_usage_pattern.recurrent_edge_resource_needs)
 
     def test_systems(self):
         """Test systems property returns modeling_obj_containers."""

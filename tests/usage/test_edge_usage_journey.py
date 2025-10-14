@@ -32,12 +32,12 @@ class TestEdgeUsageJourney(TestCase):
         self.mock_edge_function_1 = MagicMock(spec=EdgeFunction)
         self.mock_edge_function_1.id = "mock_function_1"
         self.mock_edge_function_1.name = "Mock Function 1"
-        self.mock_edge_function_1.edge_needs = [self.mock_edge_need_1]
+        self.mock_edge_function_1.recurrent_edge_resource_needs = [self.mock_edge_need_1]
 
         self.mock_edge_function_2 = MagicMock(spec=EdgeFunction)
         self.mock_edge_function_2.id = "mock_function_2"
         self.mock_edge_function_2.name = "Mock Function 2"
-        self.mock_edge_function_2.edge_needs = [self.mock_edge_need_2]
+        self.mock_edge_function_2.recurrent_edge_resource_needs = [self.mock_edge_need_2]
 
         self.usage_span = SourceValue(2 * u.year)
 
@@ -54,10 +54,10 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual("Usage span of test edge usage journey from e-footprint hypothesis", self.edge_usage_journey.usage_span.label)
         self.assertEqual(2 * u.year, self.edge_usage_journey.usage_span.value)
 
-    def test_edge_needs_property(self):
-        """Test edge_needs property returns unique edge needs from all edge functions."""
-        edge_needs = self.edge_usage_journey.edge_needs
-        self.assertEqual({self.mock_edge_need_1, self.mock_edge_need_2}, set(edge_needs))
+    def test_recurrent_edge_resource_needs_property(self):
+        """Test recurrent_edge_resource_needs property returns unique edge needs from all edge functions."""
+        recurrent_edge_resource_needs = self.edge_usage_journey.recurrent_edge_resource_needs
+        self.assertEqual({self.mock_edge_need_1, self.mock_edge_need_2}, set(recurrent_edge_resource_needs))
 
     def test_edge_hardwares_property(self):
         """Test edge_hardwares property returns unique edge devices from all edge needs."""
@@ -74,7 +74,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)
-        mock_edge_function.edge_needs = [mock_edge_need]
+        mock_edge_function.recurrent_edge_resource_needs = [mock_edge_need]
 
         usage_span = SourceValue(4 * u.year)
         with self.assertRaises(InsufficientCapacityError) as context:
@@ -95,7 +95,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)
-        mock_edge_function.edge_needs = [mock_edge_need]
+        mock_edge_function.recurrent_edge_resource_needs = [mock_edge_need]
 
         usage_span = SourceValue(1 * u.year)
         euj = EdgeUsageJourney("test euj", edge_functions=[mock_edge_function], usage_span=usage_span)
@@ -113,7 +113,7 @@ class TestEdgeUsageJourney(TestCase):
         mock_edge_need.edge_hardware = mock_edge_hardware
 
         mock_edge_function = MagicMock(spec=EdgeFunction)
-        mock_edge_function.edge_needs = [mock_edge_need]
+        mock_edge_function.recurrent_edge_resource_needs = [mock_edge_need]
 
         usage_span = SourceValue(1 * u.year)
         euj = EdgeUsageJourney("test euj", edge_functions=[mock_edge_function], usage_span=usage_span)
