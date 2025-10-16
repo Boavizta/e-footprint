@@ -1,298 +1,213 @@
+import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
-from typing import List
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.core.country import Country
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
-from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from efootprint.constants.units import u
+from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-
-
-class EdgeHardwareBaseTestClass(EdgeHardwareBase):
-    default_values = {
-        "carbon_footprint_fabrication": SourceValue(100 * u.kg),
-        "power": SourceValue(100 * u.W),
-        "lifespan": SourceValue(5 * u.year)
-    }
-
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, edge_usage_patterns):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self._edge_usage_patterns = edge_usage_patterns if edge_usage_patterns is not None else []
-
-    @property
-    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return self._edge_usage_patterns
-
-    def update_unitary_power_per_usage_pattern(self):
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.unitary_power_per_usage_pattern[usage_pattern] = create_source_hourly_values_from_list(
-                [1.5, 3], pint_unit=u.W).set_label(f"Unitary power for {self.name} in {usage_pattern.name}")
-
-    def after_init(self):
-        self.trigger_modeling_updates = False
+from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
+from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeHardware(TestCase):
     def setUp(self):
-        mock_edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_edge_usage_pattern.name = "Mock Usage Pattern"
-        mock_edge_usage_pattern.id = "mock_edge_usage_pattern"
-        mock_edge_usage_pattern.nb_edge_usage_journeys_in_parallel = EmptyExplainableObject()
-        mock_country = MagicMock(spec=Country)
-        mock_avg_carbon_intensity = MagicMock()
-        mock_country.average_carbon_intensity = mock_avg_carbon_intensity
-        mock_edge_usage_pattern.country = mock_country
-        self.mock_edge_usage_pattern = mock_edge_usage_pattern
-        self.mock_avg_carbon_intensity = mock_avg_carbon_intensity
+        """Set up test fixtures."""
+        self.edge_hardware = EdgeHardware(
+            "test edge hardware",
+            carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            power=SourceValue(50 * u.W),
+            lifespan=SourceValue(5 * u.year),
+            idle_power=SourceValue(5 * u.W))
 
-        self.test_edge_hardware = EdgeHardwareBaseTestClass(
-            "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
-            edge_usage_patterns=[mock_edge_usage_pattern])
+    def test_init(self):
+        """Test EdgeHardware initialization."""
+        self.assertEqual("test edge hardware", self.edge_hardware.name)
+        self.assertEqual(100 * u.kg, self.edge_hardware.carbon_footprint_fabrication.value)
+        self.assertEqual(50 * u.W, self.edge_hardware.power.value)
+        self.assertEqual(5 * u.year, self.edge_hardware.lifespan.value)
+        self.assertEqual(5 * u.W, self.edge_hardware.idle_power.value)
+        self.assertIsInstance(self.edge_hardware.unitary_hourly_workload_per_usage_pattern, ExplainableObjectDict)
 
-    def test_init_sets_empty_explainable_objects(self):
-        """Test that init sets ExplainableObjectDict for per-pattern calculations."""
-        self.assertIsInstance(self.test_edge_hardware.unitary_power_per_usage_pattern, ExplainableObjectDict)
-        self.assertIsInstance(self.test_edge_hardware.nb_of_instances_per_usage_pattern, ExplainableObjectDict)
-        self.assertIsInstance(self.test_edge_hardware.instances_energy_per_usage_pattern, ExplainableObjectDict)
-        self.assertIsInstance(self.test_edge_hardware.energy_footprint_per_usage_pattern, ExplainableObjectDict)
-        self.assertIsInstance(
-            self.test_edge_hardware.instances_fabrication_footprint_per_usage_pattern, ExplainableObjectDict)
-        self.assertIsInstance(self.test_edge_hardware.nb_of_instances, EmptyExplainableObject)
-        self.assertIsInstance(self.test_edge_hardware.instances_fabrication_footprint, EmptyExplainableObject)
-        self.assertIsInstance(self.test_edge_hardware.instances_energy, EmptyExplainableObject)
-        self.assertIsInstance(self.test_edge_hardware.energy_footprint, EmptyExplainableObject)
+    def test_edge_workloads_property(self):
+        """Test edge_workloads property returns modeling_obj_containers."""
+        mock_workload1 = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload2 = MagicMock(spec=RecurrentEdgeWorkload)
 
-    def test_update_nb_of_instances_per_usage_pattern(self):
-        """Test update_nb_of_instances_per_usage_pattern aggregates all patterns."""
-        mock_usage_pattern2 = MagicMock(spec=EdgeUsagePattern)
-        mock_usage_pattern2.name = "Mock Usage Pattern 2"
-        mock_usage_pattern2.id = "mock_usage_pattern2"
-        
-        # Update test hardware to have two patterns
-        self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
-        
-        with patch.object(
-                EdgeHardwareBase, "update_dict_element_in_nb_of_instances_per_usage_pattern") as mock_update:
-            self.test_edge_hardware.update_nb_of_instances_per_usage_pattern()
-            
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(self.mock_edge_usage_pattern)
-            mock_update.assert_any_call(mock_usage_pattern2)
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
 
-    def test_update_dict_element_in_nb_of_instances_per_usage_pattern(self):
-        """Test update_dict_element_in_nb_of_instances_per_usage_pattern calculation."""
-        mock_instances = create_source_hourly_values_from_list([1, 2, 3])
-        with patch.object(self.mock_edge_usage_pattern, "nb_edge_usage_journeys_in_parallel", mock_instances):
-            self.test_edge_hardware.update_dict_element_in_nb_of_instances_per_usage_pattern(
-                self.mock_edge_usage_pattern)
-        
-        result = self.test_edge_hardware.nb_of_instances_per_usage_pattern[self.mock_edge_usage_pattern]
-        self.assertEqual("Number of test edge hardware instances for Mock Usage Pattern", result.label)
-        self.assertEqual(mock_instances, result)
+        self.assertEqual({mock_workload1, mock_workload2}, set(self.edge_hardware.edge_workloads))
 
-    def test_update_instances_fabrication_footprint_per_usage_pattern(self):
-        """Test update_instances_fabrication_footprint_per_usage_pattern aggregates all patterns."""
-        mock_usage_pattern2 = MagicMock(spec=EdgeUsagePattern)
-        mock_usage_pattern2.name = "Mock Usage Pattern 2"
-        mock_usage_pattern2.id = "mock_usage_pattern2"
-        
-        # Update test hardware to have two patterns
-        self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
-        
-        with patch.object(
-                EdgeHardwareBase, "update_dict_element_in_instances_fabrication_footprint_per_usage_pattern") as mock_update:
-            self.test_edge_hardware.update_instances_fabrication_footprint_per_usage_pattern()
-            
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(self.mock_edge_usage_pattern)
-            mock_update.assert_any_call(mock_usage_pattern2)
+    def test_edge_usage_patterns_property(self):
+        """Test edge_usage_patterns property aggregates patterns from workloads."""
+        mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern1.id = "pattern1"
+        mock_pattern2.id = "pattern2"
 
-    def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self):
-        """Test update_dict_element_in_instances_fabrication_footprint_per_usage_pattern calculation."""
-        mock_instances = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([2, 4], pint_unit=u.dimensionless)}
-        with patch.object(self.test_edge_hardware, "nb_of_instances_per_usage_pattern", mock_instances), \
-                patch.object(self.test_edge_hardware, "carbon_footprint_fabrication", SourceValue(120 * u.kg)), \
-                patch.object(self.test_edge_hardware, "lifespan", SourceValue(6 * u.year)):
-            self.test_edge_hardware.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
-                self.mock_edge_usage_pattern)
-        
-        result = self.test_edge_hardware.instances_fabrication_footprint_per_usage_pattern[self.mock_edge_usage_pattern]
-        # fabrication_footprint = nb_instances * carbon_footprint_fabrication / lifespan
-        # = [2, 4] * 120 kg / (6 years * 365.25 * 24 hours/year)
-        expected_hourly_footprint = 120 / (6 * 365.25 * 24)  # kg/hour
-        expected_values = [2 * expected_hourly_footprint, 4 * expected_hourly_footprint]
-        
+        mock_workload1 = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload2 = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload1.edge_usage_patterns = [mock_pattern1]
+        mock_workload2.edge_usage_patterns = [mock_pattern2]
+
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
+
+        patterns = self.edge_hardware.edge_usage_patterns
+        self.assertEqual(2, len(patterns))
+        self.assertIn(mock_pattern1, patterns)
+        self.assertIn(mock_pattern2, patterns)
+
+    def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern aggregates workloads."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+
+        mock_workload1 = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload2 = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload1.edge_usage_patterns = [mock_pattern]
+        mock_workload2.edge_usage_patterns = [mock_pattern]
+
+        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.dimensionless)
+        workload_values2 = create_source_hourly_values_from_list([0.1, 0.15], pint_unit=u.dimensionless)
+
+        mock_workload1.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values1}
+        mock_workload2.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values2}
+
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
+
+        self.edge_hardware.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+
+        result = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern]
+        expected_values = [0.3, 0.45]
         self.assertTrue(np.allclose(expected_values, result.value.magnitude))
-        self.assertEqual(u.kg, result.unit)
-        self.assertEqual(
-            "Hourly test edge hardware instances fabrication footprint for Mock Usage Pattern", result.label)
+        self.assertEqual("test edge hardware hourly workload for Test Pattern", result.label)
 
-    def test_update_instances_energy_per_usage_pattern(self):
-        """Test update_instances_energy_per_usage_pattern aggregates all patterns."""
-        mock_usage_pattern2 = MagicMock(spec=EdgeUsagePattern)
-        mock_usage_pattern2.name = "Mock Usage Pattern 2"
-        mock_usage_pattern2.id = "mock_usage_pattern2"
-        
-        # Update test hardware to have two patterns
-        self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
-        
-        with patch.object(
-                EdgeHardwareBase, "update_dict_element_in_instances_energy_per_usage_pattern") as mock_update:
-            self.test_edge_hardware.update_instances_energy_per_usage_pattern()
-            
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(self.mock_edge_usage_pattern)
-            mock_update.assert_any_call(mock_usage_pattern2)
+    def test_update_dict_element_in_unitary_hourly_workload_exceeds_capacity(self):
+        """Test that workload exceeding 100% raises InsufficientCapacityError."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
 
-    def test_update_dict_element_in_instances_energy_per_usage_pattern(self):
-        """Test update_dict_element_in_instances_energy_per_usage_pattern calculation."""
-        mock_instances = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)}
-        mock_power = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1.5, 3], pint_unit=u.W)
+        mock_workload = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload.edge_usage_patterns = [mock_pattern]
+
+        # Workload exceeding 100%
+        workload_values = create_source_hourly_values_from_list([0.8, 1.2], pint_unit=u.dimensionless)
+
+        mock_workload.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values}
+
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
+
+        with self.assertRaises(InsufficientCapacityError) as context:
+            self.edge_hardware.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+
+        self.assertIn("workload capacity", str(context.exception))
+
+    def test_update_unitary_hourly_workload_per_usage_pattern(self):
+        """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
+        mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern1.name = "Pattern 1"
+        mock_pattern2.name = "Pattern 2"
+        mock_pattern1.id = "pattern1"
+        mock_pattern2.id = "pattern2"
+
+        mock_workload = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload.edge_usage_patterns = [mock_pattern1, mock_pattern2]
+
+        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.dimensionless)
+        workload_values2 = create_source_hourly_values_from_list([0.4, 0.5], pint_unit=u.dimensionless)
+
+        mock_workload.unitary_hourly_workload_per_usage_pattern = {
+            mock_pattern1: workload_values1,
+            mock_pattern2: workload_values2
         }
 
-        with patch.object(self.test_edge_hardware, "unitary_power_per_usage_pattern", mock_power), \
-            patch.object(self.test_edge_hardware, "nb_of_instances_per_usage_pattern", mock_instances):
-            self.test_edge_hardware.update_dict_element_in_instances_energy_per_usage_pattern(
-                self.mock_edge_usage_pattern)
-        
-        result = self.test_edge_hardware.instances_energy_per_usage_pattern[self.mock_edge_usage_pattern]
-        # energy = nb_instances * unitary_power * 1 hour
-        # = [1, 2] * [1.5, 3] W * 1 hour = [1.5, 6] Wh
-        expected_values = create_source_hourly_values_from_list([1.5, 6], pint_unit=u.Wh)
-        
-        self.assertEqual(expected_values, result)
-        self.assertEqual("Hourly energy consumed by test edge hardware instances for Mock Usage Pattern", result.label)
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
 
-    def test_update_energy_footprint_per_usage_pattern(self):
-        """Test update_energy_footprint_per_usage_pattern aggregates all patterns."""
-        mock_usage_pattern2 = MagicMock(spec=EdgeUsagePattern)
-        mock_usage_pattern2.name = "Mock Usage Pattern 2"
-        mock_usage_pattern2.id = "mock_usage_pattern2"
-        
-        # Update test hardware to have two patterns
-        self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
-        
-        with patch.object(
-                EdgeHardwareBase, "update_dict_element_in_energy_footprint_per_usage_pattern") as mock_update:
-            self.test_edge_hardware.update_energy_footprint_per_usage_pattern()
-            
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(self.mock_edge_usage_pattern)
-            mock_update.assert_any_call(mock_usage_pattern2)
+        self.edge_hardware.update_unitary_hourly_workload_per_usage_pattern()
 
-    def test_update_dict_element_in_energy_footprint_per_usage_pattern(self):
-        """Test update_dict_element_in_energy_footprint_per_usage_pattern calculation."""
-        instances_energy_per_usage_pattern = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1, 2], pint_unit=u.kWh)}
-        mock_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        self.assertIn(mock_pattern1, self.edge_hardware.unitary_hourly_workload_per_usage_pattern)
+        self.assertIn(mock_pattern2, self.edge_hardware.unitary_hourly_workload_per_usage_pattern)
+        result1 = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern1]
+        result2 = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern2]
+        self.assertTrue(np.allclose([0.2, 0.3], result1.value.magnitude))
+        self.assertTrue(np.allclose([0.4, 0.5], result2.value.magnitude))
 
-        with patch.object(self.mock_edge_usage_pattern.country, 'average_carbon_intensity', mock_carbon_intensity), \
-                patch.object(self.test_edge_hardware, "instances_energy_per_usage_pattern",
-                             instances_energy_per_usage_pattern):
-            self.test_edge_hardware.update_dict_element_in_energy_footprint_per_usage_pattern(
-                self.mock_edge_usage_pattern)
-            
-            result = self.test_edge_hardware.energy_footprint_per_usage_pattern[self.mock_edge_usage_pattern]
-            # energy_footprint = instances_energy * carbon_intensity
-            # energy_footprint = [1, 2] kWh * [100] g/kWh = [100, 200] g
-            expected_values = [100, 200]
-            
-            self.assertTrue(np.allclose(expected_values, result.value.magnitude))
-            self.assertEqual(u.g, result.unit)
-            self.assertEqual("test edge hardware energy footprint for Mock Usage Pattern", result.label)
+    def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
+        """Test update_dict_element_in_unitary_power_per_usage_pattern calculates power based on workload."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test_pattern"
 
-    def test_sum_calculated_attribute_across_usage_patterns(self):
-        """Test sum_calculated_attribute_across_usage_patterns method."""
-        # Create a second usage pattern
-        mock_usage_pattern2 = MagicMock(spec=EdgeUsagePattern)
-        mock_usage_pattern2.name = "Mock Usage Pattern 2"
-        mock_usage_pattern2.id = "mock_usage_pattern2"
-        
-        # Set up mock instances for both patterns
-        mock_instances1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)
-        mock_instances2 = create_source_hourly_values_from_list([2, 3], pint_unit=u.dimensionless)
-        
-        # Update test hardware to have two patterns
-        self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
-        
-        # Set up mock instances for both patterns
-        self.mock_edge_usage_pattern.nb_edge_usage_journeys_in_parallel = mock_instances1
-        mock_usage_pattern2.nb_edge_usage_journeys_in_parallel = mock_instances2
-        
-        self.test_edge_hardware.update_nb_of_instances_per_usage_pattern()
-        
-        # Test the sum method
-        result = self.test_edge_hardware.sum_calculated_attribute_across_usage_patterns(
-            "nb_of_instances_per_usage_pattern", "total instances")
-        
-        # Sum should be [1+2, 2+3] = [3, 5]
-        expected_values = [3, 5]
-        self.assertTrue(np.allclose(expected_values, result.value.magnitude))
-        self.assertEqual("test edge hardware total instances across usage patterns", result.label)
+        workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.dimensionless)
+        self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
 
-    def test_update_aggregated_attributes(self):
-        """Test that aggregated attributes are properly updated."""
-        mock_instances = create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)
-        self.mock_edge_usage_pattern.nb_edge_usage_journeys_in_parallel = mock_instances
-        
-        # Update per-pattern and aggregated attributes
-        self.test_edge_hardware.update_nb_of_instances_per_usage_pattern()
-        self.test_edge_hardware.update_unitary_power_per_usage_pattern()
-        self.test_edge_hardware.update_instances_fabrication_footprint_per_usage_pattern()
-        self.test_edge_hardware.update_instances_energy_per_usage_pattern()
-        
-        self.test_edge_hardware.update_nb_of_instances()
-        self.test_edge_hardware.update_instances_fabrication_footprint()
-        self.test_edge_hardware.update_instances_energy()
-        
-        # Check that aggregated attributes are not EmptyExplainableObject anymore
-        self.assertNotIsInstance(self.test_edge_hardware.nb_of_instances, EmptyExplainableObject)
-        self.assertNotIsInstance(self.test_edge_hardware.instances_fabrication_footprint, EmptyExplainableObject)
-        self.assertNotIsInstance(self.test_edge_hardware.instances_energy, EmptyExplainableObject)
-        
-        # Check labels
-        self.assertEqual("test edge hardware total instances across usage patterns", 
-                        self.test_edge_hardware.nb_of_instances.label)
-        self.assertEqual("test edge hardware total fabrication footprint across usage patterns", 
-                        self.test_edge_hardware.instances_fabrication_footprint.label)
-        self.assertEqual("test edge hardware total instances energy across usage patterns", 
-                        self.test_edge_hardware.instances_energy.label)
+        self.edge_hardware.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
 
-    def test_edge_hardware_no_patterns(self):
-        """Test EdgeHardware behavior with no usage patterns."""
-        test_edge_hardware = EdgeHardwareBaseTestClass(
-            "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
-            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
-            edge_usage_patterns=None)
-        
-        # All per-pattern dicts should be empty
-        self.assertEqual(0, len(test_edge_hardware.unitary_power_per_usage_pattern))
-        self.assertEqual(0, len(test_edge_hardware.nb_of_instances_per_usage_pattern))
-        self.assertEqual(0, len(test_edge_hardware.instances_energy_per_usage_pattern))
-        self.assertEqual(0, len(test_edge_hardware.energy_footprint_per_usage_pattern))
-        self.assertEqual(0, len(test_edge_hardware.instances_fabrication_footprint_per_usage_pattern))
-        
-        # Aggregated attributes should remain as EmptyExplainableObject
-        test_edge_hardware.update_nb_of_instances()
-        test_edge_hardware.update_instances_fabrication_footprint()
-        test_edge_hardware.update_instances_energy()
-        test_edge_hardware.update_energy_footprint()
-        
-        self.assertIsInstance(test_edge_hardware.nb_of_instances, EmptyExplainableObject)
-        self.assertIsInstance(test_edge_hardware.instances_fabrication_footprint, EmptyExplainableObject)
-        self.assertIsInstance(test_edge_hardware.instances_energy, EmptyExplainableObject)
-        self.assertIsInstance(test_edge_hardware.energy_footprint, EmptyExplainableObject)
+        result = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern]
+        # Power = idle_power + (power - idle_power) * workload
+        # = 5 + (50 - 5) * [0.0, 0.5, 1.0]
+        # = 5 + 45 * [0.0, 0.5, 1.0]
+        # = [5, 27.5, 50]
+        expected_values = [5, 27.5, 50]
+        self.assertTrue(np.allclose(expected_values, result.value.to(u.W).magnitude))
+        self.assertEqual("test edge hardware unitary power for Test Pattern", result.label)
+
+    def test_update_unitary_power_per_usage_pattern(self):
+        """Test update_unitary_power_per_usage_pattern updates all patterns."""
+        mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern1.name = "Pattern 1"
+        mock_pattern2.name = "Pattern 2"
+        mock_pattern1.id = "pattern1"
+        mock_pattern2.id = "pattern2"
+
+        workload_values1 = create_source_hourly_values_from_list([0.2], pint_unit=u.dimensionless)
+        workload_values2 = create_source_hourly_values_from_list([0.5], pint_unit=u.dimensionless)
+
+        self.edge_hardware.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern1: workload_values1,
+            mock_pattern2: workload_values2
+        })
+
+        mock_workload = MagicMock(spec=RecurrentEdgeWorkload)
+        mock_workload.edge_usage_patterns = [mock_pattern1, mock_pattern2]
+        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
+
+        self.edge_hardware.update_unitary_power_per_usage_pattern()
+
+        self.assertIn(mock_pattern1, self.edge_hardware.unitary_power_per_usage_pattern)
+        self.assertIn(mock_pattern2, self.edge_hardware.unitary_power_per_usage_pattern)
+        result1 = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern1]
+        result2 = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern2]
+        expected_values1 = [5 + 45 * 0.2]  # = 14W
+        expected_values2 = [5 + 45 * 0.5]  # = 27.5W
+        self.assertTrue(np.allclose(expected_values1, result1.value.to(u.W).magnitude))
+        self.assertTrue(np.allclose(expected_values2, result2.value.to(u.W).magnitude))
+
+    def test_update_dict_element_in_unitary_power_with_empty_workload(self):
+        """Test power calculation with EmptyExplainableObject workload."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test_pattern"
+
+        self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
+
+        self.edge_hardware.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+
+        result = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern]
+        # With empty workload, power should be idle_power + (power - idle_power) * EmptyExplainableObject()
+        # which equals idle_power = 5W
+        self.assertIsInstance(result, ExplainableQuantity)
+        self.assertEqual(5 * u.W, result.value)
+
+
+if __name__ == "__main__":
+    unittest.main()
