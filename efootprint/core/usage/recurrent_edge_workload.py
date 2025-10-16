@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
+from efootprint.constants.units import u
 from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
@@ -9,11 +10,30 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
+class WorkloadOutOfBoundsError(Exception):
+    def __init__(self, workload_name: str, min_value: float, max_value: float):
+        message = (
+            f"Workload '{workload_name}' has values outside the valid range [0, 1]. "
+            f"Found values between {min_value:.3f} and {max_value:.3f}. "
+            f"Workload values must be dimensionless and represent a percentage between 0 and 1 (0% to 100%).")
+        super().__init__(message)
+
+
 class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
     def __init__(self, name: str, edge_hardware: EdgeHardwareBase, recurrent_workload: ExplainableRecurrentQuantities):
         super().__init__(name, edge_hardware)
+        self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         self.recurrent_workload = recurrent_workload.set_label(f"{self.name} recurrent workload")
+
+    @staticmethod
+    def assert_recurrent_workload_is_between_0_and_1(recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
+        workload_magnitude = recurrent_workload.value.to(u.dimensionless).magnitude
+        min_value = float(workload_magnitude.min())
+        max_value = float(workload_magnitude.max())
+
+        if min_value < 0 or max_value > 1:
+            raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
 
     @property
     def calculated_attributes(self):
@@ -29,3 +49,8 @@ class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(usage_pattern)
+
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        if name == "recurrent_workload":
+            self.assert_recurrent_workload_is_between_0_and_1(input_value, self.name)
+        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
