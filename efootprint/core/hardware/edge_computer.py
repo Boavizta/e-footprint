@@ -63,8 +63,7 @@ class EdgeComputer(EdgeHardware):
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        # TODO: get unique usage patterns from edge_processes
-        pass
+        return list(set(sum([ep.edge_usage_patterns for ep in self.edge_processes], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List:

@@ -73,63 +73,94 @@ class TestEdgeComputer(TestCase):
         self.assertIn("Base RAM consumption of Test EdgeComputer", self.edge_computer.base_ram_consumption.label)
         self.assertIn("Base compute consumption of Test EdgeComputer", self.edge_computer.base_compute_consumption.label)
 
-    def test_edge_usage_journeys_property_no_containers(self):
-        """Test edge_usage_journeys property when no containers are set."""
-        self.assertEqual([], self.edge_computer.edge_usage_journeys)
+    def test_edge_processes_property_no_containers(self):
+        """Test edge_processes property when no containers are set."""
+        self.assertEqual([], self.edge_computer.edge_processes)
 
-    def test_edge_usage_journeys_property_single_container(self):
-        """Test edge_usage_journeys property with single container."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_journey.name = "Mock Journey"
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        self.assertEqual([mock_journey], self.edge_computer.edge_usage_journeys)
+    def test_edge_processes_property_with_containers(self):
+        """Test edge_processes property returns modeling_obj_containers."""
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
+
+        self.assertEqual({mock_process_1, mock_process_2}, set(self.edge_computer.edge_processes))
         set_modeling_obj_containers(self.edge_computer, [])
 
-    def test_edge_usage_journeys_property_multiple_containers(self):
-        """Test edge_usage_journeys property with multiple containers."""
-        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_1.name = "Journey 1"
-        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_2.name = "Journey 2"
+    def test_edge_usage_journeys_property_no_processes(self):
+        """Test edge_usage_journeys property when no processes are set."""
+        self.assertEqual([], self.edge_computer.edge_usage_journeys)
 
-        set_modeling_obj_containers(self.edge_computer, [mock_journey_1, mock_journey_2])
+    def test_edge_usage_journeys_property_with_process(self):
+        """Test edge_usage_journeys property aggregates from processes."""
+        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
+        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
+
+        mock_process = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process.edge_usage_journeys = [mock_journey_1, mock_journey_2]
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process])
 
         self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_computer.edge_usage_journeys))
         set_modeling_obj_containers(self.edge_computer, [])
 
-    def test_edge_usage_patterns_property_no_journey(self):
-        """Test edge_usage_patterns property when no journey is set."""
+    def test_edge_usage_journeys_property_with_multiple_processes(self):
+        """Test edge_usage_journeys property deduplicates across processes."""
+        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
+        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
+        mock_journey_3 = MagicMock(spec=EdgeUsageJourney)
+
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_1.edge_usage_journeys = [mock_journey_1, mock_journey_2]
+
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2.edge_usage_journeys = [mock_journey_2, mock_journey_3]
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
+
+        journeys = self.edge_computer.edge_usage_journeys
+        self.assertEqual(3, len(journeys))
+        self.assertIn(mock_journey_1, journeys)
+        self.assertIn(mock_journey_2, journeys)
+        self.assertIn(mock_journey_3, journeys)
+        set_modeling_obj_containers(self.edge_computer, [])
+
+    def test_edge_usage_patterns_property_no_processes(self):
+        """Test edge_usage_patterns property when no processes are set."""
         self.assertEqual([], self.edge_computer.edge_usage_patterns)
 
-    def test_edge_usage_patterns_property_with_journey(self):
-        """Test edge_usage_patterns property delegates to journey."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
+    def test_edge_usage_patterns_property_with_process(self):
+        """Test edge_usage_patterns property aggregates from processes."""
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
 
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
+        mock_process = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process])
 
         self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_computer.edge_usage_patterns))
         set_modeling_obj_containers(self.edge_computer, [])
 
-    def test_edge_usage_patterns_property_with_multiple_journeys(self):
-        """Test edge_usage_patterns property aggregates patterns from multiple journeys."""
-        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
+    def test_edge_usage_patterns_property_with_multiple_processes(self):
+        """Test edge_usage_patterns property deduplicates patterns across processes."""
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_3 = MagicMock(spec=EdgeUsagePattern)
-        mock_journey_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        mock_journey_2.edge_usage_patterns = [mock_pattern_3]
 
-        set_modeling_obj_containers(self.edge_computer, [mock_journey_1, mock_journey_2])
+        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
 
-        result = self.edge_computer.edge_usage_patterns
-        self.assertEqual(3, len(result))
-        self.assertIn(mock_pattern_1, result)
-        self.assertIn(mock_pattern_2, result)
-        self.assertIn(mock_pattern_3, result)
+        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process_2.edge_usage_patterns = [mock_pattern_2, mock_pattern_3]
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
+
+        patterns = self.edge_computer.edge_usage_patterns
+        self.assertEqual(3, len(patterns))
+        self.assertIn(mock_pattern_1, patterns)
+        self.assertIn(mock_pattern_2, patterns)
+        self.assertIn(mock_pattern_3, patterns)
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -137,16 +168,6 @@ class TestEdgeComputer(TestCase):
         dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual([self.mock_storage], dependent_objects)
 
-    def test_edge_processes_property(self):
-        """Test edge_processes property delegates to journey."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_processes = [MagicMock(spec=RecurrentEdgeProcess), MagicMock(spec=RecurrentEdgeProcess)]
-        mock_journey.edge_processes = mock_processes
-        
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
-        self.assertEqual(set(mock_processes), set(self.edge_computer.edge_processes))
-        set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
@@ -204,131 +225,124 @@ class TestEdgeComputer(TestCase):
 
     def test_update_unitary_hourly_ram_need_per_usage_pattern(self):
         """Test update_unitary_hourly_ram_need_per_usage_pattern aggregates all patterns."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2.name = "Pattern 2"
-        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
+
+        mock_process = MagicMock(spec=RecurrentEdgeProcess)
+        mock_process.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process])
+
         with patch.object(
                 EdgeComputer, "update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern") as mock_update:
             self.edge_computer.update_unitary_hourly_ram_need_per_usage_pattern()
-            
+
             self.assertEqual(2, mock_update.call_count)
             mock_update.assert_any_call(mock_pattern_1)
             mock_update.assert_any_call(mock_pattern_2)
-        
+
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern calculation."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        
+
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-        
+
         ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
         ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)
-        
+
         mock_process_1.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_1}
         mock_process_2.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_2}
         mock_process_1.edge_usage_patterns = [mock_pattern]
         mock_process_2.edge_usage_patterns = [mock_pattern]
-        
-        mock_journey.edge_processes = [mock_process_1, mock_process_2]
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
+
         with patch.object(self.edge_computer, "available_ram_per_instance", SourceValue(10 * u.GB)):
             self.edge_computer.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
-            
+
             expected_values = [3, 3, 7]  # Sum of both processes
             result = self.edge_computer.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
             self.assertEqual(expected_values, result.value_as_float_list)
             self.assertEqual(u.GB, result.unit)
             self.assertIn("Test EdgeComputer hourly RAM need for Test Pattern", result.label)
-        
+
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        
+
         mock_process = MagicMock(spec=RecurrentEdgeProcess)
         ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB)  # Peak of 15 GB
         mock_process.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need}
         mock_process.edge_usage_patterns = [mock_pattern]
 
-        mock_journey.edge_processes = [mock_process]
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
+        set_modeling_obj_containers(self.edge_computer, [mock_process])
+
         with patch.object(self.edge_computer, "available_ram_per_instance", SourceValue(10 * u.GB)):
             with self.assertRaises(InsufficientCapacityError) as context:
                 self.edge_computer.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
-            
+
             self.assertEqual("RAM", context.exception.capacity_type)
             self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-        
+
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        
+
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-        
+
         compute_need_1 = create_source_hourly_values_from_list([0.5, 1.0, 1.5], pint_unit=u.cpu_core)
         compute_need_2 = create_source_hourly_values_from_list([1.0, 0.5, 2.0], pint_unit=u.cpu_core)
-        
+
         mock_process_1.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_1}
         mock_process_2.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_2}
         mock_process_1.edge_usage_patterns = [mock_pattern]
         mock_process_2.edge_usage_patterns = [mock_pattern]
-        
-        mock_journey.edge_processes = [mock_process_1, mock_process_2]
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
+
+        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
+
         with patch.object(self.edge_computer, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
             self.edge_computer.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
-            
+
             expected_values = [1.5, 1.5, 3.5]  # Sum of both processes
             result = self.edge_computer.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
             self.assertEqual(expected_values, result.value_as_float_list)
             self.assertEqual(u.cpu_core, result.unit)
             self.assertIn("Test EdgeComputer hourly compute need for Test Pattern", result.label)
-        
+
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
-        
+
         mock_process = MagicMock(spec=RecurrentEdgeProcess)
         compute_need = create_source_hourly_values_from_list([0.5, 1.0, 8.0], pint_unit=u.cpu_core)  # Peak of 8.0 cpu_core
         mock_process.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
         mock_process.edge_usage_patterns = [mock_pattern]
 
-        mock_journey.edge_processes = [mock_process]
-        set_modeling_obj_containers(self.edge_computer, [mock_journey])
-        
+        set_modeling_obj_containers(self.edge_computer, [mock_process])
+
         with patch.object(self.edge_computer, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
             with self.assertRaises(InsufficientCapacityError) as context:
                 self.edge_computer.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
-            
+
             self.assertEqual("compute", context.exception.capacity_type)
             self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-        
+
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
