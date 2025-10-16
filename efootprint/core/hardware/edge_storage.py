@@ -5,7 +5,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -32,7 +32,7 @@ class NegativeCumulativeStorageNeedError(Exception):
         super().__init__(message)
 
 
-class EdgeStorage(EdgeHardware):
+class EdgeStorage(EdgeHardwareBase):
     default_values =  {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
             "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),

@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -16,7 +16,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
-class EdgeHardwareTestClass(EdgeHardware):
+class EdgeHardwareBaseTestClass(EdgeHardwareBase):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(100 * u.W),
@@ -55,7 +55,7 @@ class TestEdgeHardware(TestCase):
         self.mock_edge_usage_pattern = mock_edge_usage_pattern
         self.mock_avg_carbon_intensity = mock_avg_carbon_intensity
 
-        self.test_edge_hardware = EdgeHardwareTestClass(
+        self.test_edge_hardware = EdgeHardwareBaseTestClass(
             "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
             edge_usage_patterns=[mock_edge_usage_pattern])
@@ -83,7 +83,7 @@ class TestEdgeHardware(TestCase):
         self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
         
         with patch.object(
-                EdgeHardware, "update_dict_element_in_nb_of_instances_per_usage_pattern") as mock_update:
+                EdgeHardwareBase, "update_dict_element_in_nb_of_instances_per_usage_pattern") as mock_update:
             self.test_edge_hardware.update_nb_of_instances_per_usage_pattern()
             
             self.assertEqual(2, mock_update.call_count)
@@ -111,7 +111,7 @@ class TestEdgeHardware(TestCase):
         self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
         
         with patch.object(
-                EdgeHardware, "update_dict_element_in_instances_fabrication_footprint_per_usage_pattern") as mock_update:
+                EdgeHardwareBase, "update_dict_element_in_instances_fabrication_footprint_per_usage_pattern") as mock_update:
             self.test_edge_hardware.update_instances_fabrication_footprint_per_usage_pattern()
             
             self.assertEqual(2, mock_update.call_count)
@@ -149,7 +149,7 @@ class TestEdgeHardware(TestCase):
         self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
         
         with patch.object(
-                EdgeHardware, "update_dict_element_in_instances_energy_per_usage_pattern") as mock_update:
+                EdgeHardwareBase, "update_dict_element_in_instances_energy_per_usage_pattern") as mock_update:
             self.test_edge_hardware.update_instances_energy_per_usage_pattern()
             
             self.assertEqual(2, mock_update.call_count)
@@ -187,7 +187,7 @@ class TestEdgeHardware(TestCase):
         self.test_edge_hardware._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
         
         with patch.object(
-                EdgeHardware, "update_dict_element_in_energy_footprint_per_usage_pattern") as mock_update:
+                EdgeHardwareBase, "update_dict_element_in_energy_footprint_per_usage_pattern") as mock_update:
             self.test_edge_hardware.update_energy_footprint_per_usage_pattern()
             
             self.assertEqual(2, mock_update.call_count)
@@ -274,7 +274,7 @@ class TestEdgeHardware(TestCase):
 
     def test_edge_hardware_no_patterns(self):
         """Test EdgeHardware behavior with no usage patterns."""
-        test_edge_hardware = EdgeHardwareTestClass(
+        test_edge_hardware = EdgeHardwareBaseTestClass(
             "test edge hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years),
             edge_usage_patterns=None)

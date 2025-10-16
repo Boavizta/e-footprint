@@ -10,7 +10,7 @@ from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.hardware.edge_hardware import EdgeHardware
+    from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
     from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 
@@ -40,7 +40,7 @@ class EdgeUsageJourney(ModelingObject):
         return list(set(sum([ef.recurrent_edge_resource_needs for ef in self.edge_functions], start=[])))
 
     @property
-    def edge_hardwares(self) -> List["EdgeHardware"]:
+    def edge_hardwares(self) -> List["EdgeHardwareBase"]:
         return list(set([edge_need.edge_hardware for edge_need in self.recurrent_edge_resource_needs]))
 
     @property

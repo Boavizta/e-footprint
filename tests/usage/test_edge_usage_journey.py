@@ -7,14 +7,14 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeUsageJourney(TestCase):
     def setUp(self):
-        self.mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        self.mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         self.mock_edge_hardware.id = "mock_device"
         self.mock_edge_hardware.name = "Mock Device"
         self.mock_edge_hardware.lifespan = SourceValue(4 * u.year)
@@ -65,7 +65,7 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual([self.mock_edge_hardware], edge_hardwares)
 
     def test_usage_span_superior_to_lifespan_raises_error(self):
-        mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         mock_edge_hardware.id = "mock_device"
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)
@@ -86,7 +86,7 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual(usage_span, context.exception.requested_capacity)
 
     def test_changing_to_usage_span_superior_to_edge_hardware_lifespan_raises_error(self):
-        mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         mock_edge_hardware.id = "mock_device"
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)
@@ -104,7 +104,7 @@ class TestEdgeUsageJourney(TestCase):
             euj.usage_span = SourceValue(3 * u.year)
 
     def test_changing_to_usage_span_not_superior_to_edge_hardware_lifespan_doesnt_raise_error(self):
-        mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         mock_edge_hardware.id = "mock_device"
         mock_edge_hardware.name = "Mock Device"
         mock_edge_hardware.lifespan = SourceValue(2 * u.year)

@@ -6,13 +6,13 @@ from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeRe
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from tests.utils import set_modeling_obj_containers
 
 
 class TestRecurrentEdgeResourceNeed(TestCase):
     def setUp(self):
-        self.mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        self.mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         self.mock_edge_hardware.id = "mock_hardware"
         self.mock_edge_hardware.name = "Mock Hardware"
 

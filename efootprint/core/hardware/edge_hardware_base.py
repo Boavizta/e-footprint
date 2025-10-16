@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
-class EdgeHardware(HardwareBase):
+class EdgeHardwareBase(HardwareBase):
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity):
         super().__init__(

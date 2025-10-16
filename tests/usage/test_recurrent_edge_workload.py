@@ -12,7 +12,7 @@ from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
@@ -20,7 +20,7 @@ from tests.utils import set_modeling_obj_containers
 class TestRecurrentEdgeWorkload(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_edge_hardware = MagicMock(spec=EdgeHardware)
+        self.mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
         self.mock_edge_hardware.id = "mock_hardware"
         self.mock_edge_hardware.name = "Mock Hardware"
 
