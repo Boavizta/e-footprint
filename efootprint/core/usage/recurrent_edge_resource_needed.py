@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
+from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -10,9 +10,9 @@ if TYPE_CHECKING:
 
 
 class RecurrentEdgeResourceNeed(ModelingObject):
-    def __init__(self, name: str, edge_hardware: EdgeHardwareBase):
+    def __init__(self, name: str, edge_device: EdgeDeviceBase):
         super().__init__(name)
-        self.edge_hardware = edge_hardware
+        self.edge_device = edge_device
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
@@ -27,7 +27,7 @@ class RecurrentEdgeResourceNeed(ModelingObject):
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeHardwareBase"]:
-        return [self.edge_hardware]
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeDeviceBase"]:
+        return [self.edge_device]
         
     

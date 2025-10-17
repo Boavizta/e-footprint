@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
+from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
 
-class EdgeComputer(EdgeHardwareBase):
+class EdgeComputer(EdgeDeviceBase):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg),
         "power": SourceValue(30 * u.W),

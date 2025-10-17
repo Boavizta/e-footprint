@@ -20,7 +20,7 @@ from tests.utils import set_modeling_obj_containers
 class TestEdgeAppliance(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.edge_hardware = EdgeAppliance(
+        self.edge_device = EdgeAppliance(
             "test edge appliance",
             carbon_footprint_fabrication=SourceValue(100 * u.kg),
             power=SourceValue(50 * u.W),
@@ -29,21 +29,21 @@ class TestEdgeAppliance(TestCase):
 
     def test_init(self):
         """Test EdgeAppliance initialization."""
-        self.assertEqual("test edge appliance", self.edge_hardware.name)
-        self.assertEqual(100 * u.kg, self.edge_hardware.carbon_footprint_fabrication.value)
-        self.assertEqual(50 * u.W, self.edge_hardware.power.value)
-        self.assertEqual(5 * u.year, self.edge_hardware.lifespan.value)
-        self.assertEqual(5 * u.W, self.edge_hardware.idle_power.value)
-        self.assertIsInstance(self.edge_hardware.unitary_hourly_workload_per_usage_pattern, ExplainableObjectDict)
+        self.assertEqual("test edge appliance", self.edge_device.name)
+        self.assertEqual(100 * u.kg, self.edge_device.carbon_footprint_fabrication.value)
+        self.assertEqual(50 * u.W, self.edge_device.power.value)
+        self.assertEqual(5 * u.year, self.edge_device.lifespan.value)
+        self.assertEqual(5 * u.W, self.edge_device.idle_power.value)
+        self.assertIsInstance(self.edge_device.unitary_hourly_workload_per_usage_pattern, ExplainableObjectDict)
 
     def test_edge_workloads_property(self):
         """Test edge_workloads property returns modeling_obj_containers."""
         mock_workload1 = MagicMock(spec=RecurrentEdgeWorkload)
         mock_workload2 = MagicMock(spec=RecurrentEdgeWorkload)
 
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
+        set_modeling_obj_containers(self.edge_device, [mock_workload1, mock_workload2])
 
-        self.assertEqual({mock_workload1, mock_workload2}, set(self.edge_hardware.edge_workloads))
+        self.assertEqual({mock_workload1, mock_workload2}, set(self.edge_device.edge_workloads))
 
     def test_edge_usage_patterns_property(self):
         """Test edge_usage_patterns property aggregates patterns from workloads."""
@@ -57,9 +57,9 @@ class TestEdgeAppliance(TestCase):
         mock_workload1.edge_usage_patterns = [mock_pattern1]
         mock_workload2.edge_usage_patterns = [mock_pattern2]
 
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
+        set_modeling_obj_containers(self.edge_device, [mock_workload1, mock_workload2])
 
-        patterns = self.edge_hardware.edge_usage_patterns
+        patterns = self.edge_device.edge_usage_patterns
         self.assertEqual(2, len(patterns))
         self.assertIn(mock_pattern1, patterns)
         self.assertIn(mock_pattern2, patterns)
@@ -80,11 +80,11 @@ class TestEdgeAppliance(TestCase):
         mock_workload1.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values1}
         mock_workload2.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values2}
 
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload1, mock_workload2])
+        set_modeling_obj_containers(self.edge_device, [mock_workload1, mock_workload2])
 
-        self.edge_hardware.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+        self.edge_device.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
 
-        result = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern]
+        result = self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern]
         expected_values = [0.3, 0.45]
         self.assertTrue(np.allclose(expected_values, result.value.magnitude))
         self.assertEqual("test edge appliance hourly workload for Test Pattern", result.label)
@@ -102,10 +102,10 @@ class TestEdgeAppliance(TestCase):
 
         mock_workload.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values}
 
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
+        set_modeling_obj_containers(self.edge_device, [mock_workload])
 
         with self.assertRaises(InsufficientCapacityError) as context:
-            self.edge_hardware.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+            self.edge_device.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
 
         self.assertIn("workload capacity", str(context.exception))
 
@@ -129,14 +129,14 @@ class TestEdgeAppliance(TestCase):
             mock_pattern2: workload_values2
         }
 
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
+        set_modeling_obj_containers(self.edge_device, [mock_workload])
 
-        self.edge_hardware.update_unitary_hourly_workload_per_usage_pattern()
+        self.edge_device.update_unitary_hourly_workload_per_usage_pattern()
 
-        self.assertIn(mock_pattern1, self.edge_hardware.unitary_hourly_workload_per_usage_pattern)
-        self.assertIn(mock_pattern2, self.edge_hardware.unitary_hourly_workload_per_usage_pattern)
-        result1 = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern1]
-        result2 = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern2]
+        self.assertIn(mock_pattern1, self.edge_device.unitary_hourly_workload_per_usage_pattern)
+        self.assertIn(mock_pattern2, self.edge_device.unitary_hourly_workload_per_usage_pattern)
+        result1 = self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern1]
+        result2 = self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern2]
         self.assertTrue(np.allclose([0.2, 0.3], result1.value.magnitude))
         self.assertTrue(np.allclose([0.4, 0.5], result2.value.magnitude))
 
@@ -147,11 +147,11 @@ class TestEdgeAppliance(TestCase):
         mock_pattern.id = "test_pattern"
 
         workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.dimensionless)
-        self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
+        self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
 
-        self.edge_hardware.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+        self.edge_device.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
 
-        result = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern]
+        result = self.edge_device.unitary_power_per_usage_pattern[mock_pattern]
         # Power = idle_power + (power - idle_power) * workload
         # = 5 + (50 - 5) * [0.0, 0.5, 1.0]
         # = 5 + 45 * [0.0, 0.5, 1.0]
@@ -172,21 +172,21 @@ class TestEdgeAppliance(TestCase):
         workload_values1 = create_source_hourly_values_from_list([0.2], pint_unit=u.dimensionless)
         workload_values2 = create_source_hourly_values_from_list([0.5], pint_unit=u.dimensionless)
 
-        self.edge_hardware.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict({
+        self.edge_device.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict({
             mock_pattern1: workload_values1,
             mock_pattern2: workload_values2
         })
 
         mock_workload = MagicMock(spec=RecurrentEdgeWorkload)
         mock_workload.edge_usage_patterns = [mock_pattern1, mock_pattern2]
-        set_modeling_obj_containers(self.edge_hardware, [mock_workload])
+        set_modeling_obj_containers(self.edge_device, [mock_workload])
 
-        self.edge_hardware.update_unitary_power_per_usage_pattern()
+        self.edge_device.update_unitary_power_per_usage_pattern()
 
-        self.assertIn(mock_pattern1, self.edge_hardware.unitary_power_per_usage_pattern)
-        self.assertIn(mock_pattern2, self.edge_hardware.unitary_power_per_usage_pattern)
-        result1 = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern1]
-        result2 = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern2]
+        self.assertIn(mock_pattern1, self.edge_device.unitary_power_per_usage_pattern)
+        self.assertIn(mock_pattern2, self.edge_device.unitary_power_per_usage_pattern)
+        result1 = self.edge_device.unitary_power_per_usage_pattern[mock_pattern1]
+        result2 = self.edge_device.unitary_power_per_usage_pattern[mock_pattern2]
         expected_values1 = [5 + 45 * 0.2]  # = 14W
         expected_values2 = [5 + 45 * 0.5]  # = 27.5W
         self.assertTrue(np.allclose(expected_values1, result1.value.to(u.W).magnitude))
@@ -198,11 +198,11 @@ class TestEdgeAppliance(TestCase):
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern"
 
-        self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
+        self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
 
-        self.edge_hardware.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
+        self.edge_device.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
 
-        result = self.edge_hardware.unitary_power_per_usage_pattern[mock_pattern]
+        result = self.edge_device.unitary_power_per_usage_pattern[mock_pattern]
         # With empty workload, power should be idle_power + (power - idle_power) * EmptyExplainableObject()
         # which equals idle_power = 5W
         self.assertIsInstance(result, ExplainableQuantity)

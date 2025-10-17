@@ -40,7 +40,7 @@ class TestRecurrentEdgeProcess(TestCase):
     def test_init(self):
         """Test RecurrentEdgeProcess initialization."""
         self.assertEqual("test edge process", self.edge_process.name)
-        self.assertEqual(self.mock_edge_computer, self.edge_process.edge_hardware)
+        self.assertEqual(self.mock_edge_computer, self.edge_process.edge_device)
         self.assertIs(self.recurrent_compute_needed, self.edge_process.recurrent_compute_needed)
         self.assertIs(self.recurrent_ram_needed, self.edge_process.recurrent_ram_needed)
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -243,7 +243,7 @@ class TestRecurrentEdgeProcess(TestCase):
             "default process", edge_computer=self.mock_edge_computer)
 
         self.assertEqual("default process", edge_process_from_defaults.name)
-        self.assertEqual(self.mock_edge_computer, edge_process_from_defaults.edge_hardware)
+        self.assertEqual(self.mock_edge_computer, edge_process_from_defaults.edge_device)
         self.assertIsInstance(edge_process_from_defaults.recurrent_compute_needed, SourceRecurrentValues)
         self.assertIsInstance(edge_process_from_defaults.recurrent_ram_needed, SourceRecurrentValues)
         self.assertEqual(

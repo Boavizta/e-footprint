@@ -6,25 +6,25 @@ from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeRe
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
+from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from tests.utils import set_modeling_obj_containers
 
 
 class TestRecurrentEdgeResourceNeed(TestCase):
     def setUp(self):
-        self.mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
-        self.mock_edge_hardware.id = "mock_hardware"
-        self.mock_edge_hardware.name = "Mock Hardware"
+        self.mock_edge_device = MagicMock(spec=EdgeDeviceBase)
+        self.mock_edge_device.id = "mock_hardware"
+        self.mock_edge_device.name = "Mock Hardware"
 
         self.edge_resource_needed = RecurrentEdgeResourceNeed(
             "test edge resource needed",
-            edge_hardware=self.mock_edge_hardware
+            edge_device=self.mock_edge_device
         )
 
     def test_init(self):
         """Test RecurrentEdgeResourceNeed initialization."""
         self.assertEqual("test edge resource needed", self.edge_resource_needed.name)
-        self.assertEqual(self.mock_edge_hardware, self.edge_resource_needed.edge_hardware)
+        self.assertEqual(self.mock_edge_device, self.edge_resource_needed.edge_device)
 
     def test_edge_functions_property_no_containers(self):
         """Test edge_functions property when no containers are set."""
@@ -129,9 +129,9 @@ class TestRecurrentEdgeResourceNeed(TestCase):
         self.assertIn(mock_pattern_3, patterns)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge_hardware is returned as dependent object."""
+        """Test that edge_device is returned as dependent object."""
         dependent_objects = self.edge_resource_needed.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_hardware], dependent_objects)
+        self.assertEqual([self.mock_edge_device], dependent_objects)
 
     def test_systems_property_no_functions(self):
         """Test systems property when no functions are set."""

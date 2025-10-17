@@ -12,7 +12,7 @@ from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload,
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
+from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
@@ -20,29 +20,29 @@ from tests.utils import set_modeling_obj_containers
 class TestRecurrentEdgeWorkload(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_edge_hardware = MagicMock(spec=EdgeHardwareBase)
-        self.mock_edge_hardware.id = "mock_hardware"
-        self.mock_edge_hardware.name = "Mock Hardware"
+        self.mock_edge_device = MagicMock(spec=EdgeDeviceBase)
+        self.mock_edge_device.id = "mock_hardware"
+        self.mock_edge_device.name = "Mock Hardware"
 
         self.recurrent_workload = SourceRecurrentValues(
             Quantity(np.array([0.5] * 168, dtype=np.float32), u.dimensionless))
 
         self.edge_workload = RecurrentEdgeWorkload(
             "test edge workload",
-            edge_appliance=self.mock_edge_hardware,
+            edge_appliance=self.mock_edge_device,
             recurrent_workload=self.recurrent_workload)
 
     def test_init(self):
         """Test RecurrentEdgeWorkload initialization."""
         self.assertEqual("test edge workload", self.edge_workload.name)
-        self.assertEqual(self.mock_edge_hardware, self.edge_workload.edge_hardware)
+        self.assertEqual(self.mock_edge_device, self.edge_workload.edge_device)
         self.assertIs(self.recurrent_workload, self.edge_workload.recurrent_workload)
         self.assertIsInstance(self.edge_workload.unitary_hourly_workload_per_usage_pattern, ExplainableObjectDict)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test modeling_objects_whose_attributes_depend_directly_on_me returns edge_hardware."""
+        """Test modeling_objects_whose_attributes_depend_directly_on_me returns edge_device."""
         dependent_objects = self.edge_workload.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_hardware], dependent_objects)
+        self.assertEqual([self.mock_edge_device], dependent_objects)
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern method."""
@@ -124,7 +124,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_appliance=self.mock_edge_hardware,
+                edge_appliance=self.mock_edge_device,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -138,7 +138,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_appliance=self.mock_edge_hardware,
+                edge_appliance=self.mock_edge_device,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -151,11 +151,11 @@ class TestRecurrentEdgeWorkload(TestCase):
 
         edge_workload = RecurrentEdgeWorkload(
             "boundary edge workload",
-            edge_appliance=self.mock_edge_hardware,
+            edge_appliance=self.mock_edge_device,
             recurrent_workload=valid_workload)
 
         self.assertEqual("boundary edge workload", edge_workload.name)
-        self.assertEqual(self.mock_edge_hardware, edge_workload.edge_hardware)
+        self.assertEqual(self.mock_edge_device, edge_workload.edge_device)
 
     def test_workload_update_exceeds_bound(self):
         """Test that updating workload to invalid values raises WorkloadOutOfBoundsError."""
