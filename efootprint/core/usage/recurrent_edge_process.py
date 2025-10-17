@@ -7,11 +7,11 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
+from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.hardware.edge_computer import EdgeComputer
 
 
 class RecurrentEdgeProcess(RecurrentEdgeResourceNeed):
@@ -21,7 +21,7 @@ class RecurrentEdgeProcess(RecurrentEdgeResourceNeed):
         "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
-    def __init__(self, name: str, edge_computer: "EdgeComputer",
+    def __init__(self, name: str, edge_computer: EdgeComputer,
                  recurrent_compute_needed: ExplainableRecurrentQuantities,
                  recurrent_ram_needed: ExplainableRecurrentQuantities,
                  recurrent_storage_needed: ExplainableRecurrentQuantities):

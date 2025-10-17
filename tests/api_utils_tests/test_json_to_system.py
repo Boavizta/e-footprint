@@ -94,12 +94,12 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         classes_generation_order = compute_classes_generation_order(efootprint_classes_dict)
 
         self.assertListEqual(
-            ["Device", "Country", "EdgeStorage", "RecurrentEdgeProcess", "Network", "Storage",
-             "EdgeComputer", "BoaviztaCloudServer",
-             "Server", "GPUServer", "EdgeUsageJourney", "WebApplication",
-             "VideoStreaming", "GenAIModel", "Job", "GPUJob", "EdgeUsagePattern",
+            ["Device", "Country", "EdgeAppliance", "EdgeStorage", "Network", "Storage",
+             "EdgeComputer", "BoaviztaCloudServer", "RecurrentEdgeWorkload",
+             "Server", "GPUServer", "WebApplication",
+             "VideoStreaming", "GenAIModel", "Job", "GPUJob", "RecurrentEdgeProcess", "EdgeFunction",
              "WebApplicationJob", "VideoStreamingJob", "GenAIJob",
-             "UsageJourneyStep", "UsageJourney", "UsagePattern", "System"],
+             "UsageJourneyStep", "EdgeUsageJourney", "UsageJourney", "EdgeUsagePattern", "UsagePattern", "System"],
             classes_generation_order
         )
 

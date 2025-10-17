@@ -51,6 +51,6 @@ class EdgeUsageJourney(ModelingObject):
         return self.edge_functions
 
     def __setattr__(self, name, input_value, check_input_validity=True):
-        if name == "usage_span":
+        if name == "usage_span" and self.trigger_modeling_updates:
             self.assert_usage_span_is_inferior_to_edge_devices_lifespan(input_value, self.edge_devices)
         super().__setattr__(name, input_value, check_input_validity=check_input_validity)

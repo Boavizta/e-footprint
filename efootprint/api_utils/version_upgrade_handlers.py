@@ -55,12 +55,36 @@ def upgrade_version_11_to_12(system_dict):
     if "EdgeDevice" in system_dict:
         logger.info(f"Upgrading system dict from version 11 to 12, changing 'EdgeDevice' key to 'EdgeComputer'")
         system_dict["EdgeComputer"] = system_dict.pop("EdgeDevice")
+
     if "EdgeUsageJourney" in system_dict:
-        logger.info(f"Upgrading system dict from version 11 to 12, changing 'edge_device' attribute to 'edge_computer'")
-        for usage_journey_key in system_dict["EdgeUsageJourney"]:
-            if "edge_device" in system_dict["EdgeUsageJourney"][usage_journey_key]:
-                rename_dict_key(system_dict["EdgeUsageJourney"][usage_journey_key], "edge_device", "edge_computer")
-    # TODO: complete version upgrading logic
+        logger.info(f"Upgrading system dict from version 11 to 12, upgrading EdgeUsageJourney structure")
+        # Create EdgeFunction entries from edge_processes
+        if "EdgeFunction" not in system_dict:
+            system_dict["EdgeFunction"] = {}
+
+        for edge_usage_journey_id in system_dict["EdgeUsageJourney"]:
+            journey = system_dict["EdgeUsageJourney"][edge_usage_journey_id]
+
+            # Get the edge_device (now edge_computer) reference from the journey
+            edge_computer_id = journey.get("edge_device")
+            del journey["edge_device"]
+
+            # Embed edge_processes into an edge_function
+            edge_function_id = f"ef_{edge_usage_journey_id}"
+            edge_process_ids = journey.get("edge_processes", [])
+            system_dict["EdgeFunction"][edge_function_id] = {
+                "name": f"Edge function for edge usage journey {journey["name"]}",
+                "id": edge_function_id,
+                "recurrent_edge_resource_needs": edge_process_ids
+            }
+
+            # Replace edge_processes with edge_functions
+            rename_dict_key(journey, "edge_processes", "edge_functions")
+            journey["edge_functions"] = [edge_function_id]
+
+            for edge_process_id in edge_process_ids:
+                # Add edge_computer reference to RecurrentEdgeProcess
+                system_dict["RecurrentEdgeProcess"][edge_process_id]["edge_device"] = edge_computer_id
 
     return system_dict
 

@@ -74,12 +74,128 @@ class TestVersionUpgradeHandlers(TestCase):
 
     def test_upgrade_11_to_12(self):
         input_dict = {
-            "EdgeDevice": {"key": {"key": 1}}, "a": {"key": {"key": 2}},
-            "EdgeUsageJourney": {"key": {"edge_device": "uuid-EdgeDevice"}}
+            "EdgeDevice": {
+                "edge_device_1": {
+                    "name": "My Edge Device",
+                    "id": "edge_device_1",
+                    "some_attribute": "value"
+                }
+            },
+            "RecurrentEdgeProcess": {
+                "process_1": {
+                    "name": "My Process",
+                    "id": "process_1",
+                    "recurrent_compute_needed": {}
+                },
+                "process_2": {
+                    "name": "My Process 2",
+                    "id": "process_2",
+                    "recurrent_compute_needed": {}
+                }
+            },
+            "EdgeUsageJourney": {
+                "journey_1": {
+                    "name": "My Journey",
+                    "id": "journey_1",
+                    "edge_device": "edge_device_1",
+                    "edge_processes": ["process_1", "process_2"],
+                    "usage_span": {}
+                }
+            },
+            "OtherClass": {"key": {"key": 1}}
         }
         expected_output = {
-            "EdgeComputer": {"key": {"key": 1}}, "a": {"key": {"key": 2}},
-            "EdgeUsageJourney": {"key": {"edge_computer": "uuid-EdgeDevice"}}
+            "EdgeComputer": {
+                "edge_device_1": {
+                    "name": "My Edge Device",
+                    "id": "edge_device_1",
+                    "some_attribute": "value"
+                }
+            },
+            "RecurrentEdgeProcess": {
+                "process_1": {
+                    "name": "My Process",
+                    "id": "process_1",
+                    "recurrent_compute_needed": {},
+                    "edge_device": "edge_device_1"
+                },
+                "process_2": {
+                    "name": "My Process 2",
+                    "id": "process_2",
+                    "recurrent_compute_needed": {},
+                    "edge_device": "edge_device_1"
+                }
+            },
+            "EdgeFunction": {
+                "ef_journey_1": {
+                    "name": "Edge function for edge usage journey My Journey",
+                    "id": "ef_journey_1",
+                    "recurrent_edge_resource_needs": ["process_1", "process_2"]
+                }
+            },
+            "EdgeUsageJourney": {
+                "journey_1": {
+                    "name": "My Journey",
+                    "id": "journey_1",
+                    "edge_functions": ["ef_journey_1"],
+                    "usage_span": {}
+                }
+            },
+            "OtherClass": {"key": {"key": 1}}
+        }
+        output_dict = upgrade_version_11_to_12(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_11_to_12_with_empty_edge_processes(self):
+        input_dict = {
+            "EdgeUsageJourney": {
+                "journey_1": {
+                    "name": "My Journey",
+                    "id": "journey_1",
+                    "edge_device": "edge_device_1",
+                    "edge_processes": [],
+                    "usage_span": {}
+                }
+            }
+        }
+        expected_output = {
+            "EdgeFunction": {
+                "ef_journey_1": {
+                    "name": "Edge function for edge usage journey My Journey",
+                    "id": "ef_journey_1",
+                    "recurrent_edge_resource_needs": []
+                }
+            },
+            "EdgeUsageJourney": {
+                "journey_1": {
+                    "name": "My Journey",
+                    "id": "journey_1",
+                    "edge_functions": ["ef_journey_1"],
+                    "usage_span": {}
+                }
+            }
+        }
+        output_dict = upgrade_version_11_to_12(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_11_to_12_without_edge_usage_journey(self):
+        input_dict = {
+            "EdgeDevice": {
+                "edge_device_1": {
+                    "name": "My Edge Device",
+                    "id": "edge_device_1"
+                }
+            }
+        }
+        expected_output = {
+            "EdgeComputer": {
+                "edge_device_1": {
+                    "name": "My Edge Device",
+                    "id": "edge_device_1"
+                }
+            }
         }
         output_dict = upgrade_version_11_to_12(input_dict)
 
