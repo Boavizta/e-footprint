@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -10,6 +11,12 @@ if TYPE_CHECKING:
 
 
 class RecurrentEdgeResourceNeed(ModelingObject):
+    # Mark the class as abstract but not its children when they define a default_values class attribute
+    @classmethod
+    @abstractmethod
+    def default_values(cls):
+        pass
+
     def __init__(self, name: str, edge_device: EdgeDeviceBase):
         super().__init__(name)
         self.edge_device = edge_device

@@ -9,6 +9,7 @@ from efootprint.utils.tools import get_init_signature_params
 
 
 class ServiceJob(JobBase):
+    # Mark the class as abstract but not its children when they define a default_values class attribute
     @classmethod
     @abstractmethod
     def default_values(cls):

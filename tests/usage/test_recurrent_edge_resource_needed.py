@@ -10,13 +10,18 @@ from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from tests.utils import set_modeling_obj_containers
 
 
+class ConcreteRecurrentEdgeResourceNeed(RecurrentEdgeResourceNeed):
+    """Concrete test implementation of abstract RecurrentEdgeResourceNeed."""
+    default_values = {}
+
+
 class TestRecurrentEdgeResourceNeed(TestCase):
     def setUp(self):
         self.mock_edge_device = MagicMock(spec=EdgeDeviceBase)
         self.mock_edge_device.id = "mock_hardware"
         self.mock_edge_device.name = "Mock Hardware"
 
-        self.edge_resource_needed = RecurrentEdgeResourceNeed(
+        self.edge_resource_needed = ConcreteRecurrentEdgeResourceNeed(
             "test edge resource needed",
             edge_device=self.mock_edge_device
         )

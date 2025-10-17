@@ -1,5 +1,7 @@
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
+from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.server_base import ServerBase
@@ -34,12 +36,12 @@ RECURRENT_EDGE_NEEDS_CLASSES = [RecurrentEdgeProcess, RecurrentEdgeWorkload]
 
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
-        + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, EdgeComputer, EdgeStorage]
+        + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, EdgeAppliance, EdgeComputer, EdgeStorage]
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
         + [Job, GPUJob] + RECURRENT_EDGE_NEEDS_CLASSES + SERVICE_JOB_CLASSES + [Network] + SERVER_CLASSES
         + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
-    EdgeUsagePattern, RecurrentEdgeResourceNeed, EdgeComputer, EdgeStorage, Service, JobBase,
+    EdgeUsagePattern, RecurrentEdgeResourceNeed, EdgeDeviceBase, EdgeStorage, Service, JobBase,
     Network, ServerBase, Storage, System]

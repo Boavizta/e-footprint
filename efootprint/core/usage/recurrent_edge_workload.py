@@ -1,7 +1,11 @@
 from typing import TYPE_CHECKING
 
+import numpy as np
+from pint import Quantity
+
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
@@ -20,6 +24,10 @@ class WorkloadOutOfBoundsError(Exception):
 
 
 class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
+    default_values = {
+        "recurrent_workload": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.dimensionless)),
+    }
+
     def __init__(self, name: str, edge_appliance: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
         super().__init__(name, edge_appliance)
         self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)

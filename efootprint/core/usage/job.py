@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 
 
 class JobBase(ModelingObject):
+    # Mark the class as abstract but not its children when they define a default_values class attribute
     @classmethod
     @abstractmethod
     def default_values(cls):
@@ -171,6 +172,7 @@ class JobBase(ModelingObject):
 
 
 class DirectServerJob(JobBase):
+    # Mark the class as abstract but not its children when they define a default_values class attribute
     @classmethod
     @abstractmethod
     def default_values(cls):

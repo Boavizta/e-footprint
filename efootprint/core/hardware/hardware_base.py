@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class HardwareBase(ModelingObject):
+    # Mark the class as abstract but not its children when they define a default_values class attribute
     @classmethod
     @abstractmethod
     def default_values(cls):
