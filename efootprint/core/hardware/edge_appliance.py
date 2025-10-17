@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 
 
-class EdgeHardware(EdgeHardwareBase):
+class EdgeAppliance(EdgeHardwareBase):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),

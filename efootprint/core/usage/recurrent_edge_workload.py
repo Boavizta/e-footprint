@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_hardware_base import EdgeHardwareBase
+from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
 
 if TYPE_CHECKING:
@@ -20,14 +20,15 @@ class WorkloadOutOfBoundsError(Exception):
 
 
 class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
-    def __init__(self, name: str, edge_hardware: EdgeHardwareBase, recurrent_workload: ExplainableRecurrentQuantities):
-        super().__init__(name, edge_hardware)
+    def __init__(self, name: str, edge_appliance: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
+        super().__init__(name, edge_appliance)
         self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         self.recurrent_workload = recurrent_workload.set_label(f"{self.name} recurrent workload")
 
     @staticmethod
-    def assert_recurrent_workload_is_between_0_and_1(recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
+    def assert_recurrent_workload_is_between_0_and_1(
+            recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
         workload_magnitude = recurrent_workload.value.to(u.dimensionless).magnitude
         min_value = float(workload_magnitude.min())
         max_value = float(workload_magnitude.max())

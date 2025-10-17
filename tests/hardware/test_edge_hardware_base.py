@@ -42,7 +42,7 @@ class EdgeHardwareBaseTestClass(EdgeHardwareBase):
         self.trigger_modeling_updates = False
 
 
-class TestEdgeHardware(TestCase):
+class TestEdgeHardwareBase(TestCase):
     def setUp(self):
         mock_edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_edge_usage_pattern.name = "Mock Usage Pattern"

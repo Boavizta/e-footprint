@@ -10,26 +10,26 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_hardware import EdgeHardware
+from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 from tests.utils import set_modeling_obj_containers
 
 
-class TestEdgeHardware(TestCase):
+class TestEdgeAppliance(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.edge_hardware = EdgeHardware(
-            "test edge hardware",
+        self.edge_hardware = EdgeAppliance(
+            "test edge appliance",
             carbon_footprint_fabrication=SourceValue(100 * u.kg),
             power=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
             idle_power=SourceValue(5 * u.W))
 
     def test_init(self):
-        """Test EdgeHardware initialization."""
-        self.assertEqual("test edge hardware", self.edge_hardware.name)
+        """Test EdgeAppliance initialization."""
+        self.assertEqual("test edge appliance", self.edge_hardware.name)
         self.assertEqual(100 * u.kg, self.edge_hardware.carbon_footprint_fabrication.value)
         self.assertEqual(50 * u.W, self.edge_hardware.power.value)
         self.assertEqual(5 * u.year, self.edge_hardware.lifespan.value)
@@ -87,7 +87,7 @@ class TestEdgeHardware(TestCase):
         result = self.edge_hardware.unitary_hourly_workload_per_usage_pattern[mock_pattern]
         expected_values = [0.3, 0.45]
         self.assertTrue(np.allclose(expected_values, result.value.magnitude))
-        self.assertEqual("test edge hardware hourly workload for Test Pattern", result.label)
+        self.assertEqual("test edge appliance hourly workload for Test Pattern", result.label)
 
     def test_update_dict_element_in_unitary_hourly_workload_exceeds_capacity(self):
         """Test that workload exceeding 100% raises InsufficientCapacityError."""
@@ -158,7 +158,7 @@ class TestEdgeHardware(TestCase):
         # = [5, 27.5, 50]
         expected_values = [5, 27.5, 50]
         self.assertTrue(np.allclose(expected_values, result.value.to(u.W).magnitude))
-        self.assertEqual("test edge hardware unitary power for Test Pattern", result.label)
+        self.assertEqual("test edge appliance unitary power for Test Pattern", result.label)
 
     def test_update_unitary_power_per_usage_pattern(self):
         """Test update_unitary_power_per_usage_pattern updates all patterns."""

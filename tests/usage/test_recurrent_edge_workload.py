@@ -29,7 +29,7 @@ class TestRecurrentEdgeWorkload(TestCase):
 
         self.edge_workload = RecurrentEdgeWorkload(
             "test edge workload",
-            edge_hardware=self.mock_edge_hardware,
+            edge_appliance=self.mock_edge_hardware,
             recurrent_workload=self.recurrent_workload)
 
     def test_init(self):
@@ -124,7 +124,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_hardware=self.mock_edge_hardware,
+                edge_appliance=self.mock_edge_hardware,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -138,7 +138,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_hardware=self.mock_edge_hardware,
+                edge_appliance=self.mock_edge_hardware,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -151,7 +151,7 @@ class TestRecurrentEdgeWorkload(TestCase):
 
         edge_workload = RecurrentEdgeWorkload(
             "boundary edge workload",
-            edge_hardware=self.mock_edge_hardware,
+            edge_appliance=self.mock_edge_hardware,
             recurrent_workload=valid_workload)
 
         self.assertEqual("boundary edge workload", edge_workload.name)
