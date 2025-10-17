@@ -14,7 +14,8 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
             server1_job1, server1_job2, server1_job3, server2_job, server3_job, \
             uj_step_1, uj_step_2, uj_step_3, uj_step_4, \
             start_date, usage_pattern1, usage_pattern2, uj, network1, network2, \
-            edge_storage, edge_computer, edge_process, edge_usage_journey, edge_usage_pattern = cls.generate_complex_system()
+            edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey, edge_usage_pattern = \
+            cls.generate_complex_system()
 
         cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "complex_system_with_calculated_attributes.json")
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
@@ -23,11 +24,12 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
             system_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(system_dict)
 
-        cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
+        (cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
             cls.server1_job1, cls.server1_job2, cls.server1_job3, cls.server2_job, cls.server3_job, \
             cls.uj_step_1, cls.uj_step_2, cls.uj_step_3, cls.uj_step_4, \
             cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network1, cls.network2, \
-            cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_usage_journey, cls.edge_usage_pattern = \
+            cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function,
+            cls.edge_usage_journey, cls.edge_usage_pattern) = \
         flat_obj_dict[system.id], flat_obj_dict[storage_1.id], flat_obj_dict[storage_2.id], flat_obj_dict[storage_3.id], \
         flat_obj_dict[server1.id], flat_obj_dict[server2.id], flat_obj_dict[server3.id], \
         flat_obj_dict[server1_job1.id], flat_obj_dict[server1_job2.id], flat_obj_dict[server1_job3.id], \
@@ -36,7 +38,7 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
         flat_obj_dict[uj_step_4.id], start_date, flat_obj_dict[usage_pattern1.id], \
         flat_obj_dict[usage_pattern2.id], flat_obj_dict[uj.id], flat_obj_dict[network1.id], flat_obj_dict[network2.id], \
         flat_obj_dict[edge_storage.id], flat_obj_dict[edge_computer.id], flat_obj_dict[edge_process.id], \
-        flat_obj_dict[edge_usage_journey.id], flat_obj_dict[edge_usage_pattern.id]
+        flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id], flat_obj_dict[edge_usage_pattern.id]
 
         cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
                                   cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network1, cls.network2,

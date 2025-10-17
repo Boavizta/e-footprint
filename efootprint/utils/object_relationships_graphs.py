@@ -15,6 +15,7 @@ COLOR_MAP = {
     "EdgeStorage": "red",
     "EdgeUsagePattern": "blue",
     "EdgeUsageJourney": "dodgerblue",
+    "EdgeFunction": "deepskyblue",
     "Job": "palegoldenrod",
     "RecurrentEdgeProcess": "palegoldenrod",
     "VideoStreamingJob": "palegoldenrod",
@@ -29,7 +30,7 @@ USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
     "System", "Network", "Device", "Country", "Job", "RecurrentEdgeProcess", "Storage", "EdgeStorage",
     "VideoStreaming", "GenAIModel", "WebApplication", "VideoStreamingJob", "GenAIJob", "WebApplicationJob"]
 INFRA_VIEW_CLASSES_TO_IGNORE = [
-    "UsagePattern", "EdgeUsagePattern", "Network", "Device", "System", "UsageJourneyStep", "Country"]
+    "UsagePattern", "EdgeUsagePattern", "Network", "Device", "System", "UsageJourneyStep", "EdgeFunction", "Country"]
 
 
 def build_object_relationships_graph(

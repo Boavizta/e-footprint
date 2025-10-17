@@ -24,6 +24,7 @@ from efootprint.logger import logger
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
@@ -182,6 +183,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         edge_process = RecurrentEdgeProcess(
             "Edge process",
+            edge_computer=edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -190,10 +192,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
+        edge_function = EdgeFunction(
+            "Edge function",
+            recurrent_edge_resource_needs=[edge_process]
+        )
+
         edge_usage_journey = EdgeUsageJourney(
             "Edge usage journey",
-            edge_processes=[edge_process],
-            edge_computer=edge_computer,
+            edge_functions=[edge_function],
             usage_span=SourceValue(6 * u.year)
         )
 
@@ -220,7 +226,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             server1_job1, server1_job2, server1_job3, server2_job, server3_job, \
             uj_step_1, uj_step_2, uj_step_3, uj_step_4, \
             start_date, usage_pattern1, usage_pattern2, uj, network1, network2, \
-            edge_storage, edge_computer, edge_process, edge_usage_journey, edge_usage_pattern
+            edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey, edge_usage_pattern
 
     @classmethod
     def initialize_footprints(cls, system, storage_1, storage_2, storage_3, server1, server2, server3, usage_pattern1,
@@ -263,7 +269,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             cls.server1_job1, cls.server1_job2, cls.server1_job3, cls.server2_job, cls.server3_job, \
             cls.uj_step_1, cls.uj_step_2, cls.uj_step_3, cls.uj_step_4, \
             cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network1, cls.network2, \
-            cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_usage_journey, cls.edge_usage_pattern = cls.generate_complex_system()
+            cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function, cls.edge_usage_journey, cls.edge_usage_pattern = cls.generate_complex_system()
 
         cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
                                   cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network1, cls.network2,
@@ -279,7 +285,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_4, self.server1_job1, self.server1_job2, self.server1_job3, self.server2_job,
             self.server3_job, self.usage_pattern1.devices[0], self.usage_pattern2.devices[0],
             self.usage_pattern1.country, self.usage_pattern2.country, self.edge_storage, self.edge_computer,
-            self.edge_process, self.edge_usage_journey, self.edge_usage_pattern.country]
+            self.edge_process, self.edge_function, self.edge_usage_journey, self.edge_usage_pattern.country]
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
     def run_test_remove_uj_steps_1_and_2(self):
@@ -420,6 +426,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
+            edge_computer=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -428,10 +435,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
         )
 
+        new_edge_function = EdgeFunction(
+            "New edge function",
+            recurrent_edge_resource_needs=[new_edge_process]
+        )
+
         new_edge_usage_journey = EdgeUsageJourney(
             "New edge usage journey",
-            edge_processes=[new_edge_process],
-            edge_computer=new_edge_computer,
+            edge_functions=[new_edge_function],
             usage_span=SourceValue(6 * u.year)
         )
 

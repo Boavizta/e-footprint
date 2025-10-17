@@ -10,7 +10,7 @@ from tests.integration_tests.integration_simple_edge_system_base_class import In
 class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        (system, edge_storage, edge_computer, edge_process, edge_usage_journey,
+        (system, edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey,
          edge_usage_pattern, start_date) = cls.generate_simple_edge_system()
 
         cls.system_json_filepath = "simple_edge_system_with_calculated_attributes.json"
@@ -19,10 +19,10 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
             system_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(system_dict)
 
-        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_usage_journey,
+        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function, cls.edge_usage_journey,
          cls.edge_usage_pattern, cls.start_date) = \
              (flat_obj_dict[system.id], flat_obj_dict[edge_storage.id], flat_obj_dict[edge_computer.id],
-              flat_obj_dict[edge_process.id], flat_obj_dict[edge_usage_journey.id],
+              flat_obj_dict[edge_process.id], flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id],
               flat_obj_dict[edge_usage_pattern.id], start_date)
 
         cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer)

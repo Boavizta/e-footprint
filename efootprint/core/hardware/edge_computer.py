@@ -12,6 +12,8 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
+    from efootprint.core.usage.edge_function import EdgeFunction
+    from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 
 
 class EdgeComputer(EdgeDeviceBase):
@@ -58,7 +60,7 @@ class EdgeComputer(EdgeDeviceBase):
                 + super().calculated_attributes)
 
     @property
-    def edge_processes(self) -> Optional["RecurrentEdgeProcess"]:
+    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
         return self.modeling_obj_containers
 
     @property
@@ -66,8 +68,12 @@ class EdgeComputer(EdgeDeviceBase):
         return list(set(sum([ep.edge_usage_patterns for ep in self.edge_processes], start=[])))
 
     @property
-    def edge_usage_journeys(self) -> List:
+    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
         return list(set(sum([ep.edge_usage_journeys for ep in self.edge_processes], start=[])))
+
+    @property
+    def edge_functions(self) -> List["EdgeFunction"]:
+        return list(set(sum([ep.edge_functions for ep in self.edge_processes], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

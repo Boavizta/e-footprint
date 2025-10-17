@@ -43,5 +43,5 @@ ALL_EFOOTPRINT_CLASSES = (
 
 CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
-    EdgeUsagePattern, RecurrentEdgeResourceNeed, EdgeDeviceBase, EdgeStorage, Service, JobBase,
+    EdgeUsagePattern, RecurrentEdgeResourceNeed, EdgeDeviceBase, Service, JobBase,
     Network, ServerBase, Storage, System]

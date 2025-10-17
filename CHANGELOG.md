@@ -1,8 +1,18 @@
 # Change Log
 All notable changes to this project will be documented in this file.
- 
+
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [12.0.0] - 2025-10-17
+
+### Changed
+- Introduced EdgeFunction class to encapsulate RecurrentEdgeResourceNeed objects. EdgeUsageJourney now takes edge_functions parameter instead of edge_processes and edge_computer parameters.
+- RecurrentEdgeProcess now requires edge_computer parameter during initialization instead of being linked via EdgeUsageJourney.
+- Updated EdgeComputer to expose edge_functions property aggregating functions from all linked edge usage journeys.
+
+### Added
+- Retrocompatibility with version 11 json files through automatic upgrade handler.
 
 ## [11.2.4] - 2025-09-30
 

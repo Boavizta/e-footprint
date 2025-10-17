@@ -24,6 +24,7 @@ from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
@@ -146,6 +147,7 @@ edge_computer = EdgeComputer(
 
 edge_process = RecurrentEdgeProcess(
     "edge process",
+    edge_computer=edge_computer,
     recurrent_compute_needed=SourceRecurrentValues(
         Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None),
     recurrent_ram_needed=SourceRecurrentValues(
@@ -154,10 +156,14 @@ edge_process = RecurrentEdgeProcess(
         Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
 )
 
+edge_function = EdgeFunction(
+    "edge function",
+    recurrent_edge_resource_needs=[edge_process]
+)
+
 edge_usage_journey = EdgeUsageJourney(
     "edge usage journey",
-    edge_processes=[edge_process],
-    edge_computer=edge_computer,
+    edge_functions=[edge_function],
     usage_span=SourceValue(6 * u.year, source=None)
 )
 
