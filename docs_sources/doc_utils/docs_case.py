@@ -3,6 +3,9 @@ from time import time
 import numpy as np
 from pint import Quantity
 
+from efootprint.core.hardware.edge_appliance import EdgeAppliance
+from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
+
 start = time()
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
@@ -156,9 +159,24 @@ edge_process = RecurrentEdgeProcess(
         Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
 )
 
+edge_appliance = EdgeAppliance(
+    "edge appliance",
+    carbon_footprint_fabrication=SourceValue(60 * u.kg, source=None),
+    power=SourceValue(30 * u.W, source=None),
+    lifespan=SourceValue(8 * u.year, source=None),
+    idle_power=SourceValue(5 * u.W, source=None)
+)
+
+edge_workload = RecurrentEdgeWorkload(
+    "edge workload",
+    edge_device=edge_appliance,
+    recurrent_workload=SourceRecurrentValues(
+        Quantity(np.array([0.5] * 168, dtype=np.float32), u.dimensionless), source=None)
+)
+
 edge_function = EdgeFunction(
     "edge function",
-    recurrent_edge_resource_needs=[edge_process]
+    recurrent_edge_resource_needs=[edge_process, edge_workload]
 )
 
 edge_usage_journey = EdgeUsageJourney(

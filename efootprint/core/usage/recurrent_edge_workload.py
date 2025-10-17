@@ -28,8 +28,8 @@ class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
         "recurrent_workload": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.dimensionless)),
     }
 
-    def __init__(self, name: str, edge_appliance: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
-        super().__init__(name, edge_appliance)
+    def __init__(self, name: str, edge_device: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
+        super().__init__(name, edge_device)
         self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         self.recurrent_workload = recurrent_workload.set_label(f"{self.name} recurrent workload")

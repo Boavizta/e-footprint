@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 - Introduced EdgeFunction class to encapsulate RecurrentEdgeResourceNeed objects. EdgeUsageJourney now takes edge_functions parameter instead of edge_processes and edge_computer parameters.
-- RecurrentEdgeProcess now requires edge_computer parameter during initialization instead of being linked via EdgeUsageJourney.
-- Updated EdgeComputer to expose edge_functions property aggregating functions from all linked edge usage journeys.
+- RecurrentEdgeProcess now requires edge_device parameter during initialization instead of being linked via EdgeUsageJourney.
+- Introduce EdgeAppliance class to model simple edge devices that don’t do compute but still consume power.
 
 ### Added
 - Retrocompatibility with version 11 json files through automatic upgrade handler.

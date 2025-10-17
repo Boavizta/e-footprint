@@ -8,11 +8,11 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload, WorkloadOutOfBoundsError
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
 
@@ -20,7 +20,7 @@ from tests.utils import set_modeling_obj_containers
 class TestRecurrentEdgeWorkload(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_edge_device = MagicMock(spec=EdgeDeviceBase)
+        self.mock_edge_device = MagicMock(spec=EdgeAppliance)
         self.mock_edge_device.id = "mock_hardware"
         self.mock_edge_device.name = "Mock Hardware"
 
@@ -29,7 +29,7 @@ class TestRecurrentEdgeWorkload(TestCase):
 
         self.edge_workload = RecurrentEdgeWorkload(
             "test edge workload",
-            edge_appliance=self.mock_edge_device,
+            edge_device=self.mock_edge_device,
             recurrent_workload=self.recurrent_workload)
 
     def test_init(self):
@@ -124,7 +124,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_appliance=self.mock_edge_device,
+                edge_device=self.mock_edge_device,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -138,7 +138,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             RecurrentEdgeWorkload(
                 "invalid edge workload",
-                edge_appliance=self.mock_edge_device,
+                edge_device=self.mock_edge_device,
                 recurrent_workload=invalid_workload)
 
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
@@ -151,7 +151,7 @@ class TestRecurrentEdgeWorkload(TestCase):
 
         edge_workload = RecurrentEdgeWorkload(
             "boundary edge workload",
-            edge_appliance=self.mock_edge_device,
+            edge_device=self.mock_edge_device,
             recurrent_workload=valid_workload)
 
         self.assertEqual("boundary edge workload", edge_workload.name)

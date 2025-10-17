@@ -42,6 +42,7 @@ nav:
       - Devices: Device.md
       - Network: Network.md
       - Storage: Storage.md
+      - Edge appliances: EdgeAppliance.md
       - Edge computers: EdgeComputer.md
       - Edge storage: EdgeStorage.md
   - Services:
@@ -62,6 +63,8 @@ nav:
       - GPU job: GPUJob.md
       - Edge usage pattern: EdgeUsagePattern.md
       - Edge usage journey: EdgeUsageJourney.md
+      - Edge function: EdgeFunction.md
+      - Recurrent edge workload: RecurrentEdgeWorkload.md
       - Recurrent edge process: RecurrentEdgeProcess.md
   - System: System.md
   - Country: Country.md
