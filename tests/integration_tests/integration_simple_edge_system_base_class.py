@@ -59,7 +59,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         edge_process = RecurrentEdgeProcess(
             "Default edge process",
-            edge_computer=edge_computer,
+            edge_device=edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -293,7 +293,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Adding new edge process")
         new_edge_process = RecurrentEdgeProcess(
             "Additional edge process",
-            edge_computer=self.edge_computer,
+            edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -320,7 +320,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Modifying edge processes list")
         new_edge_process = RecurrentEdgeProcess(
             "Replacement edge process",
-            edge_computer=self.edge_computer,
+            edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -369,7 +369,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            edge_computer=new_edge_computer,
+            edge_device=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -504,7 +504,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            edge_computer=new_edge_computer,
+            edge_device=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -555,7 +555,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Modifying edge processes")
         new_edge_process = RecurrentEdgeProcess(
             "new edge process",
-            edge_computer=edge_computer,
+            edge_device=edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -605,7 +605,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_simulation_add_new_edge_process(self):
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            edge_computer=self.edge_computer,
+            edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -648,7 +648,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "Additional edge process for second journey",
-            edge_computer=self.edge_computer,
+            edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([0.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(

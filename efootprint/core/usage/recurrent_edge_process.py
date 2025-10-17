@@ -21,11 +21,11 @@ class RecurrentEdgeProcess(RecurrentEdgeResourceNeed):
         "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
-    def __init__(self, name: str, edge_computer: EdgeComputer,
+    def __init__(self, name: str, edge_device: EdgeComputer,
                  recurrent_compute_needed: ExplainableRecurrentQuantities,
                  recurrent_ram_needed: ExplainableRecurrentQuantities,
                  recurrent_storage_needed: ExplainableRecurrentQuantities):
-        super().__init__(name, edge_computer)
+        super().__init__(name, edge_device)
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
         self.unitary_hourly_storage_need_per_usage_pattern = ExplainableObjectDict()

@@ -32,7 +32,7 @@ class TestRecurrentEdgeProcess(TestCase):
 
         self.edge_process = RecurrentEdgeProcess(
             "test edge process",
-            edge_computer=self.mock_edge_computer,
+            edge_device=self.mock_edge_computer,
             recurrent_compute_needed=self.recurrent_compute_needed,
             recurrent_ram_needed=self.recurrent_ram_needed,
             recurrent_storage_needed=self.recurrent_storage_needed)
@@ -240,7 +240,7 @@ class TestRecurrentEdgeProcess(TestCase):
     def test_from_defaults_class_method(self):
         """Test RecurrentEdgeProcess can be created using from_defaults class method."""
         edge_process_from_defaults = RecurrentEdgeProcess.from_defaults(
-            "default process", edge_computer=self.mock_edge_computer)
+            "default process", edge_device=self.mock_edge_computer)
 
         self.assertEqual("default process", edge_process_from_defaults.name)
         self.assertEqual(self.mock_edge_computer, edge_process_from_defaults.edge_device)

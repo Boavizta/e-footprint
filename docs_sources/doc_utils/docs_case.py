@@ -147,7 +147,7 @@ edge_computer = EdgeComputer(
 
 edge_process = RecurrentEdgeProcess(
     "edge process",
-    edge_computer=edge_computer,
+    edge_device=edge_computer,
     recurrent_compute_needed=SourceRecurrentValues(
         Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None),
     recurrent_ram_needed=SourceRecurrentValues(

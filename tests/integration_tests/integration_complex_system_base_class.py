@@ -183,7 +183,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         edge_process = RecurrentEdgeProcess(
             "Edge process",
-            edge_computer=edge_computer,
+            edge_device=edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
@@ -426,7 +426,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_process = RecurrentEdgeProcess(
             "New edge process",
-            edge_computer=new_edge_computer,
+            edge_device=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(

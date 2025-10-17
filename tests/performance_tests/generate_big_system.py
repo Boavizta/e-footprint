@@ -149,7 +149,7 @@ def generate_big_system(
         for edge_process_index in range(1, nb_of_edge_processes_per_edge_computer + 1):
             edge_process = RecurrentEdgeProcess(
                 f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
-                edge_computer=edge_computer,
+                edge_device=edge_computer,
                 recurrent_compute_needed=SourceRecurrentValues(
                     Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
                 recurrent_ram_needed=SourceRecurrentValues(
@@ -199,7 +199,7 @@ if __name__ == "__main__":
     nb_years = 5
     system = generate_big_system(
         nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_computer=5, nb_years=nb_years)
+        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_device=5, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()
