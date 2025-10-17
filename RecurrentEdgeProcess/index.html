@@ -9,14 +9,14 @@
       
       
       
-        <link rel="prev" href="../EdgeUsageJourney/">
+        <link rel="prev" href="../RecurrentEdgeWorkload/">
       
       
         <link rel="next" href="../System/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.20">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.e53b48f4.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.84d31ad4.min.css">
       
       
 
@@ -843,12 +843,35 @@
   
   
     <li class="md-nav__item">
-      <a href="../EdgeDevice/" class="md-nav__link">
+      <a href="../EdgeAppliance/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Edge devices
+    Edge appliances
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../EdgeComputer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge computers
     
   </span>
   
@@ -1417,6 +1440,52 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../EdgeFunction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Edge function
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../RecurrentEdgeWorkload/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Recurrent edge workload
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1483,6 +1552,15 @@
   <a href="#name" class="md-nav__link">
     <span class="md-ellipsis">
       name
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#edge_device" class="md-nav__link">
+    <span class="md-ellipsis">
+      edge_device
     </span>
   </a>
   
@@ -1868,6 +1946,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#edge_device" class="md-nav__link">
+    <span class="md-ellipsis">
+      edge_device
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#recurrent_compute_needed" class="md-nav__link">
     <span class="md-ellipsis">
       recurrent_compute_needed
@@ -1970,6 +2057,8 @@
 <h2 id="params">Params</h2>
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
+<h3 id="edge_device">edge_device</h3>
+<p>An instance of <a href="../EdgeComputer/">EdgeComputer</a>.</p>
 <h3 id="recurrent_compute_needed">recurrent_compute_needed</h3>
 <p>Edge process recurrent compute needed, in typical week of hourly timeseries data, starting on Monday at midnight.</p>
 <p>For example, 168 values in cpu_core:
@@ -1987,14 +2076,14 @@
     last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0]</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
-<li><a href="../EdgeUsageJourney/">EdgeUsageJourney</a></li>
+<li><a href="../EdgeFunction/">EdgeFunction</a></li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="unitary_hourly_compute_need_per_usage_pattern">unitary_hourly_compute_need_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process unitary hourly compute need for default edge usage pattern as values, in cpu_core.  </p>
 <p>Example value: {<br />
-4d8dca: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:<br />
+8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:<br />
     first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
     last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
 }  </p>
@@ -2038,7 +2127,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4b42d2 {
+             #mynetwork_9862bd {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2060,7 +2149,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4b42d2" class="card-body"></div>
+            <div id="mynetwork_9862bd" class="card-body"></div>
         </div>
 
 
@@ -2090,7 +2179,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4b42d2');
+                  var container = document.getElementById('mynetwork_9862bd');
 
 
 
@@ -2166,7 +2255,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process unitary hourly ram need for default edge usage pattern as values, in gigabyte.  </p>
 <p>Example value: {<br />
-4d8dca: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB:<br />
+8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB:<br />
     first 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],<br />
     last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], <br />
 }  </p>
@@ -2210,7 +2299,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ea90b6 {
+             #mynetwork_9910f3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2232,7 +2321,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ea90b6" class="card-body"></div>
+            <div id="mynetwork_9910f3" class="card-body"></div>
         </div>
 
 
@@ -2262,7 +2351,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ea90b6');
+                  var container = document.getElementById('mynetwork_9910f3');
 
 
 
@@ -2338,7 +2427,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process unitary hourly storage need for default edge usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-4d8dca: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:<br />
+8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], <br />
 }  </p>
@@ -2382,7 +2471,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_42e71c {
+             #mynetwork_fbd5c4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2404,7 +2493,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_42e71c" class="card-body"></div>
+            <div id="mynetwork_fbd5c4" class="card-body"></div>
         </div>
 
 
@@ -2434,7 +2523,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_42e71c');
+                  var container = document.getElementById('mynetwork_fbd5c4');
 
 
 
