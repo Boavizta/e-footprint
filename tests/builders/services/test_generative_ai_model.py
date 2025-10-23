@@ -16,7 +16,7 @@ class TestGenAIModel(unittest.TestCase):
     def setUp(self):
         self.mock_server = Mock(spec=GPUServer)
         self.mock_server.name = "Test Server"
-        self.mock_server.ram_per_gpu = SourceValue(80 * u.GB)
+        self.mock_server.ram_per_gpu = SourceValue(80 * u.GB_ram)
         self.mock_server.systems = []
         self.mock_server.modeling_objects_whose_attributes_depend_directly_on_me = []
         self.model_name = SourceObject("open-mistral-7b")
@@ -110,7 +110,7 @@ class TestGenAIModel(unittest.TestCase):
             GenAIModel.from_defaults(
                 name="Test GenAI", provider=SourceObject("openai"), model_name=SourceObject("gpt-4"), server=server)
         self.assertIn(
-            "Test Server has available RAM capacity of 320.0 gigabyte but is asked for 4224.0 gigabyte", str(context.exception))
+            "Test Server has available RAM capacity of 320.0 gigabyte_ram but is asked for 4224.0 gigabyte_ram", str(context.exception))
 
 
 class TestGenAIJob(unittest.TestCase):
@@ -160,7 +160,7 @@ class TestGenAIJob(unittest.TestCase):
         with patch.object(self.service, "llm_memory_factor", SourceValue(2 * u.dimensionless)), \
                 patch.object(self.service, "nb_of_bits_per_parameter", SourceValue(10 * u.dimensionless)), \
                 patch.object(self.service, "active_params", SourceValue(100e9 * u.dimensionless)), \
-                patch.object(self.server, "ram_per_gpu", SourceValue(100e9 * u.dimensionless / u.gpu)):
+                patch.object(self.server, "ram_per_gpu", SourceValue(100e9 * u.bit_ram / u.gpu)):
             self.job.update_compute_needed()
             self.assertEqual(self.job.compute_needed.value, 20 * u.gpu)
 

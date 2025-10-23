@@ -48,11 +48,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
         )
@@ -266,11 +266,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
         )
@@ -358,11 +358,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
         )
@@ -493,11 +493,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
         )
@@ -713,3 +713,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
+
+    def run_test_semantic_units_in_calculated_attributes(self):
+        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
+        self.check_semantic_units_in_calculated_attributes(self.system)

@@ -56,12 +56,12 @@ autoscaling_server = Server(
     power=SourceValue(300 * u.W, source=None),
     lifespan=SourceValue(6 * u.year, source=None),
     idle_power=SourceValue(50 * u.W, source=None),
-    ram=SourceValue(128 * u.GB, source=None),
+    ram=SourceValue(128 * u.GB_ram, source=None),
     compute=SourceValue(24 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
-    base_ram_consumption=SourceValue(300 * u.MB, source=None),
+    base_ram_consumption=SourceValue(300 * u.MB_ram, source=None),
     base_compute_consumption=SourceValue(2 * u.cpu_core, source=None),
     storage=storage
 )
@@ -139,11 +139,11 @@ edge_computer = EdgeComputer(
     power=SourceValue(30 * u.W, source=None),
     lifespan=SourceValue(8 * u.year, source=None),
     idle_power=SourceValue(5 * u.W, source=None),
-    ram=SourceValue(16 * u.GB, source=None),
+    ram=SourceValue(16 * u.GB_ram, source=None),
     compute=SourceValue(8 * u.cpu_core, source=None),
     power_usage_effectiveness=SourceValue(1.0 * u.dimensionless, source=None),
     utilization_rate=SourceValue(0.8 * u.dimensionless, source=None),
-    base_ram_consumption=SourceValue(1 * u.GB, source=None),
+    base_ram_consumption=SourceValue(1 * u.GB_ram, source=None),
     base_compute_consumption=SourceValue(0.1 * u.cpu_core, source=None),
     storage=edge_storage
 )
@@ -154,7 +154,7 @@ edge_process = RecurrentEdgeProcess(
     recurrent_compute_needed=SourceRecurrentValues(
         Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None),
     recurrent_ram_needed=SourceRecurrentValues(
-        Quantity(np.array([2] * 168, dtype=np.float32), u.GB), source=None),
+        Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram), source=None),
     recurrent_storage_needed=SourceRecurrentValues(
         Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
 )
@@ -171,7 +171,7 @@ edge_workload = RecurrentEdgeWorkload(
     "edge workload",
     edge_device=edge_appliance,
     recurrent_workload=SourceRecurrentValues(
-        Quantity(np.array([0.5] * 168, dtype=np.float32), u.dimensionless), source=None)
+        Quantity(np.array([0.5] * 168, dtype=np.float32), u.occurrence), source=None)
 )
 
 edge_function = EdgeFunction(

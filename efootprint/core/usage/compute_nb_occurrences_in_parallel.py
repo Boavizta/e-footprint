@@ -62,7 +62,7 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
             result = initial_values_padded + shifted_values * nonfull_duration_rest
 
     return ExplainableHourlyQuantities(
-        Quantity(result, u.dimensionless),
+        Quantity(result, u.concurrent),
         start_date=hourly_occurrences_starts.start_date,
         left_parent=hourly_occurrences_starts,
         right_parent=event_duration,

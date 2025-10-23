@@ -121,7 +121,7 @@ class TestEdgeHardwareBase(TestCase):
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self):
         """Test update_dict_element_in_instances_fabrication_footprint_per_usage_pattern calculation."""
         mock_instances = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([2, 4], pint_unit=u.dimensionless)}
+            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([2, 4], pint_unit=u.concurrent)}
         with patch.object(self.test_edge_device, "nb_of_instances_per_usage_pattern", mock_instances), \
                 patch.object(self.test_edge_device, "carbon_footprint_fabrication", SourceValue(120 * u.kg)), \
                 patch.object(self.test_edge_device, "lifespan", SourceValue(6 * u.year)):
@@ -159,7 +159,7 @@ class TestEdgeHardwareBase(TestCase):
     def test_update_dict_element_in_instances_energy_per_usage_pattern(self):
         """Test update_dict_element_in_instances_energy_per_usage_pattern calculation."""
         mock_instances = {
-            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)}
+            self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1, 2], pint_unit=u.concurrent)}
         mock_power = {
             self.mock_edge_usage_pattern: create_source_hourly_values_from_list([1.5, 3], pint_unit=u.W)
         }
@@ -223,8 +223,8 @@ class TestEdgeHardwareBase(TestCase):
         mock_usage_pattern2.id = "mock_usage_pattern2"
         
         # Set up mock instances for both patterns
-        mock_instances1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)
-        mock_instances2 = create_source_hourly_values_from_list([2, 3], pint_unit=u.dimensionless)
+        mock_instances1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.concurrent)
+        mock_instances2 = create_source_hourly_values_from_list([2, 3], pint_unit=u.concurrent)
         
         # Update test device to have two patterns
         self.test_edge_device._edge_usage_patterns = [self.mock_edge_usage_pattern, mock_usage_pattern2]
@@ -246,7 +246,7 @@ class TestEdgeHardwareBase(TestCase):
 
     def test_update_aggregated_attributes(self):
         """Test that aggregated attributes are properly updated."""
-        mock_instances = create_source_hourly_values_from_list([1, 2], pint_unit=u.dimensionless)
+        mock_instances = create_source_hourly_values_from_list([1, 2], pint_unit=u.concurrent)
         self.mock_edge_usage_pattern.nb_edge_usage_journeys_in_parallel = mock_instances
         
         # Update per-pattern and aggregated attributes

@@ -49,9 +49,9 @@ class TestVideoStreamingJob(unittest.TestCase):
         self.assertTrue(self.job.compute_needed.value, 12 * u.cpu_core)
 
     def test_update_ram_needed(self):
-        with patch.object(self.service, "ram_buffer_per_user", SourceValue(50 * u.MB)):
+        with patch.object(self.service, "ram_buffer_per_user", SourceValue(50 * u.MB_ram)):
             self.job.update_ram_needed()
-        self.assertTrue(self.job.ram_needed.value, 50 * u.MB)
+        self.assertTrue(self.job.ram_needed.value, 50 * u.MB_ram)
 
 
 if __name__ == "__main__":

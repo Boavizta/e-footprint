@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "12.0.0",
+    "efootprint_version": "13.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -16,7 +16,7 @@
             "id": "Youtube-usage-in-France",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Youtube usage in France hourly nb of visits from e-footprint hypothesis",
@@ -96,7 +96,7 @@
             },
             "ram_needed": {
                 "value": 50.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server GPU server to process direct GPU server job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -183,7 +183,7 @@
             },
             "base_ram_consumption": {
                 "value": 0.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Base RAM consumption of GPU server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -224,7 +224,7 @@
             },
             "ram_per_gpu": {
                 "value": 80.0,
-                "unit": "gigabyte / gpu",
+                "unit": "gigabyte_ram / gpu",
                 "label": "GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM",
                 "source": {
                     "name": "Estimating the Carbon Footprint of BLOOM",
@@ -480,7 +480,7 @@
             "server": "Web-server",
             "base_ram_consumption": {
                 "value": 2.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Youtube streaming service OS and streaming software base RAM consumption from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -511,7 +511,7 @@
             },
             "ram_buffer_per_user": {
                 "value": 50.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "Youtube streaming service RAM buffer size per user from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -588,7 +588,7 @@
             },
             "base_ram_consumption": {
                 "value": 1.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Base RAM consumption of Web server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

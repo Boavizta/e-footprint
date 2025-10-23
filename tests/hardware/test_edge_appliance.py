@@ -74,8 +74,8 @@ class TestEdgeAppliance(TestCase):
         mock_workload1.edge_usage_patterns = [mock_pattern]
         mock_workload2.edge_usage_patterns = [mock_pattern]
 
-        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.dimensionless)
-        workload_values2 = create_source_hourly_values_from_list([0.1, 0.15], pint_unit=u.dimensionless)
+        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.concurrent)
+        workload_values2 = create_source_hourly_values_from_list([0.1, 0.15], pint_unit=u.concurrent)
 
         mock_workload1.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values1}
         mock_workload2.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values2}
@@ -98,7 +98,7 @@ class TestEdgeAppliance(TestCase):
         mock_workload.edge_usage_patterns = [mock_pattern]
 
         # Workload exceeding 100%
-        workload_values = create_source_hourly_values_from_list([0.8, 1.2], pint_unit=u.dimensionless)
+        workload_values = create_source_hourly_values_from_list([0.8, 1.2], pint_unit=u.concurrent)
 
         mock_workload.unitary_hourly_workload_per_usage_pattern = {mock_pattern: workload_values}
 
@@ -121,8 +121,8 @@ class TestEdgeAppliance(TestCase):
         mock_workload = MagicMock(spec=RecurrentEdgeWorkload)
         mock_workload.edge_usage_patterns = [mock_pattern1, mock_pattern2]
 
-        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.dimensionless)
-        workload_values2 = create_source_hourly_values_from_list([0.4, 0.5], pint_unit=u.dimensionless)
+        workload_values1 = create_source_hourly_values_from_list([0.2, 0.3], pint_unit=u.concurrent)
+        workload_values2 = create_source_hourly_values_from_list([0.4, 0.5], pint_unit=u.concurrent)
 
         mock_workload.unitary_hourly_workload_per_usage_pattern = {
             mock_pattern1: workload_values1,
@@ -146,7 +146,7 @@ class TestEdgeAppliance(TestCase):
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern"
 
-        workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.dimensionless)
+        workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.concurrent)
         self.edge_device.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
 
         self.edge_device.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
@@ -169,8 +169,8 @@ class TestEdgeAppliance(TestCase):
         mock_pattern1.id = "pattern1"
         mock_pattern2.id = "pattern2"
 
-        workload_values1 = create_source_hourly_values_from_list([0.2], pint_unit=u.dimensionless)
-        workload_values2 = create_source_hourly_values_from_list([0.5], pint_unit=u.dimensionless)
+        workload_values1 = create_source_hourly_values_from_list([0.2], pint_unit=u.concurrent)
+        workload_values2 = create_source_hourly_values_from_list([0.5], pint_unit=u.concurrent)
 
         self.edge_device.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict({
             mock_pattern1: workload_values1,

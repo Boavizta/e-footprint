@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "12.0.0",
+    "efootprint_version": "13.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -16,7 +16,7 @@
             "id": "Usage-Pattern",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Usage Pattern hourly nb of visits from e-footprint hypothesis",
@@ -110,7 +110,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Default server to process job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -160,7 +160,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Default server to process job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -238,7 +238,7 @@
             },
             "ram": {
                 "value": 128.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Default server from user data",
                 "source": {
                     "name": "user data",
@@ -393,7 +393,7 @@
             },
             "fixed_nb_of_instances": {
                 "value": 10000.0,
-                "unit": "dimensionless",
+                "unit": "concurrent",
                 "label": "User defined number of Default SSD storage instances from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

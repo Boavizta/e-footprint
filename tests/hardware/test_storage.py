@@ -190,7 +190,7 @@ class TestStorage(TestCase):
         storage_freed = create_source_hourly_values_from_list([0, -0.5, 0, -1, -5], pint_unit=u.TB)
         automatic_storage_dumps_after_storage_duration = create_source_hourly_values_from_list(
             [0, -0.5, -1, -0.5, 0], pint_unit=u.TB)
-        nb_of_instances = create_source_hourly_values_from_list([3, 3, 3, 2, 6], pint_unit=u.dimensionless)
+        nb_of_instances = create_source_hourly_values_from_list([3, 3, 3, 2, 6], pint_unit=u.concurrent)
 
         with patch.object(self.storage_base, "storage_needed", storage_needed), \
                 patch.object(self.storage_base, "storage_freed", storage_freed), \
@@ -206,7 +206,7 @@ class TestStorage(TestCase):
         storage_needed = EmptyExplainableObject()
         storage_freed = EmptyExplainableObject()
         automatic_storage_dumps_after_storage_duration = EmptyExplainableObject()
-        nb_of_instances = create_source_hourly_values_from_list([1, 2, 2], pint_unit=u.dimensionless)
+        nb_of_instances = create_source_hourly_values_from_list([1, 2, 2], pint_unit=u.concurrent)
 
         with patch.object(self.storage_base, "storage_needed", storage_needed), \
                 patch.object(self.storage_base, "storage_freed", storage_freed), \
@@ -228,16 +228,16 @@ class TestStorage(TestCase):
             self.assertEqual(expected_data, self.storage_base.raw_nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances(self):
-        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.concurrent)
         expected_data = [2, 3, 4]
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances):
             self.storage_base.update_nb_of_instances()
             self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
-            self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
+            self.assertEqual(u.concurrent, self.storage_base.nb_of_instances.unit)
 
     def test_nb_of_instances_with_fixed_nb_of_instances(self):
-        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.concurrent)
         expected_data = [5, 5, 5]
         fixed_nb_of_instances = SourceValue(5 * u.dimensionless)
 
@@ -245,23 +245,23 @@ class TestStorage(TestCase):
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
             self.storage_base.update_nb_of_instances()
             self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
-            self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
+            self.assertEqual(u.concurrent, self.storage_base.nb_of_instances.unit)
 
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
-        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless)
-        fixed_nb_of_instances = SourceValue(2 * u.dimensionless)
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.concurrent)
+        fixed_nb_of_instances = SourceValue(2 * u.concurrent)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
             patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):
             with self.assertRaises(InsufficientCapacityError) as context:
                 self.storage_base.update_nb_of_instances()
             self.assertIn(
-                "storage_base has available number of instances capacity of 2.0 dimensionless but is asked for "
-                "4.0 dimensionless", str(context.exception))
+                "storage_base has available number of instances capacity of 2.0 concurrent but is asked for "
+                "4.0 concurrent", str(context.exception))
 
     def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
         raw_nb_of_instances = EmptyExplainableObject()
-        fixed_nb_of_instances = SourceValue(2 * u.dimensionless)
+        fixed_nb_of_instances = SourceValue(2 * u.concurrent)
 
         with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
                 patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances):

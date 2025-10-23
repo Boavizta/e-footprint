@@ -23,13 +23,13 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             nb_of_cpu_units=SourceValue(2 * u.dimensionless),
             nb_of_cores_per_cpu_unit=SourceValue(4 * u.dimensionless),
             nb_of_ram_units=SourceValue(2 * u.dimensionless),
-            ram_quantity_per_unit=SourceValue(8 * u.GB),
+            ram_quantity_per_unit=SourceValue(8 * u.GB_ram),
             average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
             lifespan=SourceValue(6 * u.year),
             idle_power=SourceValue(0 * u.W),
             power_usage_effectiveness=SourceValue(1.4 * u.dimensionless),
             utilization_rate=SourceValue(0.7 * u.dimensionless),
-            base_ram_consumption=SourceValue(0 * u.GB),
+            base_ram_consumption=SourceValue(0 * u.GB_ram),
             base_compute_consumption=SourceValue(0 * u.cpu_core),
             storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
             fixed_nb_of_instances=EmptyExplainableObject()
@@ -175,7 +175,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         }, label="Mocked response")
 
         self.test_server.update_ram()
-        self.assertEqual(self.test_server.ram.value, 32 * u.GB)
+        self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
         self.assertIn("ram", self.test_server.ram.label)
 
     def test_update_compute(self):

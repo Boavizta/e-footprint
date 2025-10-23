@@ -38,9 +38,9 @@ class TestGPUServer(unittest.TestCase):
 
     def test_update_ram(self):
         with patch.object(self.gpu_server, "compute", SourceValue(4 * u.gpu)), \
-                patch.object(self.gpu_server, "ram_per_gpu", SourceValue(80 * u.GB / u.gpu)):
+                patch.object(self.gpu_server, "ram_per_gpu", SourceValue(80 * u.GB_ram / u.gpu)):
             self.gpu_server.update_ram()
-        self.assertEqual(self.gpu_server.ram.value, 320 * u.GB)
+        self.assertEqual(self.gpu_server.ram.value, 320 * u.GB_ram)
 
 
 if __name__ == "__main__":

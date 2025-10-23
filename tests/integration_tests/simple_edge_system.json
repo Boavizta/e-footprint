@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "12.0.0",
+    "efootprint_version": "13.0.0",
     "System": {
         "Edge-system": {
             "name": "Edge system",
@@ -16,7 +16,7 @@
             "id": "Default-edge-usage-pattern",
             "hourly_edge_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkpQAAQAAAekT6gDtFBAA7DYA7YNwHRwQ=",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis",
@@ -72,7 +72,7 @@
             },
             "recurrent_ram_needed": {
                 "recurring_values": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Default edge process recurrent ram needed from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -141,7 +141,7 @@
             },
             "ram": {
                 "value": 8.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Default edge device from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -177,7 +177,7 @@
             },
             "base_ram_consumption": {
                 "value": 1.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Base RAM consumption of Default edge device from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

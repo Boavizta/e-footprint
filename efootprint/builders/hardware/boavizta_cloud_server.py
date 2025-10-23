@@ -44,7 +44,7 @@ class BoaviztaCloudServer(Server):
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
             "utilization_rate": SourceValue(0.9 * u.dimensionless),
-            "base_ram_consumption": SourceValue(0 * u.GB),
+            "base_ram_consumption": SourceValue(0 * u.GB_ram),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
@@ -128,7 +128,7 @@ class BoaviztaCloudServer(Server):
         ram_spec = float(self.api_call_response.value["verbose"]["memory"]["value"])
 
         self.ram = ExplainableQuantity(
-            ram_spec * u.GB, f"{self.name} ram",
+            ram_spec * u.GB_ram, f"{self.name} ram",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
     def update_compute(self):

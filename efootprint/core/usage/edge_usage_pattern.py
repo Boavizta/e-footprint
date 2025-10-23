@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
     ExplainableHourlyQuantities)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.constants.units import u
 
 if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
@@ -19,7 +20,7 @@ class EdgeUsagePattern(ModelingObject):
         self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
         self.nb_edge_usage_journeys_in_parallel = EmptyExplainableObject()
 
-        self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.set_label(
+        self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.to(u.occurrence).set_label(
             f"{self.name} hourly nb of edge device starts")
         self.edge_usage_journey = edge_usage_journey
         self.country = country
@@ -47,5 +48,5 @@ class EdgeUsagePattern(ModelingObject):
         nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
             self.utc_hourly_edge_usage_journey_starts, self.edge_usage_journey.usage_span)
 
-        self.nb_edge_usage_journeys_in_parallel = nb_of_edge_usage_journeys_in_parallel.set_label(
+        self.nb_edge_usage_journeys_in_parallel = nb_of_edge_usage_journeys_in_parallel.to(u.concurrent).set_label(
             f"{self.name} hourly nb of edge usage journeys in parallel")

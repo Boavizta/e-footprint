@@ -26,11 +26,11 @@ class TestEdgeComputer(TestCase):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=self.mock_storage
         )
@@ -171,7 +171,7 @@ class TestEdgeComputer(TestCase):
 
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
-        with patch.object(self.edge_computer, "ram", SourceValue(16 * u.GB)), \
+        with patch.object(self.edge_computer, "ram", SourceValue(16 * u.GB_ram)), \
              patch.object(self.edge_computer, "utilization_rate", SourceValue(0.8 * u.dimensionless)), \
              patch.object(self.edge_computer, "base_ram_consumption", SourceValue(2 * u.GB)):
             
@@ -180,13 +180,13 @@ class TestEdgeComputer(TestCase):
             expected_value = 16 * 0.8 - 2  # 10.8 GB
             self.assertAlmostEqual(
                 expected_value, self.edge_computer.available_ram_per_instance.value.magnitude, places=5)
-            self.assertEqual(u.GB, self.edge_computer.available_ram_per_instance.value.units)
+            self.assertEqual(u.GB_ram, self.edge_computer.available_ram_per_instance.value.units)
             self.assertEqual("Available RAM per Test EdgeComputer instance",
                              self.edge_computer.available_ram_per_instance.label)
 
     def test_update_available_ram_per_instance_insufficient_capacity(self):
         """Test update_available_ram_per_instance raises error when capacity is insufficient."""
-        with patch.object(self.edge_computer, "ram", SourceValue(8 * u.GB)), \
+        with patch.object(self.edge_computer, "ram", SourceValue(8 * u.GB_ram)), \
              patch.object(self.edge_computer, "utilization_rate", SourceValue(0.5 * u.dimensionless)), \
              patch.object(self.edge_computer, "base_ram_consumption", SourceValue(5 * u.GB)):
             
@@ -253,8 +253,8 @@ class TestEdgeComputer(TestCase):
         mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
         mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
 
-        ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB)
-        ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB)
+        ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB_ram)
+        ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB_ram)
 
         mock_process_1.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_1}
         mock_process_2.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_2}
@@ -269,7 +269,7 @@ class TestEdgeComputer(TestCase):
             expected_values = [3, 3, 7]  # Sum of both processes
             result = self.edge_computer.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
             self.assertEqual(expected_values, result.value_as_float_list)
-            self.assertEqual(u.GB, result.unit)
+            self.assertEqual(u.GB_ram, result.unit)
             self.assertIn("Test EdgeComputer hourly RAM need for Test Pattern", result.label)
 
         set_modeling_obj_containers(self.edge_computer, [])
@@ -280,7 +280,7 @@ class TestEdgeComputer(TestCase):
         mock_pattern.name = "Test Pattern"
 
         mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB)  # Peak of 15 GB
+        ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB_ram)  # Peak of 15 GB
         mock_process.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need}
         mock_process.edge_usage_patterns = [mock_pattern]
 

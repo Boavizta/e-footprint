@@ -137,11 +137,11 @@ def generate_big_system(
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(16 * u.GB),
+            ram=SourceValue(16 * u.GB_ram),
             compute=SourceValue(8 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
         )

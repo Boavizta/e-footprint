@@ -17,6 +17,7 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
 from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and_simulation_data, prepare_data
+from efootprint.abstract_modeling_classes.aggregation_utils import validate_timeseries_unit
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -85,6 +86,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         self.start_date = start_date
         self.json_compressed_value_data = None
         if isinstance(value, Quantity):
+            validate_timeseries_unit(value, label)
             if value.magnitude.dtype != np.float32:
                 logger.info(
                     f"converting value {label} to float32. This is surprising, a casting to np.float32 is probably "
@@ -119,6 +121,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def to(self, unit_to_convert_to: Unit):
         self.value = self.value.to(unit_to_convert_to)
+        validate_timeseries_unit(self.value, self.label)
 
         return self
 
@@ -157,6 +160,12 @@ class ExplainableHourlyQuantities(ExplainableObject):
     @property
     def magnitude(self):
         return self.value.magnitude
+
+    @property
+    def plot_aggregation_strategy(self) -> str:
+        """Determine how to aggregate hourly values into daily values for plotting."""
+        from efootprint.abstract_modeling_classes.aggregation_utils import get_plot_aggregation_strategy
+        return get_plot_aggregation_strategy(self.unit)
 
     @property
     def value_as_float_list(self):
@@ -409,9 +418,6 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return [str(round(hourly_value.magnitude, 2)) for hourly_value in input_series]
 
         compact_unit = "{:~}".format(self.unit)
-        if self.unit == u.dimensionless:
-            compact_unit = "dimensionless"
-
         nb_of_values = len(self.value)
         if nb_of_values < 30:
             rounded_values = _round_series_values(self.value)

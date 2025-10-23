@@ -18,12 +18,12 @@ class Server(ServerBase):
             "power": SourceValue(300 * u.W),
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(50 * u.W),
-            "ram": SourceValue(128 * u.GB),
+            "ram": SourceValue(128 * u.GB_ram),
             "compute": SourceValue(24 * u.cpu_core),
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
             "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
             "utilization_rate": SourceValue(0.9 * u.dimensionless),
-            "base_ram_consumption": SourceValue(0 * u.GB),
+            "base_ram_consumption": SourceValue(0 * u.GB_ram),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "fixed_nb_of_instances": EmptyExplainableObject()
         }

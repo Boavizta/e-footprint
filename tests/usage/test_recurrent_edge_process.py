@@ -26,7 +26,7 @@ class TestRecurrentEdgeProcess(TestCase):
         self.recurrent_compute_needed = SourceRecurrentValues(
             Quantity(np.array([2.5] * 168, dtype=np.float32), u.cpu_core))
         self.recurrent_ram_needed = SourceRecurrentValues(
-            Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
+            Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB_ram))
         self.recurrent_storage_needed = SourceRecurrentValues(
             Quantity(np.array([4.0] * 168, dtype=np.float32), u.GB))
 
@@ -249,7 +249,7 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertEqual(
             edge_process_from_defaults.recurrent_compute_needed.unit, u.cpu_core)
         self.assertEqual(
-            edge_process_from_defaults.recurrent_ram_needed.unit, u.GB)
+            edge_process_from_defaults.recurrent_ram_needed.unit, u.GB_ram)
 
 
 

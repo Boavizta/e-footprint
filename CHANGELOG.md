@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [13.0.0] - 2025-10-24
+
+### Changed
+- **[BREAKING]** Replaced dimensionless units with semantic units for timeseries attributes to enable proper aggregation:
+  - `occurrence`: discrete events aggregated by sum (e.g., hourly_usage_journey_starts, hourly_occurrences_per_usage_pattern)
+  - `concurrent`: concurrent counts aggregated by mean (e.g., nb_usage_journeys_in_parallel, nb_of_instances, raw_nb_of_instances)
+  - Use of dimensionless unit is now forbidden in timeseries.
+- Introduced `byte_ram` units (GB_ram, MB_ram, etc.) to distinguish RAM allocation from data transfer:
+  - RAM attributes in ServerBase, EdgeComputer, JobBase classes now use byte_ram units
+  - RAM timeseries (hour_by_hour_ram_need, recurrent_ram_needed, unitary_hourly_ram_need_per_usage_pattern) now use byte_ram units
+- Unit mappings defined at base class level automatically apply to all subclasses (e.g., JobBase mappings apply to Job, GPUJob, etc.)
+- Use objects instead of object ids as keys in System fabrication_footprints and energy_footprints dictionaries. This allows for easier object data fetching when plotting.
+
+### Added
+- `ModelingObject.is_subclass_of()` method to check class inheritance via Method Resolution Order
+- Retrocompatibility with version 12 JSON files through automatic upgrade handler that:
+  - Migrates dimensionless units to occurrence/concurrent based on attribute semantics
+  - Appends _ram suffix to byte units for RAM attributes while preserving power of ten (MB → MB_ram, GB → GB_ram, etc.)
+  - Uses inheritance checking to apply migrations to all subclasses automatically
+
 ## [12.0.0] - 2025-10-17
 
 ### Changed

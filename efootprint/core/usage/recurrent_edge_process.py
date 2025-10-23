@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class RecurrentEdgeProcess(RecurrentEdgeResourceNeed):
     default_values = {
         "recurrent_compute_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-        "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB)),
+        "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
         "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
     }
 
@@ -31,7 +31,7 @@ class RecurrentEdgeProcess(RecurrentEdgeResourceNeed):
         self.unitary_hourly_storage_need_per_usage_pattern = ExplainableObjectDict()
         
         self.recurrent_compute_needed = recurrent_compute_needed.set_label(f"{self.name} recurrent compute needed")
-        self.recurrent_ram_needed = recurrent_ram_needed.set_label(f"{self.name} recurrent ram needed")
+        self.recurrent_ram_needed = recurrent_ram_needed.set_label(f"{self.name} recurrent ram needed").to(u.GB_ram)
         self.recurrent_storage_needed = recurrent_storage_needed.set_label(f"{self.name} recurrent storage needed")
 
     @property

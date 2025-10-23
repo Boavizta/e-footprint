@@ -25,7 +25,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "idle_power": SourceValue(0 * u.W),
             "power_usage_effectiveness": SourceValue(1.4 * u.dimensionless),
             "utilization_rate": SourceValue(0.7 * u.dimensionless),
-            "base_ram_consumption": SourceValue(0 * u.GB),
+            "base_ram_consumption": SourceValue(0 * u.GB_ram),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
             "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
             "fixed_nb_of_instances": EmptyExplainableObject()
@@ -144,7 +144,7 @@ class BoaviztaServerFromConfig(ServerBase):
         ram_spec = self.api_call_response.value["verbose"]["RAM-1"]
 
         self.ram = ExplainableQuantity(
-            ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, f"{self.name} ram",
+            ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB_ram, f"{self.name} ram",
             left_parent=self.api_call_response, operator="data extraction from", source=self.impact_source)
         
     def update_compute(self):

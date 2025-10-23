@@ -60,4 +60,4 @@ class TestWebApplicationJob(unittest.TestCase):
             "test job", service=service, data_transferred=SourceValue(2 * u.MB),
             data_stored=SourceValue(1 * u.MB), implementation_details=SourceObject("default"))
         job.update_ram_needed()
-        self.assertEqual(job.ram_needed, SourceValue(512 * u.MB))
+        self.assertEqual(job.ram_needed, SourceValue(512 * u.MB_ram))

@@ -135,7 +135,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         # Artificially fix datetime to avoid test crashing because of annual time changes.
         mock_data = [1] * 12
         usage = ExplainableHourlyQuantities(
-            Quantity(np.array(mock_data), u.dimensionless), start_date, "usage")
+            Quantity(np.array(mock_data), u.occurrence), start_date, "usage")
 
         local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'), "local timezone ahead UTC")
         local_tz_behind_utc = ExplainableObject(pytz.timezone('America/New_York'), "local timezone behind UTC")
@@ -169,7 +169,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
     def test_abs_complex_case(self):
         test_data = ExplainableHourlyQuantities(
-            Quantity(np.array([1, -1, -4]), u.dimensionless), start_date=datetime(2025, 1, 1), label="Test Data")
+            Quantity(np.array([1, -1, -4]), u.occurrence), start_date=datetime(2025, 1, 1), label="Test Data")
 
         self.assertEqual([1, 1, 4], test_data.abs().value_as_float_list)
 
@@ -201,11 +201,11 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
     def test_ceil_dimensionless(self):
         usage_data = [1.5] * 24
         hourly_usage_data = ExplainableHourlyQuantities(
-            Quantity(np.array(usage_data), u.dimensionless), start_date=self.start_date, label="test")
+            Quantity(np.array(usage_data), u.occurrence), start_date=self.start_date, label="test")
 
         ceil = hourly_usage_data.ceil()
         self.assertEqual([2] * 24, ceil.value_as_float_list)
-        self.assertEqual(u.dimensionless, ceil.unit)
+        self.assertEqual(u.occurrence, ceil.unit)
 
     def test_ceil_with_unit_specified(self):
         usage_data = [1.5] * 24

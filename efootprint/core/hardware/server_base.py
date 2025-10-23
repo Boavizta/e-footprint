@@ -87,7 +87,7 @@ class ServerBase(InfraHardware):
         self.occupied_compute_per_instance = EmptyExplainableObject()
         self.server_type = server_type.set_label(f"Server type of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
-        self.ram = ram.set_label(f"RAM of {self.name}")
+        self.ram = ram.set_label(f"RAM of {self.name}").to(u.GB_ram)
         self.compute = compute.set_label("tmp label")
         self.compute.set_label(f"Nb {self.compute_type.replace("_", " ")}s of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
@@ -99,7 +99,7 @@ class ServerBase(InfraHardware):
         self.base_compute_consumption = base_compute_consumption.set_label(
             f"Base {self.compute_type.replace("_", " ")} consumption of {self.name}")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
-            f"User defined number of {self.name} instances").to(u.dimensionless)
+            f"User defined number of {self.name} instances").to(u.concurrent)
         self.storage = storage
         
     @property
@@ -116,7 +116,7 @@ class ServerBase(InfraHardware):
 
     @property
     def resources_unit_dict(self):
-        return {"ram": "GB", "compute": self.compute_type}
+        return {"ram": "GB_ram", "compute": self.compute_type}
 
     @property
     def jobs(self) -> List["JobBase"]:
@@ -155,7 +155,7 @@ class ServerBase(InfraHardware):
 
     def update_occupied_ram_per_instance(self):
         self.occupied_ram_per_instance = (self.base_ram_consumption + sum(
-            [service.base_ram_consumption for service in self.installed_services])).set_label(
+            [service.base_ram_consumption for service in self.installed_services])).to(u.GB_ram).set_label(
             f"Occupied RAM per {self.name} instance including services")
 
     def update_occupied_compute_per_instance(self):
@@ -164,10 +164,10 @@ class ServerBase(InfraHardware):
             f"Occupied CPU per {self.name} instance including services")
 
     def update_available_ram_per_instance(self):
-        available_ram_per_instance_before_services_installation = self.ram * self.utilization_rate
+        available_ram_per_instance_before_services_installation = (self.ram * self.utilization_rate).to(u.GB_ram)
         available_ram_per_instance = (
                 available_ram_per_instance_before_services_installation - self.occupied_ram_per_instance)
-        if available_ram_per_instance.value < 0 * u.B:
+        if available_ram_per_instance.value < 0 * u.B_ram:
             raise InsufficientCapacityError(
                 self, "RAM", available_ram_per_instance_before_services_installation, self.occupied_ram_per_instance)
 
@@ -188,10 +188,10 @@ class ServerBase(InfraHardware):
 
     def update_raw_nb_of_instances(self):
         nb_of_servers_based_on_ram_alone = (
-                self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.dimensionless).set_label(
+                self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.concurrent).set_label(
             f"Raw nb of {self.name} instances based on RAM alone")
         nb_of_servers_based_on_cpu_alone = (
-                self.hour_by_hour_compute_need / self.available_compute_per_instance).to(u.dimensionless).set_label(
+                self.hour_by_hour_compute_need / self.available_compute_per_instance).to(u.concurrent).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
         nb_of_servers_raw = nb_of_servers_based_on_ram_alone.np_compared_with(nb_of_servers_based_on_cpu_alone, "max")
@@ -231,7 +231,7 @@ class ServerBase(InfraHardware):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
         else:
-            max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
+            max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.concurrent)
 
             if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
                 if max_nb_of_instances > self.fixed_nb_of_instances:
@@ -240,14 +240,14 @@ class ServerBase(InfraHardware):
                 else:
                     fixed_nb_of_instances_np = Quantity(
                         np.full(len(self.raw_nb_of_instances), np.float32(self.fixed_nb_of_instances.magnitude)),
-                        u.dimensionless)
+                        u.concurrent)
                     nb_of_instances = ExplainableHourlyQuantities(
                         fixed_nb_of_instances_np, self.raw_nb_of_instances.start_date, "Nb of instances",
                         left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
             else:
                 nb_of_instances_np = Quantity(
                     np.float32(max_nb_of_instances.magnitude) * np.ones(len(self.raw_nb_of_instances), dtype=np.float32),
-                    u.dimensionless)
+                    u.concurrent)
 
                 nb_of_instances = ExplainableHourlyQuantities(
                     nb_of_instances_np, self.raw_nb_of_instances.start_date,f"Hourly number of {self.name} instances",

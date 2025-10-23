@@ -16,7 +16,7 @@ class TestTimeBuilders(unittest.TestCase):
         min_val = 1
         max_val = 27
         start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.dimensionless
+        pint_unit = u.occurrence
         shv = create_random_source_hourly_values(timespan, min_val, max_val, start_date, pint_unit)
 
         self.assertEqual(start_date, shv.start_date)
@@ -27,7 +27,7 @@ class TestTimeBuilders(unittest.TestCase):
 
     def test_create_source_hourly_values_from_list(self):
         start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.dimensionless
+        pint_unit = u.occurrence
         input_list = [1, 2, 5, 7]
         shv = create_source_hourly_values_from_list(input_list, start_date, pint_unit)
 
@@ -60,7 +60,7 @@ class TestTimeBuilders(unittest.TestCase):
         self.assertGreaterEqual(result.min().magnitude, -amplitude)
         self.assertGreaterEqual(result.max().magnitude, amplitude * 0.9)
         self.assertLessEqual(result.min().magnitude, -amplitude * 0.9)
-        self.assertEqual(result.unit, u.dimensionless)
+        self.assertEqual(result.unit, u.occurrence)
 
     def test_daily_fluct_hourly_values(self):
         timespan = 24 * u.hour
@@ -71,7 +71,7 @@ class TestTimeBuilders(unittest.TestCase):
         self.assertTrue(isinstance(result, SourceHourlyValues))
         self.assertEqual(1-fluct_scale, result.value[hour_of_min].magnitude)
         self.assertEqual(len(result.value), 24)
-        self.assertEqual(result.unit, u.dimensionless)
+        self.assertEqual(result.unit, u.occurrence)
 
     def test_create_hourly_usage_from_frequency_case_daily(self):
         input_volume = 100
@@ -89,7 +89,7 @@ class TestTimeBuilders(unittest.TestCase):
         expected_index_populated = [9, 33, 57, 81, 105, 129, 153]
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
-        self.assertEqual(result.unit, u.dimensionless)
+        self.assertEqual(result.unit, u.occurrence)
         for index in range(0, len(result.value)):
             if index in expected_index_populated:
                 self.assertEqual(result.value[index], input_volume)
@@ -110,7 +110,7 @@ class TestTimeBuilders(unittest.TestCase):
         expected_index_populated = [9, 10, 33, 34, 57, 58, 81, 82, 105, 106, 129, 130, 153, 154]
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
-        self.assertEqual(result.unit, u.dimensionless)
+        self.assertEqual(result.unit, u.occurrence)
         for index in range(0, len(result.value)):
             if index in expected_index_populated:
                 self.assertEqual(result.value[index], 50)
@@ -134,7 +134,7 @@ class TestTimeBuilders(unittest.TestCase):
             9, 11, 33, 35, 57, 59, 81, 83, 105, 107, 177, 179, 201, 203, 225, 227, 249, 251, 273, 275]
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
-        self.assertEqual(result.unit, u.dimensionless)
+        self.assertEqual(result.unit, u.occurrence)
         for index in range(0, len(result.value)):
             if index in expected_index_populated:
                 self.assertEqual(result.value[index], input_volume)
@@ -158,7 +158,7 @@ class TestTimeBuilders(unittest.TestCase):
                                     995, 1113, 1115, 1233, 1235, 1353, 1355]
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
-        self.assertEqual(result.unit,u.dimensionless)
+        self.assertEqual(result.unit,u.occurrence)
         for index in range(0, len(result.value)):
             if index in expected_index_populated:
                 self.assertEqual(result.value[index], input_volume)
@@ -181,7 +181,7 @@ class TestTimeBuilders(unittest.TestCase):
         expected_index_populated = [12, 8796, 17556]
 
         self.assertTrue(isinstance(result, SourceHourlyValues))
-        self.assertEqual(result.unit,u.dimensionless)
+        self.assertEqual(result.unit,u.occurrence)
         for index in range(0, len(result.value)):
             if index in expected_index_populated:
                 self.assertEqual(result.value[index], input_volume)

@@ -102,3 +102,6 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
 
     def test_simulation_add_objects_and_make_input_changes(self):
         self.run_test_simulation_add_objects_and_make_input_changes()
+
+    def test_semantic_units_in_calculated_attributes(self):
+        self.run_test_semantic_units_in_calculated_attributes()

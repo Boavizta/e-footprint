@@ -103,7 +103,7 @@ class Storage(InfraHardware):
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration of {self.name}")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
-            f"User defined number of {self.name} instances").to(u.dimensionless)
+            f"User defined number of {self.name} instances").to(u.concurrent)
         self.storage_delta = EmptyExplainableObject()
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.nb_of_active_instances = EmptyExplainableObject()
@@ -247,7 +247,7 @@ class Storage(InfraHardware):
             )
 
     def update_raw_nb_of_instances(self):
-        raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)
+        raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.concurrent)
 
         self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances for {self.name}")
 
@@ -267,8 +267,8 @@ class Storage(InfraHardware):
                 fixed_nb_of_instances_quantity = Quantity(
                     np.full(
                         len(self.raw_nb_of_instances),
-                        np.float32(self.fixed_nb_of_instances.to(u.dimensionless).magnitude)
-                    ), u.dimensionless)
+                        np.float32(self.fixed_nb_of_instances.to(u.concurrent).magnitude)
+                    ), u.concurrent)
                 fixed_nb_of_instances = ExplainableHourlyQuantities(
                     fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date,"Nb of instances",
                     left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
@@ -284,7 +284,7 @@ class Storage(InfraHardware):
                 (storage_needed.abs().np_compared_with(self.storage_freed.abs(), "max")
                  + self.automatic_storage_dumps_after_storage_duration.abs())
                 / self.storage_capacity
-        ).to(u.dimensionless)
+        ).to(u.concurrent)
         nb_of_active_instances = tmp_nb_of_active_instances.np_compared_with(self.nb_of_instances, "min")
         self.nb_of_active_instances = nb_of_active_instances.set_label(
             f"Hourly number of active instances for {self.name}")

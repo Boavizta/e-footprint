@@ -166,14 +166,6 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
         self.assertIn("first 10 vals", str_repr)
         self.assertIn("last 10 vals", str_repr)
 
-    def test_str_dimensionless_unit(self):
-        recurring_quantity = ExplainableRecurrentQuantities(
-            Quantity(np.array([1, 2, 3], dtype=np.float32), u.dimensionless), "Test")
-        
-        str_repr = str(recurring_quantity)
-        
-        self.assertIn("dimensionless", str_repr)
-
     def test_repr_equals_str(self):
         self.assertEqual(repr(self.recurring_quantity1), str(self.recurring_quantity1))
 
@@ -283,7 +275,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_generate_over_one_week_monday_start_and_calculation_dependencies_are_tracked(self):
         # Start on Monday 2025-01-06 00:00:00 local time (which is a Monday)
         start_date_local = datetime(2025, 1, 6, 0, 0, 0)  # naive datetime in local timezone
-        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -303,7 +295,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_generate_over_one_week_wednesday_start(self):
         # Start on Wednesday 2025-01-08 00:00:00 local time (which is a Wednesday)
         start_date_local = datetime(2025, 1, 8, 0, 0, 0)  # Wednesday = weekday 2
-        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(168, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -321,7 +313,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_generate_over_partial_week_with_hour_offset(self):
         # Start on Tuesday 2025-01-07 15:00:00 local time (Tuesday at 3 PM)
         start_date_local = datetime(2025, 1, 7, 15, 0, 0)  # Tuesday=1, hour=15
-        timespan_values = Quantity(np.ones(25, dtype=np.float32), u.dimensionless)  # 25 hours
+        timespan_values = Quantity(np.ones(25, dtype=np.float32), u.occurrence)  # 25 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -340,7 +332,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_generate_over_multiple_weeks(self):
         # Start on Monday and span 2.5 weeks (420 hours)
         start_date_local = datetime(2025, 1, 6, 0, 0, 0)
-        timespan_values = Quantity(np.ones(420, dtype=np.float32), u.dimensionless)  # 2.5 weeks
+        timespan_values = Quantity(np.ones(420, dtype=np.float32), u.occurrence)  # 2.5 weeks
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -358,7 +350,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
             Quantity(np.array([1, 2, 3], dtype=np.float32), u.W), "Short")
         
         start_date_local = datetime(2025, 1, 6, 0, 0, 0)
-        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         with self.assertRaises(ValueError) as cm:
@@ -369,7 +361,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_edge_case_single_hour_timespan(self):
         # Test with single hour timespan
         start_date_local = datetime(2025, 1, 7, 10, 0, 0)  # Tuesday 10 AM
-        timespan_values = Quantity(np.ones(1, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(1, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -385,7 +377,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_cross_week_boundary_alignment(self):
         # Start near end of week and cross into next week
         start_date_local = datetime(2025, 1, 12, 22, 0, 0)  # Sunday 10 PM
-        timespan_values = Quantity(np.ones(10, dtype=np.float32), u.dimensionless)  # 10 hours
+        timespan_values = Quantity(np.ones(10, dtype=np.float32), u.occurrence)  # 10 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -403,7 +395,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         # Test with Paris timezone (UTC+1 in winter)
         # Start on Monday 2025-01-06 02:00:00 Paris time (which is 01:00:00 UTC)
         start_date_local = datetime(2025, 1, 6, 2, 0, 0)  # 2 AM Paris time
-        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
@@ -423,7 +415,7 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
     def test_with_timezone_aware_start_date(self):
         # Start on Monday 2025-01-06 01:00:00 UTC time (which is 02:00:00 Paris time)
         start_date_utc_aware = datetime(2025, 1, 6, 1, 0, 0, tzinfo=timezone.utc)
-        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.dimensionless)
+        timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_utc_aware, "test timespan")
 
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(

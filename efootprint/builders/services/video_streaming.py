@@ -13,10 +13,10 @@ from efootprint.core.hardware.server import Server
 
 class VideoStreaming(Service):
     default_values =  {
-            "base_ram_consumption": SourceValue(2 * u.GB, source=Sources.HYPOTHESIS),
+            "base_ram_consumption": SourceValue(2 * u.GB_ram, source=Sources.HYPOTHESIS),
             "bits_per_pixel": SourceValue(0.1 * u.dimensionless, source=Sources.HYPOTHESIS),
             "static_delivery_cpu_cost": SourceValue(4 * u.cpu_core / (u.GB / u.s), source=Sources.HYPOTHESIS),
-            "ram_buffer_per_user": SourceValue(50 * u.MB, source=Sources.HYPOTHESIS),
+            "ram_buffer_per_user": SourceValue(50 * u.MB_ram, source=Sources.HYPOTHESIS),
             }
 
     def __init__(self, name: str, server: Server, base_ram_consumption: ExplainableQuantity,

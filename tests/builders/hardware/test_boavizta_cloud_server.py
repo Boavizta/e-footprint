@@ -28,7 +28,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
             average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
             utilization_rate=SourceValue(0.9 * u.dimensionless),
-            base_ram_consumption=SourceValue(0 * u.GB),
+            base_ram_consumption=SourceValue(0 * u.GB_ram),
             base_compute_consumption=SourceValue(0 * u.cpu_core),
             storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
             fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
@@ -46,7 +46,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
                 power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
                 average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
                 utilization_rate=SourceValue(0.9 * u.dimensionless),
-                base_ram_consumption=SourceValue(0 * u.GB),
+                base_ram_consumption=SourceValue(0 * u.GB_ram),
                 base_compute_consumption=SourceValue(0 * u.cpu_core),
                 storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
                 fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
@@ -152,7 +152,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.test_server.api_call_response = ExplainableObject(mock_data, "API call response")
 
         self.test_server.update_ram()
-        self.assertEqual(self.test_server.ram.value, 32 * u.GB)
+        self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
         self.assertIn("ram", self.test_server.ram.label)
 
     def test_update_compute(self):

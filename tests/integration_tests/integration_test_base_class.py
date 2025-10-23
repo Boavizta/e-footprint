@@ -1,10 +1,11 @@
-import re
 from copy import copy
 from typing import List, Optional
 from unittest import TestCase
 import os
 import json
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -148,3 +149,60 @@ class IntegrationTestBaseClass(TestCase):
                     expl_attr_new_value.value *= 100 * u.dimensionless
 
                 self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
+
+    def check_semantic_units_in_calculated_attributes(self, system):
+        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram).
+
+        Args:
+            system: The System object to check
+        """
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        from efootprint.api_utils.unit_mappings import (
+            TIMESERIES_UNIT_MIGRATIONS, SCALAR_RAM_ATTRIBUTES_TO_MIGRATE, RAM_TIMESERIES_ATTRIBUTES_TO_MIGRATE
+        )
+
+        errors = []
+
+        def check_unit(calc_attr, mod_obj, calc_attr_name, key_str=""):
+            """Check a single attribute's unit and append errors if incorrect.
+
+            Args:
+                calc_attr: The attribute to check
+                mod_obj: The modeling object that contains this attribute
+                calc_attr_name: The attribute name
+                key_str: Optional string for dict keys (e.g., "[key_name]")
+            """
+            unit_str = str(calc_attr.unit)
+            attr_path = f"{calc_attr_name}{key_str}"
+
+            # Check occurrence/concurrent units
+            for (mapping_class, mapping_attr), expected_unit in TIMESERIES_UNIT_MIGRATIONS.items():
+                if mapping_attr == calc_attr_name and mod_obj.is_subclass_of(mapping_class):
+                    if expected_unit not in unit_str:
+                        errors.append(
+                            f"{mod_obj.name}.{attr_path} should use '{expected_unit}' unit but has '{unit_str}'")
+                    break
+
+            # Check RAM units (should contain _ram)
+            for (mapping_class, mapping_attr) in SCALAR_RAM_ATTRIBUTES_TO_MIGRATE | RAM_TIMESERIES_ATTRIBUTES_TO_MIGRATE:
+                if mapping_attr == calc_attr_name and mod_obj.is_subclass_of(mapping_class):
+                    if '_ram' not in unit_str:
+                        errors.append(
+                            f"{mod_obj.name}.{attr_path} should use byte_ram unit (e.g., gigabyte_ram) but has '{unit_str}'")
+                    break
+
+        for mod_obj in system.all_linked_objects + [system]:
+            for calc_attr_name in mod_obj.calculated_attributes:
+                calc_attr = getattr(mod_obj, calc_attr_name)
+
+                # Handle ExplainableObjectDict
+                if isinstance(calc_attr, ExplainableObjectDict):
+                    for key, value in calc_attr.items():
+                        check_unit(value, mod_obj, calc_attr_name, value.key_in_dict)
+                elif isinstance(calc_attr, EmptyExplainableObject):
+                    pass
+                else:
+                    check_unit(calc_attr, mod_obj, calc_attr_name)
+
+        if errors:
+            self.fail("Unit errors found:\n" + "\n".join(errors))

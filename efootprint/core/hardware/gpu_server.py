@@ -17,7 +17,7 @@ class GPUServer(ServerBase):
             "server_type": ServerTypes.serverless(),
             "gpu_power": SourceValue(400 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU Power"),
             "gpu_idle_power": SourceValue(50 * u.W / u.gpu, BLOOM_PAPER_SOURCE, "GPU idle power"),
-            "ram_per_gpu": SourceValue(80 * u.GB / u.gpu, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
+            "ram_per_gpu": SourceValue(80 * u.GB_ram / u.gpu, BLOOM_PAPER_SOURCE, label="RAM per GPU"),
             "carbon_footprint_fabrication_per_gpu": SourceValue(
                 150 * u.kg / u.gpu, BLOOM_PAPER_SOURCE, "Carbon footprint one GPU"),
             "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
@@ -28,7 +28,7 @@ class GPUServer(ServerBase):
             "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless),
             "utilization_rate": SourceValue(1 * u.dimensionless),
             "base_compute_consumption": SourceValue(0 * u.gpu),
-            "base_ram_consumption": SourceValue(0 * u.GB),
+            "base_ram_consumption": SourceValue(0 * u.GB_ram),
             "fixed_nb_of_instances": EmptyExplainableObject()
             }
     
@@ -71,4 +71,4 @@ class GPUServer(ServerBase):
         self.idle_power = (self.gpu_idle_power * self.compute).set_label(f"{self.name} idle power")
 
     def update_ram(self):
-        self.ram = (self.ram_per_gpu * self.compute).set_label(f"{self.name} RAM")
+        self.ram = (self.ram_per_gpu * self.compute).set_label(f"{self.name} RAM").to(u.GB_ram)

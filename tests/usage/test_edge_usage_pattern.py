@@ -30,7 +30,7 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_country.timezone = MagicMock()
 
         start_date = datetime(2023, 1, 1, 0, 0, 0)
-        hourly_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0]) * u.dimensionless
+        hourly_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0]) * u.concurrent
         self.real_hourly_starts = ExplainableHourlyQuantities(hourly_data, start_date, "test hourly starts")
 
         self.edge_usage_pattern = EdgeUsagePattern(
@@ -79,7 +79,7 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey.usage_span = mock_duration
         
         utc_starts = ExplainableHourlyQuantities(
-            np.array([1.0, 2.0, 3.0]) * u.dimensionless,
+            np.array([1.0, 2.0, 3.0]) * u.concurrent,
             datetime(2023, 1, 1, 0, 0, 0),
             "UTC starts"
         )
@@ -93,7 +93,7 @@ class TestEdgeUsagePattern(TestCase):
     def test_update_utc_hourly_edge_usage_journey_starts(self):
         """Test update_utc_hourly_edge_usage_journey_starts method."""
         mock_utc_result = ExplainableHourlyQuantities(
-            np.array([1.0, 2.0, 3.0]) * u.dimensionless,
+            np.array([1.0, 2.0, 3.0]) * u.concurrent,
             datetime(2023, 1, 1, 0, 0, 0),
             "UTC result"
         )

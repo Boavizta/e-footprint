@@ -12,7 +12,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValu
 def create_random_source_hourly_values(
         timespan: Quantity = 1 * u.day, min_val: int = 1, max_val: int = 10,
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     nb_days = timespan.to(u.day).magnitude
     data = Quantity(
         np.random.randint(min_val, max_val, size=int(nb_days * 24)).astype(np.float32, copy=False), pint_unit)
@@ -23,14 +23,14 @@ def create_random_source_hourly_values(
 
 def create_source_hourly_values_from_list(
         input_list: List[float], start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     return SourceHourlyValues(Quantity(np.array(input_list, dtype=np.float32), pint_unit), start_date)
 
 
 def linear_growth_hourly_values(
         timespan: Quantity, start_value: int, end_value: int,
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     nb_of_hours = int(timespan.to(u.hour).magnitude)
     linear_growth = np.linspace(start_value, end_value, nb_of_hours, dtype=np.float32)
 
@@ -40,7 +40,7 @@ def linear_growth_hourly_values(
 def sinusoidal_fluct_hourly_values(
         timespan: Quantity, sin_fluct_amplitude: int, sin_fluct_period_in_hours: int,
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     nb_of_hours = int(timespan.to(u.hour).magnitude)
     time = np.arange(nb_of_hours, dtype=np.float32)
     sinusoidal_fluctuation = (
@@ -52,7 +52,7 @@ def sinusoidal_fluct_hourly_values(
 def daily_fluct_hourly_values(
         timespan: Quantity, fluct_scale: float, hour_of_day_for_min_value: int = 4,
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     assert fluct_scale > 0
     assert fluct_scale <= 1
     nb_of_hours = int(timespan.to(u.hour).magnitude)
@@ -77,7 +77,7 @@ def daily_fluct_hourly_values(
 def create_hourly_usage_from_frequency(
         timespan: Quantity, input_volume: float, frequency: str, active_days: list = None,
         hours: list = None, start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     if frequency not in ['daily', 'weekly', 'monthly', 'yearly']:
         raise ValueError(f"frequency must be one of 'daily', 'weekly', 'monthly', or 'yearly', got {frequency}.")
 
@@ -121,7 +121,7 @@ def create_hourly_usage_from_frequency(
 def create_hourly_usage_from_daily_volume_and_list_of_hours(
         timespan: Quantity, daily_volume: float, hours: List[int],
         start_date: datetime = ciso8601.parse_datetime("2025-01-01"),
-        pint_unit: Unit = u.dimensionless):
+        pint_unit: Unit = u.occurrence):
     volume_per_hour = daily_volume / len(hours)
 
     return create_hourly_usage_from_frequency(

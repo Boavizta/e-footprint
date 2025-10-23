@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "13.0.0",
+    "efootprint_version": "12.0.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -27,7 +27,7 @@
                     2000.0,
                     3000.0
                 ],
-                "unit": "occurrence",
+                "unit": "dimensionless",
                 "start_date": "2025-01-01 00:00:00",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -485,7 +485,7 @@
                     "link": null
                 }
             },
-            "fixed_nb_of_instances": {
+            "fixed_nb_of_instances":  {
                 "label": "no value",
                 "value": null
             }

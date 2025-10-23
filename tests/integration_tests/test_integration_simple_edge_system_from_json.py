@@ -127,3 +127,6 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
 
     def test_simulation_add_existing_edge_process(self):
         self.run_test_simulation_add_existing_edge_process()
+
+    def test_semantic_units_in_calculated_attributes(self):
+        self.run_test_semantic_units_in_calculated_attributes()

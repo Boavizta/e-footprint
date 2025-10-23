@@ -60,7 +60,7 @@ class TestModelingObject(unittest.TestCase):
         self.modeling_object = ModelingObjectForTesting("test_object")
 
     def test_setattr_already_assigned_value(self):
-        input_value = create_source_hourly_values_from_list([1, 2, 5], pint_unit=u.dimensionless)
+        input_value = create_source_hourly_values_from_list([1, 2, 5], pint_unit=u.occurrence)
         child_obj = ModelingObjectForTesting("child_object", custom_input=input_value)
         parent_obj = ModelingObjectForTesting("parent_object", mod_obj_input1=child_obj)
 
@@ -71,7 +71,7 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(child_obj, parent_obj.mod_obj_input1)
         self.assertIn(parent_obj, child_obj.modeling_obj_containers)
 
-        child_obj.custom_input = create_source_hourly_values_from_list([4, 5, 6], pint_unit=u.dimensionless)
+        child_obj.custom_input = create_source_hourly_values_from_list([4, 5, 6], pint_unit=u.occurrence)
 
         self.assertEqual([4, 5, 6], parent_obj.mod_obj_input1.custom_input.value_as_float_list)
 

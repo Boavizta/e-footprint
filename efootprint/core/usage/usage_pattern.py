@@ -25,7 +25,8 @@ class UsagePattern(ModelingObject):
         self.devices_fabrication_footprint = EmptyExplainableObject()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
-        self.hourly_usage_journey_starts = hourly_usage_journey_starts.set_label(f"{self.name} hourly nb of visits")
+        self.hourly_usage_journey_starts = hourly_usage_journey_starts.to(u.occurrence).set_label(
+            f"{self.name} hourly nb of visits")
         self.usage_journey = usage_journey
         self.devices = devices
         self.network = network
@@ -55,7 +56,7 @@ class UsagePattern(ModelingObject):
         nb_of_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
             self.utc_hourly_usage_journey_starts, self.usage_journey.duration)
 
-        self.nb_usage_journeys_in_parallel = nb_of_usage_journeys_in_parallel.set_label(
+        self.nb_usage_journeys_in_parallel = nb_of_usage_journeys_in_parallel.to(u.concurrent).set_label(
             f"{self.name} hourly nb of user journeys in parallel")
 
     def update_devices_energy(self):

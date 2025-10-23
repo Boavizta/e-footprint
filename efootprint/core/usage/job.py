@@ -47,7 +47,7 @@ class JobBase(ModelingObject):
             f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
         self.request_duration = request_duration.set_label(f"Request duration of {self.name}")
-        self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}")
+        self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}").to(u.MB_ram)
         self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
 
     @property
@@ -95,7 +95,7 @@ class JobBase(ModelingObject):
 
             delay_between_uj_start_and_job_evt += uj_step.user_time_spent
 
-        self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.set_label(
+        self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
             f"Hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
@@ -108,7 +108,7 @@ class JobBase(ModelingObject):
         hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
             self.hourly_occurrences_per_usage_pattern[usage_pattern], self.request_duration)
 
-        self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] = hourly_avg_job_occurrences.set_label(
+        self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] = hourly_avg_job_occurrences.to(u.concurrent).set_label(
             f"Average hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_avg_occurrences_per_usage_pattern(self):
@@ -160,7 +160,7 @@ class JobBase(ModelingObject):
 
     def update_hourly_avg_occurrences_across_usage_patterns(self):
         self.hourly_avg_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
-            "hourly_avg_occurrences_per_usage_pattern", "average occurrences")
+            "hourly_avg_occurrences_per_usage_pattern", "average occurrences").to(u.concurrent)
 
     def update_hourly_data_transferred_across_usage_patterns(self):
         self.hourly_data_transferred_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
@@ -199,7 +199,7 @@ class Job(DirectServerJob):
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),
             "compute_needed": SourceValue(0.1 * u.cpu_core),
-            "ram_needed": SourceValue(50 * u.MB)
+            "ram_needed": SourceValue(50 * u.MB_ram)
         }
 
     # __init__ method is copied to change server type.
@@ -215,7 +215,7 @@ class GPUJob(DirectServerJob):
             "data_stored": SourceValue(100 * u.kB),
             "request_duration": SourceValue(1 * u.s),
             "compute_needed": SourceValue(1 * u.gpu),
-            "ram_needed": SourceValue(50 * u.MB)
+            "ram_needed": SourceValue(50 * u.MB_ram)
         }
 
     def __init__(self, name: str, server: GPUServer, data_transferred: ExplainableQuantity,

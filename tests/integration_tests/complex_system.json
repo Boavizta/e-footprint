@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "12.0.0",
+    "efootprint_version": "13.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -19,7 +19,7 @@
             "id": "Usage-pattern-1",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Usage pattern 1 hourly nb of visits from e-footprint hypothesis",
@@ -40,7 +40,7 @@
             "id": "Usage-pattern-2",
             "hourly_usage_journey_starts": {
                 "compressed_values": "KLUv/SAk9QAAsAAAekUAAPpEAAB6RABAnMDaRQCAO0UCACBg30od",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Usage pattern 2 hourly nb of visits from e-footprint hypothesis",
@@ -169,7 +169,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Server 1 to process server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -219,7 +219,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Server 1 to process server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -269,7 +269,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Server 1 to process server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -319,7 +319,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Server 2 to process server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -369,7 +369,7 @@
             },
             "ram_needed": {
                 "value": 100.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "RAM needed on server Server 3 to process server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -447,7 +447,7 @@
             },
             "ram": {
                 "value": 12.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Server 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -572,7 +572,7 @@
             },
             "ram": {
                 "value": 12.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Server 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -693,7 +693,7 @@
             },
             "ram": {
                 "value": 128.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Server 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -1130,7 +1130,7 @@
             "id": "Edge-usage-pattern",
             "hourly_edge_usage_journey_starts": {
                 "compressed_values": "KLUv/SAknQAAOAAAyEJIQ5YEADs3gHzBwA+OCA==",
-                "unit": "dimensionless",
+                "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Edge usage pattern hourly nb of edge device starts from e-footprint hypothesis",
@@ -1186,7 +1186,7 @@
             },
             "recurrent_ram_needed": {
                 "recurring_values": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Edge process recurrent ram needed from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -1255,7 +1255,7 @@
             },
             "ram": {
                 "value": 8.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "RAM of Edge device from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -1291,7 +1291,7 @@
             },
             "base_ram_consumption": {
                 "value": 1.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "label": "Base RAM consumption of Edge device from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

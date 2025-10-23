@@ -66,7 +66,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(300 * u.W),
             lifespan=SourceValue(6 * u.year),
             idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(12 * u.GB),
+            ram=SourceValue(12 * u.GB_ram),
             compute=SourceValue(6 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
@@ -84,7 +84,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(300 * u.W),
             lifespan=SourceValue(6 * u.year),
             idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(12 * u.GB),
+            ram=SourceValue(12 * u.GB_ram),
             compute=cores_per_cpu_units * nb_cpu_units,
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
@@ -102,33 +102,33 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
         server1_job1 = Job("server 1 job 1", server1, data_transferred=SourceValue(1 * u.GB),
                                 data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
-                                ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
+                                ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
         uj_step_1 = UsageJourneyStep(
             "UJ step 1", user_time_spent=SourceValue(20 * u.min), jobs=[server1_job1])
 
         server1_job2 = Job("server 1 job 2", server1, data_transferred=SourceValue(300 * u.kB),
                              data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(0.4 * u.s),
-                             ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
+                             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
         uj_step_2 = UsageJourneyStep(
             "UJ step 2", user_time_spent=SourceValue(1 * u.s), jobs=[server1_job2])
 
         server1_job3 = Job(
             "server 1 job 3", server1, data_transferred=SourceValue(3.3 * u.MB),
             data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
-            ram_needed=SourceValue(100 * u.MB), compute_needed=SourceValue(1 * u.cpu_core))
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         uj_step_3 = UsageJourneyStep(
             "UJ step 3", user_time_spent=SourceValue(1 * u.min), jobs=[server1_job3])
 
         server2_job = Job(
             "server 2 job", server2, data_transferred=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         server3_job = Job(
             "server 3 job", server3, data_transferred=SourceValue(50 * u.kB),
             data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         uj_step_4 = UsageJourneyStep(
@@ -172,11 +172,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
         )
@@ -347,7 +347,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Adding job")
         new_job = Job(
             "new job", self.server1, data_transferred=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
-            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB),
+            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB_ram),
             compute_needed=SourceValue(1 * u.cpu_core))
 
         new_uj_step = UsageJourneyStep(
@@ -415,11 +415,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
             idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB),
+            ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
             power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
             utilization_rate=SourceValue(0.8 * u.dimensionless),
-            base_ram_consumption=SourceValue(1 * u.GB),
+            base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
         )
@@ -519,7 +519,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
         compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
@@ -561,11 +561,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
         compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
         compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
@@ -589,11 +589,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
         compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB),
+         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
          compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate(
@@ -611,3 +611,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         for job in [new_job, new_job2, self.server1_job1]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertIn(self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
+
+    def run_test_semantic_units_in_calculated_attributes(self):
+        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
+        self.check_semantic_units_in_calculated_attributes(self.system)

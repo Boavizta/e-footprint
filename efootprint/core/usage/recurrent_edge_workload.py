@@ -19,13 +19,13 @@ class WorkloadOutOfBoundsError(Exception):
         message = (
             f"Workload '{workload_name}' has values outside the valid range [0, 1]. "
             f"Found values between {min_value:.3f} and {max_value:.3f}. "
-            f"Workload values must be dimensionless and represent a percentage between 0 and 1 (0% to 100%).")
+            f"Workload values must represent a percentage between 0 and 1 (0% to 100%).")
         super().__init__(message)
 
 
 class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
     default_values = {
-        "recurrent_workload": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.dimensionless)),
+        "recurrent_workload": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.concurrent)),
     }
 
     def __init__(self, name: str, edge_device: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
@@ -37,7 +37,8 @@ class RecurrentEdgeWorkload(RecurrentEdgeResourceNeed):
     @staticmethod
     def assert_recurrent_workload_is_between_0_and_1(
             recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
-        workload_magnitude = recurrent_workload.value.to(u.dimensionless).magnitude
+        # Convert to concurrent (or dimensionless-like unit) to get raw magnitude
+        workload_magnitude = recurrent_workload.value.to(u.concurrent).magnitude
         min_value = float(workload_magnitude.min())
         max_value = float(workload_magnitude.max())
 

@@ -33,7 +33,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
     def generate_system_with_services():
         storage = Storage.ssd("Web server SSD storage")
         server = BoaviztaCloudServer.from_defaults(
-            "Web server", storage=storage, base_ram_consumption=SourceValue(1 * u.GB))
+            "Web server", storage=storage, base_ram_consumption=SourceValue(1 * u.GB_ram))
         gpu_server = GPUServer.from_defaults("GPU server", storage=Storage.ssd())
 
         video_streaming_service = VideoStreaming.from_defaults(
@@ -170,7 +170,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_storage = Storage.ssd("New web server SSD storage, identical to previous one")
         new_server = BoaviztaCloudServer.from_defaults(
             "New web server, identical to previous one", storage=new_storage,
-            base_ram_consumption=SourceValue(1 * u.GB))
+            base_ram_consumption=SourceValue(1 * u.GB_ram))
         new_gpu_server = GPUServer.from_defaults("New GPU server, identical to previous one", storage=Storage.ssd())
 
         new_video_streaming_service = VideoStreaming.from_defaults(

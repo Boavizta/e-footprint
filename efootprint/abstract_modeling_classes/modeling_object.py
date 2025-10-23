@@ -274,6 +274,21 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
              for contextual_mod_obj_container in self.contextual_modeling_obj_containers
              if contextual_mod_obj_container.modeling_obj_container is not None]))
 
+    @classmethod
+    def is_subclass_of(cls, base_class_name: str) -> bool:
+        """Check if this class inherits from base_class_name or any of its subclasses.
+
+        Args:
+            base_class_name: The name of the base class to check against
+
+        Returns:
+            True if this object's class or any of its parent classes has the given name
+        """
+        for parent_cls in cls.__mro__:
+            if parent_cls.__name__ == base_class_name:
+                return True
+        return False
+
     def add_to_contextual_modeling_obj_containers(self, contextual_mod_obj_container):
         self.contextual_modeling_obj_containers.append(contextual_mod_obj_container)
 
