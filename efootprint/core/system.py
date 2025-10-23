@@ -168,14 +168,14 @@ class System(ModelingObject):
     @property
     def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         fab_footprints = {
-            "Servers": {server.id: server.instances_fabrication_footprint for server in self.servers},
-            "Storage": {storage.id: storage.instances_fabrication_footprint for storage in self.storages},
+            "Servers": {server: server.instances_fabrication_footprint for server in self.servers},
+            "Storage": {storage: storage.instances_fabrication_footprint for storage in self.storages},
             "Network": {},
-            "Devices": {usage_pattern.id: usage_pattern.instances_fabrication_footprint
+            "Devices": {usage_pattern: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
-            "EdgeDevices": {edge_device.id: edge_device.instances_fabrication_footprint
+            "EdgeDevices": {edge_device: edge_device.instances_fabrication_footprint
                             for edge_device in self.edge_devices},
-            "EdgeStorage": {edge_storage.id: edge_storage.instances_fabrication_footprint
+            "EdgeStorage": {edge_storage: edge_storage.instances_fabrication_footprint
                              for edge_storage in self.edge_storages},
         }
 
@@ -184,14 +184,14 @@ class System(ModelingObject):
     @property
     def energy_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         energy_footprints = {
-            "Servers": {server.id: server.energy_footprint for server in self.servers},
-            "Storage": {storage.id: storage.energy_footprint for storage in self.storages},
-            "Network": {network.id: network.energy_footprint for network in self.networks},
-            "Devices": {usage_pattern.id: usage_pattern.energy_footprint
+            "Servers": {server: server.energy_footprint for server in self.servers},
+            "Storage": {storage: storage.energy_footprint for storage in self.storages},
+            "Network": {network: network.energy_footprint for network in self.networks},
+            "Devices": {usage_pattern: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
-            "EdgeDevices": {edge_device.id: edge_device.energy_footprint
+            "EdgeDevices": {edge_device: edge_device.energy_footprint
                             for edge_device in self.edge_devices},
-            "EdgeStorage": {edge_storage.id: edge_storage.energy_footprint for edge_storage in self.edge_storages},
+            "EdgeStorage": {edge_storage: edge_storage.energy_footprint for edge_storage in self.edge_storages},
         }
 
         return energy_footprints
@@ -311,17 +311,17 @@ class System(ModelingObject):
         value_colname = "tonnes CO2 emissions"
 
         for category in fab_footprints:
-            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
-            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
+            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0].name)
+            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0].name)
 
             for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
-                for obj_name, quantity in objs:
+                for object, quantity in objs:
                     magnitude_kg = quantity.magnitude
                     magnitude_tonnes = magnitude_kg / 1000
                     amount_str = display_co2_amount(format_co2_amount(magnitude_kg))
 
                     rows_as_dicts.append({
-                        "Type": color, "Category": category, "Object": obj_name, value_colname: magnitude_tonnes,
+                        "Type": color, "Category": category, "Object": object.name, value_colname: magnitude_tonnes,
                         "Amount": amount_str})
 
         import pandas as pd

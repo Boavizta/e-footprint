@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -9,7 +10,11 @@ if TYPE_CHECKING:
 
 
 class Service(ModelingObject):
-    default_values = {}
+    # Mark the class as abstract but not its children when they define a default_values class attribute
+    @classmethod
+    @abstractmethod
+    def default_values(cls):
+        pass
 
     @classmethod
     def installable_on(cls) -> List:

@@ -30,7 +30,7 @@ class TestSystem(TestCase):
 
         self.usage_pattern = MagicMock(spec=UsagePattern)
         self.usage_pattern.name = "usage_pattern"
-        self.usage_pattern.id = "usage_pattern_id"
+        self.usage_pattern.id = self.usage_pattern
         self.usage_pattern.systems = []
         device = MagicMock()
         self.usage_pattern.devices = [device]
@@ -48,15 +48,15 @@ class TestSystem(TestCase):
         self.usage_pattern.usage_journey.systems = []
         self.server = MagicMock()
         self.server.name = "server"
-        self.server.id = "server_id"
+        self.server.id = self.server
         self.server.systems = []
         self.storage = MagicMock()
         self.storage.name = "storage"
-        self.storage.id = "storage_id"
+        self.storage.id = self.storage
         self.storage.systems = []
         self.network = MagicMock()
         self.network.name = "network"
-        self.network.id = "network_id"
+        self.network.id = self.network
         self.network.systems = []
 
         self.usage_pattern.usage_journey.servers = [self.server]
@@ -146,12 +146,12 @@ class TestSystem(TestCase):
         
     def test_fabrication_footprints(self):
         expected_dict = {
-            "Servers": {"server_id": 
+            "Servers": {self.server: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Storage": {"storage_id": 
+            "Storage": {self.storage: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {},
-            "Devices": {"usage_pattern_id": 
+            "Devices": {self.usage_pattern:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "EdgeDevices": {},
             "EdgeStorage": {}
@@ -161,13 +161,13 @@ class TestSystem(TestCase):
 
     def test_energy_footprints(self):
         expected_dict = {
-            "Servers": {"server_id": 
+            "Servers": {self.server: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Storage": {"storage_id": 
+            "Storage": {self.storage: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Devices": {"usage_pattern_id": 
+            "Devices": {self.usage_pattern: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Network": {"network_id": 
+            "Network": {self.network: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "EdgeDevices": {},
             "EdgeStorage": {}
@@ -208,18 +208,18 @@ class TestSystem(TestCase):
 
     def test_fabrication_footprint_sum_over_period(self):
         test_footprints = {
-            "Servers": {"server_id": 
+            "Servers": {self.server: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Storage": {"storage_id": 
+            "Storage": {self.storage: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Devices": {"usage_pattern_id": 
+            "Devices": {self.usage_pattern: 
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {"networks_id": EmptyExplainableObject()}
         }
         expected_dict = {
-            "Servers": {"server_id": ExplainableQuantity(6 * u.kg, label="server")},
-            "Storage": {"storage_id": ExplainableQuantity(6 * u.kg, label="storage")},
-            "Devices": {"usage_pattern_id": ExplainableQuantity(6 * u.kg, label="devices")},
+            "Servers": {self.server: ExplainableQuantity(6 * u.kg, label="server")},
+            "Storage": {self.storage: ExplainableQuantity(6 * u.kg, label="storage")},
+            "Devices": {self.usage_pattern: ExplainableQuantity(6 * u.kg, label="devices")},
             "Network": {"networks_id": EmptyExplainableObject()},
         }
 
@@ -389,17 +389,17 @@ class TestSystem(TestCase):
 
     def test_footprints_by_category_and_object(self):
         fab_footprints = {
-            "Servers": {"server": ExplainableQuantity(6 * u.kg, "server")},
-            "Storage": {"storage": ExplainableQuantity(6 * u.kg, "storage")},
-            "Devices": {"usage_pattern": ExplainableQuantity(6 * u.kg, "usage_pattern")},
-            "Network": {"networks": ExplainableQuantity(0 * u.kg, "network")}
+            "Servers": {self.server: ExplainableQuantity(6 * u.kg, "server")},
+            "Storage": {self.storage: ExplainableQuantity(6 * u.kg, "storage")},
+            "Devices": {self.usage_pattern: ExplainableQuantity(6 * u.kg, "usage_pattern")},
+            "Network": {self.network: ExplainableQuantity(0 * u.kg, "network")}
         }
 
         energy_footprints = {
-            "Servers": {"server": ExplainableQuantity(5 * u.kg, "server")},
-            "Storage": {"storage": ExplainableQuantity(5 * u.kg, "storage")},
-            "Devices": {"usage_pattern": ExplainableQuantity(5 * u.kg, "usage_pattern")},
-            "Network": {"network": ExplainableQuantity(5 * u.kg, "network")},
+            "Servers": {self.server: ExplainableQuantity(5 * u.kg, "server")},
+            "Storage": {self.storage: ExplainableQuantity(5 * u.kg, "storage")},
+            "Devices": {self.usage_pattern: ExplainableQuantity(5 * u.kg, "usage_pattern")},
+            "Network": {self.network: ExplainableQuantity(5 * u.kg, "network")},
         }
 
         with patch.object(System, "fabrication_footprint_sum_over_period", new_callable=PropertyMock) as fab_mock,\
@@ -504,12 +504,12 @@ class TestSystem(TestCase):
 
     def test_fabrication_footprints_includes_edge_devices(self):
         expected_dict = {
-            "Servers": {self.server.id:
+            "Servers": {self.server:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Storage": {self.storage.id:
+            "Storage": {self.storage:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "Network": {},
-            "Devices": {self.usage_pattern.id:
+            "Devices": {self.usage_pattern:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "EdgeDevices": {},
             "EdgeStorage": {}
@@ -529,19 +529,19 @@ class TestSystem(TestCase):
             mock_edge_devices.return_value = [edge_computer]
             fab_footprints = self.system.fabrication_footprints
 
-            expected_dict["EdgeDevices"] = {edge_computer.id: edge_computer.instances_fabrication_footprint}
-            expected_dict["EdgeStorage"] = {edge_storage.id: edge_storage.instances_fabrication_footprint}
+            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.instances_fabrication_footprint}
+            expected_dict["EdgeStorage"] = {edge_storage: edge_storage.instances_fabrication_footprint}
             self.assertDictEqual(expected_dict, fab_footprints)
 
     def test_energy_footprints_includes_edge_devices(self):
         expected_dict = {
-            "Servers": {self.server.id:
+            "Servers": {self.server:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Storage": {self.storage.id:
+            "Storage": {self.storage:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Devices": {self.usage_pattern.id:
+            "Devices": {self.usage_pattern:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
-            "Network": {self.network.id:
+            "Network": {self.network:
                 create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)},
             "EdgeDevices": {},
             "EdgeStorage": {}
@@ -561,8 +561,8 @@ class TestSystem(TestCase):
             mock_edge_devices.return_value = [edge_computer]
             energy_footprints = self.system.energy_footprints
 
-            expected_dict["EdgeDevices"] = {edge_computer.id: edge_computer.energy_footprint}
-            expected_dict["EdgeStorage"] = {edge_storage.id: edge_storage.energy_footprint}
+            expected_dict["EdgeDevices"] = {edge_computer: edge_computer.energy_footprint}
+            expected_dict["EdgeStorage"] = {edge_storage: edge_storage.energy_footprint}
             self.assertDictEqual(expected_dict, energy_footprints)
 
     def test_total_fabrication_footprints_includes_edge_devices(self):
@@ -713,14 +713,14 @@ class TestSystem(TestCase):
         fab_footprints = system.fabrication_footprints
         self.assertIn("Devices", fab_footprints)
         self.assertIn("EdgeDevices", fab_footprints)
-        self.assertIn(self.usage_pattern.id, fab_footprints["Devices"])
-        self.assertIn(edge_computer.id, fab_footprints["EdgeDevices"])
+        self.assertIn(self.usage_pattern, fab_footprints["Devices"])
+        self.assertIn(edge_computer, fab_footprints["EdgeDevices"])
 
         energy_footprints = system.energy_footprints
         self.assertIn("Devices", energy_footprints)
         self.assertIn("EdgeDevices", energy_footprints)
-        self.assertIn(self.usage_pattern.id, energy_footprints["Devices"])
-        self.assertIn(edge_computer.id, energy_footprints["EdgeDevices"])
+        self.assertIn(self.usage_pattern, energy_footprints["Devices"])
+        self.assertIn(edge_computer, energy_footprints["EdgeDevices"])
 
     def test_get_objects_linked_to_edge_usage_patterns(self):
         edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
