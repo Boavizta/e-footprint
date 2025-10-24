@@ -2163,10 +2163,10 @@
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="utc_hourly_usage_journey_starts">utc_hourly_usage_journey_starts</h3>
-<p>Usage pattern utc in dimensionless.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],<br />
-    last 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]  </p>
+<p>Usage pattern utc in occurrence.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in occurrence:<br />
+    first 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],<br />
+    last 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_usage_journey_starts">usage pattern hourly nb of visits</a></li>
@@ -2206,7 +2206,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4d3dc3 {
+             #mynetwork_ebd291 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2228,7 +2228,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4d3dc3" class="card-body"></div>
+            <div id="mynetwork_ebd291" class="card-body"></div>
         </div>
 
 
@@ -2258,12 +2258,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4d3dc3');
+                  var container = document.getElementById('mynetwork_ebd291');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of visits", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}]);
 
                   nodeColors = {};
@@ -2331,10 +2331,10 @@
 
 <p>You can also visit the <a href='../calculus_graphs/usage_pattern_utc_hourly_usage_journey_starts.html' target='_blank'>link to usage pattern UTC’s full calculation graph</a>.</p>
 <h3 id="nb_usage_journeys_in_parallel">nb_usage_journeys_in_parallel</h3>
-<p>Usage pattern hourly nb of user journeys in parallel in dimensionless.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],<br />
-    last 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33]  </p>
+<p>Usage pattern hourly nb of user journeys in parallel in concurrent.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
+    first 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],<br />
+    last 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#utc_hourly_usage_journey_starts">usage pattern UTC</a></li>
@@ -2374,7 +2374,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f241f6 {
+             #mynetwork_47c229 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2396,7 +2396,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f241f6" class="card-body"></div>
+            <div id="mynetwork_47c229" class="card-body"></div>
         </div>
 
 
@@ -2426,12 +2426,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f241f6');
+                  var container = document.getElementById('mynetwork_47c229');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming + no value\n=\n20.0 minute + no value\n=\n20.0 minute", "x": 112.5, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming + no value\n=\n20.0 minute + no value\n=\n20.0 minute", "x": 112.5, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "usage pattern hourly nb of user journeys in parallel"}, {"arrows": "to", "from": "Duration of user journey", "to": "usage pattern hourly nb of user journeys in parallel"}]);
 
                   nodeColors = {};
@@ -2501,8 +2501,8 @@
 <h3 id="devices_energy">devices_energy</h3>
 <p>Energy consumed by usage pattern devices in kilowatt_hour.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:<br />
-    first 10 vals [0.12, 0.1, 0.13, 0.05, 0.07, 0.03, 0.02, 0.15, 0.02, 0.05],<br />
-    last 10 vals [0.02, 0.13, 0.13, 0.02, 0.15, 0.12, 0.08, 0.07, 0.05, 0.02]  </p>
+    first 10 vals [0.1, 0.05, 0.05, 0.12, 0.15, 0.02, 0.05, 0.13, 0.02, 0.12],<br />
+    last 10 vals [0.08, 0.02, 0.03, 0.08, 0.08, 0.1, 0.02, 0.08, 0.1, 0.12]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#nb_usage_journeys_in_parallel">usage pattern hourly nb of user journeys in parallel</a></li>
@@ -2542,7 +2542,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3ec57a {
+             #mynetwork_242388 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2564,7 +2564,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3ec57a" class="card-body"></div>
+            <div id="mynetwork_242388" class="card-body"></div>
         </div>
 
 
@@ -2594,12 +2594,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3ec57a');
+                  var container = document.getElementById('mynetwork_242388');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33] * (50.0\nwatt) * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.12, 0.1, 0.13, 0.05, 0.07, 0.03, 0.02, 0.15, 0.02, 0.05],\nlast 10 vals [0.02, 0.13, 0.13, 0.02, 0.15, 0.12, 0.08, 0.07, 0.05, 0.02]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33]", "x": -112.5, "y": 450}, {"color": null, "id": "Power of device on which the user journey is made", "label": "Power of device on\nwhich the user\njourney is made", "shape": "dot", "size": 15, "title": "Power of device on which the user journey is made = 50.0 watt", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33] * (50.0\nwatt) * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.1, 0.05, 0.05, 0.12, 0.15, 0.02, 0.05, 0.13, 0.02, 0.12],\nlast 10 vals [0.08, 0.02, 0.03, 0.08, 0.08, 0.1, 0.02, 0.08, 0.1, 0.12]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33]", "x": -112.5, "y": 450}, {"color": null, "id": "Power of device on which the user journey is made", "label": "Power of device on\nwhich the user\njourney is made", "shape": "dot", "size": 15, "title": "Power of device on which the user journey is made = 50.0 watt", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "Energy consumed by usage pattern devices"}, {"arrows": "to", "from": "Power of device on which the user journey is made", "to": "Energy consumed by usage pattern devices"}]);
 
                   nodeColors = {};
@@ -2669,8 +2669,8 @@
 <h3 id="devices_energy_footprint">devices_energy_footprint</h3>
 <p>Devices energy footprint of usage pattern in kilogram.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
-    first 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0]  </p>
+    first 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],<br />
+    last 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#devices_energy">Energy consumed by usage pattern devices</a></li>
@@ -2710,7 +2710,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_32e8e2 {
+             #mynetwork_376f0d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2732,7 +2732,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_32e8e2" class="card-body"></div>
+            <div id="mynetwork_376f0d" class="card-body"></div>
         </div>
 
 
@@ -2762,12 +2762,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_32e8e2');
+                  var container = document.getElementById('mynetwork_376f0d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Devices energy footprint of usage pattern", "label": "Devices energy\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.12, 0.1, 0.13, 0.05, 0.07, 0.03, 0.02, 0.15, 0.02, 0.05],\nlast 10 vals [0.02, 0.13, 0.13, 0.02, 0.15, 0.12, 0.08, 0.07, 0.05, 0.02] * 85.0\ngram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],\nlast 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33] * (50.0\nwatt) * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.12, 0.1, 0.13, 0.05, 0.07, 0.03, 0.02, 0.15, 0.02, 0.05],\nlast 10 vals [0.02, 0.13, 0.13, 0.02, 0.15, 0.12, 0.08, 0.07, 0.05, 0.02]", "x": -112.5, "y": 600}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 112.5, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Devices energy footprint of usage pattern", "label": "Devices energy\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.1, 0.05, 0.05, 0.12, 0.15, 0.02, 0.05, 0.13, 0.02, 0.12],\nlast 10 vals [0.08, 0.02, 0.03, 0.08, 0.08, 0.1, 0.02, 0.08, 0.1, 0.12] * 85.0\ngram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],\nlast 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]", "x": 0.0, "y": 750}, {"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33] * (50.0\nwatt) * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.1, 0.05, 0.05, 0.12, 0.15, 0.02, 0.05, 0.13, 0.02, 0.12],\nlast 10 vals [0.08, 0.02, 0.03, 0.08, 0.08, 0.1, 0.02, 0.08, 0.1, 0.12]", "x": -112.5, "y": 600}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 112.5, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Energy consumed by usage pattern devices", "to": "Devices energy footprint of usage pattern"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Devices energy footprint of usage pattern"}]);
 
                   nodeColors = {};
@@ -2837,8 +2837,8 @@
 <h3 id="devices_fabrication_footprint">devices_fabrication_footprint</h3>
 <p>Devices fabrication footprint of usage pattern in kilogram.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
-    first 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],<br />
-    last 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0]  </p>
+    first 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],<br />
+    last 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#nb_usage_journeys_in_parallel">usage pattern hourly nb of user journeys in parallel</a></li>
@@ -2880,7 +2880,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_066c82 {
+             #mynetwork_ea914f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2902,7 +2902,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_066c82" class="card-body"></div>
+            <div id="mynetwork_ea914f" class="card-body"></div>
         </div>
 
 
@@ -2932,12 +2932,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_066c82');
+                  var container = document.getElementById('mynetwork_ea914f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (Carbon footprint\nfabrication of device on which the user journey is made * one hour / (Lifespan\nof device on which the user journey is made * device on which the user journey\nis made fraction of usage time) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33] * (156.0\nkilogram * 1.0 hour / (6.0 year * 7.0 hour / day) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],\nlast 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33]", "x": -225.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication of device on which the user journey is made", "label": "Carbon footprint\nfabrication of\ndevice on which the\nuser journey is made", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of device on which the user journey is made = 156.0\nkilogram", "x": -75.0, "y": 450}, {"color": null, "id": "Lifespan of device on which the user journey is made", "label": "Lifespan of device\non which the user\njourney is made", "shape": "dot", "size": 15, "title": "Lifespan of device on which the user journey is made = 6.0 year", "x": 75.0, "y": 450}, {"color": null, "id": "device on which the user journey is made fraction of usage time", "label": "device on which the\nuser journey is made\nfraction of usage\ntime", "shape": "dot", "size": 15, "title": "device on which the user journey is made fraction of usage time = 7.0 hour / day", "x": 225.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (Carbon footprint\nfabrication of device on which the user journey is made * one hour / (Lifespan\nof device on which the user journey is made * device on which the user journey\nis made fraction of usage time) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33] * (156.0\nkilogram * 1.0 hour / (6.0 year * 7.0 hour / day) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],\nlast 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33]", "x": -225.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication of device on which the user journey is made", "label": "Carbon footprint\nfabrication of\ndevice on which the\nuser journey is made", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of device on which the user journey is made = 156.0\nkilogram", "x": -75.0, "y": 450}, {"color": null, "id": "Lifespan of device on which the user journey is made", "label": "Lifespan of device\non which the user\njourney is made", "shape": "dot", "size": 15, "title": "Lifespan of device on which the user journey is made = 6.0 year", "x": 75.0, "y": 450}, {"color": null, "id": "device on which the user journey is made fraction of usage time", "label": "device on which the\nuser journey is made\nfraction of usage\ntime", "shape": "dot", "size": 15, "title": "device on which the user journey is made fraction of usage time = 7.0 hour / day", "x": 225.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "Devices fabrication footprint of usage pattern"}, {"arrows": "to", "from": "Carbon footprint fabrication of device on which the user journey is made", "to": "Devices fabrication footprint of usage pattern"}, {"arrows": "to", "from": "Lifespan of device on which the user journey is made", "to": "Devices fabrication footprint of usage pattern"}, {"arrows": "to", "from": "device on which the user journey is made fraction of usage time", "to": "Devices fabrication footprint of usage pattern"}]);
 
                   nodeColors = {};
@@ -3007,8 +3007,8 @@
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>Usage pattern total energy footprint in kilogram.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
-    first 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0]  </p>
+    first 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],<br />
+    last 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#devices_energy_footprint">Devices energy footprint of usage pattern</a>  </li>
@@ -3047,7 +3047,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_86e4f4 {
+             #mynetwork_cd629e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3069,7 +3069,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_86e4f4" class="card-body"></div>
+            <div id="mynetwork_cd629e" class="card-body"></div>
         </div>
 
 
@@ -3099,12 +3099,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_86e4f4');
+                  var container = document.getElementById('mynetwork_cd629e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total energy footprint", "label": "usage pattern total\nenergy footprint", "shape": "dot", "size": 15, "title": "usage pattern total energy footprint\n=\nduplicate (Devices energy footprint of usage pattern)\n=\nduplicate (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],\nlast 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0])\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],\nlast 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Devices energy footprint of usage pattern", "label": "Devices energy\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.12, 0.1, 0.13, 0.05, 0.07, 0.03, 0.02, 0.15, 0.02, 0.05],\nlast 10 vals [0.02, 0.13, 0.13, 0.02, 0.15, 0.12, 0.08, 0.07, 0.05, 0.02] * 85.0\ngram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0],\nlast 10 vals [0.0, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total energy footprint", "label": "usage pattern total\nenergy footprint", "shape": "dot", "size": 15, "title": "usage pattern total energy footprint\n=\nduplicate (Devices energy footprint of usage pattern)\n=\nduplicate (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],\nlast 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01])\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],\nlast 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]", "x": 0.0, "y": 900}, {"color": null, "id": "Devices energy footprint of usage pattern", "label": "Devices energy\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.1, 0.05, 0.05, 0.12, 0.15, 0.02, 0.05, 0.13, 0.02, 0.12],\nlast 10 vals [0.08, 0.02, 0.03, 0.08, 0.08, 0.1, 0.02, 0.08, 0.1, 0.12] * 85.0\ngram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01],\nlast 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Devices energy footprint of usage pattern", "to": "usage pattern total energy footprint"}]);
 
                   nodeColors = {};
@@ -3174,8 +3174,8 @@
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>Usage pattern total fabrication footprint in kilogram.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:<br />
-    first 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],<br />
-    last 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0]  </p>
+    first 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],<br />
+    last 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#devices_fabrication_footprint">Devices fabrication footprint of usage pattern</a>  </li>
@@ -3214,7 +3214,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_650923 {
+             #mynetwork_993ff0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3236,7 +3236,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_650923" class="card-body"></div>
+            <div id="mynetwork_993ff0" class="card-body"></div>
         </div>
 
 
@@ -3266,12 +3266,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_650923');
+                  var container = document.getElementById('mynetwork_993ff0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total fabrication footprint", "label": "usage pattern total\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "usage pattern total fabrication footprint\n=\nduplicate (Devices fabrication footprint of usage pattern)\n=\nduplicate (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],\nlast 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0])\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],\nlast 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (Carbon footprint\nfabrication of device on which the user journey is made * one hour / (Lifespan\nof device on which the user journey is made * device on which the user journey\nis made fraction of usage time) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [2.33, 2.0, 2.67, 1.0, 1.33, 0.67, 0.33, 3.0, 0.33, 1.0],\nlast 10 vals [0.33, 2.67, 2.67, 0.33, 3.0, 2.33, 1.67, 1.33, 1.0, 0.33] * (156.0\nkilogram * 1.0 hour / (6.0 year * 7.0 hour / day) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.03, 0.01, 0.01, 0.01, 0.0, 0.03, 0.0, 0.01],\nlast 10 vals [0.0, 0.03, 0.03, 0.0, 0.03, 0.02, 0.02, 0.01, 0.01, 0.0]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total fabrication footprint", "label": "usage pattern total\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "usage pattern total fabrication footprint\n=\nduplicate (Devices fabrication footprint of usage pattern)\n=\nduplicate (26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],\nlast 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02])\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],\nlast 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02]", "x": 0.0, "y": 750}, {"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (Carbon footprint\nfabrication of device on which the user journey is made * one hour / (Lifespan\nof device on which the user journey is made * device on which the user journey\nis made fraction of usage time) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2.0, 1.0, 1.0, 2.33, 3.0, 0.33, 1.0, 2.67, 0.33, 2.33],\nlast 10 vals [1.67, 0.33, 0.67, 1.67, 1.67, 2.0, 0.33, 1.67, 2.0, 2.33] * (156.0\nkilogram * 1.0 hour / (6.0 year * 7.0 hour / day) + no value)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.0, 0.02],\nlast 10 vals [0.02, 0.0, 0.01, 0.02, 0.02, 0.02, 0.0, 0.02, 0.02, 0.02]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Devices fabrication footprint of usage pattern", "to": "usage pattern total fabrication footprint"}]);
 
                   nodeColors = {};

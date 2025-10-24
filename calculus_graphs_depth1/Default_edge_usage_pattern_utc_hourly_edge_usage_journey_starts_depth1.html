@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_500245 {
+             #mynetwork_769c8f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_500245" class="card-body"></div>
+            <div id="mynetwork_769c8f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_500245');
+                  var container = document.getElementById('mynetwork_769c8f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Default edge usage pattern UTC", "label": "Default edge usage\npattern UTC", "shape": "dot", "size": 15, "title": "Default edge usage pattern UTC\n=\nDefault edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis converted to UTC from devices country timezone from user data\n=\n52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Default edge usage pattern UTC", "label": "Default edge usage\npattern UTC", "shape": "dot", "size": 15, "title": "Default edge usage pattern UTC\n=\nDefault edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis converted to UTC from devices country timezone from user data\n=\n52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in occurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nconverted to UTC from Europe/Paris\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "label": "Default edge usage\npattern hourly nb of\nedge device starts\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge device starts from e-footprint\nhypothesis = 52597 values from 2025-01-01 00:00:00 to 2031-01-01 13:00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis", "to": "Default edge usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "Default edge usage pattern UTC"}]);
 
                   nodeColors = {};

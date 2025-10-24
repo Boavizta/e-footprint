@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2c1464 {
+             #mynetwork_e3fa6b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_2c1464" class="card-body"></div>
+            <div id="mynetwork_e3fa6b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2c1464');
+                  var container = document.getElementById('mynetwork_e3fa6b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per server instance including services", "label": "Occupied RAM per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per server instance including services\n=\nBase RAM consumption of server + Video streaming service OS and streaming\nsoftware base RAM consumption from e-footprint hypothesis\n=\n300.0 megabyte + 2.0 gigabyte\n=\n2300.0 megabyte", "x": 0.0, "y": 300}, {"color": null, "id": "Base RAM consumption of server", "label": "Base RAM consumption\nof server", "shape": "dot", "size": 15, "title": "Base RAM consumption of server = 300.0 megabyte", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Video streaming service OS and streaming software base RAM consumption from e-footprint hypothesis", "label": "Video streaming\nservice OS and\nstreaming software\nbase RAM consumption\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service OS and streaming software base RAM consumption from\ne-footprint hypothesis = 2.0 gigabyte", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per server instance including services", "label": "Occupied RAM per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per server instance including services\n=\nBase RAM consumption of server + Video streaming service OS and streaming\nsoftware base RAM consumption from e-footprint hypothesis\n=\n300.0 megabyte_ram + 2.0 gigabyte_ram\n=\n2.3 gigabyte_ram", "x": 0.0, "y": 300}, {"color": null, "id": "Base RAM consumption of server", "label": "Base RAM consumption\nof server", "shape": "dot", "size": 15, "title": "Base RAM consumption of server = 300.0 megabyte_ram", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Video streaming service OS and streaming software base RAM consumption from e-footprint hypothesis", "label": "Video streaming\nservice OS and\nstreaming software\nbase RAM consumption\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service OS and streaming software base RAM consumption from\ne-footprint hypothesis = 2.0 gigabyte_ram", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Base RAM consumption of server", "to": "Occupied RAM per server instance including services"}, {"arrows": "to", "from": "Video streaming service OS and streaming software base RAM consumption from e-footprint hypothesis", "to": "Occupied RAM per server instance including services"}]);
 
                   nodeColors = {};

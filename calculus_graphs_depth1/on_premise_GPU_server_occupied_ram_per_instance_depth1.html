@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_65b927 {
+             #mynetwork_c673dc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_65b927" class="card-body"></div>
+            <div id="mynetwork_c673dc" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_65b927');
+                  var container = document.getElementById('mynetwork_c673dc');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per on premise GPU server instance including services", "label": "Occupied RAM per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per on premise GPU server instance including services\n=\nBase RAM consumption of on premise GPU server from e-footprint hypothesis +\nGenerative AI model base RAM consumption\n=\n0.0 gigabyte + 17.52 gigabyte\n=\n17.52 gigabyte", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Base RAM consumption of on premise GPU server from e-footprint hypothesis", "label": "Base RAM consumption\nof on premise GPU\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of on premise GPU server from e-footprint hypothesis = 0.0\ngigabyte", "x": -112.5, "y": 450}, {"color": null, "id": "Generative AI model base RAM consumption", "label": "Generative AI model\nbase RAM consumption", "shape": "dot", "size": 15, "title": "Generative AI model base RAM consumption\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai total nb of parameters from Ecologits\n* Generative AI model nb of bits per parameter from e-footprint hypothesis\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16.0 dimensionless\n=\n17.52 gigabyte", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per on premise GPU server instance including services", "label": "Occupied RAM per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per on premise GPU server instance including services\n=\nBase RAM consumption of on premise GPU server from e-footprint hypothesis +\nGenerative AI model base RAM consumption\n=\n0.0 gigabyte_ram + 17.52 gigabyte\n=\n17.52 gigabyte_ram", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Base RAM consumption of on premise GPU server from e-footprint hypothesis", "label": "Base RAM consumption\nof on premise GPU\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of on premise GPU server from e-footprint hypothesis = 0.0\ngigabyte_ram", "x": -112.5, "y": 450}, {"color": null, "id": "Generative AI model base RAM consumption", "label": "Generative AI model\nbase RAM consumption", "shape": "dot", "size": 15, "title": "Generative AI model base RAM consumption\n=\nGenerative AI model ratio between GPU memory footprint and model size from\nEcologits * open-mistral-7b from mistralai total nb of parameters from Ecologits\n* Generative AI model nb of bits per parameter from e-footprint hypothesis\n=\n1.2 dimensionless * 7300000000.0 dimensionless * 16.0 dimensionless\n=\n17.52 gigabyte", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Base RAM consumption of on premise GPU server from e-footprint hypothesis", "to": "Occupied RAM per on premise GPU server instance including services"}, {"arrows": "to", "from": "Generative AI model base RAM consumption", "to": "Occupied RAM per on premise GPU server instance including services"}]);
 
                   nodeColors = {};

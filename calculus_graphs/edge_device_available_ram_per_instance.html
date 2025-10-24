@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ad2988 {
+             #mynetwork_7913e4 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ad2988" class="card-body"></div>
+            <div id="mynetwork_7913e4" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ad2988');
+                  var container = document.getElementById('mynetwork_7913e4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge device instance", "label": "Available RAM per\nedge device instance", "shape": "dot", "size": 15, "title": "Available RAM per edge device instance\n=\nRAM of edge device * edge device utilization rate - Base RAM consumption of edge\ndevice\n=\n16.0 gigabyte * 0.8 dimensionless - 1.0 gigabyte\n=\n11.8 gigabyte", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of edge device", "label": "RAM of edge device", "shape": "dot", "size": 15, "title": "RAM of edge device = 16.0 gigabyte", "x": -150.0, "y": 150}, {"color": null, "id": "edge device utilization rate", "label": "edge device\nutilization rate", "shape": "dot", "size": 15, "title": "edge device utilization rate = 0.8 dimensionless", "x": 0.0, "y": 150}, {"color": null, "id": "Base RAM consumption of edge device", "label": "Base RAM consumption\nof edge device", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge device = 1.0 gigabyte", "x": 150.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge device instance", "label": "Available RAM per\nedge device instance", "shape": "dot", "size": 15, "title": "Available RAM per edge device instance\n=\nRAM of edge device * edge device utilization rate - Base RAM consumption of edge\ndevice\n=\n16.0 gigabyte_ram * 0.8 dimensionless - 1.0 gigabyte_ram\n=\n11.8 gigabyte_ram", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of edge device", "label": "RAM of edge device", "shape": "dot", "size": 15, "title": "RAM of edge device = 16.0 gigabyte_ram", "x": -150.0, "y": 150}, {"color": null, "id": "edge device utilization rate", "label": "edge device\nutilization rate", "shape": "dot", "size": 15, "title": "edge device utilization rate = 0.8 dimensionless", "x": 0.0, "y": 150}, {"color": null, "id": "Base RAM consumption of edge device", "label": "Base RAM consumption\nof edge device", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge device = 1.0 gigabyte_ram", "x": 150.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM of edge device", "to": "Available RAM per edge device instance"}, {"arrows": "to", "from": "edge device utilization rate", "to": "Available RAM per edge device instance"}, {"arrows": "to", "from": "Base RAM consumption of edge device", "to": "Available RAM per edge device instance"}]);
 
                   nodeColors = {};

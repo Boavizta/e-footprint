@@ -2176,7 +2176,7 @@
 <h3 id="compute_needed">compute_needed</h3>
 <p>Gpus needed on server on premise gpu server to process manually defined gpu job from e-footprint hypothesis in gpu.</p>
 <h3 id="ram_needed">ram_needed</h3>
-<p>Ram needed on server on premise gpu server to process manually defined gpu job from e-footprint hypothesis in megabyte.</p>
+<p>Ram needed on server on premise gpu server to process manually defined gpu job from e-footprint hypothesis in megabyte_ram.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../UsageJourneyStep/">UsageJourneyStep</a></li>
@@ -2184,11 +2184,11 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="hourly_occurrences_per_usage_pattern">hourly_occurrences_per_usage_pattern</h3>
 <p>Dictionary with UsagePattern as keys and 
-                        Hourly manually defined gpu job occurrences in usage pattern as values, in dimensionless.  </p>
+                        Hourly manually defined gpu job occurrences in usage pattern as values, in occurrence.  </p>
 <p>Example value: {<br />
-64fe4f: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
-    first 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],<br />
-    last 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0], <br />
+2392d3: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in occurrence:<br />
+    first 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],<br />
+    last 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -2228,7 +2228,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_93d003 {
+             #mynetwork_543065 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2250,7 +2250,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_93d003" class="card-body"></div>
+            <div id="mynetwork_543065" class="card-body"></div>
         </div>
 
 
@@ -2280,12 +2280,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_93d003');
+                  var container = document.getElementById('mynetwork_543065');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job occurrences in usage pattern", "label": "Hourly Manually\ndefined GPU job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in dimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job occurrences in usage pattern", "label": "Hourly Manually\ndefined GPU job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Manually defined GPU job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -2354,9 +2354,9 @@
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_occurrences_per_usage_pattern.html' target='_blank'>link to Hourly Manually defined GPU job occurrences in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_per_usage_pattern">hourly_avg_occurrences_per_usage_pattern</h3>
 <p>Dictionary with UsagePattern as keys and 
-                        Average hourly manually defined gpu job occurrences in usage pattern as values, in dimensionless.  </p>
+                        Average hourly manually defined gpu job occurrences in usage pattern as values, in concurrent.  </p>
 <p>Example value: {<br />
-64fe4f: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+2392d3: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
 }  </p>
@@ -2399,7 +2399,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7b7b0b {
+             #mynetwork_dcaba9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2421,7 +2421,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7b7b0b" class="card-body"></div>
+            <div id="mynetwork_dcaba9" class="card-body"></div>
         </div>
 
 
@@ -2451,12 +2451,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7b7b0b');
+                  var container = document.getElementById('mynetwork_dcaba9');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Manually defined GPU job occurrences in usage pattern", "label": "Hourly Manually\ndefined GPU job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0]", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Manually defined GPU job occurrences in usage pattern", "label": "Hourly Manually\ndefined GPU job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job occurrences in usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0]", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Manually defined GPU job occurrences in usage pattern", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined GPU job from e-footprint hypothesis", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -2525,11 +2525,11 @@
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_avg_occurrences_per_usage_pattern.html' target='_blank'>link to Average hourly Manually defined GPU job occurrences in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_per_usage_pattern">hourly_data_transferred_per_usage_pattern</h3>
 <p>Dictionary with UsagePattern as keys and 
-                        Hourly data transferred for manually defined gpu job in usage pattern as values, in hour * kilobyte / second.  </p>
+                        Hourly data transferred for manually defined gpu job in usage pattern as values, in concurrent * hour * kilobyte / second.  </p>
 <p>Example value: {<br />
-64fe4f: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h * kB / s:<br />
-    first 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],<br />
-    last 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04], <br />
+2392d3: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent * h * kB / s:<br />
+    first 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],<br />
+    last 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -2571,7 +2571,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9fe105 {
+             #mynetwork_262bc8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2593,7 +2593,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9fe105" class="card-body"></div>
+            <div id="mynetwork_262bc8" class="card-body"></div>
         </div>
 
 
@@ -2623,12 +2623,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9fe105');
+                  var container = document.getElementById('mynetwork_262bc8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],\nlast 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads for request Manually defined GPU job from e-footprint hypothesis", "label": "Sum of all data\nuploads and\ndownloads for\nrequest Manually\ndefined GPU job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis = 150.0 kilobyte", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],\nlast 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads for request Manually defined GPU job from e-footprint hypothesis", "label": "Sum of all data\nuploads and\ndownloads for\nrequest Manually\ndefined GPU job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis = 150.0 kilobyte", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly data transferred for Manually defined GPU job in usage pattern"}, {"arrows": "to", "from": "Sum of all data uploads and downloads for request Manually defined GPU job from e-footprint hypothesis", "to": "Hourly data transferred for Manually defined GPU job in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined GPU job from e-footprint hypothesis", "to": "Hourly data transferred for Manually defined GPU job in usage pattern"}]);
 
                   nodeColors = {};
@@ -2697,11 +2697,11 @@
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_data_transferred_per_usage_pattern.html' target='_blank'>link to Hourly data transferred for Manually defined GPU job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_data_stored_per_usage_pattern">hourly_data_stored_per_usage_pattern</h3>
 <p>Dictionary with UsagePattern as keys and 
-                        Hourly data stored for manually defined gpu job in usage pattern as values, in hour * kilobyte / second.  </p>
+                        Hourly data stored for manually defined gpu job in usage pattern as values, in concurrent * hour * kilobyte / second.  </p>
 <p>Example value: {<br />
-64fe4f: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h * kB / s:<br />
-    first 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],<br />
-    last 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03], <br />
+2392d3: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent * h * kB / s:<br />
+    first 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],<br />
+    last 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -2743,7 +2743,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_10ef62 {
+             #mynetwork_02a325 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2765,7 +2765,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_10ef62" class="card-body"></div>
+            <div id="mynetwork_02a325" class="card-body"></div>
         </div>
 
 
@@ -2795,12 +2795,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_10ef62');
+                  var container = document.getElementById('mynetwork_02a325');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Manually defined GPU job in usage pattern", "label": "Hourly data stored\nfor Manually defined\nGPU job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Data\nstored by request Manually defined GPU job from e-footprint hypothesis * one\nhour / Request duration of Manually defined GPU job from e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (100.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],\nlast 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Manually defined GPU job from e-footprint hypothesis", "label": "Data stored by\nrequest Manually\ndefined GPU job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Manually defined GPU job from e-footprint hypothesis =\n100.0 kilobyte", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Manually defined GPU job in usage pattern", "label": "Hourly data stored\nfor Manually defined\nGPU job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Data\nstored by request Manually defined GPU job from e-footprint hypothesis * one\nhour / Request duration of Manually defined GPU job from e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (100.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],\nlast 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Manually defined GPU job from e-footprint hypothesis", "label": "Data stored by\nrequest Manually\ndefined GPU job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Manually defined GPU job from e-footprint hypothesis =\n100.0 kilobyte", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1.0\nsecond", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly data stored for Manually defined GPU job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Manually defined GPU job from e-footprint hypothesis", "to": "Hourly data stored for Manually defined GPU job in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined GPU job from e-footprint hypothesis", "to": "Hourly data stored for Manually defined GPU job in usage pattern"}]);
 
                   nodeColors = {};
@@ -2868,8 +2868,8 @@
 
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_data_stored_per_usage_pattern.html' target='_blank'>link to Hourly data stored for Manually defined GPU job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
-<p>Hourly manually defined gpu job average occurrences across usage patterns in dimensionless.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in dimensionless:<br />
+<p>Hourly manually defined gpu job average occurrences across usage patterns in concurrent.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
@@ -2910,7 +2910,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ec67f7 {
+             #mynetwork_d61c7c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2932,7 +2932,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ec67f7" class="card-body"></div>
+            <div id="mynetwork_d61c7c" class="card-body"></div>
         </div>
 
 
@@ -2962,12 +2962,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ec67f7');
+                  var container = document.getElementById('mynetwork_d61c7c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job average occurrences across usage patterns", "label": "Hourly Manually\ndefined GPU job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job average occurrences across usage patterns\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [7.0, 6.0, 8.0, 3.0, 4.0, 2.0, 1.0, 9.0, 1.0, 3.0],\nlast 10 vals [1.0, 8.0, 8.0, 1.0, 9.0, 7.0, 5.0, 4.0, 3.0, 1.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job average occurrences across usage patterns", "label": "Hourly Manually\ndefined GPU job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job average occurrences across usage patterns\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in usage pattern hourly occurrences\naverage Request duration of Manually defined GPU job from e-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [6.0, 3.0, 3.0, 7.0, 9.0, 1.0, 3.0, 8.0, 1.0, 7.0],\nlast 10 vals [5.0, 1.0, 2.0, 5.0, 5.0, 6.0, 1.0, 5.0, 6.0, 7.0] hourly\noccurrences average 1.0 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly Manually defined GPU job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -3035,10 +3035,10 @@
 
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly Manually defined GPU job average occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
-<p>Hourly manually defined gpu job data transferred across usage patterns in hour * kilobyte / second.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h * kB / s:<br />
-    first 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],<br />
-    last 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04]  </p>
+<p>Hourly manually defined gpu job data transferred across usage patterns in concurrent * hour * kilobyte / second.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent * h * kB / s:<br />
+    first 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],<br />
+    last 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Manually defined GPU job in usage pattern</a>  </li>
@@ -3077,7 +3077,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_00a6b3 {
+             #mynetwork_300bff {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3099,7 +3099,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_00a6b3" class="card-body"></div>
+            <div id="mynetwork_300bff" class="card-body"></div>
         </div>
 
 
@@ -3129,12 +3129,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_00a6b3');
+                  var container = document.getElementById('mynetwork_300bff');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job data transferred across usage patterns", "label": "Hourly Manually\ndefined GPU job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job data transferred across usage patterns\n=\nHourly data transferred for Manually defined GPU job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],\nlast 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],\nlast 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.29, 0.25, 0.33, 0.12, 0.17, 0.08, 0.04, 0.38, 0.04, 0.12],\nlast 10 vals [0.04, 0.33, 0.33, 0.04, 0.38, 0.29, 0.21, 0.17, 0.12, 0.04]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job data transferred across usage patterns", "label": "Hourly Manually\ndefined GPU job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job data transferred across usage patterns\n=\nHourly data transferred for Manually defined GPU job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],\nlast 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],\nlast 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.25, 0.12, 0.12, 0.29, 0.38, 0.04, 0.12, 0.33, 0.04, 0.29],\nlast 10 vals [0.21, 0.04, 0.08, 0.21, 0.21, 0.25, 0.04, 0.21, 0.25, 0.29]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Manually defined GPU job in usage pattern", "to": "Hourly Manually defined GPU job data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -3202,10 +3202,10 @@
 
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_GPU_job_hourly_data_transferred_across_usage_patterns.html' target='_blank'>link to Hourly Manually defined GPU job data transferred across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_stored_across_usage_patterns">hourly_data_stored_across_usage_patterns</h3>
-<p>Hourly manually defined gpu job data stored across usage patterns in hour * kilobyte / second.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h * kB / s:<br />
-    first 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],<br />
-    last 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03]  </p>
+<p>Hourly manually defined gpu job data stored across usage patterns in concurrent * hour * kilobyte / second.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent * h * kB / s:<br />
+    first 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],<br />
+    last 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_stored_per_usage_pattern">Hourly data stored for Manually defined GPU job in usage pattern</a>  </li>
@@ -3244,7 +3244,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_886eb8 {
+             #mynetwork_980198 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3266,7 +3266,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_886eb8" class="card-body"></div>
+            <div id="mynetwork_980198" class="card-body"></div>
         </div>
 
 
@@ -3296,12 +3296,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_886eb8');
+                  var container = document.getElementById('mynetwork_980198');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job data stored across usage patterns", "label": "Hourly Manually\ndefined GPU job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job data stored across usage patterns\n=\nHourly data stored for Manually defined GPU job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],\nlast 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],\nlast 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Manually defined GPU job in usage pattern", "label": "Hourly data stored\nfor Manually defined\nGPU job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Data\nstored by request Manually defined GPU job from e-footprint hypothesis * one\nhour / Request duration of Manually defined GPU job from e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (100.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in h *\nkB / s:\nfirst 10 vals [0.19, 0.17, 0.22, 0.08, 0.11, 0.06, 0.03, 0.25, 0.03, 0.08],\nlast 10 vals [0.03, 0.22, 0.22, 0.03, 0.25, 0.19, 0.14, 0.11, 0.08, 0.03]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job data stored across usage patterns", "label": "Hourly Manually\ndefined GPU job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job data stored across usage patterns\n=\nHourly data stored for Manually defined GPU job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],\nlast 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],\nlast 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Manually defined GPU job in usage pattern", "label": "Hourly data stored\nfor Manually defined\nGPU job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Data\nstored by request Manually defined GPU job from e-footprint hypothesis * one\nhour / Request duration of Manually defined GPU job from e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (100.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent * h * kB / s:\nfirst 10 vals [0.17, 0.08, 0.08, 0.19, 0.25, 0.03, 0.08, 0.22, 0.03, 0.19],\nlast 10 vals [0.14, 0.03, 0.06, 0.14, 0.14, 0.17, 0.03, 0.14, 0.17, 0.19]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Manually defined GPU job in usage pattern", "to": "Hourly Manually defined GPU job data stored across usage patterns"}]);
 
                   nodeColors = {};

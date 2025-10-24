@@ -2066,7 +2066,7 @@
     last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]</p>
 <h3 id="recurrent_ram_needed">recurrent_ram_needed</h3>
 <p>Edge process recurrent ram needed, in typical week of hourly timeseries data, starting on Monday at midnight.</p>
-<p>For example, 168 values in GB:
+<p>For example, 168 values in GB_ram:
     first 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
     last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]</p>
 <h3 id="recurrent_storage_needed">recurrent_storage_needed</h3>
@@ -2083,7 +2083,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process unitary hourly compute need for default edge usage pattern as values, in cpu_core.  </p>
 <p>Example value: {<br />
-8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:<br />
+8d5634: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:<br />
     first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
     last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
 }  </p>
@@ -2127,7 +2127,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9862bd {
+             #mynetwork_bd2671 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2149,7 +2149,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9862bd" class="card-body"></div>
+            <div id="mynetwork_bd2671" class="card-body"></div>
         </div>
 
 
@@ -2179,12 +2179,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9862bd');
+                  var container = document.getElementById('mynetwork_bd2671');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly compute need for Default edge usage pattern", "label": "edge process unitary\nhourly compute need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly compute need for Default edge usage pattern\n=\nedge process recurrent compute needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent compute needed", "label": "edge process\nrecurrent compute\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed = 168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly compute need for Default edge usage pattern", "label": "edge process unitary\nhourly compute need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly compute need for Default edge usage pattern\n=\nedge process recurrent compute needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in concurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ncpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent compute needed", "label": "edge process\nrecurrent compute\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent compute needed = 168 values in cpu_core:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent compute needed", "to": "edge process unitary hourly compute need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge process unitary hourly compute need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly compute need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -2253,9 +2253,9 @@
 <p>You can also visit the <a href='../calculus_graphs/edge_process_unitary_hourly_compute_need_per_usage_pattern.html' target='_blank'>link to edge process unitary hourly compute need for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="unitary_hourly_ram_need_per_usage_pattern">unitary_hourly_ram_need_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
-                        Edge process unitary hourly ram need for default edge usage pattern as values, in gigabyte.  </p>
+                        Edge process unitary hourly ram need for default edge usage pattern as values, in gigabyte_ram.  </p>
 <p>Example value: {<br />
-8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB:<br />
+8d5634: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB_ram:<br />
     first 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],<br />
     last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], <br />
 }  </p>
@@ -2299,7 +2299,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9910f3 {
+             #mynetwork_79df5b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2321,7 +2321,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9910f3" class="card-body"></div>
+            <div id="mynetwork_79df5b" class="card-body"></div>
         </div>
 
 
@@ -2351,12 +2351,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9910f3');
+                  var container = document.getElementById('mynetwork_79df5b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly ram need for Default edge usage pattern", "label": "edge process unitary\nhourly ram need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly ram need for Default edge usage pattern\n=\nedge process recurrent ram needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent ram needed", "label": "edge process\nrecurrent ram needed", "shape": "dot", "size": 15, "title": "edge process recurrent ram needed = 168 values in GB:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly ram need for Default edge usage pattern", "label": "edge process unitary\nhourly ram need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly ram need for Default edge usage pattern\n=\nedge process recurrent ram needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in concurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nGB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent ram needed", "label": "edge process\nrecurrent ram needed", "shape": "dot", "size": 15, "title": "edge process recurrent ram needed = 168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent ram needed", "to": "edge process unitary hourly ram need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge process unitary hourly ram need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly ram need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -2427,7 +2427,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process unitary hourly storage need for default edge usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-8b5c4a: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:<br />
+8d5634: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
     last 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0], <br />
 }  </p>
@@ -2471,7 +2471,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fbd5c4 {
+             #mynetwork_0cdf1c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2493,7 +2493,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_fbd5c4" class="card-body"></div>
+            <div id="mynetwork_0cdf1c" class="card-body"></div>
         </div>
 
 
@@ -2523,12 +2523,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fbd5c4');
+                  var container = document.getElementById('mynetwork_0cdf1c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly storage need for Default edge usage pattern", "label": "edge process unitary\nhourly storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly storage need for Default edge usage pattern\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in dimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent storage needed", "label": "edge process\nrecurrent storage\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed = 168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\ndimensionless:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process unitary hourly storage need for Default edge usage pattern", "label": "edge process unitary\nhourly storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process unitary hourly storage need for Default edge usage pattern\n=\nedge process recurrent storage needed expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0] expanded over timespan 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process recurrent storage needed", "label": "edge process\nrecurrent storage\nneeded", "shape": "dot", "size": 15, "title": "edge process recurrent storage needed = 168 values in kB:\nfirst 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process recurrent storage needed", "to": "edge process unitary hourly storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge process unitary hourly storage need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process unitary hourly storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};
