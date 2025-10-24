@@ -1,2 +1,9 @@
-The previous commit is a draft implementation of the addition of the EdgeFunction, RecurrentEdgeRessourceNeed and RecurrendEdgeWorkload objects.
-Look up the commit diff, then update EdgeUsagePattern unit tests.
+I would like to complexify my EdgeDeviceBase class to make it an EdgeDevice class that has a more complex structure. It will be defined by its name, a structure fabrication carbon footprint, and a list of components. The type of the components will be EdgeComponent, that will be a new abstract class similar to EdgeAppliance (but adapted to the edge component context) and that will have its update_unitary_power_per_usage_pattern method abstract.
+
+EdgeComputer and EdgeAppliance will keep the same signature but become builders for EdgeDevice objects (creating EdgeComponents under the hood), just like BoaviztaCloudServer is a builder for Server. 
+
+Then RecurrentEdgeResourceNeed object will be renamed to RecurrentEdgeDeviceNeed and its structure will have a new parameter: recurrent_edge_component_needs, which will be a list of a new type of object: RecurrentEdgeComponentNeed. The RecurrentEdgeComponentNeed object will have a name, a link to an EdgeComponent called edge_component, and a recurrent_need of type ExplainableRecurrentQuantities. It will compute a "unitary_hourly_need_per_usage_pattern" just like RecurrentEdgeWorkload computes "unitary_hourly_workload_per_usage_pattern". Of course RecurrentProcess and RecurrentEdgeWorkload will become builders that create RecurrentEdgeResourceNeed objects suited to their signature and context.
+
+EdgeStorage will need to inherit from EdgeComponent.
+
+Think hard about the best way to implement this while keeping the code clean and maintainable. If you detect logical weaknesses in the design, please raise them and don’t hesitate to ask clarifying questions. This is a critical development that needs to be done properly.
