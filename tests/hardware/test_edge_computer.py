@@ -28,8 +28,6 @@ class TestEdgeComputer(TestCase):
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=self.mock_storage
@@ -43,11 +41,9 @@ class TestEdgeComputer(TestCase):
         self.assertEqual(30 * u.W, self.edge_computer.power.value)
         self.assertEqual(8 * u.year, self.edge_computer.lifespan.value)
         self.assertEqual(5 * u.W, self.edge_computer.idle_power.value)
-        self.assertEqual(8 * u.GB, self.edge_computer.ram.value)
+        self.assertEqual(8 * u.GB_ram, self.edge_computer.ram.value)
         self.assertEqual(4 * u.cpu_core, self.edge_computer.compute.value)
-        self.assertEqual(1.0 * u.dimensionless, self.edge_computer.power_usage_effectiveness.value)
-        self.assertEqual(0.8 * u.dimensionless, self.edge_computer.utilization_rate.value)
-        self.assertEqual(1 * u.GB, self.edge_computer.base_ram_consumption.value)
+        self.assertEqual(1 * u.GB_ram, self.edge_computer.base_ram_consumption.value)
         self.assertEqual(0.1 * u.cpu_core, self.edge_computer.base_compute_consumption.value)
         self.assertEqual(self.mock_storage, self.edge_computer.storage)
 
@@ -68,8 +64,6 @@ class TestEdgeComputer(TestCase):
         self.assertIn("Idle power of Test EdgeComputer", self.edge_computer.idle_power.label)
         self.assertIn("RAM of Test EdgeComputer", self.edge_computer.ram.label)
         self.assertIn("Compute of Test EdgeComputer", self.edge_computer.compute.label)
-        self.assertIn("PUE of Test EdgeComputer", self.edge_computer.power_usage_effectiveness.label)
-        self.assertIn("Test EdgeComputer utilization rate", self.edge_computer.utilization_rate.label)
         self.assertIn("Base RAM consumption of Test EdgeComputer", self.edge_computer.base_ram_consumption.label)
         self.assertIn("Base compute consumption of Test EdgeComputer", self.edge_computer.base_compute_consumption.label)
 
@@ -164,186 +158,13 @@ class TestEdgeComputer(TestCase):
         set_modeling_obj_containers(self.edge_computer, [])
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that storage is returned as dependent object."""
+        """Test that components are returned as dependent objects."""
         dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_storage], dependent_objects)
-
-
-    def test_update_available_ram_per_instance(self):
-        """Test update_available_ram_per_instance calculation."""
-        with patch.object(self.edge_computer, "ram", SourceValue(16 * u.GB_ram)), \
-             patch.object(self.edge_computer, "utilization_rate", SourceValue(0.8 * u.dimensionless)), \
-             patch.object(self.edge_computer, "base_ram_consumption", SourceValue(2 * u.GB)):
-            
-            self.edge_computer.update_available_ram_per_instance()
-            
-            expected_value = 16 * 0.8 - 2  # 10.8 GB
-            self.assertAlmostEqual(
-                expected_value, self.edge_computer.available_ram_per_instance.value.magnitude, places=5)
-            self.assertEqual(u.GB_ram, self.edge_computer.available_ram_per_instance.value.units)
-            self.assertEqual("Available RAM per Test EdgeComputer instance",
-                             self.edge_computer.available_ram_per_instance.label)
-
-    def test_update_available_ram_per_instance_insufficient_capacity(self):
-        """Test update_available_ram_per_instance raises error when capacity is insufficient."""
-        with patch.object(self.edge_computer, "ram", SourceValue(8 * u.GB_ram)), \
-             patch.object(self.edge_computer, "utilization_rate", SourceValue(0.5 * u.dimensionless)), \
-             patch.object(self.edge_computer, "base_ram_consumption", SourceValue(5 * u.GB)):
-            
-            with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_computer.update_available_ram_per_instance()
-            
-            self.assertEqual("RAM", context.exception.capacity_type)
-            self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-
-    def test_update_available_compute_per_instance(self):
-        """Test update_available_compute_per_instance calculation."""
-        with patch.object(self.edge_computer, "compute", SourceValue(8 * u.cpu_core)), \
-             patch.object(self.edge_computer, "utilization_rate", SourceValue(0.75 * u.dimensionless)), \
-             patch.object(self.edge_computer, "base_compute_consumption", SourceValue(1 * u.cpu_core)):
-            
-            self.edge_computer.update_available_compute_per_instance()
-            
-            expected_value = 8 * 0.75 - 1  # 5.0 cpu_core
-            self.assertAlmostEqual(
-                expected_value, self.edge_computer.available_compute_per_instance.value.magnitude, places=5)
-            self.assertEqual(u.cpu_core, self.edge_computer.available_compute_per_instance.value.units)
-            self.assertEqual("Available compute per Test EdgeComputer instance",
-                             self.edge_computer.available_compute_per_instance.label)
-
-    def test_update_available_compute_per_instance_insufficient_capacity(self):
-        """Test update_available_compute_per_instance raises error when capacity is insufficient."""
-        with patch.object(self.edge_computer, "compute", SourceValue(4 * u.cpu_core)), \
-             patch.object(self.edge_computer, "utilization_rate", SourceValue(0.5 * u.dimensionless)), \
-             patch.object(self.edge_computer, "base_compute_consumption", SourceValue(3 * u.cpu_core)):
-            
-            with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_computer.update_available_compute_per_instance()
-            
-            self.assertEqual("compute", context.exception.capacity_type)
-            self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-
-    def test_update_unitary_hourly_ram_need_per_usage_pattern(self):
-        """Test update_unitary_hourly_ram_need_per_usage_pattern aggregates all patterns."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_2.name = "Pattern 2"
-
-        mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process])
-
-        with patch.object(
-                EdgeComputer, "update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern") as mock_update:
-            self.edge_computer.update_unitary_hourly_ram_need_per_usage_pattern()
-
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(mock_pattern_1)
-            mock_update.assert_any_call(mock_pattern_2)
-
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self):
-        """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern calculation."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-
-        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-
-        ram_need_1 = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.GB_ram)
-        ram_need_2 = create_source_hourly_values_from_list([2, 1, 4], pint_unit=u.GB_ram)
-
-        mock_process_1.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_1}
-        mock_process_2.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need_2}
-        mock_process_1.edge_usage_patterns = [mock_pattern]
-        mock_process_2.edge_usage_patterns = [mock_pattern]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
-
-        with patch.object(self.edge_computer, "available_ram_per_instance", SourceValue(10 * u.GB)):
-            self.edge_computer.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
-
-            expected_values = [3, 3, 7]  # Sum of both processes
-            result = self.edge_computer.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
-            self.assertEqual(expected_values, result.value_as_float_list)
-            self.assertEqual(u.GB_ram, result.unit)
-            self.assertIn("Test EdgeComputer hourly RAM need for Test Pattern", result.label)
-
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern_insufficient_capacity(self):
-        """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-
-        mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        ram_need = create_source_hourly_values_from_list([1, 2, 15], pint_unit=u.GB_ram)  # Peak of 15 GB
-        mock_process.unitary_hourly_ram_need_per_usage_pattern = {mock_pattern: ram_need}
-        mock_process.edge_usage_patterns = [mock_pattern]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process])
-
-        with patch.object(self.edge_computer, "available_ram_per_instance", SourceValue(10 * u.GB)):
-            with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_computer.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(mock_pattern)
-
-            self.assertEqual("RAM", context.exception.capacity_type)
-            self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
-        """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-
-        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-
-        compute_need_1 = create_source_hourly_values_from_list([0.5, 1.0, 1.5], pint_unit=u.cpu_core)
-        compute_need_2 = create_source_hourly_values_from_list([1.0, 0.5, 2.0], pint_unit=u.cpu_core)
-
-        mock_process_1.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_1}
-        mock_process_2.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need_2}
-        mock_process_1.edge_usage_patterns = [mock_pattern]
-        mock_process_2.edge_usage_patterns = [mock_pattern]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
-
-        with patch.object(self.edge_computer, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
-            self.edge_computer.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
-
-            expected_values = [1.5, 1.5, 3.5]  # Sum of both processes
-            result = self.edge_computer.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
-            self.assertEqual(expected_values, result.value_as_float_list)
-            self.assertEqual(u.cpu_core, result.unit)
-            self.assertIn("Test EdgeComputer hourly compute need for Test Pattern", result.label)
-
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
-        """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-
-        mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        compute_need = create_source_hourly_values_from_list([0.5, 1.0, 8.0], pint_unit=u.cpu_core)  # Peak of 8.0 cpu_core
-        mock_process.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
-        mock_process.edge_usage_patterns = [mock_pattern]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process])
-
-        with patch.object(self.edge_computer, "available_compute_per_instance", SourceValue(5 * u.cpu_core)):
-            with self.assertRaises(InsufficientCapacityError) as context:
-                self.edge_computer.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
-
-            self.assertEqual("compute", context.exception.capacity_type)
-            self.assertEqual(self.edge_computer, context.exception.overloaded_object)
-
-        set_modeling_obj_containers(self.edge_computer, [])
+        # EdgeComputer has 3 components: RAM, CPU, and Storage
+        self.assertEqual(3, len(dependent_objects))
+        self.assertIn(self.edge_computer.ram_component, dependent_objects)
+        self.assertIn(self.edge_computer.cpu_component, dependent_objects)
+        self.assertIn(self.mock_storage, dependent_objects)
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculation."""

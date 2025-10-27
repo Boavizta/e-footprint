@@ -48,6 +48,11 @@ class EdgeAppliance(EdgeDevice):
         return self.modeling_obj_containers
 
     @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return super().attributes_that_shouldnt_trigger_update_logic + [
+            "power", "idle_power", "carbon_footprint_fabrication"]
+
+    @property
     def power(self):
         return self._appliance_component.power
 

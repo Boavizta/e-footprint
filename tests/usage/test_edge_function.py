@@ -3,30 +3,30 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeFunction(TestCase):
     def setUp(self):
-        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeResourceNeed)
+        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeDeviceNeed)
         self.mock_edge_need_1.id = "mock_need_1"
         self.mock_edge_need_1.name = "Mock Need 1"
 
-        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeResourceNeed)
+        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeDeviceNeed)
         self.mock_edge_need_2.id = "mock_need_2"
         self.mock_edge_need_2.name = "Mock Need 2"
 
         self.edge_function = EdgeFunction(
             "test edge function",
-            recurrent_edge_resource_needs=[self.mock_edge_need_1, self.mock_edge_need_2]
+            recurrent_edge_device_needs=[self.mock_edge_need_1, self.mock_edge_need_2]
         )
 
     def test_init(self):
         """Test EdgeFunction initialization."""
         self.assertEqual("test edge function", self.edge_function.name)
-        self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], self.edge_function.recurrent_edge_resource_needs)
+        self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], self.edge_function.recurrent_edge_device_needs)
 
     def test_edge_usage_journeys_property_no_containers(self):
         """Test edge_usage_journeys property when no containers are set."""

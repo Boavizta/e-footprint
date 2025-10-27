@@ -10,9 +10,6 @@ from efootprint.core.hardware.edge_appliance import EdgeAppliance
 from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
-if TYPE_CHECKING:
-    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-
 
 class WorkloadOutOfBoundsError(Exception):
     def __init__(self, workload_name: str, min_value: float, max_value: float):
@@ -53,6 +50,10 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
 
         if min_value < 0 or max_value > 1:
             raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
+
+    @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return super().attributes_that_shouldnt_trigger_update_logic + ["recurrent_workload"]
 
     @property
     def recurrent_workload(self):

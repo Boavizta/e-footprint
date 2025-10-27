@@ -32,13 +32,12 @@ class EdgeComputer(EdgeDevice):
                  ram: ExplainableQuantity, compute: ExplainableQuantity,
                  base_ram_consumption: ExplainableQuantity, base_compute_consumption: ExplainableQuantity,
                  storage: EdgeStorage):
-
         # RAM component has no power
         ram_component = EdgeRAMComponent(
             name=f"{name} RAM",
             carbon_footprint_fabrication=SourceValue(0 * u.kg),
             power=SourceValue(0 * u.W),
-            lifespan=lifespan,
+            lifespan=lifespan.copy(),
             idle_power=SourceValue(0 * u.W),
             ram=ram,
             base_ram_consumption=base_ram_consumption)
@@ -48,33 +47,22 @@ class EdgeComputer(EdgeDevice):
             name=f"{name} CPU",
             carbon_footprint_fabrication=SourceValue(0 * u.kg),
             power=power,
-            lifespan=lifespan,
+            lifespan=lifespan.copy(),
             idle_power=idle_power,
             compute=compute,
             base_compute_consumption=base_compute_consumption)
 
-        # All fabrication footprint goes to structure
+        # Initialize parent first
         super().__init__(
             name=name,
             structure_fabrication_carbon_footprint=carbon_footprint_fabrication,
             components=[ram_component, cpu_component, storage],
             lifespan=lifespan)
 
-        self._ram_component = ram_component
-        self._cpu_component = cpu_component
-        self._storage = storage
-
-    @property
-    def ram_component(self) -> EdgeRAMComponent:
-        return self._ram_component
-
-    @property
-    def cpu_component(self) -> EdgeCPUComponent:
-        return self._cpu_component
-
-    @property
-    def storage(self) -> EdgeStorage:
-        return self._storage
+        # Store component references for delegation
+        self.ram_component = ram_component
+        self.cpu_component = cpu_component
+        self.storage = storage
 
     @property
     def edge_processes(self) -> List["RecurrentEdgeProcess"]:
@@ -89,20 +77,26 @@ class EdgeComputer(EdgeDevice):
         return list(set(sum([ep.edge_functions for ep in self.edge_processes], start=[])))
 
     @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return super().attributes_that_shouldnt_trigger_update_logic + [
+            "power", "idle_power", "carbon_footprint_fabrication", "ram", "compute",
+            "base_ram_consumption", "base_compute_consumption"]
+
+    @property
     def power(self):
-        return self._cpu_component.power
+        return self.cpu_component.power
 
     @power.setter
     def power(self, value):
-        self._cpu_component.power = value
+        self.cpu_component.power = value
 
     @property
     def idle_power(self):
-        return self._cpu_component.idle_power
+        return self.cpu_component.idle_power
 
     @idle_power.setter
     def idle_power(self, value):
-        self._cpu_component.idle_power = value
+        self.cpu_component.idle_power = value
 
     @property
     def carbon_footprint_fabrication(self):
@@ -114,48 +108,55 @@ class EdgeComputer(EdgeDevice):
 
     @property
     def ram(self):
-        return self._ram_component.ram
+        return self.ram_component.ram
 
     @ram.setter
     def ram(self, value):
-        self._ram_component.ram = value
+        self.ram_component.ram = value
 
     @property
     def compute(self):
-        return self._cpu_component.compute
+        return self.cpu_component.compute
 
     @compute.setter
     def compute(self, value):
-        self._cpu_component.compute = value
+        self.cpu_component.compute = value
 
     @property
     def base_ram_consumption(self):
-        return self._ram_component.base_ram_consumption
+        return self.ram_component.base_ram_consumption
 
     @base_ram_consumption.setter
     def base_ram_consumption(self, value):
-        self._ram_component.base_ram_consumption = value
+        self.ram_component.base_ram_consumption = value
 
     @property
     def base_compute_consumption(self):
-        return self._cpu_component.base_compute_consumption
+        return self.cpu_component.base_compute_consumption
 
     @base_compute_consumption.setter
     def base_compute_consumption(self, value):
-        self._cpu_component.base_compute_consumption = value
+        self.cpu_component.base_compute_consumption = value
 
     @property
     def available_ram_per_instance(self):
-        return self._ram_component.available_ram_per_instance
+        return self.ram_component.available_ram_per_instance
 
     @property
     def available_compute_per_instance(self):
-        return self._cpu_component.available_compute_per_instance
+        return self.cpu_component.available_compute_per_instance
 
     @property
     def unitary_hourly_ram_need_per_usage_pattern(self):
-        return self._ram_component.unitary_hourly_ram_need_per_usage_pattern
+        return self.ram_component.unitary_hourly_ram_need_per_usage_pattern
 
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
-        return self._cpu_component.unitary_hourly_compute_need_per_usage_pattern
+        return self.cpu_component.unitary_hourly_compute_need_per_usage_pattern
+
+    def __setattr__(self, name, value):
+        super().__setattr__(name, value)
+        # When lifespan is updated after init, propagate copies to components
+        if name == "lifespan" and hasattr(self, 'ram_component'):
+            self.ram_component.lifespan = value.copy()
+            self.cpu_component.lifespan = value.copy()

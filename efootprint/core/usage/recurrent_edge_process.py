@@ -57,6 +57,11 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         return ["unitary_hourly_storage_need_per_usage_pattern"]
 
     @property
+    def attributes_that_shouldnt_trigger_update_logic(self):
+        return super().attributes_that_shouldnt_trigger_update_logic + [
+            "recurrent_compute_needed", "recurrent_ram_needed", "recurrent_storage_needed"]
+
+    @property
     def recurrent_compute_needed(self):
         return self._cpu_need.recurrent_need
 

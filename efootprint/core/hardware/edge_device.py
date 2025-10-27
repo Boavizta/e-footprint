@@ -3,24 +3,23 @@ from typing import List, TYPE_CHECKING
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.constants.units import u
-from efootprint.core.hardware.hardware_base import HardwareBase
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.hardware.edge_component import EdgeComponent
 
 
-class EdgeDevice(HardwareBase):
+class EdgeDevice(ModelingObject):
     def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
                  components: List["EdgeComponent"], lifespan: ExplainableQuantity):
-        super().__init__(
-            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
-            lifespan=lifespan, fraction_of_usage_time=SourceValue(1 * u.dimensionless))
+        super().__init__(name)
+        self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         self.structure_fabrication_carbon_footprint = structure_fabrication_carbon_footprint.set_label(
             f"Structure fabrication carbon footprint of {self.name}")
         self.components = components
+        self.carbon_footprint_fabrication = EmptyExplainableObject()
+        self.total_component_power = EmptyExplainableObject()
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         self.nb_of_instances_per_usage_pattern = ExplainableObjectDict()
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
@@ -37,7 +36,7 @@ class EdgeDevice(HardwareBase):
 
     @property
     def calculated_attributes(self):
-        return ["carbon_footprint_fabrication", "power", "nb_of_instances_per_usage_pattern",
+        return ["carbon_footprint_fabrication", "total_component_power", "nb_of_instances_per_usage_pattern",
                 "instances_fabrication_footprint_per_usage_pattern", "unitary_power_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern", "nb_of_instances",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
@@ -77,11 +76,11 @@ class EdgeDevice(HardwareBase):
         self.carbon_footprint_fabrication = total_fabrication.set_label(
             f"Total carbon footprint fabrication of {self.name}")
 
-    def update_power(self):
+    def update_total_component_power(self):
         total_power = EmptyExplainableObject()
         for component in self.components:
             total_power += component.power
-        self.power = total_power.set_label(f"Total power of {self.name}")
+        self.total_component_power = total_power.set_label(f"Total component power of {self.name}")
 
     def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         total_power = EmptyExplainableObject()

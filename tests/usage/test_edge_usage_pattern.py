@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
@@ -21,9 +21,9 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         self.mock_edge_usage_journey.id = "mock_edge_journey"
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
-        self.mock_edge_need = MagicMock(spec=RecurrentEdgeResourceNeed)
+        self.mock_edge_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         self.mock_edge_need.name = "Mock Edge Need"
-        self.mock_edge_usage_journey.recurrent_edge_resource_needs = [self.mock_edge_need]
+        self.mock_edge_usage_journey.recurrent_edge_device_needs = [self.mock_edge_need]
 
         self.mock_country = MagicMock(spec=Country)
         self.mock_country.name = "Mock Country"
@@ -53,13 +53,13 @@ class TestEdgeUsagePattern(TestCase):
         self.assertIsInstance(self.edge_usage_pattern.nb_edge_usage_journeys_in_parallel, EmptyExplainableObject)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that recurrent_edge_resource_needs are returned as dependent objects."""
+        """Test that recurrent_edge_device_needs are returned as dependent objects."""
         dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual([self.mock_edge_need], dependent_objects)
 
-    def test_recurrent_edge_resource_needs(self):
-        """Test recurrent_edge_resource_needs property delegates to edge_usage_journey."""
-        self.assertEqual([self.mock_edge_need], self.edge_usage_pattern.recurrent_edge_resource_needs)
+    def test_recurrent_edge_device_needs(self):
+        """Test recurrent_edge_device_needs property delegates to edge_usage_journey."""
+        self.assertEqual([self.mock_edge_need], self.edge_usage_pattern.recurrent_edge_device_needs)
 
     def test_systems(self):
         """Test systems property returns modeling_obj_containers."""
