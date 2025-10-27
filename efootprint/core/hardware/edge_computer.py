@@ -17,49 +17,46 @@ if TYPE_CHECKING:
 
 class EdgeComputer(EdgeDevice):
     default_values = {
-        "structure_fabrication_carbon_footprint": SourceValue(20 * u.kg),
-        "cpu_carbon_footprint_fabrication": SourceValue(20 * u.kg),
-        "cpu_power": SourceValue(15 * u.W),
-        "cpu_idle_power": SourceValue(3 * u.W),
-        "ram_carbon_footprint_fabrication": SourceValue(20 * u.kg),
-        "ram_power": SourceValue(10 * u.W),
-        "ram_idle_power": SourceValue(2 * u.W),
+        "carbon_footprint_fabrication": SourceValue(60 * u.kg),
+        "power": SourceValue(30 * u.W),
         "lifespan": SourceValue(6 * u.year),
+        "idle_power": SourceValue(5 * u.W),
         "ram": SourceValue(8 * u.GB_ram),
         "compute": SourceValue(4 * u.cpu_core),
         "base_ram_consumption": SourceValue(1 * u.GB_ram),
         "base_compute_consumption": SourceValue(0.1 * u.cpu_core),
     }
 
-    def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
-                 cpu_carbon_footprint_fabrication: ExplainableQuantity, cpu_power: ExplainableQuantity,
-                 cpu_idle_power: ExplainableQuantity, ram_carbon_footprint_fabrication: ExplainableQuantity,
-                 ram_power: ExplainableQuantity, ram_idle_power: ExplainableQuantity,
-                 lifespan: ExplainableQuantity, ram: ExplainableQuantity, compute: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
+                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
+                 ram: ExplainableQuantity, compute: ExplainableQuantity,
                  base_ram_consumption: ExplainableQuantity, base_compute_consumption: ExplainableQuantity,
                  storage: EdgeStorage):
 
+        # RAM component has no power
         ram_component = EdgeRAMComponent(
             name=f"{name} RAM",
-            carbon_footprint_fabrication=ram_carbon_footprint_fabrication,
-            power=ram_power,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(0 * u.W),
             lifespan=lifespan,
-            idle_power=ram_idle_power,
+            idle_power=SourceValue(0 * u.W),
             ram=ram,
             base_ram_consumption=base_ram_consumption)
 
+        # CPU component gets all power and idle_power
         cpu_component = EdgeCPUComponent(
             name=f"{name} CPU",
-            carbon_footprint_fabrication=cpu_carbon_footprint_fabrication,
-            power=cpu_power,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=power,
             lifespan=lifespan,
-            idle_power=cpu_idle_power,
+            idle_power=idle_power,
             compute=compute,
             base_compute_consumption=base_compute_consumption)
 
+        # All fabrication footprint goes to structure
         super().__init__(
             name=name,
-            structure_fabrication_carbon_footprint=structure_fabrication_carbon_footprint,
+            structure_fabrication_carbon_footprint=carbon_footprint_fabrication,
             components=[ram_component, cpu_component, storage],
             lifespan=lifespan)
 

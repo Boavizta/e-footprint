@@ -13,27 +13,27 @@ if TYPE_CHECKING:
 
 class EdgeAppliance(EdgeDevice):
     default_values = {
-        "structure_fabrication_carbon_footprint": SourceValue(0 * u.kg),
-        "appliance_carbon_footprint_fabrication": SourceValue(100 * u.kg),
+        "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),
         "lifespan": SourceValue(5 * u.year),
         "idle_power": SourceValue(5 * u.W),
     }
 
-    def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
-                 appliance_carbon_footprint_fabrication: ExplainableQuantity,
+    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
 
+        # Appliance component gets power and idle_power
         appliance_component = EdgeApplianceComponent(
             name=f"{name} appliance",
-            carbon_footprint_fabrication=appliance_carbon_footprint_fabrication,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
             power=power,
             lifespan=lifespan,
             idle_power=idle_power)
 
+        # All fabrication footprint goes to structure
         super().__init__(
             name=name,
-            structure_fabrication_carbon_footprint=structure_fabrication_carbon_footprint,
+            structure_fabrication_carbon_footprint=carbon_footprint_fabrication,
             components=[appliance_component],
             lifespan=lifespan)
 

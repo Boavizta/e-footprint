@@ -23,6 +23,16 @@ class RecurrentEdgeDeviceNeed(ModelingObject):
         self.edge_device = edge_device
         self.recurrent_edge_component_needs = recurrent_edge_component_needs
 
+        # Validate that all component needs point to components of this edge_device
+        for component_need in recurrent_edge_component_needs:
+            component_device = component_need.edge_component.edge_device
+            if component_device is not None and component_device != edge_device:
+                raise ValueError(
+                    f"RecurrentEdgeComponentNeed '{component_need.name}' points to component "
+                    f"'{component_need.edge_component.name}' belonging to EdgeDevice '{component_device.name}', "
+                    f"but RecurrentEdgeDeviceNeed '{name}' is linked to EdgeDevice '{edge_device.name}'. "
+                    f"All component needs must belong to the same edge device.")
+
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
         return self.modeling_obj_containers
@@ -37,6 +47,7 @@ class RecurrentEdgeDeviceNeed(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.edge_device] + self.recurrent_edge_component_needs
+        # edge_device is automatically included through components' modeling_objects_whose_attributes_depend_directly_on_me
+        return self.recurrent_edge_component_needs
         
     

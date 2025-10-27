@@ -55,5 +55,16 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
             raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
 
     @property
+    def recurrent_workload(self):
+        """Get the recurrent workload from the workload component need."""
+        return self._workload_need.recurrent_need
+
+    @recurrent_workload.setter
+    def recurrent_workload(self, value):
+        """Set the recurrent workload, validating it's between 0 and 1."""
+        self.assert_recurrent_workload_is_between_0_and_1(value, self.name)
+        self._workload_need.recurrent_need = value
+
+    @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self._workload_need.unitary_hourly_need_per_usage_pattern
