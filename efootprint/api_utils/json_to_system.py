@@ -68,7 +68,7 @@ def json_to_system(
         if (json_major_version < efootprint_major_version) and json_major_version >= 9:
             from efootprint.api_utils.version_upgrade_handlers import VERSION_UPGRADE_HANDLERS
             for version in range(json_major_version, efootprint_major_version):
-                system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict)
+                system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict, efootprint_classes_dict)
         elif json_major_version != efootprint_major_version:
             logger.warning(
                 f"Warning: the version of the efootprint library used to generate the JSON file is "

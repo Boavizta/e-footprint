@@ -1,3 +1,4 @@
+from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13
 
@@ -543,7 +544,11 @@ class TestVersionUpgradeHandlers(TestCase):
                 }
             }
         }
+        efootprint_classes_dict = {
+            modeling_object_class.__name__: modeling_object_class
+            for modeling_object_class in ALL_EFOOTPRINT_CLASSES
+        }
 
-        output_dict = upgrade_version_12_to_13(input_dict)
+        output_dict = upgrade_version_12_to_13(input_dict, efootprint_classes_dict)
 
         self.assertEqual(output_dict, expected_output)

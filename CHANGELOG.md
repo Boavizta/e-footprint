@@ -2,7 +2,12 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
-and this project adheres to [Semantic Versioning](http://semver.org/).
+and this project adheres to [Semantic Versioning](http://semver.org/)
+
+## [13.0.1] - 2025-10-27
+
+### Fixed
+- Set efootprint_classes_dict as input to version upgrade handler functions so that the upgrade logic can also apply to extension classes defined outside e-footprint package.
 
 ## [13.0.0] - 2025-10-24
 

@@ -22,7 +22,7 @@ def rename_dict_key(d, old_key, new_key):
     d.update(d_items)
 
 
-def upgrade_version_9_to_10(system_dict):
+def upgrade_version_9_to_10(system_dict, efootprint_classes_dict=None):
     object_keys_to_delete = ["year", "job_type", "description"]
     for class_key in system_dict:
         if class_key == "efootprint_version":
@@ -38,7 +38,7 @@ def upgrade_version_9_to_10(system_dict):
     return system_dict
 
 
-def upgrade_version_10_to_11(system_dict):
+def upgrade_version_10_to_11(system_dict, efootprint_classes_dict=None):
     for system_key in system_dict["System"]:
         system_dict["System"][system_key]["edge_usage_patterns"] = []
 
@@ -51,7 +51,7 @@ def upgrade_version_10_to_11(system_dict):
     return system_dict
 
 
-def upgrade_version_11_to_12(system_dict):
+def upgrade_version_11_to_12(system_dict, efootprint_classes_dict=None):
     if "EdgeDevice" in system_dict:
         logger.info(f"Upgrading system dict from version 11 to 12, changing 'EdgeDevice' key to 'EdgeComputer'")
         system_dict["EdgeComputer"] = system_dict.pop("EdgeDevice")
@@ -89,7 +89,7 @@ def upgrade_version_11_to_12(system_dict):
     return system_dict
 
 
-def upgrade_version_12_to_13(system_dict):
+def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
     """
     Upgrade from version 12 to 13: Replace dimensionless units with occurrence/concurrent,
     and byte units with byte_ram where appropriate in timeseries data.
@@ -97,15 +97,8 @@ def upgrade_version_12_to_13(system_dict):
     from efootprint.api_utils.unit_mappings import (
         TIMESERIES_UNIT_MIGRATIONS, SCALAR_RAM_ATTRIBUTES_TO_MIGRATE, RAM_TIMESERIES_ATTRIBUTES_TO_MIGRATE
     )
-    from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 
     logger.info("Upgrading system dict from version 12 to 13: migrating units in timeseries and RAM data")
-
-    # Build classes dict
-    efootprint_classes_dict = {
-        modeling_object_class.__name__: modeling_object_class
-        for modeling_object_class in ALL_EFOOTPRINT_CLASSES
-    }
 
     def migrate_timeseries_unit(obj_dict, attr_name, new_unit):
         """Migrate unit in timeseries (ExplainableHourlyQuantities or ExplainableRecurrentQuantities) stored in JSON."""
