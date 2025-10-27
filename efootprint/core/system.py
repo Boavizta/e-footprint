@@ -5,7 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_computer import EdgeComputer
-from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
@@ -138,7 +138,7 @@ class System(ModelingObject):
         return list(set(sum([usage_pattern.usage_journey.servers for usage_pattern in self.usage_patterns], start=[])))
 
     @property
-    def edge_devices(self) -> List[EdgeDeviceBase]:
+    def edge_devices(self) -> List[EdgeDevice]:
         return list(set(sum([euj.edge_devices for euj in self.edge_usage_journeys], start=[])))
 
     @property

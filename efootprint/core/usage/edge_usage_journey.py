@@ -10,8 +10,8 @@ from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
-    from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+    from efootprint.core.hardware.edge_device import EdgeDevice
+    from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 
 
 class EdgeUsageJourney(ModelingObject):
@@ -27,7 +27,7 @@ class EdgeUsageJourney(ModelingObject):
 
     @staticmethod
     def assert_usage_span_is_inferior_to_edge_devices_lifespan(usage_span: ExplainableQuantity, edge_devices: List[
-        "EdgeDeviceBase"]):
+        "EdgeDevice"]):
         for edge_device in edge_devices:
             if usage_span > edge_device.lifespan:
                 raise InsufficientCapacityError(edge_device, "lifespan", edge_device.lifespan, usage_span)
@@ -37,12 +37,12 @@ class EdgeUsageJourney(ModelingObject):
         return self.modeling_obj_containers
 
     @property
-    def recurrent_edge_resource_needs(self) -> List["RecurrentEdgeResourceNeed"]:
-        return list(set(sum([ef.recurrent_edge_resource_needs for ef in self.edge_functions], start=[])))
+    def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
+        return list(set(sum([ef.recurrent_edge_device_needs for ef in self.edge_functions], start=[])))
 
     @property
-    def edge_devices(self) -> List["EdgeDeviceBase"]:
-        return list(set([edge_need.edge_device for edge_need in self.recurrent_edge_resource_needs]))
+    def edge_devices(self) -> List["EdgeDevice"]:
+        return list(set([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:

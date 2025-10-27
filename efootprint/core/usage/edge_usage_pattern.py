@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+    from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 
 
 class EdgeUsagePattern(ModelingObject):
@@ -30,12 +30,12 @@ class EdgeUsagePattern(ModelingObject):
         return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeResourceNeed"]:
-        return self.recurrent_edge_resource_needs
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeDeviceNeed"]:
+        return self.recurrent_edge_device_needs
 
     @property
-    def recurrent_edge_resource_needs(self) -> List["RecurrentEdgeResourceNeed"]:
-        return self.edge_usage_journey.recurrent_edge_resource_needs
+    def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
+        return self.edge_usage_journey.recurrent_edge_device_needs
 
     def update_utc_hourly_edge_usage_journey_starts(self):
         utc_hourly_edge_usage_journey_starts = self.hourly_edge_usage_journey_starts.convert_to_utc(

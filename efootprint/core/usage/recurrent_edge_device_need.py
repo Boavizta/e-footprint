@@ -1,4 +1,3 @@
-from abc import abstractmethod
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -13,7 +12,6 @@ if TYPE_CHECKING:
 
 class RecurrentEdgeDeviceNeed(ModelingObject):
     @classmethod
-    @abstractmethod
     def default_values(cls):
         pass
 
