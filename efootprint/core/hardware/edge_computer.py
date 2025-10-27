@@ -1,13 +1,12 @@
-from typing import List, Optional, TYPE_CHECKING
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.hardware.edge_ram_component import EdgeRAMComponent
+from efootprint.core.hardware.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -16,56 +15,73 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 
 
-class EdgeComputer(EdgeDeviceBase):
+class EdgeComputer(EdgeDevice):
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(60 * u.kg),
-        "power": SourceValue(30 * u.W),
+        "structure_fabrication_carbon_footprint": SourceValue(20 * u.kg),
+        "cpu_carbon_footprint_fabrication": SourceValue(20 * u.kg),
+        "cpu_power": SourceValue(15 * u.W),
+        "cpu_idle_power": SourceValue(3 * u.W),
+        "ram_carbon_footprint_fabrication": SourceValue(20 * u.kg),
+        "ram_power": SourceValue(10 * u.W),
+        "ram_idle_power": SourceValue(2 * u.W),
         "lifespan": SourceValue(6 * u.year),
-        "idle_power": SourceValue(5 * u.W),
         "ram": SourceValue(8 * u.GB_ram),
         "compute": SourceValue(4 * u.cpu_core),
-        "power_usage_effectiveness": SourceValue(1.0 * u.dimensionless),
-        "utilization_rate": SourceValue(0.8 * u.dimensionless),
         "base_ram_consumption": SourceValue(1 * u.GB_ram),
         "base_compute_consumption": SourceValue(0.1 * u.cpu_core),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
-                 ram: ExplainableQuantity, compute: ExplainableQuantity,
-                 power_usage_effectiveness: ExplainableQuantity,
-                 utilization_rate: ExplainableQuantity, base_ram_consumption: ExplainableQuantity,
-                 base_compute_consumption: ExplainableQuantity, storage: EdgeStorage):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
+    def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
+                 cpu_carbon_footprint_fabrication: ExplainableQuantity, cpu_power: ExplainableQuantity,
+                 cpu_idle_power: ExplainableQuantity, ram_carbon_footprint_fabrication: ExplainableQuantity,
+                 ram_power: ExplainableQuantity, ram_idle_power: ExplainableQuantity,
+                 lifespan: ExplainableQuantity, ram: ExplainableQuantity, compute: ExplainableQuantity,
+                 base_ram_consumption: ExplainableQuantity, base_compute_consumption: ExplainableQuantity,
+                 storage: EdgeStorage):
 
-        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
-        self.ram = ram.set_label(f"RAM of {self.name}").to(u.GB_ram)
-        self.compute = compute.set_label(f"Compute of {self.name}")
-        self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
-        self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
-        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
-        self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
-        self.storage = storage
+        ram_component = EdgeRAMComponent(
+            name=f"{name} RAM",
+            carbon_footprint_fabrication=ram_carbon_footprint_fabrication,
+            power=ram_power,
+            lifespan=lifespan,
+            idle_power=ram_idle_power,
+            ram=ram,
+            base_ram_consumption=base_ram_consumption)
 
-        self.available_compute_per_instance = EmptyExplainableObject()
-        self.available_ram_per_instance = EmptyExplainableObject()
-        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
-        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
+        cpu_component = EdgeCPUComponent(
+            name=f"{name} CPU",
+            carbon_footprint_fabrication=cpu_carbon_footprint_fabrication,
+            power=cpu_power,
+            lifespan=lifespan,
+            idle_power=cpu_idle_power,
+            compute=compute,
+            base_compute_consumption=base_compute_consumption)
+
+        super().__init__(
+            name=name,
+            structure_fabrication_carbon_footprint=structure_fabrication_carbon_footprint,
+            components=[ram_component, cpu_component, storage],
+            lifespan=lifespan)
+
+        self._ram_component = ram_component
+        self._cpu_component = cpu_component
+        self._storage = storage
 
     @property
-    def calculated_attributes(self):
-        return ([
-            "available_ram_per_instance", "available_compute_per_instance",
-            "unitary_hourly_ram_need_per_usage_pattern", "unitary_hourly_compute_need_per_usage_pattern"]
-                + super().calculated_attributes)
+    def ram_component(self) -> EdgeRAMComponent:
+        return self._ram_component
+
+    @property
+    def cpu_component(self) -> EdgeCPUComponent:
+        return self._cpu_component
+
+    @property
+    def storage(self) -> EdgeStorage:
+        return self._storage
 
     @property
     def edge_processes(self) -> List["RecurrentEdgeProcess"]:
         return self.modeling_obj_containers
-
-    @property
-    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([ep.edge_usage_patterns for ep in self.edge_processes], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
@@ -76,80 +92,33 @@ class EdgeComputer(EdgeDeviceBase):
         return list(set(sum([ep.edge_functions for ep in self.edge_processes], start=[])))
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.storage]
+    def ram(self):
+        return self._ram_component.ram
 
-    def update_available_ram_per_instance(self):
-        available_ram_per_instance = ((self.ram * self.utilization_rate).to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram))
+    @property
+    def compute(self):
+        return self._cpu_component.compute
 
-        if available_ram_per_instance.value < 0 * u.B_ram:
-            raise InsufficientCapacityError(
-                self, "RAM", self.ram * self.utilization_rate, self.base_ram_consumption)
+    @property
+    def base_ram_consumption(self):
+        return self._ram_component.base_ram_consumption
 
-        self.available_ram_per_instance = available_ram_per_instance.set_label(
-            f"Available RAM per {self.name} instance")
+    @property
+    def base_compute_consumption(self):
+        return self._cpu_component.base_compute_consumption
 
-    def update_available_compute_per_instance(self):
-        available_compute_per_instance = (self.compute * self.utilization_rate - self.base_compute_consumption)
+    @property
+    def available_ram_per_instance(self):
+        return self._ram_component.available_ram_per_instance
 
-        if available_compute_per_instance.value < 0 * u.cpu_core:
-            raise InsufficientCapacityError(
-                self, "compute", self.compute * self.utilization_rate, self.base_compute_consumption)
+    @property
+    def available_compute_per_instance(self):
+        return self._cpu_component.available_compute_per_instance
 
-        self.available_compute_per_instance = available_compute_per_instance.set_label(
-            f"Available compute per {self.name} instance")
+    @property
+    def unitary_hourly_ram_need_per_usage_pattern(self):
+        return self._ram_component.unitary_hourly_ram_need_per_usage_pattern
 
-    def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        unitary_hourly_ram_need = sum(
-            [edge_process.unitary_hourly_ram_need_per_usage_pattern[usage_pattern]
-             for edge_process in self.edge_processes if usage_pattern in edge_process.edge_usage_patterns],
-            start=EmptyExplainableObject())
-
-        max_ram_need = unitary_hourly_ram_need.max().to(u.GB_ram)
-        if max_ram_need > self.available_ram_per_instance:
-            raise InsufficientCapacityError(
-                self, "RAM", self.available_ram_per_instance, max_ram_need)
-
-        self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.to(u.GB_ram).set_label(
-            f"{self.name} hourly RAM need for {usage_pattern.name}")
-
-    def update_unitary_hourly_ram_need_per_usage_pattern(self):
-        self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
-
-    def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        unitary_hourly_compute_need = sum(
-            [edge_process.unitary_hourly_compute_need_per_usage_pattern[usage_pattern]
-             for edge_process in self.edge_processes if usage_pattern in edge_process.edge_usage_patterns],
-            start=EmptyExplainableObject())
-
-        max_compute_need = unitary_hourly_compute_need.max().to(u.cpu_core)
-        if max_compute_need > self.available_compute_per_instance:
-            raise InsufficientCapacityError(
-                self, "compute", self.available_compute_per_instance, max_compute_need)
-        
-        self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.to(
-            u.cpu_core).set_label(f"{self.name} hourly compute need for {usage_pattern.name}")
-
-    def update_unitary_hourly_compute_need_per_usage_pattern(self):
-        self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)
-
-    def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        unitary_compute_workload = (
-                (self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] + self.base_compute_consumption)
-                / self.compute)
-
-        unitary_power = (
-                (self.idle_power + (self.power - self.idle_power) * unitary_compute_workload)
-                * self.power_usage_effectiveness)
-
-        self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
-            f"{self.name} unitary power for {usage_pattern.name}")
-
-    def update_unitary_power_per_usage_pattern(self):
-        self.unitary_power_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)
+    @property
+    def unitary_hourly_compute_need_per_usage_pattern(self):
+        return self._cpu_component.unitary_hourly_compute_need_per_usage_pattern

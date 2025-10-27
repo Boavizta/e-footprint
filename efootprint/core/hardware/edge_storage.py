@@ -1,11 +1,11 @@
 from copy import copy
-from typing import List, TYPE_CHECKING, Optional
+from typing import List, TYPE_CHECKING
 
 import numpy as np
 from pint import Quantity
 
 from efootprint.constants.sources import Sources
-from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge_component import EdgeComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -15,8 +15,6 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-    from efootprint.core.hardware.edge_computer import EdgeComputer
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
@@ -32,15 +30,15 @@ class NegativeCumulativeStorageNeedError(Exception):
         super().__init__(message)
 
 
-class EdgeStorage(EdgeDeviceBase):
-    default_values =  {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
-            "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
-            "lifespan": SourceValue(6 * u.years),
-            "idle_power": SourceValue(0 * u.W),
-            "storage_capacity": SourceValue(1 * u.TB),
-            "base_storage_need": SourceValue(30 * u.GB),
-        }
+class EdgeStorage(EdgeComponent):
+    default_values = {
+        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
+        "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
+        "lifespan": SourceValue(6 * u.years),
+        "idle_power": SourceValue(0 * u.W),
+        "storage_capacity": SourceValue(1 * u.TB),
+        "base_storage_need": SourceValue(30 * u.GB),
+    }
 
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
@@ -83,55 +81,26 @@ class EdgeStorage(EdgeDeviceBase):
                  power_per_storage_capacity: ExplainableQuantity, idle_power: ExplainableQuantity,
                  base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity):
         super().__init__(
-            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
+            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
+            lifespan=lifespan, idle_power=idle_power)
         self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
         .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
         self.power_per_storage_capacity = power_per_storage_capacity.set_label(
             f"Power of {self.name} per storage capacity")
-        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
-        
+
         self.unitary_storage_delta_per_usage_pattern = ExplainableObjectDict()
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
     @property
-    def edge_computer(self) -> Optional["EdgeComputer"]:
-        if self.modeling_obj_containers:
-            if len(self.modeling_obj_containers) > 1:
-                raise PermissionError(
-                    f"An EdgeStorage object can only be associated with one EdgeComputer object but {self.name} is "
-                    f"associated with {[mod_obj.name for mod_obj in self.modeling_obj_containers]}")
-            return self.modeling_obj_containers[0]
-        else:
-            return None
-
-    @property
     def calculated_attributes(self):
-        return [
-            "carbon_footprint_fabrication", "power", "unitary_storage_delta_per_usage_pattern",
-            "cumulative_unitary_storage_need_per_usage_pattern"] + super().calculated_attributes
+        return (["carbon_footprint_fabrication", "power", "unitary_storage_delta_per_usage_pattern",
+                 "cumulative_unitary_storage_need_per_usage_pattern"] + super().calculated_attributes)
 
-    @property
-    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
-        edge_computer = self.edge_computer
-        if edge_computer is not None:
-            return edge_computer.edge_processes
-        return []
-    
-    @property
-    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        edge_computer = self.edge_computer
-        if edge_computer is not None:
-            return edge_computer.edge_usage_patterns
-        return []
-
-    @property
-    def power_usage_effectiveness(self):
-        if self.edge_computer is not None:
-            return self.edge_computer.power_usage_effectiveness
-        else:
-            return EmptyExplainableObject()
+    def expected_need_units(self) -> List:
+        """Storage components accept storage units."""
+        return [u.GB, u.TB, u.B, u.MB, u.KB]
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
@@ -142,12 +111,11 @@ class EdgeStorage(EdgeDeviceBase):
         self.power = (self.power_per_storage_capacity * self.storage_capacity).set_label(f"Power of {self.name}")
 
     def update_dict_element_in_unitary_storage_delta_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        unitary_storage_delta = EmptyExplainableObject()
-        
-        for edge_process in self.edge_processes:
-            if usage_pattern in edge_process.edge_usage_patterns:
-                unitary_storage_delta += edge_process.unitary_hourly_storage_need_per_usage_pattern[usage_pattern]
-        
+        unitary_storage_delta = sum(
+            [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
+             for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
+            start=EmptyExplainableObject())
+
         self.unitary_storage_delta_per_usage_pattern[usage_pattern] = unitary_storage_delta.set_label(
             f"Hourly storage delta for {self.name} in {usage_pattern.name}")
 
@@ -209,13 +177,13 @@ class EdgeStorage(EdgeDeviceBase):
 
     def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_storage_delta = self.unitary_storage_delta_per_usage_pattern[usage_pattern]
-        
-        unitary_activity_level = (unitary_storage_delta.abs() / self.storage_capacity).to(u.dimensionless)
 
-        unitary_power = (
-                (self.idle_power + (self.power - self.idle_power) * unitary_activity_level)
-                * self.power_usage_effectiveness)
-        
+        if isinstance(unitary_storage_delta, EmptyExplainableObject):
+            unitary_power = self.idle_power
+        else:
+            unitary_activity_level = (unitary_storage_delta.abs() / self.storage_capacity).to(u.dimensionless)
+            unitary_power = self.idle_power + (self.power - self.idle_power) * unitary_activity_level
+
         self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
             f"Hourly power for {self.name} in {usage_pattern.name}")
 
