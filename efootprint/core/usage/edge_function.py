@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney

@@ -10,7 +10,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+    from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 
 
 class EdgeUsagePattern(ModelingObject):

@@ -18,7 +18,7 @@ from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 from tests import root_test_dir
 
 

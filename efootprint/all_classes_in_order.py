@@ -9,7 +9,7 @@ from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_journey import UsageJourney

@@ -11,7 +11,7 @@ from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
-    from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+    from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 
 
 class EdgeUsageJourney(ModelingObject):

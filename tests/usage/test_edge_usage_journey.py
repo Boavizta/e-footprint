@@ -6,7 +6,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_needed import RecurrentEdgeResourceNeed
+from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
