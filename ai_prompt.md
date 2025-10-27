@@ -1,1 +1,1 @@
-The check added in RecurrentEdgeDeviceNeed needs to be triggered every time recurrent_edge_component_needs is updated.
+Better thanks. Now I have a problem in EdgeComputer and EdgeAppliance. Updating the builder parameter should trigger recomputation. Like for example, when updating EdgeComputer’s power, the cpu power should be updated to trigger modeling recomputation. How can I implement this behavior in my code?

@@ -23,15 +23,22 @@ class RecurrentEdgeDeviceNeed(ModelingObject):
         self.edge_device = edge_device
         self.recurrent_edge_component_needs = recurrent_edge_component_needs
 
-        # Validate that all component needs point to components of this edge_device
-        for component_need in recurrent_edge_component_needs:
+    def _validate_component_needs_edge_device(self, component_needs: List["RecurrentEdgeComponentNeed"]):
+        """Validate that all component needs point to components of this edge_device."""
+        for component_need in component_needs:
             component_device = component_need.edge_component.edge_device
-            if component_device is not None and component_device != edge_device:
+            if component_device is not None and component_device != self.edge_device:
                 raise ValueError(
                     f"RecurrentEdgeComponentNeed '{component_need.name}' points to component "
                     f"'{component_need.edge_component.name}' belonging to EdgeDevice '{component_device.name}', "
-                    f"but RecurrentEdgeDeviceNeed '{name}' is linked to EdgeDevice '{edge_device.name}'. "
+                    f"but RecurrentEdgeDeviceNeed '{self.name}' is linked to EdgeDevice '{self.edge_device.name}'. "
                     f"All component needs must belong to the same edge device.")
+
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        if name == "recurrent_edge_component_needs" and hasattr(self, "edge_device"):
+            # Validate whenever recurrent_edge_component_needs is updated
+            self._validate_component_needs_edge_device(input_value)
+        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
