@@ -57,6 +57,30 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         return ["unitary_hourly_storage_need_per_usage_pattern"]
 
     @property
+    def recurrent_compute_needed(self):
+        return self._cpu_need.recurrent_need
+
+    @recurrent_compute_needed.setter
+    def recurrent_compute_needed(self, value):
+        self._cpu_need.recurrent_need = value
+
+    @property
+    def recurrent_ram_needed(self):
+        return self._ram_need.recurrent_need
+
+    @recurrent_ram_needed.setter
+    def recurrent_ram_needed(self, value):
+        self._ram_need.recurrent_need = value
+
+    @property
+    def recurrent_storage_needed(self):
+        return self._storage_need.recurrent_need
+
+    @recurrent_storage_needed.setter
+    def recurrent_storage_needed(self, value):
+        self._storage_need.recurrent_need = value
+
+    @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
         return self._cpu_need.unitary_hourly_need_per_usage_pattern
 

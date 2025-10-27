@@ -89,20 +89,60 @@ class EdgeComputer(EdgeDevice):
         return list(set(sum([ep.edge_functions for ep in self.edge_processes], start=[])))
 
     @property
+    def power(self):
+        return self._cpu_component.power
+
+    @power.setter
+    def power(self, value):
+        self._cpu_component.power = value
+
+    @property
+    def idle_power(self):
+        return self._cpu_component.idle_power
+
+    @idle_power.setter
+    def idle_power(self, value):
+        self._cpu_component.idle_power = value
+
+    @property
+    def carbon_footprint_fabrication(self):
+        return self.structure_fabrication_carbon_footprint
+
+    @carbon_footprint_fabrication.setter
+    def carbon_footprint_fabrication(self, value):
+        self.structure_fabrication_carbon_footprint = value
+
+    @property
     def ram(self):
         return self._ram_component.ram
+
+    @ram.setter
+    def ram(self, value):
+        self._ram_component.ram = value
 
     @property
     def compute(self):
         return self._cpu_component.compute
 
+    @compute.setter
+    def compute(self, value):
+        self._cpu_component.compute = value
+
     @property
     def base_ram_consumption(self):
         return self._ram_component.base_ram_consumption
 
+    @base_ram_consumption.setter
+    def base_ram_consumption(self, value):
+        self._ram_component.base_ram_consumption = value
+
     @property
     def base_compute_consumption(self):
         return self._cpu_component.base_compute_consumption
+
+    @base_compute_consumption.setter
+    def base_compute_consumption(self, value):
+        self._cpu_component.base_compute_consumption = value
 
     @property
     def available_ram_per_instance(self):

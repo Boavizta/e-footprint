@@ -48,5 +48,29 @@ class EdgeAppliance(EdgeDevice):
         return self.modeling_obj_containers
 
     @property
+    def power(self):
+        return self._appliance_component.power
+
+    @power.setter
+    def power(self, value):
+        self._appliance_component.power = value
+
+    @property
+    def idle_power(self):
+        return self._appliance_component.idle_power
+
+    @idle_power.setter
+    def idle_power(self, value):
+        self._appliance_component.idle_power = value
+
+    @property
+    def carbon_footprint_fabrication(self):
+        return self.structure_fabrication_carbon_footprint
+
+    @carbon_footprint_fabrication.setter
+    def carbon_footprint_fabrication(self, value):
+        self.structure_fabrication_carbon_footprint = value
+
+    @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self._appliance_component.unitary_hourly_workload_per_usage_pattern
