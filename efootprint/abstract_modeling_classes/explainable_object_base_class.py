@@ -30,7 +30,8 @@ def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject
     update_func = getattr(mod_obj, update_func_name, None)
 
     if update_func is None:
-        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.id}, please create it.")
+        raise AttributeError(f"No update function associated to {attr_name} in {mod_obj.class_as_simple_str} "
+                             f"{mod_obj.name} ({mod_obj.id}), please create it.")
 
     return update_func
 

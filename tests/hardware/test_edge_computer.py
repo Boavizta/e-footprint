@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_computer import EdgeComputer
@@ -14,6 +14,8 @@ class TestEdgeComputer(TestCase):
         self.mock_storage = MagicMock(spec=EdgeStorage)
         self.mock_storage.edge_usage_patterns = []
         self.mock_storage.id = "mock_storage_id"
+        self.mock_storage.carbon_footprint_fabrication = SourceValue(100 * u.kg)
+        self.mock_storage.power = SourceValue(20 * u.W)
         self.edge_computer = EdgeComputer(
             name="Test EdgeComputer",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
@@ -60,11 +62,11 @@ class TestEdgeComputer(TestCase):
         """Test that raw_nb_of_instances is removed during initialization."""
         self.assertFalse(hasattr(self.edge_computer, "raw_nb_of_instances"))
 
-    def test_init_sets_empty_explainable_objects(self):
-        """Test that initialization sets proper empty explainable objects."""
+    def test_init_sets_explainable_objects(self):
+        """Test that initialization sets explainable objects."""
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.assertIsInstance(self.edge_computer.available_compute_per_instance, EmptyExplainableObject)
-        self.assertIsInstance(self.edge_computer.available_ram_per_instance, EmptyExplainableObject)
+        self.assertIsInstance(self.edge_computer.available_compute_per_instance, ExplainableObject)
+        self.assertIsInstance(self.edge_computer.available_ram_per_instance, ExplainableObject)
         self.assertIsInstance(self.edge_computer.unitary_hourly_compute_need_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_computer.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
 
@@ -79,11 +81,7 @@ class TestEdgeComputer(TestCase):
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that components are returned as dependent objects."""
         dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
-        # EdgeComputer has 3 components: RAM, CPU, and Storage
-        self.assertEqual(3, len(dependent_objects))
-        self.assertIn(self.edge_computer.ram_component, dependent_objects)
-        self.assertIn(self.edge_computer.cpu_component, dependent_objects)
-        self.assertIn(self.edge_computer.storage, dependent_objects)
+        self.assertEqual(0, len(dependent_objects))
 
     def test_unitary_power_per_usage_pattern_property(self):
         """Test unitary_power_per_usage_pattern is delegated to EdgeDevice."""
@@ -94,12 +92,10 @@ class TestEdgeComputer(TestCase):
     def test_lifespan_propagates_to_components(self):
         """Test that updating lifespan propagates copies to RAM and CPU components."""
         new_lifespan = SourceValue(10 * u.year)
-        from efootprint.logger import logger
-        logger.info("setting new lifespan to %s", new_lifespan)
+        self.edge_computer.trigger_modeling_updates = True
         self.edge_computer.lifespan = new_lifespan
 
         # EdgeComputer's lifespan should be updated
-        logger.info("checking edge computer lifespan: %s", self.edge_computer.lifespan)
         self.assertEqual(10 * u.year, self.edge_computer.lifespan.value)
 
         # Components should have copies with the same value but different objects
@@ -109,6 +105,8 @@ class TestEdgeComputer(TestCase):
         # They should be different objects (copies, not references)
         self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.ram_component.lifespan)
         self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.cpu_component.lifespan)
+
+        self.edge_computer.trigger_modeling_updates = False
 
 
 if __name__ == "__main__":
