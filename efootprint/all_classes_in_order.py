@@ -38,12 +38,13 @@ SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 EDGE_COMPONENT_CLASSES = [EdgeRAMComponent, EdgeCPUComponent, EdgeApplianceComponent, EdgeStorage]
 RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES = [RecurrentEdgeProcess, RecurrentEdgeWorkload]
+EDGE_DEVICE_BUILDER_CLASSES = [EdgeAppliance, EdgeComputer]
 
 
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
         + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeComponentNeed]
-        + EDGE_COMPONENT_CLASSES + [EdgeAppliance, EdgeComputer]
+        + EDGE_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed] + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES
         + [Network] + SERVER_CLASSES + [Storage, System])

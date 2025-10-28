@@ -28,6 +28,12 @@ class EdgeComponent(ModelingObject):
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
 
     @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeDevice"]:
+        if self.edge_device:
+            return [self.edge_device]
+        return []
+
+    @property
     def calculated_attributes(self):
         return ["unitary_power_per_usage_pattern"]
 
@@ -39,29 +45,14 @@ class EdgeComponent(ModelingObject):
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
-        """Return the EdgeDevice that contains this component by navigating through recurrent_edge_component_needs."""
         if not self.recurrent_edge_component_needs:
             return None
 
-        # Get the RecurrentEdgeDeviceNeed from the first RecurrentEdgeComponentNeed
-        # All RecurrentEdgeComponentNeeds should point to the same edge_device (validated in RecurrentEdgeDeviceNeed)
-        component_need = self.recurrent_edge_component_needs[0]
-        recurrent_device_needs = component_need.recurrent_edge_device_needs
-
-        if not recurrent_device_needs:
-            return None
-
-        return recurrent_device_needs[0].edge_device
+        return self.recurrent_edge_component_needs[0].edge_device
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        if self.edge_device:
-            return [self.edge_device]
-        return []
 
     @abstractmethod
     def expected_need_units(self) -> List:

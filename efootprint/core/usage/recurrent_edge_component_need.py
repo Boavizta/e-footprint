@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_function import EdgeFunction
     from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.hardware.edge_device import EdgeDevice
 
 
 class InvalidComponentNeedUnitError(Exception):
@@ -28,6 +29,10 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
         self._validate_need_unit()
 
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[EdgeComponent]:
+        return [self.edge_component]
+
     def _validate_need_unit(self):
         """Validate that the recurrent_need unit is compatible with the edge_component."""
         need_unit = self.recurrent_need.value.units
@@ -45,6 +50,12 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         return self.modeling_obj_containers
 
     @property
+    def edge_device(self) -> Optional["EdgeDevice"]:
+        if not self.recurrent_edge_device_needs:
+            return None
+        return self.recurrent_edge_device_needs[0].edge_device
+
+    @property
     def edge_functions(self) -> List["EdgeFunction"]:
         return list(set(sum([need.edge_functions for need in self.recurrent_edge_device_needs], start=[])))
 
@@ -55,10 +66,6 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[EdgeComponent]:
-        return [self.edge_component]
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_need = self.recurrent_need.generate_hourly_quantities_over_timespan(

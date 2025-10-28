@@ -25,6 +25,12 @@ class EdgeUsageJourney(ModelingObject):
         self.assert_usage_span_is_inferior_to_edge_devices_lifespan(usage_span, self.edge_devices)
         self.usage_span = usage_span.set_label(f"Usage span of {self.name}")
 
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:
+        if self.edge_usage_patterns:
+            return self.edge_usage_patterns
+        return self.edge_functions
+
     @staticmethod
     def assert_usage_span_is_inferior_to_edge_devices_lifespan(usage_span: ExplainableQuantity, edge_devices: List[
         "EdgeDevice"]):
@@ -43,12 +49,6 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(set([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:
-        if self.edge_usage_patterns:
-            return self.edge_usage_patterns
-        return self.edge_functions
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         if name == "usage_span" and self.trigger_modeling_updates:

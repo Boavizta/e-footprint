@@ -186,9 +186,19 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_13_to_14(system_dict, efootprint_classes_dict=None):
+    if "EdgeComputer" in system_dict:
+        for edge_computer_id in system_dict["EdgeComputer"]:
+            del system_dict["EdgeComputer"][edge_computer_id]["power_usage_effectiveness"]
+            del system_dict["EdgeComputer"][edge_computer_id]["utilization_rate"]
+
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
     11: upgrade_version_11_to_12,
     12: upgrade_version_12_to_13,
+    13: upgrade_version_13_to_14,
 }

@@ -150,22 +150,27 @@ class TestEdgeStorage(TestCase):
 
     def test_update_unitary_storage_delta_per_usage_pattern(self):
         """Test update_unitary_storage_delta_per_usage_pattern aggregates all patterns."""
-        mock_device = MagicMock(spec=EdgeComputer)
+        from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2.name = "Pattern 2"
-        mock_device.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        
-        set_modeling_obj_containers(self.edge_storage, [mock_device])
-        
+        mock_pattern_1.id = "pattern1"
+        mock_pattern_2.id = "pattern2"
+
+        mock_need = MagicMock(spec=RecurrentEdgeComponentNeed)
+        mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+
+        set_modeling_obj_containers(self.edge_storage, [mock_need])
+
         with patch.object(EdgeStorage, "update_dict_element_in_unitary_storage_delta_per_usage_pattern") as mock_update:
             self.edge_storage.update_unitary_storage_delta_per_usage_pattern()
-            
+
             self.assertEqual(2, mock_update.call_count)
             mock_update.assert_any_call(mock_pattern_1)
             mock_update.assert_any_call(mock_pattern_2)
-        
+
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_dict_element_in_unitary_storage_delta_per_usage_pattern_empty(self):

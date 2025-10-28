@@ -13,9 +13,9 @@ class EdgeFunction(ModelingObject):
         self.recurrent_edge_device_needs = recurrent_edge_device_needs
 
     @property
-    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return self.modeling_obj_containers
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[RecurrentEdgeDeviceNeed]:
+        return self.recurrent_edge_device_needs
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["RecurrentEdgeDeviceNeed"]:
-        return self.recurrent_edge_device_needs
+    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
+        return self.modeling_obj_containers

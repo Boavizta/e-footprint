@@ -119,20 +119,22 @@ class TestEdgeCPUComponent(TestCase):
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
-        compute_need = create_source_hourly_values_from_list([0, 4, 8], pint_unit=u.cpu_core)
+        compute_need = create_source_hourly_values_from_list([0, 4, 7], pint_unit=u.cpu_core)
         self.cpu_component.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
 
         self.cpu_component.update_available_compute_per_instance()
         self.cpu_component.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
 
-        # Workload ratios: [(0-1)/(8-1), (4-1)/(8-1), (8-1)/(8-1)] = [-1/7, 3/7, 7/7] -> clamped to [0, 3/7, 1]
-        # Power: [10 + (50-10)*0, 10 + (50-10)*(3/7), 10 + (50-10)*1]
-        #      = [10, 10 + 40*(3/7), 50]
-        #      = [10, 27.142857, 50]
-        expected_values = [10, 10 + 40 * (3/7), 50]
+        # Workload ratios: (compute_need + base_compute_consumption) / compute
+        # = ([0, 4, 7] + 1) / 8
+        # = [1/8, 5/8, 8/8]
+        # Power: idle_power + (power - idle_power) * workload_ratio
+        # = 10 + (50-10) * [1/8, 5/8, 1]
+        # = 10 + 40 * [1/8, 5/8, 1]
+        # = [15, 35, 50]
+        expected_values = [15, 35, 50]
         result = self.cpu_component.unitary_power_per_usage_pattern[mock_pattern]
-        self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
-        self.assertEqual(u.W, result.unit)
+        self.assertTrue(np.allclose(expected_values, result.value.to(u.W).magnitude))
         self.assertIn("Test CPU unitary power for Test Pattern", result.label)
 
 

@@ -5,16 +5,16 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
+from efootprint.core.hardware.edge_component import EdgeComponent
 
 if TYPE_CHECKING:
     from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.hardware.edge_component import EdgeComponent
 
 
 class EdgeDevice(ModelingObject):
     def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
-                 components: List["EdgeComponent"], lifespan: ExplainableQuantity):
+                 components: List[EdgeComponent], lifespan: ExplainableQuantity):
         super().__init__(name)
         self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         self.structure_fabrication_carbon_footprint = structure_fabrication_carbon_footprint.set_label(
@@ -35,7 +35,7 @@ class EdgeDevice(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return self.components
+        return []
 
     @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
