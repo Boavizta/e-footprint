@@ -87,6 +87,12 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
 
+    def test_loads_version_13_system(self):
+        with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v13.json"), "rb") as file:
+            base_system_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+
     def test_json_to_system_doesnt_update_input_dict(self):
         input_dict = deepcopy(self.base_system_dict)
 

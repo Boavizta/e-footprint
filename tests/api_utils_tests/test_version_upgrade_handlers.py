@@ -1,6 +1,6 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
-    upgrade_version_11_to_12, upgrade_version_12_to_13
+    upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14
 
 from unittest import TestCase
 
@@ -550,5 +550,54 @@ class TestVersionUpgradeHandlers(TestCase):
         }
 
         output_dict = upgrade_version_12_to_13(input_dict, efootprint_classes_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+
+    def test_upgrade_13_to_14(self):
+        """Test version 13 to 14 upgrade (dummy test for now)."""
+        input_dict = {
+            "EdgeComputer": {
+                "obj_1": {
+                    "name": "Object 1",
+                    "power_usage_effectiveness": "val",
+                    "utilization_rate": "value"
+                },
+                "obj_2": {
+                    "power_usage_effectiveness": "val2",
+                    "utilization_rate": "value2"
+                }
+            },
+            "EdgeFunction": {
+                "func_1": {
+                    "name": "Function 1",
+                    "recurrent_edge_resource_needs": []
+                },
+                "func_2": {
+                    "name": "Function 2",
+                    "recurrent_edge_resource_needs": []
+                }
+            }
+        }
+        expected_output = {
+            "EdgeComputer": {
+                "obj_1": {
+                    "name": "Object 1",
+                },
+                "obj_2": {}
+            },
+            "EdgeFunction": {
+                "func_1": {
+                    "name": "Function 1",
+                    "recurrent_edge_device_needs": []
+                },
+                "func_2": {
+                    "name": "Function 2",
+                    "recurrent_edge_device_needs": []
+                }
+            }
+        }
+
+        output_dict = upgrade_version_13_to_14(input_dict)
 
         self.assertEqual(output_dict, expected_output)

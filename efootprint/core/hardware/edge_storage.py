@@ -100,7 +100,7 @@ class EdgeStorage(EdgeComponent):
 
     def expected_need_units(self) -> List:
         """Storage components accept storage units."""
-        return [u.GB, u.TB, u.B, u.MB, u.KB]
+        return [u.GB, u.TB, u.B, u.MB, u.kB]
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (

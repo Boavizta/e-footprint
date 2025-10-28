@@ -191,6 +191,10 @@ def upgrade_version_13_to_14(system_dict, efootprint_classes_dict=None):
         for edge_computer_id in system_dict["EdgeComputer"]:
             del system_dict["EdgeComputer"][edge_computer_id]["power_usage_effectiveness"]
             del system_dict["EdgeComputer"][edge_computer_id]["utilization_rate"]
+    if "EdgeFunction" in system_dict:
+        for edge_function_id in system_dict["EdgeFunction"]:
+            rename_dict_key(system_dict["EdgeFunction"][edge_function_id], "recurrent_edge_resource_needs",
+                            "recurrent_edge_device_needs")
 
     return system_dict
 

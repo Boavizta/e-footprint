@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from copy import copy
 
 import numpy as np
 from pint import Quantity
@@ -27,18 +27,33 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
 
     def __init__(self, name: str, edge_device: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
         self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)
-
-        workload_need = RecurrentEdgeComponentNeed(
-            name=f"{name} workload need",
-            edge_component=edge_device.appliance_component,
-            recurrent_need=recurrent_workload)
-
         super().__init__(
             name=name,
             edge_device=edge_device,
-            recurrent_edge_component_needs=[workload_need])
+            recurrent_edge_component_needs=[])
+        self.recurrent_workload = recurrent_workload.set_label(f"Recurrent workload for {self.name}")
+
+        self._workload_need = None
+
+    def after_init(self):
+        workload_need = RecurrentEdgeComponentNeed(
+            name=f"{self.name} workload need",
+            edge_component=self.edge_device.appliance_component,
+            recurrent_need=copy(self.recurrent_workload))
 
         self._workload_need = workload_need
+        self.recurrent_edge_component_needs = [workload_need]
+        super().after_init()
+
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        # Validate workload before setting
+        if name == "recurrent_workload" and input_value is not None and hasattr(input_value, 'value'):
+            self.assert_recurrent_workload_is_between_0_and_1(input_value, self.name)
+        super().__setattr__(name, input_value)
+        # When attribute is updated after init, propagate copy to component need
+        if self.trigger_modeling_updates:
+            if name == "recurrent_workload":
+                self._workload_need.recurrent_need = copy(input_value)
 
     @staticmethod
     def assert_recurrent_workload_is_between_0_and_1(
@@ -50,21 +65,6 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
 
         if min_value < 0 or max_value > 1:
             raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
-
-    @property
-    def attributes_that_shouldnt_trigger_update_logic(self):
-        return super().attributes_that_shouldnt_trigger_update_logic + ["recurrent_workload"]
-
-    @property
-    def recurrent_workload(self):
-        """Get the recurrent workload from the workload component need."""
-        return self._workload_need.recurrent_need
-
-    @recurrent_workload.setter
-    def recurrent_workload(self, value):
-        """Set the recurrent workload, validating it's between 0 and 1."""
-        self.assert_recurrent_workload_is_between_0_and_1(value, self.name)
-        self._workload_need.recurrent_need = value
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):

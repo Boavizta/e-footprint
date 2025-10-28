@@ -1,13 +1,10 @@
-from typing import List, TYPE_CHECKING
+from copy import copy
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
-
-if TYPE_CHECKING:
-    from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 
 
 class EdgeAppliance(EdgeDevice):
@@ -20,58 +17,44 @@ class EdgeAppliance(EdgeDevice):
 
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
-
-        # Appliance component gets power and idle_power
-        appliance_component = EdgeApplianceComponent(
-            name=f"{name} appliance",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=power,
-            lifespan=lifespan.copy(),
-            idle_power=idle_power)
-
         super().__init__(
             name=name,
-            structure_fabrication_carbon_footprint=carbon_footprint_fabrication,
-            components=[appliance_component],
+            structure_fabrication_carbon_footprint=carbon_footprint_fabrication.copy(),
+            components=[],
             lifespan=lifespan)
+        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
+            f"Carbon footprint fabrication of {self.name}")
+        self.power = power.set_label(f"Power of {self.name}")
+        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
+
+        self.appliance_component = None
+
+    def after_init(self):
+        # Appliance component gets power and idle_power
+        appliance_component = EdgeApplianceComponent(
+            name=f"{self.name} appliance",
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=copy(self.power),
+            lifespan=copy(self.lifespan),
+            idle_power=copy(self.idle_power))
 
         self.appliance_component = appliance_component
+        self.components = [appliance_component]
+        super().after_init()
 
-    @property
-    def attributes_that_shouldnt_trigger_update_logic(self):
-        return super().attributes_that_shouldnt_trigger_update_logic + [
-            "power", "idle_power", "carbon_footprint_fabrication"]
-
-    @property
-    def power(self):
-        return self.appliance_component.power
-
-    @power.setter
-    def power(self, value):
-        self.appliance_component.power = value
-
-    @property
-    def idle_power(self):
-        return self.appliance_component.idle_power
-
-    @idle_power.setter
-    def idle_power(self, value):
-        self.appliance_component.idle_power = value
-
-    @property
-    def carbon_footprint_fabrication(self):
-        return self.structure_fabrication_carbon_footprint
-
-    @carbon_footprint_fabrication.setter
-    def carbon_footprint_fabrication(self, value):
-        self.structure_fabrication_carbon_footprint = value
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        super().__setattr__(name, input_value)
+        # When attributes are updated after init, propagate copies to component
+        if self.trigger_modeling_updates:
+            if name == "lifespan":
+                self.appliance_component.lifespan = copy(input_value)
+            elif name == "power":
+                self.appliance_component.power = copy(input_value)
+            elif name == "idle_power":
+                self.appliance_component.idle_power = copy(input_value)
+            elif name == "carbon_footprint_fabrication":
+                self.structure_fabrication_carbon_footprint = copy(input_value)
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self.appliance_component.unitary_hourly_workload_per_usage_pattern
-
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        super().__setattr__(name, input_value)
-        # When lifespan is updated after init, propagate copy to component
-        if name == "lifespan" and hasattr(self, 'appliance_component'):
-            self.appliance_component.lifespan = input_value.copy()
