@@ -1,5 +1,3 @@
-from typing import List, TYPE_CHECKING
-
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -7,12 +5,6 @@ from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge_storage import EdgeStorage
-
-if TYPE_CHECKING:
-    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-    from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-    from efootprint.core.usage.edge_function import EdgeFunction
-    from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 
 
 class EdgeComputer(EdgeDevice):
@@ -63,18 +55,6 @@ class EdgeComputer(EdgeDevice):
         self.ram_component = ram_component
         self.cpu_component = cpu_component
         self.storage = storage
-
-    @property
-    def edge_processes(self) -> List["RecurrentEdgeProcess"]:
-        return self.modeling_obj_containers
-
-    @property
-    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return list(set(sum([ep.edge_usage_journeys for ep in self.edge_processes], start=[])))
-
-    @property
-    def edge_functions(self) -> List["EdgeFunction"]:
-        return list(set(sum([ep.edge_functions for ep in self.edge_processes], start=[])))
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
@@ -154,9 +134,13 @@ class EdgeComputer(EdgeDevice):
     def unitary_hourly_compute_need_per_usage_pattern(self):
         return self.cpu_component.unitary_hourly_compute_need_per_usage_pattern
 
-    def __setattr__(self, name, value):
-        super().__setattr__(name, value)
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        super().__setattr__(name, input_value)
         # When lifespan is updated after init, propagate copies to components
         if name == "lifespan" and hasattr(self, 'ram_component'):
-            self.ram_component.lifespan = value.copy()
-            self.cpu_component.lifespan = value.copy()
+            from efootprint.logger import logger
+            logger.info(f"Setting ram lifespan")
+            self.ram_component.lifespan = input_value.copy()
+            logger.info(f"Setting cpu lifespan")
+            self.cpu_component.lifespan = input_value.copy()
+            logger.info(f"compute lifespan set")

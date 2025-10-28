@@ -7,7 +7,6 @@ from efootprint.core.hardware.edge_device import EdgeDevice
 from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
 
 
@@ -27,25 +26,16 @@ class EdgeAppliance(EdgeDevice):
             name=f"{name} appliance",
             carbon_footprint_fabrication=SourceValue(0 * u.kg),
             power=power,
-            lifespan=lifespan,
+            lifespan=lifespan.copy(),
             idle_power=idle_power)
 
-        # All fabrication footprint goes to structure
         super().__init__(
             name=name,
             structure_fabrication_carbon_footprint=carbon_footprint_fabrication,
             components=[appliance_component],
             lifespan=lifespan)
 
-        self._appliance_component = appliance_component
-
-    @property
-    def appliance_component(self) -> EdgeApplianceComponent:
-        return self._appliance_component
-
-    @property
-    def edge_workloads(self) -> List["RecurrentEdgeWorkload"]:
-        return self.modeling_obj_containers
+        self.appliance_component = appliance_component
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
@@ -54,19 +44,19 @@ class EdgeAppliance(EdgeDevice):
 
     @property
     def power(self):
-        return self._appliance_component.power
+        return self.appliance_component.power
 
     @power.setter
     def power(self, value):
-        self._appliance_component.power = value
+        self.appliance_component.power = value
 
     @property
     def idle_power(self):
-        return self._appliance_component.idle_power
+        return self.appliance_component.idle_power
 
     @idle_power.setter
     def idle_power(self, value):
-        self._appliance_component.idle_power = value
+        self.appliance_component.idle_power = value
 
     @property
     def carbon_footprint_fabrication(self):
@@ -78,4 +68,10 @@ class EdgeAppliance(EdgeDevice):
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
-        return self._appliance_component.unitary_hourly_workload_per_usage_pattern
+        return self.appliance_component.unitary_hourly_workload_per_usage_pattern
+
+    def __setattr__(self, name, input_value, check_input_validity=True):
+        super().__setattr__(name, input_value)
+        # When lifespan is updated after init, propagate copy to component
+        if name == "lifespan" and hasattr(self, 'appliance_component'):
+            self.appliance_component.lifespan = input_value.copy()

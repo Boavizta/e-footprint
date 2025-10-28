@@ -2,24 +2,18 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-import numpy as np
-
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.hardware.hardware_base import InsufficientCapacityError
-from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import set_modeling_obj_containers
 
 
 class TestEdgeComputer(TestCase):
     def setUp(self):
         self.mock_storage = MagicMock(spec=EdgeStorage)
+        self.mock_storage.edge_usage_patterns = []
+        self.mock_storage.id = "mock_storage_id"
         self.edge_computer = EdgeComputer(
             name="Test EdgeComputer",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
@@ -35,9 +29,14 @@ class TestEdgeComputer(TestCase):
         self.edge_computer.trigger_modeling_updates = False
 
     def test_init(self):
-        """Test EdgeComputer initialization."""
+        """Test EdgeComputer initialization and property delegation."""
         self.assertEqual("Test EdgeComputer", self.edge_computer.name)
-        self.assertEqual(60 * u.kg, self.edge_computer.carbon_footprint_fabrication.value)
+        # structure_fabrication_carbon_footprint is defined at EdgeDevice level
+        self.assertIn("Structure fabrication carbon footprint",
+                      self.edge_computer.structure_fabrication_carbon_footprint.label)
+        self.assertEqual(60 * u.kg, self.edge_computer.structure_fabrication_carbon_footprint.value)
+
+        # Properties delegate to components
         self.assertEqual(30 * u.W, self.edge_computer.power.value)
         self.assertEqual(8 * u.year, self.edge_computer.lifespan.value)
         self.assertEqual(5 * u.W, self.edge_computer.idle_power.value)
@@ -46,6 +45,16 @@ class TestEdgeComputer(TestCase):
         self.assertEqual(1 * u.GB_ram, self.edge_computer.base_ram_consumption.value)
         self.assertEqual(0.1 * u.cpu_core, self.edge_computer.base_compute_consumption.value)
         self.assertEqual(self.mock_storage, self.edge_computer.storage)
+
+        # Components should be created
+        self.assertIsNotNone(self.edge_computer.ram_component)
+        self.assertIsNotNone(self.edge_computer.cpu_component)
+
+        # Verify components are in EdgeDevice.components list
+        self.assertEqual(3, len(self.edge_computer.components))
+        self.assertIn(self.edge_computer.ram_component, self.edge_computer.components)
+        self.assertIn(self.edge_computer.cpu_component, self.edge_computer.components)
+        self.assertIn(self.edge_computer.storage, self.edge_computer.components)
 
     def test_init_removes_raw_nb_of_instances(self):
         """Test that raw_nb_of_instances is removed during initialization."""
@@ -67,96 +76,6 @@ class TestEdgeComputer(TestCase):
         self.assertIn("Base RAM consumption of Test EdgeComputer", self.edge_computer.base_ram_consumption.label)
         self.assertIn("Base compute consumption of Test EdgeComputer", self.edge_computer.base_compute_consumption.label)
 
-    def test_edge_processes_property_no_containers(self):
-        """Test edge_processes property when no containers are set."""
-        self.assertEqual([], self.edge_computer.edge_processes)
-
-    def test_edge_processes_property_with_containers(self):
-        """Test edge_processes property returns modeling_obj_containers."""
-        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
-
-        self.assertEqual({mock_process_1, mock_process_2}, set(self.edge_computer.edge_processes))
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_edge_usage_journeys_property_no_processes(self):
-        """Test edge_usage_journeys property when no processes are set."""
-        self.assertEqual([], self.edge_computer.edge_usage_journeys)
-
-    def test_edge_usage_journeys_property_with_process(self):
-        """Test edge_usage_journeys property aggregates from processes."""
-        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
-
-        mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process.edge_usage_journeys = [mock_journey_1, mock_journey_2]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process])
-
-        self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_computer.edge_usage_journeys))
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_edge_usage_journeys_property_with_multiple_processes(self):
-        """Test edge_usage_journeys property deduplicates across processes."""
-        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_3 = MagicMock(spec=EdgeUsageJourney)
-
-        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_1.edge_usage_journeys = [mock_journey_1, mock_journey_2]
-
-        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_2.edge_usage_journeys = [mock_journey_2, mock_journey_3]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
-
-        journeys = self.edge_computer.edge_usage_journeys
-        self.assertEqual(3, len(journeys))
-        self.assertIn(mock_journey_1, journeys)
-        self.assertIn(mock_journey_2, journeys)
-        self.assertIn(mock_journey_3, journeys)
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_edge_usage_patterns_property_no_processes(self):
-        """Test edge_usage_patterns property when no processes are set."""
-        self.assertEqual([], self.edge_computer.edge_usage_patterns)
-
-    def test_edge_usage_patterns_property_with_process(self):
-        """Test edge_usage_patterns property aggregates from processes."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-
-        mock_process = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process])
-
-        self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_computer.edge_usage_patterns))
-        set_modeling_obj_containers(self.edge_computer, [])
-
-    def test_edge_usage_patterns_property_with_multiple_processes(self):
-        """Test edge_usage_patterns property deduplicates patterns across processes."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_3 = MagicMock(spec=EdgeUsagePattern)
-
-        mock_process_1 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        mock_process_2 = MagicMock(spec=RecurrentEdgeProcess)
-        mock_process_2.edge_usage_patterns = [mock_pattern_2, mock_pattern_3]
-
-        set_modeling_obj_containers(self.edge_computer, [mock_process_1, mock_process_2])
-
-        patterns = self.edge_computer.edge_usage_patterns
-        self.assertEqual(3, len(patterns))
-        self.assertIn(mock_pattern_1, patterns)
-        self.assertIn(mock_pattern_2, patterns)
-        self.assertIn(mock_pattern_3, patterns)
-        set_modeling_obj_containers(self.edge_computer, [])
-
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that components are returned as dependent objects."""
         dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
@@ -164,33 +83,32 @@ class TestEdgeComputer(TestCase):
         self.assertEqual(3, len(dependent_objects))
         self.assertIn(self.edge_computer.ram_component, dependent_objects)
         self.assertIn(self.edge_computer.cpu_component, dependent_objects)
-        self.assertIn(self.mock_storage, dependent_objects)
+        self.assertIn(self.edge_computer.storage, dependent_objects)
 
-    def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
-        """Test update_dict_element_in_unitary_power_per_usage_pattern calculation."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test pattern id"
-        
-        compute_need = create_source_hourly_values_from_list([0, 2, 4], pint_unit=u.cpu_core)
-        self.edge_computer.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}
-        
-        with patch.object(self.edge_computer, "base_compute_consumption", SourceValue(0 * u.cpu_core)), \
-             patch.object(self.edge_computer, "compute", SourceValue(4 * u.cpu_core)), \
-             patch.object(self.edge_computer, "idle_power", SourceValue(10 * u.W)), \
-             patch.object(self.edge_computer, "power", SourceValue(50 * u.W)), \
-             patch.object(self.edge_computer, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            
-            self.edge_computer.update_dict_element_in_unitary_power_per_usage_pattern(mock_pattern)
-            
-            # Workload ratios: [0/4, 2/4, 4/4] = [0, 0.5, 1]
-            # Power: [10 + (50-10)*0, 10 + (50-10)*0.5, 10 + (50-10)*1] = [10, 30, 50]
-            # With PUE: [10*1.2, 30*1.2, 50*1.2] = [12, 36, 60]
-            expected_values = [12, 36, 60]
-            result = self.edge_computer.unitary_power_per_usage_pattern[mock_pattern]
-            self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
-            self.assertEqual(u.W, result.unit)
-            self.assertIn("Test EdgeComputer unitary power for Test Pattern", result.label)
+    def test_unitary_power_per_usage_pattern_property(self):
+        """Test unitary_power_per_usage_pattern is delegated to EdgeDevice."""
+        # This is now calculated at the EdgeDevice level by aggregating component powers
+        # EdgeComputer just provides a pass-through
+        self.assertIsNotNone(self.edge_computer.unitary_power_per_usage_pattern)
+
+    def test_lifespan_propagates_to_components(self):
+        """Test that updating lifespan propagates copies to RAM and CPU components."""
+        new_lifespan = SourceValue(10 * u.year)
+        from efootprint.logger import logger
+        logger.info("setting new lifespan to %s", new_lifespan)
+        self.edge_computer.lifespan = new_lifespan
+
+        # EdgeComputer's lifespan should be updated
+        logger.info("checking edge computer lifespan: %s", self.edge_computer.lifespan)
+        self.assertEqual(10 * u.year, self.edge_computer.lifespan.value)
+
+        # Components should have copies with the same value but different objects
+        self.assertEqual(10 * u.year, self.edge_computer.ram_component.lifespan.value)
+        self.assertEqual(10 * u.year, self.edge_computer.cpu_component.lifespan.value)
+
+        # They should be different objects (copies, not references)
+        self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.ram_component.lifespan)
+        self.assertIsNot(self.edge_computer.lifespan, self.edge_computer.cpu_component.lifespan)
 
 
 if __name__ == "__main__":

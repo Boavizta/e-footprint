@@ -1,9 +1,6 @@
 from copy import deepcopy
 from time import time
 
-import numpy as np
-from pint import Quantity
-
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 
 start = time()

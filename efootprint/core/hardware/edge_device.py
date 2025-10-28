@@ -4,8 +4,10 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
 
 if TYPE_CHECKING:
+    from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.hardware.edge_component import EdgeComponent
 
@@ -18,7 +20,8 @@ class EdgeDevice(ModelingObject):
         self.structure_fabrication_carbon_footprint = structure_fabrication_carbon_footprint.set_label(
             f"Structure fabrication carbon footprint of {self.name}")
         self.components = components
-        self.carbon_footprint_fabrication = EmptyExplainableObject()
+
+        self.total_carbon_footprint_fabrication = EmptyExplainableObject()
         self.total_component_power = EmptyExplainableObject()
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         self.nb_of_instances_per_usage_pattern = ExplainableObjectDict()
@@ -35,15 +38,32 @@ class EdgeDevice(ModelingObject):
         return self.components
 
     @property
+    def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
+        return self.modeling_obj_containers
+
+    @property
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
+        return list(set(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
+
+    @property
     def calculated_attributes(self):
-        return ["carbon_footprint_fabrication", "total_component_power", "nb_of_instances_per_usage_pattern",
+        return ["total_carbon_footprint_fabrication", "total_component_power", "nb_of_instances_per_usage_pattern",
                 "instances_fabrication_footprint_per_usage_pattern", "unitary_power_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern", "nb_of_instances",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
-    @property
-    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([component.edge_usage_patterns for component in self.components], start=[])))
+    def update_total_carbon_footprint_fabrication(self):
+        total_fabrication = self.structure_fabrication_carbon_footprint
+        for component in self.components:
+            total_fabrication += component.carbon_footprint_fabrication
+        self.total_carbon_footprint_fabrication = total_fabrication.set_label(
+            f"Total carbon footprint fabrication of {self.name}")
+
+    def update_total_component_power(self):
+        total_power = EmptyExplainableObject()
+        for component in self.components:
+            total_power += component.power
+        self.total_component_power = total_power.set_label(f"Total component power of {self.name}")
 
     def update_dict_element_in_nb_of_instances_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         self.nb_of_instances_per_usage_pattern[
@@ -58,7 +78,7 @@ class EdgeDevice(ModelingObject):
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
         instances_fabrication_footprint = (
-                self.nb_of_instances_per_usage_pattern[usage_pattern] * self.carbon_footprint_fabrication
+                self.nb_of_instances_per_usage_pattern[usage_pattern] * self.total_carbon_footprint_fabrication
                 * (ExplainableQuantity(1 * u.hour, "one hour") / self.lifespan))
 
         self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = instances_fabrication_footprint.to(
@@ -68,19 +88,6 @@ class EdgeDevice(ModelingObject):
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
-
-    def update_carbon_footprint_fabrication(self):
-        total_fabrication = self.structure_fabrication_carbon_footprint
-        for component in self.components:
-            total_fabrication += component.carbon_footprint_fabrication
-        self.carbon_footprint_fabrication = total_fabrication.set_label(
-            f"Total carbon footprint fabrication of {self.name}")
-
-    def update_total_component_power(self):
-        total_power = EmptyExplainableObject()
-        for component in self.components:
-            total_power += component.power
-        self.total_component_power = total_power.set_label(f"Total component power of {self.name}")
 
     def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         total_power = EmptyExplainableObject()

@@ -33,9 +33,9 @@ class EdgeComponent(ModelingObject):
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
-        """Return RecurrentEdgeComponentNeed objects linked to this component."""
-        # modeling_obj_containers for EdgeComponent will always be RecurrentEdgeComponentNeed
-        return self.modeling_obj_containers
+        from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+        return [container for container in self.modeling_obj_containers
+                if isinstance(container, RecurrentEdgeComponentNeed)]
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
