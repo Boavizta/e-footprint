@@ -28,7 +28,7 @@ class EdgeComputer(EdgeDevice):
                  storage: EdgeStorage):
         super().__init__(
             name=name,
-            structure_fabrication_carbon_footprint=carbon_footprint_fabrication.copy(),
+            structure_carbon_footprint_fabrication=carbon_footprint_fabrication.copy(),
             components=[],
             lifespan=lifespan)
         self.storage = storage
@@ -90,7 +90,7 @@ class EdgeComputer(EdgeDevice):
             elif name == "base_compute_consumption":
                 self.cpu_component.base_compute_consumption = copy(input_value)
             elif name == "carbon_footprint_fabrication":
-                self.structure_fabrication = copy(input_value)
+                self.structure_carbon_footprint_fabrication = copy(input_value)
 
     @property
     def available_ram_per_instance(self):

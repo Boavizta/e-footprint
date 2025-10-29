@@ -13,11 +13,11 @@ if TYPE_CHECKING:
 
 
 class EdgeDevice(ModelingObject):
-    def __init__(self, name: str, structure_fabrication_carbon_footprint: ExplainableQuantity,
+    def __init__(self, name: str, structure_carbon_footprint_fabrication: ExplainableQuantity,
                  components: List[EdgeComponent], lifespan: ExplainableQuantity):
         super().__init__(name)
         self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
-        self.structure_fabrication_carbon_footprint = structure_fabrication_carbon_footprint.set_label(
+        self.structure_carbon_footprint_fabrication = structure_carbon_footprint_fabrication.set_label(
             f"Structure fabrication carbon footprint of {self.name}")
         self.components = components
 
@@ -53,7 +53,7 @@ class EdgeDevice(ModelingObject):
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     def update_total_carbon_footprint_fabrication(self):
-        total_fabrication = self.structure_fabrication_carbon_footprint
+        total_fabrication = self.structure_carbon_footprint_fabrication
         for component in self.components:
             total_fabrication += component.carbon_footprint_fabrication
         self.total_carbon_footprint_fabrication = total_fabrication.set_label(

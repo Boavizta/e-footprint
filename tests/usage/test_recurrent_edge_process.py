@@ -64,120 +64,20 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertIs(self.recurrent_compute_needed, self.edge_process.recurrent_compute_needed)
         self.assertIs(self.recurrent_ram_needed, self.edge_process.recurrent_ram_needed)
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        from efootprint.core.usage.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
         self.assertIsInstance(self.edge_process.unitary_hourly_compute_need_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_process.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_process.unitary_hourly_storage_need_per_usage_pattern, ExplainableObjectDict)
+        # Verify that storage need is a RecurrentEdgeStorageNeed instance
+        self.assertIsInstance(self.edge_process._storage_need, RecurrentEdgeStorageNeed)
 
-    def test_update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern_monday_start(self):
-        """Test update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern when starting on Monday 00:00."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern Monday"
-        mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
-        # 2025-01-06 is a Monday
-        mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-06T00:00:00")
-        mock_country = MagicMock()
-        mock_timezone = MagicMock()
+    def test_unitary_hourly_storage_need_per_usage_pattern_delegates_to_storage_need(self):
+        """Test that unitary_hourly_storage_need_per_usage_pattern delegates to the storage need."""
+        # Verify that the property returns the storage need's unitary_hourly_need_per_usage_pattern
+        result = self.edge_process.unitary_hourly_storage_need_per_usage_pattern
+        expected = self.edge_process._storage_need.unitary_hourly_need_per_usage_pattern
 
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
-        mock_pattern.country = mock_country
-        mock_country.timezone = mock_timezone
-
-        # Create mock result with magnitude array
-        base_storage_result = MagicMock(spec=ExplainableHourlyQuantities)
-        base_storage_result.magnitude = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        base_storage_result.set_label = MagicMock(return_value=base_storage_result)
-
-        # Mock the storage component need's dictionary to return the base result
-        self.edge_process._storage_need.unitary_hourly_need_per_usage_pattern = {mock_pattern: base_storage_result}
-
-        self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=base_storage_result
-        )
-
-        self.edge_process.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(mock_pattern)
-
-        # Values should not be modified since it starts on Monday 00:00
-        np.testing.assert_array_equal(base_storage_result.magnitude, [1.0, 2.0, 3.0, 4.0, 5.0])
-
-        self.assertEqual(
-            {mock_pattern: base_storage_result}, self.edge_process.unitary_hourly_storage_need_per_usage_pattern)
-
-    def test_update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern_non_monday_start(self):
-        """Test update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern when not starting on Monday 00:00."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern Wednesday"
-        mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
-        # 2025-01-01 is a Wednesday at 00:00
-        mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-01T00:00:00")
-        mock_country = MagicMock()
-        mock_timezone = MagicMock()
-
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
-        mock_pattern.country = mock_country
-        mock_country.timezone = mock_timezone
-
-        # Create mock result with magnitude array - enough hours to cover until first Monday
-        # From Wednesday 00:00 to Monday 00:00 = 5 days = 120 hours
-        base_storage_result = MagicMock(spec=ExplainableHourlyQuantities)
-        original_values = np.array([1.0, 2.0, 3.0] * 50)  # 150 values
-        base_storage_result.magnitude = original_values.copy()
-        base_storage_result.set_label = MagicMock(return_value=base_storage_result)
-
-        # Mock the storage component need's dictionary to return the base result
-        self.edge_process._storage_need.unitary_hourly_need_per_usage_pattern = {mock_pattern: base_storage_result}
-
-        self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=base_storage_result
-        )
-
-        self.edge_process.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(mock_pattern)
-
-        # First 120 hours (5 days * 24 hours) should be set to 0
-        # Wednesday (weekday 2) to Monday (weekday 0): (7 - 2) * 24 - 0 = 120 hours
-        expected_modified_values = original_values.copy()
-        expected_modified_values[:120] = 0
-        np.testing.assert_array_equal(base_storage_result.magnitude, expected_modified_values)
-
-        self.assertEqual(
-            {mock_pattern: base_storage_result}, self.edge_process.unitary_hourly_storage_need_per_usage_pattern)
-
-    def test_update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern_friday_afternoon_start(self):
-        """Test update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern when starting on Friday afternoon."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern Friday Afternoon"
-        mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
-        # 2025-01-03 is a Friday at 15:00
-        mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-03T15:00:00")
-        mock_country = MagicMock()
-        mock_timezone = MagicMock()
-
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
-        mock_pattern.country = mock_country
-        mock_country.timezone = mock_timezone
-
-        # Create mock result with magnitude array
-        base_storage_result = MagicMock(spec=ExplainableHourlyQuantities)
-        original_values = np.array([1.0, 2.0, 3.0] * 20)  # 60 values, enough to cover until first Monday
-        base_storage_result.magnitude = original_values.copy()
-        base_storage_result.set_label = MagicMock(return_value=base_storage_result)
-
-        # Mock the storage component need's dictionary to return the base result
-        self.edge_process._storage_need.unitary_hourly_need_per_usage_pattern = {mock_pattern: base_storage_result}
-
-        self.edge_process.recurrent_storage_needed.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=base_storage_result
-        )
-
-        self.edge_process.update_dict_element_in_unitary_hourly_storage_need_per_usage_pattern(mock_pattern)
-
-        # From Friday 15:00 to Monday 00:00: (7 - 4) * 24 - 15 = 57 hours
-        # Friday is weekday 4, so (7 - 4) * 24 - 15 = 3 * 24 - 15 = 72 - 15 = 57 hours
-        expected_modified_values = original_values.copy()
-        expected_modified_values[:57] = 0
-        np.testing.assert_array_equal(base_storage_result.magnitude, expected_modified_values)
-
-        self.assertEqual(
-            {mock_pattern: base_storage_result}, self.edge_process.unitary_hourly_storage_need_per_usage_pattern)
+        self.assertIs(result, expected)
 
     def test_from_defaults_class_method(self):
         """Test RecurrentEdgeProcess can be created using from_defaults class method."""

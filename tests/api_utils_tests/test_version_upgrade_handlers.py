@@ -561,11 +561,13 @@ class TestVersionUpgradeHandlers(TestCase):
                 "obj_1": {
                     "name": "Object 1",
                     "power_usage_effectiveness": "val",
-                    "utilization_rate": "value"
+                    "utilization_rate": "value",
+                    "carbon_footprint_fabrication": "cff_val"
                 },
                 "obj_2": {
                     "power_usage_effectiveness": "val2",
-                    "utilization_rate": "value2"
+                    "utilization_rate": "value2",
+                    "carbon_footprint_fabrication": "cff_val"
                 }
             },
             "EdgeFunction": {
@@ -583,8 +585,13 @@ class TestVersionUpgradeHandlers(TestCase):
             "EdgeComputer": {
                 "obj_1": {
                     "name": "Object 1",
+                    "carbon_footprint_fabrication": "cff_val",
+                    "structure_carbon_footprint_fabrication": "cff_val"
                 },
-                "obj_2": {}
+                "obj_2": {
+                    "carbon_footprint_fabrication": "cff_val",
+                    "structure_carbon_footprint_fabrication": "cff_val"
+                }
             },
             "EdgeFunction": {
                 "func_1": {

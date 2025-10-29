@@ -109,7 +109,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             ["Device", "Country", 
              "EdgeRAMComponent", "EdgeCPUComponent", "EdgeApplianceComponent", "EdgeStorage",
              "EdgeAppliance", "Network", "Storage",
-             "RecurrentEdgeComponentNeed", "EdgeDevice", "EdgeComputer", 
+             "RecurrentEdgeComponentNeed", "RecurrentEdgeStorageNeed", "EdgeDevice", "EdgeComputer",
              "BoaviztaCloudServer", "RecurrentEdgeWorkload",
              "Server", "GPUServer", "WebApplication",
              "VideoStreaming", "GenAIModel", "Job", "GPUJob",

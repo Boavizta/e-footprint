@@ -19,7 +19,7 @@ class EdgeAppliance(EdgeDevice):
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
         super().__init__(
             name=name,
-            structure_fabrication_carbon_footprint=carbon_footprint_fabrication.copy(),
+            structure_carbon_footprint_fabrication=carbon_footprint_fabrication.copy(),
             components=[],
             lifespan=lifespan)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
@@ -53,7 +53,7 @@ class EdgeAppliance(EdgeDevice):
             elif name == "idle_power":
                 self.appliance_component.idle_power = copy(input_value)
             elif name == "carbon_footprint_fabrication":
-                self.structure_fabrication_carbon_footprint = copy(input_value)
+                self.structure_carbon_footprint_fabrication = copy(input_value)
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):

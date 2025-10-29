@@ -33,10 +33,10 @@ class TestEdgeComputer(TestCase):
     def test_init(self):
         """Test EdgeComputer initialization and property delegation."""
         self.assertEqual("Test EdgeComputer", self.edge_computer.name)
-        # structure_fabrication_carbon_footprint is defined at EdgeDevice level
+        # structure_carbon_footprint_fabrication is defined at EdgeDevice level
         self.assertIn("Structure fabrication carbon footprint",
-                      self.edge_computer.structure_fabrication_carbon_footprint.label)
-        self.assertEqual(60 * u.kg, self.edge_computer.structure_fabrication_carbon_footprint.value)
+                      self.edge_computer.structure_carbon_footprint_fabrication.label)
+        self.assertEqual(60 * u.kg, self.edge_computer.structure_carbon_footprint_fabrication.value)
 
         # Properties delegate to components
         self.assertEqual(30 * u.W, self.edge_computer.power.value)

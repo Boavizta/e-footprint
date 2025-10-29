@@ -11,6 +11,7 @@ from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
@@ -43,7 +44,7 @@ EDGE_DEVICE_BUILDER_CLASSES = [EdgeAppliance, EdgeComputer]
 
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
-        + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeComponentNeed]
+        + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeComponentNeed, RecurrentEdgeStorageNeed]
         + EDGE_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed] + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES
