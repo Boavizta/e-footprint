@@ -51,7 +51,7 @@
         "Default-edge-function": {
             "name": "Default edge function",
             "id": "Default-edge-function",
-            "recurrent_edge_resource_needs": [
+            "recurrent_edge_device_needs": [
                 "Default-edge-process"
             ]
         }
@@ -152,24 +152,6 @@
                 "value": 4.0,
                 "unit": "cpu_core",
                 "label": "Compute of Default edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "power_usage_effectiveness": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "PUE of Default edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "utilization_rate": {
-                "value": 0.8,
-                "unit": "dimensionless",
-                "label": "Default edge device utilization rate from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

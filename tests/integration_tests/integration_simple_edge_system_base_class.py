@@ -50,8 +50,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
@@ -70,7 +68,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         edge_function = EdgeFunction(
             "Default edge function",
-            recurrent_edge_resource_needs=[edge_process]
+            recurrent_edge_device_needs=[edge_process]
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -167,9 +165,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(
             edge_computer,
             # fraction_of_usage_time is an Hardware parameter not used in EdgeComputer
-            # ram, base_ram_consumption and utilization_rate only matter to raise InsufficientCapacityError
+            # ram and base_ram_consumption only matter to raise InsufficientCapacityError
             # and this behavior is already unit tested.
-            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption", "utilization_rate"],
+            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption"],
             special_mult={"base_compute_consumption": 10}
         )
         self._test_variations_on_obj_inputs(
@@ -217,10 +215,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_process(self):
         logger.warning("Changing edge resource needs in edge function")
-        self.edge_function.recurrent_edge_resource_needs = []
+        self.edge_function.recurrent_edge_device_needs = []
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         logger.warning("Putting back initial edge processes")
-        self.edge_function.recurrent_edge_resource_needs = [self.edge_process]
+        self.edge_function.recurrent_edge_device_needs = [self.edge_process]
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_edge_storage(self):
@@ -268,8 +266,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
@@ -302,15 +298,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
 
-        self.edge_function.recurrent_edge_resource_needs = (
-            self.edge_function.recurrent_edge_resource_needs + [new_edge_process])
+        self.edge_function.recurrent_edge_device_needs = (
+            self.edge_function.recurrent_edge_device_needs + [new_edge_process])
 
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.edge_computer, self.edge_storage])
 
         logger.warning("Removing the new edge process")
-        self.edge_function.recurrent_edge_resource_needs = (
-            self.edge_function.recurrent_edge_resource_needs[:-1])
+        self.edge_function.recurrent_edge_device_needs = (
+            self.edge_function.recurrent_edge_device_needs[:-1])
         new_edge_process.self_delete()
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
@@ -328,13 +324,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
         )
-        self.edge_function.recurrent_edge_resource_needs = [new_edge_process]
+        self.edge_function.recurrent_edge_device_needs = [new_edge_process]
 
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_changed([self.edge_computer, self.edge_storage], system=self.system)
 
         logger.warning("Changing back to previous edge processes")
-        self.edge_function.recurrent_edge_resource_needs = [self.edge_process]
+        self.edge_function.recurrent_edge_device_needs = [self.edge_process]
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
@@ -360,8 +356,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
@@ -380,7 +374,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_function = EdgeFunction(
             "New edge function",
-            recurrent_edge_resource_needs=[new_edge_process]
+            recurrent_edge_device_needs=[new_edge_process]
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
@@ -414,7 +408,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process(self):
-        new_edge_function = EdgeFunction("additional edge function", recurrent_edge_resource_needs=[self.edge_process])
+        new_edge_function = EdgeFunction("additional edge function", recurrent_edge_device_needs=[self.edge_process])
 
         new_edge_usage_journey = EdgeUsageJourney(
             "additional edge usage journey",
@@ -495,8 +489,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(8 * u.GB_ram),
             compute=SourceValue(4 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=new_edge_storage
@@ -515,7 +507,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_function = EdgeFunction(
             "New edge function",
-            recurrent_edge_resource_needs=[new_edge_process]
+            recurrent_edge_device_needs=[new_edge_process]
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
@@ -548,7 +540,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_usage_pattern = next(iter(class_obj_dict["EdgeUsagePattern"].values()))
         edge_usage_journey = edge_usage_pattern.edge_usage_journey
         edge_function = edge_usage_journey.edge_functions[0]
-        previous_edge_needs = copy(edge_function.recurrent_edge_resource_needs)
+        previous_edge_needs = copy(edge_function.recurrent_edge_device_needs)
         system = next(iter(class_obj_dict["System"].values()))
         edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
         edge_computer = next(iter(class_obj_dict["EdgeComputer"].values()))
@@ -564,13 +556,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
 
-        edge_function.recurrent_edge_resource_needs = edge_function.recurrent_edge_resource_needs + [new_edge_process]
+        edge_function.recurrent_edge_device_needs = edge_function.recurrent_edge_device_needs + [new_edge_process]
 
         self.assertNotEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_changed([edge_storage, edge_computer])
 
         logger.warning("Changing back to previous edge processes")
-        edge_function.recurrent_edge_resource_needs = previous_edge_needs
+        edge_function.recurrent_edge_device_needs = previous_edge_needs
 
         self.assertEqual(self.initial_footprint, system.total_footprint)
         self.footprint_has_not_changed([edge_storage, edge_computer])
@@ -614,33 +606,33 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
         )
 
-        initial_edge_needs = copy(self.edge_function.recurrent_edge_resource_needs)
-        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_resource_needs,
-                                    self.edge_function.recurrent_edge_resource_needs + [new_edge_process]]],
+        initial_edge_needs = copy(self.edge_function.recurrent_edge_device_needs)
+        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,
+                                    self.edge_function.recurrent_edge_device_needs + [new_edge_process]]],
                                     copy(self.start_date).replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_resource_needs)
+        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
         simulation.set_updated_values()
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_resource_needs)
+        self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_device_needs)
         simulation.reset_values()
 
     def run_test_simulation_add_existing_edge_process(self):
-        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_resource_needs,
-                                    self.edge_function.recurrent_edge_resource_needs + [self.edge_process]]],
+        simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,
+                                    self.edge_function.recurrent_edge_device_needs + [self.edge_process]]],
                                     copy(self.start_date).replace(tzinfo=timezone.utc) + timedelta(hours=1))
 
-        initial_edge_needs = copy(self.edge_function.recurrent_edge_resource_needs)
+        initial_edge_needs = copy(self.edge_function.recurrent_edge_device_needs)
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
-        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_resource_needs)
+        self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
         simulation.set_updated_values()
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(initial_edge_needs + [self.edge_process], self.edge_function.recurrent_edge_resource_needs)
+        self.assertEqual(initial_edge_needs + [self.edge_process], self.edge_function.recurrent_edge_device_needs)
         simulation.reset_values()
 
     def run_test_add_edge_usage_journey_to_edge_computer(self):
@@ -659,7 +651,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_function = EdgeFunction(
             "Second edge function",
-            recurrent_edge_resource_needs=[new_edge_process]
+            recurrent_edge_device_needs=[new_edge_process]
         )
 
         new_edge_usage_journey = EdgeUsageJourney(

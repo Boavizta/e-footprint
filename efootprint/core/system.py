@@ -111,11 +111,11 @@ class System(ModelingObject):
         output_list = self.edge_storages + edge_usage_patterns
         edge_usage_journeys = self.edge_usage_journeys
         edge_functions = list(set(sum([euj.edge_functions for euj in edge_usage_journeys], start=[])))
-        recurrent_edge_resource_needs = list(
-            set(sum([ef.recurrent_edge_resource_needs for ef in edge_functions], start=[])))
+        recurrent_edge_device_needs = list(
+            set(sum([ef.recurrent_edge_device_needs for ef in edge_functions], start=[])))
         edge_devices = self.edge_devices
         countries = list(set([up.country for up in edge_usage_patterns]))
-        all_modeling_objects = (output_list + edge_usage_journeys + edge_functions + recurrent_edge_resource_needs
+        all_modeling_objects = (output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
                                 + edge_devices + countries)
 
         return all_modeling_objects

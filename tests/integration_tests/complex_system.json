@@ -1165,7 +1165,7 @@
         "Edge-function": {
             "name": "Edge function",
             "id": "Edge-function",
-            "recurrent_edge_resource_needs": [
+            "recurrent_edge_device_needs": [
                 "Edge-process"
             ]
         }
@@ -1266,24 +1266,6 @@
                 "value": 4.0,
                 "unit": "cpu_core",
                 "label": "Compute of Edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "power_usage_effectiveness": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "PUE of Edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "utilization_rate": {
-                "value": 0.8,
-                "unit": "dimensionless",
-                "label": "Edge device utilization rate from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
