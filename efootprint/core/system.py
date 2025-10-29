@@ -151,7 +151,12 @@ class System(ModelingObject):
 
     @property
     def edge_storages(self) -> List[EdgeStorage]:
-        return list(set([edge_computer.storage for edge_computer in self.edge_computers]))
+        edge_storages = []
+        for edge_device in self.edge_devices:
+            for component in edge_device.components:
+                if isinstance(component, EdgeStorage):
+                    edge_storages.append(component)
+        return list(set(edge_storages))
 
     @property
     def networks(self) -> List[Network]:
