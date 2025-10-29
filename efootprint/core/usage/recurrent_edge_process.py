@@ -1,5 +1,4 @@
 from copy import copy
-from typing import TYPE_CHECKING
 
 import numpy as np
 from pint import Quantity
@@ -11,9 +10,6 @@ from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
-
-if TYPE_CHECKING:
-    from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
 class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
@@ -74,6 +70,10 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
                 self._ram_need.recurrent_need = copy(input_value)
             elif name == "recurrent_storage_needed":
                 self._storage_need.recurrent_need = copy(input_value)
+            elif name == "edge_device":
+                self._cpu_need.edge_component = input_value.cpu_component
+                self._ram_need.edge_component = input_value.ram_component
+                self._storage_need.edge_component = input_value.storage
 
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):

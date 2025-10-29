@@ -36,7 +36,7 @@ class TestEdgeComputer(TestCase):
         # structure_carbon_footprint_fabrication is defined at EdgeDevice level
         self.assertIn("Structure fabrication carbon footprint",
                       self.edge_computer.structure_carbon_footprint_fabrication.label)
-        self.assertEqual(60 * u.kg, self.edge_computer.structure_carbon_footprint_fabrication.value)
+        self.assertEqual(0 * u.kg, self.edge_computer.structure_carbon_footprint_fabrication.value)
 
         # Properties delegate to components
         self.assertEqual(30 * u.W, self.edge_computer.power.value)
@@ -83,16 +83,12 @@ class TestEdgeComputer(TestCase):
         dependent_objects = self.edge_computer.modeling_objects_whose_attributes_depend_directly_on_me
         self.assertEqual(0, len(dependent_objects))
 
-    def test_unitary_power_per_usage_pattern_property(self):
-        """Test unitary_power_per_usage_pattern is delegated to EdgeDevice."""
-        # This is now calculated at the EdgeDevice level by aggregating component powers
-        # EdgeComputer just provides a pass-through
-        self.assertIsNotNone(self.edge_computer.unitary_power_per_usage_pattern)
-
     def test_lifespan_propagates_to_components(self):
         """Test that updating lifespan propagates copies to RAM and CPU components."""
         new_lifespan = SourceValue(10 * u.year)
         self.edge_computer.trigger_modeling_updates = True
+        self.edge_computer.ram_component.update_lifespan()
+        self.edge_computer.cpu_component.update_lifespan()
         self.edge_computer.lifespan = new_lifespan
 
         # EdgeComputer's lifespan should be updated

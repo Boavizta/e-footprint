@@ -28,6 +28,12 @@ class EdgeComponent(ModelingObject):
         self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
+        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
+        self.instances_energy_per_usage_pattern = ExplainableObjectDict()
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        self.instances_fabrication_footprint = EmptyExplainableObject()
+        self.instances_energy = EmptyExplainableObject()
+        self.energy_footprint = EmptyExplainableObject()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeDevice"]:
@@ -37,7 +43,9 @@ class EdgeComponent(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["unitary_power_per_usage_pattern"]
+        return ["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
+                "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
+                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -47,89 +55,83 @@ class EdgeComponent(ModelingObject):
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
-        if not self.recurrent_edge_component_needs:
-            return None
-
-        return self.recurrent_edge_component_needs[0].edge_device
+        from efootprint.core.hardware.edge_device import EdgeDevice
+        output = None
+        for container in self.modeling_obj_containers:
+            if isinstance(container, EdgeDevice):
+                output = container
+                break
+        return output
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
 
-    @property
-    def device_carbon_footprint_fabrication_intensity_share(self) -> ExplainableQuantity:
-        """Component's share of device's total carbon footprint fabrication intensity."""
-        if not self.edge_device:
-            return EmptyExplainableObject()
+    def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
+            self, usage_pattern: "EdgeUsagePattern"):
+        component_fabrication_intensity = (self.carbon_footprint_fabrication / self.lifespan)
+        nb_instances = usage_pattern.nb_edge_usage_journeys_in_parallel
 
-        component_intensity = (self.carbon_footprint_fabrication / self.lifespan).to(u.kg / u.year)
-        device_total_intensity = self.edge_device.total_carbon_footprint_fabrication_intensity
+        instances_fabrication_footprint = (
+            nb_instances * component_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
 
-        if device_total_intensity.value == 0:
-            return EmptyExplainableObject()
+        self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = instances_fabrication_footprint.to(
+            u.kg).set_label(f"Hourly {self.name} instances fabrication footprint for {usage_pattern.name}")
 
-        share = (component_intensity / device_total_intensity).set_label(
-            f"{self.name} carbon footprint fabrication intensity share of {self.edge_device.name}")
-        return share
+    def update_instances_fabrication_footprint_per_usage_pattern(self):
+        """Calculate fabrication footprint per usage pattern."""
+        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
 
-    @property
-    def device_power_share(self) -> ExplainableQuantity:
-        """Component's share of device's total component power."""
-        if not self.edge_device:
-            return EmptyExplainableObject()
+    def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        nb_instances = usage_pattern.nb_edge_usage_journeys_in_parallel
+        unitary_energy = (self.unitary_power_per_usage_pattern[usage_pattern] *
+                        ExplainableQuantity(1 * u.hour, "one hour"))
+        instances_energy = nb_instances * unitary_energy
 
-        device_total_power = self.edge_device.total_component_power
+        self.instances_energy_per_usage_pattern[usage_pattern] = instances_energy.set_label(
+            f"Hourly energy consumed by {self.name} instances for {usage_pattern.name}")
 
-        if device_total_power.value == 0:
-            return EmptyExplainableObject()
+    def update_instances_energy_per_usage_pattern(self):
+        """Calculate energy per usage pattern."""
+        self.instances_energy_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_instances_energy_per_usage_pattern(usage_pattern)
 
-        share = (self.power / device_total_power).set_label(f"{self.name} power share of {self.edge_device.name}")
-        return share
+    def update_dict_element_in_energy_footprint_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        energy_footprint = (
+                self.instances_energy_per_usage_pattern[usage_pattern] * usage_pattern.country.average_carbon_intensity)
 
-    @property
-    def instances_fabrication_footprint(self) -> ExplainableQuantity:
-        """Component's instances fabrication footprint based on its share of device footprint."""
-        if not self.edge_device:
-            return EmptyExplainableObject()
+        self.energy_footprint_per_usage_pattern[usage_pattern] = energy_footprint.set_label(
+            f"{self.name} energy footprint for {usage_pattern.name}")
 
-        device_footprint = self.edge_device.instances_fabrication_footprint
-        share = self.device_carbon_footprint_fabrication_intensity_share
+    def update_energy_footprint_per_usage_pattern(self):
+        """Calculate energy footprint per usage pattern."""
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
 
-        if isinstance(share, EmptyExplainableObject) or isinstance(device_footprint, EmptyExplainableObject):
-            return EmptyExplainableObject()
+    def update_instances_fabrication_footprint(self):
+        """Sum fabrication footprint across usage patterns."""
+        instances_fabrication_footprint = sum(
+            self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
+        self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
+            f"{self.name} total fabrication footprint across usage patterns")
 
-        component_footprint = (device_footprint * share).set_label(f"{self.name} instances fabrication footprint")
-        return component_footprint
+    def update_instances_energy(self):
+        """Sum energy across usage patterns."""
+        instances_energy = sum(
+            self.instances_energy_per_usage_pattern.values(), start=EmptyExplainableObject())
+        self.instances_energy = instances_energy.set_label(
+            f"{self.name} total energy consumed across usage patterns")
 
-    @property
-    def instances_energy(self) -> ExplainableQuantity:
-        """Component's instances energy based on its share of device energy."""
-        if not self.edge_device:
-            return EmptyExplainableObject()
-
-        device_energy = self.edge_device.instances_energy
-        share = self.device_power_share
-
-        if isinstance(share, EmptyExplainableObject) or isinstance(device_energy, EmptyExplainableObject):
-            return EmptyExplainableObject()
-
-        component_energy = (device_energy * share).set_label(f"{self.name} instances energy")
-        return component_energy
-
-    @property
-    def energy_footprint(self) -> ExplainableQuantity:
-        """Component's energy footprint based on its share of device energy footprint."""
-        if not self.edge_device:
-            return EmptyExplainableObject()
-
-        device_energy_footprint = self.edge_device.energy_footprint
-        share = self.device_power_share
-
-        if isinstance(share, EmptyExplainableObject) or isinstance(device_energy_footprint, EmptyExplainableObject):
-            return EmptyExplainableObject()
-
-        component_energy_footprint = (device_energy_footprint * share).set_label(f"{self.name} energy footprint")
-        return component_energy_footprint
+    def update_energy_footprint(self):
+        """Sum energy footprint across usage patterns."""
+        energy_footprint = sum(
+            self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
+        self.energy_footprint = energy_footprint.set_label(
+            f"{self.name} total energy footprint across usage patterns")
 
     @abstractmethod
     def expected_need_units(self) -> List:

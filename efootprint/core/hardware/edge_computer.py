@@ -9,6 +9,64 @@ from efootprint.core.hardware.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge_storage import EdgeStorage
 
 
+class EdgeComputerRAMComponent(EdgeRAMComponent):
+    def __init__(self, name: str):
+        super().__init__(
+            name=name,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(0 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            idle_power=SourceValue(0 * u.W),
+            ram=SourceValue(1 * u.GB_ram),
+            base_ram_consumption=SourceValue(0 * u.GB_ram))
+
+    @property
+    def calculated_attributes(self):
+        return ["ram", "base_ram_consumption", "lifespan"] + super().calculated_attributes
+
+    def update_ram(self):
+        self.ram = self.edge_device.ram.copy().set_label(f"RAM of {self.name}")
+
+    def update_base_ram_consumption(self):
+        self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
+            f"Base RAM consumption of {self.name}")
+
+    def update_lifespan(self):
+        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+
+
+class EdgeComputerCPUComponent(EdgeCPUComponent):
+    def __init__(self, name: str):
+        super().__init__(
+            name=name,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            idle_power=SourceValue(0 * u.W),
+            compute=SourceValue(1 * u.cpu_core),
+            base_compute_consumption=SourceValue(0 * u.cpu_core))
+
+    @property
+    def calculated_attributes(self):
+        return ["compute", "base_compute_consumption", "lifespan", "power", "idle_power"] + super().calculated_attributes
+
+    def update_compute(self):
+        self.compute = self.edge_device.compute.copy().set_label(f"Compute of {self.name}")
+
+    def update_base_compute_consumption(self):
+        self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
+            f"Base compute consumption of {self.name}")
+
+    def update_lifespan(self):
+        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+
+    def update_power(self):
+        self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+
+    def update_idle_power(self):
+        self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+
+
 class EdgeComputer(EdgeDevice):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg),
@@ -28,7 +86,7 @@ class EdgeComputer(EdgeDevice):
                  storage: EdgeStorage):
         super().__init__(
             name=name,
-            structure_carbon_footprint_fabrication=carbon_footprint_fabrication.copy(),
+            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
             components=[],
             lifespan=lifespan)
         self.storage = storage
@@ -44,53 +102,22 @@ class EdgeComputer(EdgeDevice):
         self.ram_component = None
         self.cpu_component = None
 
-    def after_init(self):
-        # RAM component has no power
-        ram_component = EdgeRAMComponent(
-            name=f"{self.name} RAM",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=SourceValue(0 * u.W),
-            lifespan=copy(self.lifespan),
-            idle_power=SourceValue(0 * u.W),
-            ram=copy(self.ram),
-            base_ram_consumption=copy(self.base_ram_consumption))
+    @property
+    def calculated_attributes(self):
+        return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
 
-        # CPU component gets all power and idle_power
-        cpu_component = EdgeCPUComponent(
-            name=f"{self.name} CPU",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=copy(self.power),
-            lifespan=copy(self.lifespan),
-            idle_power=copy(self.idle_power),
-            compute=copy(self.compute),
-            base_compute_consumption=copy(self.base_compute_consumption))
+    def update_structure_carbon_footprint_fabrication(self):
+        self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
+            f"Structure fabrication carbon footprint of {self.name}")
+
+    def after_init(self):
+        ram_component = EdgeComputerRAMComponent(name=f"{self.name} RAM")
+        cpu_component = EdgeComputerCPUComponent(name=f"{self.name} CPU")
 
         self.ram_component = ram_component
         self.cpu_component = cpu_component
         self.components = [cpu_component, ram_component, self.storage]
         super().after_init()
-
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        super().__setattr__(name, input_value)
-        # When lifespan is updated after init, propagate copies to components
-        if self.trigger_modeling_updates:
-            if name == "lifespan":
-                self.ram_component.lifespan = copy(input_value)
-                self.cpu_component.lifespan = copy(input_value)
-            elif name == "power":
-                self.cpu_component.power = copy(input_value)
-            elif name == "idle_power":
-                self.cpu_component.idle_power = copy(input_value)
-            elif name == "ram":
-                self.ram_component.ram = copy(input_value)
-            elif name == "compute":
-                self.cpu_component.compute = copy(input_value)
-            elif name == "base_ram_consumption":
-                self.ram_component.base_ram_consumption = copy(input_value)
-            elif name == "base_compute_consumption":
-                self.cpu_component.base_compute_consumption = copy(input_value)
-            elif name == "carbon_footprint_fabrication":
-                self.structure_carbon_footprint_fabrication = copy(input_value)
 
     @property
     def available_ram_per_instance(self):

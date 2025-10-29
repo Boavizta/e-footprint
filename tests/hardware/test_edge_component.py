@@ -1,12 +1,15 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+import numpy as np
+
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_component import EdgeComponent
-from efootprint.core.hardware.edge_device import EdgeDevice
+from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
 class ConcreteEdgeComponent(EdgeComponent):
@@ -37,170 +40,120 @@ class TestEdgeComponent(TestCase):
         )
         self.component.trigger_modeling_updates = False
 
-    def test_device_carbon_footprint_fabrication_intensity_share_no_device(self):
-        """Test device_carbon_footprint_fabrication_intensity_share returns EmptyExplainableObject when no device."""
-        result = self.component.device_carbon_footprint_fabrication_intensity_share
-        self.assertIsInstance(result, EmptyExplainableObject)
+    def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self):
+        """Test fabrication footprint calculation for a single pattern."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test_pattern_id"
+        mock_pattern.nb_edge_usage_journeys_in_parallel = SourceValue(10 * u.concurrent)
 
-    def test_device_carbon_footprint_fabrication_intensity_share(self):
-        """Test device_carbon_footprint_fabrication_intensity_share calculation."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
+        self.component.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
 
         # Component intensity: 20 kg / 5 year = 4 kg/year
-        # Device total intensity: 10 kg/year
-        # Share: 4/10 = 0.4
-        mock_device.total_carbon_footprint_fabrication_intensity = SourceValue(10 * u.kg / u.year)
+        # Per hour: 4 kg/year / (365.25 * 24) kg/hour
+        # For 10 instances: 10 * (4 / 8766) kg
+        expected_footprint = 10 * (20 / 5) / (365.25 * 24)
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.device_carbon_footprint_fabrication_intensity_share
+        result = self.component.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
+        self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
+        self.assertIn("Test Component", result.label)
+        self.assertIn("Test Pattern", result.label)
 
-            expected_share = 0.4
-            self.assertAlmostEqual(expected_share, result.value.magnitude, places=5)
-            self.assertEqual(u.dimensionless, result.value.units)
-            self.assertIn("Test Component carbon footprint fabrication intensity share of Test Device", result.label)
+    def test_update_dict_element_in_instances_energy_per_usage_pattern(self):
+        """Test energy calculation for a single pattern."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.id = "test_pattern_id"
+        mock_pattern.nb_edge_usage_journeys_in_parallel = create_source_hourly_values_from_list([10, 20], pint_unit=u.concurrent)
 
-    def test_device_carbon_footprint_fabrication_intensity_share_zero_total(self):
-        """Test device_carbon_footprint_fabrication_intensity_share returns EmptyExplainableObject when device total is zero."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_carbon_footprint_fabrication_intensity = SourceValue(0 * u.kg / u.year)
+        unitary_power = create_source_hourly_values_from_list([30, 40], pint_unit=u.W)
+        self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({mock_pattern: unitary_power})
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.device_carbon_footprint_fabrication_intensity_share
-            self.assertIsInstance(result, EmptyExplainableObject)
+        self.component.update_dict_element_in_instances_energy_per_usage_pattern(mock_pattern)
 
-    def test_device_power_share_no_device(self):
-        """Test device_power_share returns EmptyExplainableObject when no device."""
-        result = self.component.device_power_share
-        self.assertIsInstance(result, EmptyExplainableObject)
+        # Energy = nb_instances * unitary_power * 1 hour = [10, 20] * [30, 40] W * 1 hour = [300, 800] Wh
+        expected_energy = [300, 800]
 
-    def test_device_power_share(self):
-        """Test device_power_share calculation."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
+        result = self.component.instances_energy_per_usage_pattern[mock_pattern]
+        self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
+        self.assertIn("Test Component", result.label)
 
-        # Component power: 50 W
-        # Device total power: 200 W
-        # Share: 50/200 = 0.25
-        mock_device.total_component_power = SourceValue(200 * u.W)
+    def test_update_dict_element_in_energy_footprint_per_usage_pattern(self):
+        """Test energy footprint calculation for a single pattern."""
+        mock_pattern = MagicMock()
+        mock_pattern.name = "Test Pattern"
+        mock_pattern.country.average_carbon_intensity = SourceValue(0.5 * u.kg / u.kWh)
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.device_power_share
+        instances_energy = create_source_hourly_values_from_list([1000, 2000], pint_unit=u.Wh)
+        self.component.instances_energy_per_usage_pattern = ExplainableObjectDict({mock_pattern: instances_energy})
 
-            expected_share = 0.25
-            self.assertAlmostEqual(expected_share, result.value.magnitude, places=5)
-            self.assertEqual(u.dimensionless, result.value.units)
-            self.assertIn("Test Component power share of Test Device", result.label)
+        self.component.update_dict_element_in_energy_footprint_per_usage_pattern(mock_pattern)
 
-    def test_device_power_share_zero_total(self):
-        """Test device_power_share returns EmptyExplainableObject when device total power is zero."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_component_power = SourceValue(0 * u.W)
+        # Energy footprint = [1000, 2000] Wh * 0.5 kg/kWh = [0.5, 1.0] kg
+        expected_footprint = [0.5, 1.0]
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.device_power_share
-            self.assertIsInstance(result, EmptyExplainableObject)
+        result = self.component.energy_footprint_per_usage_pattern[mock_pattern]
+        self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
 
-    def test_instances_fabrication_footprint_no_device(self):
-        """Test instances_fabrication_footprint returns EmptyExplainableObject when no device."""
+    def test_update_instances_fabrication_footprint(self):
+        """Test summing fabrication footprint across patterns."""
+        mock_pattern_1 = MagicMock()
+        mock_pattern_1.id = "pattern_1"
+        mock_pattern_2 = MagicMock()
+        mock_pattern_2.id = "pattern_2"
+
+        footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)
+        footprint_2 = create_source_hourly_values_from_list([5, 10], pint_unit=u.kg)
+        self.component.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: footprint_1,
+            mock_pattern_2: footprint_2
+        })
+
+        self.component.update_instances_fabrication_footprint()
+
+        # Sum: [10, 20] + [5, 10] = [15, 30]
         result = self.component.instances_fabrication_footprint
-        self.assertIsInstance(result, EmptyExplainableObject)
+        self.assertTrue(np.allclose([15, 30], result.value.to(u.kg).magnitude))
 
-    def test_instances_fabrication_footprint(self):
-        """Test instances_fabrication_footprint calculation."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_carbon_footprint_fabrication_intensity = SourceValue(10 * u.kg / u.year)
-        mock_device.instances_fabrication_footprint = SourceValue(100 * u.kg)
+    def test_update_instances_energy(self):
+        """Test summing energy across patterns."""
+        mock_pattern_1 = MagicMock()
+        mock_pattern_1.id = "pattern_1"
+        mock_pattern_2 = MagicMock()
+        mock_pattern_2.id = "pattern_2"
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.instances_fabrication_footprint
+        energy_1 = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
+        energy_2 = create_source_hourly_values_from_list([50, 100], pint_unit=u.Wh)
+        self.component.instances_energy_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: energy_1,
+            mock_pattern_2: energy_2
+        })
 
-            # Component intensity: 20 kg / 5 year = 4 kg/year
-            # Share: 4/10 = 0.4
-            # Component footprint: 100 kg * 0.4 = 40 kg
-            expected_footprint = 40
-            self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
-            self.assertIn("Test Component instances fabrication footprint", result.label)
+        self.component.update_instances_energy()
 
-    def test_instances_fabrication_footprint_empty_device_footprint(self):
-        """Test instances_fabrication_footprint returns EmptyExplainableObject when device footprint is empty."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_carbon_footprint_fabrication_intensity = SourceValue(10 * u.kg / u.year)
-        mock_device.instances_fabrication_footprint = EmptyExplainableObject()
-
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.instances_fabrication_footprint
-            self.assertIsInstance(result, EmptyExplainableObject)
-
-    def test_instances_energy_no_device(self):
-        """Test instances_energy returns EmptyExplainableObject when no device."""
+        # Sum: [100, 200] + [50, 100] = [150, 300]
         result = self.component.instances_energy
-        self.assertIsInstance(result, EmptyExplainableObject)
+        self.assertTrue(np.allclose([150, 300], result.value.to(u.Wh).magnitude))
 
-    def test_instances_energy(self):
-        """Test instances_energy calculation."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_component_power = SourceValue(200 * u.W)
-        mock_device.instances_energy = SourceValue(1000 * u.Wh)
+    def test_update_energy_footprint(self):
+        """Test summing energy footprint across patterns."""
+        mock_pattern_1 = MagicMock()
+        mock_pattern_1.id = "pattern_1"
+        mock_pattern_2 = MagicMock()
+        mock_pattern_2.id = "pattern_2"
 
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.instances_energy
+        footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
+        footprint_2 = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
+        self.component.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: footprint_1,
+            mock_pattern_2: footprint_2
+        })
 
-            # Component power: 50 W
-            # Share: 50/200 = 0.25
-            # Component energy: 1000 Wh * 0.25 = 250 Wh
-            expected_energy = 250
-            self.assertAlmostEqual(expected_energy, result.value.to(u.Wh).magnitude, places=5)
-            self.assertIn("Test Component instances energy", result.label)
+        self.component.update_energy_footprint()
 
-    def test_instances_energy_empty_device_energy(self):
-        """Test instances_energy returns EmptyExplainableObject when device energy is empty."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_component_power = SourceValue(200 * u.W)
-        mock_device.instances_energy = EmptyExplainableObject()
-
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.instances_energy
-            self.assertIsInstance(result, EmptyExplainableObject)
-
-    def test_energy_footprint_no_device(self):
-        """Test energy_footprint returns EmptyExplainableObject when no device."""
+        # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
         result = self.component.energy_footprint
-        self.assertIsInstance(result, EmptyExplainableObject)
-
-    def test_energy_footprint(self):
-        """Test energy_footprint calculation."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_component_power = SourceValue(200 * u.W)
-        mock_device.energy_footprint = SourceValue(50 * u.kg)
-
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.energy_footprint
-
-            # Component power: 50 W
-            # Share: 50/200 = 0.25
-            # Component energy footprint: 50 kg * 0.25 = 12.5 kg
-            expected_footprint = 12.5
-            self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
-            self.assertIn("Test Component energy footprint", result.label)
-
-    def test_energy_footprint_empty_device_footprint(self):
-        """Test energy_footprint returns EmptyExplainableObject when device energy footprint is empty."""
-        mock_device = MagicMock(spec=EdgeDevice)
-        mock_device.name = "Test Device"
-        mock_device.total_component_power = SourceValue(200 * u.W)
-        mock_device.energy_footprint = EmptyExplainableObject()
-
-        with patch.object(type(self.component), 'edge_device', new_callable=PropertyMock, return_value=mock_device):
-            result = self.component.energy_footprint
-            self.assertIsInstance(result, EmptyExplainableObject)
+        self.assertTrue(np.allclose([1.5, 3], result.value.to(u.kg).magnitude))
 
 
 if __name__ == "__main__":

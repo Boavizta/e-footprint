@@ -6,7 +6,7 @@ from efootprint.core.hardware.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
 from efootprint.core.hardware.edge_appliance import EdgeAppliance
-from efootprint.core.hardware.edge_computer import EdgeComputer
+from efootprint.core.hardware.edge_computer import EdgeComputer, EdgeComputerRAMComponent, EdgeComputerCPUComponent
 from efootprint.core.hardware.edge_storage import EdgeStorage
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.usage.edge_function import EdgeFunction
@@ -38,6 +38,7 @@ SERVICE_JOB_CLASSES = [WebApplicationJob, VideoStreamingJob, GenAIJob]
 SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 EDGE_COMPONENT_CLASSES = [EdgeRAMComponent, EdgeCPUComponent, EdgeApplianceComponent, EdgeStorage]
+EDGE_COMPUTER_COMPONENT_CLASSES = [EdgeComputerRAMComponent, EdgeComputerCPUComponent]
 RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES = [RecurrentEdgeProcess, RecurrentEdgeWorkload]
 EDGE_DEVICE_BUILDER_CLASSES = [EdgeAppliance, EdgeComputer]
 
@@ -45,7 +46,7 @@ EDGE_DEVICE_BUILDER_CLASSES = [EdgeAppliance, EdgeComputer]
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
         + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeComponentNeed, RecurrentEdgeStorageNeed]
-        + EDGE_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
+        + EDGE_COMPONENT_CLASSES + EDGE_COMPUTER_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed] + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES
         + [Network] + SERVER_CLASSES + [Storage, System])
