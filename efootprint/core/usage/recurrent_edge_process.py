@@ -10,6 +10,61 @@ from efootprint.core.hardware.edge_computer import EdgeComputer
 from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+from efootprint.core.hardware.edge_component import EdgeComponent
+
+
+class RecurrentEdgeProcessRAMNeed(RecurrentEdgeComponentNeed):
+    def __init__(self, name: str, edge_component: EdgeComponent):
+        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+        super().__init__(
+            name=name,
+            edge_component=edge_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram)))
+
+    @property
+    def calculated_attributes(self):
+        return ["recurrent_need"] + super().calculated_attributes
+
+    def update_recurrent_need(self):
+        recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
+        self.recurrent_need = recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
+            f"{self.name} recurrent need")
+
+
+class RecurrentEdgeProcessCPUNeed(RecurrentEdgeComponentNeed):
+    def __init__(self, name: str, edge_component: EdgeComponent):
+        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+        super().__init__(
+            name=name,
+            edge_component=edge_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core)))
+
+    @property
+    def calculated_attributes(self):
+        return ["recurrent_need"] + super().calculated_attributes
+
+    def update_recurrent_need(self):
+        recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
+        self.recurrent_need = recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
+            f"{self.name} recurrent need")
+
+
+class RecurrentEdgeProcessStorageNeed(RecurrentEdgeStorageNeed):
+    def __init__(self, name: str, edge_component: EdgeComponent):
+        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+        super().__init__(
+            name=name,
+            edge_component=edge_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)))
+
+    @property
+    def calculated_attributes(self):
+        return ["recurrent_need"] + super().calculated_attributes
+
+    def update_recurrent_need(self):
+        recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
+        self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
+            f"{self.name} recurrent need")
 
 
 class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
@@ -39,20 +94,17 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         self._storage_need = None
 
     def after_init(self):
-        ram_need = RecurrentEdgeComponentNeed(
+        ram_need = RecurrentEdgeProcessRAMNeed(
             name=f"{self.name} RAM need",
-            edge_component=self.edge_device.ram_component,
-            recurrent_need=copy(self.recurrent_ram_needed))
+            edge_component=self.edge_device.ram_component)
 
-        cpu_need = RecurrentEdgeComponentNeed(
+        cpu_need = RecurrentEdgeProcessCPUNeed(
             name=f"{self.name} CPU need",
-            edge_component=self.edge_device.cpu_component,
-            recurrent_need=copy(self.recurrent_compute_needed))
+            edge_component=self.edge_device.cpu_component)
 
-        storage_need = RecurrentEdgeStorageNeed(
+        storage_need = RecurrentEdgeProcessStorageNeed(
             name=f"{self.name} storage need",
-            edge_component=self.edge_device.storage,
-            recurrent_need=copy(self.recurrent_storage_needed))
+            edge_component=self.edge_device.storage)
 
         self._ram_need = ram_need
         self._cpu_need = cpu_need
@@ -62,15 +114,9 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         super().__setattr__(name, input_value)
-        # When attributes are updated after init, propagate copies to component needs
+        # When edge_device is updated after init, propagate to component needs
         if self.trigger_modeling_updates:
-            if name == "recurrent_compute_needed":
-                self._cpu_need.recurrent_need = copy(input_value)
-            elif name == "recurrent_ram_needed":
-                self._ram_need.recurrent_need = copy(input_value)
-            elif name == "recurrent_storage_needed":
-                self._storage_need.recurrent_need = copy(input_value)
-            elif name == "edge_device":
+            if name == "edge_device":
                 self._cpu_need.edge_component = input_value.cpu_component
                 self._ram_need.edge_component = input_value.ram_component
                 self._storage_need.edge_component = input_value.storage

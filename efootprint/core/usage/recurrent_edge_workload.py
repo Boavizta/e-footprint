@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_recurrent_quantities impor
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_appliance import EdgeAppliance
+from efootprint.core.hardware.edge_component import EdgeComponent
 from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
@@ -18,6 +19,24 @@ class WorkloadOutOfBoundsError(Exception):
             f"Found values between {min_value:.3f} and {max_value:.3f}. "
             f"Workload values must represent a percentage between 0 and 1 (0% to 100%).")
         super().__init__(message)
+
+
+class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
+    def __init__(self, name: str, edge_component: EdgeComponent):
+        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+        super().__init__(
+            name=name,
+            edge_component=edge_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent)))
+
+    @property
+    def calculated_attributes(self):
+        return ["recurrent_need"] + super().calculated_attributes
+
+    def update_recurrent_need(self):
+        recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
+        self.recurrent_need = recurrent_edge_device_need.recurrent_workload.copy().set_label(
+            f"{self.name} recurrent need")
 
 
 class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
@@ -36,10 +55,9 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
         self._workload_need = None
 
     def after_init(self):
-        workload_need = RecurrentEdgeComponentNeed(
+        workload_need = RecurrentEdgeWorkloadNeed(
             name=f"{self.name} workload need",
-            edge_component=self.edge_device.appliance_component,
-            recurrent_need=copy(self.recurrent_workload))
+            edge_component=self.edge_device.appliance_component)
 
         self._workload_need = workload_need
         self.recurrent_edge_component_needs = [workload_need]
@@ -50,10 +68,6 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
         if name == "recurrent_workload" and input_value is not None and hasattr(input_value, 'value'):
             self.assert_recurrent_workload_is_between_0_and_1(input_value, self.name)
         super().__setattr__(name, input_value)
-        # When attribute is updated after init, propagate copy to component need
-        if self.trigger_modeling_updates:
-            if name == "recurrent_workload":
-                self._workload_need.recurrent_need = copy(input_value)
 
     @staticmethod
     def assert_recurrent_workload_is_between_0_and_1(
