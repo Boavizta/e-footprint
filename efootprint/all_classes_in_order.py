@@ -1,24 +1,24 @@
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
-from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.hardware.edge_component import EdgeComponent
-from efootprint.core.hardware.edge_ram_component import EdgeRAMComponent
-from efootprint.core.hardware.edge_cpu_component import EdgeCPUComponent
-from efootprint.core.hardware.edge_workload_component import EdgeWorkloadComponent
-from efootprint.core.hardware.edge_appliance import EdgeAppliance, EdgeApplianceComponent
-from efootprint.core.hardware.edge_computer import EdgeComputer, EdgeComputerRAMComponent, EdgeComputerCPUComponent
-from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
+from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
+from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
+from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance, EdgeApplianceComponent
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer, EdgeComputerRAMComponent, EdgeComputerCPUComponent
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.hardware.server_base import ServerBase
-from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
-from efootprint.core.usage.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
-from efootprint.core.usage.recurrent_edge_process import (
+from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+from efootprint.builders.usage.edge.recurrent_edge_process import (
     RecurrentEdgeProcess, RecurrentEdgeProcessRAMNeed, RecurrentEdgeProcessCPUNeed,
     RecurrentEdgeProcessStorageNeed)
-from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.usage.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
-from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload, RecurrentEdgeWorkloadNeed
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload, RecurrentEdgeWorkloadNeed
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.hardware.device import Device

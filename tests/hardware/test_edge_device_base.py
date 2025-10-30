@@ -8,12 +8,12 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
-from efootprint.core.hardware.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge.edge_device_base import EdgeDeviceBase
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 
 
 class EdgeDeviceBaseTestClass(EdgeDeviceBase):

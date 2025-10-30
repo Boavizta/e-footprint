@@ -3,12 +3,12 @@ from time import time
 import numpy as np
 from pint import Quantity
 
-from efootprint.core.hardware.edge_computer import EdgeComputer
-from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 
 start = time()
 

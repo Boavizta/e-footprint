@@ -6,18 +6,17 @@ import unittest
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.core.hardware.edge_storage import EdgeStorage
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.hardware.edge_computer import EdgeComputer
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-from efootprint.core.usage.edge_function import EdgeFunction
+from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
 from tests import root_test_dir
 

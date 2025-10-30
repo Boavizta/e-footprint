@@ -3,8 +3,8 @@ from time import time
 import numpy as np
 from pint import Quantity
 
-from efootprint.core.hardware.edge_appliance import EdgeAppliance
-from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload
+from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
+from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload
 
 start = time()
 
@@ -23,12 +23,12 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
-from efootprint.core.hardware.edge_computer import EdgeComputer
-from efootprint.core.hardware.edge_storage import EdgeStorage
-from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.recurrent_edge_process import RecurrentEdgeProcess
-from efootprint.core.usage.edge_function import EdgeFunction
-from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
+from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
