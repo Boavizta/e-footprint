@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING, List, Optional
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -25,25 +26,16 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         super().__init__(name)
         self.edge_component = edge_component
         self.recurrent_need = recurrent_need.set_label(f"{self.name} recurrent need")
+        self.validated_recurrent_need = EmptyExplainableObject()
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
-
-        self._validate_need_unit()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[EdgeComponent]:
         return [self.edge_component]
 
-    def _validate_need_unit(self):
-        """Validate that the recurrent_need unit is compatible with the edge_component."""
-        need_unit = self.recurrent_need.value.units
-        expected_units = self.edge_component.expected_need_units()
-
-        if not any(need_unit.is_compatible_with(expected_unit) for expected_unit in expected_units):
-            raise InvalidComponentNeedUnitError(self.edge_component.name, need_unit, expected_units)
-
     @property
     def calculated_attributes(self):
-        return ["unitary_hourly_need_per_usage_pattern"]
+        return ["validated_recurrent_need", "unitary_hourly_need_per_usage_pattern"]
 
     @property
     def recurrent_edge_device_needs(self):
@@ -67,6 +59,17 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
+    def update_validated_recurrent_need(self):
+        """Validate that the recurrent_need unit is compatible with the edge_component."""
+        need_unit = self.recurrent_need.value.units
+        expected_units = self.edge_component.expected_need_units()
+
+        if not any(need_unit.is_compatible_with(expected_unit) for expected_unit in expected_units):
+            raise InvalidComponentNeedUnitError(self.edge_component.name, need_unit, expected_units)
+
+        self.validated_recurrent_need = self.recurrent_need.copy().set_label(
+            f"Validated recurrent need of {self.name}")
+
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_need = self.recurrent_need.generate_hourly_quantities_over_timespan(
             usage_pattern.nb_edge_usage_journeys_in_parallel, usage_pattern.country.timezone)
@@ -77,8 +80,3 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_need_per_usage_pattern(usage_pattern)
-
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
-        if name == "recurrent_need" and hasattr(self, "edge_component"):
-            self._validate_need_unit()

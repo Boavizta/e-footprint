@@ -1,6 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
-from typing import List, Type, get_origin, get_args
+from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
 import re
 import time
@@ -18,6 +18,9 @@ from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwo
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import get_init_signature_params
+
+if TYPE_CHECKING:
+    from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 
 compute_times = defaultdict(float)
 
@@ -464,8 +467,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
 
-        for attr in self.mod_obj_attributes:
-            attr.set_modeling_obj_container(None, None)
+        for contextual_attr in self.mod_obj_attributes:
+            contextual_attr.set_modeling_obj_container(None, None)
         for attr_value in get_instance_attributes(self, ObjectLinkedToModelingObj).values():
                 attr_value.set_modeling_obj_container(None, None)
 

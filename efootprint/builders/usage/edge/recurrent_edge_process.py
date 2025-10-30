@@ -1,6 +1,12 @@
+from abc import abstractmethod
+from copy import copy
+from typing import Optional
+
 import numpy as np
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.constants.units import u
@@ -11,17 +17,48 @@ from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdge
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 
 
-class RecurrentEdgeProcessRAMNeed(RecurrentEdgeComponentNeed):
-    def __init__(self, name: str, edge_component: EdgeComponent):
-        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
+class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
+    def __init__(self, name: str):
         super().__init__(
             name=name,
-            edge_component=edge_component,
-            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram)))
+            edge_component=None,
+            recurrent_need=EmptyExplainableObject()
+        )
 
     @property
     def calculated_attributes(self):
         return ["recurrent_need"] + super().calculated_attributes
+
+    @property
+    def edge_process(self) -> "RecurrentEdgeProcess":
+        if self.modeling_obj_containers:
+            return self.modeling_obj_containers[0]
+        return None
+
+    @property
+    def edge_device(self) -> Optional["EdgeDevice"]:
+        return self.edge_process.edge_device
+
+    @property
+    @abstractmethod
+    def edge_component(self) -> EdgeComponent:
+        pass
+
+    @abstractmethod
+    def update_recurrent_need(self):
+        pass
+
+
+class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
+    @property
+    def edge_component(self) -> EdgeComponent:
+        contextual_component = ContextualModelingObjectAttribute(self.edge_device.ram_component)
+        contextual_component.set_modeling_obj_container(self, "edge_component")
+        return contextual_component
+
+    @edge_component.setter
+    def edge_component(self, value: EdgeComponent):
+        pass
 
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
@@ -29,17 +66,16 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeComponentNeed):
             f"{self.name} recurrent need")
 
 
-class RecurrentEdgeProcessCPUNeed(RecurrentEdgeComponentNeed):
-    def __init__(self, name: str, edge_component: EdgeComponent):
-        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
-        super().__init__(
-            name=name,
-            edge_component=edge_component,
-            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core)))
-
+class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
     @property
-    def calculated_attributes(self):
-        return ["recurrent_need"] + super().calculated_attributes
+    def edge_component(self) -> EdgeComponent:
+        contextual_component = ContextualModelingObjectAttribute(self.edge_device.cpu_component)
+        contextual_component.set_modeling_obj_container(self, "edge_component")
+        return contextual_component
+
+    @edge_component.setter
+    def edge_component(self, value: EdgeComponent):
+        pass
 
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
@@ -47,17 +83,16 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeComponentNeed):
             f"{self.name} recurrent need")
 
 
-class RecurrentEdgeProcessStorageNeed(RecurrentEdgeStorageNeed):
-    def __init__(self, name: str, edge_component: EdgeComponent):
-        from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
-        super().__init__(
-            name=name,
-            edge_component=edge_component,
-            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)))
-
+class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
     @property
-    def calculated_attributes(self):
-        return ["recurrent_need"] + super().calculated_attributes
+    def edge_component(self) -> EdgeComponent:
+        contextual_component = ContextualModelingObjectAttribute(self.edge_device.storage)
+        contextual_component.set_modeling_obj_container(self, "edge_component")
+        return contextual_component
+
+    @edge_component.setter
+    def edge_component(self, value: EdgeComponent):
+        pass
 
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
@@ -87,46 +122,43 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         self.recurrent_storage_needed = recurrent_storage_needed.set_label(
             f"Recurrent storage needed for {self.name}")
 
-        self._ram_need = None
-        self._cpu_need = None
-        self._storage_need = None
+        self.ram_need = None
+        self.cpu_need = None
+        self.storage_need = None
 
     def after_init(self):
-        ram_need = RecurrentEdgeProcessRAMNeed(
-            name=f"{self.name} RAM need",
-            edge_component=self.edge_device.ram_component)
+        if self.ram_need is None:
+            ram_need = RecurrentEdgeProcessRAMNeed(name=f"{self.name} RAM need")
+            cpu_need = RecurrentEdgeProcessCPUNeed(name=f"{self.name} CPU need")
+            storage_need = RecurrentEdgeProcessStorageNeed(name=f"{self.name} storage need")
 
-        cpu_need = RecurrentEdgeProcessCPUNeed(
-            name=f"{self.name} CPU need",
-            edge_component=self.edge_device.cpu_component)
-
-        storage_need = RecurrentEdgeProcessStorageNeed(
-            name=f"{self.name} storage need",
-            edge_component=self.edge_device.storage)
-
-        self._ram_need = ram_need
-        self._cpu_need = cpu_need
-        self._storage_need = storage_need
-        self.recurrent_edge_component_needs = [ram_need, cpu_need, storage_need]
+            self.ram_need = ram_need
+            self.cpu_need = cpu_need
+            self.storage_need = storage_need
+            self.recurrent_edge_component_needs = [ram_need, cpu_need, storage_need]
         super().after_init()
-
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        super().__setattr__(name, input_value)
-        # When edge_device is updated after init, propagate to component needs
-        if self.trigger_modeling_updates:
-            if name == "edge_device":
-                self._cpu_need.edge_component = input_value.cpu_component
-                self._ram_need.edge_component = input_value.ram_component
-                self._storage_need.edge_component = input_value.storage
 
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
-        return self._cpu_need.unitary_hourly_need_per_usage_pattern
+        return self.cpu_need.unitary_hourly_need_per_usage_pattern
 
     @property
     def unitary_hourly_ram_need_per_usage_pattern(self):
-        return self._ram_need.unitary_hourly_need_per_usage_pattern
+        return self.ram_need.unitary_hourly_need_per_usage_pattern
 
     @property
     def unitary_hourly_storage_need_per_usage_pattern(self):
-        return self._storage_need.unitary_hourly_need_per_usage_pattern
+        return self.storage_need.unitary_hourly_need_per_usage_pattern
+
+    def self_delete(self):
+        old_needs = copy(self.recurrent_edge_component_needs)
+        self.recurrent_edge_component_needs = []
+        self.ram_need.set_modeling_obj_container(None, None)
+        self.cpu_need.set_modeling_obj_container(None, None)
+        self.storage_need.set_modeling_obj_container(None, None)
+        del self.ram_need
+        del self.cpu_need
+        del self.storage_need
+        for need in old_needs:
+            need.self_delete()
+        super().self_delete()

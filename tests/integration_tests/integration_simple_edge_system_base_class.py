@@ -43,7 +43,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         )
 
         edge_computer = EdgeComputer(
-            "Default edge device",
+            "Edge computer",
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),

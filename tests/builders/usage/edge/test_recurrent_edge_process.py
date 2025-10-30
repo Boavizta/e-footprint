@@ -65,13 +65,13 @@ class TestRecurrentEdgeProcess(TestCase):
         self.assertIsInstance(self.edge_process.unitary_hourly_ram_need_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_process.unitary_hourly_storage_need_per_usage_pattern, ExplainableObjectDict)
         # Verify that storage need is a RecurrentEdgeStorageNeed instance
-        self.assertIsInstance(self.edge_process._storage_need, RecurrentEdgeStorageNeed)
+        self.assertIsInstance(self.edge_process.storage_need, RecurrentEdgeStorageNeed)
 
     def test_unitary_hourly_storage_need_per_usage_pattern_delegates_to_storage_need(self):
         """Test that unitary_hourly_storage_need_per_usage_pattern delegates to the storage need."""
         # Verify that the property returns the storage need's unitary_hourly_need_per_usage_pattern
         result = self.edge_process.unitary_hourly_storage_need_per_usage_pattern
-        expected = self.edge_process._storage_need.unitary_hourly_need_per_usage_pattern
+        expected = self.edge_process.storage_need.unitary_hourly_need_per_usage_pattern
 
         self.assertIs(result, expected)
 
@@ -88,7 +88,6 @@ class TestRecurrentEdgeProcess(TestCase):
             edge_process_from_defaults.recurrent_compute_needed.unit, u.cpu_core)
         self.assertEqual(
             edge_process_from_defaults.recurrent_ram_needed.unit, u.GB_ram)
-
 
 
 if __name__ == "__main__":

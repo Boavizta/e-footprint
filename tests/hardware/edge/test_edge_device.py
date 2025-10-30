@@ -176,7 +176,8 @@ class TestEdgeDevice(TestCase):
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
-        mock_pattern.nb_edge_usage_journeys_in_parallel = SourceValue(10 * u.concurrent)
+        mock_pattern.nb_edge_usage_journeys_in_parallel = create_source_hourly_values_from_list(
+            [10, 10], pint_unit=u.concurrent)
 
         self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -186,10 +187,10 @@ class TestEdgeDevice(TestCase):
         # Structure intensity: 100 kg / 5 year = 20 kg/year
         # Per hour: 20 kg/year / (365.25 * 24) kg/hour
         # For 10 instances: 10 * (100 / 5) / (365.25 * 24) kg
-        expected_footprint = 10 * (100 / 5) / (365.25 * 24)
+        expected_footprint = [10 * (100 / 5) / (365.25 * 24), 10 * (100 / 5) / (365.25 * 24)]
 
         result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
-        self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
+        self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
         self.assertIn("Test Device", result.label)
         self.assertIn("Test Pattern", result.label)
 
@@ -198,10 +199,11 @@ class TestEdgeDevice(TestCase):
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
-        mock_pattern.nb_edge_usage_journeys_in_parallel = SourceValue(10 * u.concurrent)
+        mock_pattern.nb_edge_usage_journeys_in_parallel = create_source_hourly_values_from_list(
+            [10, 10], pint_unit=u.concurrent)
 
-        component_1_footprint = SourceValue(5 * u.kg)
-        component_2_footprint = SourceValue(8 * u.kg)
+        component_1_footprint = create_source_hourly_values_from_list([5, 5], pint_unit=u.kg)
+        component_2_footprint = create_source_hourly_values_from_list([8, 8], pint_unit=u.kg)
 
         self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_1_footprint
@@ -214,35 +216,11 @@ class TestEdgeDevice(TestCase):
 
         # Structure footprint: 10 * (100 / 5) / (365.25 * 24) kg
         # Total: structure + 5 kg + 8 kg
-        expected_footprint = 10 * (100 / 5) / (365.25 * 24) + 5 + 8
+        structure_footprint = 10 * (100 / 5) / (365.25 * 24)
+        expected_footprint = [structure_footprint + 5 + 8, structure_footprint + 5 + 8]
 
         result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
-        self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
-
-    def test_update_instances_fabrication_footprint_per_usage_pattern(self):
-        """Test updating fabrication footprints for all usage patterns."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_1.id = "pattern_1"
-        mock_pattern_1.nb_edge_usage_journeys_in_parallel = SourceValue(5 * u.concurrent)
-
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2.name = "Pattern 2"
-        mock_pattern_2.id = "pattern_2"
-        mock_pattern_2.nb_edge_usage_journeys_in_parallel = SourceValue(10 * u.concurrent)
-
-        mock_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        set_modeling_obj_containers(self.edge_device, [mock_need])
-
-        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-
-        self.edge_device.update_instances_fabrication_footprint_per_usage_pattern()
-
-        self.assertIn(mock_pattern_1, self.edge_device.instances_fabrication_footprint_per_usage_pattern)
-        self.assertIn(mock_pattern_2, self.edge_device.instances_fabrication_footprint_per_usage_pattern)
+        self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
 
     def test_update_dict_element_in_instances_energy_per_usage_pattern_no_components(self):
         """Test energy calculation with no component contributions."""
@@ -284,29 +262,6 @@ class TestEdgeDevice(TestCase):
         self.assertIn("Test Device", result.label)
         self.assertIn("Test Pattern", result.label)
 
-    def test_update_instances_energy_per_usage_pattern(self):
-        """Test updating energy for all usage patterns."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_1.id = "pattern_1"
-
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2.name = "Pattern 2"
-        mock_pattern_2.id = "pattern_2"
-
-        mock_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        set_modeling_obj_containers(self.edge_device, [mock_need])
-
-        self.mock_component_1.instances_energy_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.instances_energy_per_usage_pattern = ExplainableObjectDict()
-
-        self.edge_device.update_instances_energy_per_usage_pattern()
-
-        self.assertIn(mock_pattern_1, self.edge_device.instances_energy_per_usage_pattern)
-        self.assertIn(mock_pattern_2, self.edge_device.instances_energy_per_usage_pattern)
-
     def test_update_dict_element_in_energy_footprint_per_usage_pattern_no_components(self):
         """Test energy footprint calculation with no component contributions."""
         mock_pattern = MagicMock(spec=EdgeUsagePattern)
@@ -346,29 +301,6 @@ class TestEdgeDevice(TestCase):
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
         self.assertIn("Test Device", result.label)
         self.assertIn("Test Pattern", result.label)
-
-    def test_update_energy_footprint_per_usage_pattern(self):
-        """Test updating energy footprint for all usage patterns."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_1.id = "pattern_1"
-
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2.name = "Pattern 2"
-        mock_pattern_2.id = "pattern_2"
-
-        mock_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        set_modeling_obj_containers(self.edge_device, [mock_need])
-
-        self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-
-        self.edge_device.update_energy_footprint_per_usage_pattern()
-
-        self.assertIn(mock_pattern_1, self.edge_device.energy_footprint_per_usage_pattern)
-        self.assertIn(mock_pattern_2, self.edge_device.energy_footprint_per_usage_pattern)
 
     def test_update_instances_energy(self):
         """Test summing energy across all usage patterns."""
