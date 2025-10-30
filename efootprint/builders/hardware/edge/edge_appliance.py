@@ -32,7 +32,7 @@ class EdgeAppliance(EdgeDevice):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),
-        "lifespan": SourceValue(5 * u.year),
+        "lifespan": SourceValue(6 * u.year),
         "idle_power": SourceValue(5 * u.W),
     }
 

@@ -2,34 +2,32 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge.edge_device_base import EdgeDeviceBase
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from tests.utils import set_modeling_obj_containers
 
 
-class ConcreteRecurrentEdgeResourceNeed(RecurrentEdgeResourceNeed):
-    """Concrete test implementation of abstract RecurrentEdgeResourceNeed."""
-    default_values = {}
-
-
-class TestRecurrentEdgeResourceNeed(TestCase):
+class TestRecurrentEdgeDeviceNeed(TestCase):
     def setUp(self):
-        self.mock_edge_device = MagicMock(spec=EdgeDeviceBase)
+        self.mock_edge_device = MagicMock(spec=EdgeDevice)
         self.mock_edge_device.id = "mock_hardware"
         self.mock_edge_device.name = "Mock Hardware"
 
-        self.edge_resource_needed = ConcreteRecurrentEdgeResourceNeed(
+        self.edge_resource_needed = RecurrentEdgeDeviceNeed(
             "test edge resource needed",
             edge_device=self.mock_edge_device
         )
 
     def test_init(self):
-        """Test RecurrentEdgeResourceNeed initialization."""
+        """Test RecurrentEdgeDeviceNeed initialization."""
         self.assertEqual("test edge resource needed", self.edge_resource_needed.name)
         self.assertEqual(self.mock_edge_device, self.edge_resource_needed.edge_device)
+
+    def test_validate_component_needs_edge_device(self):
+        raise NotImplementedError
 
     def test_edge_functions_property_no_containers(self):
         """Test edge_functions property when no containers are set."""

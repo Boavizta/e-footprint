@@ -6,6 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -15,6 +16,11 @@ if TYPE_CHECKING:
 
 
 class EdgeDevice(ModelingObject):
+    default_values = {
+        "structure_carbon_footprint_fabrication": SourceValue(50 * u.kg),
+        "lifespan": SourceValue(6 * u.year)
+    }
+
     def __init__(self, name: str, structure_carbon_footprint_fabrication: ExplainableQuantity,
                  components: List[EdgeComponent], lifespan: ExplainableQuantity):
         super().__init__(name)
@@ -35,6 +41,12 @@ class EdgeDevice(ModelingObject):
         return []
 
     @property
+    def calculated_attributes(self):
+        return ["instances_fabrication_footprint_per_usage_pattern",
+                "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
+                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+
+    @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
         return self.modeling_obj_containers
 
@@ -49,12 +61,6 @@ class EdgeDevice(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
-
-    @property
-    def calculated_attributes(self):
-        return ["instances_fabrication_footprint_per_usage_pattern",
-                "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
-                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):

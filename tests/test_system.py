@@ -17,7 +17,7 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge.edge_function import EdgeFunction
-from efootprint.core.usage.recurrent_edge_resource_need import RecurrentEdgeResourceNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests import root_test_dir
 
 
@@ -470,7 +470,7 @@ class TestSystem(TestCase):
         storage_from_edge.energy_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
         edge_computer.storage = storage_from_edge
 
-        edge_resource_need = MagicMock(spec=RecurrentEdgeResourceNeed)
+        edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         edge_resource_need.systems = []
         edge_resource_need.edge_device = edge_computer
 
@@ -669,7 +669,7 @@ class TestSystem(TestCase):
         storage_from_edge.energy_footprint = create_source_hourly_values_from_list([1, 1, 1], pint_unit=u.kg)
         edge_computer.storage = storage_from_edge
 
-        edge_resource_need = MagicMock(spec=RecurrentEdgeResourceNeed)
+        edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         edge_resource_need.systems = []
         edge_resource_need.edge_device = edge_computer
 
@@ -729,7 +729,7 @@ class TestSystem(TestCase):
         storage = MagicMock(spec=Storage)
         edge_computer.storage = storage
 
-        edge_resource_need = MagicMock(spec=RecurrentEdgeResourceNeed)
+        edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         edge_resource_need.edge_device = edge_computer
 
         edge_function = MagicMock(spec=EdgeFunction)
