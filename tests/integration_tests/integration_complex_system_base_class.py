@@ -185,7 +185,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
-                Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+                Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
@@ -426,7 +426,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             recurrent_compute_needed=SourceRecurrentValues(
                 Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
-                Quantity(np.array([3] * 168, dtype=np.float32), u.GB)),
+                Quantity(np.array([3] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
         )

@@ -99,7 +99,8 @@ class ModelingUpdate:
 
     def parse_changes_list(self):
         indexes_to_skip = []
-        for index in range(len(self.changes_list)):
+        index = 0
+        while index < len(self.changes_list):
             old_value, new_value = self.changes_list[index]
             assert isinstance(old_value, ObjectLinkedToModelingObj), \
                               f"{old_value} should be an ObjectLinkedToModelingObj but is of type {type(old_value)}"
@@ -108,13 +109,18 @@ class ModelingUpdate:
                 self.changes_list[index][1] = EmptyExplainableObject()
             else:
                 mod_obj_container = old_value.modeling_obj_container
-                mod_obj_container.check_input_value_type_positivity_and_unit(old_value.attr_name_in_mod_obj_container, new_value)
+                mod_obj_container.check_input_value_type_positivity_and_unit(
+                    old_value.attr_name_in_mod_obj_container, new_value)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 self.changes_list[index][1] = ListLinkedToModelingObj(new_value)
             if isinstance(new_value, ModelingObject):
                 self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
+                if old_value.attr_name_in_mod_obj_container in mod_obj_container.attribute_update_entanglements:
+                    changes_to_add = mod_obj_container.attribute_update_entanglements[
+                        old_value.attr_name_in_mod_obj_container]([old_value, new_value])
+                    self.changes_list += changes_to_add
 
             if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObj):
                 raise ValueError(
@@ -129,6 +135,7 @@ class ModelingUpdate:
                     f"Otherwise This is surprising, you might want to double check your action. "
                     f"The link update logic will be skipped.")
                 indexes_to_skip.append(index)
+            index += 1
 
         for index in sorted(indexes_to_skip, reverse=True):
             del self.changes_list[index]

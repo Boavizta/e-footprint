@@ -69,7 +69,7 @@ class TestEdgeUsagePattern(TestCase):
 
         self.assertEqual([mock_system], self.edge_usage_pattern.systems)
 
-    @patch('efootprint.core.usage.edge_usage_pattern.compute_nb_avg_hourly_occurrences')
+    @patch('efootprint.core.usage.edge.edge_usage_pattern.compute_nb_avg_hourly_occurrences')
     def test_update_nb_edge_usage_journeys_in_parallel(self, mock_compute_nb_avg):
         """Test update_nb_edge_usage_journeys_in_parallel method."""
         mock_result = EmptyExplainableObject()

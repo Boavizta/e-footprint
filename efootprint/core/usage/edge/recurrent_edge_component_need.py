@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 
 if TYPE_CHECKING:
@@ -18,6 +19,15 @@ class InvalidComponentNeedUnitError(Exception):
         message = (
             f"RecurrentEdgeComponentNeed linked to {component_name} has incompatible unit '{need_unit}'. "
             f"Expected one of: {[str(unit) for unit in expected_units]}")
+        super().__init__(message)
+
+
+class WorkloadOutOfBoundsError(Exception):
+    def __init__(self, workload_name: str, min_value: float, max_value: float):
+        message = (
+            f"Workload '{workload_name}' has values outside the valid range [0, 1]. "
+            f"Found values between {min_value:.3f} and {max_value:.3f}. "
+            f"Workload values must represent a percentage between 0 and 1 (0% to 100%).")
         super().__init__(message)
 
 
@@ -59,13 +69,28 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
+    @staticmethod
+    def assert_recurrent_workload_is_between_0_and_1(
+            recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
+        # Convert to concurrent (or dimensionless-like unit) to get raw magnitude
+        workload_magnitude = recurrent_workload.value.to(u.concurrent).magnitude
+        min_value = float(workload_magnitude.min())
+        max_value = float(workload_magnitude.max())
+
+        if min_value < 0 or max_value > 1:
+            raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
+
     def update_validated_recurrent_need(self):
         """Validate that the recurrent_need unit is compatible with the edge_component."""
         need_unit = self.recurrent_need.value.units
         expected_units = self.edge_component.expected_need_units()
 
-        if not any(need_unit.is_compatible_with(expected_unit) for expected_unit in expected_units):
+        if not need_unit in expected_units:
             raise InvalidComponentNeedUnitError(self.edge_component.name, need_unit, expected_units)
+
+        if expected_units == [u.concurrent]:
+            # For dimensionless needs (like workload), ensure values are between 0 and 1
+            self.assert_recurrent_workload_is_between_0_and_1(self.recurrent_need, self.name)
 
         self.validated_recurrent_need = self.recurrent_need.copy().set_label(
             f"Validated recurrent need of {self.name}")

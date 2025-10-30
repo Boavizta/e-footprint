@@ -30,8 +30,7 @@ class EdgeWorkloadComponent(EdgeComponent):
         return ["unitary_hourly_workload_per_usage_pattern"] + super().calculated_attributes
 
     def expected_need_units(self) -> List:
-        """Appliance components accept concurrent/dimensionless workload units."""
-        return [u.concurrent, u.dimensionless]
+        return [u.concurrent]
 
     def update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_workload = sum(

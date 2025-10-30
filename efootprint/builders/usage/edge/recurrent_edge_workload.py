@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 from pint import Quantity
 
@@ -8,15 +10,6 @@ from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
-
-
-class WorkloadOutOfBoundsError(Exception):
-    def __init__(self, workload_name: str, min_value: float, max_value: float):
-        message = (
-            f"Workload '{workload_name}' has values outside the valid range [0, 1]. "
-            f"Found values between {min_value:.3f} and {max_value:.3f}. "
-            f"Workload values must represent a percentage between 0 and 1 (0% to 100%).")
-        super().__init__(message)
 
 
 class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
@@ -43,41 +36,37 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
     }
 
     def __init__(self, name: str, edge_device: EdgeAppliance, recurrent_workload: ExplainableRecurrentQuantities):
-        self.assert_recurrent_workload_is_between_0_and_1(recurrent_workload, name)
         super().__init__(
             name=name,
             edge_device=edge_device,
             recurrent_edge_component_needs=[])
         self.recurrent_workload = recurrent_workload.set_label(f"Recurrent workload for {self.name}")
 
-        self._workload_need = None
+        self.workload_need = None
 
     def after_init(self):
-        workload_need = RecurrentEdgeWorkloadNeed(
-            name=f"{self.name} workload need",
-            edge_component=self.edge_device.appliance_component)
+        if not hasattr(self, "workload_need") or self.workload_need is None:
+            workload_need = RecurrentEdgeWorkloadNeed(
+                name=f"{self.name} workload need",
+                edge_component=self.edge_device.appliance_component)
 
-        self._workload_need = workload_need
-        self.recurrent_edge_component_needs = [workload_need]
+            self.workload_need = workload_need
+            self.recurrent_edge_component_needs = [workload_need]
         super().after_init()
 
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        # Validate workload before setting
-        if name == "recurrent_workload" and input_value is not None and hasattr(input_value, 'value'):
-            self.assert_recurrent_workload_is_between_0_and_1(input_value, self.name)
-        super().__setattr__(name, input_value)
+    @property
+    def attribute_update_entanglements(self):
+        return {
+            "edge_device": self.generate_component_needs_changes_from_device_change,
+        }
 
-    @staticmethod
-    def assert_recurrent_workload_is_between_0_and_1(
-            recurrent_workload: ExplainableRecurrentQuantities, workload_name: str):
-        # Convert to concurrent (or dimensionless-like unit) to get raw magnitude
-        workload_magnitude = recurrent_workload.value.to(u.concurrent).magnitude
-        min_value = float(workload_magnitude.min())
-        max_value = float(workload_magnitude.max())
-
-        if min_value < 0 or max_value > 1:
-            raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
+    def generate_component_needs_changes_from_device_change(self, change: List[EdgeAppliance]):
+        old_edge_appliance, new_edge_appliance = change[0], change[1]
+        component_needs_changes = [
+            [self.workload_need.edge_component, new_edge_appliance.appliance_component],
+        ]
+        return component_needs_changes
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
-        return self._workload_need.unitary_hourly_need_per_usage_pattern
+        return self.workload_need.unitary_hourly_need_per_usage_pattern

@@ -9,7 +9,8 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
-from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload, WorkloadOutOfBoundsError
+from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload
+from efootprint.core.usage.edge.recurrent_edge_component_need import WorkloadOutOfBoundsError
 from efootprint.constants.units import u
 
 

@@ -1,3 +1,5 @@
+from copy import copy
+
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -59,12 +61,22 @@ class EdgeAppliance(EdgeDevice):
             f"Structure fabrication carbon footprint of {self.name}")
 
     def after_init(self):
-        appliance_component = EdgeApplianceComponent(name=f"{self.name} appliance")
+        if not hasattr(self, "appliance_component") or self.appliance_component is None:
+            appliance_component = EdgeApplianceComponent(name=f"{self.name} appliance")
 
-        self.appliance_component = appliance_component
-        self.components = [appliance_component]
+            self.appliance_component = appliance_component
+            self.components = [appliance_component]
         super().after_init()
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self.appliance_component.unitary_hourly_workload_per_usage_pattern
+
+    def self_delete(self):
+        old_components = copy(self.components)
+        self.components = []
+        self.appliance_component.set_modeling_obj_container(None, None)
+        del self.appliance_component
+        for component in old_components:
+            component.self_delete()
+        super().self_delete()

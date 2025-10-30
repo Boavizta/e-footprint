@@ -1,3 +1,6 @@
+from copy import copy
+from typing import List
+
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -104,17 +107,33 @@ class EdgeComputer(EdgeDevice):
     def calculated_attributes(self):
         return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
 
+    @property
+    def attribute_update_entanglements(self):
+        return {"storage": self.generate_process_changes_from_storage_change}
+
+    def generate_process_changes_from_storage_change(self, change: List[EdgeStorage]):
+        old_storage, new_storage = change[0], change[1]
+        component_needs_changes = [
+            [edge_process.storage_need.edge_component, new_storage] for edge_process in self.recurrent_needs
+        ]
+        component_needs_changes.append([
+            self.components, [self.cpu_component, self.ram_component, new_storage]
+        ])
+
+        return component_needs_changes
+
     def update_structure_carbon_footprint_fabrication(self):
         self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
             f"Structure fabrication carbon footprint of {self.name}")
 
     def after_init(self):
-        ram_component = EdgeComputerRAMComponent(name=f"{self.name} RAM")
-        cpu_component = EdgeComputerCPUComponent(name=f"{self.name} CPU")
+        if not hasattr(self, "ram_component") or self.ram_component is None:
+            ram_component = EdgeComputerRAMComponent(name=f"{self.name} RAM")
+            cpu_component = EdgeComputerCPUComponent(name=f"{self.name} CPU")
 
-        self.ram_component = ram_component
-        self.cpu_component = cpu_component
-        self.components = [cpu_component, ram_component, self.storage]
+            self.ram_component = ram_component
+            self.cpu_component = cpu_component
+            self.components = [cpu_component, ram_component, self.storage]
         super().after_init()
 
     @property
@@ -132,3 +151,16 @@ class EdgeComputer(EdgeDevice):
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
         return self.cpu_component.unitary_hourly_compute_need_per_usage_pattern
+
+    def self_delete(self):
+        old_components = copy(self.components)
+        self.components = []
+        self.ram_component.set_modeling_obj_container(None, None)
+        self.cpu_component.set_modeling_obj_container(None, None)
+        self.storage.set_modeling_obj_container(None, None)
+        del self.ram_component
+        del self.cpu_component
+        del self.storage
+        for component in old_components:
+            component.self_delete()
+        super().self_delete()

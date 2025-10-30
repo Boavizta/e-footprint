@@ -550,3 +550,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_str += "  " + key_value_to_str(key, getattr(self, key))
 
         return output_str
+
+    @property
+    def attribute_update_entanglements(self):
+        # Used to generate new changes that depend on a change in certain attributes
+        # Used in RecurrentEdgeProcess class for generating entanglements so that whenever device is updated,
+        # component needs are updated too.
+        return {}

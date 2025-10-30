@@ -1,11 +1,10 @@
 from abc import abstractmethod
 from copy import copy
-from typing import Optional
+from typing import List
 
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
@@ -18,10 +17,10 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 
 
 class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
-    def __init__(self, name: str):
+    def __init__(self, name: str, edge_component: EdgeComponent):
         super().__init__(
             name=name,
-            edge_component=None,
+            edge_component=edge_component,
             recurrent_need=EmptyExplainableObject()
         )
 
@@ -29,39 +28,12 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
     def calculated_attributes(self):
         return ["recurrent_need"] + super().calculated_attributes
 
-    @property
-    def edge_process(self) -> "RecurrentEdgeProcess":
-        if self.modeling_obj_containers:
-            return self.modeling_obj_containers[0]
-        return None
-
-    @property
-    def edge_device(self) -> Optional["EdgeDevice"]:
-        if self.edge_process:
-            return self.edge_process.edge_device
-        return None
-
-    @property
-    @abstractmethod
-    def edge_component(self) -> EdgeComponent:
-        pass
-
     @abstractmethod
     def update_recurrent_need(self):
         pass
 
 
 class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
-    @property
-    def edge_component(self) -> EdgeComponent:
-        contextual_component = ContextualModelingObjectAttribute(self.edge_device.ram_component)
-        contextual_component.set_modeling_obj_container(self, "edge_component")
-        return contextual_component
-
-    @edge_component.setter
-    def edge_component(self, value: EdgeComponent):
-        pass
-
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
@@ -69,16 +41,6 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
 
 
 class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
-    @property
-    def edge_component(self) -> EdgeComponent:
-        contextual_component = ContextualModelingObjectAttribute(self.edge_device.cpu_component)
-        contextual_component.set_modeling_obj_container(self, "edge_component")
-        return contextual_component
-
-    @edge_component.setter
-    def edge_component(self, value: EdgeComponent):
-        pass
-
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
@@ -86,16 +48,6 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
 
 
 class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
-    @property
-    def edge_component(self) -> EdgeComponent:
-        contextual_component = ContextualModelingObjectAttribute(self.edge_device.storage)
-        contextual_component.set_modeling_obj_container(self, "edge_component")
-        return contextual_component
-
-    @edge_component.setter
-    def edge_component(self, value: EdgeComponent):
-        pass
-
     def update_recurrent_need(self):
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
@@ -129,16 +81,32 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         self.storage_need = None
 
     def after_init(self):
-        if self.ram_need is None:
-            ram_need = RecurrentEdgeProcessRAMNeed(name=f"{self.name} RAM need")
-            cpu_need = RecurrentEdgeProcessCPUNeed(name=f"{self.name} CPU need")
-            storage_need = RecurrentEdgeProcessStorageNeed(name=f"{self.name} storage need")
+        if not hasattr(self, "ram_need") or self.ram_need is None:
+            ram_need = RecurrentEdgeProcessRAMNeed(
+                name=f"{self.name} RAM need", edge_component=self.edge_device.ram_component)
+            cpu_need = RecurrentEdgeProcessCPUNeed(
+                name=f"{self.name} CPU need", edge_component=self.edge_device.cpu_component)
+            storage_need = RecurrentEdgeProcessStorageNeed(
+                name=f"{self.name} storage need", edge_component=self.edge_device.storage)
 
             self.ram_need = ram_need
             self.cpu_need = cpu_need
             self.storage_need = storage_need
             self.recurrent_edge_component_needs = [ram_need, cpu_need, storage_need]
         super().after_init()
+
+    @property
+    def attribute_update_entanglements(self):
+        return {"edge_device": self.generate_component_needs_changes_from_device_change}
+
+    def generate_component_needs_changes_from_device_change(self, change: List[EdgeComputer]):
+        old_edge_computer, new_edge_computer = change[0], change[1]
+        component_needs_changes = [
+            [self.ram_need.edge_component, new_edge_computer.ram_component],
+            [self.cpu_need.edge_component, new_edge_computer.cpu_component],
+            [self.storage_need.edge_component, new_edge_computer.storage],
+        ]
+        return component_needs_changes
 
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
