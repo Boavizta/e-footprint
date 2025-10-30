@@ -37,7 +37,9 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
 
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
-        return self.edge_process.edge_device
+        if self.edge_process:
+            return self.edge_process.edge_device
+        return None
 
     @property
     @abstractmethod
