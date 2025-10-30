@@ -8,16 +8,16 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
-from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
+from efootprint.core.hardware.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import set_modeling_obj_containers
 
 
-class TestEdgeApplianceComponent(TestCase):
+class TestEdgeWorkloadComponent(TestCase):
     def setUp(self):
-        self.appliance_component = EdgeApplianceComponent(
+        self.appliance_component = EdgeWorkloadComponent(
             name="Test Appliance",
             carbon_footprint_fabrication=SourceValue(100 * u.kg),
             power=SourceValue(50 * u.W),
@@ -27,7 +27,7 @@ class TestEdgeApplianceComponent(TestCase):
         self.appliance_component.trigger_modeling_updates = False
 
     def test_init(self):
-        """Test EdgeApplianceComponent initialization."""
+        """Test EdgeWorkloadComponent initialization."""
         self.assertEqual("Test Appliance", self.appliance_component.name)
         self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_fabrication.value)
         self.assertEqual(50 * u.W, self.appliance_component.power.value)

@@ -107,10 +107,13 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         self.assertListEqual(
             ["Device", "Country", 
-             "EdgeRAMComponent", "EdgeCPUComponent", "EdgeApplianceComponent", "EdgeStorage",
+             "EdgeRAMComponent", "EdgeCPUComponent", "EdgeWorkloadComponent", "EdgeStorage",
+             "EdgeComputerRAMComponent", "EdgeComputerCPUComponent", "EdgeApplianceComponent",
              "EdgeAppliance", "Network", "Storage",
-             "RecurrentEdgeComponentNeed", "RecurrentEdgeStorageNeed", "EdgeDevice", "EdgeComputer",
-             "BoaviztaCloudServer", "RecurrentEdgeWorkload",
+             "RecurrentEdgeStorageNeed", "EdgeDevice", "EdgeComputer",
+             "BoaviztaCloudServer", "RecurrentEdgeComponentNeed",
+             "RecurrentEdgeProcessRAMNeed", "RecurrentEdgeProcessCPUNeed", "RecurrentEdgeProcessStorageNeed",
+             "RecurrentEdgeWorkloadNeed", "RecurrentEdgeWorkload",
              "Server", "GPUServer", "WebApplication",
              "VideoStreaming", "GenAIModel", "Job", "GPUJob",
              "RecurrentEdgeDeviceNeed", "RecurrentEdgeProcess", "EdgeFunction",

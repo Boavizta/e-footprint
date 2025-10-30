@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge_usage_pattern import EdgeUsagePattern
 
 
-class EdgeApplianceComponent(EdgeComponent):
+class EdgeWorkloadComponent(EdgeComponent):
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),

@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.core.hardware.edge_appliance import EdgeAppliance
-from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
+from efootprint.core.hardware.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.usage.recurrent_edge_workload import RecurrentEdgeWorkload, WorkloadOutOfBoundsError
 from efootprint.core.usage.edge_function import EdgeFunction
 from efootprint.core.usage.edge_usage_journey import EdgeUsageJourney
@@ -21,7 +21,7 @@ from tests.utils import set_modeling_obj_containers
 class TestRecurrentEdgeWorkload(TestCase):
     def setUp(self):
         """Set up test fixtures."""
-        self.mock_appliance_component = MagicMock(spec=EdgeApplianceComponent)
+        self.mock_appliance_component = MagicMock(spec=EdgeWorkloadComponent)
         self.mock_appliance_component.name = "Mock Appliance Component"
         self.mock_appliance_component.expected_need_units.return_value = [u.concurrent, u.dimensionless]
         self.mock_appliance_component.edge_device = None

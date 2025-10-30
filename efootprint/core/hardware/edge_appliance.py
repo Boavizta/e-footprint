@@ -1,10 +1,31 @@
-from copy import copy
-
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge_device import EdgeDevice
-from efootprint.core.hardware.edge_appliance_component import EdgeApplianceComponent
+from efootprint.core.hardware.edge_workload_component import EdgeWorkloadComponent
+
+
+class EdgeApplianceComponent(EdgeWorkloadComponent):
+    def __init__(self, name: str):
+        super().__init__(
+            name=name,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            idle_power=SourceValue(0 * u.W))
+
+    @property
+    def calculated_attributes(self):
+        return ["power", "idle_power", "lifespan"] + super().calculated_attributes
+
+    def update_power(self):
+        self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+
+    def update_idle_power(self):
+        self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+
+    def update_lifespan(self):
+        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
 
 
 class EdgeAppliance(EdgeDevice):
@@ -19,7 +40,7 @@ class EdgeAppliance(EdgeDevice):
                  power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
         super().__init__(
             name=name,
-            structure_carbon_footprint_fabrication=carbon_footprint_fabrication.copy(),
+            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
             components=[],
             lifespan=lifespan)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
@@ -29,31 +50,20 @@ class EdgeAppliance(EdgeDevice):
 
         self.appliance_component = None
 
+    @property
+    def calculated_attributes(self):
+        return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
+
+    def update_structure_carbon_footprint_fabrication(self):
+        self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
+            f"Structure fabrication carbon footprint of {self.name}")
+
     def after_init(self):
-        # Appliance component gets power and idle_power
-        appliance_component = EdgeApplianceComponent(
-            name=f"{self.name} appliance",
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=copy(self.power),
-            lifespan=copy(self.lifespan),
-            idle_power=copy(self.idle_power))
+        appliance_component = EdgeApplianceComponent(name=f"{self.name} appliance")
 
         self.appliance_component = appliance_component
         self.components = [appliance_component]
         super().after_init()
-
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        super().__setattr__(name, input_value)
-        # When attributes are updated after init, propagate copies to component
-        if self.trigger_modeling_updates:
-            if name == "lifespan":
-                self.appliance_component.lifespan = copy(input_value)
-            elif name == "power":
-                self.appliance_component.power = copy(input_value)
-            elif name == "idle_power":
-                self.appliance_component.idle_power = copy(input_value)
-            elif name == "carbon_footprint_fabrication":
-                self.structure_carbon_footprint_fabrication = copy(input_value)
 
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
