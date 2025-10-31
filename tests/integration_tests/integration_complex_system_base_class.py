@@ -219,6 +219,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         for mod_obj in mod_obj_list:
             if mod_obj not in [usage_pattern1, usage_pattern2]:
                 mod_obj.id = css_escape(mod_obj.name)
+        for edge_process_need in edge_process.recurrent_edge_component_needs:
+            edge_process_need.id = css_escape(edge_process_need.name)
+        for edge_computer_component in edge_computer.components:
+            edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return system, storage_1, storage_2, storage_3, server1, server2, server3, \
             server1_job1, server1_job2, server1_job3, server2_job, server3_job, \
@@ -283,7 +287,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_4, self.server1_job1, self.server1_job2, self.server1_job3, self.server2_job,
             self.server3_job, self.usage_pattern1.devices[0], self.usage_pattern2.devices[0],
             self.usage_pattern1.country, self.usage_pattern2.country, self.edge_storage, self.edge_computer,
-            self.edge_process, self.edge_function, self.edge_usage_journey, self.edge_usage_pattern.country]
+            self.edge_process, self.edge_function, self.edge_usage_journey, self.edge_usage_pattern.country
+        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
     def run_test_remove_uj_steps_1_and_2(self):

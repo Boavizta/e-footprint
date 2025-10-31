@@ -38,7 +38,6 @@ class TestEdgeWorkloadComponent(TestCase):
         """Test expected_need_units returns correct units."""
         expected_units = self.appliance_component.expected_need_units()
         self.assertIn(u.concurrent, expected_units)
-        self.assertIn(u.dimensionless, expected_units)
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern aggregates workloads."""

@@ -1175,10 +1175,15 @@
             "name": "Edge process",
             "id": "Edge-process",
             "edge_device": "Edge-device",
+            "recurrent_edge_component_needs": [
+                "Edge-process-RAM-need",
+                "Edge-process-CPU-need",
+                "Edge-process-storage-need"
+            ],
             "recurrent_compute_needed": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
-                "label": "Edge process recurrent compute needed from e-footprint hypothesis",
+                "label": "Recurrent compute needed for Edge process from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1187,7 +1192,7 @@
             "recurrent_ram_needed": {
                 "recurring_values": "[2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]",
                 "unit": "gigabyte_ram",
-                "label": "Edge process recurrent ram needed from e-footprint hypothesis",
+                "label": "Recurrent RAM needed for Edge process from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1196,7 +1201,7 @@
             "recurrent_storage_needed": {
                 "recurring_values": "[200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0]",
                 "unit": "megabyte",
-                "label": "Edge process recurrent storage needed from e-footprint hypothesis",
+                "label": "Recurrent storage needed for Edge process from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1208,6 +1213,21 @@
         "Edge-device": {
             "name": "Edge device",
             "id": "Edge-device",
+            "lifespan": {
+                "value": 8.0,
+                "unit": "year",
+                "label": "Lifespan of Edge device from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "components": [
+                "Edge-device-CPU",
+                "Edge-device-RAM",
+                "Edge-SSD-storage"
+            ],
+            "storage": "Edge-SSD-storage",
             "carbon_footprint_fabrication": {
                 "value": 60.0,
                 "unit": "kilogram",
@@ -1221,24 +1241,6 @@
                 "value": 30.0,
                 "unit": "watt",
                 "label": "Power of Edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "lifespan": {
-                "value": 8.0,
-                "unit": "year",
-                "label": "Lifespan of Edge device from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Edge device fraction of usage time from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1288,8 +1290,55 @@
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
+            }
+        }
+    },
+    "EdgeComputerCPUComponent": {
+        "Edge-device-CPU": {
+            "name": "Edge device CPU",
+            "id": "Edge-device-CPU",
+            "carbon_footprint_fabrication": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication of Edge device CPU from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "EdgeComputerRAMComponent": {
+        "Edge-device-RAM": {
+            "name": "Edge device RAM",
+            "id": "Edge-device-RAM",
+            "carbon_footprint_fabrication": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication of Edge device RAM from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
             },
-            "storage": "Edge-SSD-storage"
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power of Edge device RAM from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Idle power of Edge device RAM from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
         }
     },
     "EdgeStorage": {
@@ -1305,10 +1354,10 @@
                     "link": null
                 }
             },
-            "fraction_of_usage_time": {
-                "value": 1.0,
-                "unit": "dimensionless",
-                "label": "Edge SSD storage fraction of usage time from e-footprint hypothesis",
+            "idle_power": {
+                "value": 0.1,
+                "unit": "watt",
+                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1332,15 +1381,6 @@
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
-            "idle_power": {
-                "value": 0.1,
-                "unit": "watt",
-                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
             "storage_capacity": {
                 "value": 1.0,
                 "unit": "terabyte",
@@ -1359,6 +1399,27 @@
                     "link": null
                 }
             }
+        }
+    },
+    "RecurrentEdgeProcessRAMNeed": {
+        "Edge-process-RAM-need": {
+            "name": "Edge process RAM need",
+            "id": "Edge-process-RAM-need",
+            "edge_component": "Edge-device-RAM"
+        }
+    },
+    "RecurrentEdgeProcessCPUNeed": {
+        "Edge-process-CPU-need": {
+            "name": "Edge process CPU need",
+            "id": "Edge-process-CPU-need",
+            "edge_component": "Edge-device-CPU"
+        }
+    },
+    "RecurrentEdgeProcessStorageNeed": {
+        "Edge-process-storage-need": {
+            "name": "Edge process storage need",
+            "id": "Edge-process-storage-need",
+            "edge_component": "Edge-SSD-storage"
         }
     }
 }

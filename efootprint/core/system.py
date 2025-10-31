@@ -113,10 +113,14 @@ class System(ModelingObject):
         edge_functions = list(set(sum([euj.edge_functions for euj in edge_usage_journeys], start=[])))
         recurrent_edge_device_needs = list(
             set(sum([ef.recurrent_edge_device_needs for ef in edge_functions], start=[])))
+        recurrent_edge_component_needs = list(
+            set(sum([redn.recurrent_edge_component_needs for redn in recurrent_edge_device_needs], start=[])))
         edge_devices = self.edge_devices
+        edge_devices_components = list(set(sum([ed.components for ed in edge_devices], start=[])))
         countries = list(set([up.country for up in edge_usage_patterns]))
-        all_modeling_objects = (output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
-                                + edge_devices + countries)
+        all_modeling_objects = (
+                output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
+                + recurrent_edge_component_needs + edge_devices + edge_devices_components + countries)
 
         return all_modeling_objects
 
@@ -180,8 +184,6 @@ class System(ModelingObject):
                         for usage_pattern in self.usage_patterns},
             "EdgeDevices": {edge_device: edge_device.instances_fabrication_footprint
                             for edge_device in self.edge_devices},
-            "EdgeStorage": {edge_storage: edge_storage.instances_fabrication_footprint
-                             for edge_storage in self.edge_storages},
         }
 
         return fab_footprints
@@ -196,7 +198,6 @@ class System(ModelingObject):
                         for usage_pattern in self.usage_patterns},
             "EdgeDevices": {edge_device: edge_device.energy_footprint
                             for edge_device in self.edge_devices},
-            "EdgeStorage": {edge_storage: edge_storage.energy_footprint for edge_storage in self.edge_storages},
         }
 
         return energy_footprints
@@ -217,9 +218,6 @@ class System(ModelingObject):
             "EdgeDevices": sum([edge_device.instances_fabrication_footprint for edge_device in self.edge_devices],
                                start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Edge devices total fabrication footprint"),
-            "EdgeStorage": sum([edge_storage.instances_fabrication_footprint for edge_storage in self.edge_storages],
-                                start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Edge storage total fabrication footprint")
         }
 
         return fab_footprints
@@ -237,8 +235,6 @@ class System(ModelingObject):
                            start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint"),
             "EdgeDevices": sum([edge_device.energy_footprint for edge_device in self.edge_devices],
                                start=EmptyExplainableObject()).to(u.kg).set_label("Edge devices total energy footprint"),
-            "EdgeStorage": sum([edge_storage.energy_footprint for edge_storage in self.edge_storages],
-                               start=EmptyExplainableObject()).to(u.kg).set_label("Edge storage total energy footprint")
         }
 
         return energy_footprints

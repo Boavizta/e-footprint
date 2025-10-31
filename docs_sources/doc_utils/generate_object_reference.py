@@ -15,7 +15,8 @@ from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, web_application, genai_model,
     video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job, edge_computer,
-    edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload)
+    edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload,
+    cpu_component, ram_component, edge_device, ram_need, cpu_need, edge_device_need)
 from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
@@ -146,7 +147,11 @@ def generate_object_reference(automatically_update_yaml=False):
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
             video_streaming, web_application, genai_model, video_streaming_job, web_application_job, genai_model_job,
             storage, edge_usage_pattern, edge_function, edge_usage_journey, edge_computer, edge_storage, edge_process,
-            edge_appliance, edge_workload):
+            edge_process.storage_need, edge_process.compute_need, edge_process.ram_need,
+            edge_appliance, edge_workload, edge_workload.workload_need, cpu_component, ram_component, edge_device,
+            ram_need, cpu_need,
+            edge_device_need, edge_computer.ram_component, edge_computer.cpu_component,
+            edge_appliance.appliance_component):
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)
 

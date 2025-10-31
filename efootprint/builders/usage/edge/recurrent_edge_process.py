@@ -88,12 +88,12 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         if not self.recurrent_edge_component_needs:
             ram_need = RecurrentEdgeProcessRAMNeed(
                 name=f"{self.name} RAM need", edge_component=self.edge_device.ram_component)
-            cpu_need = RecurrentEdgeProcessCPUNeed(
+            compute_need = RecurrentEdgeProcessCPUNeed(
                 name=f"{self.name} CPU need", edge_component=self.edge_device.cpu_component)
             storage_need = RecurrentEdgeProcessStorageNeed(
                 name=f"{self.name} storage need", edge_component=self.edge_device.storage)
 
-            self.recurrent_edge_component_needs = [ram_need, cpu_need, storage_need]
+            self.recurrent_edge_component_needs = [ram_need, compute_need, storage_need]
         super().after_init()
 
     @property
@@ -102,7 +102,7 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
                     if isinstance(need, RecurrentEdgeProcessRAMNeed))
 
     @property
-    def cpu_need(self) -> RecurrentEdgeProcessCPUNeed:
+    def compute_need(self) -> RecurrentEdgeProcessCPUNeed:
         return next(need for need in self.recurrent_edge_component_needs
                     if isinstance(need, RecurrentEdgeProcessCPUNeed))
 
@@ -119,14 +119,14 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         old_edge_computer, new_edge_computer = change[0], change[1]
         component_needs_changes = [
             [self.ram_need.edge_component, new_edge_computer.ram_component],
-            [self.cpu_need.edge_component, new_edge_computer.cpu_component],
+            [self.compute_need.edge_component, new_edge_computer.cpu_component],
             [self.storage_need.edge_component, new_edge_computer.storage],
         ]
         return component_needs_changes
 
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
-        return self.cpu_need.unitary_hourly_need_per_usage_pattern
+        return self.compute_need.unitary_hourly_need_per_usage_pattern
 
     @property
     def unitary_hourly_ram_need_per_usage_pattern(self):

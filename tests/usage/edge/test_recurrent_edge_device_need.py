@@ -3,44 +3,58 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from tests.utils import set_modeling_obj_containers
 
 
 class TestRecurrentEdgeDeviceNeed(TestCase):
     def setUp(self):
         self.mock_edge_device = MagicMock(spec=EdgeDevice)
-        self.mock_edge_device.id = "mock_hardware"
-        self.mock_edge_device.name = "Mock Hardware"
+        self.mock_edge_device.name = "Mock Device"
 
-        self.edge_resource_needed = RecurrentEdgeDeviceNeed(
-            "test edge resource needed",
-            edge_device=self.mock_edge_device
+        self.mock_component_need_1 = MagicMock(spec=RecurrentEdgeComponentNeed)
+        self.mock_component_need_1.name = "Component Need 1"
+
+        self.mock_component_need_2 = MagicMock(spec=RecurrentEdgeComponentNeed)
+        self.mock_component_need_2.name = "Component Need 2"
+
+        self.device_need = RecurrentEdgeDeviceNeed(
+            "test device need",
+            edge_device=self.mock_edge_device,
+            recurrent_edge_component_needs=[self.mock_component_need_1, self.mock_component_need_2]
         )
 
     def test_init(self):
         """Test RecurrentEdgeDeviceNeed initialization."""
-        self.assertEqual("test edge resource needed", self.edge_resource_needed.name)
-        self.assertEqual(self.mock_edge_device, self.edge_resource_needed.edge_device)
+        self.assertEqual("test device need", self.device_need.name)
+        self.assertEqual(self.mock_edge_device, self.device_need.edge_device)
+        self.assertEqual(
+            [self.mock_component_need_1, self.mock_component_need_2],
+            self.device_need.recurrent_edge_component_needs
+        )
 
-    def test_validate_component_needs_edge_device(self):
-        raise NotImplementedError
+    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
+        """Test that recurrent_edge_component_needs are returned as dependent objects."""
+        dependent_objects = self.device_need.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertEqual([self.mock_component_need_1, self.mock_component_need_2], dependent_objects)
 
     def test_edge_functions_property_no_containers(self):
         """Test edge_functions property when no containers are set."""
-        self.assertEqual([], self.edge_resource_needed.edge_functions)
+        self.assertEqual([], self.device_need.edge_functions)
 
     def test_edge_functions_property_single_container(self):
         """Test edge_functions property with single container."""
         mock_function = MagicMock(spec=EdgeFunction)
         mock_function.name = "Mock Function"
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function])
+        set_modeling_obj_containers(self.device_need, [mock_function])
 
-        self.assertEqual([mock_function], self.edge_resource_needed.edge_functions)
+        self.assertEqual([mock_function], self.device_need.edge_functions)
 
     def test_edge_functions_property_multiple_containers(self):
         """Test edge_functions property returns all containers."""
@@ -49,28 +63,16 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
         mock_function_2 = MagicMock(spec=EdgeFunction)
         mock_function_2.name = "Function 2"
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function_1, mock_function_2])
+        set_modeling_obj_containers(self.device_need, [mock_function_1, mock_function_2])
 
-        self.assertEqual({mock_function_1, mock_function_2}, set(self.edge_resource_needed.edge_functions))
+        self.assertEqual({mock_function_1, mock_function_2}, set(self.device_need.edge_functions))
 
     def test_edge_usage_journeys_property_no_functions(self):
-        """Test edge_usage_journeys property when no functions are set."""
-        self.assertEqual([], self.edge_resource_needed.edge_usage_journeys)
-
-    def test_edge_usage_journeys_property_single_function(self):
-        """Test edge_usage_journeys property with single function."""
-        mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
-        mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
-
-        mock_function = MagicMock(spec=EdgeFunction)
-        mock_function.edge_usage_journeys = [mock_journey_1, mock_journey_2]
-
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function])
-
-        self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_resource_needed.edge_usage_journeys))
+        """Test edge_usage_journeys property when no functions exist."""
+        self.assertEqual([], self.device_need.edge_usage_journeys)
 
     def test_edge_usage_journeys_property_multiple_functions_with_deduplication(self):
-        """Test edge_usage_journeys property deduplicates journeys across functions."""
+        """Test edge_usage_journeys property deduplicates across functions."""
         mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
         mock_journey_2 = MagicMock(spec=EdgeUsageJourney)
         mock_journey_3 = MagicMock(spec=EdgeUsageJourney)
@@ -81,9 +83,9 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
         mock_function_2 = MagicMock(spec=EdgeFunction)
         mock_function_2.edge_usage_journeys = [mock_journey_2, mock_journey_3]
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function_1, mock_function_2])
+        set_modeling_obj_containers(self.device_need, [mock_function_1, mock_function_2])
 
-        journeys = self.edge_resource_needed.edge_usage_journeys
+        journeys = self.device_need.edge_usage_journeys
         self.assertEqual(3, len(journeys))
         self.assertIn(mock_journey_1, journeys)
         self.assertIn(mock_journey_2, journeys)
@@ -91,25 +93,10 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
 
     def test_edge_usage_patterns_property_no_journeys(self):
         """Test edge_usage_patterns property when no journeys exist."""
-        self.assertEqual([], self.edge_resource_needed.edge_usage_patterns)
-
-    def test_edge_usage_patterns_property_single_journey(self):
-        """Test edge_usage_patterns property with single journey."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
-        mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-
-        mock_function = MagicMock(spec=EdgeFunction)
-        mock_function.edge_usage_journeys = [mock_journey]
-
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function])
-
-        self.assertEqual({mock_pattern_1, mock_pattern_2}, set(self.edge_resource_needed.edge_usage_patterns))
+        self.assertEqual([], self.device_need.edge_usage_patterns)
 
     def test_edge_usage_patterns_property_multiple_journeys_with_deduplication(self):
-        """Test edge_usage_patterns property deduplicates patterns across journeys."""
+        """Test edge_usage_patterns property deduplicates across journeys."""
         mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
         mock_pattern_3 = MagicMock(spec=EdgeUsagePattern)
@@ -123,51 +110,65 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
         mock_function = MagicMock(spec=EdgeFunction)
         mock_function.edge_usage_journeys = [mock_journey_1, mock_journey_2]
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function])
+        set_modeling_obj_containers(self.device_need, [mock_function])
 
-        patterns = self.edge_resource_needed.edge_usage_patterns
+        patterns = self.device_need.edge_usage_patterns
         self.assertEqual(3, len(patterns))
         self.assertIn(mock_pattern_1, patterns)
         self.assertIn(mock_pattern_2, patterns)
         self.assertIn(mock_pattern_3, patterns)
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that edge_device is returned as dependent object."""
-        dependent_objects = self.edge_resource_needed.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_device], dependent_objects)
+    def test_update_component_needs_edge_device_validation_all_components_valid(self):
+        """Test validation passes when all component needs belong to the same device."""
+        mock_component_1 = MagicMock(spec=EdgeComponent)
+        mock_component_1.name = "Component 1"
+        mock_component_1.edge_device = self.mock_edge_device
 
-    def test_systems_property_no_functions(self):
-        """Test systems property when no functions are set."""
-        self.assertEqual([], self.edge_resource_needed.systems)
+        mock_component_2 = MagicMock(spec=EdgeComponent)
+        mock_component_2.name = "Component 2"
+        mock_component_2.edge_device = self.mock_edge_device
 
-    def test_systems_property_single_function(self):
-        """Test systems property with single function."""
-        mock_function = MagicMock(spec=EdgeFunction)
-        mock_system_1 = MagicMock()
-        mock_system_2 = MagicMock()
-        mock_function.systems = [mock_system_1, mock_system_2]
+        self.mock_component_need_1.edge_component = mock_component_1
+        self.mock_component_need_2.edge_component = mock_component_2
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function])
+        self.device_need.update_component_needs_edge_device_validation()
 
-        self.assertEqual({mock_system_1, mock_system_2}, set(self.edge_resource_needed.systems))
+    def test_update_component_needs_edge_device_validation_component_device_is_none(self):
+        """Test validation passes when component's edge_device is None."""
+        mock_component = MagicMock(spec=EdgeComponent)
+        mock_component.name = "Component"
+        mock_component.edge_device = None
 
-    def test_systems_property_multiple_functions(self):
-        """Test systems property aggregates across multiple functions."""
-        mock_function_1 = MagicMock(spec=EdgeFunction)
-        mock_function_2 = MagicMock(spec=EdgeFunction)
-        mock_system_1 = MagicMock()
-        mock_system_2 = MagicMock()
-        mock_system_3 = MagicMock()
-        mock_function_1.systems = [mock_system_1, mock_system_2]
-        mock_function_2.systems = [mock_system_2, mock_system_3]
+        self.mock_component_need_1.edge_component = mock_component
+        self.mock_component_need_2.edge_component = mock_component
 
-        set_modeling_obj_containers(self.edge_resource_needed, [mock_function_1, mock_function_2])
+        self.device_need.update_component_needs_edge_device_validation()
 
-        systems = self.edge_resource_needed.systems
-        self.assertEqual(3, len(systems))
-        self.assertIn(mock_system_1, systems)
-        self.assertIn(mock_system_2, systems)
-        self.assertIn(mock_system_3, systems)
+    def test_update_component_needs_edge_device_validation_mismatched_device(self):
+        """Test validation raises error when component belongs to different device."""
+        mock_other_device = MagicMock(spec=EdgeDevice)
+        mock_other_device.name = "Other Device"
+
+        mock_component = MagicMock(spec=EdgeComponent)
+        mock_component.name = "Component 1"
+        mock_component.edge_device = mock_other_device
+
+        self.mock_component_need_1.edge_component = mock_component
+
+        mock_component_2 = MagicMock(spec=EdgeComponent)
+        mock_component_2.name = "Component 2"
+        mock_component_2.edge_device = self.mock_edge_device
+        self.mock_component_need_2.edge_component = mock_component_2
+
+        with self.assertRaises(ValueError) as context:
+            self.device_need.update_component_needs_edge_device_validation()
+
+        error_message = str(context.exception)
+        self.assertIn("Component Need 1", error_message)
+        self.assertIn("Component 1", error_message)
+        self.assertIn("Other Device", error_message)
+        self.assertIn("test device need", error_message)
+        self.assertIn("Mock Device", error_message)
 
 
 if __name__ == "__main__":

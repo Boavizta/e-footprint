@@ -139,8 +139,6 @@ def generate_big_system(
             idle_power=SourceValue(5 * u.W),
             ram=SourceValue(16 * u.GB_ram),
             compute=SourceValue(8 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.0 * u.dimensionless),
-            utilization_rate=SourceValue(0.8 * u.dimensionless),
             base_ram_consumption=SourceValue(1 * u.GB_ram),
             base_compute_consumption=SourceValue(0.1 * u.cpu_core),
             storage=edge_storage
@@ -153,7 +151,7 @@ def generate_big_system(
                 recurrent_compute_needed=SourceRecurrentValues(
                     Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
                 recurrent_ram_needed=SourceRecurrentValues(
-                    Quantity(np.array([2] * 168, dtype=np.float32), u.GB)),
+                    Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
                 recurrent_storage_needed=SourceRecurrentValues(
                     Quantity(np.array([200] * 168, dtype=np.float32), u.kB))
             )
@@ -161,7 +159,7 @@ def generate_big_system(
 
         edge_function = EdgeFunction(
             f"Default edge function {edge_usage_pattern_index}",
-            recurrent_edge_resource_needs=edge_processes
+            recurrent_edge_device_needs=edge_processes
         )
 
         edge_usage_journey = EdgeUsageJourney(

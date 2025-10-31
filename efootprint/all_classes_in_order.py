@@ -1,3 +1,5 @@
+from copy import copy
+
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
@@ -61,3 +63,8 @@ CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
     EdgeUsagePattern, RecurrentEdgeDeviceNeed, RecurrentEdgeComponentNeed, EdgeComponent, EdgeDevice, Service, JobBase,
     Network, ServerBase, Storage, System]
+
+ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}
+ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
+ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)

@@ -42,9 +42,21 @@ nav:
       - Devices: Device.md
       - Network: Network.md
       - Storage: Storage.md
-      - Edge appliances: EdgeAppliance.md
-      - Edge computers: EdgeComputer.md
-      - Edge storage: EdgeStorage.md
+      - Edge:
+          - Edge device:
+              - Edge device (base object): EdgeDevice.md
+              - Edge computer:
+                - Edge computer: EdgeComputer.md
+                - Edge computer RAM: EdgeComputerRAMComponent.md
+                - Edge computer CPU: EdgeComputerCPUComponent.md
+              - Edge appliance:
+                - Edge appliance: EdgeAppliance.md
+                - Edge appliance component: EdgeApplianceComponent.md
+          - Edge components:
+              - RAM component: EdgeRAMComponent.md
+              - CPU component: EdgeCPUComponent.md
+              - Storage component: EdgeStorage.md
+
   - Services:
       - Web application:
           - Web application service: WebApplication.md
@@ -61,11 +73,23 @@ nav:
       - Usage journey step: UsageJourneyStep.md
       - Job: Job.md
       - GPU job: GPUJob.md
-      - Edge usage pattern: EdgeUsagePattern.md
-      - Edge usage journey: EdgeUsageJourney.md
-      - Edge function: EdgeFunction.md
-      - Recurrent edge workload: RecurrentEdgeWorkload.md
-      - Recurrent edge process: RecurrentEdgeProcess.md
+      - Edge:
+        - Edge usage pattern: EdgeUsagePattern.md
+        - Edge usage journey: EdgeUsageJourney.md
+        - Edge function: EdgeFunction.md
+        - Edge device need:
+          - Edge device need: EdgeDeviceNeed.md
+          - Recurrent edge workload:
+            - Recurrent edge workload: RecurrentEdgeWorkload.md
+            - Recurrent edge workload need: RecurrentEdgeWorkloadNeed.md
+          - Recurrent edge process:
+            - Recurrent edge process: RecurrentEdgeProcess.md
+            - Recurrent edge process ram need: RecurrentEdgeProcessRAMNeed.md
+            - Recurrent edge process cpu need: RecurrentEdgeProcessCPUNeed.md
+            - Recurrent edge process storage need: RecurrentEdgeProcessStorageNeed.md
+        - Edge component need:
+          - Edge component need: RecurrentEdgeComponentNeed.md
+          - Edge storage need: RecurrentEdgeStorageNeed.md
   - System: System.md
   - Country: Country.md
 - FAQ:

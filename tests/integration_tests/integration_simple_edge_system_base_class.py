@@ -92,6 +92,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         for mod_obj in mod_obj_list:
             if mod_obj != edge_usage_pattern:
                 mod_obj.id = css_escape(mod_obj.name)
+        for edge_process_need in edge_process.recurrent_edge_component_needs:
+            edge_process_need.id = css_escape(edge_process_need.name)
+        for edge_computer_component in edge_computer.components:
+            edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return (system, edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey,
                 edge_usage_pattern, start_date)
@@ -136,11 +140,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         str(self.edge_usage_pattern)
 
     def run_test_all_objects_linked_to_system(self):
-        expected_objects = {
+        expected_objects = [
             self.edge_storage, self.edge_computer, self.edge_process, self.edge_function,
             self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
-        }
-        self.assertEqual(expected_objects, set(self.system.all_linked_objects))
+        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs
+        self.assertEqual(set(expected_objects), set(self.system.all_linked_objects))
 
     def run_test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
