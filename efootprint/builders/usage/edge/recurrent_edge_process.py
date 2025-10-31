@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from copy import copy
 from typing import List
 
 import numpy as np
@@ -35,6 +34,9 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
 
 class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
     def update_recurrent_need(self):
+        if not self.recurrent_edge_device_needs:
+            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram))
+            return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
             f"{self.name} recurrent need")
@@ -42,6 +44,9 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
 
 class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
     def update_recurrent_need(self):
+        if not self.recurrent_edge_device_needs:
+            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core))
+            return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
             f"{self.name} recurrent need")
@@ -49,6 +54,9 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
 
 class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
     def update_recurrent_need(self):
+        if not self.recurrent_edge_device_needs:
+            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB))
+            return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
             f"{self.name} recurrent need")
@@ -76,12 +84,8 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
         self.recurrent_storage_needed = recurrent_storage_needed.set_label(
             f"Recurrent storage needed for {self.name}")
 
-        self.ram_need = None
-        self.cpu_need = None
-        self.storage_need = None
-
     def after_init(self):
-        if not hasattr(self, "ram_need") or self.ram_need is None:
+        if not self.recurrent_edge_component_needs:
             ram_need = RecurrentEdgeProcessRAMNeed(
                 name=f"{self.name} RAM need", edge_component=self.edge_device.ram_component)
             cpu_need = RecurrentEdgeProcessCPUNeed(
@@ -89,11 +93,23 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
             storage_need = RecurrentEdgeProcessStorageNeed(
                 name=f"{self.name} storage need", edge_component=self.edge_device.storage)
 
-            self.ram_need = ram_need
-            self.cpu_need = cpu_need
-            self.storage_need = storage_need
             self.recurrent_edge_component_needs = [ram_need, cpu_need, storage_need]
         super().after_init()
+
+    @property
+    def ram_need(self) -> RecurrentEdgeProcessRAMNeed:
+        return next(need for need in self.recurrent_edge_component_needs
+                    if isinstance(need, RecurrentEdgeProcessRAMNeed))
+
+    @property
+    def cpu_need(self) -> RecurrentEdgeProcessCPUNeed:
+        return next(need for need in self.recurrent_edge_component_needs
+                    if isinstance(need, RecurrentEdgeProcessCPUNeed))
+
+    @property
+    def storage_need(self) -> RecurrentEdgeProcessStorageNeed:
+        return next(need for need in self.recurrent_edge_component_needs
+                    if isinstance(need, RecurrentEdgeProcessStorageNeed))
 
     @property
     def attribute_update_entanglements(self):
@@ -119,16 +135,3 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
     @property
     def unitary_hourly_storage_need_per_usage_pattern(self):
         return self.storage_need.unitary_hourly_need_per_usage_pattern
-
-    def self_delete(self):
-        old_needs = copy(self.recurrent_edge_component_needs)
-        self.recurrent_edge_component_needs = []
-        self.ram_need.set_modeling_obj_container(None, None)
-        self.cpu_need.set_modeling_obj_container(None, None)
-        self.storage_need.set_modeling_obj_container(None, None)
-        del self.ram_need
-        del self.cpu_need
-        del self.storage_need
-        for need in old_needs:
-            need.self_delete()
-        super().self_delete()

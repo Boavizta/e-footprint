@@ -1,4 +1,3 @@
-from copy import copy
 from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -100,9 +99,6 @@ class EdgeComputer(EdgeDevice):
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
 
-        self.ram_component = None
-        self.cpu_component = None
-
     @property
     def calculated_attributes(self):
         return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
@@ -127,14 +123,20 @@ class EdgeComputer(EdgeDevice):
             f"Structure fabrication carbon footprint of {self.name}")
 
     def after_init(self):
-        if not hasattr(self, "ram_component") or self.ram_component is None:
+        if not self.components:
             ram_component = EdgeComputerRAMComponent(name=f"{self.name} RAM")
             cpu_component = EdgeComputerCPUComponent(name=f"{self.name} CPU")
 
-            self.ram_component = ram_component
-            self.cpu_component = cpu_component
             self.components = [cpu_component, ram_component, self.storage]
         super().after_init()
+
+    @property
+    def ram_component(self) -> EdgeComputerRAMComponent:
+        return next(comp for comp in self.components if isinstance(comp, EdgeComputerRAMComponent))
+
+    @property
+    def cpu_component(self) -> EdgeComputerCPUComponent:
+        return next(comp for comp in self.components if isinstance(comp, EdgeComputerCPUComponent))
 
     @property
     def available_ram_per_instance(self):
@@ -151,16 +153,3 @@ class EdgeComputer(EdgeDevice):
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
         return self.cpu_component.unitary_hourly_compute_need_per_usage_pattern
-
-    def self_delete(self):
-        old_components = copy(self.components)
-        self.components = []
-        self.ram_component.set_modeling_obj_container(None, None)
-        self.cpu_component.set_modeling_obj_container(None, None)
-        self.storage.set_modeling_obj_container(None, None)
-        del self.ram_component
-        del self.cpu_component
-        del self.storage
-        for component in old_components:
-            component.self_delete()
-        super().self_delete()

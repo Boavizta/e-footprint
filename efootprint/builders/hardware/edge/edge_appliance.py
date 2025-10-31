@@ -50,8 +50,6 @@ class EdgeAppliance(EdgeDevice):
         self.power = power.set_label(f"Power of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
 
-        self.appliance_component = None
-
     @property
     def calculated_attributes(self):
         return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
@@ -61,22 +59,15 @@ class EdgeAppliance(EdgeDevice):
             f"Structure fabrication carbon footprint of {self.name}")
 
     def after_init(self):
-        if not hasattr(self, "appliance_component") or self.appliance_component is None:
+        if not self.components:
             appliance_component = EdgeApplianceComponent(name=f"{self.name} appliance")
-
-            self.appliance_component = appliance_component
             self.components = [appliance_component]
         super().after_init()
 
     @property
+    def appliance_component(self) -> EdgeApplianceComponent:
+        return self.components[0]
+
+    @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self.appliance_component.unitary_hourly_workload_per_usage_pattern
-
-    def self_delete(self):
-        old_components = copy(self.components)
-        self.components = []
-        self.appliance_component.set_modeling_obj_container(None, None)
-        del self.appliance_component
-        for component in old_components:
-            component.self_delete()
-        super().self_delete()

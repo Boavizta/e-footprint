@@ -42,17 +42,17 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
             recurrent_edge_component_needs=[])
         self.recurrent_workload = recurrent_workload.set_label(f"Recurrent workload for {self.name}")
 
-        self.workload_need = None
-
     def after_init(self):
-        if not hasattr(self, "workload_need") or self.workload_need is None:
+        if not self.recurrent_edge_component_needs:
             workload_need = RecurrentEdgeWorkloadNeed(
                 name=f"{self.name} workload need",
                 edge_component=self.edge_device.appliance_component)
-
-            self.workload_need = workload_need
             self.recurrent_edge_component_needs = [workload_need]
         super().after_init()
+
+    @property
+    def workload_need(self) -> RecurrentEdgeWorkloadNeed:
+        return self.recurrent_edge_component_needs[0]
 
     @property
     def attribute_update_entanglements(self):
