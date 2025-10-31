@@ -57,12 +57,6 @@ class BoaviztaCloudServer(Server):
 
     conditional_list_values = server_conditional_list_values
 
-    def __setattr__(self, name, input_value, check_input_validity=True):
-        if name == "provider" and self.trigger_modeling_updates:
-            raise PermissionError("The provider of a BoaviztaCloudServer cannot be changed after initialization. "
-                                  "Use a ModelingUpdate to update both provider and a compatible model name.")
-        super().__setattr__(name, input_value, check_input_validity=check_input_validity)
-
     def __init__(
             self, name: str, provider: ExplainableObject, instance_type: ExplainableObject, server_type: ExplainableObject,
             lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,

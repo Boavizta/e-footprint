@@ -81,9 +81,9 @@ class TestGenAIModel(unittest.TestCase):
                         self.genai_model.update_total_params()
                         self.genai_model.update_active_params()
 
-    def test_setting_provider_after_init_raises_permission_error(self):
+    def test_setting_provider_after_init_raises_value_error(self):
         self.genai_model.trigger_modeling_updates = True
-        with self.assertRaises(PermissionError):
+        with self.assertRaises(ValueError):
             self.genai_model.provider = SourceObject("openai")
 
     def test_changing_provider_and_model_name_triggers_modeling_updates(self):

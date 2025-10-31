@@ -266,8 +266,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     raise ValueError(
                         f"Setting {name} as {input_value} is not possible because {dependent_attribute_value}"
                         f" is not in the list of possible values for {dependent_attribute} "
-                        f"when {name} is {input_value}: "
-                        f"{self.conditional_list_values[dependent_attribute]['conditional_list_values'][input_value]}"
+                        f"when {name} is {input_value}."
+                        f"\nYou might want to use the ModelingUpdate object to be able to change both inputs "
+                        f"at the same time."
+                        f"\nList of possible values for {input_value}:"
+                        f"\n{self.conditional_list_values[dependent_attribute]['conditional_list_values'][input_value]}"
                     )
 
     @property

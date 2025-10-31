@@ -52,9 +52,9 @@ class TestBoaviztaCloudServer(unittest.TestCase):
                 fixed_nb_of_instances=EmptyExplainableObject()  # or None, if you prefer
             )
 
-    def test_setting_provider_after_init_raises_permission_error(self):
+    def test_setting_provider_after_init_raises_value_error(self):
         self.test_server.trigger_modeling_updates = True
-        with self.assertRaises(PermissionError):
+        with self.assertRaises(ValueError):
             self.test_server.provider = SourceObject("openai")
         self.test_server.trigger_modeling_updates = False
 
