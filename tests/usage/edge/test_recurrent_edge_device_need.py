@@ -118,58 +118,6 @@ class TestRecurrentEdgeDeviceNeed(TestCase):
         self.assertIn(mock_pattern_2, patterns)
         self.assertIn(mock_pattern_3, patterns)
 
-    def test_update_component_needs_edge_device_validation_all_components_valid(self):
-        """Test validation passes when all component needs belong to the same device."""
-        mock_component_1 = MagicMock(spec=EdgeComponent)
-        mock_component_1.name = "Component 1"
-        mock_component_1.edge_device = self.mock_edge_device
-
-        mock_component_2 = MagicMock(spec=EdgeComponent)
-        mock_component_2.name = "Component 2"
-        mock_component_2.edge_device = self.mock_edge_device
-
-        self.mock_component_need_1.edge_component = mock_component_1
-        self.mock_component_need_2.edge_component = mock_component_2
-
-        self.device_need.update_component_needs_edge_device_validation()
-
-    def test_update_component_needs_edge_device_validation_component_device_is_none(self):
-        """Test validation passes when component's edge_device is None."""
-        mock_component = MagicMock(spec=EdgeComponent)
-        mock_component.name = "Component"
-        mock_component.edge_device = None
-
-        self.mock_component_need_1.edge_component = mock_component
-        self.mock_component_need_2.edge_component = mock_component
-
-        self.device_need.update_component_needs_edge_device_validation()
-
-    def test_update_component_needs_edge_device_validation_mismatched_device(self):
-        """Test validation raises error when component belongs to different device."""
-        mock_other_device = MagicMock(spec=EdgeDevice)
-        mock_other_device.name = "Other Device"
-
-        mock_component = MagicMock(spec=EdgeComponent)
-        mock_component.name = "Component 1"
-        mock_component.edge_device = mock_other_device
-
-        self.mock_component_need_1.edge_component = mock_component
-
-        mock_component_2 = MagicMock(spec=EdgeComponent)
-        mock_component_2.name = "Component 2"
-        mock_component_2.edge_device = self.mock_edge_device
-        self.mock_component_need_2.edge_component = mock_component_2
-
-        with self.assertRaises(ValueError) as context:
-            self.device_need.update_component_needs_edge_device_validation()
-
-        error_message = str(context.exception)
-        self.assertIn("Component Need 1", error_message)
-        self.assertIn("Component 1", error_message)
-        self.assertIn("Other Device", error_message)
-        self.assertIn("test device need", error_message)
-        self.assertIn("Mock Device", error_message)
-
 
 if __name__ == "__main__":
     unittest.main()

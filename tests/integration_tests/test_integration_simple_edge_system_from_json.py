@@ -10,8 +10,8 @@ from tests.integration_tests.integration_simple_edge_system_base_class import In
 class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        (system, edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey,
-         edge_usage_pattern, start_date) = cls.generate_simple_edge_system()
+        (system, edge_storage, edge_computer, edge_process, edge_device, edge_device_need,
+         ram_component, cpu_component, edge_function, edge_usage_journey, edge_usage_pattern, start_date) = cls.generate_simple_edge_system()
 
         cls.system_json_filepath = "simple_edge_system_with_calculated_attributes.json"
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
@@ -19,13 +19,17 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
             system_dict = json.load(file)
         class_obj_dict, flat_obj_dict = json_to_system(system_dict)
 
-        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function, cls.edge_usage_journey,
+        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_device, cls.edge_device_need,
+         cls.ram_component, cls.cpu_component, cls.edge_function, cls.edge_usage_journey,
          cls.edge_usage_pattern, cls.start_date) = \
              (flat_obj_dict[system.id], flat_obj_dict[edge_storage.id], flat_obj_dict[edge_computer.id],
-              flat_obj_dict[edge_process.id], flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id],
+              flat_obj_dict[edge_process.id], flat_obj_dict[edge_device.id], flat_obj_dict[edge_device_need.id],
+              flat_obj_dict[ram_component.id], flat_obj_dict[cpu_component.id],
+              flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id],
               flat_obj_dict[edge_usage_pattern.id], start_date)
 
-        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer)
+        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer, cls.edge_device,
+                                   cls.ram_component, cls.cpu_component)
 
         cls.ref_json_filename = "simple_edge_system"
 
@@ -77,6 +81,12 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
         self.run_test_update_edge_usage_pattern_hourly_starts()
 
     # OBJECT LINKS UPDATES TESTING
+
+    def test_update_edge_device_in_edge_device_need_raises_error(self):
+        self.run_test_update_edge_device_in_edge_device_need_raises_error()
+
+    def test_update_edge_component_in_component_need_raises_error(self):
+        self.run_test_update_edge_component_in_component_need_raises_error()
 
     def test_update_edge_process(self):
         self.run_test_update_edge_process()

@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import numpy as np
 
@@ -367,6 +367,69 @@ class TestEdgeDevice(TestCase):
         result = self.edge_device.instances_fabrication_footprint
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
         self.assertIn("Test Device", result.label)
+
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_component_needs_edge_device_validation_all_components_valid(
+            self, mock_recurrent_edge_component_needs):
+        """Test validation passes when all component needs belong to the same device."""
+        mock_component_1 = MagicMock(spec=EdgeComponent)
+        mock_component_1.name = "Component 1"
+        mock_component_1.edge_device = self.edge_device
+
+        mock_component_2 = MagicMock(spec=EdgeComponent)
+        mock_component_2.name = "Component 2"
+        mock_component_2.edge_device = self.edge_device
+
+        mock_component_need_1 = MagicMock()
+        mock_component_need_2 = MagicMock()
+        mock_component_need_1.edge_component = mock_component_1
+        mock_component_need_2.edge_component = mock_component_2
+        mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
+
+        self.edge_device.update_component_needs_edge_device_validation()
+
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_component_needs_edge_device_validation_component_device_is_none(
+            self, mock_recurrent_edge_component_needs):
+        """Test validation passes when component's edge_device is None."""
+        mock_component = MagicMock(spec=EdgeComponent)
+        mock_component.name = "Component"
+        mock_component.edge_device = None
+
+        mock_component_need_1 = MagicMock()
+        mock_component_need_2 = MagicMock()
+        mock_component_need_1.edge_component = mock_component
+        mock_component_need_2.edge_component = mock_component
+        mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
+
+        self.edge_device.update_component_needs_edge_device_validation()
+
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_component_needs_edge_device_validation_mismatched_device(self, mock_recurrent_edge_component_needs):
+        """Test validation raises error when component belongs to different device."""
+        mock_component_need_1 = MagicMock()
+        mock_component_need_2 = MagicMock()
+
+        mock_other_device = MagicMock(spec=EdgeDevice)
+        mock_other_device.name = "Other Device"
+        mock_other_device.id = "other_device_id"
+        mock_component = MagicMock(spec=EdgeComponent)
+        mock_component.name = "Component 1"
+        mock_component.edge_device = mock_other_device
+        mock_component_need_1.edge_component = mock_component
+
+        mock_component_2 = MagicMock(spec=EdgeComponent)
+        mock_component_2.name = "Component 2"
+        mock_component_2.edge_device = self.edge_device
+        mock_component_need_2.edge_component = mock_component_2
+
+        mock_recurrent_edge_component_needs.return_value = [mock_component_need_1, mock_component_need_2]
+
+        with self.assertRaises(ValueError) as context:
+            self.edge_device.update_component_needs_edge_device_validation()
 
 
 if __name__ == "__main__":

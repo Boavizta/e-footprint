@@ -38,7 +38,7 @@ class EdgeRAMComponent(EdgeComponent):
 
     def expected_need_units(self) -> List:
         """RAM components accept memory units."""
-        return [u.GB_ram, u.B_ram, u.MB_ram, u.TB_ram]
+        return [u.B_ram, u.kB_ram, u.MB_ram, u.GB_ram, u.TB_ram]
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram))

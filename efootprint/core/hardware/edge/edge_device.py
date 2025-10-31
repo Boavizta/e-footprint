@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_function import EdgeFunction
+    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
 
 class EdgeDevice(ModelingObject):
@@ -29,6 +30,7 @@ class EdgeDevice(ModelingObject):
             f"Structure fabrication carbon footprint of {self.name}")
         self.components = components
 
+        self.component_needs_edge_device_validation = EmptyExplainableObject()
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -42,13 +44,18 @@ class EdgeDevice(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["instances_fabrication_footprint_per_usage_pattern",
+        return ["component_needs_edge_device_validation",
+                "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
         return self.modeling_obj_containers
+
+    @property
+    def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
+        return list(set(sum([need.recurrent_edge_component_needs for need in self.recurrent_needs], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
@@ -61,6 +68,19 @@ class EdgeDevice(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
+
+    def update_component_needs_edge_device_validation(self):
+        """Validate that all component needs point to components of this edge_device."""
+        for component_need in self.recurrent_edge_component_needs:
+            component_device = component_need.edge_component.edge_device
+            if component_device is not None and component_device != self:
+                raise ValueError(
+                    f"RecurrentEdgeComponentNeed '{component_need.name}' points to component "
+                    f"'{component_need.edge_component.name}' belonging to EdgeDevice '{component_device.name}', "
+                    f"but RecurrentEdgeDeviceNeed '{self.name}' is linked to EdgeDevice '{self.name}'. "
+                    f"All component needs must belong to the same edge device.")
+
+        self.component_needs_edge_device_validation = EmptyExplainableObject()
 
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
@@ -116,21 +136,18 @@ class EdgeDevice(ModelingObject):
 
     def update_instances_energy(self):
         instances_energy = sum(
-            self.instances_energy_per_usage_pattern.values(), start=EmptyExplainableObject()
-        )
+            self.instances_energy_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_energy = instances_energy.set_label(
             f"{self.name} total energy consumed across usage patterns")
 
     def update_energy_footprint(self):
         energy_footprint = sum(
-            self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
-        )
+            self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             f"{self.name} total energy footprint across usage patterns")
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = sum(
-            self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
-        )
+            self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"{self.name} total fabrication footprint across usage patterns")

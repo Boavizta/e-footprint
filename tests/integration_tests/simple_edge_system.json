@@ -37,7 +37,7 @@
                 "Default-edge-function"
             ],
             "usage_span": {
-                "value": 6.0,
+                "value": 5.0,
                 "unit": "year",
                 "label": "Usage span of Default edge usage journey from e-footprint hypothesis",
                 "source": {
@@ -52,7 +52,8 @@
             "name": "Default edge function",
             "id": "Default-edge-function",
             "recurrent_edge_device_needs": [
-                "Default-edge-process"
+                "Default-edge-process",
+                "custom-edge-device-need"
             ]
         }
     },
@@ -306,6 +307,195 @@
             "name": "Default edge process storage need",
             "id": "Default-edge-process-storage-need",
             "edge_component": "Edge-SSD-storage"
+        }
+    },
+    "RecurrentEdgeDeviceNeed": {
+        "custom-edge-device-need": {
+            "name": "custom edge device need",
+            "id": "custom-edge-device-need",
+            "edge_device": "custom-edge-device",
+            "recurrent_edge_component_needs": [
+                "RAM-need",
+                "CPU-need"
+            ]
+        }
+    },
+    "EdgeDevice": {
+        "custom-edge-device": {
+            "name": "custom edge device",
+            "id": "custom-edge-device",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan of custom edge device from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "structure_carbon_footprint_fabrication": {
+                "value": 50.0,
+                "unit": "kilogram",
+                "label": "Structure fabrication carbon footprint of custom edge device from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "components": [
+                "edge-RAM-component",
+                "edge-CPU-component"
+            ]
+        }
+    },
+    "EdgeRAMComponent": {
+        "edge-RAM-component": {
+            "name": "edge RAM component",
+            "id": "edge-RAM-component",
+            "carbon_footprint_fabrication": {
+                "value": 20.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power": {
+                "value": 10.0,
+                "unit": "watt",
+                "label": "Power of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "value": 2.0,
+                "unit": "watt",
+                "label": "Idle power of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram": {
+                "value": 8.0,
+                "unit": "gigabyte_ram",
+                "label": "RAM of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "value": 1.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "EdgeCPUComponent": {
+        "edge-CPU-component": {
+            "name": "edge CPU component",
+            "id": "edge-CPU-component",
+            "carbon_footprint_fabrication": {
+                "value": 20.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power": {
+                "value": 15.0,
+                "unit": "watt",
+                "label": "Power of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "value": 3.0,
+                "unit": "watt",
+                "label": "Idle power of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute": {
+                "value": 4.0,
+                "unit": "cpu_core",
+                "label": "Compute of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "Base compute consumption of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "RecurrentEdgeComponentNeed": {
+        "RAM-need": {
+            "name": "RAM need",
+            "id": "RAM-need",
+            "edge_component": "edge-RAM-component",
+            "recurrent_need": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "gigabyte_ram",
+                "label": "RAM need recurrent need from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        },
+        "CPU-need": {
+            "name": "CPU need",
+            "id": "CPU-need",
+            "edge_component": "edge-CPU-component",
+            "recurrent_need": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "cpu_core",
+                "label": "CPU need recurrent need from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
         }
     },
     "Country": {

@@ -41,6 +41,12 @@ class IntegrationTestSimpleEdgeSystem(IntegrationTestSimpleEdgeSystemBaseClass):
 
     # OBJECT LINKS UPDATES TESTING
 
+    def test_update_edge_device_in_edge_device_need_raises_error(self):
+        self.run_test_update_edge_device_in_edge_device_need_raises_error()
+
+    def test_update_edge_component_in_component_need_raises_error(self):
+        self.run_test_update_edge_component_in_component_need_raises_error()
+
     def test_update_edge_process(self):
         self.run_test_update_edge_process()
 

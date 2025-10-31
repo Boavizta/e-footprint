@@ -27,7 +27,6 @@ class ModelingUpdate:
             self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None,
             compute_previous_system_footprints=True):
         start = time()
-        self.updated_values_set = False
         self.system = None
         for change in changes_list:
             changed_val = change[0]
@@ -76,18 +75,19 @@ class ModelingUpdate:
             mod_obj_container.check_belonging_to_authorized_values(
                 new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
                 mod_obj_container.attributes_with_depending_values())
-        self.recomputed_values = self.recompute_attributes()
+        self.recomputed_values = []
         self.updated_values_set = True
+        try:
+            self.recompute_attributes()
+        except Exception as e:
+            logger.error("An error occurred during attribute recomputation. Resetting to previous values.")
+            self.reset_values()
+            e.args = (f"Error occurred while computing changes. All changes have been reset."
+                      f"\nOriginal error:\n {e}",) + e.args[1:]
+            raise e
 
         if self.simulation_date is not None:
             self.link_simulated_and_baseline_twins()
-
-        self.previous_and_new_objects_organized_in_sections = [
-            ["direct changes", [change[0] for change in self.changes_list], [change[1] for change in self.changes_list]],
-            ["filtered hourly quantities", self.hourly_quantities_to_filter, self.filtered_hourly_quantities],
-            ["replaced ancestors copies", self.ancestors_to_replace_by_copies, self.replaced_ancestors_copies],
-            ["recomputed values", self.values_to_recompute, self.recomputed_values]
-        ]
 
         if simulation_date is not None:
             self.reset_values()
@@ -96,6 +96,15 @@ class ModelingUpdate:
             if self.values_to_recompute else 0
         logger.info(f"{len(self.changes_list)} changes lead to {len(self.values_to_recompute)} update computations "
                     f"done in {compute_time_ms} ms (avg {avg_compute_time_per_value} ms per computation).")
+
+    @property
+    def previous_and_new_objects_organized_in_sections(self):
+        return [
+            ["direct changes", [change[0] for change in self.changes_list], [change[1] for change in self.changes_list]],
+            ["filtered hourly quantities", self.hourly_quantities_to_filter, self.filtered_hourly_quantities],
+            ["replaced ancestors copies", self.ancestors_to_replace_by_copies, self.replaced_ancestors_copies],
+            ["recomputed values", self.values_to_recompute, self.recomputed_values]
+        ]
 
     def parse_changes_list(self):
         indexes_to_skip = []
@@ -175,7 +184,6 @@ class ModelingUpdate:
         self.filter_hourly_quantities_to_filter()
 
     def recompute_attributes(self):
-        recomputed_values = []
         for value_to_recompute in self.values_to_recompute:
             attr_name_in_mod_obj_container = value_to_recompute.attr_name_in_mod_obj_container
             modeling_obj_container = value_to_recompute.modeling_obj_container
@@ -191,9 +199,7 @@ class ModelingUpdate:
                              f"with key {key_in_dict.id}")
                 value_to_recompute.update_function(key_in_dict)
                 recomputed_value = getattr(modeling_obj_container, attr_name_in_mod_obj_container)[key_in_dict]
-            recomputed_values.append(recomputed_value)
-
-        return recomputed_values
+            self.recomputed_values.append(recomputed_value)
 
     @property
     def old_sourcevalues(self):

@@ -16,6 +16,11 @@ from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeP
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
+from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
@@ -66,15 +71,38 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
+        # Create custom edge device with components
+        ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
+        cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
+
+        edge_device = EdgeDevice.from_defaults("custom edge device", components=[ram_component, cpu_component])
+
+        ram_need = RecurrentEdgeComponentNeed(
+            "RAM need",
+            edge_component=ram_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram))
+        )
+        cpu_need = RecurrentEdgeComponentNeed(
+            "CPU need",
+            edge_component=cpu_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core))
+        )
+
+        edge_device_need = RecurrentEdgeDeviceNeed(
+            "custom edge device need",
+            edge_device=edge_device,
+            recurrent_edge_component_needs=[ram_need, cpu_need]
+        )
+
         edge_function = EdgeFunction(
             "Default edge function",
-            recurrent_edge_device_needs=[edge_process]
+            recurrent_edge_device_needs=[edge_process, edge_device_need]
         )
 
         edge_usage_journey = EdgeUsageJourney(
             "Default edge usage journey",
             edge_functions=[edge_function],
-            usage_span=SourceValue(6 * u.year)
+            usage_span=SourceValue(5 * u.year)
         )
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
@@ -97,21 +125,27 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         for edge_computer_component in edge_computer.components:
             edge_computer_component.id = css_escape(edge_computer_component.name)
 
-        return (system, edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey,
-                edge_usage_pattern, start_date)
+        return (system, edge_storage, edge_computer, edge_process, edge_device, edge_device_need,
+                ram_component, cpu_component, edge_function, edge_usage_journey, edge_usage_pattern, start_date)
 
     @classmethod
-    def initialize_footprints(cls, system, edge_storage, edge_computer):
+    def initialize_footprints(cls, system, edge_storage, edge_computer, edge_device, ram_component, cpu_component):
         cls.initial_footprint = system.total_footprint
 
         cls.initial_fab_footprints = {
             edge_storage: edge_storage.instances_fabrication_footprint,
             edge_computer: edge_computer.instances_fabrication_footprint,
+            edge_device: edge_device.instances_fabrication_footprint,
+            ram_component: ram_component.instances_fabrication_footprint,
+            cpu_component: cpu_component.instances_fabrication_footprint,
         }
 
         cls.initial_energy_footprints = {
             edge_storage: edge_storage.energy_footprint,
             edge_computer: edge_computer.energy_footprint,
+            edge_device: edge_device.energy_footprint,
+            ram_component: ram_component.energy_footprint,
+            cpu_component: cpu_component.energy_footprint,
         }
 
         cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
@@ -119,10 +153,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function,
-         cls.edge_usage_journey, cls.edge_usage_pattern, cls.start_date) = cls.generate_simple_edge_system()
+        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_device, cls.edge_device_need,
+         cls.ram_component, cls.cpu_component, cls.edge_function, cls.edge_usage_journey, cls.edge_usage_pattern,
+         cls.start_date) = cls.generate_simple_edge_system()
 
-        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer)
+        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer, cls.edge_device,
+                                   cls.ram_component, cls.cpu_component)
 
         cls.ref_json_filename = "simple_edge_system"
 
@@ -141,9 +177,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_all_objects_linked_to_system(self):
         expected_objects = [
-            self.edge_storage, self.edge_computer, self.edge_process, self.edge_function,
-            self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
-        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs
+            self.edge_storage, self.edge_computer, self.edge_process, self.edge_device, self.edge_device_need,
+            self.edge_function, self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
+        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs + self.edge_device.components + self.edge_device_need.recurrent_edge_component_needs
         self.assertEqual(set(expected_objects), set(self.system.all_linked_objects))
 
     def run_test_calculation_graph(self):
@@ -164,14 +200,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     # INPUT VARIATION TESTING
 
     def _run_test_variations_on_edge_inputs_from_object_list(
-            self, edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system):
+            self, edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system,
+            edge_device_need, edge_device):
         # Test edge object variations
         self._test_variations_on_obj_inputs(
             edge_computer,
-            # fraction_of_usage_time is an Hardware parameter not used in EdgeComputer
             # ram and base_ram_consumption only matter to raise InsufficientCapacityError
             # and this behavior is already unit tested.
-            attrs_to_skip=["fraction_of_usage_time", "ram", "base_ram_consumption"],
+            attrs_to_skip=["component_needs_edge_device_validation", "ram", "base_ram_consumption"],
             special_mult={"base_compute_consumption": 10}
         )
         self._test_variations_on_obj_inputs(
@@ -184,11 +220,18 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(edge_usage_journey, special_mult={"usage_span": 1.1})
         self._test_variations_on_obj_inputs(
             edge_usage_pattern, attrs_to_skip=["hourly_edge_usage_journey_starts"])
+        for component_need in edge_device_need.recurrent_edge_component_needs:
+            self._test_variations_on_obj_inputs(
+                component_need, attrs_to_skip=[], special_mult={"recurrent_need": 2})
+        self._test_variations_on_obj_inputs(edge_device)
+        for component in edge_device.components:
+            self._test_variations_on_obj_inputs(component, attrs_to_skip=[], special_mult={
+                "base_ram_consumption": 2, "base_compute_consumption": 2})
 
     def run_test_variations_on_inputs(self):
         self._run_test_variations_on_edge_inputs_from_object_list(
             self.edge_computer, self.edge_storage, self.edge_process, self.edge_usage_journey,
-            self.edge_usage_pattern, self.system)
+            self.edge_usage_pattern, self.system, self.edge_device_need, self.edge_device)
 
     def run_test_variations_on_inputs_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
@@ -201,9 +244,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_process = next(iter(class_obj_dict.get("RecurrentEdgeProcess", {}).values()))
         edge_usage_journey = next(iter(class_obj_dict.get("EdgeUsageJourney", {}).values()))
         edge_usage_pattern = next(iter(class_obj_dict.get("EdgeUsagePattern", {}).values()))
+        edge_device_need = next(iter(class_obj_dict.get("RecurrentEdgeDeviceNeed", {}).values()))
+        edge_device = next(iter(class_obj_dict.get("EdgeDevice", {}).values()))
 
         self._run_test_variations_on_edge_inputs_from_object_list(
-            edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system)
+            edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system,
+            edge_device_need, edge_device)
 
     def run_test_update_edge_usage_pattern_hourly_starts(self):
         logger.warning("Updating edge usage pattern hourly starts")
@@ -217,12 +263,44 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     # OBJECT LINKS UPDATES TESTING
 
+    def run_test_update_edge_device_in_edge_device_need_raises_error(self):
+        logger.warning("Attempting to change edge_device in edge_device_need")
+        new_edge_device = EdgeDevice(
+            "new custom edge device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[],
+            lifespan=SourceValue(6 * u.year)
+        )
+        with self.assertRaises(ValueError):
+            self.edge_device_need.edge_device = new_edge_device
+
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertNotEqual(self.edge_device_need.edge_device, new_edge_device)
+
+    def run_test_update_edge_component_in_component_need_raises_error(self):
+        logger.warning("Attempting to change edge_component in component_need to component from different device")
+        new_ram_component = EdgeRAMComponent.from_defaults("new RAM component")
+        new_edge_device = EdgeDevice(
+            "another custom edge device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[new_ram_component],
+            lifespan=SourceValue(6 * u.year)
+        )
+        ram_need = self.edge_device_need.recurrent_edge_component_needs[0]
+        with self.assertRaises(ValueError):
+            ram_need.edge_component = new_ram_component
+
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertNotIn(new_ram_component, self.system.all_linked_objects)
+        self.assertNotEqual(new_ram_component, ram_need.edge_component)
+
     def run_test_update_edge_process(self):
         logger.warning("Changing edge resource needs in edge function")
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.edge_function.recurrent_edge_device_needs = []
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         logger.warning("Putting back initial edge processes")
-        self.edge_function.recurrent_edge_device_needs = [self.edge_process]
+        self.edge_function.recurrent_edge_device_needs = [self.edge_process, self.edge_device_need]
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_edge_storage(self):
@@ -334,7 +412,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_changed([self.edge_computer, self.edge_storage], system=self.system)
 
         logger.warning("Changing back to previous edge processes")
-        self.edge_function.recurrent_edge_device_needs = [self.edge_process]
+        self.edge_function.recurrent_edge_device_needs = [self.edge_process, self.edge_device_need]
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
@@ -378,13 +456,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         new_edge_function = EdgeFunction(
             "New edge function",
-            recurrent_edge_device_needs=[new_edge_process]
+            recurrent_edge_device_needs=[new_edge_process, self.edge_device_need]
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
             "New edge usage journey",
             edge_functions=[new_edge_function],
-            usage_span=SourceValue(6 * u.year)
+            usage_span=SourceValue(5 * u.year)
         )
         self.edge_usage_pattern.edge_usage_journey = new_edge_usage_journey
         
@@ -417,7 +495,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_journey = EdgeUsageJourney(
             "additional edge usage journey",
             edge_functions=[new_edge_function],
-            usage_span=SourceValue(6 * u.year)
+            usage_span=SourceValue(5 * u.year)
         )
 
         new_edge_usage_pattern = EdgeUsagePattern(
@@ -509,15 +587,37 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
                 Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
         )
 
+        ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
+        cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
+
+        edge_device = EdgeDevice.from_defaults("custom edge device", components=[ram_component, cpu_component])
+
+        ram_need = RecurrentEdgeComponentNeed(
+            "RAM need",
+            edge_component=ram_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram))
+        )
+        cpu_need = RecurrentEdgeComponentNeed(
+            "CPU need",
+            edge_component=cpu_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core))
+        )
+
+        edge_device_need = RecurrentEdgeDeviceNeed(
+            "custom edge device need",
+            edge_device=edge_device,
+            recurrent_edge_component_needs=[ram_need, cpu_need]
+        )
+
         new_edge_function = EdgeFunction(
             "New edge function",
-            recurrent_edge_device_needs=[new_edge_process]
+            recurrent_edge_device_needs=[new_edge_process, edge_device_need]
         )
 
         new_edge_usage_journey = EdgeUsageJourney(
             "New edge usage journey",
             edge_functions=[new_edge_function],
-            usage_span=SourceValue(6 * u.year)
+            usage_span=SourceValue(5 * u.year)
         )
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -661,7 +761,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_journey = EdgeUsageJourney(
             "Second edge usage journey",
             edge_functions=[new_edge_function],
-            usage_span=SourceValue(6 * u.year)
+            usage_span=SourceValue(5 * u.year)
         )
 
         new_edge_usage_pattern = EdgeUsagePattern(

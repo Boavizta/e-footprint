@@ -59,13 +59,28 @@ class EdgeComponent(ModelingObject):
         output = None
         for container in self.modeling_obj_containers:
             if isinstance(container, EdgeDevice):
+                if output is not None and container != output:
+                    raise PermissionError(
+                        f"EdgeComponent object can only be associated with one EdgeDevice object but {self.name} "
+                        f"is associated "
+                        f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers 
+                                 if isinstance(mod_obj, EdgeDevice)]}.")
                 output = container
-                break
+
         return output
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
+
+    @abstractmethod
+    def expected_need_units(self) -> List:
+        """Return list of acceptable pint units for RecurrentEdgeComponentNeed objects linked to this component."""
+        pass
+
+    @abstractmethod
+    def update_unitary_power_per_usage_pattern(self):
+        pass
 
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
@@ -132,12 +147,3 @@ class EdgeComponent(ModelingObject):
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             f"{self.name} total energy footprint across usage patterns")
-
-    @abstractmethod
-    def expected_need_units(self) -> List:
-        """Return list of acceptable pint units for RecurrentEdgeComponentNeed objects linked to this component."""
-        pass
-
-    @abstractmethod
-    def update_unitary_power_per_usage_pattern(self):
-        pass

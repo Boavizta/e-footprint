@@ -25,6 +25,9 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
         return ["recurrent_need"] + super().calculated_attributes
 
     def update_recurrent_need(self):
+        if not self.recurrent_edge_device_needs:
+            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent))
+            return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_workload.copy().set_label(
             f"{self.name} recurrent need")
