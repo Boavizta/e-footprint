@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_711ddf {
+             #mynetwork_4ae3ec {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_711ddf" class="card-body"></div>
+            <div id="mynetwork_4ae3ec" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_711ddf');
+                  var container = document.getElementById('mynetwork_4ae3ec');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent * h * occurrence * W:\nfirst 10 vals [-27.88, -59.73, -37.17, -43.8, -51.77, -58.41, -58.41, -33.19,\n17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent * g * h * occurrence * W / kWh:\nfirst 10 vals [-2369.42, -5077.33, -3159.23, -3723.38, -4400.36, -4964.5,\n-4964.5, -2820.74, 1.4865302e+06, 2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by edge appliance instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nappliance instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge appliance instances for Default edge usage\npattern\n=\nNumber of edge appliance instances for Default edge usage pattern * edge\nappliance unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [-1.59, -3.41, -2.12, -2.5, -2.96, -3.34, -3.34, -1.9, 999.35,\n1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in occurrence * W:\nfirst 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5],\nlast 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5] * 1.0\nhour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent * h * occurrence * W:\nfirst 10 vals [-27.88, -59.73, -37.17, -43.8, -51.77, -58.41, -58.41, -33.19,\n17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44]", "x": -112.5, "y": 1050}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 112.5, "y": 1050}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge appliance instances for Default edge usage pattern", "to": "edge appliance energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "edge appliance energy footprint for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [-2369.42, -5077.33, -3159.23, -3723.38, -4400.36, -4964.5,\n-4964.5, -2820.74, 1.4865302e+06, 2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [-2369.42, -5077.33, -3159.23, -3723.38, -4400.36, -4964.5,\n-4964.5, -2820.74, 1.4865302e+06, 2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge appliance appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nappliance energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [-27.88, -59.73, -37.17, -43.8, -51.77, -58.41, -58.41, -33.19,\n17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [-2369.42, -5077.33, -3159.23, -3723.38, -4400.36, -4964.5,\n-4964.5, -2820.74, 1.4865302e+06, 2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge appliance appliance energy footprint for Default edge usage pattern", "to": "edge appliance energy footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
