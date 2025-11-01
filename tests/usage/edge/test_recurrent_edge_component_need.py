@@ -188,16 +188,49 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
     def test_update_validated_recurrent_need_valid_unit(self):
         """Test update_validated_recurrent_need with valid unit."""
-        self.mock_edge_component.expected_need_units.return_value = [u.cpu_core]
+        self.mock_edge_component.compatible_root_units = [u.cpu_core]
 
         self.component_need.update_validated_recurrent_need()
 
         self.assertEqual("Validated recurrent need of test component need",
                         self.component_need.validated_recurrent_need.label)
 
+    def test_unit_validation_works_with_different_power_of_ten(self):
+        self.mock_edge_component = MagicMock(spec=EdgeComponent)
+        self.mock_edge_component.name = "Mock Component"
+        self.mock_edge_component.compatible_root_units = [u.bit_ram]
+
+        self.recurrent_need = ExplainableRecurrentQuantities(
+            np.array([0.5] * 168, dtype=np.float32) * u.GB_ram, "test recurrent need")
+
+        self.component_need = RecurrentEdgeComponentNeed(
+            "test component need",
+            edge_component=self.mock_edge_component,
+            recurrent_need=self.recurrent_need
+        )
+
+        self.component_need.update_validated_recurrent_need()
+
+    def test_unit_validation_raises_error_if_different_semantics_but_same_dimension(self):
+        self.mock_edge_component = MagicMock(spec=EdgeComponent)
+        self.mock_edge_component.name = "Mock Component"
+        self.mock_edge_component.compatible_root_units = [u.bit_ram]
+
+        self.recurrent_need = ExplainableRecurrentQuantities(
+            np.array([0.5] * 168, dtype=np.float32) * u.GB, "test recurrent need")
+
+        self.component_need = RecurrentEdgeComponentNeed(
+            "test component need",
+            edge_component=self.mock_edge_component,
+            recurrent_need=self.recurrent_need
+        )
+
+        with self.assertRaises(InvalidComponentNeedUnitError) as context:
+            self.component_need.update_validated_recurrent_need()
+
     def test_update_validated_recurrent_need_invalid_unit(self):
         """Test update_validated_recurrent_need raises error for invalid unit."""
-        self.mock_edge_component.expected_need_units.return_value = [u.GB]
+        self.mock_edge_component.compatible_root_units = [u.GB]
 
         with self.assertRaises(InvalidComponentNeedUnitError) as context:
             self.component_need.update_validated_recurrent_need()
@@ -207,7 +240,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
     def test_update_validated_recurrent_need_workload_validation(self):
         """Test update_validated_recurrent_need validates workload range for concurrent units."""
-        self.mock_edge_component.expected_need_units.return_value = [u.concurrent]
+        self.mock_edge_component.compatible_root_units = [u.concurrent]
 
         valid_workload = ExplainableRecurrentQuantities(
             np.array([0.5] * 168, dtype=np.float32) * u.concurrent, "valid workload")
@@ -222,7 +255,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
     def test_update_validated_recurrent_need_workload_out_of_bounds(self):
         """Test update_validated_recurrent_need raises error for out-of-bounds workload."""
-        self.mock_edge_component.expected_need_units.return_value = [u.concurrent]
+        self.mock_edge_component.compatible_root_units = [u.concurrent]
 
         invalid_workload = ExplainableRecurrentQuantities(
             np.array([1.5] * 168, dtype=np.float32) * u.concurrent, "invalid workload")

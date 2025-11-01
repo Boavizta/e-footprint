@@ -19,7 +19,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         """Set up test fixtures."""
         self.mock_storage = MagicMock(spec=EdgeStorage)
         self.mock_storage.name = "Mock Storage"
-        self.mock_storage.expected_need_units.return_value = [u.GB, u.TB, u.B, u.MB, u.kB]
+        self.mock_storage.compatible_root_units = [u.bit]
         self.mock_storage.edge_device = None
 
         self.recurrent_storage_needed = SourceRecurrentValues(

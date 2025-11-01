@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.0.0] - 2025-11-01
+
+### Added
+- The base structure for edge devices is now to be composed of EdgeComponent objects. This complexifies in turn the structure of RecurrentEdgeDeviceNeeds, which now have a list of RecurrentEdgeComponentNeed objects as attribute. This allows for very precise modelings where processes run on specific components of edge devices (for example, a performance vs efficiency CPU, a network card, a GPU, etc.). To keep retrocompatibility with previous logic, EdgeComputer and EdgeAppliance are now builder classes, that create the required EdgeComponent objects in the background. In the same way, RecurrentEdgeProcess and RecurrentEdgeWorkload are now builder classes that create the required RecurrentEdgeComponentNeed objects in the background.
+- ModelingObjects can now specify object relationships entanglements through the attribute_update_entanglements property. This is used notably in the RecurrentEdgeProcess object, so that when its edge_device attribute is updated, all RecurrentEdgeComponentNeed objects linked to the RecurrentEdgeProcess are also updated to link to the new EdgeComponent objects of the new EdgeComputer.
+
+### Changed
+- If there is an error during the processing of a ModelingUpdate, all changes are reverted before raising the error. This ensures that the model remains in a consistent state even if an error occurs during a batch of changes.
+
 ## [13.0.1] - 2025-10-27
 
 ### Fixed

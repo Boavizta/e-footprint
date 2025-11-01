@@ -34,12 +34,6 @@ class TestEdgeRAMComponent(TestCase):
         self.assertEqual(16 * u.GB_ram, self.ram_component.ram.value)
         self.assertEqual(2 * u.GB_ram, self.ram_component.base_ram_consumption.value)
 
-    def test_expected_need_units(self):
-        """Test expected_need_units returns correct units."""
-        expected_units = self.ram_component.expected_need_units()
-        self.assertIn(u.GB_ram, expected_units)
-        self.assertIn(u.MB_ram, expected_units)
-
     def test_update_available_ram_per_instance(self):
         """Test update_available_ram_per_instance calculation."""
         self.ram_component.update_available_ram_per_instance()

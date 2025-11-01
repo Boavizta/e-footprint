@@ -19,7 +19,7 @@ class TestRecurrentEdgeWorkload(TestCase):
         """Set up test fixtures."""
         self.mock_appliance_component = MagicMock(spec=EdgeWorkloadComponent)
         self.mock_appliance_component.name = "Mock Appliance Component"
-        self.mock_appliance_component.expected_need_units.return_value = [u.concurrent, u.dimensionless]
+        self.mock_appliance_component.compatible_root_units = [u.concurrent]
         self.mock_appliance_component.edge_device = None
 
         self.mock_edge_device = MagicMock(spec=EdgeAppliance)

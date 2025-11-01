@@ -16,6 +16,12 @@ if TYPE_CHECKING:
 class EdgeComponent(ModelingObject):
     @classmethod
     @abstractmethod
+    def compatible_root_units(self) -> List["str"]:
+        """Return list of acceptable pint units for RecurrentEdgeComponentNeed objects linked to this component."""
+        pass
+
+    @classmethod
+    @abstractmethod
     def default_values(cls):
         pass
 
@@ -72,11 +78,6 @@ class EdgeComponent(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
-
-    @abstractmethod
-    def expected_need_units(self) -> List:
-        """Return list of acceptable pint units for RecurrentEdgeComponentNeed objects linked to this component."""
-        pass
 
     @abstractmethod
     def update_unitary_power_per_usage_pattern(self):

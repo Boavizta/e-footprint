@@ -31,6 +31,7 @@ class NegativeCumulativeStorageNeedError(Exception):
 
 
 class EdgeStorage(EdgeComponent):
+    compatible_root_units = [u.bit]
     default_values = {
         "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
         "power_per_storage_capacity": SourceValue(1.3 * u.W / u.TB),
@@ -97,10 +98,6 @@ class EdgeStorage(EdgeComponent):
     def calculated_attributes(self):
         return (["carbon_footprint_fabrication", "power", "unitary_storage_delta_per_usage_pattern",
                  "cumulative_unitary_storage_need_per_usage_pattern"] + super().calculated_attributes)
-
-    def expected_need_units(self) -> List:
-        """Storage components accept storage units."""
-        return [u.GB, u.TB, u.B, u.MB, u.kB]
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (

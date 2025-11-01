@@ -37,11 +37,6 @@ class TestEdgeCPUComponent(TestCase):
         self.assertEqual(8 * u.cpu_core, self.cpu_component.compute.value)
         self.assertEqual(1 * u.cpu_core, self.cpu_component.base_compute_consumption.value)
 
-    def test_expected_need_units(self):
-        """Test expected_need_units returns correct units."""
-        expected_units = self.cpu_component.expected_need_units()
-        self.assertIn(u.cpu_core, expected_units)
-
     def test_update_available_compute_per_instance(self):
         """Test update_available_compute_per_instance calculation."""
         self.cpu_component.update_available_compute_per_instance()

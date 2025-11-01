@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class EdgeCPUComponent(EdgeComponent):
+    compatible_root_units = [u.cpu_core]
     default_values = {
         "carbon_footprint_fabrication": SourceValue(20 * u.kg),
         "power": SourceValue(15 * u.W),
@@ -36,10 +37,6 @@ class EdgeCPUComponent(EdgeComponent):
     def calculated_attributes(self):
         return (["available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
                 + super().calculated_attributes)
-
-    def expected_need_units(self) -> List:
-        """CPU components accept compute units."""
-        return [u.cpu_core]
 
     def update_available_compute_per_instance(self):
         available_compute_per_instance = (self.compute - self.base_compute_consumption)

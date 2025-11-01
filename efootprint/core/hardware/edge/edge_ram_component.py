@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class EdgeRAMComponent(EdgeComponent):
+    compatible_root_units = [u.bit_ram]
     default_values = {
         "carbon_footprint_fabrication": SourceValue(20 * u.kg),
         "power": SourceValue(10 * u.W),
@@ -35,10 +36,6 @@ class EdgeRAMComponent(EdgeComponent):
     @property
     def calculated_attributes(self):
         return ["available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"] + super().calculated_attributes
-
-    def expected_need_units(self) -> List:
-        """RAM components accept memory units."""
-        return [u.B_ram, u.kB_ram, u.MB_ram, u.GB_ram, u.TB_ram]
 
     def update_available_ram_per_instance(self):
         available_ram_per_instance = (self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram))

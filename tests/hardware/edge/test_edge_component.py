@@ -14,16 +14,13 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 
 class ConcreteEdgeComponent(EdgeComponent):
     """Concrete implementation of EdgeComponent for testing."""
-
+    compatible_root_units = [u.cpu_core]
     default_values = {
         "carbon_footprint_fabrication": SourceValue(20 * u.kg),
         "power": SourceValue(50 * u.W),
         "lifespan": SourceValue(5 * u.year),
         "idle_power": SourceValue(10 * u.W),
     }
-
-    def expected_need_units(self):
-        return [u.cpu_core]
 
     def update_unitary_power_per_usage_pattern(self):
         pass

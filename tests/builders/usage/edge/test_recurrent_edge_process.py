@@ -19,17 +19,17 @@ class TestRecurrentEdgeProcess(TestCase):
         """Set up test fixtures."""
         self.mock_ram_component = MagicMock(spec=EdgeRAMComponent)
         self.mock_ram_component.name = "Mock RAM Component"
-        self.mock_ram_component.expected_need_units.return_value = [u.GB_ram, u.byte_ram]
+        self.mock_ram_component.compatible_root_units = [u.bit_ram]
         self.mock_ram_component.edge_device = None
 
         self.mock_cpu_component = MagicMock(spec=EdgeCPUComponent)
         self.mock_cpu_component.name = "Mock CPU Component"
-        self.mock_cpu_component.expected_need_units.return_value = [u.cpu_core]
+        self.mock_cpu_component.compatible_root_units = [u.cpu_core]
         self.mock_cpu_component.edge_device = None
 
         self.mock_storage = MagicMock(spec=EdgeStorage)
         self.mock_storage.name = "Mock Storage"
-        self.mock_storage.expected_need_units.return_value = [u.GB, u.TB, u.B, u.MB, u.kB]
+        self.mock_storage.compatible_root_units = [u.bit_ram]
         self.mock_storage.edge_device = None
 
         self.mock_edge_computer = MagicMock(spec=EdgeComputer)

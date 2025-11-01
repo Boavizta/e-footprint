@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class EdgeWorkloadComponent(EdgeComponent):
+    compatible_root_units = [u.concurrent]
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),
@@ -28,9 +29,6 @@ class EdgeWorkloadComponent(EdgeComponent):
     @property
     def calculated_attributes(self):
         return ["unitary_hourly_workload_per_usage_pattern"] + super().calculated_attributes
-
-    def expected_need_units(self) -> List:
-        return [u.concurrent]
 
     def update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_workload = sum(

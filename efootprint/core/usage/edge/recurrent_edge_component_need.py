@@ -6,6 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_recurrent_quantities impor
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from tests.test_notebooks import root_dir
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_function import EdgeFunction
@@ -82,13 +83,13 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
     def update_validated_recurrent_need(self):
         """Validate that the recurrent_need unit is compatible with the edge_component."""
-        need_unit = self.recurrent_need.value.units
-        expected_units = self.edge_component.expected_need_units()
+        root_need_unit = self.recurrent_need.value.to_root_units().units
+        expected_units = self.edge_component.compatible_root_units
 
-        if not need_unit in expected_units:
-            raise InvalidComponentNeedUnitError(self.edge_component.name, need_unit, expected_units)
+        if not root_need_unit in expected_units:
+            raise InvalidComponentNeedUnitError(self.edge_component.name, root_need_unit, expected_units)
 
-        if expected_units == [u.concurrent]:
+        if expected_units == ["concurrent"]:
             # For dimensionless needs (like workload), ensure values are between 0 and 1
             self.assert_recurrent_workload_is_between_0_and_1(self.recurrent_need, self.name)
 
