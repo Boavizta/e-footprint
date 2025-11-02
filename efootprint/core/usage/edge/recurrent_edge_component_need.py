@@ -6,7 +6,6 @@ from efootprint.abstract_modeling_classes.explainable_recurrent_quantities impor
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
-from tests.test_notebooks import root_dir
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_function import EdgeFunction
