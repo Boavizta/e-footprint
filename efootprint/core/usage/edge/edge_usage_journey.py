@@ -41,10 +41,12 @@ class EdgeUsageJourney(ModelingObject):
         self.compute_calculated_attributes()
 
     def update_usage_span_validation(self):
+        result = self.usage_span.copy().set_label(f"{self.name} usage span validation")
         for edge_device in self.edge_devices:
             if self.usage_span > edge_device.lifespan:
                 raise InsufficientCapacityError(edge_device, "lifespan", edge_device.lifespan, self.usage_span)
-        self.usage_span_validation = self.usage_span.copy().set_label(f"{self.name} usage span validation")
+            result = result.generate_explainable_object_with_logical_dependency(edge_device.lifespan)
+        self.usage_span_validation = result
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:

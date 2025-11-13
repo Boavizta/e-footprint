@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.0.2] - 2025-11-17
+
+### Fixed
+- Manually set calculus graph logical dependencies around InsufficientCapacityError raisings. This prevents errors where capacity checking wasn’t recomputed when an attribute that influences capacity was updated.
+
+### Added
+- to_json method to Source object and storages and cpus properties to EdgeDevice
+
 ## [14.0.1] - 2025-11-01
 
 ### Fixed

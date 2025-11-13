@@ -310,6 +310,40 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server])
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
+    def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
+        """Test that InsufficientCapacityError is raised for server and storage when capacities are exceeded."""
+        from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+
+        # Server RAM capacity check
+        logger.warning("Testing Server available RAM per instance error")
+        original_base_ram_consumption = self.server.base_ram_consumption
+        with self.assertRaises(InsufficientCapacityError):
+            self.server.base_ram_consumption = SourceValue(200 * u.GB_ram)
+        self.server.base_ram_consumption = original_base_ram_consumption
+
+        # Server compute capacity check
+        logger.warning("Testing Server available compute per instance error")
+        original_base_compute_consumption = self.server.base_compute_consumption
+        with self.assertRaises(InsufficientCapacityError):
+            self.server.base_compute_consumption = SourceValue(30 * u.cpu_core)
+        self.server.base_compute_consumption = original_base_compute_consumption
+
+        # Server fixed number of instances vs required instances check
+        logger.warning("Testing Server fixed number of instances error")
+        original_server_fixed_nb_of_instances = self.server.fixed_nb_of_instances
+        with self.assertRaises(InsufficientCapacityError):
+            self.server.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
+        self.server.fixed_nb_of_instances = original_server_fixed_nb_of_instances
+
+        # Storage fixed number of instances vs required instances check
+        logger.warning("Testing Storage fixed number of instances error")
+        original_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
+        with self.assertRaises(InsufficientCapacityError):
+            self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
+        self.storage.fixed_nb_of_instances = original_storage_fixed_nb_of_instances
+
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
     # OBJECT LINKS UPDATES TESTING
 
     def run_test_generate_new_system_with_json_saving_halfway_keeps_calculation_graph_intact(self):

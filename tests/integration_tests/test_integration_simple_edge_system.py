@@ -39,6 +39,9 @@ class IntegrationTestSimpleEdgeSystem(IntegrationTestSimpleEdgeSystemBaseClass):
         self.run_test_update_edge_usage_pattern_hourly_starts()
         self.run_test_update_edge_usage_pattern_hourly_starts()
 
+    def test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
+        self.run_test_make_sure_updating_available_capacity_raises_error_if_necessary()
+
     # OBJECT LINKS UPDATES TESTING
 
     def test_update_edge_device_in_edge_device_need_raises_error(self):

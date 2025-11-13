@@ -53,6 +53,9 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
         self.run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty()
 
+    def test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
+        self.run_test_make_sure_updating_available_capacity_raises_error_if_necessary()
+
     # OBJECT LINKS UPDATES TESTING
 
     def test_uj_step_update(self):

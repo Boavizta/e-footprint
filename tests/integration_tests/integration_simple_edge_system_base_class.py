@@ -19,6 +19,7 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
+from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.constants.countries import Countries
@@ -74,8 +75,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Create custom edge device with components
         ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
         cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
+        workload_component = EdgeWorkloadComponent.from_defaults("edge workload component")
 
-        edge_device = EdgeDevice.from_defaults("custom edge device", components=[ram_component, cpu_component])
+        edge_device = EdgeDevice.from_defaults("custom edge device",
+                                               components=[ram_component, cpu_component, workload_component])
 
         ram_need = RecurrentEdgeComponentNeed(
             "RAM need",
@@ -87,11 +90,16 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             edge_component=cpu_component,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core))
         )
+        workload_need = RecurrentEdgeComponentNeed(
+            "Workload need",
+            edge_component=workload_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0.5] * 168, dtype=np.float32), u.concurrent))
+        )
 
         edge_device_need = RecurrentEdgeDeviceNeed(
             "custom edge device need",
             edge_device=edge_device,
-            recurrent_edge_component_needs=[ram_need, cpu_need]
+            recurrent_edge_component_needs=[ram_need, cpu_need, workload_need]
         )
 
         edge_function = EdgeFunction(
@@ -126,10 +134,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return (system, edge_storage, edge_computer, edge_process, edge_device, edge_device_need,
-                ram_component, cpu_component, edge_function, edge_usage_journey, edge_usage_pattern, start_date)
+                ram_component, cpu_component, workload_component, edge_function, edge_usage_journey, edge_usage_pattern,
+                start_date)
 
     @classmethod
-    def initialize_footprints(cls, system, edge_storage, edge_computer, edge_device, ram_component, cpu_component):
+    def initialize_footprints(cls, system, edge_storage, edge_computer, edge_device, ram_component, cpu_component,
+                              workload_component):
         cls.initial_footprint = system.total_footprint
 
         cls.initial_fab_footprints = {
@@ -138,6 +148,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             edge_device: edge_device.instances_fabrication_footprint,
             ram_component: ram_component.instances_fabrication_footprint,
             cpu_component: cpu_component.instances_fabrication_footprint,
+            workload_component: workload_component.instances_fabrication_footprint,
         }
 
         cls.initial_energy_footprints = {
@@ -146,6 +157,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             edge_device: edge_device.energy_footprint,
             ram_component: ram_component.energy_footprint,
             cpu_component: cpu_component.energy_footprint,
+            workload_component: workload_component.energy_footprint,
         }
 
         cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
@@ -154,11 +166,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     @classmethod
     def setUpClass(cls):
         (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_device, cls.edge_device_need,
-         cls.ram_component, cls.cpu_component, cls.edge_function, cls.edge_usage_journey, cls.edge_usage_pattern,
+         cls.ram_component, cls.cpu_component, cls.workload_component, cls.edge_function, cls.edge_usage_journey, cls.edge_usage_pattern,
          cls.start_date) = cls.generate_simple_edge_system()
 
         cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer, cls.edge_device,
-                                   cls.ram_component, cls.cpu_component)
+                                   cls.ram_component, cls.cpu_component, cls.workload_component)
 
         cls.ref_json_filename = "simple_edge_system"
 
@@ -259,6 +271,71 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.edge_usage_pattern.hourly_edge_usage_journey_starts = initial_hourly_starts
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
+        """Test that InsufficientCapacityError is raised when updating capacities that trigger the error."""
+        from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+        from efootprint.core.usage.edge.recurrent_edge_component_need import WorkloadOutOfBoundsError
+
+        # Test EdgeRAMComponent - available_ram_per_instance
+        # Change ram to trigger error in update_available_ram_per_instance
+        logger.warning("Testing EdgeRAMComponent available_ram_per_instance error")
+        original_ram = self.ram_component.ram
+        with self.assertRaises(InsufficientCapacityError):
+            self.ram_component.ram = SourceValue(0.5 * u.GB_ram)
+        self.ram_component.ram = original_ram
+
+        # Test EdgeRAMComponent - max_ram_need comparison
+        # Reduce available_ram_per_instance to trigger error in update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern
+        logger.warning("Testing EdgeRAMComponent max ram need error")
+        original_base_ram = self.ram_component.base_ram_consumption
+        with self.assertRaises(InsufficientCapacityError):
+            self.ram_component.base_ram_consumption = SourceValue(7.5 * u.GB_ram)
+        self.ram_component.base_ram_consumption = original_base_ram
+
+        # Test EdgeCPUComponent - available_compute_per_instance
+        # Change compute to trigger error in update_available_compute_per_instance
+        logger.warning("Testing EdgeCPUComponent available_compute_per_instance error")
+        original_compute = self.cpu_component.compute
+        with self.assertRaises(InsufficientCapacityError):
+            self.cpu_component.compute = SourceValue(0.05 * u.cpu_core)
+        self.cpu_component.compute = original_compute
+
+        # Test EdgeCPUComponent - max_compute_need comparison
+        # Reduce available_compute_per_instance to trigger error in update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern
+        logger.warning("Testing EdgeCPUComponent max compute need error")
+        original_base_compute = self.cpu_component.base_compute_consumption
+        with self.assertRaises(InsufficientCapacityError):
+            self.cpu_component.base_compute_consumption = SourceValue(3.5 * u.cpu_core)
+        self.cpu_component.base_compute_consumption = original_base_compute
+
+        # Test EdgeStorage - cumulative storage capacity
+        # Reduce storage_capacity to trigger error in update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern
+        logger.warning("Testing EdgeStorage cumulative storage capacity error")
+        original_storage_capacity = self.edge_storage.storage_capacity
+        with self.assertRaises(InsufficientCapacityError):
+            self.edge_storage.storage_capacity = SourceValue(50 * u.GB)
+        self.edge_storage.storage_capacity = original_storage_capacity
+
+        # Test EdgeUsageJourney - usage_span vs lifespan
+        # Increase usage_span to trigger error in update_usage_span_validation
+        logger.warning("Testing EdgeUsageJourney usage_span vs lifespan error")
+        original_usage_span = self.edge_usage_journey.usage_span
+        with self.assertRaises(InsufficientCapacityError):
+            self.edge_usage_journey.usage_span = SourceValue(10 * u.year)
+        self.edge_usage_journey.usage_span = original_usage_span
+
+        # Test EdgeWorkloadComponent - max workload exceeds 100%
+        # Increase workload to trigger error in update_dict_element_in_unitary_hourly_workload_per_usage_pattern
+        logger.warning("Testing EdgeWorkloadComponent max workload error")
+        original_workload_need = self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need
+        with self.assertRaises(WorkloadOutOfBoundsError):
+            self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need = SourceRecurrentValues(
+                Quantity(np.array([1.5] * 168, dtype=np.float32), u.concurrent))
+        self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need = original_workload_need
+
+        # Ensure system is back to normal state
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     # OBJECT LINKS UPDATES TESTING
@@ -589,8 +666,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
         cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
+        workload_component = EdgeWorkloadComponent.from_defaults("edge workload component")
 
-        edge_device = EdgeDevice.from_defaults("custom edge device", components=[ram_component, cpu_component])
+        edge_device = EdgeDevice.from_defaults("custom edge device",
+                                               components=[ram_component, cpu_component, workload_component])
 
         ram_need = RecurrentEdgeComponentNeed(
             "RAM need",
@@ -603,10 +682,16 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core))
         )
 
+        workload_need = RecurrentEdgeComponentNeed(
+            "Workload need",
+            edge_component=workload_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0.5] * 168, dtype=np.float32), u.concurrent))
+        )
+
         edge_device_need = RecurrentEdgeDeviceNeed(
             "custom edge device need",
             edge_device=edge_device,
-            recurrent_edge_component_needs=[ram_need, cpu_need]
+            recurrent_edge_component_needs=[ram_need, cpu_need, workload_need]
         )
 
         new_edge_function = EdgeFunction(

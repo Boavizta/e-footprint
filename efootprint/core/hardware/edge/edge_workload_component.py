@@ -36,12 +36,6 @@ class EdgeWorkloadComponent(EdgeComponent):
              for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
             start=EmptyExplainableObject())
 
-        if not isinstance(unitary_hourly_workload, EmptyExplainableObject):
-            max_workload = unitary_hourly_workload.max().to(u.dimensionless)
-            if max_workload > ExplainableQuantity(1 * u.dimensionless, "100% workload"):
-                raise InsufficientCapacityError(
-                    self, "workload capacity", ExplainableQuantity(1 * u.dimensionless, "100% workload"), max_workload)
-
         self.unitary_hourly_workload_per_usage_pattern[usage_pattern] = unitary_hourly_workload.set_label(
             f"{self.name} hourly workload for {usage_pattern.name}")
 

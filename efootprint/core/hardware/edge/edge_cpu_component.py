@@ -59,7 +59,8 @@ class EdgeCPUComponent(EdgeComponent):
                 raise InsufficientCapacityError(self, "compute", self.available_compute_per_instance, max_compute_need)
 
         self.unitary_hourly_compute_need_per_usage_pattern[usage_pattern] = unitary_hourly_compute_need.to(
-            u.cpu_core).set_label(f"{self.name} hourly compute need for {usage_pattern.name}")
+            u.cpu_core).set_label(f"{self.name} hourly compute need for {usage_pattern.name}").generate_explainable_object_with_logical_dependency(
+            self.available_compute_per_instance)
 
     def update_unitary_hourly_compute_need_per_usage_pattern(self):
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()

@@ -61,26 +61,6 @@ class TestEdgeWorkloadComponent(TestCase):
         self.assertEqual(u.concurrent, result.unit)
         self.assertIn("Test Appliance hourly workload for Test Pattern", result.label)
 
-    def test_update_dict_element_in_unitary_hourly_workload_exceeds_capacity(self):
-        """Test that workload exceeding 100% raises InsufficientCapacityError."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern_id"
-
-        mock_need = MagicMock(spec=RecurrentEdgeComponentNeed)
-        # Workload exceeding 100%
-        workload = create_source_hourly_values_from_list([0.8, 1.2], pint_unit=u.concurrent)
-        mock_need.unitary_hourly_need_per_usage_pattern = {mock_pattern: workload}
-        mock_need.edge_usage_patterns = [mock_pattern]
-
-        set_modeling_obj_containers(self.appliance_component, [mock_need])
-
-        with self.assertRaises(InsufficientCapacityError) as context:
-            self.appliance_component.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
-
-        self.assertEqual("workload capacity", context.exception.capacity_type)
-        self.assertEqual(self.appliance_component, context.exception.overloaded_object)
-
     def test_update_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
         mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
