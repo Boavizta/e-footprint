@@ -1,6 +1,5 @@
 from typing import TYPE_CHECKING, List
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed

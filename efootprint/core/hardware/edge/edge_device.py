@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_function import EdgeFunction
     from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+    from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
 
 class EdgeDevice(ModelingObject):
@@ -68,6 +69,24 @@ class EdgeDevice(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
+
+    def _filter_component_by_type(self, component_type: type) -> List[EdgeComponent]:
+        components_of_type = []
+        for component in self.components:
+            if isinstance(component, component_type):
+                components_of_type.append(component)
+
+        return components_of_type
+
+    @property
+    def storages(self) -> List["EdgeStorage"]:
+        from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+        return self._filter_component_by_type(EdgeStorage)
+
+    @property
+    def cpus(self):
+        from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
+        return self._filter_component_by_type(EdgeCPUComponent)
 
     def update_component_needs_edge_device_validation(self):
         """Validate that all component needs point to components of this edge_device."""

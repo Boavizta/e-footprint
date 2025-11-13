@@ -24,6 +24,12 @@ class Source:
     name: str
     link: Optional[str]
 
+    def to_json(self):
+        output_dict = {"name": self.name}
+        if self.link is not None:
+            output_dict["link"] = self.link
+        return output_dict
+
 
 def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject", attr_name: str):
     update_func_name = f"update_{attr_name}"
