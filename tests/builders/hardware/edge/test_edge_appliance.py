@@ -58,6 +58,16 @@ class TestEdgeAppliance(TestCase):
         self.assertIn(mock_pattern1, patterns)
         self.assertIn(mock_pattern2, patterns)
 
+    def test_delete_edge_appliance(self):
+        edge_appliance = EdgeAppliance.from_defaults("temporary edge appliance for deletion test")
+
+        for component in edge_appliance.components:
+            component.compute_calculated_attributes()
+
+        edge_appliance.compute_calculated_attributes()
+
+        edge_appliance.self_delete()
+
 
 if __name__ == "__main__":
     unittest.main()

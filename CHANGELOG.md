@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.0.3] - 2025-11-20
+
+### Fixed
+- Add custom self_delete method to EdgeComputer and EdgeAppliance objects, because their hidden components need to be deleted when the EdgeComputer or EdgeAppliance is deleted.
+
 ## [14.0.2] - 2025-11-17
 
 ### Fixed

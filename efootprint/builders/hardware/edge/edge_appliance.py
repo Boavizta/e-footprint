@@ -1,3 +1,4 @@
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -19,13 +20,25 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
         return ["power", "idle_power", "lifespan"] + super().calculated_attributes
 
     def update_power(self):
-        self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.power = edge_device.power.copy().set_label(f"Power of {self.name}")
+        else:
+            self.power = EmptyExplainableObject()
 
     def update_idle_power(self):
-        self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.idle_power = edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+        else:
+            self.idle_power = EmptyExplainableObject()
 
     def update_lifespan(self):
-        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.lifespan = edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        else:
+            self.lifespan = EmptyExplainableObject()
 
 
 class EdgeAppliance(EdgeDevice):
@@ -69,3 +82,9 @@ class EdgeAppliance(EdgeDevice):
     @property
     def unitary_hourly_workload_per_usage_pattern(self):
         return self.appliance_component.unitary_hourly_workload_per_usage_pattern
+
+    def self_delete(self):
+        components = list(self.components)
+        super().self_delete()
+        for component in components:
+            component.self_delete()
