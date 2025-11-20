@@ -41,7 +41,7 @@ class EdgeCPUComponent(EdgeComponent):
     def update_available_compute_per_instance(self):
         available_compute_per_instance = (self.compute - self.base_compute_consumption)
 
-        if available_compute_per_instance.value < 0 * u.cpu_core:
+        if available_compute_per_instance < SourceValue(0 * u.cpu_core):
             raise InsufficientCapacityError(self, "compute", self.compute, self.base_compute_consumption)
 
         self.available_compute_per_instance = available_compute_per_instance.set_label(

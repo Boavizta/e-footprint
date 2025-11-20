@@ -1,5 +1,6 @@
 from typing import List
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -25,14 +26,26 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
         return ["ram", "base_ram_consumption", "lifespan"] + super().calculated_attributes
 
     def update_ram(self):
-        self.ram = self.edge_device.ram.copy().set_label(f"RAM of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.ram = self.edge_device.ram.copy().set_label(f"RAM of {self.name}")
+        else:
+            self.ram = EmptyExplainableObject()
 
     def update_base_ram_consumption(self):
-        self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
-            f"Base RAM consumption of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
+                f"Base RAM consumption of {self.name}")
+        else:
+            self.base_ram_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
-        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        else:
+            self.lifespan = EmptyExplainableObject()
 
 
 class EdgeComputerCPUComponent(EdgeCPUComponent):
@@ -51,20 +64,41 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         return ["compute", "base_compute_consumption", "lifespan", "power", "idle_power"] + super().calculated_attributes
 
     def update_compute(self):
-        self.compute = self.edge_device.compute.copy().set_label(f"Compute of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.compute = edge_device.compute.copy().set_label(f"Compute of {self.name}")
+        else:
+            self.compute = EmptyExplainableObject()
 
     def update_base_compute_consumption(self):
-        self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
-            f"Base compute consumption of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
+                f"Base compute consumption of {self.name}")
+        else:
+            self.base_compute_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
-        self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+        else:
+            self.lifespan = EmptyExplainableObject()
 
     def update_power(self):
-        self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+        else:
+            self.power = EmptyExplainableObject()
+
 
     def update_idle_power(self):
-        self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+        edge_device = self.edge_device
+        if edge_device:
+            self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+        else:
+            self.idle_power = EmptyExplainableObject()
 
 
 class EdgeComputer(EdgeDevice):
@@ -153,3 +187,10 @@ class EdgeComputer(EdgeDevice):
     @property
     def unitary_hourly_compute_need_per_usage_pattern(self):
         return self.cpu_component.unitary_hourly_compute_need_per_usage_pattern
+
+    def self_delete(self):
+        ram = self.ram_component
+        cpu = self.cpu_component
+        super().self_delete()
+        for component in [ram, cpu]:
+            component.self_delete()

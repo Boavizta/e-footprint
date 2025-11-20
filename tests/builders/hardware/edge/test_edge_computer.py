@@ -104,6 +104,18 @@ class TestEdgeComputer(TestCase):
 
         self.edge_computer.trigger_modeling_updates = False
 
+    def test_delete_edge_computer(self):
+        edge_computer = EdgeComputer.from_defaults(
+            "temporary edge computer for deletion test",
+            storage=EdgeStorage.from_defaults("temporary edge storage for deletion test"))
+
+        for component in edge_computer.components:
+            component.compute_calculated_attributes()
+
+        edge_computer.compute_calculated_attributes()
+
+        edge_computer.self_delete()
+
 
 if __name__ == "__main__":
     unittest.main()
