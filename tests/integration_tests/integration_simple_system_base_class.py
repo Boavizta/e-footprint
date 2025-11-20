@@ -26,6 +26,7 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.utils import check_all_calculus_graph_dependencies_consistencies
 
 
 class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
@@ -761,4 +762,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_semantic_units_in_calculated_attributes(self):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
         self.check_semantic_units_in_calculated_attributes(self.system)
-    
+
+    def run_test_check_all_calculus_graph_dependencies_consistencies(self):
+        check_all_calculus_graph_dependencies_consistencies(self.system)

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.0.4] - 2025-11-20
+
+### Fixed
+- Check that EdgeDevice lifespan isn’t inferor to its edge usage journey usage spans in the EdgeDevice class instead of in the EdgeUsageJourney class, because EdgeUsageJourney objects are computed before EdgeDevice objects in the canonical computation order.
+
+### Added
+- Tests that check all calculus dependencies in integration tests, to make sure that no calculated attribute depends on an attribute that is computed after it in the canonical computation order. It will ensure that the bug fixed in this version doesn’t happen again.
+
 ## [14.0.3] - 2025-11-20
 
 ### Fixed

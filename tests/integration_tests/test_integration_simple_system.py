@@ -19,6 +19,9 @@ class IntegrationTestSimpleSystem(IntegrationTestSimpleSystemBaseClass):
     def test_object_relationship_graph(self):
         self.run_test_object_relationship_graph()
 
+    def test_check_all_calculus_graph_dependencies_consistencies(self):
+        self.run_test_check_all_calculus_graph_dependencies_consistencies()
+
     # SYSTEM <=> JSON
 
     def test_system_to_json(self):

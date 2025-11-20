@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
@@ -31,6 +32,7 @@ class EdgeDevice(ModelingObject):
             f"Structure fabrication carbon footprint of {self.name}")
         self.components = components
 
+        self.lifespan_validation = EmptyExplainableObject()
         self.component_needs_edge_device_validation = EmptyExplainableObject()
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -45,7 +47,7 @@ class EdgeDevice(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["component_needs_edge_device_validation",
+        return ["lifespan_validation", "component_needs_edge_device_validation",
                 "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
@@ -87,6 +89,14 @@ class EdgeDevice(ModelingObject):
     def cpus(self):
         from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
         return self._filter_component_by_type(EdgeCPUComponent)
+
+    def update_lifespan_validation(self):
+        result = self.lifespan.copy().set_label(f"{self.name} lifespan validation")
+        for edge_usage_journey in self.edge_usage_journeys:
+            if self.lifespan < edge_usage_journey.usage_span:
+                raise InsufficientCapacityError(self, "lifespan", self.lifespan, edge_usage_journey.usage_span)
+            result = result.generate_explainable_object_with_logical_dependency(edge_usage_journey.usage_span)
+        self.lifespan_validation = result
 
     def update_component_needs_edge_device_validation(self):
         """Validate that all component needs point to components of this edge_device."""

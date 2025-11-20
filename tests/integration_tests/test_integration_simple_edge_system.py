@@ -26,6 +26,9 @@ class IntegrationTestSimpleEdgeSystem(IntegrationTestSimpleEdgeSystemBaseClass):
     def test_system_to_json(self):
         self.run_test_system_to_json(self.system)
 
+    def test_check_all_calculus_graph_dependencies_consistencies(self):
+        self.run_test_check_all_calculus_graph_dependencies_consistencies()
+
     # INPUTS VARIATION TESTING
 
     def test_variations_on_inputs(self):

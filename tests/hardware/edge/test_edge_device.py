@@ -11,6 +11,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -430,6 +431,23 @@ class TestEdgeDevice(TestCase):
 
         with self.assertRaises(ValueError) as context:
             self.edge_device.update_component_needs_edge_device_validation()
+
+    def test_changing_to_usage_span_superior_to_edge_device_lifespan_raises_error(self):
+        edge_device = EdgeDevice(
+            name="Test Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(2 * u.year)
+        )
+        edge_need = RecurrentEdgeDeviceNeed("Empty need", edge_device=edge_device, recurrent_edge_component_needs=[])
+        edge_function = EdgeFunction("Mock Function", recurrent_edge_device_needs=[edge_need])
+
+        usage_span = SourceValue(1 * u.year)
+        euj = EdgeUsageJourney("test euj", edge_functions=[edge_function], usage_span=usage_span)
+        edge_device.compute_calculated_attributes()
+
+        with self.assertRaises(InsufficientCapacityError):
+            euj.usage_span = SourceValue(3 * u.year)
 
 
 if __name__ == "__main__":
