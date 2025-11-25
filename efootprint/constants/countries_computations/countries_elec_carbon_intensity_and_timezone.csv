@@ -1,0 +1,127 @@
+Entity,Code,Year,Carbon intensity of electricity - gCO2/kWh,Timezone
+Afghanistan,AFG,2023,123.711334,Asia/Kabul
+Algeria,DZA,2023,633.64484,Africa/Algiers
+Angola,AGO,2023,167.22408,Africa/Luanda
+Argentina,ARG,2024,358.94824,America/Argentina/Buenos_Aires
+Australia,AUS,2024,551.58984,Australia/Sydney
+Austria,AUT,2024,102.62287,Europe/Vienna
+Azerbaijan,AZE,2024,633.0714,Asia/Baku
+Bangladesh,BGD,2024,694.62494,Asia/Dhaka
+Belarus,BLR,2024,313.6173,Europe/Minsk
+Belgium,BEL,2024,117.57641,Europe/Brussels
+Benin,BEN,2023,590.0,Africa/Porto-Novo
+Bolivia,BOL,2024,468.0162,America/La_Paz
+Brazil,BRA,2024,103.212296,America/Sao_Paulo
+Bulgaria,BGR,2024,264.20685,Europe/Sofia
+Burkina Faso,BFA,2023,554.91327,Africa/Ouagadougou
+Burundi,BDI,2023,230.76924,Africa/Bujumbura
+Cambodia,KHM,2024,497.45547,Asia/Phnom_Penh
+Cameroon,CMR,2023,285.7143,Africa/Douala
+Canada,CAN,2024,174.81425,America/Toronto
+Central African Republic,CAF,2022,0.0,Africa/Bangui
+Chad,TCD,2022,615.38464,Africa/Ndjamena
+Chile,CHL,2024,265.51648,America/Santiago
+China,CHN,2024,559.5517,Asia/Shanghai
+Colombia,COL,2024,285.7959,America/Bogota
+Congo,COG,2023,713.7331,Africa/Brazzaville
+Costa Rica,CRI,2024,63.004845,America/Costa_Rica
+Cote d'Ivoire,CIV,2023,393.531,Africa/Abidjan
+Cuba,CUB,2023,638.97974,America/Havana
+Czechia,CZE,2024,413.85922,Europe/Prague
+Democratic Republic of Congo,COD,2023,27.044025,Africa/Kinshasa
+Denmark,DNK,2024,143.30042,Europe/Copenhagen
+Dominican Republic,DOM,2024,566.6918,America/Santo_Domingo
+Ecuador,ECU,2024,209.69698,America/Guayaquil
+Egypt,EGY,2024,571.9383,Africa/Cairo
+El Salvador,SLV,2024,101.56249,America/El_Salvador
+Ethiopia,ETH,2023,23.54874,Africa/Addis_Ababa
+Finland,FIN,2024,72.2488,Europe/Helsinki
+France,FRA,2024,44.179085,Europe/Paris
+Germany,DEU,2024,344.13992,Europe/Berlin
+Ghana,GHA,2023,452.86124,Africa/Accra
+Greece,GRC,2024,319.76236,Europe/Athens
+Guatemala,GTM,2023,272.65973,America/Guatemala
+Guinea,GIN,2023,182.71605,Africa/Conakry
+Haiti,HTI,2022,534.6535,America/Port-au-Prince
+Honduras,HND,2023,289.49615,America/Tegucigalpa
+Hong Kong,HKG,2023,681.98724,Asia/Hong_Kong
+Hungary,HUN,2024,182.81822,Europe/Budapest
+India,IND,2024,708.3216,Asia/Kolkata
+Indonesia,IDN,2023,682.4301,Asia/Jakarta
+Iran,IRN,2024,641.93616,Asia/Tehran
+Iraq,IRQ,2023,689.4005,Asia/Baghdad
+Ireland,IRL,2024,279.70218,Europe/Dublin
+Israel,ISR,2023,567.26245,Asia/Jerusalem
+Italy,ITA,2024,287.5335,Europe/Rome
+Japan,JPN,2024,482.32416,Asia/Tokyo
+Jordan,JOR,2022,539.21136,Asia/Amman
+Kazakhstan,KAZ,2024,801.9483,Asia/Almaty
+Kenya,KEN,2024,84.824905,Africa/Nairobi
+Kyrgyzstan,KGZ,2024,163.70107,Asia/Bishkek
+Laos,LAO,2023,232.12238,Asia/Vientiane
+Lebanon,LBN,2023,369.46902,Asia/Beirut
+Liberia,LBR,2023,435.89746,Africa/Monrovia
+Libya,LBY,2023,830.5326,Africa/Tripoli
+Madagascar,MDG,2022,477.2727,Indian/Antananarivo
+Malawi,MWI,2022,54.64481,Africa/Blantyre
+Malaysia,MYS,2024,604.4294,Asia/Kuala_Lumpur
+Mali,MLI,2023,394.49542,Africa/Bamako
+Mauritania,MRT,2022,481.70734,Africa/Nouakchott
+Mexico,MEX,2024,484.83173,America/Mexico_City
+Morocco,MAR,2024,577.6511,Africa/Casablanca
+Mozambique,MOZ,2023,127.81187,Africa/Maputo
+Myanmar,MMR,2024,569.6921,Asia/Yangon
+Nepal,NPL,2022,23.364487,Asia/Kathmandu
+Netherlands,NLD,2024,253.31152,Europe/Amsterdam
+New Zealand,NZL,2024,120.10797,Pacific/Auckland
+Nicaragua,NIC,2023,288.32953,America/Managua
+Niger,NER,2023,687.5,Africa/Niamey
+Nigeria,NGA,2024,507.84946,Africa/Lagos
+North Korea,PRK,2022,344.25613,Asia/Pyongyang
+Norway,NOR,2024,30.745583,Europe/Oslo
+Oman,OMN,2024,545.32874,Asia/Muscat
+Pakistan,PAK,2024,398.6102,Asia/Karachi
+Palestine,PSE,2022,460.78433,Asia/Gaza
+Papua New Guinea,PNG,2023,513.74207,Pacific/Port_Moresby
+Paraguay,PRY,2023,24.864376,America/Asuncion
+Peru,PER,2024,263.2733,America/Lima
+Philippines,PHL,2024,613.37994,Asia/Manila
+Poland,POL,2024,614.98236,Europe/Warsaw
+Portugal,PRT,2024,112.28676,Europe/Lisbon
+Romania,ROU,2024,245.55428,Europe/Bucharest
+Russia,RUS,2024,449.19592,Europe/Moscow
+Rwanda,RWA,2023,301.8868,Africa/Kigali
+Saudi Arabia,SAU,2023,696.31335,Asia/Riyadh
+Senegal,SEN,2023,535.4037,Africa/Dakar
+Serbia,SRB,2024,670.7974,Europe/Belgrade
+Sierra Leone,SLE,2023,47.61905,Africa/Freetown
+Singapore,SGP,2024,498.74182,Asia/Singapore
+Slovakia,SVK,2024,96.488235,Europe/Bratislava
+Somalia,SOM,2023,523.8095,Africa/Mogadishu
+South Africa,ZAF,2024,708.8762,Africa/Johannesburg
+South Korea,KOR,2024,414.2726,Asia/Seoul
+South Sudan,SSD,2023,610.16956,Africa/Juba
+Spain,ESP,2024,146.15356,Europe/Madrid
+Sri Lanka,LKA,2022,509.78137,Asia/Colombo
+Sudan,SDN,2023,214.32835,Africa/Khartoum
+Sweden,SWE,2024,35.823833,Europe/Stockholm
+Switzerland,CHE,2024,36.599316,Europe/Zurich
+Syria,SYR,2022,682.27094,Asia/Damascus
+Tajikistan,TJK,2024,115.87792,Asia/Dushanbe
+Tanzania,TZA,2023,371.58472,Africa/Dar_es_Salaam
+Thailand,THA,2024,554.4976,Asia/Bangkok
+Togo,TGO,2023,478.26086,Africa/Lome
+Tunisia,TUN,2024,560.24963,Africa/Tunis
+Turkey,TUR,2024,469.697,Europe/Istanbul
+Turkmenistan,TKM,2023,1306.3036,Asia/Ashgabat
+Uganda,UGA,2022,57.391308,Africa/Kampala
+Ukraine,UKR,2022,256.21008,Europe/Kyiv
+United Arab Emirates,ARE,2023,492.69827,Asia/Dubai
+United Kingdom,GBR,2024,210.89114,Europe/London
+United States,USA,2024,383.5492,America/New_York
+Uzbekistan,UZB,2023,1121.1803,Asia/Tashkent
+Venezuela,VEN,2023,180.25078,America/Caracas
+Vietnam,VNM,2024,471.15857,Asia/Ho_Chi_Minh
+Yemen,YEM,2023,586.3192,Asia/Aden
+Zambia,ZMB,2023,110.996925,Africa/Lusaka
+Zimbabwe,ZWE,2023,298.4356,Africa/Harare

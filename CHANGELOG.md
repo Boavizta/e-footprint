@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.1.0] - 2025-11-28
+
+### Added
+- New countries in Countries class, to have all 126 countries with more than 5 million inhabitants covered. Countries than span several timezones get their capital timezone as timezone.
+
+### Changed
+- Set lifespan_validation value to EmptyExplainableObject in EdgeDevice, instead of copying self.lifespan, which is confusing.
+
 ## [14.0.4] - 2025-11-20
 
 ### Fixed

@@ -1,0 +1,6 @@
+# python -m ipykernel install --user --name jupyter-ai --display-name "Jupyter AI"
+# jupyter-ai[openai]
+pandas
+pytz
+pycountry
+jupytext

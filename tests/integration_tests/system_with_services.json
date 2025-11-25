@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "14.0.4",
+    "efootprint_version": "14.1.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -835,12 +835,12 @@
             "id": "France",
             "short_name": "FRA",
             "average_carbon_intensity": {
-                "value": 85.0,
+                "value": 44.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of France from Our world in data",
+                "label": "Average carbon intensity of France from Our world in data (2024)",
                 "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
+                    "name": "Our world in data (2024)",
+                    "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
                 }
             },
             "timezone": {
