@@ -91,7 +91,7 @@ class EdgeDevice(ModelingObject):
         return self._filter_component_by_type(EdgeCPUComponent)
 
     def update_lifespan_validation(self):
-        result = self.lifespan.copy().set_label(f"{self.name} lifespan validation")
+        result = EmptyExplainableObject().generate_explainable_object_with_logical_dependency(self.lifespan)
         for edge_usage_journey in self.edge_usage_journeys:
             if self.lifespan < edge_usage_journey.usage_span:
                 raise InsufficientCapacityError(self, "lifespan", self.lifespan, edge_usage_journey.usage_span)
