@@ -1,5 +1,6 @@
 from collections import defaultdict
 from copy import copy
+import inspect
 from typing import List, Optional, Dict, Type
 from unittest import TestCase
 import os
@@ -16,6 +17,57 @@ from efootprint.constants.units import u
 from efootprint.logger import logger
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+class AutoTestMethodsMeta(type):
+    """Metaclass that auto-generates test_* methods from run_test_* methods in base classes.
+
+    For each run_test_X method found in the class hierarchy, creates a test_X method
+    that calls run_test_X(). This eliminates boilerplate like:
+        def test_foo(self): self.run_test_foo()
+
+    Special handling:
+    - run_test_system_to_json and run_test_json_to_system pass self.system as argument
+    - Skips generation if test_X is already defined in the class
+    """
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, namespace)
+
+        # Collect all run_test_* methods from the class and its bases
+        run_test_methods = {}
+        for klass in reversed(cls.__mro__):
+            for method_name, method in inspect.getmembers(klass, predicate=inspect.isfunction):
+                if method_name.startswith('run_test_'):
+                    run_test_methods[method_name] = method
+
+        # Generate test_* methods for each run_test_* method
+        for run_method_name in run_test_methods:
+            test_method_name = run_method_name.replace('run_test_', 'test_')
+
+            # Skip if test method already exists in the class (not inherited)
+            if test_method_name in namespace:
+                continue
+
+            # Create the test method
+            if run_method_name in ('run_test_system_to_json', 'run_test_json_to_system'):
+                # These methods need self.system as argument
+                def make_test_with_system(run_name):
+                    def test_method(self):
+                        getattr(self, run_name)(self.system)
+                    return test_method
+                test_method = make_test_with_system(run_method_name)
+            else:
+                def make_test(run_name):
+                    def test_method(self):
+                        getattr(self, run_name)()
+                    return test_method
+                test_method = make_test(run_method_name)
+
+            test_method.__name__ = test_method_name
+            test_method.__qualname__ = f"{name}.{test_method_name}"
+            setattr(cls, test_method_name, test_method)
+
+        return cls
 
 
 class SystemTestFixture:

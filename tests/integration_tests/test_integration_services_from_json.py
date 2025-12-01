@@ -4,10 +4,14 @@ import os
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
-from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR, AutoTestMethodsMeta
 
 
-class IntegrationTestServicesFromJson(IntegrationTestServicesBaseClass):
+class IntegrationTestServicesFromJson(IntegrationTestServicesBaseClass, metaclass=AutoTestMethodsMeta):
+    """Integration tests for services system loaded from JSON.
+
+    Test methods are auto-generated from run_test_* methods in the base class.
+    """
     @classmethod
     def setUpClass(cls):
         # Generate system from code first
@@ -24,23 +28,3 @@ class IntegrationTestServicesFromJson(IntegrationTestServicesBaseClass):
         # Get the reloaded system and use common setup
         reloaded_system = flat_obj_dict[system.id]
         cls._setup_from_system(reloaded_system, start_date)
-    def test_system_to_json(self):
-        self.run_test_system_to_json(self.system)
-
-    def test_json_to_system(self):
-        self.run_test_json_to_system(self.system)
-
-    def test_variations_on_services_inputs(self):
-        self.run_test_variations_on_services_inputs()
-
-    def test_variations_on_services_inputs_after_json_to_system(self):
-        self.run_test_variations_on_services_inputs_after_json_to_system()
-
-    def test_update_service_servers(self):
-        self.run_test_update_service_servers()
-
-    def test_update_service_jobs(self):
-        self.run_test_update_service_jobs()
-
-    def test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
-        self.run_test_install_new_service_on_server_and_make_sure_system_is_recomputed()
