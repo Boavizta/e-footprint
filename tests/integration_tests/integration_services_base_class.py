@@ -25,11 +25,27 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.logger import logger
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR, \
-    SystemTestFixture
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
 class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
+    REF_JSON_FILENAME = "system_with_services"
+    OBJECT_NAMES_MAP = {
+        "storage": "Web server SSD storage",
+        "server": "Web server",
+        "gpu_server": "GPU server",
+        "video_streaming_service": "Youtube streaming service",
+        "web_application_service": "Web application service",
+        "genai_service": "GenAI service",
+        "video_streaming_job": "Streaming job",
+        "web_application_job": "web app job",
+        "genai_job": "GenAI job",
+        "direct_gpu_job": "direct GPU server job",
+        "network": "Default network",
+        "uj": "Daily Youtube usage",
+        "usage_pattern": "Youtube usage in France",
+    }
+
     @staticmethod
     def generate_system_with_services():
         storage = Storage.ssd("Web server SSD storage")
@@ -75,35 +91,6 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
                 mod_obj.id = css_escape(mod_obj.name)
 
         return system, start_date
-
-    @classmethod
-    def _setup_from_system(cls, system, start_date):
-        """Common setup logic for both code-generated and JSON-loaded systems."""
-        cls.system = system
-        cls.start_date = start_date
-        cls.fixture = SystemTestFixture(system)
-
-        # Extract objects by name for backward compatibility with existing tests
-        cls.storage = cls.fixture.get("Web server SSD storage")
-        cls.server = cls.fixture.get("Web server")
-        cls.gpu_server = cls.fixture.get("GPU server")
-        cls.video_streaming_service = cls.fixture.get("Youtube streaming service")
-        cls.web_application_service = cls.fixture.get("Web application service")
-        cls.genai_service = cls.fixture.get("GenAI service")
-        cls.video_streaming_job = cls.fixture.get("Streaming job")
-        cls.web_application_job = cls.fixture.get("web app job")
-        cls.genai_job = cls.fixture.get("GenAI job")
-        cls.direct_gpu_job = cls.fixture.get("direct GPU server job")
-        cls.network = cls.fixture.get("Default network")
-        cls.uj = cls.fixture.get("Daily Youtube usage")
-        cls.usage_pattern = cls.fixture.get("Youtube usage in France")
-
-        # Auto-initialize footprints
-        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
-         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
-            cls.fixture.initialize_footprints()
-
-        cls.ref_json_filename = "system_with_services"
 
     @classmethod
     def setUpClass(cls):

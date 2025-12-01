@@ -27,10 +27,40 @@ from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeP
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, SystemTestFixture
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
 class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
+    REF_JSON_FILENAME = "complex_system"
+    OBJECT_NAMES_MAP = {
+        "storage_1": "Default SSD storage 1",
+        "storage_2": "Default SSD storage 2",
+        "storage_3": "Default SSD storage 3",
+        "server1": "Server 1",
+        "server2": "Server 2",
+        "server3": "Server 3",
+        "server1_job1": "server 1 job 1",
+        "server1_job2": "server 1 job 2",
+        "server1_job3": "server 1 job 3",
+        "server2_job": "server 2 job",
+        "server3_job": "server 3 job",
+        "uj_step_1": "UJ step 1",
+        "uj_step_2": "UJ step 2",
+        "uj_step_3": "UJ step 3",
+        "uj_step_4": "UJ step 4",
+        "usage_pattern1": "Usage pattern 1",
+        "usage_pattern2": "Usage pattern 2",
+        "uj": "Usage journey",
+        "network1": "network 1",
+        "network2": "network 2",
+        "edge_storage": "Edge SSD storage",
+        "edge_computer": "Edge device",
+        "edge_process": "Edge process",
+        "edge_function": "Edge function",
+        "edge_usage_journey": "Edge usage journey",
+        "edge_usage_pattern": "Edge usage pattern",
+    }
+
     @staticmethod
     def generate_complex_system():
         storage_1 = Storage(
@@ -225,48 +255,6 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return system, start_date
-
-    @classmethod
-    def _setup_from_system(cls, system, start_date):
-        """Common setup logic for both code-generated and JSON-loaded systems."""
-        cls.system = system
-        cls.start_date = start_date
-        cls.fixture = SystemTestFixture(system)
-
-        # Extract objects by name for backward compatibility with existing tests
-        cls.storage_1 = cls.fixture.get("Default SSD storage 1")
-        cls.storage_2 = cls.fixture.get("Default SSD storage 2")
-        cls.storage_3 = cls.fixture.get("Default SSD storage 3")
-        cls.server1 = cls.fixture.get("Server 1")
-        cls.server2 = cls.fixture.get("Server 2")
-        cls.server3 = cls.fixture.get("Server 3")
-        cls.server1_job1 = cls.fixture.get("server 1 job 1")
-        cls.server1_job2 = cls.fixture.get("server 1 job 2")
-        cls.server1_job3 = cls.fixture.get("server 1 job 3")
-        cls.server2_job = cls.fixture.get("server 2 job")
-        cls.server3_job = cls.fixture.get("server 3 job")
-        cls.uj_step_1 = cls.fixture.get("UJ step 1")
-        cls.uj_step_2 = cls.fixture.get("UJ step 2")
-        cls.uj_step_3 = cls.fixture.get("UJ step 3")
-        cls.uj_step_4 = cls.fixture.get("UJ step 4")
-        cls.usage_pattern1 = cls.fixture.get("Usage pattern 1")
-        cls.usage_pattern2 = cls.fixture.get("Usage pattern 2")
-        cls.uj = cls.fixture.get("Usage journey")
-        cls.network1 = cls.fixture.get("network 1")
-        cls.network2 = cls.fixture.get("network 2")
-        cls.edge_storage = cls.fixture.get("Edge SSD storage")
-        cls.edge_computer = cls.fixture.get("Edge device")
-        cls.edge_process = cls.fixture.get("Edge process")
-        cls.edge_function = cls.fixture.get("Edge function")
-        cls.edge_usage_journey = cls.fixture.get("Edge usage journey")
-        cls.edge_usage_pattern = cls.fixture.get("Edge usage pattern")
-
-        # Auto-initialize footprints
-        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
-         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
-            cls.fixture.initialize_footprints()
-
-        cls.ref_json_filename = "complex_system"
 
     @classmethod
     def setUpClass(cls):

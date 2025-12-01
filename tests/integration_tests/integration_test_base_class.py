@@ -155,12 +155,37 @@ class SystemTestFixture:
 
 
 class IntegrationTestBaseClass(TestCase):
+    # Mapping of attribute names to object names in the system - override in subclasses
+    OBJECT_NAMES_MAP: Dict[str, str] = {}
+    REF_JSON_FILENAME: str = None
+
     @classmethod
     def setUpClass(cls):
         cls.initial_energy_footprints = {}
         cls.initial_fab_footprints = {}
-
         cls.ref_json_filename = None
+
+    @classmethod
+    def _setup_from_system(cls, system, start_date):
+        """Common setup logic for both code-generated and JSON-loaded systems.
+
+        Uses OBJECT_NAMES_MAP to extract objects from the fixture by name and assign
+        them to class attributes.
+        """
+        cls.system = system
+        cls.start_date = start_date
+        cls.fixture = SystemTestFixture(system)
+
+        # Extract objects by name using the mapping
+        for attr_name, object_name in cls.OBJECT_NAMES_MAP.items():
+            setattr(cls, attr_name, cls.fixture.get(object_name))
+
+        # Auto-initialize footprints
+        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
+         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+            cls.fixture.initialize_footprints()
+
+        cls.ref_json_filename = cls.REF_JSON_FILENAME
 
     def footprint_has_changed(self, objects_to_test: List[ModelingObject], system=None):
         for obj in objects_to_test:
