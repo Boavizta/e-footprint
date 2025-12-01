@@ -45,60 +45,24 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     @staticmethod
     def generate_simple_system():
-        storage = Storage(
-            "Default SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
-        )
-
-        server = Server(
-            "Default server",
-            ServerTypes.on_premise(),
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W),
-            lifespan=SourceValue(6 * u.year),
-            idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(128 * u.GB_ram, Sources.USER_DATA),
-            compute=SourceValue(24 * u.cpu_core, Sources.USER_DATA),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
-            utilization_rate=SourceValue(0.9 * u.dimensionless),
-            base_ram_consumption=SourceValue(300 * u.MB),
-            base_compute_consumption=SourceValue(2 * u.cpu_core),
-            storage=storage
-        )
-
-        job_1 = Job("job 1", server=server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-                                data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
-                                ram_needed=SourceValue(100 * u.MB_ram),
-                                compute_needed=SourceValue(1 * u.cpu_core))
-
-        uj_step_1 = UsageJourneyStep(
-            "UJ step 1", user_time_spent=SourceValue(20 * u.min), jobs=[job_1])
-
-        job_2 = Job("job 2", server=server, data_transferred=SourceValue(300 * u.MB),
-                             data_stored=SourceValue(300 * u.MB), request_duration=SourceValue(40 * u.s),
-                             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-
-        uj_step_2 = UsageJourneyStep(
-            "UJ step 2", user_time_spent=SourceValue(1 * u.min), jobs=[job_2])
-
+        storage = Storage.from_defaults(
+            "Default SSD storage", fixed_nb_of_instances=SourceValue(10000 * u.dimensionless),
+            idle_power=SourceValue(0.5 * u.W), data_storage_duration=SourceValue(3 * u.hours))
+        server = Server.from_defaults("Default server", server_type=ServerTypes.on_premise(), storage=storage,
+                                      base_ram_consumption=SourceValue(300 * u.MB),
+                                      base_compute_consumption=SourceValue(2 * u.cpu_core))
+        job_1 = Job.from_defaults("job 1", server=server)
+        uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[job_1])
+        job_2 = Job.from_defaults("job 2", server=server)
+        uj_step_2 = UsageJourneyStep.from_defaults("UJ step 2", jobs=[job_2])
         uj = UsageJourney("Usage journey", uj_steps=[uj_step_1, uj_step_2])
-        network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        network = Network.from_defaults("Default network")
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern = UsagePattern(
             "Usage Pattern", uj, [Device.laptop()], network, Countries.FRANCE(),
             create_source_hourly_values_from_list(
-                [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
+                [elt * 1000000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
         # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
         # calculations
@@ -189,7 +153,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(uj)
         self._test_variations_on_obj_inputs(network)
         self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(job_1, special_mult={"data_stored": 1000000})
+        self._test_variations_on_obj_inputs(job_1, special_mult={"data_stored": 1000})
 
     def run_test_variations_on_inputs(self):
         self._run_test_variations_on_inputs_from_object_list(
@@ -240,6 +204,16 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
 
     def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
+        logger.warning("Updating job data_stored from positive to negative value")
+        # Release storage nb of instances constraint to make impact clearer
+        initial_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
+        initial_base_storage_need = self.storage.base_storage_need
+        ModelingUpdate([[self.storage.fixed_nb_of_instances, EmptyExplainableObject()],
+        [self.storage.base_storage_need, SourceValue(50 * u.TB)]])
+        self.footprint_has_changed([self.storage])
+        storage_footprint_before_updating_job = (self.storage.instances_fabrication_footprint
+                                                 + self.storage.energy_footprint)
+
         initial_upload_data_stored = self.job_2.data_stored
         initial_storage_need = self.storage.storage_needed
         initial_storage_freed = self.storage.storage_freed
@@ -258,7 +232,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
         self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
 
-        self.footprint_has_changed([self.storage])
+        self.assertNotEqual(self.storage.instances_fabrication_footprint + self.storage.energy_footprint,
+                            storage_footprint_before_updating_job)
 
         logger.warning("Changing back to previous datastored value")
         self.job_2.data_stored = initial_upload_data_stored
@@ -266,6 +241,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
         self.assertEqual(initial_storage_freed, self.storage.storage_freed)
 
+        self.storage.base_storage_need = initial_base_storage_need
+        self.storage.fixed_nb_of_instances = initial_storage_fixed_nb_of_instances
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
@@ -320,16 +297,24 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         # Server fixed number of instances vs required instances check
         logger.warning("Testing Server fixed number of instances error")
         original_server_fixed_nb_of_instances = self.server.fixed_nb_of_instances
+        initial_server_cpu = self.server.compute
+        # Decrease server cpu to force required instances to be > 1
+        self.server.compute = SourceValue(2.4 * u.cpu_core)
         with self.assertRaises(InsufficientCapacityError):
             self.server.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
         self.server.fixed_nb_of_instances = original_server_fixed_nb_of_instances
+        self.server.compute = initial_server_cpu
 
         # Storage fixed number of instances vs required instances check
         logger.warning("Testing Storage fixed number of instances error")
         original_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
+        # Decrease storage capacity to force required instances to be > 1
+        initial_storage_capacity = self.storage.storage_capacity
+        self.storage.storage_capacity = SourceValue(10 * u.GB)
         with self.assertRaises(InsufficientCapacityError):
             self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
         self.storage.fixed_nb_of_instances = original_storage_fixed_nb_of_instances
+        self.storage.storage_capacity = initial_storage_capacity
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
@@ -375,36 +360,15 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_server(self):
-        new_storage = Storage(
+        new_storage = Storage.from_defaults(
             "new SSD storage, identical in specs to default one",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
-        )
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless),
+            idle_power=SourceValue(0.5 * u.W), data_storage_duration=SourceValue(3 * u.hours))
 
-        new_server = Server(
-            "New server, identical in specs to default one",
-            server_type=ServerTypes.on_premise(),
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W),
-            lifespan=SourceValue(6 * u.year),
-            idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(128 * u.GB_ram),
-            compute=SourceValue(24 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-            utilization_rate=SourceValue(0.9 * u.dimensionless),
-            base_ram_consumption=SourceValue(300 * u.MB),
-            base_compute_consumption=SourceValue(2 * u.cpu_core),
-            storage=new_storage
-        )
+        new_server = Server.from_defaults("New server, identical in specs to default one",
+                                          server_type=ServerTypes.on_premise(), storage=new_storage,
+                                          base_ram_consumption=SourceValue(300 * u.MB),
+                                          base_compute_consumption=SourceValue(2 * u.cpu_core))
 
         logger.warning("Changing jobs server")
         self.job_1.server = new_server
@@ -423,19 +387,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_storage(self):
-        new_storage = Storage(
+        new_storage = Storage.from_defaults(
             "New storage, identical in specs to Default SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(3 * u.hours),
-            base_storage_need=SourceValue(50 * u.TB),
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless)
-        )
+            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless), idle_power=SourceValue(0.5 * u.W),
+            data_storage_duration=SourceValue(3 * u.hours))
         logger.warning("Changing jobs storage")
 
         self.server.storage = new_storage
@@ -454,9 +409,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.server, data_transferred=SourceValue(5 * u.GB),
-         data_stored=SourceValue(50 * u.MB), request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB_ram),
-         compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults("new job", server=self.server)
 
         self.uj_step_1.jobs += [new_job]
 
@@ -472,11 +425,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
-        new_step = UsageJourneyStep(
-            "new_step", user_time_spent=SourceValue(2 * u.min),
-            jobs=[Job("new job", self.server, data_transferred=SourceValue(5 * u.GB), data_stored=SourceValue(5 * u.kB),
-                      request_duration=SourceValue(4 * u.s), ram_needed=SourceValue(100 * u.MB_ram),
-                      compute_needed=SourceValue(1 * u.cpu_core))]
+        new_step = UsageJourneyStep.from_defaults(
+            "new_step", jobs=[Job.from_defaults("new job", server=self.server)]
         )
         self.uj.uj_steps = [new_step]
 
@@ -519,8 +469,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_network(self):
         logger.warning("Changing network")
-        new_network = Network(
-            "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        new_network = Network.from_defaults("New network with same specs as default")
         self.usage_pattern.network = new_network
 
         self.assertEqual(0, self.network.energy_footprint.max().magnitude)
@@ -536,8 +485,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_add_uj_step_without_job(self):
         logger.warning("Add uj step without job")
 
-        step_without_job = UsageJourneyStep(
-            "User checks her phone", user_time_spent=SourceValue(20 * u.min), jobs=[])
+        step_without_job = UsageJourneyStep.from_defaults("User checks her phone", jobs=[])
 
         self.uj.uj_steps.append(step_without_job)
 
@@ -559,19 +507,16 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_add_usage_pattern(self):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
         analytics_server = BoaviztaCloudServer.from_defaults(
-            f"analytics provider server", server_type=ServerTypes.serverless(), storage=Storage.ssd())
-        data_job_2 = Job(
-            f"analytics provider data upload", server=analytics_server, data_transferred=SourceValue(350 * u.GB),
-            data_stored=SourceValue(350 * u.GB), compute_needed=SourceValue(1 * u.cpu_core),
-            ram_needed=SourceValue(1 * u.GB_ram), request_duration=SourceValue(1 * u.hour)
+            f"analytics provider server", server_type=ServerTypes.serverless(),
+            storage=Storage.from_defaults("analytics provider storage"))
+        data_job_2 = Job.from_defaults(f"analytics provider data upload", server=analytics_server)
+        daily_analytics_uj = UsageJourney(
+            f"Daily analytics provider usage journey",
+            uj_steps=[UsageJourneyStep.from_defaults(f"Ingest daily data", jobs=[data_job_2])]
         )
-        daily_analytics_uj = UsageJourney(f"Daily analytics provider usage journey", uj_steps=[
-            UsageJourneyStep(f"Ingest daily data", user_time_spent=SourceValue(1 * u.s),
-                             jobs=[data_job_2])
-        ])
         usage_pattern = UsagePattern(
             f"analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
-            country=self.usage_pattern.country, network=Network.wifi_network(),
+            country=self.usage_pattern.country, network=Network.from_defaults("analytics provider network"),
             hourly_usage_journey_starts=create_hourly_usage_from_frequency(
                 timespan=1 * u.year, input_volume=1, frequency="daily",
                 start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
@@ -594,8 +539,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
         logger.warning("Changing network and hourly usage journey starts simultaneously")
-        new_network = Network(
-            "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        new_network = Network.from_defaults("New network with same specs as default")
         initial_usage_journey_starts = self.usage_pattern.hourly_usage_journey_starts
 
         ModelingUpdate([
@@ -665,9 +609,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-            compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults("new job", server=new_server)
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         simulation = ModelingUpdate([[self.uj_step_2.jobs, self.uj_step_2.jobs + [new_job]]],
@@ -700,13 +642,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults("new job", server=new_server)
 
-        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job.from_defaults("new job 2", server=new_server)
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         simulation = ModelingUpdate([
@@ -726,13 +664,9 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", storage=Storage.from_defaults("default storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults("new job", server=new_server)
 
-        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-         compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job.from_defaults("new job 2", server=new_server)
 
         simulation = ModelingUpdate([
                 [self.uj_step_2.jobs, self.uj_step_2.jobs + [new_job, new_job2, self.job_1]],

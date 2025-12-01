@@ -190,19 +190,15 @@ class IntegrationTestBaseClass(TestCase):
     def footprint_has_changed(self, objects_to_test: List[ModelingObject], system=None):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = self.initial_energy_footprints[obj]
-                self.assertNotEqual(initial_energy_footprint, obj.energy_footprint)
+                initial_footprint = self.initial_energy_footprints[obj]
+                new_footprint = obj.energy_footprint
                 if obj.class_as_simple_str != "Network":
-                    initial_fab_footprint = self.initial_fab_footprints[obj]
-                    new_footprint = obj.instances_fabrication_footprint + obj.energy_footprint
-                    self.assertNotEqual(
-                        (initial_fab_footprint + initial_energy_footprint), new_footprint)
-                    logger.info(
-                        f"{obj.name} footprint has changed from {str(initial_fab_footprint + initial_energy_footprint)}"
-                        f" to {str(new_footprint)}")
-                else:
-                    logger.info(f"{obj.name} footprint has changed from "
-                                f"{initial_energy_footprint} to {obj.energy_footprint}")
+                    initial_footprint += self.initial_fab_footprints[obj]
+
+                self.assertNotEqual(initial_footprint, new_footprint)
+                logger.info(
+                    f"{obj.name} footprint has changed from {str(initial_footprint)}"
+                    f" to {str(new_footprint)}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
         if objects_to_test[0].systems:

@@ -15,7 +15,7 @@
             "name": "Usage Pattern",
             "id": "Usage-Pattern",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/SAkIQEAAAB6RAAA+kQAAHpFAECcRQAA+kUAgDtGAAD6RAAA+kQAgDtF",
+                "compressed_values": "KLUv/SAkIQEAACR0SQAk9EkAJHRKgJaYSgAk9EoAGzdLACT0SQAk9EkAGzdK",
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
@@ -48,7 +48,7 @@
             "name": "UJ step 1",
             "id": "UJ-step-1",
             "user_time_spent": {
-                "value": 20.0,
+                "value": 1.0,
                 "unit": "minute",
                 "label": "Time spent on step UJ step 1 from e-footprint hypothesis",
                 "source": {
@@ -82,8 +82,8 @@
             "name": "job 1",
             "id": "job-1",
             "data_transferred": {
-                "value": 0.8333333333333334,
-                "unit": "gigabyte",
+                "value": 150.0,
+                "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads for request job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -91,7 +91,7 @@
                 }
             },
             "data_stored": {
-                "value": 50.0,
+                "value": 100.0,
                 "unit": "kilobyte",
                 "label": "Data stored by request job 1 from e-footprint hypothesis",
                 "source": {
@@ -100,8 +100,8 @@
                 }
             },
             "request_duration": {
-                "value": 4.0,
-                "unit": "minute",
+                "value": 1.0,
+                "unit": "second",
                 "label": "Request duration of job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -109,7 +109,7 @@
                 }
             },
             "ram_needed": {
-                "value": 100.0,
+                "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed on server Default server to process job 1 from e-footprint hypothesis",
                 "source": {
@@ -118,7 +118,7 @@
                 }
             },
             "compute_needed": {
-                "value": 1.0,
+                "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Default server to process job 1 from e-footprint hypothesis",
                 "source": {
@@ -132,8 +132,8 @@
             "name": "job 2",
             "id": "job-2",
             "data_transferred": {
-                "value": 300.0,
-                "unit": "megabyte",
+                "value": 150.0,
+                "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads for request job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -141,8 +141,8 @@
                 }
             },
             "data_stored": {
-                "value": 300.0,
-                "unit": "megabyte",
+                "value": 100.0,
+                "unit": "kilobyte",
                 "label": "Data stored by request job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -150,7 +150,7 @@
                 }
             },
             "request_duration": {
-                "value": 40.0,
+                "value": 1.0,
                 "unit": "second",
                 "label": "Request duration of job 2 from e-footprint hypothesis",
                 "source": {
@@ -159,7 +159,7 @@
                 }
             },
             "ram_needed": {
-                "value": 100.0,
+                "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed on server Default server to process job 2 from e-footprint hypothesis",
                 "source": {
@@ -168,7 +168,7 @@
                 }
             },
             "compute_needed": {
-                "value": 1.0,
+                "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Default server to process job 2 from e-footprint hypothesis",
                 "source": {
@@ -239,36 +239,36 @@
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte_ram",
-                "label": "RAM of Default server from user data",
+                "label": "RAM of Default server from e-footprint hypothesis",
                 "source": {
-                    "name": "user data",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
-                "label": "Nb cpu cores of Default server from user data",
+                "label": "Nb cpu cores of Default server from e-footprint hypothesis",
                 "source": {
-                    "name": "user data",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
-                "label": "PUE of Default server from user data",
+                "label": "PUE of Default server from e-footprint hypothesis",
                 "source": {
-                    "name": "user data",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
             "average_carbon_intensity": {
-                "value": 100.0,
+                "value": 400.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of Default server electricity from user data",
+                "label": "Average carbon intensity of Default server electricity from e-footprint hypothesis",
                 "source": {
-                    "name": "user data",
+                    "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
@@ -331,23 +331,23 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte",
-                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "power_per_storage_capacity": {
                 "value": 1.3,
                 "unit": "watt / terabyte",
-                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Power of Default SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "idle_power": {
-                "value": 0.1,
+                "value": 0.5,
                 "unit": "watt",
                 "label": "Idle power of Default SSD storage from e-footprint hypothesis",
                 "source": {
@@ -358,10 +358,10 @@
             "storage_capacity": {
                 "value": 1.0,
                 "unit": "terabyte",
-                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Storage capacity of Default SSD storage from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "data_replication_factor": {
@@ -383,7 +383,7 @@
                 }
             },
             "base_storage_need": {
-                "value": 50.0,
+                "value": 0.0,
                 "unit": "terabyte",
                 "label": "Default SSD storage initial storage need from e-footprint hypothesis",
                 "source": {
@@ -449,12 +449,12 @@
             "name": "Default network",
             "id": "Default-network",
             "bandwidth_energy_intensity": {
-                "value": 0.05,
+                "value": 0.1,
                 "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity of Default network from Traficom study",
+                "label": "bandwith energy intensity of Default network from e-footprint hypothesis",
                 "source": {
-                    "name": "Traficom study",
-                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             }
         }
