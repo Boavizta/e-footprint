@@ -5,34 +5,26 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.calculus_graph import build_calculus_graph
 from tests.integration_tests.integration_simple_edge_system_base_class import IntegrationTestSimpleEdgeSystemBaseClass
+from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR
 
 
 class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        (system, edge_storage, edge_computer, edge_process, edge_device, edge_device_need,
-         ram_component, cpu_component, workload_component, edge_function, edge_usage_journey,
-         edge_usage_pattern, start_date) = cls.generate_simple_edge_system()
+        # Generate system from code first
+        system, start_date = cls.generate_simple_edge_system()
 
-        cls.system_json_filepath = "simple_edge_system_with_calculated_attributes.json"
+        # Save to JSON and reload
+        cls.system_json_filepath = os.path.join(
+            INTEGRATION_TEST_DIR, "simple_edge_system_with_calculated_attributes.json")
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict = json_to_system(system_dict)
 
-        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_device, cls.edge_device_need,
-         cls.ram_component, cls.cpu_component, cls.workload_component, cls.edge_function, cls.edge_usage_journey,
-         cls.edge_usage_pattern, cls.start_date) = \
-             (flat_obj_dict[system.id], flat_obj_dict[edge_storage.id], flat_obj_dict[edge_computer.id],
-              flat_obj_dict[edge_process.id], flat_obj_dict[edge_device.id], flat_obj_dict[edge_device_need.id],
-              flat_obj_dict[ram_component.id], flat_obj_dict[cpu_component.id], flat_obj_dict[workload_component.id],
-              flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id],
-              flat_obj_dict[edge_usage_pattern.id], start_date)
-
-        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer, cls.edge_device,
-                                   cls.ram_component, cls.cpu_component, cls.workload_component)
-
-        cls.ref_json_filename = "simple_edge_system"
+        # Get the reloaded system and use common setup
+        reloaded_system = flat_obj_dict[system.id]
+        cls._setup_from_system(reloaded_system, start_date)
 
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:

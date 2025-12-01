@@ -25,7 +25,8 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.logger import logger
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR, \
+    SystemTestFixture
 
 
 class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
@@ -73,41 +74,41 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             if mod_obj != usage_pattern:
                 mod_obj.id = css_escape(mod_obj.name)
 
-        return system, storage, server, gpu_server, video_streaming_service, web_application_service, genai_service, \
-                video_streaming_job, web_application_job, genai_job, direct_gpu_job, network, uj, start_date, \
-                usage_pattern
+        return system, start_date
 
     @classmethod
-    def initialize_footprints(cls, system, storage, server, gpu_server, usage_pattern, network):
-        cls.initial_footprint = system.total_footprint
+    def _setup_from_system(cls, system, start_date):
+        """Common setup logic for both code-generated and JSON-loaded systems."""
+        cls.system = system
+        cls.start_date = start_date
+        cls.fixture = SystemTestFixture(system)
 
-        cls.initial_fab_footprints = {
-            storage: storage.instances_fabrication_footprint,
-            server: server.instances_fabrication_footprint,
-            gpu_server: gpu_server.instances_fabrication_footprint,
-            usage_pattern: usage_pattern.devices_fabrication_footprint,
-        }
+        # Extract objects by name for backward compatibility with existing tests
+        cls.storage = cls.fixture.get("Web server SSD storage")
+        cls.server = cls.fixture.get("Web server")
+        cls.gpu_server = cls.fixture.get("GPU server")
+        cls.video_streaming_service = cls.fixture.get("Youtube streaming service")
+        cls.web_application_service = cls.fixture.get("Web application service")
+        cls.genai_service = cls.fixture.get("GenAI service")
+        cls.video_streaming_job = cls.fixture.get("Streaming job")
+        cls.web_application_job = cls.fixture.get("web app job")
+        cls.genai_job = cls.fixture.get("GenAI job")
+        cls.direct_gpu_job = cls.fixture.get("direct GPU server job")
+        cls.network = cls.fixture.get("Default network")
+        cls.uj = cls.fixture.get("Daily Youtube usage")
+        cls.usage_pattern = cls.fixture.get("Youtube usage in France")
 
-        cls.initial_energy_footprints = {
-            storage: storage.energy_footprint,
-            server: server.energy_footprint,
-            gpu_server: gpu_server.energy_footprint,
-            network: network.energy_footprint,
-            usage_pattern: usage_pattern.devices_energy_footprint,
-        }
+        # Auto-initialize footprints
+        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
+         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+            cls.fixture.initialize_footprints()
 
-        cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
-        cls.initial_system_total_energy_footprint = system.total_energy_footprint_sum_over_period
+        cls.ref_json_filename = "system_with_services"
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.storage, cls.server, cls.gpu_server, cls.video_streaming_service, cls.web_application_service, 
-         cls.genai_service, cls.video_streaming_job, cls.web_application_job, cls.genai_job, cls.direct_gpu_job, 
-         cls.network, cls.uj, cls.start_date, cls.usage_pattern) = cls.generate_system_with_services()
-        
-        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.gpu_server, cls.usage_pattern, cls.network)
-
-        cls.ref_json_filename = "system_with_services"
+        system, start_date = cls.generate_system_with_services()
+        cls._setup_from_system(system, start_date)
 
     def run_test_variations_on_services_inputs(self):
         self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],

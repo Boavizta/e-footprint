@@ -30,7 +30,8 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.system import System
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR, \
+    SystemTestFixture
 from tests.utils import check_all_calculus_graph_dependencies_consistencies
 
 
@@ -134,46 +135,39 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         for edge_computer_component in edge_computer.components:
             edge_computer_component.id = css_escape(edge_computer_component.name)
 
-        return (system, edge_storage, edge_computer, edge_process, edge_device, edge_device_need,
-                ram_component, cpu_component, workload_component, edge_function, edge_usage_journey, edge_usage_pattern,
-                start_date)
+        return system, start_date
 
     @classmethod
-    def initialize_footprints(cls, system, edge_storage, edge_computer, edge_device, ram_component, cpu_component,
-                              workload_component):
-        cls.initial_footprint = system.total_footprint
+    def _setup_from_system(cls, system, start_date):
+        """Common setup logic for both code-generated and JSON-loaded systems."""
+        cls.system = system
+        cls.start_date = start_date
+        cls.fixture = SystemTestFixture(system)
 
-        cls.initial_fab_footprints = {
-            edge_storage: edge_storage.instances_fabrication_footprint,
-            edge_computer: edge_computer.instances_fabrication_footprint,
-            edge_device: edge_device.instances_fabrication_footprint,
-            ram_component: ram_component.instances_fabrication_footprint,
-            cpu_component: cpu_component.instances_fabrication_footprint,
-            workload_component: workload_component.instances_fabrication_footprint,
-        }
+        # Extract objects by name for backward compatibility with existing tests
+        cls.edge_storage = cls.fixture.get("Edge SSD storage")
+        cls.edge_computer = cls.fixture.get("Edge computer")
+        cls.edge_process = cls.fixture.get("Default edge process")
+        cls.edge_device = cls.fixture.get("custom edge device")
+        cls.edge_device_need = cls.fixture.get("custom edge device need")
+        cls.ram_component = cls.fixture.get("edge RAM component")
+        cls.cpu_component = cls.fixture.get("edge CPU component")
+        cls.workload_component = cls.fixture.get("edge workload component")
+        cls.edge_function = cls.fixture.get("Default edge function")
+        cls.edge_usage_journey = cls.fixture.get("Default edge usage journey")
+        cls.edge_usage_pattern = cls.fixture.get("Default edge usage pattern")
 
-        cls.initial_energy_footprints = {
-            edge_storage: edge_storage.energy_footprint,
-            edge_computer: edge_computer.energy_footprint,
-            edge_device: edge_device.energy_footprint,
-            ram_component: ram_component.energy_footprint,
-            cpu_component: cpu_component.energy_footprint,
-            workload_component: workload_component.energy_footprint,
-        }
+        # Auto-initialize footprints
+        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
+         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+            cls.fixture.initialize_footprints()
 
-        cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
-        cls.initial_system_total_energy_footprint = system.total_energy_footprint_sum_over_period
+        cls.ref_json_filename = "simple_edge_system"
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_device, cls.edge_device_need,
-         cls.ram_component, cls.cpu_component, cls.workload_component, cls.edge_function, cls.edge_usage_journey, cls.edge_usage_pattern,
-         cls.start_date) = cls.generate_simple_edge_system()
-
-        cls.initialize_footprints(cls.system, cls.edge_storage, cls.edge_computer, cls.edge_device,
-                                   cls.ram_component, cls.cpu_component, cls.workload_component)
-
-        cls.ref_json_filename = "simple_edge_system"
+        system, start_date = cls.generate_simple_edge_system()
+        cls._setup_from_system(system, start_date)
 
     def run_test_system_calculation_graph_right_after_json_to_system(self):
         # Because it exists in the json integration test and classes must implement same methods.

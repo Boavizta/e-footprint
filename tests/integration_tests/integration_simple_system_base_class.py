@@ -25,7 +25,8 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR, \
+    SystemTestFixture
 from tests.utils import check_all_calculus_graph_dependencies_consistencies
 
 
@@ -97,37 +98,37 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             if mod_obj != usage_pattern:
                 mod_obj.id = css_escape(mod_obj.name)
 
-        return (system, storage, server, job_1, uj_step_1, job_2, uj_step_2, uj, network,
-                start_date, usage_pattern)
+        return system, start_date
 
     @classmethod
-    def initialize_footprints(cls, system, storage, server, usage_pattern, network):
-        cls.initial_footprint = system.total_footprint
+    def _setup_from_system(cls, system, start_date):
+        """Common setup logic for both code-generated and JSON-loaded systems."""
+        cls.system = system
+        cls.start_date = start_date
+        cls.fixture = SystemTestFixture(system)
 
-        cls.initial_fab_footprints = {
-            storage: storage.instances_fabrication_footprint,
-            server: server.instances_fabrication_footprint,
-            usage_pattern: usage_pattern.devices_fabrication_footprint,
-        }
+        # Extract objects by name for backward compatibility with existing tests
+        cls.storage = cls.fixture.get("Default SSD storage")
+        cls.server = cls.fixture.get("Default server")
+        cls.job_1 = cls.fixture.get("job 1")
+        cls.job_2 = cls.fixture.get("job 2")
+        cls.uj_step_1 = cls.fixture.get("UJ step 1")
+        cls.uj_step_2 = cls.fixture.get("UJ step 2")
+        cls.uj = cls.fixture.get("Usage journey")
+        cls.network = cls.fixture.get("Default network")
+        cls.usage_pattern = cls.fixture.get("Usage Pattern")
 
-        cls.initial_energy_footprints = {
-            storage: storage.energy_footprint,
-            server: server.energy_footprint,
-            network: network.energy_footprint,
-            usage_pattern: usage_pattern.devices_energy_footprint,
-        }
+        # Auto-initialize footprints
+        (cls.initial_footprint, cls.initial_fab_footprints, cls.initial_energy_footprints,
+         cls.initial_system_total_fab_footprint, cls.initial_system_total_energy_footprint) = \
+            cls.fixture.initialize_footprints()
 
-        cls.initial_system_total_fab_footprint = system.total_fabrication_footprint_sum_over_period
-        cls.initial_system_total_energy_footprint = system.total_energy_footprint_sum_over_period
+        cls.ref_json_filename = "simple_system"
 
     @classmethod
     def setUpClass(cls):
-        (cls.system, cls.storage, cls.server, cls.job_1, cls.uj_step_1, cls.job_2, 
-         cls.uj_step_2, cls.uj, cls.network, cls.start_date, cls.usage_pattern) = cls.generate_simple_system()
-
-        cls.initialize_footprints(cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
-
-        cls.ref_json_filename = "simple_system"
+        system, start_date = cls.generate_simple_system()
+        cls._setup_from_system(system, start_date)
 
     def run_test_system_calculation_graph_right_after_json_to_system(self):
         # Created just because it exists in the IntegrationTestSimpleSystem class and another test makes sure that both

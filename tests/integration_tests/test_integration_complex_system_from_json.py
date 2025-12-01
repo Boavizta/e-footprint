@@ -10,41 +10,19 @@ from tests.integration_tests.integration_complex_system_base_class import Integr
 class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        system, storage_1, storage_2, storage_3, server1, server2, server3, \
-            server1_job1, server1_job2, server1_job3, server2_job, server3_job, \
-            uj_step_1, uj_step_2, uj_step_3, uj_step_4, \
-            start_date, usage_pattern1, usage_pattern2, uj, network1, network2, \
-            edge_storage, edge_computer, edge_process, edge_function, edge_usage_journey, edge_usage_pattern = \
-            cls.generate_complex_system()
+        # Generate system from code first
+        system, start_date = cls.generate_complex_system()
 
+        # Save to JSON and reload
         cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "complex_system_with_calculated_attributes.json")
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
-        # Load the system from the JSON file
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict = json_to_system(system_dict)
 
-        (cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2, cls.server3, \
-            cls.server1_job1, cls.server1_job2, cls.server1_job3, cls.server2_job, cls.server3_job, \
-            cls.uj_step_1, cls.uj_step_2, cls.uj_step_3, cls.uj_step_4, \
-            cls.start_date, cls.usage_pattern1, cls.usage_pattern2, cls.uj, cls.network1, cls.network2, \
-            cls.edge_storage, cls.edge_computer, cls.edge_process, cls.edge_function,
-            cls.edge_usage_journey, cls.edge_usage_pattern) = \
-        flat_obj_dict[system.id], flat_obj_dict[storage_1.id], flat_obj_dict[storage_2.id], flat_obj_dict[storage_3.id], \
-        flat_obj_dict[server1.id], flat_obj_dict[server2.id], flat_obj_dict[server3.id], \
-        flat_obj_dict[server1_job1.id], flat_obj_dict[server1_job2.id], flat_obj_dict[server1_job3.id], \
-        flat_obj_dict[server2_job.id], flat_obj_dict[server3_job.id], \
-        flat_obj_dict[uj_step_1.id], flat_obj_dict[uj_step_2.id], flat_obj_dict[uj_step_3.id], \
-        flat_obj_dict[uj_step_4.id], start_date, flat_obj_dict[usage_pattern1.id], \
-        flat_obj_dict[usage_pattern2.id], flat_obj_dict[uj.id], flat_obj_dict[network1.id], flat_obj_dict[network2.id], \
-        flat_obj_dict[edge_storage.id], flat_obj_dict[edge_computer.id], flat_obj_dict[edge_process.id], \
-        flat_obj_dict[edge_function.id], flat_obj_dict[edge_usage_journey.id], flat_obj_dict[edge_usage_pattern.id]
-
-        cls.initialize_footprints(cls.system, cls.storage_1, cls.storage_2, cls.storage_3, cls.server1, cls.server2,
-                                  cls.server3, cls.usage_pattern1, cls.usage_pattern2, cls.network1, cls.network2,
-                                  cls.edge_storage, cls.edge_computer)
-
-        cls.ref_json_filename = "complex_system"
+        # Get the reloaded system and use common setup
+        reloaded_system = flat_obj_dict[system.id]
+        cls._setup_from_system(reloaded_system, start_date)
 
     def test_all_objects_linked_to_system(self):
         self.run_test_all_objects_linked_to_system()

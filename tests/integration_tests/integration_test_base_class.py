@@ -1,10 +1,10 @@
+from collections import defaultdict
 from copy import copy
-from typing import List, Optional
+from typing import List, Optional, Dict, Type
 from unittest import TestCase
 import os
 import json
 
-from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -16,6 +16,90 @@ from efootprint.constants.units import u
 from efootprint.logger import logger
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+class SystemTestFixture:
+    """Registry for test system objects providing convenient access patterns.
+
+    Provides:
+    - Access by name: fixture.get("Server 1")
+    - Access by class: fixture.get_all(Server), fixture.get_first(Server)
+    - Auto-initialization of footprint tracking dictionaries
+    """
+    def __init__(self, system: "System"):
+        self.system = system
+        self._by_name: Dict[str, ModelingObject] = {}
+        self._by_class: Dict[str, List[ModelingObject]] = defaultdict(list)
+        self._build_registry()
+
+    def _build_registry(self):
+        """Build lookup dictionaries from system's linked objects."""
+        all_objects = [self.system] + self.system.all_linked_objects
+        for obj in all_objects:
+            self._by_name[obj.name] = obj
+            # Use class_as_simple_str for consistent class name lookup
+            self._by_class[obj.class_as_simple_str].append(obj)
+
+    def get(self, name: str) -> ModelingObject:
+        """Get object by its name."""
+        if name not in self._by_name:
+            available = list(self._by_name.keys())
+            raise KeyError(f"No object named '{name}'. Available: {available}")
+        return self._by_name[name]
+
+    def get_first(self, class_type: Type) -> ModelingObject:
+        """Get the first object of given class type."""
+        class_name = class_type.__name__
+        if class_name not in self._by_class or not self._by_class[class_name]:
+            available = [k for k, v in self._by_class.items() if v]
+            raise KeyError(f"No objects of type '{class_name}'. Available types: {available}")
+        return self._by_class[class_name][0]
+
+    def get_all(self, class_type: Type) -> List[ModelingObject]:
+        """Get all objects of given class type."""
+        class_name = class_type.__name__
+        return self._by_class.get(class_name, [])
+
+    def has(self, name: str) -> bool:
+        """Check if an object with given name exists."""
+        return name in self._by_name
+
+    def has_class(self, class_type: Type) -> bool:
+        """Check if any objects of given class type exist."""
+        return bool(self._by_class.get(class_type.__name__))
+
+    @property
+    def class_names(self) -> List[str]:
+        """Get list of all class types present in the system."""
+        return [k for k, v in self._by_class.items() if v]
+
+    def initialize_footprints(self) -> tuple:
+        """Auto-initialize footprint tracking dictionaries.
+
+        Returns:
+            Tuple of (initial_footprint, initial_fab_footprints, initial_energy_footprints,
+                     initial_system_total_fab_footprint, initial_system_total_energy_footprint)
+        """
+        initial_footprint = self.system.total_footprint
+        initial_fab_footprints = {}
+        initial_energy_footprints = {}
+
+        for obj in self.system.all_linked_objects:
+            if hasattr(obj, 'energy_footprint'):
+                initial_energy_footprints[obj] = obj.energy_footprint
+            if hasattr(obj, 'instances_fabrication_footprint'):
+                initial_fab_footprints[obj] = obj.instances_fabrication_footprint
+            # Handle UsagePattern special case with devices_fabrication_footprint
+            if hasattr(obj, 'devices_fabrication_footprint'):
+                initial_fab_footprints[obj] = obj.devices_fabrication_footprint
+            if hasattr(obj, 'devices_energy_footprint'):
+                initial_energy_footprints[obj] = obj.devices_energy_footprint
+
+        initial_system_total_fab_footprint = self.system.total_fabrication_footprint_sum_over_period
+        initial_system_total_energy_footprint = self.system.total_energy_footprint_sum_over_period
+
+        return (initial_footprint, initial_fab_footprints, initial_energy_footprints,
+                initial_system_total_fab_footprint, initial_system_total_energy_footprint)
 
 
 class IntegrationTestBaseClass(TestCase):

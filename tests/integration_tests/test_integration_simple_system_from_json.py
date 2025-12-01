@@ -5,31 +5,25 @@ from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.calculus_graph import build_calculus_graph
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+from tests.integration_tests.integration_test_base_class import INTEGRATION_TEST_DIR
 
 
 class IntegrationTestSimpleSystemFromJson(IntegrationTestSimpleSystemBaseClass):
     @classmethod
     def setUpClass(cls):
-        (system, storage, server, job_1, uj_step_1, job_2, uj_step_2, uj, network,
-         start_date, usage_pattern) = cls.generate_simple_system()
+        # Generate system from code first
+        system, start_date = cls.generate_simple_system()
 
-        cls.system_json_filepath = "system_with_calculated_attributes.json"
+        # Save to JSON and reload
+        cls.system_json_filepath = os.path.join(INTEGRATION_TEST_DIR, "system_with_calculated_attributes.json")
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict = json_to_system(system_dict)
 
-        cls.system, cls.storage, cls.server, cls.job_1, cls.uj_step_1, cls.job_2, cls.uj_step_2, \
-            cls.uj, cls.start_date, cls.network, cls.usage_pattern = \
-            flat_obj_dict[system.id], flat_obj_dict[storage.id], flat_obj_dict[server.id], \
-            flat_obj_dict[job_1.id], flat_obj_dict[uj_step_1.id], flat_obj_dict[job_2.id], \
-            flat_obj_dict[uj_step_2.id], flat_obj_dict[uj.id], start_date, flat_obj_dict[network.id], \
-            flat_obj_dict[usage_pattern.id]
-
-        cls.initialize_footprints(
-            cls.system, cls.storage, cls.server, cls.usage_pattern, cls.network)
-
-        cls.ref_json_filename = "simple_system"
+        # Get the reloaded system and use common setup
+        reloaded_system = flat_obj_dict[system.id]
+        cls._setup_from_system(reloaded_system, start_date)
 
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:
