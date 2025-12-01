@@ -53,39 +53,19 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     @staticmethod
     def generate_simple_edge_system():
         # Create edge objects
-        edge_storage = EdgeStorage(
-            "Edge SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB),
-        )
+        edge_storage = EdgeStorage.from_defaults(
+            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W))
 
-        edge_computer = EdgeComputer(
-            "Edge computer",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=edge_storage
-        )
+        edge_computer = EdgeComputer.from_defaults(
+            "Edge computer", storage=edge_storage, lifespan=SourceValue(8 * u.year))
 
-        edge_process = RecurrentEdgeProcess(
+        edge_process = RecurrentEdgeProcess.from_defaults(
             "Default edge process",
             edge_device=edge_computer,
-            recurrent_compute_needed=SourceRecurrentValues(
-                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)),
         )
 
         # Create custom edge device with components
@@ -324,12 +304,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_device_in_edge_device_need_raises_error(self):
         logger.warning("Attempting to change edge_device in edge_device_need")
-        new_edge_device = EdgeDevice(
-            "new custom edge device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[],
-            lifespan=SourceValue(6 * u.year)
-        )
+        new_edge_device = EdgeDevice.from_defaults("new custom edge device", components=[])
         with self.assertRaises(ValueError):
             self.edge_device_need.edge_device = new_edge_device
 
@@ -339,12 +314,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_update_edge_component_in_component_need_raises_error(self):
         logger.warning("Attempting to change edge_component in component_need to component from different device")
         new_ram_component = EdgeRAMComponent.from_defaults("new RAM component")
-        new_edge_device = EdgeDevice(
-            "another custom edge device",
-            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
-            components=[new_ram_component],
-            lifespan=SourceValue(6 * u.year)
-        )
+        new_edge_device = EdgeDevice.from_defaults(
+            "another custom edge device", components=[new_ram_component])
         ram_need = self.edge_device_need.recurrent_edge_component_needs[0]
         with self.assertRaises(ValueError):
             ram_need.edge_component = new_ram_component
@@ -363,16 +334,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_edge_storage(self):
-        new_edge_storage = EdgeStorage(
-            "New Edge SSD storage, identical to default one",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB),
-        )
+        new_edge_storage = EdgeStorage.from_defaults(
+            "New Edge SSD storage, identical to default one", base_storage_need=SourceValue(100 * u.GB),
+            idle_power=SourceValue(0.1 * u.W))
         logger.warning("Changing edge device storage")
         self.edge_computer.storage = new_edge_storage
         self.footprint_has_changed([self.edge_storage], system=self.system)
@@ -388,29 +352,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_edge_computer(self):
-        new_edge_storage = EdgeStorage(
-            "storage for new edge device",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB),
-        )
+        new_edge_storage = EdgeStorage.from_defaults(
+            "storage for new edge device", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W))
 
-        new_edge_computer = EdgeComputer(
-            "New edge computer, identical to default one",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=new_edge_storage
-        )
+        new_edge_computer = EdgeComputer.from_defaults(
+            "New edge computer, identical to default one", storage=new_edge_storage,
+            lifespan=SourceValue(8 * u.year))
 
         logger.warning("Changing edge process device")
         self.edge_process.edge_device = new_edge_computer
@@ -428,7 +375,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_edge_process(self):
         logger.warning("Adding new edge process")
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Additional edge process",
             edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -436,7 +383,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB)),
         )
 
         self.edge_function.recurrent_edge_device_needs = (
@@ -455,7 +402,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_processes(self):
         logger.warning("Modifying edge processes list")
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Replacement edge process",
             edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -463,7 +410,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([3] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB)),
         )
         self.edge_function.recurrent_edge_device_needs = [new_edge_process]
 
@@ -478,31 +425,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_usage_journey(self):
         logger.warning("Changing edge usage journey")
-        new_edge_storage = EdgeStorage(
-            "New edge SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB),
-        )
+        new_edge_storage = EdgeStorage.from_defaults(
+            "New edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W))
 
-        new_edge_computer = EdgeComputer(
-            "New edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=new_edge_storage
-        )
+        new_edge_computer = EdgeComputer.from_defaults(
+            "New edge device", storage=new_edge_storage, lifespan=SourceValue(8 * u.year))
 
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "New edge process",
             edge_device=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -510,7 +439,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)),
         )
 
         new_edge_function = EdgeFunction(
@@ -611,31 +540,13 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_update_edge_usage_journey_after_json_to_system(self):
         with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
-        new_edge_storage = EdgeStorage(
-            "New edge SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB),
-        )
+        new_edge_storage = EdgeStorage.from_defaults(
+            "New edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W))
 
-        new_edge_computer = EdgeComputer(
-            "New edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=new_edge_storage
-        )
+        new_edge_computer = EdgeComputer.from_defaults(
+            "New edge device", storage=new_edge_storage, lifespan=SourceValue(8 * u.year))
 
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "New edge process",
             edge_device=new_edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -643,15 +554,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)),
         )
 
         ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
         cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
         workload_component = EdgeWorkloadComponent.from_defaults("edge workload component")
 
-        edge_device = EdgeDevice.from_defaults("custom edge device",
-                                               components=[ram_component, cpu_component, workload_component])
+        edge_device = EdgeDevice.from_defaults(
+            "custom edge device", components=[ram_component, cpu_component, workload_component])
 
         ram_need = RecurrentEdgeComponentNeed(
             "RAM need",
@@ -716,7 +627,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_storage = next(iter(class_obj_dict["EdgeStorage"].values()))
         edge_computer = next(iter(class_obj_dict["EdgeComputer"].values()))
         logger.warning("Modifying edge processes")
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "new edge process",
             edge_device=edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -724,7 +635,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB)),
         )
 
         edge_function.recurrent_edge_device_needs = edge_function.recurrent_edge_device_needs + [new_edge_process]
@@ -766,7 +677,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertIn(self.edge_computer.energy_footprint.id, recomputed_elements_ids)
 
     def run_test_simulation_add_new_edge_process(self):
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "New edge process",
             edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -774,7 +685,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB)),
         )
 
         initial_edge_needs = copy(self.edge_function.recurrent_edge_device_needs)
@@ -809,7 +720,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def run_test_add_edge_usage_journey_to_edge_computer(self):
         logger.warning("Adding new edge usage journey to edge computer")
 
-        new_edge_process = RecurrentEdgeProcess(
+        new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Additional edge process for second journey",
             edge_device=self.edge_computer,
             recurrent_compute_needed=SourceRecurrentValues(
@@ -817,7 +728,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_ram_needed=SourceRecurrentValues(
                 Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB))
+                Quantity(np.array([100] * 84 + [-100] * 84, dtype=np.float32), u.MB)),
         )
 
         new_edge_function = EdgeFunction(

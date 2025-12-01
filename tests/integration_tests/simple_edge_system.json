@@ -253,28 +253,28 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte",
-                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "power_per_storage_capacity": {
                 "value": 1.3,
                 "unit": "watt / terabyte",
-                "label": "Power of Edge SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
+                "label": "Power of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "storage_capacity": {
                 "value": 1.0,
                 "unit": "terabyte",
-                "label": "Storage capacity of Edge SSD storage from Dirty secret of SSDs: embodied carbon",
+                "label": "Storage capacity of Edge SSD storage from e-footprint hypothesis",
                 "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                    "name": "e-footprint hypothesis",
+                    "link": null
                 }
             },
             "base_storage_need": {
