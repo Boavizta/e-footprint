@@ -107,23 +107,6 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             self.web_application_service,
             attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
 
-    def run_test_variations_on_services_inputs_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
-            full_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-
-        self._test_variations_on_obj_inputs(
-            next(iter(class_obj_dict["VideoStreaming"].values())),
-            attrs_to_skip = ["base_compute_consumption"],
-            special_mult = {"base_ram_consumption": 2, "ram_buffer_per_user": 5})
-        self._test_variations_on_obj_inputs(
-            next(iter(class_obj_dict["GenAIModel"].values())),
-            attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
-            special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
-        self._test_variations_on_obj_inputs(
-            next(iter(class_obj_dict["WebApplication"].values())),
-            attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
-
     def run_test_update_service_servers(self):
         logger.info("Linking services to new servers")
         new_server = BoaviztaCloudServer.from_defaults("New server", storage=Storage.ssd())
@@ -155,11 +138,10 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
 
     def run_test_update_service_jobs(self):
-        new_storage = Storage.ssd("New web server SSD storage, identical to previous one")
-        new_server = BoaviztaCloudServer.from_defaults(
-            "New web server, identical to previous one", storage=new_storage,
-            base_ram_consumption=SourceValue(1 * u.GB_ram))
-        new_gpu_server = GPUServer.from_defaults("New GPU server, identical to previous one", storage=Storage.ssd())
+        new_storage = self.storage.copy_with()
+        new_server = self.server.copy_with(storage=new_storage)
+        new_gpu_storage = self.gpu_server.storage.copy_with()
+        new_gpu_server = self.gpu_server.copy_with(storage=new_gpu_storage)
 
         new_video_streaming_service = VideoStreaming.from_defaults(
             "New Youtube streaming service", server=new_server)

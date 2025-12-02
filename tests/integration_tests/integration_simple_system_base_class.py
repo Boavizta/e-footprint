@@ -97,9 +97,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def run_test_all_objects_linked_to_system(self):
         expected_objects = {
             self.server, self.storage, self.usage_pattern, self.network, self.uj, self.uj_step_1,
-            self.uj_step_2, self.job_1, self.job_2, self.usage_pattern.devices[0],
-            self.usage_pattern.country
-        }
+            self.uj_step_2, self.job_1, self.job_2, self.usage_pattern.devices[0], self.usage_pattern.country}
         self.assertEqual(expected_objects, set(self.system.all_linked_objects))
 
     def run_test_calculation_graph(self):

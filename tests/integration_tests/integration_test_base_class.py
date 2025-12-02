@@ -253,7 +253,7 @@ class IntegrationTestBaseClass(TestCase):
             corresponding_obj = retrieve_obj_by_name(obj.name, initial_mod_objs)
             for attr_key, attr_value in obj.__dict__.items():
                 if isinstance(attr_value, ExplainableQuantity) or isinstance(attr_value, ExplainableHourlyQuantities):
-                    self.assertEqual(round(getattr(corresponding_obj, attr_key), 3), round(attr_value, 3),
+                    self.assertEqual(getattr(corresponding_obj, attr_key), attr_value,
                                      f"Attribute {attr_key} is not equal for {obj.name}")
                     self.assertEqual(getattr(corresponding_obj, attr_key).label,attr_value.label,
                                      f"Attribute {attr_key} label is not equal for {obj.name}")

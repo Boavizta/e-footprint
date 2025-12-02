@@ -63,112 +63,32 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
     @staticmethod
     def generate_complex_system():
-        storage_1 = Storage(
-            "Default SSD storage 1",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(4 * u.hour),
-            base_storage_need=SourceValue(100 * u.TB)
-        )
+        storage_1 = Storage.from_defaults("Default SSD storage 1")
+        storage_2 = Storage.from_defaults("Default SSD storage 2")
 
-        storage_2 = Storage(
-            "Default SSD storage 2",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            data_replication_factor=SourceValue(3 * u.dimensionless),
-            data_storage_duration=SourceValue(4 * u.hour),
-            base_storage_need=SourceValue(100 * u.TB)
-        )
-
-        server1 = Server(
-            "Server 1",
-            server_type=ServerTypes.autoscaling(),
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W),
-            lifespan=SourceValue(6 * u.year),
-            idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(12 * u.GB_ram),
-            compute=SourceValue(6 * u.cpu_core),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-            utilization_rate=SourceValue(0.9 * u.dimensionless),
-            base_ram_consumption=SourceValue(300 * u.MB),
-            base_compute_consumption=SourceValue(2 * u.cpu_core),
-            storage=storage_1
-        )
-        cores_per_cpu_units = SourceValue(2 * u.cpu_core)
-        nb_cpu_units = SourceValue(3 * u.dimensionless)
-        server2 = Server(
-            "Server 2",
-            server_type=ServerTypes.on_premise(),
-            carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
-            power=SourceValue(300 * u.W),
-            lifespan=SourceValue(6 * u.year),
-            idle_power=SourceValue(50 * u.W),
-            ram=SourceValue(12 * u.GB_ram),
-            compute=cores_per_cpu_units * nb_cpu_units,
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-            utilization_rate=SourceValue(0.9 * u.dimensionless),
-            base_ram_consumption=SourceValue(300 * u.MB),
-            base_compute_consumption=SourceValue(2 * u.cpu_core),
-            storage=storage_2
-        )
+        server1 = Server.from_defaults("Server 1", storage=storage_1)
+        server2 = Server.from_defaults("Server 2", server_type=ServerTypes.on_premise(), storage=storage_2)
         server3 = Server.from_defaults(
             "Server 3", server_type=ServerTypes.serverless(),
-            storage=Storage.ssd("Default SSD storage 3"),
-            base_ram_consumption=SourceValue(300 * u.MB),
-            base_compute_consumption=SourceValue(2 * u.cpu_core))
-        storage_3 = server3.storage
+            storage=Storage.ssd("Default SSD storage 3"))
 
-        server1_job1 = Job("server 1 job 1", server1, data_transferred=SourceValue(1 * u.GB),
-                                data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
-                                ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-        uj_step_1 = UsageJourneyStep(
-            "UJ step 1", user_time_spent=SourceValue(20 * u.min), jobs=[server1_job1])
+        server1_job1 = Job.from_defaults("server 1 job 1", server=server1)
+        uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[server1_job1])
 
-        server1_job2 = Job("server 1 job 2", server1, data_transferred=SourceValue(300 * u.kB),
-                             data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(0.4 * u.s),
-                             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
-        uj_step_2 = UsageJourneyStep(
-            "UJ step 2", user_time_spent=SourceValue(1 * u.s), jobs=[server1_job2])
+        server1_job2 = Job.from_defaults("server 1 job 2", server=server1)
+        uj_step_2 = UsageJourneyStep.from_defaults("UJ step 2", jobs=[server1_job2])
 
-        server1_job3 = Job(
-            "server 1 job 3", server1, data_transferred=SourceValue(3.3 * u.MB),
-            data_stored=SourceValue(300 * u.kB), request_duration=SourceValue(1 * u.s),
-            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
+        server1_job3 = Job.from_defaults("server 1 job 3", server=server1)
+        uj_step_3 = UsageJourneyStep.from_defaults("UJ step 3", jobs=[server1_job3])
 
-        uj_step_3 = UsageJourneyStep(
-            "UJ step 3", user_time_spent=SourceValue(1 * u.min), jobs=[server1_job3])
-
-        server2_job = Job(
-            "server 2 job", server2, data_transferred=SourceValue((2.5 / 3) * u.GB), data_stored=SourceValue(0 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-            compute_needed=SourceValue(1 * u.cpu_core))
-
-        server3_job = Job(
-            "server 3 job", server3, data_transferred=SourceValue(50 * u.kB),
-            data_stored=SourceValue(50 * u.kB),
-            request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-            compute_needed=SourceValue(1 * u.cpu_core))
-
-        uj_step_4 = UsageJourneyStep(
-            "UJ step 4", user_time_spent=SourceValue(20 * u.min),
-            jobs=[server2_job, server3_job])
+        server2_job = Job.from_defaults("server 2 job", server=server2)
+        server3_job = Job.from_defaults("server 3 job", server=server3)
+        uj_step_4 = UsageJourneyStep.from_defaults("UJ step 4", jobs=[server2_job, server3_job])
 
         uj = UsageJourney(
             "Usage journey", uj_steps=[uj_step_1, uj_step_2, uj_step_3, uj_step_4])
 
-        network1 = Network("network 1", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        network1 = Network.from_defaults("network 1")
 
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern1 = UsagePattern(
@@ -177,7 +97,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=start_date))
 
-        network2 = Network("network 2", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        network2 = Network.from_defaults("network 2")
         usage_pattern2 = UsagePattern(
             "Usage pattern 2", uj, [Device.laptop()], network2,
             Countries.FRANCE(),
@@ -185,51 +105,11 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date))
 
         # Edge components
-        edge_storage = EdgeStorage(
-            "Edge SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(10 * u.GB)
-        )
-
-        edge_computer = EdgeComputer(
-            "Edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=edge_storage
-        )
-
-        edge_process = RecurrentEdgeProcess(
-            "Edge process",
-            edge_device=edge_computer,
-            recurrent_compute_needed=SourceRecurrentValues(
-                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurrentValues(
-                Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
-            recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB))
-        )
-
-        edge_function = EdgeFunction(
-            "Edge function",
-            recurrent_edge_device_needs=[edge_process]
-        )
-
-        edge_usage_journey = EdgeUsageJourney(
-            "Edge usage journey",
-            edge_functions=[edge_function],
-            usage_span=SourceValue(6 * u.year)
-        )
+        edge_storage = EdgeStorage.from_defaults("Edge SSD storage")
+        edge_computer = EdgeComputer.from_defaults("Edge device", storage=edge_storage)
+        edge_process = RecurrentEdgeProcess.from_defaults("Edge process", edge_device=edge_computer)
+        edge_function = EdgeFunction("Edge function", recurrent_edge_device_needs=[edge_process])
+        edge_usage_journey = EdgeUsageJourney.from_defaults("Edge usage journey", edge_functions=[edge_function])
 
         edge_usage_pattern = EdgeUsagePattern(
             "Edge usage pattern",
@@ -330,13 +210,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_new_job(self):
         logger.warning("Adding job")
-        new_job = Job(
-            "new job", self.server1, data_transferred=SourceValue(3 * u.MB), data_stored=SourceValue(3 * u.MB),
-            request_duration=SourceValue(1 * u.s), ram_needed=SourceValue(100 * u.MB_ram),
-            compute_needed=SourceValue(1 * u.cpu_core))
-
-        new_uj_step = UsageJourneyStep(
-            "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
+        new_job = Job.from_defaults("new job", server=self.server1)
+        new_uj_step = UsageJourneyStep.from_defaults("new uj step", jobs=[new_job])
         self.uj.uj_steps += [new_uj_step]
 
         self.footprint_has_changed([self.server1, self.storage_1])
@@ -383,52 +258,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_edge_usage_pattern(self):
         logger.warning("Adding new edge usage pattern")
-        new_edge_storage = EdgeStorage(
-            "New edge SSD storage",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
-            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            base_storage_need=SourceValue(100 * u.GB)
-        )
-
-        new_edge_computer = EdgeComputer(
-            "New edge device",
-            carbon_footprint_fabrication=SourceValue(60 * u.kg),
-            power=SourceValue(30 * u.W),
-            lifespan=SourceValue(8 * u.year),
-            idle_power=SourceValue(5 * u.W),
-            ram=SourceValue(8 * u.GB_ram),
-            compute=SourceValue(4 * u.cpu_core),
-            base_ram_consumption=SourceValue(1 * u.GB_ram),
-            base_compute_consumption=SourceValue(0.1 * u.cpu_core),
-            storage=new_edge_storage
-        )
-
-        new_edge_process = RecurrentEdgeProcess(
-            "New edge process",
-            edge_device=new_edge_computer,
-            recurrent_compute_needed=SourceRecurrentValues(
-                Quantity(np.array([1.5] * 168, dtype=np.float32), u.cpu_core)),
-            recurrent_ram_needed=SourceRecurrentValues(
-                Quantity(np.array([3] * 168, dtype=np.float32), u.GB_ram)),
-            recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([300] * 84 + [-300] * 84, dtype=np.float32), u.MB))
-        )
-
-        new_edge_function = EdgeFunction(
-            "New edge function",
-            recurrent_edge_device_needs=[new_edge_process]
-        )
-
-        new_edge_usage_journey = EdgeUsageJourney(
-            "New edge usage journey",
-            edge_functions=[new_edge_function],
-            usage_span=SourceValue(6 * u.year)
-        )
-
+        new_edge_storage = EdgeStorage.from_defaults("New edge SSD storage")
+        new_edge_computer = EdgeComputer.from_defaults("New edge device", storage=new_edge_storage)
+        new_edge_process = RecurrentEdgeProcess.from_defaults("New edge process", edge_device=new_edge_computer)
+        new_edge_function = EdgeFunction("New edge function", recurrent_edge_device_needs=[new_edge_process])
+        new_edge_usage_journey = EdgeUsageJourney.from_defaults(
+            "New edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "New edge usage pattern",
             edge_usage_journey=new_edge_usage_journey,
@@ -501,9 +336,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_simulation_add_new_object(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults(
+            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         simulation = ModelingUpdate(
@@ -543,13 +379,15 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults(
+            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job.from_defaults(
+            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
         simulation = ModelingUpdate(
@@ -571,13 +409,15 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
-        new_job = Job("new job", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-        data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-        compute_needed=SourceValue(1 * u.cpu_core))
+        new_job = Job.from_defaults(
+            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
-        new_job2 = Job("new job 2", new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-         data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min), ram_needed=SourceValue(100 * u.MB_ram),
-         compute_needed=SourceValue(1 * u.cpu_core))
+        new_job2 = Job.from_defaults(
+            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate(
             [

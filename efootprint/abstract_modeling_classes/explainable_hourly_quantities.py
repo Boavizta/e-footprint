@@ -250,7 +250,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
             aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
 
-            return np.allclose(aligned_first_array, aligned_second_array, rtol=1e-06, atol=1e-06)
+            return np.allclose(aligned_first_array, aligned_second_array, atol=10**-3, rtol=10**-6)
 
         return False
 

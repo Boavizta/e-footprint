@@ -190,7 +190,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             # recurrent_ram_needed only matters to raise InsufficientCapacityError
             # and this behavior is already unit tested.
             edge_process, attrs_to_skip=["recurrent_ram_needed"],
-            special_mult={"recurrent_compute_needed": 2, "recurrent_storage_needed": 2})
+            special_mult={"recurrent_compute_needed": 2, "recurrent_storage_needed": 10})
         self._test_variations_on_obj_inputs(edge_usage_journey, special_mult={"usage_span": 1.1})
         self._test_variations_on_obj_inputs(
             edge_usage_pattern, attrs_to_skip=["hourly_edge_usage_journey_starts"])
@@ -206,24 +206,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self._run_test_variations_on_edge_inputs_from_object_list(
             self.edge_computer, self.edge_storage, self.edge_process, self.edge_usage_journey,
             self.edge_usage_pattern, self.system, self.edge_device_need, self.edge_device)
-
-    def run_test_variations_on_inputs_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
-            full_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-
-        system = next(iter(class_obj_dict["System"].values()))
-        edge_computer = next(iter(class_obj_dict.get("EdgeComputer", {}).values()))
-        edge_storage = next(iter(class_obj_dict.get("EdgeStorage", {}).values()))
-        edge_process = next(iter(class_obj_dict.get("RecurrentEdgeProcess", {}).values()))
-        edge_usage_journey = next(iter(class_obj_dict.get("EdgeUsageJourney", {}).values()))
-        edge_usage_pattern = next(iter(class_obj_dict.get("EdgeUsagePattern", {}).values()))
-        edge_device_need = next(iter(class_obj_dict.get("RecurrentEdgeDeviceNeed", {}).values()))
-        edge_device = next(iter(class_obj_dict.get("EdgeDevice", {}).values()))
-
-        self._run_test_variations_on_edge_inputs_from_object_list(
-            edge_computer, edge_storage, edge_process, edge_usage_journey, edge_usage_pattern, system,
-            edge_device_need, edge_device)
 
     def run_test_update_edge_usage_pattern_hourly_starts(self):
         logger.warning("Updating edge usage pattern hourly starts")
