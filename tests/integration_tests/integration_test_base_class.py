@@ -1,7 +1,8 @@
 from collections import defaultdict
 from copy import copy
+from dataclasses import dataclass
 import inspect
-from typing import List, Optional, Dict, Type
+from typing import Callable, List, Optional, Dict, Sequence, Type, Union
 from unittest import TestCase
 import os
 import json
@@ -11,12 +12,27 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, get_instance_attributes
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.constants.units import u
 from efootprint.logger import logger
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+@dataclass
+class ObjectLinkScenario:
+    """Declarative description of a link-mutation test case."""
+
+    name: str
+    updates_builder: Union[Callable[["IntegrationTestBaseClass"], List[List[object]]], List[List[object]]]
+    expected_changed: Sequence["ModelingObject"] = ()
+    expected_unchanged: Sequence["ModelingObject"] = ()
+    expect_total_change: bool = True
+    expected_exception: Optional[Type[BaseException]] = None
+    post_assertions: Optional[Callable[["IntegrationTestBaseClass"], None]] = None
+    post_reset_assertions: Optional[Callable[["IntegrationTestBaseClass"], None]] = None
 
 
 class AutoTestMethodsMeta(type):
@@ -306,6 +322,44 @@ class IntegrationTestBaseClass(TestCase):
                     expl_attr_new_value.value *= 100 * u.dimensionless
 
                 self._test_input_change(expl_attr, expl_attr_new_value, input_object, expl_attr_name)
+
+    def _run_object_link_scenario(self, scenario: ObjectLinkScenario):
+        """Apply link updates through ModelingUpdate and centralize assertions + rollback."""
+        logger.warning(f"Running object link scenario '{scenario.name}'")
+        updates = (scenario.updates_builder(self) if callable(scenario.updates_builder)
+                   else scenario.updates_builder)
+        modeling_update = None
+        try:
+            modeling_update = ModelingUpdate(updates)
+            if scenario.expected_exception is not None:
+                self.fail(
+                    f"Scenario '{scenario.name}' expected exception "
+                    f"{scenario.expected_exception.__name__} but none was raised"
+                )
+
+            if scenario.expect_total_change:
+                self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+            else:
+                self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+            if scenario.expected_changed:
+                self.footprint_has_changed(list(scenario.expected_changed), system=self.system)
+            if scenario.expected_unchanged:
+                self.footprint_has_not_changed(list(scenario.expected_unchanged))
+            if scenario.post_assertions:
+                scenario.post_assertions(self)
+        except Exception as exc:
+            if scenario.expected_exception and isinstance(exc, scenario.expected_exception):
+                self.assertEqual(self.initial_footprint, self.system.total_footprint)
+                return
+            raise
+        finally:
+            if modeling_update is not None:
+                modeling_update.reset_values()
+                if scenario.post_reset_assertions:
+                    scenario.post_reset_assertions(self)
+                self.footprint_has_not_changed(list(scenario.expected_changed) + list(scenario.expected_unchanged))
+                self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def check_semantic_units_in_calculated_attributes(self, system):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram).

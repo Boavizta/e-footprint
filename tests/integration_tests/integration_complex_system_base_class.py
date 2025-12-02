@@ -27,7 +27,7 @@ from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeP
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 
 
 class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
@@ -65,22 +65,17 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def generate_complex_system():
         storage_1 = Storage.from_defaults("Default SSD storage 1")
         storage_2 = Storage.from_defaults("Default SSD storage 2")
-
         server1 = Server.from_defaults("Server 1", storage=storage_1)
         server2 = Server.from_defaults("Server 2", server_type=ServerTypes.on_premise(), storage=storage_2)
         server3 = Server.from_defaults(
-            "Server 3", server_type=ServerTypes.serverless(),
-            storage=Storage.ssd("Default SSD storage 3"))
+            "Server 3", server_type=ServerTypes.serverless(), storage=Storage.ssd("Default SSD storage 3"))
 
         server1_job1 = Job.from_defaults("server 1 job 1", server=server1)
         uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[server1_job1])
-
         server1_job2 = Job.from_defaults("server 1 job 2", server=server1)
         uj_step_2 = UsageJourneyStep.from_defaults("UJ step 2", jobs=[server1_job2])
-
         server1_job3 = Job.from_defaults("server 1 job 3", server=server1)
         uj_step_3 = UsageJourneyStep.from_defaults("UJ step 3", jobs=[server1_job3])
-
         server2_job = Job.from_defaults("server 2 job", server=server2)
         server3_job = Job.from_defaults("server 3 job", server=server3)
         uj_step_4 = UsageJourneyStep.from_defaults("UJ step 4", jobs=[server2_job, server3_job])
@@ -89,7 +84,6 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "Usage journey", uj_steps=[uj_step_1, uj_step_2, uj_step_3, uj_step_4])
 
         network1 = Network.from_defaults("network 1")
-
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern1 = UsagePattern(
             "Usage pattern 1", uj, [Device.laptop()], network1,
@@ -154,77 +148,50 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
     def run_test_remove_uj_steps_1_and_2(self):
-        logger.warning("Removing uj steps 1 and 2")
-        self.uj.uj_steps = [self.uj_step_1, self.uj_step_2]
-
-        self.footprint_has_changed([self.server1, self.server2, self.storage_1, self.storage_2])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Putting uj steps 1 and 2 back")
-        self.uj.uj_steps = [self.uj_step_1, self.uj_step_2, self.uj_step_3, self.uj_step_4]
-
-        self.footprint_has_not_changed([self.server1, self.server2, self.storage_1, self.storage_2])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="remove_uj_steps_1_and_2",
+            updates_builder=[[self.uj.uj_steps, [self.uj_step_1, self.uj_step_2]]],
+            expected_changed=[self.server1, self.server2, self.storage_1, self.storage_2],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_remove_uj_step_3_job(self):
-        logger.warning("Removing uj step 3 job")
-        self.uj_step_3.jobs = []
-
-        self.footprint_has_changed([self.server1, self.storage_1])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Putting uj step 3 job back")
-        self.uj_step_3.jobs = [self.server1_job3]
-
-        self.footprint_has_not_changed([self.server1, self.storage_1])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="remove_uj_step_3_job",
+            updates_builder=[[self.uj_step_3.jobs, []]],
+            expected_changed=[self.server1, self.storage_1],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_remove_one_uj_step_4_job(self):
-        logger.warning("Removing the uj step 4 job that links to server 3")
-        self.uj_step_4.jobs = [self.server2_job]
-
-        self.footprint_has_changed([self.server3, self.storage_3], system=self.system)
-        self.footprint_has_not_changed([self.server2, self.storage_2])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Putting job back")
-        self.uj_step_4.jobs = [self.server2_job, self.server3_job]
-
-        self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="remove_one_uj_step_4_job",
+            updates_builder=[[self.uj_step_4.jobs, [self.server2_job]]],
+            expected_changed=[self.server3, self.storage_3],
+            expected_unchanged=[self.server2, self.storage_2],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_remove_all_uj_step_4_jobs(self):
-        logger.warning("Removing all uj step 4 jobs")
-        self.uj_step_4.jobs = []
-
-        self.footprint_has_changed([self.server2, self.storage_2, self.server3, self.storage_3],
-                                   system=self.system)
-        self.footprint_has_not_changed([self.server1])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Putting jobs back")
-        self.uj_step_4.jobs = [self.server2_job, self.server3_job]
-
-        self.footprint_has_not_changed([self.server3, self.storage_3, self.server2, self.storage_2])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="remove_all_uj_step_4_jobs",
+            updates_builder=[[self.uj_step_4.jobs, []]],
+            expected_changed=[self.server2, self.storage_2, self.server3, self.storage_3],
+            expected_unchanged=[self.server1],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_add_new_job(self):
-        logger.warning("Adding job")
         new_job = Job.from_defaults("new job", server=self.server1)
         new_uj_step = UsageJourneyStep.from_defaults("new uj step", jobs=[new_job])
-        self.uj.uj_steps += [new_uj_step]
+        updated_steps = self.uj.uj_steps + [new_uj_step]
 
-        self.footprint_has_changed([self.server1, self.storage_1])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Removing new job")
-        self.uj.uj_steps = self.uj.uj_steps[:-1]
-        job = new_uj_step.jobs[0]
-        new_uj_step.self_delete()
-        job.self_delete()
-
-        self.footprint_has_not_changed([self.server1, self.storage_1])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="add_new_job",
+            updates_builder=[[self.uj.uj_steps, updated_steps]],
+            expected_changed=[self.server1, self.storage_1],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
         new_network = Network.wifi_network()
@@ -257,7 +224,6 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_add_edge_usage_pattern(self):
-        logger.warning("Adding new edge usage pattern")
         new_edge_storage = EdgeStorage.from_defaults("New edge SSD storage")
         new_edge_computer = EdgeComputer.from_defaults("New edge device", storage=new_edge_storage)
         new_edge_process = RecurrentEdgeProcess.from_defaults("New edge process", edge_device=new_edge_computer)
@@ -271,17 +237,13 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 50 for elt in [2, 1, 3, 2, 4, 2, 1, 2, 3]], self.start_date)
         )
-
-        self.system.edge_usage_patterns += [new_edge_usage_pattern]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
-
-        logger.warning("Removing the new edge usage pattern")
-        self.system.edge_usage_patterns = [self.edge_usage_pattern]
-        new_edge_usage_pattern.self_delete()
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
+        updated_edge_usage_patterns = self.system.edge_usage_patterns + [new_edge_usage_pattern]
+        scenario = ObjectLinkScenario(
+            name="add_edge_usage_pattern",
+            updates_builder=[[self.system.edge_usage_patterns, updated_edge_usage_patterns]],
+            expected_unchanged=[self.edge_computer, self.edge_storage],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()

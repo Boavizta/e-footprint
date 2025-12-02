@@ -1,18 +1,14 @@
-import json
-import os
 from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
-from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.hardware.device import Device
 from efootprint.core.usage.job import GPUJob
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -25,7 +21,7 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.logger import logger
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 
 
 class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
@@ -111,31 +107,34 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         logger.info("Linking services to new servers")
         new_server = BoaviztaCloudServer.from_defaults("New server", storage=Storage.ssd())
         new_gpu_server = GPUServer.from_defaults("New GPU server", storage=Storage.ssd())
-        self.video_streaming_service.server = new_server
-        self.web_application_service.server = new_server
-        self.genai_service.server = new_gpu_server
-        self.direct_gpu_job.server = new_gpu_server
+        updates = [
+            [self.video_streaming_service.server, new_server],
+            [self.web_application_service.server, new_server],
+            [self.genai_service.server, new_gpu_server],
+            [self.direct_gpu_job.server, new_gpu_server],
+        ]
 
-        self.assertEqual(self.server.installed_services, [])
-        self.assertEqual(self.server.jobs, [])
-        self.assertIsInstance(self.server.hour_by_hour_ram_need, EmptyExplainableObject)
-        self.assertIsInstance(self.server.hour_by_hour_compute_need, EmptyExplainableObject)
-        self.assertEqual(
-            set(new_server.installed_services), {self.video_streaming_service, self.web_application_service})
-        self.assertEqual(self.gpu_server.installed_services, [])
-        self.assertEqual(self.gpu_server.jobs, [])
-        self.assertIsInstance(self.gpu_server.hour_by_hour_ram_need, EmptyExplainableObject)
-        self.assertIsInstance(self.gpu_server.hour_by_hour_compute_need, EmptyExplainableObject)
-        self.assertEqual(set(new_gpu_server.installed_services), {self.genai_service})
+        def post_assertions(test):
+            test.assertEqual(test.server.installed_services, [])
+            test.assertEqual(test.server.jobs, [])
+            test.assertIsInstance(test.server.hour_by_hour_ram_need, EmptyExplainableObject)
+            test.assertIsInstance(test.server.hour_by_hour_compute_need, EmptyExplainableObject)
+            test.assertEqual(set(new_server.installed_services),
+                             {test.video_streaming_service, test.web_application_service})
+            test.assertEqual(test.gpu_server.installed_services, [])
+            test.assertEqual(test.gpu_server.jobs, [])
+            test.assertIsInstance(test.gpu_server.hour_by_hour_ram_need, EmptyExplainableObject)
+            test.assertIsInstance(test.gpu_server.hour_by_hour_compute_need, EmptyExplainableObject)
+            test.assertEqual(set(new_gpu_server.installed_services), {test.genai_service})
 
-        logger.info("Linking services back to initial servers")
-        self.web_application_service.server = self.server
-        self.video_streaming_service.server = self.server
-        self.genai_service.server = self.gpu_server
-        self.direct_gpu_job.server = self.gpu_server
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
+        scenario = ObjectLinkScenario(
+            name="update_service_servers",
+            updates_builder=updates,
+            expected_changed=[self.server, self.gpu_server, self.storage],
+            expected_unchanged=[self.network, self.usage_pattern],
+            post_assertions=post_assertions,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_service_jobs(self):
         new_storage = self.storage.copy_with()
@@ -151,25 +150,25 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             "New GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"),
             server=new_gpu_server)
 
-        logger.info("Linking jobs to new services")
-        ModelingUpdate([[self.direct_gpu_job.server, new_gpu_server],
-        [self.video_streaming_job.service, new_video_streaming_service],
-        [self.web_application_job.service, new_web_application_service],
-        [self.genai_job.service, new_genai_service]])
+        updates = [
+            [self.direct_gpu_job.server, new_gpu_server],
+            [self.video_streaming_job.service, new_video_streaming_service],
+            [self.web_application_job.service, new_web_application_service],
+            [self.genai_job.service, new_genai_service],
+        ]
 
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.storage, self.server, self.gpu_server], system=self.system)
-        self.assertEqual(self.server.jobs, [])
-        self.footprint_has_not_changed([self.network, self.usage_pattern])
+        def post_assertions(test):
+            test.assertEqual(test.server.jobs, [])
 
-        logger.info("Linking jobs back to initial services")
-        self.direct_gpu_job.server = self.gpu_server
-        self.video_streaming_job.service = self.video_streaming_service
-        self.web_application_job.service = self.web_application_service
-        self.genai_job.service = self.genai_service
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern, self.gpu_server])
+        scenario = ObjectLinkScenario(
+            name="update_service_jobs",
+            updates_builder=updates,
+            expected_changed=[self.storage, self.server, self.gpu_server],
+            expected_unchanged=[self.network, self.usage_pattern],
+            expect_total_change=False,
+            post_assertions=post_assertions,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
         logger.info("Installing new service on server")

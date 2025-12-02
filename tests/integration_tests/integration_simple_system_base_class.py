@@ -23,7 +23,7 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list, create_hourly_usage_from_frequency
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 from tests.utils import check_all_calculus_graph_dependencies_consistencies
 
 
@@ -150,6 +150,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(network)
         self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
         self._test_variations_on_obj_inputs(job_1, special_mult={"data_stored": 1000})
+        self._test_input_change(
+            self.usage_pattern.hourly_usage_journey_starts,
+            create_source_hourly_values_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]),
+            self.usage_pattern, "hourly_usage_journey_starts")
 
     def run_test_variations_on_inputs(self):
         self._run_test_variations_on_inputs_from_object_list(
@@ -158,30 +162,15 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
-        previous_user_time_spents = []
+        changes = []
         for uj_step in self.uj.uj_steps:
-            previous_user_time_spents.append(uj_step.user_time_spent)
-            uj_step.user_time_spent = SourceValue(0 * u.min)
+            changes.append([uj_step.user_time_spent, SourceValue(0 * u.min)])
 
+        update = ModelingUpdate(changes)
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
-        logger.info("Setting user journey steps user_time_spent back to previous values")
-
-        for uj_step, previous_user_time_spent in zip(self.uj.uj_steps, previous_user_time_spents):
-            uj_step.user_time_spent = previous_user_time_spent
-
+        update.reset_values()
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-
-    def run_test_hourly_usage_journey_starts_update(self):
-        logger.warning("Updating hourly user journey starts")
-        initial_hourly_uj_starts = self.usage_pattern.hourly_usage_journey_starts
-        self.usage_pattern.hourly_usage_journey_starts = create_source_hourly_values_from_list(
-            [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.usage_pattern.hourly_usage_journey_starts = initial_hourly_uj_starts
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-
 
     def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
         logger.warning("Updating job data_stored from positive to negative value")
@@ -295,134 +284,93 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertGreater(len(children_data), 0)
 
     def run_test_uj_step_update(self):
-        logger.warning("Updating uj steps in default user journey")
-        self.uj.uj_steps = [self.uj_step_1]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.uj.uj_steps = [self.uj_step_1, self.uj_step_2]
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="uj_step_update",
+            updates_builder=[[self.uj.uj_steps, [self.uj_step_1]]],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_device_pop_update(self):
-        logger.warning("Updating devices in usage pattern")
-        self.usage_pattern.devices = [Device.laptop(), Device.screen()]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        up_laptop_with_normalized_id = Device.laptop()
-        up_laptop_with_normalized_id.id = css_escape(up_laptop_with_normalized_id.name)
-        logger.warning("Setting devices back to laptop with normalized id")
-        self.usage_pattern.devices = [up_laptop_with_normalized_id]
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="device_pop_update",
+            updates_builder=[[self.usage_pattern.devices, [Device.laptop(), Device.screen()]]],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_server(self):
         new_storage = self.storage.copy_with()
         new_server = self.server.copy_with(storage=new_storage)
-
-        logger.warning("Changing jobs server")
-        self.job_1.server = new_server
-        self.footprint_has_changed([self.server])
-        self.job_2.server = new_server
-        self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, self.server.energy_footprint.magnitude)
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-
-        logger.warning("Changing back to initial job server")
-        self.job_1.server = self.server
-        self.job_2.server = self.server
-        self.assertEqual(0, new_server.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, new_server.energy_footprint.magnitude)
-        self.footprint_has_not_changed([self.server])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="update_server",
+            updates_builder=[[self.job_1.server, new_server], [self.job_2.server, new_server]],
+            expected_changed=[self.server],
+            expect_total_change=False,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_storage(self):
         new_storage = self.storage.copy_with()
-        logger.warning("Changing jobs storage")
-
-        self.server.storage = new_storage
-        self.footprint_has_changed([self.storage], system=self.system)
-
-        self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
-        self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-
-        logger.warning("Changing back to initial jobs storage")
-        self.server.storage = self.storage
-        self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, new_storage.energy_footprint.magnitude)
-        self.footprint_has_not_changed([self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="update_storage",
+            updates_builder=[[self.server.storage, new_storage]],
+            expected_changed=[self.storage],
+            expect_total_change=False
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_jobs(self):
-        logger.warning("Modifying streaming jobs")
         new_job = Job.from_defaults("new job", server=self.server)
-
-        self.uj_step_1.jobs += [new_job]
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.usage_pattern])
-        self.footprint_has_changed([self.storage, self.server, self.network])
-
-        logger.warning("Changing back to previous jobs")
-        self.uj_step_1.jobs = [self.job_1]
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        scenario = ObjectLinkScenario(
+            name="update_jobs",
+            updates_builder=[[self.uj_step_1.jobs, self.uj_step_1.jobs + [new_job]]],
+            expected_changed=[self.storage, self.server, self.network],
+            expected_unchanged=[self.usage_pattern],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_uj_steps(self):
-        logger.warning("Modifying uj steps")
         new_step = UsageJourneyStep.from_defaults(
             "new_step", jobs=[Job.from_defaults("new job", server=self.server)]
         )
-        self.uj.uj_steps = [new_step]
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.storage, self.server, self.network], system=self.system)
-
-        logger.warning("Changing back to previous uj steps")
-        self.uj.uj_steps = [self.uj_step_1, self.uj_step_2]
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        scenario = ObjectLinkScenario(
+            name="update_uj_steps",
+            updates_builder=[[self.uj.uj_steps, [new_step]]],
+            expected_changed=[self.storage, self.server, self.network],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_usage_journey(self):
-        logger.warning("Changing user journey")
         new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.uj_step_1])
-        self.usage_pattern.usage_journey = new_uj
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern], system=self.system)
-
-        logger.warning("Changing back to previous uj")
-        self.usage_pattern.usage_journey = self.uj
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        new_uj.id = css_escape(new_uj.name)
+        scenario = ObjectLinkScenario(
+            name="update_usage_journey",
+            updates_builder=[[self.usage_pattern.usage_journey, new_uj]],
+            expected_changed=[self.storage, self.server, self.network, self.usage_pattern],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_country_in_usage_pattern(self):
-        logger.warning("Changing usage pattern country")
-
-        self.usage_pattern.country = Countries.MALAYSIA()
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.network, self.usage_pattern])
-
-        logger.warning("Changing back to initial usage pattern country")
-        self.usage_pattern.country = Countries.FRANCE()
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.network, self.usage_pattern])
+        scenario = ObjectLinkScenario(
+            name="update_usage_pattern_country",
+            updates_builder=[[self.usage_pattern.country, Countries.MALAYSIA()]],
+            expected_changed=[self.network, self.usage_pattern],
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_update_network(self):
-        logger.warning("Changing network")
         new_network = Network.from_defaults("New network with same specs as default")
-        self.usage_pattern.network = new_network
 
-        self.assertEqual(0, self.network.energy_footprint.max().magnitude)
-        self.footprint_has_changed([self.network], system=self.system)
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+        def post_assertions(test):
+            test.assertEqual(0, test.network.energy_footprint.max().magnitude)
 
-        logger.warning("Changing back to initial network")
-        self.usage_pattern.network = self.network
-        self.assertEqual(0, new_network.energy_footprint.max().magnitude)
-        self.footprint_has_not_changed([self.network])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        scenario = ObjectLinkScenario(
+            name="update_network",
+            updates_builder=[[self.usage_pattern.network, new_network]],
+            expected_changed=[self.network],
+            expect_total_change=False,
+            post_assertions=post_assertions,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_add_uj_step_without_job(self):
         logger.warning("Add uj step without job")
@@ -448,65 +396,59 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_usage_pattern(self):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
+
         analytics_server = BoaviztaCloudServer.from_defaults(
-            f"analytics provider server", server_type=ServerTypes.serverless(),
+            "analytics provider server", server_type=ServerTypes.serverless(),
             storage=Storage.from_defaults("analytics provider storage"))
-        data_job_2 = Job.from_defaults(f"analytics provider data upload", server=analytics_server)
+        data_job_2 = Job.from_defaults("analytics provider data upload", server=analytics_server)
         daily_analytics_uj = UsageJourney(
-            f"Daily analytics provider usage journey",
-            uj_steps=[UsageJourneyStep.from_defaults(f"Ingest daily data", jobs=[data_job_2])]
+            "Daily analytics provider usage journey",
+            uj_steps=[UsageJourneyStep.from_defaults("Ingest daily data", jobs=[data_job_2])]
         )
         usage_pattern = UsagePattern(
-            f"analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
+            "analytics provider daily uploads", daily_analytics_uj, devices=[Device.smartphone()],
             country=self.usage_pattern.country, network=Network.from_defaults("analytics provider network"),
             hourly_usage_journey_starts=create_hourly_usage_from_frequency(
                 timespan=1 * u.year, input_volume=1, frequency="daily",
                 start_date=datetime.strptime("2024-01-01", "%Y-%m-%d"))
         )
-        logger.warning(f"Adding usage pattern {usage_pattern.name} to system")
-        self.system.usage_patterns += [usage_pattern]
 
-        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+        def post_reset(test):
+            usage_pattern.self_delete()
+            for direct_child in test.usage_pattern.country.average_carbon_intensity.direct_children_with_id:
+                test.assertNotEqual(direct_child.modeling_obj_container.id, usage_pattern.id)
 
-        logger.warning("Removing the new usage pattern from the system")
-        self.system.usage_patterns = self.system.usage_patterns[:-1]
-        logger.warning("Deleting the usage pattern")
-        usage_pattern_id = usage_pattern.id
-        usage_pattern.self_delete()
-        # Make sure that calculus graph references to the deleted usage pattern are removed
-        for direct_child in self.usage_pattern.country.average_carbon_intensity.direct_children_with_id:
-            self.assertNotEqual(direct_child.modeling_obj_container.id, usage_pattern_id)
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+        scenario = ObjectLinkScenario(
+            name="add_usage_pattern",
+            updates_builder=[[self.system.usage_patterns, self.system.usage_patterns + [usage_pattern]]],
+            post_reset_assertions=post_reset,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_change_network_and_hourly_usage_journey_starts_simultaneously_recomputes_in_right_order(self):
-        logger.warning("Changing network and hourly usage journey starts simultaneously")
         new_network = Network.from_defaults("New network with same specs as default")
-        initial_usage_journey_starts = self.usage_pattern.hourly_usage_journey_starts
+        new_hourly = create_source_hourly_values_from_list(
+            [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])
 
-        ModelingUpdate([
-            [self.usage_pattern.network, new_network],
-            [self.usage_pattern.hourly_usage_journey_starts, create_source_hourly_values_from_list(
-                [elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]])]
-        ])
+        def post_assertions(test):
+            for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
+                test.assertIsNotNone(ancestor.modeling_obj_container)
 
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_changed([self.network, self.usage_pattern], system=self.system)
-        for ancestor in new_network.energy_footprint.direct_ancestors_with_id:
-            self.assertIsNotNone(ancestor.modeling_obj_container)
+        def post_reset(test):
+            for ancestor in test.network.energy_footprint.direct_ancestors_with_id:
+                test.assertIsNotNone(ancestor.modeling_obj_container)
 
-        logger.warning("Changing back to initial network and hourly usage journey starts")
-
-        ModelingUpdate([
-            [self.usage_pattern.network, self.network],
-            [self.usage_pattern.hourly_usage_journey_starts, initial_usage_journey_starts]
-        ])
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.network, self.usage_pattern])
-
-        for ancestor in self.network.energy_footprint.direct_ancestors_with_id:
-            self.assertIsNotNone(ancestor.modeling_obj_container)
+        scenario = ObjectLinkScenario(
+            name="change_network_and_hourly_usage_starts",
+            updates_builder=[
+                [self.usage_pattern.network, new_network],
+                [self.usage_pattern.hourly_usage_journey_starts, new_hourly],
+            ],
+            expected_changed=[self.network, self.usage_pattern],
+            post_assertions=post_assertions,
+            post_reset_assertions=post_reset,
+        )
+        self._run_object_link_scenario(scenario)
 
     def run_test_delete_job(self):
         logger.info("Removing upload job from upload step")
