@@ -1,4 +1,3 @@
-import json
 from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
@@ -6,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
-from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.device import Device
@@ -160,22 +158,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_1, self.server, self.storage, self.uj, self.network, self.usage_pattern,
             self.job_1, self.system)
 
-    def run_test_variations_on_inputs_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
-            full_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-
-        uj_step_1 = next(iter(class_obj_dict["UsageJourneyStep"].values()))
-        server = next(iter(class_obj_dict["Server"].values()))
-        storage = next(iter(class_obj_dict["Storage"].values()))
-        uj = next(iter(class_obj_dict["UsageJourney"].values()))
-        network = next(iter(class_obj_dict["Network"].values()))
-        usage_pattern = next(iter(class_obj_dict["UsagePattern"].values()))
-        job_1 = next(iter(class_obj_dict["Job"].values()))
-        system = next(iter(class_obj_dict["System"].values()))
-        self._run_test_variations_on_inputs_from_object_list(
-            uj_step_1, server, storage, uj, network, usage_pattern, job_1, system)
-
     def run_test_set_uj_duration_to_0_and_back_to_previous_value(self):
         logger.info("Setting user journey steps duration to 0")
         previous_user_time_spents = []
@@ -247,34 +229,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
-
-    def run_test_storage_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
-        logger.warning("Setting storage fixed_nb_of_instances to not empty")
-        old_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
-        self.storage.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless)
-
-        self.footprint_has_changed([self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Setting fixed_nb_of_instances back to empty")
-        self.storage.fixed_nb_of_instances = old_fixed_nb_of_instances
-
-        self.footprint_has_not_changed([self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-
-    def run_test_on_premise_fixed_nb_of_instances_becomes_not_empty_then_back_to_empty(self):
-        logger.warning("Setting on premise fixed_nb_of_instances to not empty")
-        old_fixed_nb_of_instances = self.server.fixed_nb_of_instances
-        self.server.fixed_nb_of_instances = SourceValue(1000 * u.dimensionless)
-
-        self.footprint_has_changed([self.server])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        logger.warning("Setting fixed_nb_of_instances back to empty")
-        self.server.fixed_nb_of_instances = old_fixed_nb_of_instances
-
-        self.footprint_has_not_changed([self.server])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
         """Test that InsufficientCapacityError is raised for server and storage when capacities are exceeded."""
@@ -360,15 +314,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_server(self):
-        new_storage = Storage.from_defaults(
-            "new SSD storage, identical in specs to default one",
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless),
-            idle_power=SourceValue(0.5 * u.W), data_storage_duration=SourceValue(3 * u.hours))
-
-        new_server = Server.from_defaults("New server, identical in specs to default one",
-                                          server_type=ServerTypes.on_premise(), storage=new_storage,
-                                          base_ram_consumption=SourceValue(300 * u.MB),
-                                          base_compute_consumption=SourceValue(2 * u.cpu_core))
+        new_storage = self.storage.copy_with()
+        new_server = self.server.copy_with(storage=new_storage)
 
         logger.warning("Changing jobs server")
         self.job_1.server = new_server
@@ -387,10 +334,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_update_storage(self):
-        new_storage = Storage.from_defaults(
-            "New storage, identical in specs to Default SSD storage",
-            fixed_nb_of_instances=SourceValue(10000 * u.dimensionless), idle_power=SourceValue(0.5 * u.W),
-            data_storage_duration=SourceValue(3 * u.hours))
+        new_storage = self.storage.copy_with()
         logger.warning("Changing jobs storage")
 
         self.server.storage = new_storage

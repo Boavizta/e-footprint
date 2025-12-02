@@ -1,5 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
+from copy import copy
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
 import re
@@ -187,6 +188,78 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_kwargs.update(kwargs)
 
         return cls(name, **output_kwargs)
+
+    def copy_with(self, name: str | None = None, **overrides):
+        """
+        Create a new instance of this class by reusing the current initialization inputs.
+
+        Args:
+            name: Optional name for the copy. Defaults to "<current name> copy".
+            **overrides: Replacement values for constructor arguments. Inputs whose annotations are
+                ModelingObjects or Lists must always be provided explicitly.
+
+        Returns:
+            A new ModelingObject instance.
+        """
+        overrides = dict(overrides)
+        init_params = get_init_signature_params(type(self))
+        allowed_kwargs = {param for param in init_params if param not in ("self", "name")}
+        unexpected_kwargs = set(overrides) - allowed_kwargs
+        if unexpected_kwargs:
+            raise TypeError(
+                f"Unexpected overrides for {type(self).__name__}.copy_with: {sorted(unexpected_kwargs)}")
+
+        constructor_kwargs = {}
+
+        for param_name, param in init_params.items():
+            if param_name in ("self", "name"):
+                continue
+
+            if param_name in overrides:
+                value = overrides.pop(param_name)
+            else:
+                if hasattr(self, param_name):
+                    value = getattr(self, param_name)
+                elif param.default is not param.empty:
+                    value = param.default
+                else:
+                    raise AttributeError(
+                        f"{type(self).__name__}.{param_name} is missing on {self.name} and no override was provided.")
+
+                if self._value_requires_manual_override(value):
+                    annotation_str = getattr(param.annotation, "__name__", str(param.annotation))
+                    raise ValueError(
+                        f"{type(self).__name__}.copy_with requires explicit '{param_name}' because it is annotated "
+                        f"as {annotation_str}.")
+
+            constructor_kwargs[param_name] = self._prepare_value_for_copy(value)
+
+        if overrides:
+            raise TypeError(
+                f"Some overrides could not be consumed when copying {type(self).__name__}: {sorted(overrides.keys())}")
+
+        new_name = name or f"{self.name} copy"
+        return type(self)(new_name, **constructor_kwargs)
+
+    @staticmethod
+    def _prepare_value_for_copy(value):
+        if isinstance(value, ObjectLinkedToModelingObj):
+            return copy(value)
+
+        return value
+
+    @staticmethod
+    def _value_requires_manual_override(value):
+        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
+            ContextualModelingObjectAttribute
+
+        if isinstance(value, list):
+            return True
+
+        if isinstance(value, ContextualModelingObjectAttribute):
+            return True
+
+        return isinstance(value, ModelingObject)
 
     @classmethod
     def archetypes(cls):

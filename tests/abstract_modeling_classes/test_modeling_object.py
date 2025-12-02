@@ -235,5 +235,51 @@ class TestModelingObject(unittest.TestCase):
         with self.assertRaises(AssertionError):
             parent_obj.int_attr = 42
 
+    def test_copy_with_clones_object_linked_inputs(self):
+        source_value = SourceValue(10 * u.dimensionless)
+        mod_obj = ModelingObjectForTesting("original", custom_input=source_value)
+
+        copied = mod_obj.copy_with()
+
+        self.assertEqual(copied.name, "original copy")
+        self.assertIsNot(mod_obj.custom_input, copied.custom_input)
+        self.assertEqual(mod_obj.custom_input.value, copied.custom_input.value)
+
+    def test_copy_with_requires_modeling_object_overrides(self):
+        child = ModelingObjectForTesting("child")
+        parent = ModelingObjectForTesting("parent", mod_obj_input1=child)
+
+        with self.assertRaisesRegex(ValueError, "mod_obj_input1"):
+            parent.copy_with()
+
+    def test_copy_with_requires_list_overrides(self):
+        child = ModelingObjectForTesting("child")
+        parent = ModelingObjectForTesting(
+            "parent", custom_list_input=ListLinkedToModelingObj([child]))
+
+        with self.assertRaisesRegex(ValueError, "custom_list_input"):
+            parent.copy_with()
+
+    def test_copy_with_supports_overrides(self):
+        child = ModelingObjectForTesting("child")
+        parent = ModelingObjectForTesting(
+            "parent",
+            custom_input=SourceValue(5 * u.dimensionless),
+            mod_obj_input1=child,
+            custom_list_input=ListLinkedToModelingObj([child]),
+        )
+        new_child = ModelingObjectForTesting("new child")
+
+        copied = parent.copy_with(
+            name="parent clone",
+            mod_obj_input1=new_child,
+            custom_list_input=[new_child],
+        )
+
+        self.assertEqual(copied.name, "parent clone")
+        self.assertEqual(copied.mod_obj_input1, new_child)
+        self.assertEqual(copied.custom_list_input, [new_child])
+        self.assertEqual(copied.custom_input.value, parent.custom_input.value)
+
 if __name__ == "__main__":
     unittest.main()
