@@ -156,7 +156,7 @@ class JobBase(ModelingObject):
         hourly_data_exchange = self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] * data_exchange_per_hour
 
         return hourly_data_exchange.set_label(
-                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
+                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}").to(u.MB)
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
