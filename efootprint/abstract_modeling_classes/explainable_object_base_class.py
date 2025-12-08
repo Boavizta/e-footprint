@@ -140,8 +140,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self.flat_obj_dict = flat_obj_dict
 
     def __init__(
-            self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
-            right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
+            self, value: object, label: str = None, left_parent: "ExplainableObject" = None,
+            right_parent: "ExplainableObject" = None, operator: str = None, source: Source = None):
         super().__init__()
         self.simulation_twin = None
         self.baseline_twin = None
