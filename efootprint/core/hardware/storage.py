@@ -1,4 +1,5 @@
 import math
+from copy import copy
 from typing import List, TYPE_CHECKING, Optional
 
 import numpy as np
@@ -201,7 +202,8 @@ class Storage(InfraHardware):
                     np.zeros(storage_needs_nb_of_hours + 1, dtype=np.float32),
                     self.storage_needed.units)
             else:
-                storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
+                # Use copy not to modify data storage duration unit in place
+                storage_duration_in_hours = math.ceil(copy(self.data_storage_duration.to(u.hour)).magnitude)
                 automatic_storage_dumps_after_storage_duration_np = - np.pad(
                     self.storage_needed.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
                 )[:storage_needs_nb_of_hours]
