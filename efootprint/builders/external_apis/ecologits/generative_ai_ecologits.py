@@ -69,7 +69,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         instances_energy = EmptyExplainableObject()
 
         for job in self.jobs:
-            instances_energy += job.request_energy_energy * job.hourly_occurrences_across_usage_patterns
+            instances_energy += job.request_energy * job.hourly_occurrences_across_usage_patterns
 
         self.instances_energy = instances_energy.set_label(f"Instances energy for {self.model_name}")
 
@@ -104,14 +104,19 @@ class EcoLogitsGenAIExternalAPIJob(JobBase):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return (["data_transferred", "hourly_occurrences_across_usage_patterns", "ecologits_modeling"]
-                + ecologits_calculated_attributes)
+        return (["data_transferred", "ecologits_modeling"] + ecologits_calculated_attributes
+                + ["request_duration"]
+                + super().calculated_attributes +
+                ["hourly_occurrences_across_usage_patterns"])
 
     def update_data_transferred(self):
         # One token is approximately 4 characters (4 bytes) + 1 byte json overhead
         bytes_per_token = SourceValue(5 * u.B)
         self.data_transferred = (bytes_per_token * self.output_token_count).set_label(
             f"Data transferred for {self.external_api.model_name}")
+
+    def update_request_duration(self):
+        self.request_duration = self.generation_latency.copy()
 
     def update_hourly_occurrences_across_usage_patterns(self):
         self.hourly_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(

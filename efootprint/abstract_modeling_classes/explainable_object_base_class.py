@@ -594,7 +594,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}
 
-        if isinstance(self._value, str):  # Case of technology in WebApplication
+        if isinstance(self._value, str):
             output_dict["value"] = self.value
 
         output_dict["label"] = self.label

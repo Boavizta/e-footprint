@@ -6,7 +6,6 @@ import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.video_streaming import VideoStreaming
-from efootprint.builders.services.web_application import WebApplication
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
@@ -38,7 +37,7 @@ class TestServer(TestCase):
         self.server_base.trigger_modeling_updates = False
 
     def test_installable_services(self):
-        self.assertEqual(set(Server.installable_services()), {VideoStreaming, WebApplication})
+        self.assertEqual(set(Server.installable_services()), {VideoStreaming})
 
     def test_update_hour_by_hour_compute_need(self):
         job1 = MagicMock()

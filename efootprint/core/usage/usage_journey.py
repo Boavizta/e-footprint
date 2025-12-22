@@ -29,17 +29,14 @@ class UsageJourney(ModelingObject):
     def servers(self) -> List[Server]:
         servers = set()
         for job in self.jobs:
-            servers = servers | {job.server}
+            if hasattr(job, "server"):
+                servers = servers | {job.server}
 
         return list(servers)
 
     @property
     def storages(self) -> List[Storage]:
-        storages = set()
-        for job in self.jobs:
-            storages = storages | {job.server.storage}
-
-        return list(storages)
+        return list(set([server.storage for server in self.servers]))
 
     @property
     def usage_patterns(self):

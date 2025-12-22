@@ -2,11 +2,11 @@ from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
+from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import EcoLogitsGenAIExternalAPI, \
+    EcoLogitsGenAIExternalAPIJob
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.hardware.gpu_server import GPUServer
-from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
-from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.hardware.device import Device
@@ -31,10 +31,8 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         "server": "Web server",
         "gpu_server": "GPU server",
         "video_streaming_service": "Youtube streaming service",
-        "web_application_service": "Web application service",
         "genai_service": "GenAI service",
         "video_streaming_job": "Streaming job",
-        "web_application_job": "web app job",
         "genai_job": "GenAI job",
         "direct_gpu_job": "direct GPU server job",
         "network": "Default network",
@@ -51,23 +49,20 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         video_streaming_service = VideoStreaming.from_defaults(
             "Youtube streaming service", server=server)
-        web_application_service = WebApplication(
-            "Web application service", server, technology=SourceObject("php-symfony"))
-        genai_service = GenAIModel.from_defaults(
-            "GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"),
-            server=gpu_server)
+        genai_service = EcoLogitsGenAIExternalAPI.from_defaults(
+            "GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"))
 
         video_streaming_job = VideoStreamingJob.from_defaults(
             "Streaming job", service=video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
             video_duration=SourceValue(20 * u.min))
-        web_application_job = WebApplicationJob.from_defaults("web app job", service=web_application_service)
-        genai_job = GenAIJob("GenAI job", genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
+        genai_job = EcoLogitsGenAIExternalAPIJob(
+            "GenAI job", genai_service, output_token_count=SourceValue(1000 * u.dimensionless))
         direct_gpu_job = GPUJob.from_defaults(
             "direct GPU server job", compute_needed=SourceValue(1 * u.gpu), server=gpu_server)
 
         streaming_step = UsageJourneyStep(
             "20 min streaming on Youtube with genAI chat", user_time_spent=SourceValue(20 * u.min),
-            jobs=[direct_gpu_job, video_streaming_job, web_application_job, genai_job])
+            jobs=[direct_gpu_job, video_streaming_job, genai_job])
 
         uj = UsageJourney("Daily Youtube usage", uj_steps=[streaming_step])
         network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -99,9 +94,6 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(
             self.genai_service, attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
             special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
-        self._test_variations_on_obj_inputs(
-            self.web_application_service,
-            attrs_to_skip=["technology", "base_compute_consumption", "base_ram_consumption"])
 
     def run_test_update_service_servers(self):
         logger.info("Linking services to new servers")
@@ -109,8 +101,6 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_gpu_server = GPUServer.from_defaults("New GPU server", storage=Storage.ssd())
         updates = [
             [self.video_streaming_service.server, new_server],
-            [self.web_application_service.server, new_server],
-            [self.genai_service.server, new_gpu_server],
             [self.direct_gpu_job.server, new_gpu_server],
         ]
 
@@ -119,13 +109,11 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             test.assertEqual(test.server.jobs, [])
             test.assertIsInstance(test.server.hour_by_hour_ram_need, EmptyExplainableObject)
             test.assertIsInstance(test.server.hour_by_hour_compute_need, EmptyExplainableObject)
-            test.assertEqual(set(new_server.installed_services),
-                             {test.video_streaming_service, test.web_application_service})
+            test.assertEqual(set(new_server.installed_services), {test.video_streaming_service})
             test.assertEqual(test.gpu_server.installed_services, [])
             test.assertEqual(test.gpu_server.jobs, [])
             test.assertIsInstance(test.gpu_server.hour_by_hour_ram_need, EmptyExplainableObject)
             test.assertIsInstance(test.gpu_server.hour_by_hour_compute_need, EmptyExplainableObject)
-            test.assertEqual(set(new_gpu_server.installed_services), {test.genai_service})
 
         scenario = ObjectLinkScenario(
             name="update_service_servers",
@@ -144,17 +132,13 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         new_video_streaming_service = VideoStreaming.from_defaults(
             "New Youtube streaming service", server=new_server)
-        new_web_application_service = WebApplication(
-            "New Web application service", new_server, technology=SourceObject("php-symfony"))
-        new_genai_service = GenAIModel.from_defaults(
-            "New GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"),
-            server=new_gpu_server)
+        new_genai_service = EcoLogitsGenAIExternalAPI.from_defaults(
+            "New GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"))
 
         updates = [
             [self.direct_gpu_job.server, new_gpu_server],
             [self.video_streaming_job.service, new_video_streaming_service],
-            [self.web_application_job.service, new_web_application_service],
-            [self.genai_job.service, new_genai_service],
+            [self.genai_job.external_api, new_genai_service],
         ]
 
         def post_assertions(test):
@@ -175,7 +159,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
 
         self.assertEqual(set(self.server.installed_services),
-                         {new_service, self.web_application_service, self.video_streaming_service})
+                         {new_service, self.video_streaming_service})
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server])
 

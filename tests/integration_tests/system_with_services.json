@@ -58,7 +58,6 @@
             "jobs": [
                 "direct-GPU-server-job",
                 "Streaming-job",
-                "web-app-job",
                 "GenAI-job"
             ]
         }
@@ -628,71 +627,42 @@
             "impact_url": "https://api.boavizta.org/v1/cloud/instance"
         }
     },
-    "WebApplicationJob": {
-        "web-app-job": {
-            "name": "web app job",
-            "id": "web-app-job",
-            "data_transferred": {
-                "value": 2.2,
-                "unit": "megabyte",
-                "label": "Sum of all data uploads and downloads for request web app job from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "data_stored": {
-                "value": 100.0,
-                "unit": "kilobyte",
-                "label": "Data stored by request web app job from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Web-application-service",
-            "implementation_details": {
-                "value": "default",
-                "label": "web app job implementation details from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            }
-        }
-    },
-    "WebApplication": {
-        "Web-application-service": {
-            "name": "Web application service",
-            "id": "Web-application-service",
-            "server": "Web-server",
-            "base_ram_consumption": {
-                "value": null,
-                "label": "no value"
-            },
-            "base_compute_consumption": {
-                "value": null,
-                "label": "no value"
-            },
-            "technology": {
-                "value": "php-symfony",
-                "label": "Technology used in Web application service from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            }
-        }
-    },
-    "GenAIJob": {
+    "EcoLogitsGenAIExternalAPIJob": {
         "GenAI-job": {
             "name": "GenAI job",
             "id": "GenAI-job",
-            "service": "GenAI-service",
+            "data_stored": {
+                "value": 0.0,
+                "unit": "megabyte",
+                "label": "Data stored by request GenAI job from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "value": 0.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed to process GenAI job from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_needed": {
+                "value": 0.0,
+                "unit": "cpu_core",
+                "label": "CPU needed to process GenAI job from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "external_api": "GenAI-service",
             "output_token_count": {
                 "value": 1000.0,
                 "unit": "dimensionless",
-                "label": "GenAI job output token count from e-footprint hypothesis",
+                "label": "Output token count for gpt-3.5-turbo-1106 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -700,15 +670,10 @@
             }
         }
     },
-    "GenAIModel": {
+    "EcoLogitsGenAIExternalAPI": {
         "GenAI-service": {
             "name": "GenAI service",
             "id": "GenAI-service",
-            "server": "GPU-server",
-            "base_compute_consumption": {
-                "value": null,
-                "label": "no value"
-            },
             "provider": {
                 "value": "openai",
                 "label": "openai from e-footprint hypothesis",
@@ -720,51 +685,6 @@
             "model_name": {
                 "value": "gpt-3.5-turbo-1106",
                 "label": "openai model used from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "nb_of_bits_per_parameter": {
-                "value": 16.0,
-                "unit": "dimensionless",
-                "label": "GenAI service nb of bits per parameter from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "llm_memory_factor": {
-                "value": 1.2,
-                "unit": "dimensionless",
-                "label": "GenAI service ratio between GPU memory footprint and model size from Ecologits",
-                "source": {
-                    "name": "Ecologits",
-                    "link": "https://github.com/genai-impact/ecologits"
-                }
-            },
-            "gpu_latency_alpha": {
-                "value": 0.000802,
-                "unit": "nanosecond",
-                "label": "GPU latency per active parameter and output token from Ecologits",
-                "source": {
-                    "name": "Ecologits",
-                    "link": "https://github.com/genai-impact/ecologits"
-                }
-            },
-            "gpu_latency_beta": {
-                "value": 0.0223,
-                "unit": "second",
-                "label": "Base GPU latency per output_token from Ecologits",
-                "source": {
-                    "name": "Ecologits",
-                    "link": "https://github.com/genai-impact/ecologits"
-                }
-            },
-            "bits_per_token": {
-                "value": 24.0,
-                "unit": "dimensionless",
-                "label": "Number of bits per token from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

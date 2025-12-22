@@ -3,6 +3,8 @@ from time import perf_counter
 import numpy as np
 from pint import Quantity
 
+from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import EcoLogitsGenAIExternalAPI, \
+    EcoLogitsGenAIExternalAPIJob
 from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
@@ -17,9 +19,7 @@ start = perf_counter()
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
-from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
-from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server_base import ServerTypes
@@ -93,20 +93,18 @@ on_premise_gpu_server = GPUServer.from_defaults(
 )
 
 video_streaming = VideoStreaming.from_defaults("Video streaming service", server=autoscaling_server)
-web_application = WebApplication.from_defaults("Web application service", server=serverless_server)
-genai_model = GenAIModel.from_defaults("Generative AI model", server=on_premise_gpu_server)
+genai_model = EcoLogitsGenAIExternalAPI.from_defaults("Generative AI model")
 
 video_streaming_job = VideoStreamingJob.from_defaults(
     "Video streaming job", service=video_streaming, video_duration=SourceValue(20 * u.min))
-web_application_job = WebApplicationJob.from_defaults("Web application job", service=web_application)
-genai_model_job = GenAIJob.from_defaults("Generative AI model job", service=genai_model)
+genai_model_job = EcoLogitsGenAIExternalAPIJob.from_defaults("Generative AI model job", service=genai_model)
 manually_written_job = Job.from_defaults("Manually defined job", server=autoscaling_server)
 custom_gpu_job = GPUJob.from_defaults("Manually defined GPU job", server=on_premise_gpu_server)
 
 streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
-    jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
+    jobs=[genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
     )
 
 usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])

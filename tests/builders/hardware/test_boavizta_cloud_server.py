@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.builders.services.video_streaming import VideoStreaming
-from efootprint.builders.services.web_application import WebApplication
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
@@ -170,7 +169,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.assertIn("compute", self.test_server.compute.label)
 
     def test_installable_services(self):
-        self.assertEqual(set(BoaviztaCloudServer.installable_services()), {WebApplication, VideoStreaming})
+        self.assertEqual(set(BoaviztaCloudServer.installable_services()), {VideoStreaming})
 
 
 if __name__ == "__main__":

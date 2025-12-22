@@ -1,3 +1,5 @@
+from copy import copy
+
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
@@ -29,16 +31,18 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
-from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
-from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.core.usage.job import Job, JobBase, GPUJob
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
+from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import (EcoLogitsGenAIExternalAPIJob,
+                                                                                 EcoLogitsGenAIExternalAPI)
 
 
-SERVICE_CLASSES = [WebApplication, VideoStreaming]
-SERVICE_JOB_CLASSES = [WebApplicationJob, VideoStreamingJob, GenAIJob]
+SERVICE_CLASSES = [VideoStreaming]
+SERVICE_JOB_CLASSES = [VideoStreamingJob]
+EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI]
+EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob]
 SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 EDGE_COMPONENT_CLASSES = [EdgeRAMComponent, EdgeCPUComponent, EdgeWorkloadComponent, EdgeStorage]
@@ -54,9 +58,9 @@ ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
         + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeStorageNeed]
         + EDGE_COMPONENT_CLASSES + EDGE_COMPUTER_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
-        + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
+        + SERVICE_CLASSES + SERVER_BUILDER_CLASSES + EXTERNAL_API_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed, RecurrentServerNeed] + RECURRENT_EDGE_COMPONENT_NEED_CLASSES
-        + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES
+        + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES + EXTERNAL_API_JOB_CLASSES
         + [Network] + SERVER_CLASSES + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [

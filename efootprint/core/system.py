@@ -3,6 +3,7 @@ from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
@@ -127,7 +128,7 @@ class System(ModelingObject):
 
     @property
     def all_linked_objects(self):
-        return (self.networks + self.jobs + self.servers + self.services + self.countries
+        return (self.networks + self.jobs + self.servers + self.services + self.external_apis + self.countries
                 + self.get_objects_linked_to_usage_patterns(self.usage_patterns)
                 + self.get_objects_linked_to_edge_usage_patterns(self.edge_usage_patterns))
 
@@ -162,6 +163,10 @@ class System(ModelingObject):
     @property
     def services(self) -> List[Service]:
         return list(set(sum([server.installed_services for server in self.servers], start=[])))
+
+    @property
+    def external_apis(self) -> List[ExternalAPI]:
+        return list(set([job.external_api for job in self.jobs if hasattr(job, "external_api")]))
 
     @property
     def edge_devices(self) -> List[EdgeDevice]:

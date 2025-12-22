@@ -4,6 +4,7 @@ import numpy as np
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from pint import Quantity
 
+from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import EcoLogitsGenAIExternalAPI
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
@@ -19,9 +20,7 @@ from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
-from efootprint.builders.services.generative_ai_ecologits import GenAIModel, GenAIJob
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
-from efootprint.builders.services.web_application import WebApplication, WebApplicationJob
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server_base import ServerTypes
@@ -69,22 +68,18 @@ def generate_big_system(
         )
 
         video_streaming = VideoStreaming.from_defaults(f"Video streaming service {server_index}", server=autoscaling_server)
-        genai_model = GenAIModel.from_defaults(f"Generative AI model {server_index}", server=on_premise_gpu_server)
 
         for uj_index in range(1, nb_of_uj_per_each_server_type + 1):
             uj_steps = []
             for uj_step_index in range(1, nb_of_uj_steps_per_uj + 1):
                 video_streaming_job = VideoStreamingJob.from_defaults(
                     f"Video streaming job", service=video_streaming, video_duration=SourceValue(2.5 * u.hour))
-                genai_model_job = GenAIJob.from_defaults(
-                    f"Generative AI model job uj {uj_index} uj_step {uj_step_index} server {server_index}",
-                    service=genai_model)
                 manually_written_job = Job.from_defaults(
                     f"Manually defined job uj {uj_index} uj_step {uj_step_index} server {server_index}",
                     server=serverless_server)
                 custom_gpu_job = GPUJob.from_defaults(
                     f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}", server=on_premise_gpu_server)
-                new_jobs = [genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
+                new_jobs = [video_streaming_job, manually_written_job, custom_gpu_job]
                 all_jobs += new_jobs
                 uj_steps.append(UsageJourneyStep(
                     f"20 min streaming {uj_index} step {uj_step_index}",
@@ -210,7 +205,7 @@ if __name__ == "__main__":
     nb_years = 5
     system = generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3, 
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3,
         nb_of_jobs_per_server_need=1, nb_years=nb_years)
 
     edition_iterations = 10
