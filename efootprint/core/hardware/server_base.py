@@ -167,7 +167,7 @@ class ServerBase(InfraHardware):
         available_ram_per_instance_before_services_installation = (self.ram * self.utilization_rate).to(u.GB_ram)
         available_ram_per_instance = (
                 available_ram_per_instance_before_services_installation - self.occupied_ram_per_instance)
-        if available_ram_per_instance.value < 0 * u.B_ram:
+        if available_ram_per_instance.value <= 0 * u.B_ram:
             raise InsufficientCapacityError(
                 self, "RAM", available_ram_per_instance_before_services_installation, self.occupied_ram_per_instance)
 
@@ -178,7 +178,7 @@ class ServerBase(InfraHardware):
         available_compute_per_instance_before_services_installation = self.compute * self.utilization_rate
         available_compute_per_instance = (
                 available_compute_per_instance_before_services_installation - self.occupied_compute_per_instance)
-        if available_compute_per_instance.value < 0:
+        if available_compute_per_instance.value <= 0:
             raise InsufficientCapacityError(
                 self, "compute", available_compute_per_instance_before_services_installation,
                 self.occupied_compute_per_instance)
