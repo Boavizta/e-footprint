@@ -70,17 +70,17 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
     def test_update_instances_energy_with_multiple_jobs(self):
         """Test instances energy calculation with multiple jobs."""
         mock_job1 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job1.request_energy_energy = ExplainableQuantity(100 * u.kWh, "test energy 1")
+        mock_job1.request_energy = ExplainableQuantity(100 * u.kWh, "test energy 1")
         mock_job1.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
             Quantity(np.array([8] * 24), u.occurrence), self.start_date, "test occurrences 1")
 
         mock_job2 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job2.request_energy_energy = ExplainableQuantity(50 * u.kWh, "test energy 2")
+        mock_job2.request_energy = ExplainableQuantity(50 * u.kWh, "test energy 2")
         mock_job2.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
             Quantity(np.array([4] * 24), u.occurrence), self.start_date, "test occurrences 2")
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
-        # Formula: sum(job.request_energy_energy * job.hourly_occurrences_across_usage_patterns)
+        # Formula: sum(job.request_energy * job.hourly_occurrences_across_usage_patterns)
 
         self.external_api.update_instances_energy()
 

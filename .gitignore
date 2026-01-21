@@ -16,3 +16,4 @@ docs
 litellm-config.yaml
 litellm-commands.md
 .slingshot
+*.lprof

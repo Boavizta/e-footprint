@@ -4,7 +4,6 @@ import numpy as np
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from pint import Quantity
 
-from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import EcoLogitsGenAIExternalAPI
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.builders.usage.edge.recurrent_edge_process import RecurrentEdgeProcess
@@ -211,9 +210,9 @@ if __name__ == "__main__":
     edition_iterations = 10
     start = perf_counter()
     for i in range(edition_iterations):
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(100 * u.MB)
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(30 * u.MB)
-    end = perf_counter()
+        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(100 * u.MB)
+        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(30 * u.MB)
+    end = time()
     compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")
 
