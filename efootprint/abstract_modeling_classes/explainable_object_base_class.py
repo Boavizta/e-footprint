@@ -90,6 +90,26 @@ def get_attribute_from_flat_obj_dict(attr_key: str, flat_obj_dict: dict):
 
 
 class ExplainableObject(ObjectLinkedToModelingObj):
+    __slots__ = (
+        # ExplainableObject's own attributes (parent ObjectLinkedToModelingObj has its own slots)
+        'simulation_twin',
+        'baseline_twin',
+        'simulation',
+        'initial_modeling_obj_container',
+        '_value',
+        'source',
+        'label',
+        'left_parent',
+        'right_parent',
+        'operator',
+        '_keys_of_direct_ancestors_with_id_loaded_from_json',
+        '_keys_of_direct_children_with_id_loaded_from_json',
+        'flat_obj_dict',
+        '_direct_ancestors_with_id',
+        '_direct_children_with_id',
+        'explain_nested_tuples_from_json',
+        '_explain_nested_tuples',
+    )
     _registry = []
 
     @classmethod

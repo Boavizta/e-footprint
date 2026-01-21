@@ -97,13 +97,13 @@ class TestEdgeUsagePattern(TestCase):
             datetime(2023, 1, 1, 0, 0, 0),
             "UTC result"
         )
-        
-        with patch.object(self.edge_usage_pattern.hourly_edge_usage_journey_starts, 'convert_to_utc',
+
+        # Patch at class level because __slots__ prevents instance-level patching
+        with patch.object(ExplainableHourlyQuantities, 'convert_to_utc',
                           return_value=mock_utc_result) as mock_convert:
-            
             self.edge_usage_pattern.update_utc_hourly_edge_usage_journey_starts()
             mock_convert.assert_called_once_with(local_timezone=self.mock_country.timezone)
-            
+
             self.assertEqual(self.edge_usage_pattern.utc_hourly_edge_usage_journey_starts, mock_utc_result)
 
 

@@ -3,6 +3,8 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 
 
 class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
+    __slots__ = ('_value',)
+
     def __init__(self, value: ModelingObject, modeling_obj_container=None, attr_name_in_mod_obj_container=None):
         super().__init__()
         if isinstance(value, ContextualModelingObjectAttribute):
@@ -30,8 +32,11 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
 
     def __setattr__(self, name, input_value, *args, **kwargs):
         if name in ["_value", "modeling_obj_container", "attr_name_in_mod_obj_container",
-                    "former_modeling_obj_container_id", "former_attr_name_in_mod_obj_container", "cached_values"]:
-            # If setting a class attribute, use the superclass’s __setattr__
+                    "former_modeling_obj_container_id", "former_attr_name_in_mod_obj_container",
+                    "_cached_id", "_cached_full_str_tuple_id", "_cached_attribute_id",
+                    "_cached_dict_container", "_cached_key_in_dict", "_cached_list_container",
+                    "_cached_indexes_in_list"]:
+            # If setting a class attribute, use the superclass's __setattr__
             super().__setattr__(name, input_value)
         else:
             setattr(self._value, name, input_value)  # Use `setattr` instead of `__setattr__`

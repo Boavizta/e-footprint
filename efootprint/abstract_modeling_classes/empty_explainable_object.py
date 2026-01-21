@@ -9,6 +9,11 @@ from efootprint.utils.plot_baseline_and_simulation_data import plot_baseline_and
 
 @ExplainableObject.register_subclass(lambda d: "value" in d and d["value"] is None)
 class EmptyExplainableObject(ExplainableObject):
+    __slots__ = (
+        '_ExplainableQuantity',
+        '_ExplainableHourlyQuantities',
+    )
+
     @classmethod
     def from_json_dict(cls, d):
         return cls(label=d["label"])
@@ -47,10 +52,6 @@ class EmptyExplainableObject(ExplainableObject):
     def generate_explainable_object_with_logical_dependency(self, explainable_condition: ExplainableObject):
         return EmptyExplainableObject(
             label=self.label, left_parent=self, right_parent=explainable_condition, operator="logically dependent on")
-
-    @property
-    def iloc(self):
-        return [EmptyExplainableObject(left_parent=self, operator="iloc")]
 
     @property
     def magnitude(self):

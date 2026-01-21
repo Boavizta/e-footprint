@@ -14,22 +14,32 @@ SOURCE_VALUE_DEFAULT_NAME = "unnamed source"
 
 
 class SourceObject(ExplainableObject):
+    __slots__ = ()
+
     def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=label, source=source)
 
 class SourceTimezone(ExplainableTimezone):
+    __slots__ = ()
+
     def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=label, source=source)
 
 class SourceValue(ExplainableQuantity):
+    __slots__ = ()
+
     def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=label, source=source)
 
 class SourceHourlyValues(ExplainableHourlyQuantities):
+    __slots__ = ()
+
     def __init__(self, value: Quantity, start_date: datetime, source: Source = Sources.HYPOTHESIS,
                  label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, start_date=start_date, label=label, source=source)
 
 class SourceRecurrentValues(ExplainableRecurrentQuantities):
+    __slots__ = ()
+
     def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=label, source=source)

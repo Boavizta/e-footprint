@@ -1,12 +1,14 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, retrieve_update_function_from_mod_obj_and_attr_name)
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
 
-class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
+class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
+    """Dict that can be linked to a ModelingObject. Uses ObjectLinkedToModelingObjBase (not slotted)."""
+
     def __init__(self, input_dict=None):
         super().__init__()
         if input_dict is not None:

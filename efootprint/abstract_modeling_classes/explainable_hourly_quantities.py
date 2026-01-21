@@ -59,6 +59,13 @@ def align_temporally_quantity_arrays(
 
 @ExplainableObject.register_subclass(lambda d: ("values" in d or "compressed_values" in d) and "unit" in d)
 class ExplainableHourlyQuantities(ExplainableObject):
+    __slots__ = (
+        '_ExplainableQuantity',
+        '_EmptyExplainableObject',
+        'start_date',
+        'json_compressed_value_data',
+    )
+
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None

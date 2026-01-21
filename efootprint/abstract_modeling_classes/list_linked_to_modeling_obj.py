@@ -1,12 +1,14 @@
 from copy import copy
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, AfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 
 
-class ListLinkedToModelingObj(ObjectLinkedToModelingObj, list, metaclass=AfterInitMeta):
+class ListLinkedToModelingObj(ObjectLinkedToModelingObjBase, list, metaclass=AfterInitMeta):
+    """List that can be linked to a ModelingObject. Uses ObjectLinkedToModelingObjBase (not slotted)."""
+
     def __init__(self, values=None):
         super().__init__()
         self.trigger_modeling_updates = False

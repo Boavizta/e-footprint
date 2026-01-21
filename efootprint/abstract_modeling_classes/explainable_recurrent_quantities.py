@@ -18,6 +18,11 @@ if TYPE_CHECKING:
 
 @ExplainableObject.register_subclass(lambda d: "recurring_values" in d and "unit" in d)
 class ExplainableRecurrentQuantities(ExplainableObject):
+    __slots__ = (
+        '_ExplainableQuantity',
+        '_EmptyExplainableObject',
+    )
+
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d.get("source")) if d.get("source") else None

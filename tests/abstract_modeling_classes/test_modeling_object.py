@@ -4,8 +4,8 @@ from unittest.mock import patch, MagicMock, PropertyMock, call
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
-from efootprint.abstract_modeling_classes.source_objects import SourceHourlyValues, SourceValue
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
@@ -20,8 +20,8 @@ MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 class ModelingObjectForTesting(ModelingObject):
     default_values =  {}
 
-    def __init__(self, name, custom_input: ObjectLinkedToModelingObj=None,
-                 custom_input2: ObjectLinkedToModelingObj=None, custom_list_input: list=None,
+    def __init__(self, name, custom_input: ObjectLinkedToModelingObjBase=None,
+                 custom_input2: ObjectLinkedToModelingObjBase=None, custom_list_input: list=None,
                  mod_obj_input1: ModelingObject=None, mod_obj_input2: ModelingObject=None):
         super().__init__(name)
         if custom_input:
@@ -78,11 +78,11 @@ class TestModelingObject(unittest.TestCase):
     @patch("efootprint.abstract_modeling_classes.modeling_update.ModelingUpdate")
     def test_input_change_triggers_modeling_update(self, mock_modeling_update):
         old_value = MagicMock(
-            modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
+            modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObjBase)
         mod_obj = ModelingObjectForTesting("test", custom_input=old_value)
 
         value = MagicMock(
-            modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObj)
+            modeling_obj_container=None, left_parent=None, right_parent=None, spec=ObjectLinkedToModelingObjBase)
         mod_obj.custom_input = value
 
         mock_modeling_update.assert_called_once_with([[old_value, value]])

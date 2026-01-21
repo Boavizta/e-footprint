@@ -10,6 +10,12 @@ from efootprint.constants.units import get_unit
 
 @ExplainableObject.register_subclass(lambda d: "value" in d and "unit" in d)
 class ExplainableQuantity(ExplainableObject):
+    __slots__ = (
+        '_ExplainableHourlyQuantities',
+        '_EmptyExplainableObject',
+        'json_value_data',
+    )
+
     @classmethod
     def from_json_dict(cls, d):
         value = {key: d[key] for key in ["value", "unit"]}

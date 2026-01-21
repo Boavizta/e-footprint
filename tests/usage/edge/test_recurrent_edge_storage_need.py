@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import ciso8601
 import numpy as np
@@ -56,17 +56,16 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         base_storage_result.magnitude = original_values.copy()
         base_storage_result.set_label = MagicMock(return_value=base_storage_result)
 
-        self.storage_need.recurrent_need.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=base_storage_result
-        )
+        # Patch at class level because __slots__ prevents instance-level patching
+        with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
+                          return_value=base_storage_result):
+            self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
 
-        self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
-
-        # Since we start on Monday 00:00, no values should be zeroed
-        result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
-        np.testing.assert_array_equal(result.magnitude, original_values)
-        # Verify set_label was called with the correct label (may be called multiple times during parent/child updates)
-        result.set_label.assert_called_with("Test Storage Need unitary hourly need for Test Pattern Monday")
+            # Since we start on Monday 00:00, no values should be zeroed
+            result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
+            np.testing.assert_array_equal(result.magnitude, original_values)
+            # Verify set_label was called with the correct label (may be called multiple times during parent/child updates)
+            result.set_label.assert_called_with("Test Storage Need unitary hourly need for Test Pattern Monday")
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_non_monday_start(self):
         """Test update when not starting on Monday 00:00 - values should be zeroed until first Monday."""
@@ -89,19 +88,18 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         base_storage_result.magnitude = original_values.copy()
         base_storage_result.set_label = MagicMock(return_value=base_storage_result)
 
-        self.storage_need.recurrent_need.generate_hourly_quantities_over_timespan = MagicMock(
-            return_value=base_storage_result
-        )
+        # Patch at class level because __slots__ prevents instance-level patching
+        with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
+                          return_value=base_storage_result):
+            self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
 
-        self.storage_need.update_dict_element_in_unitary_hourly_need_per_usage_pattern(mock_pattern)
-
-        result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
-        # From Wednesday 00:00, we need to zero until Monday 00:00
-        # Wednesday is weekday 2, so (7-2)*24 - 0 = 120 hours
-        expected_zeros = 120
-        np.testing.assert_array_equal(result.magnitude[:expected_zeros], np.zeros(expected_zeros))
-        # After the zeros, values should be original
-        np.testing.assert_array_equal(result.magnitude[expected_zeros:], original_values[expected_zeros:])
+            result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
+            # From Wednesday 00:00, we need to zero until Monday 00:00
+            # Wednesday is weekday 2, so (7-2)*24 - 0 = 120 hours
+            expected_zeros = 120
+            np.testing.assert_array_equal(result.magnitude[:expected_zeros], np.zeros(expected_zeros))
+            # After the zeros, values should be original
+            np.testing.assert_array_equal(result.magnitude[expected_zeros:], original_values[expected_zeros:])
 
 
 if __name__ == '__main__':

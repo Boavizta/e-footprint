@@ -1,15 +1,15 @@
 import unittest
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class ModelingObjectForTesting(ModelingObject):
     default_values =  {}
 
-    def __init__(self, name, custom_input: ObjectLinkedToModelingObj = None, mod_obj_input: ModelingObject = None):
+    def __init__(self, name, custom_input: ObjectLinkedToModelingObjBase = None, mod_obj_input: ModelingObject = None):
         super().__init__(name)
         if custom_input is not None:
             self.custom_input = custom_input
@@ -43,7 +43,7 @@ class OtherModelingObjectForTesting(ModelingObject):
 
 class TestContextualModObjAttribute(unittest.TestCase):
     def test_contextual_modeling_object_attribute(self):
-        custom_input = MagicMock(spec=ObjectLinkedToModelingObj)
+        custom_input = MagicMock(spec=ObjectLinkedToModelingObjBase)
         modeling_obj = ModelingObjectForTesting(name="TestObject", custom_input=custom_input)
         modeling_obj_container = ModelingObjectForTesting(name="container")
 
@@ -65,11 +65,11 @@ class TestContextualModObjAttribute(unittest.TestCase):
         self.assertEqual(modeling_obj.mod_obj_input.modeling_obj_container, modeling_obj)
 
     def test_contextual_modeling_object_attribute_behaves_like_its_value_with_regards_to_isinstance(self):
-        custom_input = MagicMock(spec=ObjectLinkedToModelingObj)
+        custom_input = MagicMock(spec=ObjectLinkedToModelingObjBase)
         modeling_obj = ModelingObjectForTesting(name="TestObject", custom_input=custom_input)
         contextual_attribute = ContextualModelingObjectAttribute(value=modeling_obj)
 
         self.assertTrue(isinstance(contextual_attribute, ModelingObject))
         self.assertTrue(isinstance(contextual_attribute, ContextualModelingObjectAttribute))
-        self.assertTrue(isinstance(contextual_attribute, ObjectLinkedToModelingObj))
+        self.assertTrue(isinstance(contextual_attribute, ObjectLinkedToModelingObjBase))
         self.assertFalse(isinstance(contextual_attribute, OtherModelingObjectForTesting))

@@ -5,6 +5,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 
 @ExplainableObject.register_subclass(lambda d: "zone" in d)
 class ExplainableTimezone(ExplainableObject):
+    __slots__ = ()
+
     @classmethod
     def from_json_dict(cls, d):
         source = Source.from_json_dict(d["source"]) if "source" in d else None

@@ -6,7 +6,8 @@ from typing import List
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     optimize_attr_updates_chain
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
+    ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
@@ -30,7 +31,7 @@ class ModelingUpdate:
         self.system = None
         for change in changes_list:
             changed_val = change[0]
-            if isinstance(changed_val, ObjectLinkedToModelingObj) and changed_val.modeling_obj_container.systems:
+            if isinstance(changed_val, ObjectLinkedToModelingObjBase) and changed_val.modeling_obj_container.systems:
                 self.system = changed_val.modeling_obj_container.systems[0]
                 break
         self.changes_list = changes_list
@@ -111,8 +112,8 @@ class ModelingUpdate:
         index = 0
         while index < len(self.changes_list):
             old_value, new_value = self.changes_list[index]
-            assert isinstance(old_value, ObjectLinkedToModelingObj), \
-                              f"{old_value} should be an ObjectLinkedToModelingObj but is of type {type(old_value)}"
+            assert isinstance(old_value, ObjectLinkedToModelingObjBase), \
+                              f"{old_value} should be an ObjectLinkedToModelingObjBase but is of type {type(old_value)}"
             if new_value is None:
                 assert isinstance(old_value, ExplainableObject)
                 self.changes_list[index][1] = EmptyExplainableObject()
@@ -131,9 +132,9 @@ class ModelingUpdate:
                         old_value.attr_name_in_mod_obj_container]([old_value, new_value])
                     self.changes_list += changes_to_add
 
-            if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObj):
+            if not isinstance(self.changes_list[index][1], ObjectLinkedToModelingObjBase):
                 raise ValueError(
-                    f"New e-footprint attributes should be ObjectLinkedToModelingObj,"
+                    f"New e-footprint attributes should be ObjectLinkedToModelingObjBase,"
                     f" got {old_value} of type {type(old_value)} trying to be set to an object "
                     f"of type {type(new_value)}")
 

@@ -14,7 +14,8 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     retrieve_update_function_from_mod_obj_and_attr_name, ExplainableObject)
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
+    ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -243,7 +244,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @staticmethod
     def _prepare_value_for_copy(value):
-        if isinstance(value, ObjectLinkedToModelingObj):
+        if isinstance(value, ObjectLinkedToModelingObjBase):
             return copy(value)
 
         return value
@@ -458,11 +459,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 value_to_set = ListLinkedToModelingObj(value_to_set)
             elif type(value_to_set) == dict:
                 value_to_set = current_attr.__class__(value_to_set)
-            assert isinstance(value_to_set, ObjectLinkedToModelingObj) or value_to_set is None, \
-                    f"input {name} of value {value_to_set} should be an ObjectLinkedToModelingObj or None but is of type {type(value_to_set)}"
-            if isinstance(current_attr, ObjectLinkedToModelingObj):
+            assert isinstance(value_to_set, ObjectLinkedToModelingObjBase) or value_to_set is None, \
+                    f"input {name} of value {value_to_set} should be an ObjectLinkedToModelingObjBase or None but is of type {type(value_to_set)}"
+            if isinstance(current_attr, ObjectLinkedToModelingObjBase):
                 current_attr.set_modeling_obj_container(None, None)
-            if isinstance(value_to_set, ObjectLinkedToModelingObj):
+            if isinstance(value_to_set, ObjectLinkedToModelingObjBase):
                 value_to_set.set_modeling_obj_container(self, name)
             # attribute setting must be done after setting modeling_obj_container because if system has been loaded
             # with calculated attributes from json, the calculation graph must be loaded before the attribute setting.
@@ -608,7 +609,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         key_value_str = f"{input_key}: {str_value}\n"
             elif isinstance(input_value, ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"
-            elif isinstance(input_value, ObjectLinkedToModelingObj):
+            elif isinstance(input_value, ObjectLinkedToModelingObjBase):
                 key_value_str = f"{input_key}: {input_value}\n"
 
             return key_value_str

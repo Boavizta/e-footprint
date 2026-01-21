@@ -1,7 +1,7 @@
 from typing import Dict
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
-from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
+from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, ABCAfterInitMeta
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
@@ -9,7 +9,9 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 
-class WeightedModelingObjectsDict(ObjectLinkedToModelingObj, dict, metaclass=ABCAfterInitMeta):
+class WeightedModelingObjectsDict(ObjectLinkedToModelingObjBase, dict, metaclass=ABCAfterInitMeta):
+    """Dict for weighted modeling objects. Uses ObjectLinkedToModelingObjBase (not slotted)."""
+
     def __init__(self, weighted_modeling_objects_dict: Dict[ModelingObject, float | SourceValue]):
         super().__init__()
         self.trigger_modeling_updates = False

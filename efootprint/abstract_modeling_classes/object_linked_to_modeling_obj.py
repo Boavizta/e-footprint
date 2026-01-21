@@ -1,14 +1,46 @@
 from typing import Type
 
+_NOT_CACHED = object()  # Sentinel for distinguishing "not cached" from "cached as None"
 
-class ObjectLinkedToModelingObj:
+# Attributes that ObjectLinkedToModelingObj instances need
+_OBJECT_LINKED_SLOTS = (
+    'modeling_obj_container',
+    'attr_name_in_mod_obj_container',
+    'former_modeling_obj_container_id',
+    'former_attr_name_in_mod_obj_container',
+    '_cached_id',
+    '_cached_full_str_tuple_id',
+    '_cached_attribute_id',
+    '_cached_dict_container',
+    '_cached_key_in_dict',
+    '_cached_list_container',
+    '_cached_indexes_in_list',
+)
+
+
+class ObjectLinkedToModelingObjBase:
+    """Base class with all methods.
+
+    Used by classes that need multiple inheritance with built-in types (dict, list).
+    Has empty __slots__ to allow subclasses to define their own slots.
+    Dict/list hybrid classes inherit from this and will have __dict__ because
+    built-in types don't support slots.
+    """
+    __slots__ = ()  # Empty slots - subclasses add their own
+
     def __init__(self):
         self.modeling_obj_container = None
         self.attr_name_in_mod_obj_container = None
         # kept in memory just for easier debugging and error messages
         self.former_modeling_obj_container_id = None
         self.former_attr_name_in_mod_obj_container = None
-        self.cached_values = {}
+        self._cached_id = None
+        self._cached_full_str_tuple_id = None
+        self._cached_attribute_id = None
+        self._cached_dict_container = _NOT_CACHED
+        self._cached_key_in_dict = None
+        self._cached_list_container = _NOT_CACHED
+        self._cached_indexes_in_list = None
 
     def set_modeling_obj_container(
             self, new_parent_modeling_object: Type["ModelingObject"] | None, attr_name: str | None):
@@ -27,7 +59,13 @@ class ObjectLinkedToModelingObj:
         self.former_attr_name_in_mod_obj_container = self.attr_name_in_mod_obj_container
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
-        self.cached_values = {}
+        self._cached_id = None
+        self._cached_full_str_tuple_id = None
+        self._cached_attribute_id = None
+        self._cached_dict_container = _NOT_CACHED
+        self._cached_key_in_dict = None
+        self._cached_list_container = _NOT_CACHED
+        self._cached_indexes_in_list = None
 
     def raise_error_if_modeling_obj_container_is_none(self):
         if self.modeling_obj_container is None:
@@ -40,38 +78,34 @@ class ObjectLinkedToModelingObj:
 
     @property
     def id(self):
-        if "id" not in self.cached_values:
+        if self._cached_id is None:
             self.raise_error_if_modeling_obj_container_is_none()
             if self.dict_container is None:
-                self.cached_values["id"] = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+                self._cached_id = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
             else:
-                self.cached_values[
-                    "id"] = f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
-        return self.cached_values["id"]
+                self._cached_id = f"{self.attr_name_in_mod_obj_container}[{self.key_in_dict.id}]-in-{self.modeling_obj_container.id}"
+        return self._cached_id
 
     @property
     def full_str_tuple_id(self):
-        if "full_str_tuple_id" not in self.cached_values:
+        if self._cached_full_str_tuple_id is None:
             self.raise_error_if_modeling_obj_container_is_none()
-            self.cached_values["full_str_tuple_id"] = str((self.modeling_obj_container.id,
+            self._cached_full_str_tuple_id = str((self.modeling_obj_container.id,
                     self.attr_name_in_mod_obj_container,
                     self.key_in_dict.id if self.dict_container is not None else None))
-
-        return self.cached_values["full_str_tuple_id"]
+        return self._cached_full_str_tuple_id
 
     @property
     def attribute_id(self):
-        if "attribute_id" not in self.cached_values:
+        if self._cached_attribute_id is None:
             self.raise_error_if_modeling_obj_container_is_none()
-            self.cached_values["attribute_id"] =\
-                f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
-
-        return self.cached_values["attribute_id"]
+            self._cached_attribute_id = f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
+        return self._cached_attribute_id
 
     @property
     def dict_container(self):
-        if "dict_container" in self.cached_values:
-            return self.cached_values["dict_container"]
+        if self._cached_dict_container is not _NOT_CACHED:
+            return self._cached_dict_container
         output = None
         if (
                 self.modeling_obj_container is not None
@@ -79,14 +113,13 @@ class ObjectLinkedToModelingObj:
                 and id(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)) != id(self)
         ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-        self.cached_values["dict_container"] = output
-
+        self._cached_dict_container = output
         return output
 
     @property
     def key_in_dict(self):
-        if "key_in_dict" in self.cached_values:
-            return self.cached_values["key_in_dict"]
+        if self._cached_key_in_dict is not None:
+            return self._cached_key_in_dict
         dict_container = self.dict_container
         if dict_container is None:
             raise ValueError(f"{self} is not linked to a ModelingObject through a dictionary attribute.")
@@ -98,14 +131,13 @@ class ObjectLinkedToModelingObj:
                         output_key = key
                     else:
                         raise ValueError(f"Multiple keys found for {self} in {dict_container}.")
-        self.cached_values["key_in_dict"] = output_key
-
+        self._cached_key_in_dict = output_key
         return output_key
 
     @property
     def list_container(self):
-        if "list_container" in self.cached_values:
-            return self.cached_values["list_container"]
+        if self._cached_list_container is not _NOT_CACHED:
+            return self._cached_list_container
         output = None
         if (
                 not isinstance(self, list)
@@ -113,14 +145,13 @@ class ObjectLinkedToModelingObj:
                 and isinstance(getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container), list)
         ):
             output = getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container)
-        self.cached_values["list_container"] = output
-
+        self._cached_list_container = output
         return output
 
     @property
     def indexes_in_list(self):
-        if "indexes_in_list" in self.cached_values:
-            return self.cached_values["indexes_in_list"]
+        if self._cached_indexes_in_list is not None:
+            return self._cached_indexes_in_list
         if self.list_container is None:
             raise ValueError(f"{self} is not linked to a ModelingObject through a list attribute.")
         else:
@@ -128,15 +159,14 @@ class ObjectLinkedToModelingObj:
             for index, value in enumerate(self.list_container):
                 if id(value) == id(self):
                     output_indexes.append(index)
-        self.cached_values["indexes_in_list"] = output_indexes
-
+        self._cached_indexes_in_list = output_indexes
         return output_indexes
 
     def replace_in_mod_obj_container_without_recomputation(self, new_value):
         assert self.modeling_obj_container is not None, f"{self} is not linked to a ModelingObject."
-        assert isinstance(new_value, ObjectLinkedToModelingObj), (
+        assert isinstance(new_value, ObjectLinkedToModelingObjBase), (
             f"Trying to replace {self} by {new_value} which is not an instance of "
-            f"ObjectLinkedToModelingObj.")
+            f"ObjectLinkedToModelingObjBase.")
         from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 
         if not isinstance(new_value, EmptyExplainableObject) and not isinstance(self, EmptyExplainableObject):
@@ -164,3 +194,13 @@ class ObjectLinkedToModelingObj:
             self.set_modeling_obj_container(None, None)
             mod_obj_container.__dict__[attr_name] = new_value
             new_value.set_modeling_obj_container(mod_obj_container, attr_name)
+
+
+class ObjectLinkedToModelingObj(ObjectLinkedToModelingObjBase):
+    """Slotted version of ObjectLinkedToModelingObjBase for memory optimization.
+
+    Use this as base class for ExplainableObject and other classes that don't
+    need multiple inheritance with dict/list. Uses __slots__ to reduce memory
+    footprint and fragmentation.
+    """
+    __slots__ = _OBJECT_LINKED_SLOTS
