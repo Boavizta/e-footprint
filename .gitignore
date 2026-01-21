@@ -15,3 +15,4 @@ docs
 .trees
 litellm-config.yaml
 litellm-commands.md
+.slingshot

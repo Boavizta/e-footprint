@@ -13,7 +13,6 @@ from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 start = time()
 
 import os
-os.environ["USE_BOAVIZTAPI_PACKAGE"] = "true"
 
 from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.utils.tools import time_it
@@ -83,7 +82,7 @@ def generate_big_system(
                     service=genai_model)
                 manually_written_job = Job.from_defaults(
                     f"Manually defined job uj {uj_index} uj_step {uj_step_index} server {server_index}",
-                    server=autoscaling_server)
+                    server=serverless_server)
                 custom_gpu_job = GPUJob.from_defaults(
                     f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}", server=on_premise_gpu_server)
 
@@ -196,14 +195,14 @@ if __name__ == "__main__":
     # Live system editions benchmarking
     nb_years = 5
     system = generate_big_system(
-        nb_of_servers_of_each_type=3, nb_of_uj_per_each_server_type=3, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_device=5, nb_years=nb_years)
+        nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=nb_years)
 
     edition_iterations = 10
     start = time()
     for i in range(edition_iterations):
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(100 * u.MB)
-        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[0].data_transferred = SourceValue(30 * u.MB)
+        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(100 * u.MB)
+        system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(30 * u.MB)
     end = time()
     compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")

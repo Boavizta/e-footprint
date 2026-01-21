@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.2.0] - 2026-01-21
+
+### Fixed
+- Stop converting Storage data_storage_duration to hour in place when computing storage dumps.
+
+### Changed
+- Add __slots__ to ExplainableObject classes to reduce memory fragmentation. Reduces memory growth by 10 to 30% when repeatedly loading/destroying systems by using fixed-size object layouts instead of per-instance __dict__.
+
 ## [14.1.0] - 2025-11-28
 
 ### Added

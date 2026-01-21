@@ -66,7 +66,6 @@ def update_on_system(
 
 class TestBigSystemFromAndToJsonPerformance(TestCase):
     def test_big_system_from_and_to_json_performance(self):
-        os.environ.pop("USE_BOAVIZTAPI_PACKAGE")
         generate_big_system(
             nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
             nb_of_edge_usage_patterns=5, nb_of_edge_processes_per_edge_computer=5, nb_years=5)
