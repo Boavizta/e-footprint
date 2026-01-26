@@ -1,6 +1,5 @@
 import random
 import unittest
-from copy import copy
 from unittest.mock import MagicMock, patch, PropertyMock, Mock
 from datetime import datetime, timedelta
 
@@ -197,6 +196,20 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         }
         obj = ExplainableHourlyQuantities.from_json_dict(json_data)
         self.assertDictEqual(json_data, obj.to_json())
+
+    def test_to_json_with_calculated_attributes_after_init_from_json_doesnt_update_json_data(self):
+        json_data = {
+            "label": "Usage 1",
+            "compressed_values": "KLUv/SBgVQAAIAAAgD8BAPnkiA==",
+            "unit": "watt",
+            "start_date": "2025-01-01 00:00:00",
+            "timezone": None
+        }
+        obj = ExplainableHourlyQuantities.from_json_dict(json_data)
+        json_output = obj.to_json(save_calculated_attributes=True)
+        self.assertIn("direct_ancestors_with_id", json_output)
+        self.assertNotIn("direct_ancestors_with_id", obj.json_compressed_value_data)
+        self.assertNotIn("direct_ancestors_with_id", obj.to_json(save_calculated_attributes=False))
 
     def test_ceil_dimensionless(self):
         usage_data = [1.5] * 24

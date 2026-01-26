@@ -1,5 +1,5 @@
 import numbers
-from copy import copy
+from copy import copy, deepcopy
 
 import numpy as np
 from pint import Quantity
@@ -196,7 +196,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def to_json(self, save_calculated_attributes=False):
         if self.json_value_data is not None:
-            output_dict = self.json_value_data
+            output_dict = deepcopy(self.json_value_data)
         else:
             output_dict = {"value": float(self.value.magnitude), "unit": str(self.value.units)}
 

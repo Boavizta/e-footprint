@@ -1,7 +1,7 @@
 import math
 import numbers
 import base64
-from copy import copy
+from copy import copy, deepcopy
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING
 
@@ -404,7 +404,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def to_json(self, save_calculated_attributes=False):
         if self.json_compressed_value_data is not None:
-            output_dict = self.json_compressed_value_data
+            output_dict = deepcopy(self.json_compressed_value_data)
         else:
             output_dict = {
                     "compressed_values": self.compress_values(self.magnitude),

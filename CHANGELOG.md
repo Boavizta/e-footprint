@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.2.1] - 2026-01-26
+
+### Fixed
+- Deepcopy preloaded json in ExplainableQuantity and ExplainableHourlyQuantities to_json methods, so that it doesn’t get updated in place and then create bugs if 2 to_json exports are made with save_calculated_attributes set to True and False.
+
 ## [14.2.0] - 2026-01-21
 
 ### Fixed
