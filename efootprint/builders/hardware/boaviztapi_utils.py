@@ -16,8 +16,8 @@ def call_boaviztapi(url, method="GET", params={}):
 
 def call_boaviztapi_from_web_request(url, method="GET", params={}):
     logger.info(f"Calling Boavizta API with url {url}, method {method} and params {params}")
-    from time import time
-    start = time()
+    from time import perf_counter
+    start = perf_counter()
     headers = {'accept': 'application/json'}
     response = None
     if method == "GET":
@@ -27,7 +27,7 @@ def call_boaviztapi_from_web_request(url, method="GET", params={}):
         response = requests.post(url, headers=headers, params=params)
 
     if response.status_code == 200:
-        logger.info(f"Boavizta API call succeeded in {int((time() - start) * 1000)} ms.")
+        logger.info(f"Boavizta API call succeeded in {int((perf_counter() - start) * 1000)} ms.")
         return response.json()
     else:
         raise ValueError(
@@ -124,7 +124,7 @@ def print_archetypes_and_their_configs():
 
 
 if __name__ == "__main__":
-    from time import time
-    start = time()
+    from time import perf_counter
+    start = perf_counter()
     print_archetypes_and_their_configs()
-    print(f"Execution time: {time() - start} seconds")
+    print(f"Execution time: {perf_counter() - start} seconds")

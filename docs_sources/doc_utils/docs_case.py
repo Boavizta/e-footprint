@@ -1,4 +1,4 @@
-from time import time
+from time import perf_counter
 
 import numpy as np
 from pint import Quantity
@@ -11,7 +11,7 @@ from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 
-start = time()
+start = perf_counter()
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
@@ -39,7 +39,7 @@ from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_random_source_hourly_values, create_hourly_usage_from_frequency
 from efootprint.logger import logger
-logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
+logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 
 storage = Storage(
@@ -244,4 +244,4 @@ edge_usage_pattern = EdgeUsagePattern(
 
 system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 
-logger.info(f"computation took {round((time() - start), 3)} seconds")
+logger.info(f"computation took {round((perf_counter() - start), 3)} seconds")

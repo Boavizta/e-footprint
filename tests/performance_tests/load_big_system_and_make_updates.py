@@ -1,7 +1,7 @@
 from copy import deepcopy
-from time import time
+from time import perf_counter
 
-start = time()
+start = perf_counter()
 import json
 import os
 
@@ -12,7 +12,7 @@ from efootprint.logger import logger
 from tests.performance_tests.test_big_system_from_and_to_json_performance import root_dir, update_on_system, \
     log_number_of_live_objects
 
-logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
+logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 # System loaded from json edition benchmarking
 with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file:

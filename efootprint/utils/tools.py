@@ -1,4 +1,4 @@
-import time
+from time import perf_counter
 
 from functools import lru_cache
 from inspect import signature
@@ -20,12 +20,12 @@ def round_dict(my_dict, round_level):
 
 def time_it(func):
     def wrapper(*args, **kwargs):
-        start_time = time.time()
+        start_time = perf_counter()
         result = func(*args, **kwargs)
-        end_time = time.time()
+        end_time = perf_counter()
         diff = end_time - start_time
         if diff > 0.000001:
-            logger.info(f"Function {func.__name__} took {diff*1000:.3f} ms to execute.")
+            logger.info(f"Function {func.__name__} took {diff*1000:.1f} ms to execute.")
         return result
     return wrapper
 

@@ -1,9 +1,9 @@
 from copy import deepcopy
-from time import time
+from time import perf_counter
 
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 
-start = time()
+start = perf_counter()
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -129,7 +129,7 @@ class BoaviztaCloudServer(Server):
             nb_vcpu * u.cpu_core, f"{self.name} compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
-logger.info(f"Imported BoaviztaCloudServer in {time() - start:.5f} seconds.")
+logger.info(f"Imported BoaviztaCloudServer in {perf_counter() - start:.5f} seconds.")
 
 
 if __name__ == "__main__":

@@ -74,8 +74,8 @@ class System(ModelingObject):
         return [self]
 
     def after_init(self):
-        from time import time
-        start = time()
+        from time import perf_counter
+        start = perf_counter()
         logger.info(f"Starting computing {self.name} modeling")
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
         self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
@@ -83,7 +83,7 @@ class System(ModelingObject):
         all_objects = self.all_linked_objects
         nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
         if nb_of_calculated_attributes > 0:
-            compute_duration = round((time() - start), 3)
+            compute_duration = round((perf_counter() - start), 3)
             logger.info(
                 f"Computed {nb_of_calculated_attributes} calculated attributes over {len(all_objects)} objects in "
                 f"{compute_duration} seconds or {round(1000 * compute_duration / nb_of_calculated_attributes, 2)} "

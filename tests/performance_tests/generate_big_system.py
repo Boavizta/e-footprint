@@ -1,4 +1,4 @@
-from time import time
+from time import perf_counter
 
 import numpy as np
 from pint import Quantity
@@ -10,7 +10,7 @@ from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 
-start = time()
+start = perf_counter()
 
 import os
 
@@ -36,7 +36,7 @@ from efootprint.constants.countries import country_generator, tz, Countries
 from efootprint.constants.units import u
 from efootprint.builders.time_builders import create_hourly_usage_from_frequency, create_random_source_hourly_values
 from efootprint.logger import logger
-logger.info(f"Finished importing modules in {round((time() - start), 3)} seconds")
+logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,7 +44,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 def generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
         nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=5):
-    start = time()
+    start = perf_counter()
     usage_patterns = []
     for server_index in range(1, nb_of_servers_of_each_type + 1):
         autoscaling_server = Server.from_defaults(
@@ -178,7 +178,7 @@ def generate_big_system(
         edge_usage_patterns.append(edge_usage_pattern)
 
     system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=edge_usage_patterns)
-    logger.info(f"Finished generating system in {round((time() - start), 3)} seconds")
+    logger.info(f"Finished generating system in {round((perf_counter() - start), 3)} seconds")
 
     timed_system_to_json(system, save_calculated_attributes=False,
                          output_filepath=os.path.join(root_dir, "big_system.json"))
@@ -199,27 +199,27 @@ if __name__ == "__main__":
         nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=nb_years)
 
     edition_iterations = 10
-    start = time()
+    start = perf_counter()
     for i in range(edition_iterations):
         system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(100 * u.MB)
         system.usage_patterns[0].usage_journey.uj_steps[0].jobs[3].data_transferred = SourceValue(30 * u.MB)
-    end = time()
+    end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")
 
-    start = time()
+    start = perf_counter()
     for i in range(edition_iterations):
         system.usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(
             timespan=nb_years * u.year)
-    end = time()
+    end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
 
-    start = time()
+    start = perf_counter()
     for i in range(edition_iterations):
         system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = create_random_source_hourly_values(
             timespan=nb_years * u.year)
-    end = time()
+    end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per edge hourly usage journey starts edition")
 

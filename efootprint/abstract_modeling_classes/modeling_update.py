@@ -1,6 +1,6 @@
 from copy import copy
 from datetime import datetime, timedelta
-from time import time
+from time import perf_counter
 from typing import List
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
@@ -27,7 +27,7 @@ class ModelingUpdate:
     def __init__(
             self, changes_list: List[List[ObjectLinkedToModelingObj | list | dict]], simulation_date: datetime = None,
             compute_previous_system_footprints=True):
-        start = time()
+        start = perf_counter()
         self.system = None
         for change in changes_list:
             changed_val = change[0]
@@ -92,7 +92,7 @@ class ModelingUpdate:
 
         if simulation_date is not None:
             self.reset_values()
-        compute_time_ms = round(1000 * (time() - start), 1)
+        compute_time_ms = round(1000 * (perf_counter() - start), 1)
         avg_compute_time_per_value = round(compute_time_ms / len(self.values_to_recompute), 2)\
             if self.values_to_recompute else 0
         logger.info(f"{len(self.changes_list)} changes lead to {len(self.values_to_recompute)} update computations "
