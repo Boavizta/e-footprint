@@ -9,7 +9,7 @@ from efootprint.logger import logger
 
 
 _BOAVIZTAPI_CACHE_MAX_BYTES = 50 * 1024 * 1024
-_BOAVIZTAPI_CACHE_TTL_SECONDS = 24 * 60 * 60
+_BOAVIZTAPI_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60
 _boaviztapi_cache = OrderedDict()
 _boaviztapi_cache_size_bytes = 0
 
