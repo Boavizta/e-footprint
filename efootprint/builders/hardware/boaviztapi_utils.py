@@ -1,21 +1,83 @@
 import os
+import time
+from collections import OrderedDict
+
+import orjson
 import requests
 
 from efootprint.logger import logger
 
 
-def call_boaviztapi(url, method="GET", params={}):
-    if os.getenv("USE_BOAVIZTAPI_PACKAGE"):
-        return call_boaviztapi_from_package_dependency(url, method, params)
+_BOAVIZTAPI_CACHE_MAX_BYTES = 50 * 1024 * 1024
+_BOAVIZTAPI_CACHE_TTL_SECONDS = 24 * 60 * 60
+_boaviztapi_cache = OrderedDict()
+_boaviztapi_cache_size_bytes = 0
+
+
+def _make_cache_key(url, method, params, json_payload):
+    cache_payload = {"url": url, "method": method, "params": params or {}, "json": json_payload}
+    return orjson.dumps(cache_payload, option=orjson.OPT_SORT_KEYS, default=str)
+
+
+def _estimate_cache_entry_size(cache_key, value):
     try:
-        return call_boaviztapi_from_web_request(url, method, params)
+        value_bytes = len(orjson.dumps(value, option=orjson.OPT_SORT_KEYS, default=str))
+    except TypeError:
+        value_bytes = len(repr(value).encode("utf-8"))
+    return len(cache_key) + value_bytes
+
+
+def _cache_get(cache_key):
+    entry = _boaviztapi_cache.get(cache_key)
+    if entry is None:
+        return None
+    value, entry_size, expires_at = entry
+    if expires_at <= time.time():
+        _boaviztapi_cache.pop(cache_key, None)
+        global _boaviztapi_cache_size_bytes
+        _boaviztapi_cache_size_bytes -= entry_size
+        return None
+    return value
+
+
+def _cache_set(cache_key, value):
+    global _boaviztapi_cache_size_bytes
+    entry_size = _estimate_cache_entry_size(cache_key, value)
+    if entry_size > _BOAVIZTAPI_CACHE_MAX_BYTES:
+        return
+    now = time.time()
+    for key, (_, old_size, expires_at) in list(_boaviztapi_cache.items()):
+        if expires_at <= now:
+            _boaviztapi_cache.pop(key, None)
+            _boaviztapi_cache_size_bytes -= old_size
+    while _boaviztapi_cache and (_boaviztapi_cache_size_bytes + entry_size) > _BOAVIZTAPI_CACHE_MAX_BYTES:
+        _, (_, old_size, _) = _boaviztapi_cache.popitem(last=False)
+        _boaviztapi_cache_size_bytes -= old_size
+    _boaviztapi_cache[cache_key] = (value, entry_size, now + _BOAVIZTAPI_CACHE_TTL_SECONDS)
+    _boaviztapi_cache_size_bytes += entry_size
+
+
+def call_boaviztapi(url, method="GET", params=None, json=None):
+    if os.getenv("USE_BOAVIZTAPI_PACKAGE"):
+        return call_boaviztapi_from_package_dependency(url, method, params, json)
+    cache_key = _make_cache_key(url, method, params, json)
+    cached_response = _cache_get(cache_key)
+    if cached_response is not None:
+        logger.info(f"Fetched {method} {url} params {params} Boavizta API response from cache.")
+        return cached_response
+    try:
+        response = call_boaviztapi_from_web_request(url, method, params, json)
+        _cache_set(cache_key, response)
+        return response
     except Exception as e:
         logger.warning(f"Boavizta API call failed with error {e}. Trying to call Boavizta API via package dependency.")
-        return call_boaviztapi_from_package_dependency(url, method, params)
+        response = call_boaviztapi_from_package_dependency(url, method, params, json)
+        _cache_set(cache_key, response)
+        return response
 
 
-def call_boaviztapi_from_web_request(url, method="GET", params={}):
-    logger.info(f"Calling Boavizta API with url {url}, method {method} and params {params}")
+def call_boaviztapi_from_web_request(url, method="GET", params=None, json=None):
+    params = params or {}
     from time import perf_counter
     start = perf_counter()
     headers = {'accept': 'application/json'}
@@ -24,17 +86,18 @@ def call_boaviztapi_from_web_request(url, method="GET", params={}):
         response = requests.get(url, headers=headers, params=params)
     elif method == "POST":
         headers["Content-Type"] = "application/json"
-        response = requests.post(url, headers=headers, params=params)
+        response = requests.post(url, headers=headers, params=params, json=json)
 
     if response.status_code == 200:
-        logger.info(f"Boavizta API call succeeded in {int((perf_counter() - start) * 1000)} ms.")
+        logger.info(f"Called {method} {url} with params {params} in {int((perf_counter() - start) * 1000)} ms.")
         return response.json()
     else:
         raise ValueError(
             f"{method} request to {url} with params {params} failed with status code {response.status_code}")
 
 
-def call_boaviztapi_from_package_dependency(url, method="GET", params={}):
+def call_boaviztapi_from_package_dependency(url, method="GET", params=None, json=None):
+    params = params or {}
     import asyncio
     import inspect
     import warnings

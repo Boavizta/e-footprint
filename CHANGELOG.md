@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.3.0] - 2026-01-27
+
+### Added
+- Cache system for Boaviztapi calls, with max cache size 50 MB and expiration time of 24 hours. This will reduce the number of calls to Boaviztapi and speed up the interface.
+
 ## [14.2.2] - 2026-01-27
 
 ### Fixed
