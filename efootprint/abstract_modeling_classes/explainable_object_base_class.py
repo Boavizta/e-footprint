@@ -187,7 +187,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def explain_nested_tuples(self):
         if self._explain_nested_tuples is None and self.explain_nested_tuples_from_json is not None:
             def recursively_deserialize_explain_nested_tuple(explain_nested_tuple):
-                if isinstance(explain_nested_tuple, list):
+                if isinstance(explain_nested_tuple, list) or isinstance(explain_nested_tuple, tuple):
                     return (recursively_deserialize_explain_nested_tuple(explain_nested_tuple[0]),
                             explain_nested_tuple[1],
                             recursively_deserialize_explain_nested_tuple(explain_nested_tuple[2]))

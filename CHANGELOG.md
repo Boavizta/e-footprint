@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [14.2.2] - 2026-01-27
+
+### Fixed
+- In ExplainableObject’s explain_nested_tuples method, accept also tuples as input, not only lists. In fact, the explain_nested_tuples_from_json paramaters is turned into a list if it has been json serialized, but it stays a tuple if it has been instead pickled (like by a Redis cache). 
+
 ## [14.2.1] - 2026-01-26
 
 ### Fixed
