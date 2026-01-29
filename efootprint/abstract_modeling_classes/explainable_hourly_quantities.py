@@ -12,7 +12,7 @@ import zstandard as zstd
 import ciso8601
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    ExplainableObject, Source)
+    ExplainableObject, Source, get_attribute_from_flat_obj_dict)
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
@@ -57,7 +57,7 @@ def align_temporally_quantity_arrays(
     return aligned_first_array, aligned_second_array, common_start
 
 
-@ExplainableObject.register_subclass(lambda d: ("values" in d or "compressed_values" in d) and "unit" in d)
+@ExplainableObject.register_subclass(lambda d: ("values" in d or "compressed_values" in d or "values_unsaved" in d))
 class ExplainableHourlyQuantities(ExplainableObject):
     __slots__ = (
         '_ExplainableQuantity',
@@ -74,6 +74,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
         elif "compressed_values" in d:
             # start_date and timezone are included to facilitate json dumping if object doesn’t rehydrate
             value = {k: d[k] for k in ["compressed_values", "unit", "start_date", "timezone"]}
+        elif "values_unsaved" in d:
+            value = {"values_unsaved": d["values_unsaved"]}
         else:
             raise ValueError("Invalid hourly quantity format")
         start_date = ciso8601.parse_datetime(d["start_date"])
@@ -111,8 +113,15 @@ class ExplainableHourlyQuantities(ExplainableObject):
     @property
     def value(self):
         if self._value is None and self.json_compressed_value_data is not None:
-            decompressed_values = self.decompress_values(self.json_compressed_value_data["compressed_values"])
-            self._value = Quantity(decompressed_values, get_unit(self.json_compressed_value_data["unit"]))
+            if "compressed_values" in self.json_compressed_value_data:
+                decompressed_values = self.decompress_values(self.json_compressed_value_data["compressed_values"])
+                self._value = Quantity(decompressed_values, get_unit(self.json_compressed_value_data["unit"]))
+            elif "values_unsaved" in self.json_compressed_value_data:
+                logger.info(f"Recomputing {self.label} ({self.attr_name_in_mod_obj_container}) because its value hasn’t been saved to json.")
+                attr_key = self.full_str_tuple_id
+                self.update_function()
+                replacing_obj = get_attribute_from_flat_obj_dict(attr_key, self.flat_obj_dict)
+                self._value = replacing_obj.value
 
         return self._value
 
@@ -402,8 +411,20 @@ class ExplainableHourlyQuantities(ExplainableObject):
         decompressed = dctx.decompress(compressed)
         return np.frombuffer(decompressed, dtype=np.float32)
 
+    @property
+    def all_children_are_in_same_container(self) -> bool:
+        return (
+            all(
+                child.modeling_obj_container == self.modeling_obj_container for child in self.direct_children_with_id)
+            and len(self.direct_children_with_id) > 0
+        )
+
     def to_json(self, save_calculated_attributes=False):
-        if self.json_compressed_value_data is not None:
+        if (self.attr_name_in_mod_obj_container in self.modeling_obj_container.calculated_attributes
+                and self.all_children_are_in_same_container):
+            output_dict = {"values_unsaved": "because all children are in the same container",
+                           "start_date": self.start_date.strftime("%Y-%m-%d %H:%M:%S")}
+        elif self.json_compressed_value_data is not None:
             output_dict = deepcopy(self.json_compressed_value_data)
         else:
             output_dict = {
