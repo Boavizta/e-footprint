@@ -1,6 +1,7 @@
 from time import perf_counter
 
 import numpy as np
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from pint import Quantity
 
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
@@ -43,9 +44,11 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 
 def generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=5):
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3,
+        nb_of_jobs_per_server_need=1, nb_years=5):
     start = perf_counter()
     usage_patterns = []
+    all_jobs = []
     for server_index in range(1, nb_of_servers_of_each_type + 1):
         autoscaling_server = Server.from_defaults(
             f"server {server_index}",
@@ -66,7 +69,6 @@ def generate_big_system(
         )
 
         video_streaming = VideoStreaming.from_defaults(f"Video streaming service {server_index}", server=autoscaling_server)
-        web_application = WebApplication.from_defaults(f"Web application service {server_index}", server=serverless_server)
         genai_model = GenAIModel.from_defaults(f"Generative AI model {server_index}", server=on_premise_gpu_server)
 
         for uj_index in range(1, nb_of_uj_per_each_server_type + 1):
@@ -74,9 +76,6 @@ def generate_big_system(
             for uj_step_index in range(1, nb_of_uj_steps_per_uj + 1):
                 video_streaming_job = VideoStreamingJob.from_defaults(
                     f"Video streaming job", service=video_streaming, video_duration=SourceValue(2.5 * u.hour))
-                web_application_job = WebApplicationJob.from_defaults(
-                    f"Web application job uj {uj_index} uj_step {uj_step_index} server {server_index}",
-                    service=web_application)
                 genai_model_job = GenAIJob.from_defaults(
                     f"Generative AI model job uj {uj_index} uj_step {uj_step_index} server {server_index}",
                     service=genai_model)
@@ -85,17 +84,18 @@ def generate_big_system(
                     server=serverless_server)
                 custom_gpu_job = GPUJob.from_defaults(
                     f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}", server=on_premise_gpu_server)
-
+                new_jobs = [genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
+                all_jobs += new_jobs
                 uj_steps.append(UsageJourneyStep(
                     f"20 min streaming {uj_index} step {uj_step_index}",
                     user_time_spent=SourceValue(20 * u.min, source=None),
-                    jobs=[web_application_job, genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
+                    jobs=new_jobs
                     ))
 
             usage_journey = UsageJourney(f"user journey {uj_index}", uj_steps=uj_steps)
 
             network = Network(
-                    f"network {uj_index}",
+                    f"web network {uj_index}",
                     bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
             for up_nb in range(1, nb_of_up_per_uj + 1):
                 usage_patterns.append(
@@ -119,6 +119,7 @@ def generate_big_system(
                 )
 
     edge_usage_patterns = []
+    working_job_id = 0
     for edge_usage_pattern_index in range(1, nb_of_edge_usage_patterns + 1):
         edge_storage = EdgeStorage(
             f"Edge SSD storage {edge_usage_pattern_index}",
@@ -143,7 +144,8 @@ def generate_big_system(
             storage=edge_storage
         )
         edge_processes = []
-        for edge_process_index in range(1, nb_of_edge_processes_per_edge_computer + 1):
+        recurrent_server_needs = []
+        for edge_process_index in range(1, nb_of_edge_processes_and_server_needs_per_edge_computer + 1):
             edge_process = RecurrentEdgeProcess(
                 f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
                 edge_device=edge_computer,
@@ -155,10 +157,19 @@ def generate_big_system(
                     Quantity(np.array([200] * 168, dtype=np.float32), u.kB))
             )
             edge_processes.append(edge_process)
+            jobs = []
+            for job in range(nb_of_jobs_per_server_need):
+                jobs.append(all_jobs[working_job_id % len(all_jobs)])
+                working_job_id += 1
+            recurrent_server_need = RecurrentServerNeed.from_defaults(
+                f"Recurrent server need {edge_process_index} made by edge device {edge_usage_pattern_index}",
+                edge_device=edge_computer, jobs=jobs)
+            recurrent_server_needs.append(recurrent_server_need)
 
         edge_function = EdgeFunction(
             f"Default edge function {edge_usage_pattern_index}",
-            recurrent_edge_device_needs=edge_processes
+            recurrent_edge_device_needs=edge_processes,
+            recurrent_server_needs=recurrent_server_needs
         )
 
         edge_usage_journey = EdgeUsageJourney(
@@ -166,10 +177,13 @@ def generate_big_system(
             edge_functions=[edge_function],
             usage_span=SourceValue(6 * u.year)
         )
-
+        network = Network(
+            f"edge network {edge_usage_pattern_index}",
+            bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
         edge_usage_pattern = EdgeUsagePattern(
             f"Default edge usage pattern {edge_usage_pattern_index}",
             edge_usage_journey=edge_usage_journey,
+            network=network,
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
                 timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
@@ -196,7 +210,8 @@ if __name__ == "__main__":
     nb_years = 5
     system = generate_big_system(
         nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-        nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=nb_years)
+        nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3, 
+        nb_of_jobs_per_server_need=1, nb_years=nb_years)
 
     edition_iterations = 10
     start = perf_counter()

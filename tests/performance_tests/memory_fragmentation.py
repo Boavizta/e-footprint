@@ -13,7 +13,8 @@ ch.setLevel(logging.WARNING)
 nb_years = 5
 system = generate_big_system(
     nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
-    nb_of_edge_usage_patterns=3, nb_of_edge_processes_per_edge_computer=3, nb_years=nb_years)
+    nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3,
+    nb_of_jobs_per_server_need=1, nb_years=nb_years)
 
 with open('big_system.json') as f:
     template_data = json.load(f)
