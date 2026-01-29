@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey import UsageJourney
     from efootprint.core.usage.usage_journey_step import UsageJourneyStep
     from efootprint.core.hardware.network import Network
+    from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 
 
 class JobBase(ModelingObject):
@@ -64,17 +66,32 @@ class JobBase(ModelingObject):
                 math.ceil(copy(self.request_duration.value).to(u.hour).magnitude) * u.dimensionless,
                 f"{self.name} duration in full hours")
 
+    # Job objects can be refereenced by UsageJourneySteps or by RecurrentServerNeeds
     @property
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
-        return self.modeling_obj_containers
+        from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+        return [obj for obj in self.modeling_obj_containers if isinstance(obj, UsageJourneyStep)]
+
+    @property
+    def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
+        from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+        return [obj for obj in self.modeling_obj_containers if isinstance(obj, RecurrentServerNeed)]
+
+    @property
+    def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
+        return list(set(sum([rsn.edge_usage_patterns for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def usage_journeys(self) -> List["UsageJourney"]:
         return list(set(sum([uj_step.usage_journeys for uj_step in self.usage_journey_steps], start=[])))
 
     @property
-    def usage_patterns(self) -> List["UsagePattern"]:
+    def web_usage_patterns(self) -> List["UsagePattern"]:
         return list(set(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
+
+    @property
+    def usage_patterns(self) -> List["UsagePattern| EdgeUsagePattern"]:
+        return self.web_usage_patterns + self.edge_usage_patterns
 
     @property
     def networks(self) -> List["Network"]:
@@ -84,19 +101,30 @@ class JobBase(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
         return self.networks
 
-    def update_dict_element_in_hourly_occurrences_per_usage_pattern(self, usage_pattern: "UsagePattern"):
-        job_occurrences = EmptyExplainableObject()
-        delay_between_uj_start_and_job_evt = EmptyExplainableObject()
-        for uj_step in usage_pattern.usage_journey.uj_steps:
-            for uj_step_job in uj_step.jobs:
-                if uj_step_job == self:
-                    job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
-                        delay_between_uj_start_and_job_evt)
+    def update_dict_element_in_hourly_occurrences_per_usage_pattern(
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
+        from efootprint.core.usage.usage_pattern import UsagePattern
+        if isinstance(usage_pattern, UsagePattern):
+            job_occurrences = EmptyExplainableObject()
+            delay_between_uj_start_and_job_evt = EmptyExplainableObject()
+            for uj_step in usage_pattern.usage_journey.uj_steps:
+                for uj_step_job in uj_step.jobs:
+                    if uj_step_job == self:
+                        job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
+                            delay_between_uj_start_and_job_evt)
 
-            delay_between_uj_start_and_job_evt += uj_step.user_time_spent
+                delay_between_uj_start_and_job_evt += uj_step.user_time_spent
+        else:  # usage_pattern is an EdgeUsagePattern
+            job_occurrences = EmptyExplainableObject()
+            for recurrent_server_need in self.recurrent_server_needs:
+                for recurrent_server_need_job in recurrent_server_need.jobs:
+                    if recurrent_server_need_job == self:
+                        unitary_hourly_occurrences = recurrent_server_need.unitary_hourly_volume_per_usage_pattern[
+                            usage_pattern]
+                        job_occurrences += unitary_hourly_occurrences * usage_pattern.nb_edge_usage_journeys_in_parallel
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
-            f"Hourly {self.name} occurrences in {usage_pattern.name}")
+            f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -104,7 +132,7 @@ class JobBase(ModelingObject):
             self.update_dict_element_in_hourly_occurrences_per_usage_pattern(up)
 
     def update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(
-            self, usage_pattern: "UsagePattern"):
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
             self.hourly_occurrences_per_usage_pattern[usage_pattern], self.request_duration)
 
@@ -116,7 +144,8 @@ class JobBase(ModelingObject):
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(up)
 
-    def compute_hourly_data_exchange_for_usage_pattern(self, usage_pattern, data_exchange_type: str):
+    def compute_hourly_data_exchange_for_usage_pattern(
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern", data_exchange_type: str):
         data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
 
         data_exchange_per_hour = (
@@ -130,7 +159,7 @@ class JobBase(ModelingObject):
                 f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}")
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
-            self, usage_pattern: "UsagePattern"):
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         self.hourly_data_transferred_per_usage_pattern[usage_pattern] = \
             self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
 
@@ -140,7 +169,7 @@ class JobBase(ModelingObject):
             self.update_dict_element_in_hourly_data_transferred_per_usage_pattern(up)
 
     def update_dict_element_in_hourly_data_stored_per_usage_pattern(
-            self, usage_pattern: "UsagePattern"):
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         self.hourly_data_stored_per_usage_pattern[usage_pattern] = \
             self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
 

@@ -12,6 +12,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.job import Job, JobBase
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -67,7 +68,7 @@ class System(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_patterns + self.edge_usage_patterns
+        return self.edge_usage_patterns + self.usage_patterns
 
     @property
     def systems(self) -> List:
@@ -94,15 +95,14 @@ class System(ModelingObject):
 
     def get_objects_linked_to_usage_patterns(
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
-        output_list =  self.storages + usage_patterns + self.networks
+        output_list =  self.storages + usage_patterns
         usage_journeys = self.usage_journeys
         uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
-        jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
         devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
         countries = list(set([up.country for up in usage_patterns]))
         servers = self.servers
         services = list(set(sum([server.installed_services for server in servers], start=[])))
-        all_modeling_objects = output_list + usage_journeys + uj_steps + jobs + devices + countries + servers + services
+        all_modeling_objects = output_list + usage_journeys + uj_steps + devices + countries + servers + services
 
         return all_modeling_objects
 
@@ -113,6 +113,8 @@ class System(ModelingObject):
         edge_functions = list(set(sum([euj.edge_functions for euj in edge_usage_journeys], start=[])))
         recurrent_edge_device_needs = list(
             set(sum([ef.recurrent_edge_device_needs for ef in edge_functions], start=[])))
+        recurrent_server_needs = list(
+            set(sum([ef.recurrent_server_needs for ef in edge_functions], start=[])))
         recurrent_edge_component_needs = list(
             set(sum([redn.recurrent_edge_component_needs for redn in recurrent_edge_device_needs], start=[])))
         edge_devices = self.edge_devices
@@ -120,13 +122,14 @@ class System(ModelingObject):
         countries = list(set([up.country for up in edge_usage_patterns]))
         all_modeling_objects = (
                 output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
-                + recurrent_edge_component_needs + edge_devices + edge_devices_components + countries)
+                + recurrent_server_needs + recurrent_edge_component_needs
+                + edge_devices + edge_devices_components + countries)
 
         return all_modeling_objects
 
     @property
     def all_linked_objects(self):
-        return (self.get_objects_linked_to_usage_patterns(self.usage_patterns)
+        return (self.networks + self.jobs + self.get_objects_linked_to_usage_patterns(self.usage_patterns)
                 + self.get_objects_linked_to_edge_usage_patterns(self.edge_usage_patterns))
 
     @property
@@ -164,7 +167,11 @@ class System(ModelingObject):
 
     @property
     def networks(self) -> List[Network]:
-        return list(set([up.network for up in self.usage_patterns]))
+        return list(set([up.network for up in self.usage_patterns] + [eup.network for eup in self.edge_usage_patterns]))
+
+    @property
+    def jobs(self) -> List[JobBase]:
+        return list(set(sum([network.jobs for network in self.networks], start=[])))
 
     @staticmethod
     def get_efootprint_obj_by_name(

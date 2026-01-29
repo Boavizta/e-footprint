@@ -7,10 +7,12 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -469,10 +471,17 @@ class TestSystem(TestCase):
         edge_resource_need.systems = []
         edge_resource_need.edge_device = edge_computer
         edge_resource_need.recurrent_edge_component_needs = []
+        job = MagicMock()
+        job.systems = []
+        server_need = MagicMock(spec=RecurrentServerNeed)
+        server_need.systems = []
+        server_need.edge_device = edge_computer
+        server_need.jobs = [job]
 
         edge_function = MagicMock(spec=EdgeFunction)
         edge_function.systems = []
         edge_function.recurrent_edge_device_needs = [edge_resource_need]
+        edge_function.recurrent_server_needs = [server_need]
 
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         edge_usage_journey.systems = []
@@ -483,11 +492,15 @@ class TestSystem(TestCase):
         country = MagicMock()
         country.systems = []
         edge_usage_pattern.country = country
+        network = MagicMock()
+        network.systems = []
+        edge_usage_pattern.network = network
 
         edge_usage_pattern.instances_fabrication_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
         edge_computer.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
         edge_usage_pattern.energy_footprint = create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.kg)
         edge_computer.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        network.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
 
         system = System("Test system with edge patterns", usage_patterns=[], edge_usage_patterns=[edge_usage_pattern])
         system.trigger_modeling_updates = False
@@ -662,6 +675,7 @@ class TestSystem(TestCase):
         edge_function = MagicMock(spec=EdgeFunction)
         edge_function.systems = []
         edge_function.recurrent_edge_device_needs = [edge_resource_need]
+        edge_function.recurrent_server_needs = []
 
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         edge_usage_journey.systems = []
@@ -672,11 +686,15 @@ class TestSystem(TestCase):
         country = MagicMock()
         country.systems = []
         edge_usage_pattern.country = country
+        network = MagicMock()
+        network.systems = []
+        edge_usage_pattern.network = network
 
         edge_usage_pattern.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
         edge_computer.instances_fabrication_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
         edge_usage_pattern.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
         edge_computer.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
+        network.energy_footprint = create_source_hourly_values_from_list([2, 3, 4], pint_unit=u.kg)
 
         system = System("Test system with both patterns",
                        usage_patterns=[self.usage_pattern],
@@ -710,6 +728,7 @@ class TestSystem(TestCase):
     def test_get_objects_linked_to_edge_usage_patterns(self):
         edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
         edge_usage_pattern.country = MagicMock()
+        edge_usage_pattern.network = MagicMock()
 
         edge_computer = MagicMock(spec=EdgeComputer)
         storage = MagicMock(spec=EdgeStorage)
@@ -722,6 +741,11 @@ class TestSystem(TestCase):
 
         edge_function = MagicMock(spec=EdgeFunction)
         edge_function.recurrent_edge_device_needs = [edge_resource_need]
+        job = MagicMock()
+        server_need = MagicMock(spec=RecurrentServerNeed)
+        server_need.edge_device = edge_computer
+        server_need.jobs = [job]
+        edge_function.recurrent_server_needs = [server_need]
 
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         edge_usage_journey.edge_functions = [edge_function]
@@ -744,7 +768,8 @@ class TestSystem(TestCase):
         self.assertIn(edge_usage_pattern.country, linked_objects)
         self.assertIn(storage, linked_objects)
         self.assertIn(edge_resource_need, linked_objects)
-        self.assertEqual(8, len(linked_objects))
+        self.assertIn(server_need, linked_objects)
+        self.assertEqual(9, len(linked_objects))
 
 
 if __name__ == '__main__':

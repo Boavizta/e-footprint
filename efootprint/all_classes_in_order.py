@@ -20,6 +20,7 @@ from efootprint.builders.usage.edge.recurrent_edge_process import (
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload, RecurrentEdgeWorkloadNeed
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_journey import UsageJourney
@@ -55,14 +56,14 @@ ALL_EFOOTPRINT_CLASSES = (
         + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeStorageNeed]
         + EDGE_COMPONENT_CLASSES + EDGE_COMPUTER_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES
-        + [Job, GPUJob] + [RecurrentEdgeDeviceNeed] + RECURRENT_EDGE_COMPONENT_NEED_CLASSES
+        + [Job, GPUJob] + [RecurrentEdgeDeviceNeed, RecurrentServerNeed] + RECURRENT_EDGE_COMPONENT_NEED_CLASSES
         + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES
         + [Network] + SERVER_CLASSES + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
-    EdgeUsagePattern, RecurrentEdgeDeviceNeed, RecurrentEdgeComponentNeed, EdgeComponent, EdgeDevice, Service, JobBase,
-    Network, ServerBase, Storage, System]
+    EdgeUsagePattern, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed, EdgeComponent,
+    EdgeDevice, Service, JobBase, Network, ServerBase, Storage, System]
 
 ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}
 ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}

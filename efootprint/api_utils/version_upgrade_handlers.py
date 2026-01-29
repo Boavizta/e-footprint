@@ -53,11 +53,11 @@ def upgrade_version_10_to_11(system_dict, efootprint_classes_dict=None):
 
 def upgrade_version_11_to_12(system_dict, efootprint_classes_dict=None):
     if "EdgeDevice" in system_dict:
-        logger.info(f"Upgrading system dict from version 11 to 12, changing 'EdgeDevice' key to 'EdgeComputer'")
         system_dict["EdgeComputer"] = system_dict.pop("EdgeDevice")
 
     if "EdgeUsageJourney" in system_dict:
-        logger.info(f"Upgrading system dict from version 11 to 12, upgrading EdgeUsageJourney structure")
+        logger.info(f"Upgrading system dict from version 11 to 12, upgrading EdgeUsageJourney structure "
+                    f"and changing 'EdgeDevice' key to 'EdgeComputer'")
         # Create EdgeFunction entries from edge_processes
         if "EdgeFunction" not in system_dict:
             system_dict["EdgeFunction"] = {}
@@ -112,7 +112,6 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
             if 'unit' in attr_value and attr_value['unit'] in ['dimensionless', '']:
                 old_unit = attr_value['unit']
                 attr_value['unit'] = new_unit
-                logger.info(f"  Migrated {attr_name}: {old_unit} → {new_unit}")
 
         # Handle ExplainableObjectDict (dict of timeseries)
         elif isinstance(attr_value, dict):
@@ -121,7 +120,6 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
                     if 'unit' in sub_value and sub_value['unit'] in ['dimensionless', '']:
                         old_unit = sub_value['unit']
                         sub_value['unit'] = new_unit
-                        logger.info(f"  Migrated {attr_name}[{key}]: {old_unit} → {new_unit}")
 
     def migrate_ram_timeseries_unit(obj_dict, attr_name):
         """Migrate unit in RAM timeseries (ExplainableHourlyQuantities or ExplainableRecurrentQuantities) by appending _ram."""
@@ -139,7 +137,6 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
                     # Append _ram to the existing unit to preserve power of ten
                     new_unit = old_unit + '_ram' if old_unit.endswith('byte') else old_unit.replace('B', 'B_ram')
                     attr_value['unit'] = new_unit
-                    logger.info(f"  Migrated {attr_name}: {old_unit} → {new_unit}")
 
     def migrate_scalar_ram_unit(obj_dict, attr_name):
         """Migrate unit in scalar ExplainableQuantity stored in JSON by appending _ram."""
@@ -157,7 +154,6 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
                     # Append _ram to the existing unit to preserve power of ten
                     new_unit = old_unit + '_ram' if old_unit.endswith('byte') else old_unit.replace('B', 'B_ram')
                     attr_value['unit'] = new_unit
-                    logger.info(f"  Migrated {attr_name}: {old_unit} → {new_unit}")
 
     # Iterate through all classes and objects
     for class_name in system_dict:
@@ -194,9 +190,37 @@ def upgrade_version_13_to_14(system_dict, efootprint_classes_dict=None):
             system_dict["EdgeComputer"][edge_computer_id]["structure_carbon_footprint_fabrication"] = \
                 system_dict["EdgeComputer"][edge_computer_id]["carbon_footprint_fabrication"]
     if "EdgeFunction" in system_dict:
+        logger.info("Upgrading system dict from version 13 to 14: renaming recurrent_edge_resource_needs to "
+                    "recurrent_edge_device_needs in EdgeFunctions and updating EdgeComputer attributes")
         for edge_function_id in system_dict["EdgeFunction"]:
             rename_dict_key(system_dict["EdgeFunction"][edge_function_id], "recurrent_edge_resource_needs",
                             "recurrent_edge_device_needs")
+
+    return system_dict
+
+
+def upgrade_version_14_to_15(system_dict, efootprint_classes_dict=None):
+    if "EdgeUsagePattern" in system_dict:
+        logger.info("Upgrading system dict from version 14 to 15: adding default wifi network to EdgeUsagePatterns"
+                    " and empty recurrent_server_needs to EdgeFunctions")
+        default_network_id = "default_wifi_network_for_edge"
+        if "Network" not in system_dict:
+            system_dict["Network"] = {}
+        system_dict["Network"][default_network_id] = {
+            "name": "Default wifi network for edge",
+            "id": default_network_id,
+            "bandwidth_energy_intensity": {
+                "value": 0.05, "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity of Default wifi network from e-footprint hypothesis",
+                "source": {"name": "e-footprint hypothesis", "link": None}
+            }
+        }
+        for edge_usage_pattern_id in system_dict["EdgeUsagePattern"]:
+            system_dict["EdgeUsagePattern"][edge_usage_pattern_id]["network"] = default_network_id
+
+    if "EdgeFunction" in system_dict:
+        for edge_function_id in system_dict["EdgeFunction"]:
+            system_dict["EdgeFunction"][edge_function_id]["recurrent_server_needs"] = []
 
     return system_dict
 
@@ -207,4 +231,5 @@ VERSION_UPGRADE_HANDLERS = {
     11: upgrade_version_11_to_12,
     12: upgrade_version_12_to_13,
     13: upgrade_version_13_to_14,
+    14: upgrade_version_14_to_15,
 }

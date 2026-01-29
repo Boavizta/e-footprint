@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.hardware.edge.edge_device import EdgeDevice
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+    from efootprint.core.usage.job import JobBase
 
 
 class EdgeUsageJourney(ModelingObject):
@@ -35,6 +37,14 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
         return list(set(sum([ef.recurrent_edge_device_needs for ef in self.edge_functions], start=[])))
+
+    @property
+    def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
+        return list(set(sum([ef.recurrent_server_needs for ef in self.edge_functions], start=[])))
+
+    @property
+    def jobs(self) -> List["JobBase"]:
+        return list(set(sum([rsn.jobs for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def edge_devices(self) -> List["EdgeDevice"]:

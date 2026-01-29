@@ -10,7 +10,12 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.units import u
+from efootprint.core.usage.usage_pattern import UsagePattern
+from tests.utils import set_modeling_obj_containers
 
 
 class TestJob(TestCase):
@@ -86,7 +91,8 @@ class TestJob(TestCase):
         uj1.uj_steps = [uj_step11]
         uj_step11.jobs = [self.job]
         uj_step11.user_time_spent = SourceValue(90 * u.min)
-        usage_pattern = MagicMock()
+        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
@@ -108,7 +114,8 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(40 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = MagicMock()
+        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
@@ -130,7 +137,8 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(61 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = MagicMock()
+        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
@@ -156,7 +164,8 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         uj_step13.jobs = [self.job, self.job]
         uj_step13.user_time_spent = SourceValue(1 * u.min)
-        usage_pattern = MagicMock()
+        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
@@ -173,7 +182,9 @@ class TestJob(TestCase):
 
     def test_compute_job_hourly_data_exchange(self):
         data_exchange = "data_stored"
-        usage_pattern = MagicMock()
+        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern.name = "usage pattern"
+        usage_pattern.id = "usage_pattern_id"
         hourly_avg_occs_per_up = ExplainableObjectDict(
             {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
@@ -201,6 +212,92 @@ class TestJob(TestCase):
             self.assertEqual("Hourly test job my calc attr across usage patterns", result.label)
 
         del self.job.hourly_calc_attr_per_up
+
+    def test_usage_journey_steps_property_filters_correctly(self):
+        """Test usage_journey_steps returns only UsageJourneyStep containers."""
+        mock_uj_step = MagicMock(spec=UsageJourneyStep)
+        mock_uj_step.name = "UJ Step"
+        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need.name = "Server Need"
+
+        set_modeling_obj_containers(self.job, [mock_uj_step, mock_server_need])
+
+        self.assertEqual([mock_uj_step], self.job.usage_journey_steps)
+
+    def test_recurrent_server_needs_property_filters_correctly(self):
+        """Test recurrent_server_needs returns only RecurrentServerNeed containers."""
+        mock_uj_step = MagicMock(spec=UsageJourneyStep)
+        mock_uj_step.name = "UJ Step"
+        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need.name = "Server Need"
+
+        set_modeling_obj_containers(self.job, [mock_uj_step, mock_server_need])
+
+        self.assertEqual([mock_server_need], self.job.recurrent_server_needs)
+
+    def test_edge_usage_patterns_property(self):
+        """Test edge_usage_patterns aggregates from recurrent_server_needs."""
+        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need.edge_usage_patterns = [mock_pattern]
+
+        set_modeling_obj_containers(self.job, [mock_server_need])
+
+        self.assertEqual([mock_pattern], self.job.edge_usage_patterns)
+
+    def test_web_usage_patterns_property(self):
+        """Test web_usage_patterns aggregates from usage_journey_steps."""
+        mock_web_pattern = MagicMock()
+        mock_uj_step = MagicMock(spec=UsageJourneyStep)
+        mock_uj_step.usage_patterns = [mock_web_pattern]
+
+        set_modeling_obj_containers(self.job, [mock_uj_step])
+
+        self.assertEqual([mock_web_pattern], self.job.web_usage_patterns)
+
+    def test_usage_patterns_combines_web_and_edge(self):
+        """Test usage_patterns returns both web and edge usage patterns."""
+        mock_web_pattern = MagicMock()
+        mock_edge_pattern = MagicMock(spec=EdgeUsagePattern)
+
+        mock_uj_step = MagicMock(spec=UsageJourneyStep)
+        mock_uj_step.usage_patterns = [mock_web_pattern]
+
+        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need.edge_usage_patterns = [mock_edge_pattern]
+
+        set_modeling_obj_containers(self.job, [mock_uj_step, mock_server_need])
+
+        patterns = self.job.usage_patterns
+        self.assertEqual(2, len(patterns))
+        self.assertIn(mock_web_pattern, patterns)
+        self.assertIn(mock_edge_pattern, patterns)
+
+    def test_compute_hourly_job_occurrences_for_edge_usage_pattern(self):
+        """Test update_dict_element_in_hourly_occurrences_per_usage_pattern for EdgeUsagePattern."""
+        # Setup edge usage pattern
+        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.class_as_simple_str = "EdgeUsagePattern"
+        edge_usage_pattern.name = "Edge Pattern"
+
+        # Setup nb_edge_usage_journeys_in_parallel
+        nb_parallel = create_source_hourly_values_from_list([2, 3, 4, 5])
+        edge_usage_pattern.nb_edge_usage_journeys_in_parallel = nb_parallel
+
+        # Setup recurrent server need with unitary hourly volume
+        unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
+        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need.jobs = [self.job, self.job] # Same job appears twice so volume is doubled
+        mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
+
+        set_modeling_obj_containers(self.job, [mock_server_need])
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(edge_usage_pattern)
+
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[edge_usage_pattern]
+        # unitary_volume * nb_parallel * nb of times job appears = [1*2*2, 1*3*2, 1*4*2, 1*5*2] = [4, 6, 8, 10]
+        self.assertEqual([4.0, 6.0, 8.0, 10.0], job_occurrences.value_as_float_list)
 
 
 if __name__ == "__main__":

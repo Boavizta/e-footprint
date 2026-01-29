@@ -1,6 +1,6 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
-    upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14
+    upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15
 
 from unittest import TestCase
 
@@ -555,7 +555,7 @@ class TestVersionUpgradeHandlers(TestCase):
 
 
     def test_upgrade_13_to_14(self):
-        """Test version 13 to 14 upgrade (dummy test for now)."""
+        """Test version 13 to 14 upgrade."""
         input_dict = {
             "EdgeComputer": {
                 "obj_1": {
@@ -606,5 +606,40 @@ class TestVersionUpgradeHandlers(TestCase):
         }
 
         output_dict = upgrade_version_13_to_14(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_14_to_15(self):
+        """Test version 14 to 15: add default wifi network to EdgeUsagePatterns and recurrent_server_needs to EdgeFunctions."""
+        input_dict = {
+            "Network": {
+                "existing_network": {"name": "Existing Network", "id": "existing_network"}},
+            "EdgeUsagePattern": {
+                "pattern_1": {"name": "Pattern 1", "id": "pattern_1"},
+                "pattern_2": {"name": "Pattern 2", "id": "pattern_2"}},
+            "EdgeFunction": {
+                "func_1": {"name": "Function 1", "recurrent_edge_device_needs": []},
+                "func_2": {"name": "Function 2", "recurrent_edge_device_needs": ["need_1"]}},
+            "OtherClass": {"obj_1": {"name": "Object 1"}}}
+        expected_output = {
+            "Network": {
+                "existing_network": {"name": "Existing Network", "id": "existing_network"},
+                "default_wifi_network_for_edge": {
+                    "name": "Default wifi network for edge",
+                    "id": "default_wifi_network_for_edge",
+                    "bandwidth_energy_intensity": {
+                        "value": 0.05, "unit": "kilowatt_hour / gigabyte",
+                        "label": "bandwith energy intensity of Default wifi network from e-footprint hypothesis",
+                        "source": {"name": "e-footprint hypothesis", "link": None}
+                    }}},
+            "EdgeUsagePattern": {
+                "pattern_1": {"name": "Pattern 1", "id": "pattern_1", "network": "default_wifi_network_for_edge"},
+                "pattern_2": {"name": "Pattern 2", "id": "pattern_2", "network": "default_wifi_network_for_edge"}},
+            "EdgeFunction": {
+                "func_1": {"name": "Function 1", "recurrent_edge_device_needs": [], "recurrent_server_needs": []},
+                "func_2": {"name": "Function 2", "recurrent_edge_device_needs": ["need_1"], "recurrent_server_needs": []}},
+            "OtherClass": {"obj_1": {"name": "Object 1"}}}
+
+        output_dict = upgrade_version_14_to_15(input_dict)
 
         self.assertEqual(output_dict, expected_output)

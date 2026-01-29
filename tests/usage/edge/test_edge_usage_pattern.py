@@ -12,7 +12,9 @@ from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeD
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.country import Country
+from efootprint.core.hardware.network import Network
 from efootprint.constants.units import u
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from tests.utils import set_modeling_obj_containers
 
 
@@ -23,11 +25,18 @@ class TestEdgeUsagePattern(TestCase):
         self.mock_edge_usage_journey.name = "Mock Edge Journey"
         self.mock_edge_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         self.mock_edge_need.name = "Mock Edge Need"
+        self.mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        self.mock_server_need.name = "Mock Server Need"
         self.mock_edge_usage_journey.recurrent_edge_device_needs = [self.mock_edge_need]
+        self.mock_edge_usage_journey.recurrent_server_needs = [self.mock_server_need]
 
         self.mock_country = MagicMock(spec=Country)
         self.mock_country.name = "Mock Country"
         self.mock_country.timezone = MagicMock()
+
+        self.mock_network = MagicMock(spec=Network)
+        self.mock_network.name = "Mock Network"
+        self.mock_network.id = "mock_network"
 
         start_date = datetime(2023, 1, 1, 0, 0, 0)
         hourly_data = np.array([1.0, 2.0, 3.0, 4.0, 5.0]) * u.concurrent
@@ -36,9 +45,9 @@ class TestEdgeUsagePattern(TestCase):
         self.edge_usage_pattern = EdgeUsagePattern(
             "test edge usage pattern",
             edge_usage_journey=self.mock_edge_usage_journey,
+            network=self.mock_network,
             country=self.mock_country,
-            hourly_edge_usage_journey_starts=self.real_hourly_starts
-        )
+            hourly_edge_usage_journey_starts=self.real_hourly_starts)
         self.edge_usage_pattern.trigger_modeling_updates = False
 
     def test_init(self):
@@ -46,6 +55,7 @@ class TestEdgeUsagePattern(TestCase):
         self.assertEqual("test edge usage pattern", self.edge_usage_pattern.name)
         self.assertEqual(self.mock_edge_usage_journey, self.edge_usage_pattern.edge_usage_journey)
         self.assertEqual(self.mock_country, self.edge_usage_pattern.country)
+        self.assertEqual(self.mock_network, self.edge_usage_pattern.network)
         self.assertEqual(self.real_hourly_starts, self.edge_usage_pattern.hourly_edge_usage_journey_starts)
 
         # Check that calculated attributes are initialized as EmptyExplainableObject
@@ -55,7 +65,7 @@ class TestEdgeUsagePattern(TestCase):
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that recurrent_edge_device_needs are returned as dependent objects."""
         dependent_objects = self.edge_usage_pattern.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_need], dependent_objects)
+        self.assertEqual([self.mock_edge_need, self.mock_server_need], dependent_objects)
 
     def test_recurrent_edge_device_needs(self):
         """Test recurrent_edge_device_needs property delegates to edge_usage_journey."""

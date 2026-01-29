@@ -29,6 +29,7 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.system import System
+from efootprint.core.hardware.network import Network
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, ObjectLinkScenario
 from tests.utils import check_all_calculus_graph_dependencies_consistencies
 
@@ -92,7 +93,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             edge_device=edge_device, recurrent_edge_component_needs=[ram_need, cpu_need, workload_need])
 
         edge_function = EdgeFunction(
-            "Default edge function", recurrent_edge_device_needs=[edge_process, edge_device_need])
+            "Default edge function", recurrent_edge_device_needs=[edge_process, edge_device_need],
+            recurrent_server_needs=[])
 
         edge_usage_journey = EdgeUsageJourney.from_defaults("Default edge usage journey", edge_functions=[edge_function])
 
@@ -100,6 +102,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         edge_usage_pattern = EdgeUsagePattern(
             "Default edge usage pattern",
             edge_usage_journey=edge_usage_journey,
+            network=Network.wifi_network(),
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
@@ -140,7 +143,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         expected_objects = [
             self.edge_storage, self.edge_computer, self.edge_process, self.edge_device, self.edge_device_need,
             self.edge_function, self.edge_usage_journey, self.edge_usage_pattern, self.edge_usage_pattern.country
-        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs + self.edge_device.components + self.edge_device_need.recurrent_edge_component_needs
+        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs + self.edge_device.components + self.edge_device_need.recurrent_edge_component_needs + [self.edge_usage_pattern.network]
         self.assertEqual(set(expected_objects), set(self.system.all_linked_objects))
 
     def run_test_calculation_graph(self):
@@ -359,7 +362,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_process = self.edge_process.copy_with("New edge process", edge_device=new_edge_computer)
         new_edge_function = EdgeFunction(
             "New edge function",
-            recurrent_edge_device_needs=[new_edge_process, self.edge_device_need])
+            recurrent_edge_device_needs=[new_edge_process, self.edge_device_need],
+            recurrent_server_needs=[])
         new_edge_usage_journey = self.edge_usage_journey.copy_with(
             "New edge usage journey", edge_functions=[new_edge_function])
 
@@ -382,12 +386,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self._run_object_link_scenario(scenario)
 
     def run_test_add_edge_usage_pattern_to_system_and_reuse_existing_edge_process(self):
-        new_edge_function = EdgeFunction("additional edge function", recurrent_edge_device_needs=[self.edge_process])
+        new_edge_function = EdgeFunction("additional edge function", recurrent_edge_device_needs=[self.edge_process],
+                                         recurrent_server_needs=[])
         new_edge_usage_journey = EdgeUsageJourney.from_defaults(
             "additional edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "Additional edge usage pattern",
             edge_usage_journey=new_edge_usage_journey,
+            network=self.edge_usage_pattern.network,
             country=self.edge_usage_pattern.country,
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
@@ -414,6 +420,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_usage_pattern = EdgeUsagePattern(
             "Additional edge usage pattern",
             edge_usage_journey=self.edge_usage_journey,
+            network=self.edge_usage_pattern.network,
             country=self.edge_usage_pattern.country,
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)
@@ -495,12 +502,14 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Adding new edge usage journey to edge computer")
         new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Additional edge process for second journey", edge_device=self.edge_computer)
-        new_edge_function = EdgeFunction("Second edge function", recurrent_edge_device_needs=[new_edge_process])
+        new_edge_function = EdgeFunction("Second edge function", recurrent_edge_device_needs=[new_edge_process],
+                                         recurrent_server_needs=[])
         new_edge_usage_journey = EdgeUsageJourney.from_defaults(
             "Second edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "Second edge usage pattern",
             edge_usage_journey=new_edge_usage_journey,
+            network=self.edge_usage_pattern.network,
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt for elt in [0.5, 0.5, 1, 1, 1.5, 1.5, 0.5, 0.5, 1]], self.start_date)

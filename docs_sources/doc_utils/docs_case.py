@@ -222,7 +222,8 @@ edge_device_need = RecurrentEdgeDeviceNeed(
 
 edge_function = EdgeFunction(
     "edge function",
-    recurrent_edge_device_needs=[edge_process, edge_workload, edge_device_need]
+    recurrent_edge_device_needs=[edge_process, edge_workload, edge_device_need],
+    recurrent_server_needs=[]
 )
 
 edge_usage_journey = EdgeUsageJourney(
@@ -237,6 +238,7 @@ edge_usage_pattern = EdgeUsagePattern(
     country=country_generator(
             "devices country", "its 3 letter shortname, for example FRA",
         SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
+    network=network,
     hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
         timespan=6 * u.year, input_volume=1000, frequency='weekly',
         active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])

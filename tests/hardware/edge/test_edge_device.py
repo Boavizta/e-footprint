@@ -440,7 +440,8 @@ class TestEdgeDevice(TestCase):
             lifespan=SourceValue(2 * u.year)
         )
         edge_need = RecurrentEdgeDeviceNeed("Empty need", edge_device=edge_device, recurrent_edge_component_needs=[])
-        edge_function = EdgeFunction("Mock Function", recurrent_edge_device_needs=[edge_need])
+        edge_function = EdgeFunction("Mock Function", recurrent_edge_device_needs=[edge_need],
+                                     recurrent_server_needs=[])
 
         usage_span = SourceValue(1 * u.year)
         euj = EdgeUsageJourney("test euj", edge_functions=[edge_function], usage_span=usage_span)

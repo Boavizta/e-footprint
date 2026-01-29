@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "14.3.0",
+    "efootprint_version": "15.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -380,6 +380,56 @@
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 3 to process server 3 job from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "server": "Server-3"
+        },
+        "server-3-job-2": {
+            "name": "server 3 job 2",
+            "id": "server-3-job-2",
+            "data_transferred": {
+                "value": 150.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads for request server 3 job 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "data_stored": {
+                "value": 100.0,
+                "unit": "kilobyte",
+                "label": "Data stored by request server 3 job 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "value": 1.0,
+                "unit": "second",
+                "label": "Request duration of server 3 job 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "value": 50.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed on server Server 3 to process server 3 job 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_needed": {
+                "value": 0.1,
+                "unit": "cpu_core",
+                "label": "cpu cores needed on server Server 3 to process server 3 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1144,6 +1194,7 @@
                 }
             },
             "edge_usage_journey": "Edge-usage-journey",
+            "network": "network-1",
             "country": "France"
         }
     },
@@ -1171,6 +1222,10 @@
             "id": "Edge-function",
             "recurrent_edge_device_needs": [
                 "Edge-process"
+            ],
+            "recurrent_server_needs": [
+                "Recurrent-server-need-1",
+                "Recurrent-server-need-2"
             ]
         }
     },
@@ -1424,6 +1479,35 @@
             "name": "Edge process storage need",
             "id": "Edge-process-storage-need",
             "edge_component": "Edge-SSD-storage"
+        }
+    },
+    "RecurrentServerNeed": {
+        "Recurrent-server-need-1": {
+            "name": "Recurrent server need 1",
+            "id": "Recurrent-server-need-1",
+            "edge_device": "Edge-device",
+            "recurrent_volume_per_edge_device": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "occurrence",
+                "label": "Default recurrent volume per edge device"
+            },
+            "jobs": [
+                "server-1-job-1",
+                "server-3-job-2"
+            ]
+        },
+        "Recurrent-server-need-2": {
+            "name": "Recurrent server need 2",
+            "id": "Recurrent-server-need-2",
+            "edge_device": "Edge-device",
+            "recurrent_volume_per_edge_device": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "occurrence",
+                "label": "Default recurrent volume per edge device"
+            },
+            "jobs": [
+                "server-2-job"
+            ]
         }
     }
 }

@@ -2,6 +2,7 @@ import os.path
 from copy import copy
 from datetime import datetime, timedelta, timezone
 import numpy as np
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
@@ -44,6 +45,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         "server1_job3": "server 1 job 3",
         "server2_job": "server 2 job",
         "server3_job": "server 3 job",
+        "server3_job2": "server 3 job 2",
         "uj_step_1": "UJ step 1",
         "uj_step_2": "UJ step 2",
         "uj_step_3": "UJ step 3",
@@ -56,6 +58,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         "edge_storage": "Edge SSD storage",
         "edge_computer": "Edge device",
         "edge_process": "Edge process",
+        "rsn1": "Recurrent server need 1",
+        "rsn2": "Recurrent server need 2",
         "edge_function": "Edge function",
         "edge_usage_journey": "Edge usage journey",
         "edge_usage_pattern": "Edge usage pattern",
@@ -102,12 +106,19 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         edge_storage = EdgeStorage.from_defaults("Edge SSD storage")
         edge_computer = EdgeComputer.from_defaults("Edge device", storage=edge_storage)
         edge_process = RecurrentEdgeProcess.from_defaults("Edge process", edge_device=edge_computer)
-        edge_function = EdgeFunction("Edge function", recurrent_edge_device_needs=[edge_process])
+        server3_job2 = Job.from_defaults("server 3 job 2", server=server3)
+        rsn_1 = RecurrentServerNeed.from_defaults(
+            "Recurrent server need 1", edge_device=edge_computer, jobs=[server1_job1, server3_job2])
+        rsn_2 = RecurrentServerNeed.from_defaults(
+            "Recurrent server need 2", edge_device=edge_computer, jobs=[server2_job])
+        edge_function = EdgeFunction("Edge function", recurrent_edge_device_needs=[edge_process],
+                                     recurrent_server_needs=[rsn_1, rsn_2])
         edge_usage_journey = EdgeUsageJourney.from_defaults("Edge usage journey", edge_functions=[edge_function])
 
         edge_usage_pattern = EdgeUsagePattern(
             "Edge usage pattern",
             edge_usage_journey=edge_usage_journey,
+            network=network1,
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 100 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
@@ -141,10 +152,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             self.usage_pattern1, self.usage_pattern2, self.edge_usage_pattern,
             self.network1, self.network2, self.uj, self.uj_step_1, self.uj_step_2, self.uj_step_3,
             self.uj_step_4, self.server1_job1, self.server1_job2, self.server1_job3, self.server2_job,
-            self.server3_job, self.usage_pattern1.devices[0], self.usage_pattern2.devices[0],
+            self.server3_job, self.server3_job2, self.usage_pattern1.devices[0], self.usage_pattern2.devices[0],
             self.usage_pattern1.country, self.usage_pattern2.country, self.edge_storage, self.edge_computer,
             self.edge_process, self.edge_function, self.edge_usage_journey, self.edge_usage_pattern.country
-        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs
+        ] + self.edge_computer.components + self.edge_process.recurrent_edge_component_needs + [self.rsn1, self.rsn2]
         self.assertEqual(set(expected_list), set(self.system.all_linked_objects))
 
     def run_test_remove_uj_steps_1_and_2(self):
@@ -199,16 +210,17 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             "New usage pattern video watching in France", self.uj, [Device.laptop()], new_network, Countries.FRANCE(),
             create_source_hourly_values_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]]))
 
-        streaming = self.server1_job1
+        server1_job1 = self.server1_job1
         up = self.usage_pattern2
-        hour_occs_per_up = streaming.hourly_occurrences_per_usage_pattern[up]
+        hour_occs_per_up = server1_job1.hourly_occurrences_per_usage_pattern[up]
         logger.warning("Adding new usage pattern")
         self.system.usage_patterns += [new_up]
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        # streaming has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
+        # server1_job1 has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
         self.assertIsNone(hour_occs_per_up.modeling_obj_container)
-        # streaming has 3 usage patterns so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
-        self.assertEqual(len(streaming.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 3)
+        # server1_job1 has 4 usage patterns (2 web + 1 edge initially, + the new one)
+        # so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
+        self.assertEqual(len(server1_job1.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 4)
 
         logger.warning("Editing the usage pattern network")
         new_up.hourly_usage_journey_starts = create_source_hourly_values_from_list(
@@ -227,12 +239,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_edge_storage = EdgeStorage.from_defaults("New edge SSD storage")
         new_edge_computer = EdgeComputer.from_defaults("New edge device", storage=new_edge_storage)
         new_edge_process = RecurrentEdgeProcess.from_defaults("New edge process", edge_device=new_edge_computer)
-        new_edge_function = EdgeFunction("New edge function", recurrent_edge_device_needs=[new_edge_process])
+        new_edge_function = EdgeFunction("New edge function", recurrent_edge_device_needs=[new_edge_process],
+                                         recurrent_server_needs=[])
         new_edge_usage_journey = EdgeUsageJourney.from_defaults(
             "New edge usage journey", edge_functions=[new_edge_function])
         new_edge_usage_pattern = EdgeUsagePattern(
             "New edge usage pattern",
             edge_usage_journey=new_edge_usage_journey,
+            network=Network.wifi_network(),
             country=Countries.FRANCE(),
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 50 for elt in [2, 1, 3, 2, 4, 2, 1, 2, 3]], self.start_date)

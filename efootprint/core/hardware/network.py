@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -6,6 +6,11 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+    from efootprint.core.usage.job import JobBase
 
 
 class Network(ModelingObject):
@@ -42,11 +47,11 @@ class Network(ModelingObject):
         return []
 
     @property
-    def usage_patterns(self):
+    def usage_patterns(self) -> List["UsagePattern"] | List["EdgeUsagePattern"]:
         return self.modeling_obj_containers
 
     @property
-    def jobs(self) -> List[ModelingObject]:
+    def jobs(self) -> List["JobBase"]:
         return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
 
     def update_energy_footprint(self):

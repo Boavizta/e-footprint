@@ -4,6 +4,7 @@ from unittest.mock import MagicMock
 
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from tests.utils import set_modeling_obj_containers
 
@@ -18,15 +19,20 @@ class TestEdgeFunction(TestCase):
         self.mock_edge_need_2.id = "mock_need_2"
         self.mock_edge_need_2.name = "Mock Need 2"
 
+        self.mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        self.mock_server_need.id = "mock_server_need"
+        self.mock_server_need.name = "Mock Server Need"
+
         self.edge_function = EdgeFunction(
             "test edge function",
-            recurrent_edge_device_needs=[self.mock_edge_need_1, self.mock_edge_need_2]
-        )
+            recurrent_edge_device_needs=[self.mock_edge_need_1, self.mock_edge_need_2],
+            recurrent_server_needs=[self.mock_server_need])
 
     def test_init(self):
         """Test EdgeFunction initialization."""
         self.assertEqual("test edge function", self.edge_function.name)
         self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], self.edge_function.recurrent_edge_device_needs)
+        self.assertEqual([self.mock_server_need], self.edge_function.recurrent_server_needs)
 
     def test_edge_usage_journeys_property_no_containers(self):
         """Test edge_usage_journeys property when no containers are set."""
@@ -53,9 +59,10 @@ class TestEdgeFunction(TestCase):
         self.assertEqual({mock_journey_1, mock_journey_2}, set(self.edge_function.edge_usage_journeys))
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
-        """Test that recurrent_edge_resource_needs are returned as dependent objects."""
+        """Test that recurrent_edge_device_needs and recurrent_server_needs are returned as dependent objects."""
         dependent_objects = self.edge_function.modeling_objects_whose_attributes_depend_directly_on_me
-        self.assertEqual([self.mock_edge_need_1, self.mock_edge_need_2], dependent_objects)
+        self.assertEqual(
+            [self.mock_edge_need_1, self.mock_edge_need_2, self.mock_server_need], dependent_objects)
 
     def test_systems_property_no_journeys(self):
         """Test systems property when no journeys are set."""

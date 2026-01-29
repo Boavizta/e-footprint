@@ -54,7 +54,8 @@ class EdgeDevice(ModelingObject):
 
     @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
-        return self.modeling_obj_containers
+        from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+        return [elt for elt in self.modeling_obj_containers if isinstance(elt, RecurrentEdgeDeviceNeed)]
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:

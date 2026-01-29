@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "14.3.0",
+    "efootprint_version": "15.0.0",
     "System": {
         "Edge-system": {
             "name": "Edge system",
@@ -26,6 +26,7 @@
                 }
             },
             "edge_usage_journey": "Default-edge-usage-journey",
+            "network": "Default-wifi-network",
             "country": "France"
         }
     },
@@ -54,7 +55,8 @@
             "recurrent_edge_device_needs": [
                 "Default-edge-process",
                 "custom-edge-device-need"
-            ]
+            ],
+            "recurrent_server_needs": []
         }
     },
     "RecurrentEdgeProcess": {
@@ -552,6 +554,21 @@
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
+                }
+            }
+        }
+    },
+    "Network": {
+        "Default-wifi-network": {
+            "name": "Default wifi network",
+            "id": "Default-wifi-network",
+            "bandwidth_energy_intensity": {
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity of Default wifi network from Traficom study",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
                 }
             }
         }

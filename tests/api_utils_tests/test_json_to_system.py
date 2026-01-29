@@ -116,9 +116,11 @@ class TestJsonToSystem(IntegrationTestBaseClass):
              "RecurrentEdgeWorkloadNeed", "RecurrentEdgeWorkload",
              "Server", "GPUServer", "WebApplication",
              "VideoStreaming", "GenAIModel", "Job", "GPUJob",
-             "RecurrentEdgeDeviceNeed", "RecurrentEdgeProcess", "EdgeFunction",
+             "RecurrentEdgeDeviceNeed", "RecurrentEdgeProcess",
              "WebApplicationJob", "VideoStreamingJob", "GenAIJob",
-             "UsageJourneyStep", "EdgeUsageJourney", "UsageJourney", "EdgeUsagePattern", "UsagePattern", "System"],
+             "UsageJourneyStep", "RecurrentServerNeed", "UsageJourney", "EdgeFunction",
+             "UsagePattern", "EdgeUsageJourney", "EdgeUsagePattern",
+             "System"],
             classes_generation_order
         )
 
