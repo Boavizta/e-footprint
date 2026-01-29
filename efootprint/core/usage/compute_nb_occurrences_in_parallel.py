@@ -61,6 +61,8 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
                 constant_values=np.float32(0))
             result = initial_values_padded + shifted_values * nonfull_duration_rest
 
+    result = np.maximum(result, 0)  # Clip FFT numerical noise and avoid negative values that could lead to NegativeCumulativeStorageNeedError.
+
     return ExplainableHourlyQuantities(
         Quantity(result, u.concurrent),
         start_date=hourly_occurrences_starts.start_date,
