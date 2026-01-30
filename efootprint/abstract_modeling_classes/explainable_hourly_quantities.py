@@ -420,7 +420,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         )
 
     def to_json(self, save_calculated_attributes=False):
-        if (self.attr_name_in_mod_obj_container in self.modeling_obj_container.calculated_attributes
+        if self.dict_container is not None:
+            output_dict = {"values_unsaved": "because contained in dict container",
+                           "start_date": self.start_date.strftime("%Y-%m-%d %H:%M}:%S")}
+        elif (self.attr_name_in_mod_obj_container in self.modeling_obj_container.calculated_attributes
                 and self.all_children_are_in_same_container):
             output_dict = {"values_unsaved": "because all children are in the same container",
                            "start_date": self.start_date.strftime("%Y-%m-%d %H:%M:%S")}

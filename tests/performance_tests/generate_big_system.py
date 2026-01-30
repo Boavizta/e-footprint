@@ -195,9 +195,9 @@ def generate_big_system(
     logger.info(f"Finished generating system in {round((perf_counter() - start), 3)} seconds")
 
     timed_system_to_json(system, save_calculated_attributes=False,
-                         output_filepath=os.path.join(root_dir, "big_system.json"))
+                         output_filepath=os.path.join(root_dir, "big_system.json"), indent=2)
     timed_system_to_json(system, save_calculated_attributes=True,
-                         output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"))
+                         output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"), indent=2)
 
     return system
 
