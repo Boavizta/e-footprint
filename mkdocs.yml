@@ -78,7 +78,7 @@ nav:
         - Edge usage journey: EdgeUsageJourney.md
         - Edge function: EdgeFunction.md
         - Edge device need:
-          - Edge device need: EdgeDeviceNeed.md
+          - Edge device need: RecurrentEdgeDeviceNeed.md
           - Recurrent edge workload:
             - Recurrent edge workload: RecurrentEdgeWorkload.md
             - Recurrent edge workload need: RecurrentEdgeWorkloadNeed.md
@@ -87,6 +87,7 @@ nav:
             - Recurrent edge process ram need: RecurrentEdgeProcessRAMNeed.md
             - Recurrent edge process cpu need: RecurrentEdgeProcessCPUNeed.md
             - Recurrent edge process storage need: RecurrentEdgeProcessStorageNeed.md
+        - Edge server need: RecurrentServerNeed.md
         - Edge component need:
           - Edge component need: RecurrentEdgeComponentNeed.md
           - Edge storage need: RecurrentEdgeStorageNeed.md

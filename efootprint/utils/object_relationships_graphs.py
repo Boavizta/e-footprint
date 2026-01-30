@@ -16,6 +16,7 @@ COLOR_MAP = {
     "EdgeFunction": "deepskyblue",
     "JobBase": "palegoldenrod",
     "RecurrentEdgeDeviceNeed": "palegoldenrod",
+    "RecurrentServerNeed": "palegoldenrod",
     "RecurrentEdgeComponentNeed": "lightgoldenrodyellow",
     "Service": "orange",
 }

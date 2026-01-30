@@ -10,6 +10,8 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 
 start = perf_counter()
 
@@ -197,10 +199,20 @@ cpu_component = EdgeCPUComponent(
     base_compute_consumption=SourceValue(0.1 * u.cpu_core, source=None)
 )
 
+storage_component = EdgeStorage(
+    "edge storage component",
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
+    lifespan=SourceValue(6 * u.years, source=None),
+    idle_power=SourceValue(0.1 * u.W, source=None),
+    storage_capacity=SourceValue(512 * u.GB, source=None),
+    base_storage_need=SourceValue(20 * u.GB, source=None),
+)
+
 edge_device = EdgeDevice(
     "custom edge device",
     structure_carbon_footprint_fabrication=SourceValue(50 * u.kg, source=None),
-    components=[ram_component, cpu_component],
+    components=[ram_component, cpu_component, storage_component],
     lifespan=SourceValue(6 * u.year, source=None)
 )
 
@@ -214,16 +226,31 @@ cpu_need = RecurrentEdgeComponentNeed(
     edge_component=cpu_component,
     recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core), source=None)
 )
+
+storage_need = RecurrentEdgeStorageNeed(
+    "Storage need",
+    edge_component=storage_component,
+    recurrent_need=SourceRecurrentValues(
+        Quantity(np.array([50] * 84 + [-50] * 84, dtype=np.float32), u.MB), source=None)
+)
+
 edge_device_need = RecurrentEdgeDeviceNeed(
     "custom edge device need",
     edge_device=edge_device,
-    recurrent_edge_component_needs=[ram_need, cpu_need]
+    recurrent_edge_component_needs=[ram_need, cpu_need, storage_need]
 )
+
+recurrent_volume = SourceRecurrentValues(np.array([1.0] * 168, dtype=np.float32) * u.occurrence, source=None)
+recurrent_server_need = RecurrentServerNeed(
+            "Server need",
+            edge_device=edge_computer,
+            recurrent_volume_per_edge_device=recurrent_volume,
+            jobs=[manually_written_job])
 
 edge_function = EdgeFunction(
     "edge function",
     recurrent_edge_device_needs=[edge_process, edge_workload, edge_device_need],
-    recurrent_server_needs=[]
+    recurrent_server_needs=[recurrent_server_need]
 )
 
 edge_usage_journey = EdgeUsageJourney(

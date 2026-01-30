@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [15.0.0] - 2026-02-02
+
+### Added
+- Introduction of the RecurrentServerNeed object, new list attribute of EdgeFunction. This object links to an EdgeDevice, has a recurrent_volume_per_edge_device attribute that describes a recurrent volume of calls applied to all Jobs in its jobs attribute. In this way, it becomes possible to model the interaction between edge devices and servers, for example, downloading updates, playing online or uploading data to the cloud.
+
+### Changed
+- Increase BoaviztAPI cache duration to 7 days.
+
+### Fixed
+- Clip FFT numerical noise in compute_nb_avg_hourly_occurrences to avoid negative values that could lead to NegativeCumulativeStorageNeedError. In fact, for large timeseries and because of float32 precision, the inverse FFT could lead to small negative values that would then be cumulated and lead to negative cumulative storage need.
+
 ## [14.3.0] - 2026-01-27
 
 ### Added

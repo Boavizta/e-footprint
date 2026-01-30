@@ -11,6 +11,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_function import EdgeFunction
@@ -53,13 +54,23 @@ class EdgeDevice(ModelingObject):
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
-    def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
+    def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
         from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
         return [elt for elt in self.modeling_obj_containers if isinstance(elt, RecurrentEdgeDeviceNeed)]
 
     @property
+    def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
+        from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+        return [elt for elt in self.modeling_obj_containers if isinstance(elt, RecurrentServerNeed)]
+
+    @property
+    def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]:
+        return self.modeling_obj_containers
+
+    @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
-        return list(set(sum([need.recurrent_edge_component_needs for need in self.recurrent_needs], start=[])))
+        return list(set(sum([need.recurrent_edge_component_needs
+                             for need in self.recurrent_edge_device_needs], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:

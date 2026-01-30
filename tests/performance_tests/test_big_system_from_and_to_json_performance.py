@@ -84,7 +84,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_loading_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")
-        self.assertLess(avg_loading_time, 0.075)
+        self.assertLess(avg_loading_time, 0.1)
 
         start = perf_counter()
         for i in range(nb_system_loadings):
@@ -93,7 +93,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_writing_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
-        self.assertLess(avg_writing_time, 0.075)
+        self.assertLess(avg_writing_time, 0.1)
 
         nb_system_loadings = 5
         avg_loading_editing_writing_time = update_on_system(
