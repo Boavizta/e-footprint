@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3d8561 {
+             #mynetwork_1cab29 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3d8561" class="card-body"></div>
+            <div id="mynetwork_1cab29" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d8561');
+                  var container = document.getElementById('mynetwork_1cab29');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage energy footprint", "label": "Hourly storage\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly storage energy footprint\n=\nStorage energy for storage * Average carbon intensity of server electricity\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 100.0 gram /\nkilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 2250}, {"color": null, "id": "Storage energy for storage", "label": "Storage energy for\nstorage", "shape": "dot", "size": 15, "title": "Storage energy for storage\n=\nHourly number of active instances for storage * Power of storage * one hour *\nPUE of server + (Hourly number of instances for storage - Hourly number of\nactive instances for storage) * Idle power of storage * one hour * PUE of server\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 1.3 watt * 1.0\nhour * 1.2 dimensionless + (26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] - 26298 values\nfrom 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]) * 0.0 watt *\n1.0 hour * 1.2 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -337.5, "y": 2100}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100.0 gram / kilowatt_hour", "x": 337.5, "y": 2100}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage energy footprint", "label": "Hourly storage\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly storage energy footprint\n=\nStorage energy for storage * Average carbon intensity of server electricity\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 100.0 gram /\nkilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 2550}, {"color": null, "id": "Storage energy for storage", "label": "Storage energy for\nstorage", "shape": "dot", "size": 15, "title": "Storage energy for storage\n=\nHourly number of active instances for storage * Power of storage * one hour *\nPUE of server + (Hourly number of instances for storage - Hourly number of\nactive instances for storage) * Idle power of storage * one hour * PUE of server\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07] * 1.3\nwatt * 1.0 hour * 1.2 dimensionless + (105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [18128.0, 18126.0, 18124.0, 18122.0, 18120.0, 18118.0, 18116.0,\n18114.0, 18112.0, 18110.0] - 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07, 2.07]) * 0.0\nwatt * 1.0 hour * 1.2 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -412.5, "y": 2400}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100.0 gram / kilowatt_hour", "x": 412.5, "y": 2400}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage energy for storage", "to": "Hourly storage energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of server electricity", "to": "Hourly storage energy footprint"}]);
 
                   nodeColors = {};

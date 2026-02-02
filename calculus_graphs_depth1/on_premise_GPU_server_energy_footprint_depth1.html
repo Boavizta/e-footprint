@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_90dcb5 {
+             #mynetwork_bda730 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_90dcb5" class="card-body"></div>
+            <div id="mynetwork_bda730" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_90dcb5');
+                  var container = document.getElementById('mynetwork_bda730');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise GPU server energy footprint", "label": "Hourly on premise\nGPU server energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise GPU server energy footprint\n=\nHourly energy consumed by on premise GPU server instances * Average carbon\nintensity of on premise GPU server electricity\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.24, 0.25, 0.25, 0.24, 0.25, 0.24, 0.24, 0.24, 0.25, 0.24],\nlast 10 vals [0.24, 0.24, 0.25, 0.24, 0.25, 0.25, 0.24, 0.24, 0.24, 0.24] *\n100.0 gram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly energy consumed by on premise GPU server instances", "label": "Hourly energy\nconsumed by on\npremise GPU server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise GPU server instances\n=\nHourly number of on premise GPU server instances * on premise GPU server idle\npower * PUE of on premise GPU server * one hour + Hourly raw number of on\npremise GPU server instances * (on premise GPU server power - on premise GPU\nserver idle power) * PUE of on premise GPU server * one hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 200.0 watt *\n1.2 dimensionless * 1.0 hour + 26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (1600.0 watt -\n200.0 watt) * 1.2 dimensionless * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.24, 0.25, 0.25, 0.24, 0.25, 0.24, 0.24, 0.24, 0.25, 0.24],\nlast 10 vals [0.24, 0.24, 0.25, 0.24, 0.25, 0.25, 0.24, 0.24, 0.24, 0.24]", "x": -787.5, "y": 1350}, {"color": null, "id": "Average carbon intensity of on premise GPU server electricity", "label": "Average carbon\nintensity of on\npremise GPU server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise GPU server electricity = 100.0 gram /\nkilowatt_hour", "x": 787.5, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise GPU server energy footprint", "label": "Hourly on premise\nGPU server energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise GPU server energy footprint\n=\nHourly energy consumed by on premise GPU server instances * Average carbon\nintensity of on premise GPU server electricity\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.24, 0.25, 0.25, 0.24, 0.25, 0.24, 0.25, 0.25, 0.24, 0.24],\nlast 10 vals [0.25, 0.25, 0.25, 0.25, 0.24, 0.24, 0.25, 0.24, 0.24, 0.24] *\n100.0 gram / kilowatt_hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kg:\nfirst 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly energy consumed by on premise GPU server instances", "label": "Hourly energy\nconsumed by on\npremise GPU server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise GPU server instances\n=\nHourly number of on premise GPU server instances * on premise GPU server idle\npower * PUE of on premise GPU server * one hour + Hourly raw number of on\npremise GPU server instances * (on premise GPU server power - on premise GPU\nserver idle power) * PUE of on premise GPU server * one hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 200.0 watt *\n1.2 dimensionless * 1.0 hour + 26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (1600.0 watt -\n200.0 watt) * 1.2 dimensionless * 1.0 hour\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in kWh:\nfirst 10 vals [0.24, 0.25, 0.25, 0.24, 0.25, 0.24, 0.25, 0.25, 0.24, 0.24],\nlast 10 vals [0.25, 0.25, 0.25, 0.25, 0.24, 0.24, 0.25, 0.24, 0.24, 0.24]", "x": -787.5, "y": 1350}, {"color": null, "id": "Average carbon intensity of on premise GPU server electricity", "label": "Average carbon\nintensity of on\npremise GPU server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise GPU server electricity = 100.0 gram /\nkilowatt_hour", "x": 787.5, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by on premise GPU server instances", "to": "Hourly on premise GPU server energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of on premise GPU server electricity", "to": "Hourly on premise GPU server energy footprint"}]);
 
                   nodeColors = {};

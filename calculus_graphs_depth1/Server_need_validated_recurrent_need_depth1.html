@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6966ab {
+             #mynetwork_e0109b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6966ab" class="card-body"></div>
+            <div id="mynetwork_e0109b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6966ab');
+                  var container = document.getElementById('mynetwork_e0109b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge usage journey usage span validation", "label": "edge usage journey\nusage span\nvalidation", "shape": "dot", "size": 15, "title": "edge usage journey usage span validation\n=\nduplicate (Usage span of edge usage journey)\n=\nduplicate (6.0 year)\n=\n6.0 year", "x": 0.0, "y": 300}, {"color": null, "id": "Usage span of edge usage journey", "label": "Usage span of edge\nusage journey", "shape": "dot", "size": 15, "title": "Usage span of edge usage journey = 6.0 year", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Usage span of edge usage journey", "to": "edge usage journey usage span validation"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Server need validated recurrent need", "label": "Server need\nvalidated recurrent\nneed", "shape": "dot", "size": 15, "title": "Server need validated recurrent need\n=\nduplicate (unnamed source)\n=\nduplicate (168 values in occurrence:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])\n=\n168 values in occurrence:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values in occurrence:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Server need validated recurrent need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
