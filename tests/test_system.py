@@ -7,7 +7,6 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
-from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -17,7 +16,6 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
-from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests import root_test_dir
@@ -94,6 +92,7 @@ class TestSystem(TestCase):
         network_energy=None
     ):
         edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.jobs = []
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
         edge_function = MagicMock(spec=EdgeFunction)
         edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
@@ -113,6 +112,8 @@ class TestSystem(TestCase):
             if with_job:
                 job = MagicMock()
                 server_need.jobs = [job]
+                job.server = self.server
+                edge_usage_pattern.jobs = [job]
             edge_function.recurrent_server_needs = [server_need]
 
         edge_usage_journey.edge_functions = [edge_function]
@@ -176,26 +177,27 @@ class TestSystem(TestCase):
         uj_step = MagicMock()
         self.usage_pattern.usage_journey.uj_steps = [uj_step]
         uj_step.systems = []
-        job = MagicMock()
-        uj_step.jobs = [job]
-        job.systems = []
         self.usage_pattern.usage_journey.systems = []
         self.server = MagicMock()
         self.server.name = "server"
-        self.server.id = self.server
+        self.server.id = "server_id"
         self.server.systems = []
         self.storage = MagicMock()
         self.storage.name = "storage"
-        self.storage.id = self.storage
+        self.storage.id = "storage_id"
         self.storage.systems = []
+        self.server.storage = self.storage
+        job = MagicMock()
+        uj_step.jobs = [job]
+        job.systems = []
+        job.server = self.server
         self.network = MagicMock()
         self.network.name = "network"
-        self.network.id = self.network
+        self.network.id = "network_id"
         self.network.systems = []
 
-        self.usage_pattern.usage_journey.servers = [self.server]
-        self.usage_pattern.usage_journey.storages = [self.storage]
         self.usage_pattern.network = self.network
+        self.usage_pattern.jobs = [job]
 
         self.server.instances_fabrication_footprint = self._hourly_kg()
         self.storage.instances_fabrication_footprint = self._hourly_kg()
@@ -751,11 +753,10 @@ class TestSystem(TestCase):
         self.assertIn(edge_function, linked_objects)
         self.assertIn(edge_resource_need, linked_objects)
         self.assertIn(edge_computer, linked_objects)
-        self.assertIn(edge_usage_pattern.country, linked_objects)
         self.assertIn(storage, linked_objects)
         self.assertIn(edge_resource_need, linked_objects)
         self.assertIn(server_need, linked_objects)
-        self.assertEqual(9, len(linked_objects))
+        self.assertEqual(8, len(linked_objects))
 
 
 if __name__ == '__main__':
