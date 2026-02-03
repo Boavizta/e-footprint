@@ -1132,32 +1132,30 @@ files = [
 
 [[package]]
 name = "ecologits"
-version = "0.6.3"
+version = "0.9.2"
 description = "EcoLogits tracks and estimates the energy consumption and environmental impacts of using generative AI models through APIs."
 optional = false
-python-versions = "<4,>=3.9"
+python-versions = "<4,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ecologits-0.6.3-py3-none-any.whl", hash = "sha256:6e269b369b2f6f3980ab20c0ae50c2135171f0e05095ac7c5bfc56641d3ae056"},
-    {file = "ecologits-0.6.3.tar.gz", hash = "sha256:6ecee491175212d9b933e79d8d65c8f8ce6c812a160fe3941a2ededa1f97eade"},
+    {file = "ecologits-0.9.2-py3-none-any.whl", hash = "sha256:f220eb9519575e3c4ef74881f77699813e5afd1510b628e090e8b6fb6502c3bb"},
+    {file = "ecologits-0.9.2.tar.gz", hash = "sha256:eb68e9877b1d6ddba12bb4e183f291a7f8eaa86c30c32222ee6d000e0c39b6fd"},
 ]
 
 [package.dependencies]
-httpx = ">=0.23.0,<1"
 packaging = ">=24.2,<25.0"
 pydantic = ">=1.9.0,<3"
-requests = ">=2.26.0"
-tqdm = ">4"
 wrapt = ">=1.14.1,<2.0.0"
 
 [package.extras]
 anthropic = ["anthropic (>=0.45.2,<0.46.0)"]
 cohere = ["cohere (>=5.13.12,<6.0.0)"]
-google-generativeai = ["google-generativeai (>=0.8.4,<0.9.0)"]
-huggingface-hub = ["aiohttp (>=3.11.12,<4.0.0)", "huggingface-hub (>=0.28.1,<0.29.0)", "minijinja (>=2.7.0,<3.0.0)", "tiktoken (>=0.8.0,<0.9.0)"]
+google-genai = ["google-genai (>=1.26.0,<2.0.0)"]
+huggingface-hub = ["aiohttp (>=3.11.12,<4.0.0)", "huggingface-hub (>=0.28.1,<0.29.0)", "minijinja (>=2.7.0,<3.0.0)", "tiktoken (>=0.8.0,<0.10.0)"]
 litellm = ["litellm (>=1.60.6,<2.0.0)", "rapidfuzz (>=3.12.1,<4.0.0)"]
 mistralai = ["mistralai (>=1.5.0,<2.0.0)"]
 openai = ["openai (>=1.61.1,<2.0.0)"]
+opentelemetry = ["opentelemetry-api (>=1.32.1,<2.0.0)", "opentelemetry-exporter-otlp (>=1.32.1,<2.0.0)", "opentelemetry-sdk (>=1.32.1,<2.0.0)", "tiktoken (>=0.8.0,<0.10.0)"]
 
 [[package]]
 name = "executing"
@@ -1509,7 +1507,7 @@ version = "1.0.9"
 description = "A minimal low-level HTTP client."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "httpcore-1.0.9-py3-none-any.whl", hash = "sha256:2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55"},
     {file = "httpcore-1.0.9.tar.gz", hash = "sha256:6e34463af53fd2ab5d807f399a9b45ea31c3dfa2276f15a2c3f00afff6e176e8"},
@@ -1531,7 +1529,7 @@ version = "0.28.1"
 description = "The next generation HTTP client."
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev"]
+groups = ["dev"]
 files = [
     {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
     {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
@@ -5062,28 +5060,6 @@ files = [
 ]
 
 [[package]]
-name = "tqdm"
-version = "4.67.2"
-description = "Fast, Extensible Progress Meter"
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "tqdm-4.67.2-py3-none-any.whl", hash = "sha256:9a12abcbbff58b6036b2167d9d3853042b9d436fe7330f06ae047867f2f8e0a7"},
-    {file = "tqdm-4.67.2.tar.gz", hash = "sha256:649aac53964b2cb8dec76a14b405a4c0d13612cb8933aae547dd144eacc99653"},
-]
-
-[package.dependencies]
-colorama = {version = "*", markers = "platform_system == \"Windows\""}
-
-[package.extras]
-dev = ["nbval", "pytest (>=6)", "pytest-asyncio (>=0.24)", "pytest-cov", "pytest-timeout"]
-discord = ["requests"]
-notebook = ["ipywidgets (>=6)"]
-slack = ["slack-sdk"]
-telegram = ["requests"]
-
-[[package]]
 name = "traitlets"
 version = "5.14.3"
 description = "Traitlets Python configuration system"
@@ -5670,4 +5646,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "d9eaccc853e2f495741c61a5f2b8133cc9b6c1ff6c51a2dae379eb964b383c98"
+content-hash = "1f035f8eec5fffc9edfacfe29bfe2cbabdd54fa60f0ce66b8b4802f9b8716503"

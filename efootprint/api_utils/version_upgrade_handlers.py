@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
 from efootprint.logger import logger
 
 
@@ -97,7 +100,8 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
     from efootprint.api_utils.unit_mappings import (
         TIMESERIES_UNIT_MIGRATIONS, SCALAR_RAM_ATTRIBUTES_TO_MIGRATE, RAM_TIMESERIES_ATTRIBUTES_TO_MIGRATE
     )
-
+    efootprint_classes_with_suppressed_classes = deepcopy(efootprint_classes_dict)
+    efootprint_classes_with_suppressed_classes.update(ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT)
     logger.info("Upgrading system dict from version 12 to 13: migrating units in timeseries and RAM data")
 
     def migrate_timeseries_unit(obj_dict, attr_name, new_unit):
@@ -159,7 +163,7 @@ def upgrade_version_12_to_13(system_dict, efootprint_classes_dict=None):
     for class_name in system_dict:
         if class_name == "efootprint_version":
             continue
-        efootprint_class = efootprint_classes_dict[class_name]
+        efootprint_class = efootprint_classes_with_suppressed_classes[class_name]
 
         for obj_id in system_dict[class_name]:
             obj_dict = system_dict[class_name][obj_id]
@@ -225,6 +229,80 @@ def upgrade_version_14_to_15(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_15_to_16(system_dict, efootprint_classes_dict=None):
+    """
+    Upgrade from version 15 to 16:
+    - WebApplication / WebApplicationJob services are removed:
+        * suppress WebApplication services from the JSON
+        * convert WebApplicationJobs into classic Jobs with Job.default_values inputs (server inferred from service)
+    - GenAIModel / GenAIJob services are removed:
+        * convert GenAIModel into EcoLogitsGenAIExternalAPI (keep provider + model_name)
+        * convert GenAIJob into EcoLogitsGenAIExternalAPIJob (keep output_token_count, point to external API)
+    """
+    from efootprint.core.usage.job import Job
+    did_upgrade = False
+
+    # WebApplicationJob -> Job (defaults) + remove WebApplication services
+    web_app_job_class_key = "WebApplicationJob"
+    if web_app_job_class_key in system_dict:
+        did_upgrade = True
+        system_dict.setdefault("Job", {})
+        web_app_services = system_dict.get("WebApplication", {})
+
+        for web_app_job_id, web_app_job_dict in list(system_dict[web_app_job_class_key].items()):
+            service_id = web_app_job_dict.get("service")
+            server_id = web_app_services[service_id].get("server")
+            new_job_id = web_app_job_id
+            new_job_dict = {"name": web_app_job_dict.get("name"), "id": new_job_id, "server": server_id,
+                            "data_transferred": web_app_job_dict["data_transferred"],
+                            "data_stored": web_app_job_dict["data_stored"]}
+            for attr_name, default_value in Job.default_values.items():
+                if attr_name not in ["data_transferred", "data_stored"]:
+                    new_job_dict[attr_name] = default_value.to_json()
+
+            system_dict["Job"][new_job_id] = new_job_dict
+
+        del system_dict[web_app_job_class_key]
+
+    # Suppress WebApplication services from the JSON (they are removed in v16).
+    if "WebApplication" in system_dict:
+        del system_dict["WebApplication"]
+
+    # GenAIModel -> EcoLogitsGenAIExternalAPI, GenAIJob -> EcoLogitsGenAIExternalAPIJob
+    if "GenAIModel" in system_dict:
+        did_upgrade = True
+        system_dict.setdefault("EcoLogitsGenAIExternalAPI", {})
+
+        for genai_model_id, genai_model_dict in list(system_dict["GenAIModel"].items()):
+            new_external_api_id = genai_model_id
+            new_external_api_dict = {
+                "name": genai_model_dict.get("name"), "id": new_external_api_id,
+                "provider": genai_model_dict["provider"], "model_name": genai_model_dict["model_name"]}
+
+            system_dict["EcoLogitsGenAIExternalAPI"][new_external_api_id] = new_external_api_dict
+
+        del system_dict["GenAIModel"]
+
+    if "GenAIJob" in system_dict:
+        did_upgrade = True
+        system_dict.setdefault("EcoLogitsGenAIExternalAPIJob", {})
+
+        for genai_job_id, genai_job_dict in list(system_dict["GenAIJob"].items()):
+            external_api_id = genai_job_dict.get("service")
+
+            new_job_id = genai_job_dict.get("id", genai_job_id)
+            new_job_dict = {"name": genai_job_dict.get("name"), "id": new_job_id, "external_api": external_api_id}
+            new_job_dict["output_token_count"] = genai_job_dict.get("output_token_count")
+            system_dict["EcoLogitsGenAIExternalAPIJob"][new_job_id] = new_job_dict
+
+        del system_dict["GenAIJob"]
+
+    if did_upgrade:
+        logger.info("Upgraded system dict from version 15 to 16: migrating WebApplication and GenAI services removal")
+
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -232,4 +310,5 @@ VERSION_UPGRADE_HANDLERS = {
     12: upgrade_version_12_to_13,
     13: upgrade_version_13_to_14,
     14: upgrade_version_14_to_15,
+    15: upgrade_version_15_to_16,
 }

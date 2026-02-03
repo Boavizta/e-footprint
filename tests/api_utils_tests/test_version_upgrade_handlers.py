@@ -1,6 +1,7 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
-    upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15
+    upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
+    upgrade_version_15_to_16
 
 from unittest import TestCase
 
@@ -214,11 +215,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "compressed_values": [1, 2, 3],
                         "unit": "dimensionless",
                         "label": "hourly usage"
-                    },
-                    "nb_usage_journeys_in_parallel": {
-                        "values": [5, 6, 7],
-                        "unit": "",
-                        "label": "parallel journeys"
                     }
                 }
             },
@@ -231,11 +227,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "compressed_values": [10, 20],
                         "unit": "dimensionless",
                         "label": "edge starts"
-                    },
-                    "nb_edge_usage_journeys_in_parallel": {
-                        "values": [15, 25],
-                        "unit": "",
-                        "label": "edge parallel"
                     }
                 }
             },
@@ -249,16 +240,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "MB",
                         "label": "RAM needed"
                     },
-                    "hourly_occurrences_per_usage_pattern": {
-                        "values": [1, 2, 3],
-                        "unit": "dimensionless",
-                        "label": "occurrences"
-                    },
-                    "hourly_avg_occurrences_per_usage_pattern": {
-                        "values": [1.5, 2.5],
-                        "unit": "dimensionless",
-                        "label": "avg occurrences"
-                    }
                 }
             },
             "GPUJob": {
@@ -269,11 +250,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "value": 1024.0,
                         "unit": "megabyte",
                         "label": "RAM needed"
-                    },
-                    "hourly_occurrences_per_usage_pattern": {
-                        "values": [5, 6],
-                        "unit": "",
-                        "label": "occurrences"
                     }
                 }
             },
@@ -291,21 +267,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "value": 300.0,
                         "unit": "megabyte",
                         "label": "Base RAM"
-                    },
-                    "raw_nb_of_instances": {
-                        "compressed_values": [2, 3],
-                        "unit": "dimensionless",
-                        "label": "raw instances"
-                    },
-                    "nb_of_instances": {
-                        "values": [2, 3],
-                        "unit": "",
-                        "label": "instances"
-                    },
-                    "hour_by_hour_ram_need": {
-                        "compressed_values": [1024, 2048],
-                        "unit": "GB",
-                        "label": "RAM need"
                     }
                 }
             },
@@ -322,11 +283,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "value": 16.0,
                         "unit": "GB",
                         "label": "RAM per GPU"
-                    },
-                    "raw_nb_of_instances": {
-                        "compressed_values": [1, 2],
-                        "unit": "dimensionless",
-                        "label": "raw instances"
                     }
                 }
             },
@@ -334,12 +290,7 @@ class TestVersionUpgradeHandlers(TestCase):
             "Storage": {
                 "storage_1": {
                     "name": "Storage",
-                    "id": "storage_1",
-                    "raw_nb_of_instances": {
-                        "values": [5, 10],
-                        "unit": "dimensionless",
-                        "label": "storage instances"
-                    }
+                    "id": "storage_1"
                 }
             },
             # RecurrentEdgeProcess
@@ -368,11 +319,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "value": 100.0,
                         "unit": "MB",
                         "label": "Base RAM"
-                    },
-                    "unitary_hourly_ram_need_per_usage_pattern": {
-                        "values": [256, 512],
-                        "unit": "megabyte",
-                        "label": "hourly RAM"
                     }
                 }
             }
@@ -388,11 +334,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "occurrence",
                         "label": "hourly usage"
                     },
-                    "nb_usage_journeys_in_parallel": {
-                        "values": [5, 6, 7],
-                        "unit": "concurrent",
-                        "label": "parallel journeys"
-                    }
                 }
             },
             "EdgeUsagePattern": {
@@ -404,11 +345,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "occurrence",
                         "label": "edge starts"
                     },
-                    "nb_edge_usage_journeys_in_parallel": {
-                        "values": [15, 25],
-                        "unit": "concurrent",
-                        "label": "edge parallel"
-                    }
                 }
             },
             "Job": {
@@ -420,16 +356,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "MB_ram",
                         "label": "RAM needed"
                     },
-                    "hourly_occurrences_per_usage_pattern": {
-                        "values": [1, 2, 3],
-                        "unit": "occurrence",
-                        "label": "occurrences"
-                    },
-                    "hourly_avg_occurrences_per_usage_pattern": {
-                        "values": [1.5, 2.5],
-                        "unit": "concurrent",
-                        "label": "avg occurrences"
-                    }
                 }
             },
             "GPUJob": {
@@ -441,11 +367,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "megabyte_ram",
                         "label": "RAM needed"
                     },
-                    "hourly_occurrences_per_usage_pattern": {
-                        "values": [5, 6],
-                        "unit": "occurrence",
-                        "label": "occurrences"
-                    }
                 }
             },
             "Server": {
@@ -462,21 +383,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "megabyte_ram",
                         "label": "Base RAM"
                     },
-                    "raw_nb_of_instances": {
-                        "compressed_values": [2, 3],
-                        "unit": "concurrent",
-                        "label": "raw instances"
-                    },
-                    "nb_of_instances": {
-                        "values": [2, 3],
-                        "unit": "concurrent",
-                        "label": "instances"
-                    },
-                    "hour_by_hour_ram_need": {
-                        "compressed_values": [1024, 2048],
-                        "unit": "GB_ram",
-                        "label": "RAM need"
-                    }
                 }
             },
             "GPUServer": {
@@ -493,22 +399,12 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "GB_ram",
                         "label": "RAM per GPU"
                     },
-                    "raw_nb_of_instances": {
-                        "compressed_values": [1, 2],
-                        "unit": "concurrent",
-                        "label": "raw instances"
-                    }
                 }
             },
             "Storage": {
                 "storage_1": {
                     "name": "Storage",
                     "id": "storage_1",
-                    "raw_nb_of_instances": {
-                        "values": [5, 10],
-                        "unit": "concurrent",
-                        "label": "storage instances"
-                    }
                 }
             },
             "RecurrentEdgeProcess": {
@@ -536,11 +432,6 @@ class TestVersionUpgradeHandlers(TestCase):
                         "unit": "MB_ram",
                         "label": "Base RAM"
                     },
-                    "unitary_hourly_ram_need_per_usage_pattern": {
-                        "values": [256, 512],
-                        "unit": "megabyte_ram",
-                        "label": "hourly RAM"
-                    }
                 }
             }
         }
@@ -641,5 +532,66 @@ class TestVersionUpgradeHandlers(TestCase):
             "OtherClass": {"obj_1": {"name": "Object 1"}}}
 
         output_dict = upgrade_version_14_to_15(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_15_to_16_migrates_web_application_and_genai(self):
+        from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue, Sources
+        from efootprint.constants.units import u
+        from efootprint.core.usage.job import Job
+
+        input_dict = {
+            "Server": {"srv_1": {"name": "Server 1", "id": "srv_1"}},
+            "WebApplication": {"wa_1": {"name": "Web app", "id": "wa_1", "server": "srv_1"}},
+            "WebApplicationJob": {"waj_1": {
+                "name": "Fetch view", "id": "waj_1", "service": "wa_1",
+                "data_transferred": SourceValue(1 * u.MB).to_json(), "data_stored": SourceValue(2 * u.MB).to_json(),
+                "implementation_details": "php"}},
+            "GenAIModel": {
+                "gaim_1": {
+                    "name": "LLM",
+                    "id": "gaim_1",
+                    "server": "srv_1",
+                    "provider": "openai",
+                    "model_name": "gpt-4o",
+                }
+            },
+            "GenAIJob": {
+                "gaij_1": {
+                    "name": "LLM call",
+                    "id": "gaij_1",
+                    "service": "gaim_1",
+                    "output_token_count": SourceValue(1234 * u.dimensionless, Sources.HYPOTHESIS).to_json(),
+                }
+            },
+        }
+
+        expected_job_defaults = {k: v.to_json() for k, v in Job.default_values.items()
+                                 if k in ["request_duration", "compute_needed", "ram_needed"]}
+        expected_output = {
+            "Server": {"srv_1": {"name": "Server 1", "id": "srv_1"}},
+            "Job": {"waj_1": {"name": "Fetch view", "id": "waj_1", "server": "srv_1",
+                              "data_transferred": SourceValue(1 * u.MB).to_json(),
+                              "data_stored": SourceValue(2 * u.MB).to_json(),
+                              **expected_job_defaults}},
+            "EcoLogitsGenAIExternalAPI": {
+                "gaim_1": {
+                    "name": "LLM",
+                    "id": "gaim_1",
+                    "provider": "openai",
+                    "model_name": "gpt-4o",
+                }
+            },
+            "EcoLogitsGenAIExternalAPIJob": {
+                "gaij_1": {
+                    "name": "LLM call",
+                    "id": "gaij_1",
+                    "external_api": "gaim_1",
+                    "output_token_count": input_dict["GenAIJob"]["gaij_1"]["output_token_count"],
+                }
+            },
+        }
+
+        output_dict = upgrade_version_15_to_16(input_dict)
 
         self.assertEqual(output_dict, expected_output)

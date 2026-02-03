@@ -194,7 +194,8 @@ class TestJob(TestCase):
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
                 usage_pattern, data_exchange)
 
-        self.assertEqual([2, 6, 10], job_hourly_data_exchange.value_as_float_list)
+        self.assertEqual([2000, 6000, 10000], job_hourly_data_exchange.value_as_float_list)
+        self.assertEqual(u.MB, job_hourly_data_exchange.unit)
             
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
         usage_pattern1 = MagicMock()

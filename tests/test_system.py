@@ -12,6 +12,7 @@ from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -110,7 +111,7 @@ class TestSystem(TestCase):
             server_need.edge_device = edge_computer
             server_need.jobs = []
             if with_job:
-                job = MagicMock()
+                job = MagicMock(spec=Job)
                 server_need.jobs = [job]
                 job.server = self.server
                 edge_usage_pattern.jobs = [job]
@@ -187,7 +188,7 @@ class TestSystem(TestCase):
         self.storage.id = "storage_id"
         self.storage.systems = []
         self.server.storage = self.storage
-        job = MagicMock()
+        job = MagicMock(spec=Job)
         uj_step.jobs = [job]
         job.systems = []
         job.server = self.server
