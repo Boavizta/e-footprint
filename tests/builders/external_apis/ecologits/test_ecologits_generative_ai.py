@@ -1,3 +1,5 @@
+import json
+import os
 import unittest
 from datetime import datetime
 from unittest import TestCase
@@ -9,8 +11,10 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
-from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import (
+from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
+from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIJob, ecologits_calculated_attributes)
 from efootprint.constants.units import u
 from tests.utils import set_modeling_obj_containers
@@ -22,13 +26,18 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         self.model_name = SourceObject("open-mistral-7b")
         self.external_api = EcoLogitsGenAIExternalAPI(
             name="Test EcoLogits API", provider=self.provider, model_name=self.model_name)
-        self.external_api.trigger_modeling_updates = False
+        self.external_api.server.trigger_modeling_updates = False
         self.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
 
     def test_initialization_sets_provider_and_model_name(self):
         """Test that initialization correctly sets provider and model_name."""
         self.assertEqual(self.external_api.provider.value, "mistralai")
         self.assertEqual(self.external_api.model_name.value, "open-mistral-7b")
+
+    def test_compatible_jobs(self):
+        """Test that compatible_jobs returns the correct job class."""
+        compatible_jobs = self.external_api.compatible_jobs()
+        self.assertEqual([EcoLogitsGenAIExternalAPIJob], compatible_jobs)
 
     def test_jobs_property_returns_modeling_obj_containers(self):
         """Test that jobs property returns the modeling_obj_containers."""
@@ -53,19 +62,19 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns)
 
-        self.external_api.update_instances_fabrication_footprint()
+        self.external_api.server.update_instances_fabrication_footprint()
 
         expected_value = (10 * 5 + 20 * 3) * u.kg  # 50 + 60 = 110
         self.assertTrue(np.allclose(
-            [expected_value.magnitude] * 24, self.external_api.instances_fabrication_footprint.magnitude))
+            [expected_value.magnitude] * 24, self.external_api.server.instances_fabrication_footprint.magnitude))
 
     def test_update_instances_fabrication_footprint_with_no_jobs(self):
         """Test instances fabrication footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.update_instances_fabrication_footprint()
+        self.external_api.server.update_instances_fabrication_footprint()
 
-        self.assertIsInstance(self.external_api.instances_fabrication_footprint, EmptyExplainableObject)
+        self.assertIsInstance(self.external_api.server.instances_fabrication_footprint, EmptyExplainableObject)
 
     def test_update_instances_energy_with_multiple_jobs(self):
         """Test instances energy calculation with multiple jobs."""
@@ -82,19 +91,19 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_energy * job.hourly_occurrences_across_usage_patterns)
 
-        self.external_api.update_instances_energy()
+        self.external_api.server.update_instances_energy()
 
         expected_value = (100 * 8 + 50 * 4) * u.kWh  # 800 + 200 = 1000
         self.assertTrue(np.allclose(
-            [expected_value.magnitude] * 24, self.external_api.instances_energy.magnitude))
+            [expected_value.magnitude] * 24, self.external_api.server.instances_energy.magnitude))
 
     def test_update_instances_energy_with_no_jobs(self):
         """Test instances energy calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.update_instances_energy()
+        self.external_api.server.update_instances_energy()
 
-        self.assertIsInstance(self.external_api.instances_energy, EmptyExplainableObject)
+        self.assertIsInstance(self.external_api.server.instances_energy, EmptyExplainableObject)
 
     def test_update_energy_footprint_with_multiple_jobs(self):
         """Test energy footprint calculation with multiple jobs."""
@@ -111,19 +120,19 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns)
 
-        self.external_api.update_energy_footprint()
+        self.external_api.server.update_energy_footprint()
 
         expected_value = (25 * 6 + 15 * 10) * u.kg  # 150 + 150 = 300
         self.assertTrue(np.allclose(
-            [expected_value.magnitude] * 24, self.external_api.energy_footprint.magnitude))
+            [expected_value.magnitude] * 24, self.external_api.server.energy_footprint.magnitude))
 
     def test_update_energy_footprint_with_no_jobs(self):
         """Test energy footprint calculation with no jobs."""
         set_modeling_obj_containers(self.external_api, [])
 
-        self.external_api.update_energy_footprint()
+        self.external_api.server.update_energy_footprint()
 
-        self.assertIsInstance(self.external_api.energy_footprint, EmptyExplainableObject)
+        self.assertIsInstance(self.external_api.server.energy_footprint, EmptyExplainableObject)
 
     def test_provider_list_values_contains_valid_providers(self):
         """Test that list_values contains valid provider options."""
@@ -163,9 +172,12 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
             name="Test Job", external_api=self.external_api, output_token_count=self.output_token_count)
         self.job.trigger_modeling_updates = False
 
-    def test_modeling_objects_whose_attributes_depend_directly_on_me_returns_external_api(self):
+    def test_modeling_objects_whose_attributes_depend_directly_on_me_returns_external_api_server(self):
         """Test that the job returns its external_api as a dependency."""
-        self.assertEqual(self.job.modeling_objects_whose_attributes_depend_directly_on_me, [self.external_api])
+        self.assertEqual(self.job.modeling_objects_whose_attributes_depend_directly_on_me, [self.external_api.server])
+
+    def test_compatible_external_apis(self):
+        self.assertEqual(EcoLogitsGenAIExternalAPIJob.compatible_external_apis(), [EcoLogitsGenAIExternalAPI])
 
     def test_update_data_transferred(self):
         """Test data transferred calculation."""
@@ -177,18 +189,60 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         expected = 5 * 1000 * u.B  # 5000 bytes
         self.assertEqual(expected, self.job.data_transferred.value)
 
-    def test_update_ecologits_modeling_creates_model(self):
-        """Test that ecologits modeling is created correctly."""
-        self.job.update_ecologits_modeling()
+    def test_update_impacts_creates_impacts(self):
+        """Test that impacts are created correctly."""
+        self.job.update_impacts()
 
-        self.assertIsNotNone(self.job.ecologits_modeling)
-        self.assertIsNotNone(self.job.ecologits_modeling.value)
+        self.assertIsNotNone(self.job.impacts)
+        self.assertGreater(len(self.job.impacts.value), 0)
 
     def test_compute_calculated_attributes_computes_ecologits_calculated_attributes(self):
         """Test that all calculated attributes are computed without errors."""
         self.job.compute_calculated_attributes()
         for ecologits_attr in ecologits_calculated_attributes:
             self.assertTrue(hasattr(self.job, ecologits_attr))
+
+    def test_calculated_attributes(self):
+        calculated_attributes = [
+            'data_transferred', 'impacts', 'gpu_energy', 'generation_latency', 'model_required_memory',
+            'gpu_required_count', 'server_energy', 'request_energy', 'request_usage_gwp', 'server_gpu_embodied_gwp',
+            'request_embodied_gwp', 'request_duration',
+            'hourly_occurrences_per_usage_pattern', 'hourly_avg_occurrences_per_usage_pattern',
+            'hourly_data_transferred_per_usage_pattern', 'hourly_data_stored_per_usage_pattern',
+            'hourly_avg_occurrences_across_usage_patterns', 'hourly_data_transferred_across_usage_patterns',
+            'hourly_data_stored_across_usage_patterns', 'hourly_occurrences_across_usage_patterns'
+        ]
+        self.assertEqual(self.job.calculated_attributes, calculated_attributes)
+
+    def test_ancestors(self):
+        """Test that ancestors are correctly set for calculated attributes."""
+        self.job.compute_calculated_attributes()
+        for attr in ecologits_calculated_attributes:
+            calculated_attr = getattr(self.job, attr)
+            self.assertIsInstance(calculated_attr, EcoLogitsExplainableQuantity)
+            for ancestor in calculated_attr.ancestors.values():
+                self.assertIsInstance(ancestor, Quantity)
+
+    def test_to_json(self):
+        for mod_obj in [self.external_api, self.external_api.server, self.job]:
+            mod_obj.id = css_escape(mod_obj.name)
+        self.job.compute_calculated_attributes()
+        root_dir = os.path.dirname(__file__)
+        tmp_filepath = os.path.join(root_dir, f"job_serialization_tmp_file.json")
+        serialization_dict = {"job": self.job.to_json(save_calculated_attributes=True)}
+        serialization_dict.update({"external_api": self.external_api.to_json(save_calculated_attributes=True)})
+        with open(tmp_filepath, "w") as f:
+            json.dump(serialization_dict, f, indent=2)
+
+        with (open(os.path.join(root_dir, f"job_serialization.json"), 'r') as ref_file,
+              open(tmp_filepath, 'r') as tmp_file):
+            ref_file_content = ref_file.read()
+            tmp_file_content = tmp_file.read()
+
+            self.assertEqual(ref_file_content, tmp_file_content)
+
+        os.remove(tmp_filepath)
+
 
 
 if __name__ == "__main__":

@@ -66,19 +66,19 @@ class ModelingUpdate:
         self.filtered_hourly_quantities = []
         self.ancestors_to_replace_by_copies = []
         self.replaced_ancestors_copies = []
+        self.recomputed_values = []
         if self.simulation_date is not None:
             self.make_simulation_specific_operations()
             logger.info("Simulation specific operations done.")
 
         self.apply_changes()
-        for new_sourcevalue in self.new_sourcevalues:
-            mod_obj_container = new_sourcevalue.modeling_obj_container
-            mod_obj_container.check_belonging_to_authorized_values(
-                new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
-                mod_obj_container.attributes_with_depending_values())
-        self.recomputed_values = []
-        self.updated_values_set = True
         try:
+            for new_sourcevalue in self.new_sourcevalues:
+                mod_obj_container = new_sourcevalue.modeling_obj_container
+                mod_obj_container.check_belonging_to_authorized_values(
+                    new_sourcevalue.attr_name_in_mod_obj_container, new_sourcevalue,
+                    mod_obj_container.attributes_with_depending_values())
+
             self.recompute_attributes()
         except Exception as e:
             logger.error("An error occurred during attribute recomputation. Resetting to previous values.")
@@ -170,6 +170,7 @@ class ModelingUpdate:
     def apply_changes(self):
         for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
+        self.updated_values_set = True
 
     def make_simulation_specific_operations(self):
         assert self.simulation_date is not None

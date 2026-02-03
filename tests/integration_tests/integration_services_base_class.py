@@ -2,7 +2,8 @@ from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import css_escape
-from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import EcoLogitsGenAIExternalAPI, \
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+from efootprint.builders.external_apis.ecologits.ecologits_external_api import EcoLogitsGenAIExternalAPI, \
     EcoLogitsGenAIExternalAPIJob
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.core.hardware.gpu_server import GPUServer
@@ -92,8 +93,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(self.video_streaming_service, attrs_to_skip=["base_compute_consumption"],
                                             special_mult={"base_ram_consumption": 2, "ram_buffer_per_user": 5})
         self._test_variations_on_obj_inputs(
-            self.genai_service, attrs_to_skip=["provider", "model_name", "base_compute_consumption"],
-            special_mult={"llm_memory_factor": 2, "ram_per_gpu": 16, "nb_of_bits_per_parameter": 2})
+            self.genai_job, attrs_to_skip=["data_stored", "compute_needed", "ram_needed"])
 
     def run_test_update_service_servers(self):
         logger.info("Linking services to new servers")
@@ -167,3 +167,26 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_service.self_delete()
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
         self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server, self.server])
+
+    def run_test_try_to_update_model_provider_and_get_error(self):
+        previous_provider = self.genai_service.provider
+        with self.assertRaises(ValueError):
+            self.genai_service.provider = SourceObject("anthropic")
+        self.assertEqual(self.genai_service.provider, previous_provider)
+
+    def run_test_change_provider_and_model_name_and_check_footprint_changes(self):
+        previous_provider = self.genai_service.provider
+        previous_model_name = self.genai_service.model_name
+        previous_footprint = self.system.total_footprint
+
+        new_provider = SourceObject("anthropic")
+        new_model_name = SourceObject("claude-opus-4-5")
+        logger.info(f"Change provider {previous_provider} -> {new_provider} "
+                    f"and model name {previous_model_name} -> {new_model_name}")
+        ModelingUpdate([[self.genai_service.provider, new_provider], [self.genai_service.model_name, new_model_name]])
+        self.assertNotEqual(previous_footprint, self.system.total_footprint)
+
+        # revert changes
+        logger.info("Revert changes to provider and model name")
+        ModelingUpdate([[self.genai_service.provider, previous_provider], [self.genai_service.model_name, previous_model_name]])
+        self.assertEqual(previous_footprint, self.system.total_footprint)

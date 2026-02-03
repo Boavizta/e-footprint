@@ -674,9 +674,10 @@
         "GenAI-service": {
             "name": "GenAI service",
             "id": "GenAI-service",
+            "server": "GenAI-service-server",
             "provider": {
                 "value": "openai",
-                "label": "openai from e-footprint hypothesis",
+                "label": "GenAI service provider from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -684,12 +685,18 @@
             },
             "model_name": {
                 "value": "gpt-3.5-turbo-1106",
-                "label": "openai model used from e-footprint hypothesis",
+                "label": "Model used from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             }
+        }
+    },
+    "EcoLogitsGenAIExternalAPIServer": {
+        "GenAI-service-server": {
+            "name": "GenAI service server",
+            "id": "GenAI-service-server"
         }
     },
     "Device": {

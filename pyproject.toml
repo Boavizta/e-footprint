@@ -56,8 +56,8 @@ ciso8601 = "^2.3"
 [tool.poetry.group.dev.dependencies]
 pytest = '*'
 pytest-cov = '*'
-jupyter = "^1.0.0"
-ipykernel = "^6.29.3"
+jupyter = "^1"
+ipykernel = "^7"
 mkdocs-material = "*"
 pymdown-extensions = "*"
 jinja2 = "*"

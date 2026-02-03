@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.core.hardware.server import Server
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -35,6 +36,7 @@ class TestSystem(TestCase):
     def _base_fabrication_footprints(self):
         return {
             "Servers": {self.server: self._hourly_kg()},
+            "ExternalAPIs": {},
             "Storage": {self.storage: self._hourly_kg()},
             "Network": {},
             "Devices": {self.usage_pattern: self._hourly_kg()},
@@ -44,6 +46,7 @@ class TestSystem(TestCase):
     def _base_energy_footprints(self):
         return {
             "Servers": {self.server: self._hourly_kg()},
+            "ExternalAPIs": {},
             "Storage": {self.storage: self._hourly_kg()},
             "Devices": {self.usage_pattern: self._hourly_kg()},
             "Network": {self.network: self._hourly_kg()},
@@ -179,7 +182,7 @@ class TestSystem(TestCase):
         self.usage_pattern.usage_journey.uj_steps = [uj_step]
         uj_step.systems = []
         self.usage_pattern.usage_journey.systems = []
-        self.server = MagicMock()
+        self.server = MagicMock(spec=Server)
         self.server.name = "server"
         self.server.id = "server_id"
         self.server.systems = []
@@ -286,10 +289,30 @@ class TestSystem(TestCase):
     def test_energy_footprints(self):
         self.assertDictEqual(self._base_energy_footprints(), self.system.energy_footprints)
 
+    def test_external_apis_have_their_own_category_in_footprints(self):
+        external_api = MagicMock()
+        external_api.name = "external_api"
+        external_api.systems = []
+        external_api.instances_fabrication_footprint = self._hourly_kg(values=(4, 4, 4))
+        external_api.energy_footprint = self._hourly_kg(values=(2, 2, 2))
+        self.usage_pattern.jobs[0].external_api = external_api
+
+        fab_footprints = self.system.fabrication_footprints
+        energy_footprints = self.system.energy_footprints
+
+        self.assertIn(external_api, fab_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.instances_fabrication_footprint, fab_footprints["ExternalAPIs"][external_api])
+        self.assertIn(external_api, energy_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.energy_footprint, energy_footprints["ExternalAPIs"][external_api])
+
+        self.assertEqual(external_api.instances_fabrication_footprint, self.system.total_fabrication_footprints["ExternalAPIs"])
+        self.assertEqual(external_api.energy_footprint, self.system.total_energy_footprints["ExternalAPIs"])
+
     def test_total_fabrication_footprints(self):
         expected_dict = {
             "Servers":
                 self._hourly_kg(),
+            "ExternalAPIs": EmptyExplainableObject(),
             "Storage":
                 self._hourly_kg(),
             "Devices":
@@ -304,6 +327,7 @@ class TestSystem(TestCase):
         expected_dict = {
             "Servers":
                 self._hourly_kg(),
+            "ExternalAPIs": EmptyExplainableObject(),
             "Storage":
                 self._hourly_kg(),
             "Devices":
@@ -377,6 +401,7 @@ class TestSystem(TestCase):
 
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(0 * u.kg, "null value"),
@@ -402,6 +427,7 @@ class TestSystem(TestCase):
 
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(6 * u.kg, "null value"),
@@ -643,6 +669,7 @@ class TestSystem(TestCase):
     def test_total_fabrication_footprint_sum_over_period_includes_edge_devices(self):
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(0 * u.kg, "null value"),
@@ -667,6 +694,7 @@ class TestSystem(TestCase):
     def test_total_energy_footprint_sum_over_period_includes_edge_computers(self):
         expected_dict = {
             "Servers": ExplainableQuantity(6 * u.kg, "null value"),
+            "ExternalAPIs": ExplainableQuantity(0 * u.kg, "null value"),
             "Storage": ExplainableQuantity(6 * u.kg, "null value"),
             "Devices": ExplainableQuantity(6 * u.kg, "null value"),
             "Network": ExplainableQuantity(6 * u.kg, "null value"),

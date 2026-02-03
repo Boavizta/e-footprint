@@ -1,0 +1,566 @@
+{
+  "job": {
+    "name": "Test Job",
+    "id": "Test-Job",
+    "hourly_occurrences_per_usage_pattern": {},
+    "hourly_avg_occurrences_per_usage_pattern": {},
+    "hourly_data_transferred_per_usage_pattern": {},
+    "hourly_data_stored_per_usage_pattern": {},
+    "hourly_avg_occurrences_across_usage_patterns": {
+      "value": null,
+      "label": "Hourly Test Job average occurrences across usage patterns",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "hourly_data_transferred_across_usage_patterns": {
+      "value": null,
+      "label": "Hourly Test Job data transferred across usage patterns",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "hourly_data_stored_across_usage_patterns": {
+      "value": null,
+      "label": "Hourly Test Job data stored across usage patterns",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "data_transferred": {
+      "value": 5000.0,
+      "unit": "byte",
+      "label": "Data transferred for gpt-4o",
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'output_token_count', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        {
+          "value": 5.0,
+          "unit": "byte",
+          "label": "unnamed source from e-footprint hypothesis",
+          "source": {
+            "name": "e-footprint hypothesis",
+            "link": null
+          }
+        },
+        "*",
+        "('Test-Job', 'output_token_count', None)"
+      ]
+    },
+    "data_stored": {
+      "value": 0.0,
+      "unit": "megabyte",
+      "label": "Data stored by request Test Job from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "request_duration": {
+      "value": 99.14607880459047,
+      "unit": "second",
+      "label": "Ecologits generation_latency for gpt-4o from Ecologits",
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'generation_latency', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'generation_latency', None)",
+        "duplicate",
+        null
+      ]
+    },
+    "ram_needed": {
+      "value": 0.0,
+      "unit": "megabyte_ram",
+      "label": "RAM needed to process Test Job from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "compute_needed": {
+      "value": 0.0,
+      "unit": "cpu_core",
+      "label": "CPU needed to process Test Job from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "external_api": "Test-EcoLogits-API",
+    "output_token_count": {
+      "value": 1000.0,
+      "unit": "dimensionless",
+      "label": "Output token count for gpt-4o from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [
+        "('Test-Job', 'data_transferred', None)",
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": null
+    },
+    "hourly_occurrences_across_usage_patterns": {
+      "value": null,
+      "label": "Hourly Test Job occurrences across usage patterns",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "impacts": {
+      "value": {
+        "model_active_parameter_count": 88.0,
+        "model_total_parameter_count": 440.0,
+        "model_quantization_bits": 16,
+        "output_token_count": 1000.0,
+        "request_latency": Infinity,
+        "if_electricity_mix_gwp": 0.38355,
+        "if_electricity_mix_adpe": 0,
+        "if_electricity_mix_pe": 0,
+        "if_electricity_mix_wue": 0,
+        "datacenter_wue": 0.569,
+        "datacenter_pue": 1.2,
+        "gpu_energy_alpha": 1.1665273170451914e-06,
+        "gpu_energy_beta": -0.011205921025579175,
+        "gpu_energy_gamma": 4.052928146734005e-05,
+        "latency_alpha": 0.0006785088094353663,
+        "latency_beta": 0.0003119310311688259,
+        "latency_gamma": 0.019473717579473387,
+        "gpu_memory": 80,
+        "gpu_embodied_gwp": 164,
+        "gpu_embodied_adpe": 0.0051,
+        "gpu_embodied_pe": 1828,
+        "server_gpu_count": 8,
+        "server_power": 1.2,
+        "server_embodied_gwp": 5700,
+        "server_embodied_adpe": 0.37,
+        "server_embodied_pe": 70000,
+        "server_lifetime": 94608000,
+        "batch_size": 64,
+        "gpu_energy": 9.06377035298003e-05,
+        "generation_latency": 99.14607880459047,
+        "model_required_memory": 1056.0,
+        "gpu_required_count": 16,
+        "server_energy": 0.001032771654214484,
+        "server_gpu_embodied_gwp": 14024.0,
+        "server_gpu_embodied_adpe": 0.8216,
+        "server_gpu_embodied_pe": 169248.0,
+        "request_energy": 0.0029795698928295465,
+        "request_embodied_gwp": 0.00022963580794495064,
+        "request_embodied_adpe": 1.3453278651424087e-08,
+        "request_embodied_pe": 0.002771349203013905,
+        "request_usage_gwp": 0.0011428140323947727,
+        "request_usage_adpe": 0.0,
+        "request_usage_pe": 0.0,
+        "request_usage_wcf": 0.0016953752690200118
+      },
+      "label": "Ecologits impacts for Test Job from Ecologits compute_llm_impacts_dag function",
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'model_active_params', None)",
+        "('Test-EcoLogits-API', 'model_total_params', None)",
+        "('Test-Job', 'output_token_count', None)",
+        "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'gpu_energy', None)",
+        "('Test-Job', 'generation_latency', None)",
+        "('Test-Job', 'model_required_memory', None)",
+        "('Test-Job', 'gpu_required_count', None)",
+        "('Test-Job', 'server_energy', None)",
+        "('Test-Job', 'request_energy', None)",
+        "('Test-Job', 'request_usage_gwp', None)",
+        "('Test-Job', 'server_gpu_embodied_gwp', None)",
+        "('Test-Job', 'request_embodied_gwp', None)"
+      ],
+      "explain_nested_tuples": [
+        [
+          [
+            "('Test-EcoLogits-API', 'model_active_params', None)",
+            "compute impacts with EcoLogits compute_llm_impacts_dag function",
+            "('Test-EcoLogits-API', 'model_total_params', None)"
+          ],
+          "logically dependent on",
+          "('Test-Job', 'output_token_count', None)"
+        ],
+        "logically dependent on",
+        "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
+      ]
+    },
+    "gpu_energy": {
+      "value": 9.06377035298003e-05,
+      "unit": "kilowatt_hour",
+      "label": "Ecologits gpu_energy for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "batch_size": 64,
+        "gpu_energy_alpha": 1.1665273170451914e-06,
+        "gpu_energy_beta": -0.011205921025579175,
+        "gpu_energy_gamma": 4.052928146734005e-05,
+        "model_active_parameter_count": 88.0,
+        "output_token_count": 1000.0
+      },
+      "formula": "\ngpu_energy_per_token = gpu_energy_alpha * math.exp(gpu_energy_beta * batch_size) * model_active_parameter_count + \\\n    gpu_energy_gamma\ngpu_energy_per_token /= 1000    # convert to kWh\ngpu_energy = output_token_count * gpu_energy_per_token\n"
+    },
+    "generation_latency": {
+      "value": 99.14607880459047,
+      "unit": "second",
+      "label": "Ecologits generation_latency for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'request_duration', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "batch_size": 64,
+        "latency_alpha": 0.0006785088094353663,
+        "latency_beta": 0.0003119310311688259,
+        "latency_gamma": 0.019473717579473387,
+        "model_active_parameter_count": 88.0,
+        "output_token_count": 1000.0,
+        "request_latency": Infinity
+      },
+      "formula": "\nlatency_per_token = latency_alpha * model_active_parameter_count + latency_beta * batch_size + latency_gamma\ngpu_latency = output_token_count * latency_per_token\nif request_latency < gpu_latency:\n    generation_latency = request_latency\ngeneration_latency = gpu_latency\n"
+    },
+    "model_required_memory": {
+      "value": 1056.0,
+      "unit": "gigabyte",
+      "label": "Ecologits model_required_memory for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "model_quantization_bits": 16,
+        "model_total_parameter_count": 440.0
+      },
+      "formula": "\nmodel_required_memory = 1.2 * model_total_parameter_count * model_quantization_bits / 8\n"
+    },
+    "gpu_required_count": {
+      "value": 16.0,
+      "unit": "dimensionless",
+      "label": "Ecologits gpu_required_count for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "gpu_memory": 80,
+        "model_required_memory": 1056.0
+      },
+      "formula": "\ngpu_nb = math.ceil(model_required_memory / gpu_memory)\ngpu_required_count = 2 ** math.ceil(math.log2(gpu_nb))    # Round-up in base two\n"
+    },
+    "server_energy": {
+      "value": 0.001032771654214484,
+      "unit": "kilowatt_hour",
+      "label": "Ecologits server_energy for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "batch_size": 64,
+        "generation_latency": 99.14607880459047,
+        "gpu_required_count": 16,
+        "server_gpu_count": 8,
+        "server_power": 1.2
+      },
+      "formula": "\nserver_energy = (generation_latency / 3600) * server_power * (gpu_required_count / server_gpu_count) * (1 / batch_size)\n"
+    },
+    "request_energy": {
+      "value": 0.0029795698928295465,
+      "unit": "kilowatt_hour",
+      "label": "Ecologits request_energy for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "datacenter_pue": 1.2,
+        "gpu_energy": 9.06377035298003e-05,
+        "gpu_required_count": 16,
+        "server_energy": 0.001032771654214484
+      },
+      "formula": "\nrequest_energy = datacenter_pue * (server_energy + gpu_required_count * gpu_energy)\n"
+    },
+    "request_usage_gwp": {
+      "value": 0.0011428140323947727,
+      "unit": "kilogram",
+      "label": "Ecologits request_usage_gwp for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "if_electricity_mix_gwp": 0.38355,
+        "request_energy": 0.0029795698928295465
+      },
+      "formula": "\nrequest_usage_gwp = request_energy * if_electricity_mix_gwp\n"
+    },
+    "server_gpu_embodied_gwp": {
+      "value": 14024.0,
+      "unit": "kilogram",
+      "label": "Ecologits server_gpu_embodied_gwp for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "gpu_embodied_gwp": 164,
+        "gpu_required_count": 16,
+        "server_embodied_gwp": 5700,
+        "server_gpu_count": 8
+      },
+      "formula": "\nserver_gpu_embodied_gwp = (gpu_required_count / server_gpu_count) * server_embodied_gwp + gpu_required_count * gpu_embodied_gwp\n"
+    },
+    "request_embodied_gwp": {
+      "value": 0.00022963580794495064,
+      "unit": "kilogram",
+      "label": "Ecologits request_embodied_gwp for gpt-4o from Ecologits",
+      "source": {
+        "name": "Ecologits",
+        "link": "https://github.com/genai-impact/ecologits"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
+        "batch_size": 64,
+        "generation_latency": 99.14607880459047,
+        "server_gpu_embodied_gwp": 14024.0,
+        "server_lifetime": 94608000
+      },
+      "formula": "\nrequest_embodied_gwp = generation_latency * server_gpu_embodied_gwp / (server_lifetime * batch_size)\n"
+    }
+  },
+  "external_api": {
+    "name": "Test EcoLogits API",
+    "id": "Test-EcoLogits-API",
+    "server": "Test-EcoLogits-API-server",
+    "provider": {
+      "value": "openai",
+      "label": "Test EcoLogits API provider from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [
+        "('Test-EcoLogits-API', 'model_total_params', None)",
+        "('Test-EcoLogits-API', 'model_active_params', None)",
+        "('Test-EcoLogits-API', 'datacenter_location', None)",
+        "('Test-EcoLogits-API', 'data_center_pue', None)"
+      ],
+      "explain_nested_tuples": null
+    },
+    "model_name": {
+      "value": "gpt-4o",
+      "label": "Model used from e-footprint hypothesis",
+      "source": {
+        "name": "e-footprint hypothesis",
+        "link": null
+      },
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [
+        "('Test-EcoLogits-API', 'model_total_params', None)",
+        "('Test-EcoLogits-API', 'model_active_params', None)"
+      ],
+      "explain_nested_tuples": null
+    },
+    "model_total_params": {
+      "value": 440.0,
+      "unit": "billion",
+      "label": "gpt-4o total parameter count (in billions) from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits model repository with",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ]
+    },
+    "model_active_params": {
+      "value": 88.0,
+      "unit": "billion",
+      "label": "gpt-4o active parameter count (in billions) from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits model repository with",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ]
+    },
+    "datacenter_location": {
+      "value": "USA",
+      "label": "Datacenter location for openai from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits provider config",
+        null
+      ]
+    },
+    "data_center_pue": {
+      "value": 1.2,
+      "unit": "dimensionless",
+      "label": "Datacenter PUE for openai from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits provider config",
+        null
+      ]
+    },
+    "average_carbon_intensity": {
+      "value": 0.38355,
+      "unit": "kilogram / kilowatt_hour",
+      "label": "Average carbon intensity of electricity mix for openai from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'datacenter_location', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'datacenter_location', None)",
+        "query EcoLogits electricity mix repository with datacenter location",
+        null
+      ]
+    }
+  }
+}

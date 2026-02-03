@@ -59,3 +59,5 @@ concurrent = []   # Active/simultaneous counts that should be averaged
 # RAM/memory allocation units (aggregated by mean, unlike data transfer bytes)
 bit_ram = []
 byte_ram = 8 * bit_ram = B_ram = octet_ram
+
+billion = []

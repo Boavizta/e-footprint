@@ -17,11 +17,25 @@ def compute_classes_generation_order(efootprint_classes_dict):
     classes_to_order_dict = copy(efootprint_classes_dict)
     classes_generation_order = []
 
+    def get_all_subclasses_names(efootprint_class, efootprint_classes_dict):
+        if isabstract(efootprint_class):
+            output = []
+            for efootprint_class_name_to_check, efootprint_class_to_check in efootprint_classes_dict.items():
+                if issubclass(efootprint_class_to_check, efootprint_class):
+                    output.append(efootprint_class_name_to_check)
+        else:
+            output = [efootprint_class.__name__]
+
+        return output
+
     while len(classes_to_order_dict) > 0:
         classes_to_append_to_generation_order = []
         for efootprint_class_name, efootprint_class in classes_to_order_dict.items():
             init_sig_params = get_init_signature_params(efootprint_class)
-            classes_needed_to_generate_current_class = []
+            classes_needed_to_generate_current_class = sum([
+                get_all_subclasses_names(efootprint_class, efootprint_classes_dict)
+                for efootprint_class in efootprint_class.classes_outside_init_params_needed_for_generating_from_json
+            ], start=[])
             for init_sig_param_key in init_sig_params:
                 annotation = init_sig_params[init_sig_param_key].annotation
                 if annotation is empty_annotation or isinstance(annotation, UnionType):
@@ -31,13 +45,8 @@ def compute_classes_generation_order(efootprint_classes_dict):
                 else:
                     param_type = annotation
                 if issubclass(param_type, ModelingObject):
-                    if isabstract(param_type):
-                        # Case for UsageJourneyStep which has jobs params being abstract (JobBase)
-                        for efootprint_class_name_to_check, efootprint_class_to_check in efootprint_classes_dict.items():
-                            if issubclass(efootprint_class_to_check, param_type):
-                                classes_needed_to_generate_current_class.append(efootprint_class_name_to_check)
-                    else:
-                        classes_needed_to_generate_current_class.append(param_type.__name__)
+                    classes_needed_to_generate_current_class += (
+                        get_all_subclasses_names(param_type, efootprint_classes_dict))
             append_to_classes_generation_order = True
             for class_needed in classes_needed_to_generate_current_class:
                 if class_needed not in classes_generation_order:

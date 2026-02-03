@@ -130,6 +130,8 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
+    classes_outside_init_params_needed_for_generating_from_json = []
+
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
                        is_loaded_from_system_with_calculated_attributes=False):

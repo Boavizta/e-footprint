@@ -3,7 +3,7 @@ from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
+from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
@@ -12,6 +12,7 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -128,7 +129,8 @@ class System(ModelingObject):
 
     @property
     def all_linked_objects(self):
-        return (self.networks + self.jobs + self.servers + self.services + self.external_apis + self.countries
+        return (self.networks + self.jobs + self.servers + self.services + self.external_apis
+                + self.external_api_servers + self.countries
                 + self.get_objects_linked_to_usage_patterns(self.usage_patterns)
                 + self.get_objects_linked_to_edge_usage_patterns(self.edge_usage_patterns))
 
@@ -158,7 +160,8 @@ class System(ModelingObject):
 
     @property
     def servers(self) -> List[Server]:
-        return list(set([job.server for job in self.jobs if hasattr(job, "server")]))
+        return list(set([job.server for job in self.jobs if hasattr(job, "server")
+                         and isinstance(job.server, ServerBase)]))
 
     @property
     def services(self) -> List[Service]:
@@ -167,6 +170,10 @@ class System(ModelingObject):
     @property
     def external_apis(self) -> List[ExternalAPI]:
         return list(set([job.external_api for job in self.jobs if hasattr(job, "external_api")]))
+
+    @property
+    def external_api_servers(self) -> List[ExternalAPIServer]:
+        return list(set([external_api.server for external_api in self.external_apis]))
 
     @property
     def edge_devices(self) -> List[EdgeDevice]:
@@ -202,6 +209,8 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": {server: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage: storage.instances_fabrication_footprint for storage in self.storages},
+            "ExternalAPIs": {external_api: external_api.instances_fabrication_footprint for external_api in
+                             self.external_apis},
             "Network": {},
             "Devices": {usage_pattern: usage_pattern.instances_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
@@ -216,6 +225,7 @@ class System(ModelingObject):
         energy_footprints = {
             "Servers": {server: server.energy_footprint for server in self.servers},
             "Storage": {storage: storage.energy_footprint for storage in self.storages},
+            "ExternalAPIs": {external_api: external_api.energy_footprint for external_api in self.external_apis},
             "Network": {network: network.energy_footprint for network in self.networks},
             "Devices": {usage_pattern: usage_pattern.energy_footprint
                         for usage_pattern in self.usage_patterns},
@@ -234,6 +244,9 @@ class System(ModelingObject):
             "Storage": sum([storage.instances_fabrication_footprint for storage in self.storages],
                            start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Storage total fabrication footprint"),
+            "ExternalAPIs": sum([external_api.instances_fabrication_footprint for external_api in self.external_apis],
+                                start=EmptyExplainableObject()).to(u.kg).set_label(
+                "External APIs total fabrication footprint"),
             "Network": EmptyExplainableObject(),
             "Devices": sum([usage_pattern.instances_fabrication_footprint
                            for usage_pattern in self.usage_patterns], start=EmptyExplainableObject()).to(u.kg).set_label(
@@ -252,6 +265,9 @@ class System(ModelingObject):
                            ).to(u.kg).set_label("Servers total energy footprint"),
             "Storage": sum([storage.energy_footprint for storage in self.storages], start=EmptyExplainableObject()
                            ).to(u.kg).set_label("Storage total energy footprint"),
+            "ExternalAPIs": sum([external_api.energy_footprint for external_api in self.external_apis],
+                                start=EmptyExplainableObject()
+                                ).to(u.kg).set_label("External APIs total energy footprint"),
             "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
                            ).to(u.kg).set_label("Network total energy footprint"),
             "Devices": sum([usage_pattern.energy_footprint for usage_pattern in self.usage_patterns],
@@ -413,6 +429,10 @@ class System(ModelingObject):
             return fig
 
     def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
+        import os
+        import matplotlib
+        if not plt_show and os.environ.get("MPLBACKEND") is None:
+            matplotlib.use("Agg", force=True)
         from matplotlib import pyplot as plt
 
         if self.previous_change is None:

@@ -56,17 +56,13 @@ nav:
               - RAM component: EdgeRAMComponent.md
               - CPU component: EdgeCPUComponent.md
               - Storage component: EdgeStorage.md
-
   - Services:
-      - Web application:
-          - Web application service: WebApplication.md
-          - Web application job: WebApplicationJob.md
       - Video streaming:
           - Video streaming service: VideoStreaming.md
           - Video streaming job: VideoStreamingJob.md
-      - Gen AI:
-          - Gen AI service: GenAIModel.md
-          - Gen AI job: GenAIJob.md
+  - External APIs:
+      - EcoLogits generative AI APIs: EcoLogitsGenAIExternalAPI.md
+      - EcoLogits generative AI API job: EcoLogitsGenAIExternalAPIJob.md
   - Usage:
       - Usage pattern: UsagePattern.md
       - Usage journey: UsageJourney.md

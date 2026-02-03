@@ -19,11 +19,13 @@ COLOR_MAP = {
     "RecurrentServerNeed": "palegoldenrod",
     "RecurrentEdgeComponentNeed": "lightgoldenrodyellow",
     "Service": "orange",
+    "ExternalAPI": "orangered",
+    "ExternalAPIServer": "orangered",
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
     "System", "Network", "Device", "Country", "JobBase", "RecurrentEdgeDeviceNeed",
-    "Storage", "EdgeComponent", "Service", "RecurrentEdgeComponentNeed"]
+    "Storage", "EdgeComponent", "Service", "RecurrentEdgeComponentNeed", "ExternalAPI", "ExternalAPIServer"]
 INFRA_VIEW_CLASSES_TO_IGNORE = [
     "UsagePattern", "EdgeUsagePattern", "Network", "Device", "System", "UsageJourneyStep", "EdgeFunction", "Country",
     "EdgeComponent", "RecurrentEdgeComponentNeed"]

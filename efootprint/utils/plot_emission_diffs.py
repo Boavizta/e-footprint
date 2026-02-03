@@ -1,6 +1,5 @@
 from typing import List, Dict
 
-import matplotlib.pyplot as plt
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -17,7 +16,8 @@ class EmissionPlotter:
         self.formatted_input_dicts__new = formatted_input_dicts__new
         self.rounding_value = rounding_value
         self.legend_labels = legend_labels
-        all_elements = ["Servers", "Storage", "Network", "Devices", "EdgeComputers", "EdgeStorage"]
+        all_elements = ["Servers", "Storage", "ExternalAPIs", "Network", "Devices", "EdgeDevices", "EdgeComputers",
+                        "EdgeStorage"]
         elements = []
         for elt in all_elements:
             for dict in formatted_input_dicts__old + formatted_input_dicts__new:
@@ -151,5 +151,6 @@ class EmissionPlotter:
             self.set_titles()
 
     def add_legend(self):
-        handles = [plt.Rectangle((0, 0), 1, 1, color=color) for color in self.colors]
+        from matplotlib.patches import Rectangle
+        handles = [Rectangle((0, 0), 1, 1, color=color) for color in self.colors]
         self.ax.legend(handles, self.legend_labels)

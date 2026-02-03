@@ -66,7 +66,7 @@ class JobBase(ModelingObject):
                 math.ceil(copy(self.request_duration.value).to(u.hour).magnitude) * u.dimensionless,
                 f"{self.name} duration in full hours")
 
-    # Job objects can be refereenced by UsageJourneySteps or by RecurrentServerNeeds
+    # Job objects can be referenced by UsageJourneySteps or by RecurrentServerNeeds
     @property
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
         from efootprint.core.usage.usage_journey_step import UsageJourneyStep

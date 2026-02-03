@@ -1,6 +1,5 @@
 from copy import copy
 
-from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
@@ -35,12 +34,14 @@ from efootprint.builders.services.video_streaming import VideoStreaming, VideoSt
 from efootprint.core.usage.job import Job, JobBase, GPUJob
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
-from efootprint.builders.external_apis.ecologits.generative_ai_ecologits import (EcoLogitsGenAIExternalAPIJob,
-                                                                                 EcoLogitsGenAIExternalAPI)
+from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
+    EcoLogitsGenAIExternalAPIJob, EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIServer)
 
 
 SERVICE_CLASSES = [VideoStreaming]
 SERVICE_JOB_CLASSES = [VideoStreamingJob]
+EXTERNAL_API_SERVER_CLASSES = [EcoLogitsGenAIExternalAPIServer]
 EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI]
 EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob]
 SERVER_CLASSES = [Server, GPUServer]
@@ -61,12 +62,12 @@ ALL_EFOOTPRINT_CLASSES = (
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES + EXTERNAL_API_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed, RecurrentServerNeed] + RECURRENT_EDGE_COMPONENT_NEED_CLASSES
         + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES + EXTERNAL_API_JOB_CLASSES
-        + [Network] + SERVER_CLASSES + [Storage, System])
+        + [Network] + SERVER_CLASSES + EXTERNAL_API_SERVER_CLASSES + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [
     UsageJourneyStep, UsageJourney, Device, Country, UsagePattern, EdgeUsageJourney, EdgeFunction,
     EdgeUsagePattern, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed, EdgeComponent,
-    EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, Storage, System]
+    EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage, System]
 
 ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}
 ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}

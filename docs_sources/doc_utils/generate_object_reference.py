@@ -13,8 +13,8 @@ from efootprint.abstract_modeling_classes.explainable_recurrent_quantities impor
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
-    serverless_server, on_premise_gpu_server, video_streaming, web_application, genai_model,
-    video_streaming_job, web_application_job, genai_model_job, manually_written_job, custom_gpu_job, edge_computer,
+    serverless_server, on_premise_gpu_server, video_streaming, genai_model,
+    video_streaming_job, genai_model_job, manually_written_job, custom_gpu_job, edge_computer,
     edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload,
     cpu_component, ram_component, edge_device, ram_need, cpu_need, storage_need, edge_device_need,
     recurrent_server_need)
@@ -30,13 +30,16 @@ def return_class_str(input_obj):
 
 
 def obj_to_md(input_obj, attr_name):
+    def format_label(label: str):
+        return label.capitalize().replace(" from e-footprint hypothesis", "")
+
     if attr_name == "name":
         return f"""### name\nA human readable description of the object."""
     elif isinstance(input_obj, ModelingObject):
         obj_class = return_class_str(input_obj)
         return f"### {attr_name}\nAn instance of [{obj_class}]({obj_class}.md)."
     elif isinstance(input_obj, ExplainableQuantity):
-        return f"### {attr_name}\n{input_obj.label.capitalize()} in {input_obj.value.units}."
+        return f"### {attr_name}\n{format_label(input_obj.label)} in {input_obj.value.units}."
     elif isinstance(input_obj, list):
         if isinstance(input_obj[0], ModelingObject):
             obj_class = return_class_str(input_obj[0])
@@ -44,16 +47,18 @@ def obj_to_md(input_obj, attr_name):
         else:
             return "this shouldn’t happen"
     elif isinstance(input_obj, EmptyExplainableObject):
-        return (f"### {attr_name}\n{input_obj.label.capitalize()}. "
+        return (f"### {attr_name}\n{format_label(input_obj.label)}. "
                 f"Can be an EmptyExplainableObject in which case the optimum number of instances will be computed,"
                 f" or an ExplainableQuantity with a dimensionless value, in which case e-footprint will raise an error "
                 f"if the object needs more instances than available.")
     elif isinstance(input_obj, ExplainableHourlyQuantities):
-        return f"### {attr_name}\n{input_obj.label.capitalize()}, in hourly timeseries data."
+        return f"### {attr_name}\n{format_label(input_obj.label)}, in hourly timeseries data."
     elif isinstance(input_obj, ExplainableRecurrentQuantities):
-        return (f"### {attr_name}\n{input_obj.label.capitalize()}, in typical week of hourly timeseries data, "
+        return (f"### {attr_name}\n{format_label(input_obj.label)}, in typical week of hourly timeseries data, "
                 f"starting on Monday at midnight.\n\n"
                 f"For example, {input_obj}")
+    elif isinstance(input_obj, ExplainableObject) and isinstance(input_obj.value, str):
+        return (f"### {attr_name}\n{format_label(input_obj.label)}. \n\nFor example, {input_obj.value}.")
 
     return f"### {attr_name}\ndescription to be done"
 
@@ -146,7 +151,7 @@ def generate_object_reference(automatically_update_yaml=False):
     for mod_obj in (
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
-            video_streaming, web_application, genai_model, video_streaming_job, web_application_job, genai_model_job,
+            video_streaming, genai_model, video_streaming_job, genai_model_job,
             storage, edge_usage_pattern, edge_function, edge_usage_journey, edge_computer, edge_storage, edge_process,
             recurrent_server_need, edge_process.storage_need, edge_process.compute_need, edge_process.ram_need,
             edge_appliance, edge_workload, edge_workload.workload_need, cpu_component, ram_component, edge_device,
