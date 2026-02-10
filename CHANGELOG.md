@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.0] - 2026-02-10
+
+### Changed
+- Introduced ExternalAPI class to model calls to external APIs like generative AI. The first implementation is EcoLogitsGenAIExternalAPI, which uses EcoLogits’ compute engine for modeling the impact of calling generative AI models. The old GenAIModel class has been deprecated in favor of the new class.
+
+### Removed
+- WebApplication class and its associated WebApplicationJob class, as the modeling of web applications wasn’t precise enough to be useful.
+
+### Fixed
+- In ServerBase, raise InsufficientCapacityError if available RAM or compute is zero, because there is a division by those numbers to compute raw number of instances.
+
+### Changed
+- Convert data calculated attributes in Job class to MB.
+
 ## [15.0.1] - 2026-02-03
 
 ### Fixed
