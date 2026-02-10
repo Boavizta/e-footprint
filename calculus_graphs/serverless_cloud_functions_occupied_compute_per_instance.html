@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_959db8 {
+             #mynetwork_769a64 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_959db8" class="card-body"></div>
+            <div id="mynetwork_769a64" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_959db8');
+                  var container = document.getElementById('mynetwork_769a64');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied CPU per serverless cloud functions instance including services", "label": "Occupied CPU per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied CPU per serverless cloud functions instance including services\n=\nBase cpu core consumption of serverless cloud functions from e-footprint\nhypothesis + + 0 (no value)\n=\n0.0 cpu_core + + 0 (no value)\n=\n0.0 cpu_core", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base cpu core\nconsumption of\nserverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base cpu core consumption of serverless cloud functions from e-footprint\nhypothesis = 0.0 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base cpu core consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied CPU per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied CPU per serverless cloud functions instance including services"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_c168c5 {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_c168c5" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_c168c5');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits", "label": "Ecologits\ngpu_required_count\nfor claude-opus-4-5\nfrom Ecologits", "shape": "dot", "size": 15, "title": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n32.0 dimensionless", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n133.5 billion", "x": -225.0, "y": 450}, {"color": "darkred", "id": "Generative AI model provider from e-footprint hypothesis", "label": "Generative AI model\nprovider from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model provider from e-footprint hypothesis = anthropic", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Model used from e-footprint hypothesis", "label": "Model used from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Model used from e-footprint hypothesis = claude-opus-4-5", "x": -150.0, "y": 300}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670.0 billion", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "label": "Output token count\nfor claude-opus-4-5\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 from e-footprint hypothesis = 1000.0\ndimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic from Ecologits\nllm_impacts function\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic from Ecologits llm_impacts function)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.38 kilogram / kilowatt_hour", "x": 225.0, "y": 450}, {"color": null, "id": "Datacenter location for anthropic from Ecologits llm_impacts function", "label": "Datacenter location\nfor anthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Datacenter location for anthropic from Ecologits llm_impacts function\n=\nquery EcoLogits provider config (Generative AI model provider from e-footprint\nhypothesis)\n=\nquery EcoLogits provider config (anthropic)\n=\nUSA", "x": 150.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits"}, {"arrows": "to", "from": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Generative AI model provider from e-footprint hypothesis", "to": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function"}, {"arrows": "to", "from": "Model used from e-footprint hypothesis", "to": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function"}, {"arrows": "to", "from": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Generative AI model provider from e-footprint hypothesis", "to": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function"}, {"arrows": "to", "from": "Model used from e-footprint hypothesis", "to": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function"}, {"arrows": "to", "from": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Datacenter location for anthropic from Ecologits llm_impacts function", "to": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function"}, {"arrows": "to", "from": "Generative AI model provider from e-footprint hypothesis", "to": "Datacenter location for anthropic from Ecologits llm_impacts function"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

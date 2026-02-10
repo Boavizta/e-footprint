@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3350da {
+             #mynetwork_2a6387 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3350da" class="card-body"></div>
+            <div id="mynetwork_2a6387" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3350da');
+                  var container = document.getElementById('mynetwork_2a6387');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job request duration", "label": "Generative AI model\njob request duration", "shape": "dot", "size": 15, "title": "Generative AI model job request duration\n=\nGenerative AI model job output token count from e-footprint hypothesis * (GPU\nlatency per active parameter and output token from Ecologits * open-mistral-7b\nfrom mistralai nb of active parameters from Ecologits + Base GPU latency per\noutput_token from Ecologits)\n=\n1000.0 dimensionless * (0.0 nanosecond * 7300000000.0 dimensionless + 0.02\nsecond)\n=\n28154600000.0 nanosecond", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Generative AI model job output token count from e-footprint hypothesis", "label": "Generative AI model\njob output token\ncount from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model job output token count from e-footprint hypothesis = 1000.0\ndimensionless", "x": -225.0, "y": 300}, {"color": "darkred", "id": "GPU latency per active parameter and output token from Ecologits", "label": "GPU latency per\nactive parameter and\noutput token from\nEcologits", "shape": "dot", "size": 15, "title": "GPU latency per active parameter and output token from Ecologits = 0.0\nnanosecond", "x": -75.0, "y": 300}, {"color": null, "id": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "label": "open-mistral-7b from\nmistralai nb of\nactive parameters\nfrom Ecologits", "shape": "dot", "size": 15, "title": "open-mistral-7b from mistralai nb of active parameters from Ecologits\n=\nmistralai from e-footprint hypothesis query EcoLogits data with mistralai model\nused from e-footprint hypothesis\n=\nmistralai query EcoLogits data with open-mistral-7b\n=\n7300000000.0 dimensionless", "x": 75.0, "y": 300}, {"color": "darkred", "id": "Base GPU latency per output_token from Ecologits", "label": "Base GPU latency per\noutput_token from\nEcologits", "shape": "dot", "size": 15, "title": "Base GPU latency per output_token from Ecologits = 0.02 second", "x": 225.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job output token count from e-footprint hypothesis", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "GPU latency per active parameter and output token from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "open-mistral-7b from mistralai nb of active parameters from Ecologits", "to": "Generative AI model job request duration"}, {"arrows": "to", "from": "Base GPU latency per output_token from Ecologits", "to": "Generative AI model job request duration"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits)\n=\nduplicate (130.02 second)\n=\n130.02 second", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits", "to": "Ecologits generation_latency for claude-opus-4-5 from Ecologits"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

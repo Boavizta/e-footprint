@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2c83ec {
+             #mynetwork_cb5199 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_2c83ec" class="card-body"></div>
+            <div id="mynetwork_cb5199" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2c83ec');
+                  var container = document.getElementById('mynetwork_cb5199');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of serverless cloud functions instances", "label": "Hourly raw number of\nserverless cloud\nfunctions instances", "shape": "dot", "size": 15, "title": "Hourly raw number of serverless cloud functions instances\n=\nserverless cloud functions hour by hour ram need / Available RAM per serverless\ncloud functions instance max compared with serverless cloud functions hour by\nhour compute need / Available CPU per serverless cloud functions instance\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nGB_ram:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] / 28.8\ngigabyte_ram max compared with 26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in cpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] / 7.2 cpu_core\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "serverless cloud functions hour by hour ram need", "label": "serverless cloud\nfunctions hour by\nhour ram need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour ram need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 6.15 megabyte\n+ no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nGB_ram:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -393.75, "y": 900}, {"color": null, "id": "Available RAM per serverless cloud functions instance", "label": "Available RAM per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available RAM per serverless cloud functions instance\n=\nserverless cloud functions ram from Boavizta API cloud instances * serverless\ncloud functions utilization rate - Occupied RAM per serverless cloud functions\ninstance including services\n=\n32.0 gigabyte_ram * 0.9 dimensionless - 0.0 gigabyte_ram\n=\n28.8 gigabyte_ram", "x": -131.25, "y": 900}, {"color": null, "id": "serverless cloud functions hour by hour compute need", "label": "serverless cloud\nfunctions hour by\nhour compute need", "shape": "dot", "size": 15, "title": "serverless cloud functions hour by hour compute need\n=\nHourly Web application job average occurrences across usage patterns * from\ne-footprint analysis of Boavizta\u2019s Ecobenchmark data + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 0.08 cpu_core\n+ no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\ncpu_core:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 131.25, "y": 900}, {"color": null, "id": "Available CPU per serverless cloud functions instance", "label": "Available CPU per\nserverless cloud\nfunctions instance", "shape": "dot", "size": 15, "title": "Available CPU per serverless cloud functions instance\n=\nserverless cloud functions compute from Boavizta API cloud instances *\nserverless cloud functions utilization rate - Occupied CPU per serverless cloud\nfunctions instance including services\n=\n8.0 cpu_core * 0.9 dimensionless - 0.0 cpu_core\n=\n7.2 cpu_core", "x": 393.75, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "serverless cloud functions hour by hour ram need", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "Available RAM per serverless cloud functions instance", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "serverless cloud functions hour by hour compute need", "to": "Hourly raw number of serverless cloud functions instances"}, {"arrows": "to", "from": "Available CPU per serverless cloud functions instance", "to": "Hourly raw number of serverless cloud functions instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

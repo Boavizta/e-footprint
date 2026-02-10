@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c8f21b {
+             #mynetwork_a02a5f {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c8f21b" class="card-body"></div>
+            <div id="mynetwork_a02a5f" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c8f21b');
+                  var container = document.getElementById('mynetwork_a02a5f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Occupied RAM per serverless cloud functions instance including services", "label": "Occupied RAM per\nserverless cloud\nfunctions instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per serverless cloud functions instance including services\n=\nBase RAM consumption of serverless cloud functions from e-footprint hypothesis +\n+ 0 (no value)\n=\n0.0 gigabyte_ram + + 0 (no value)\n=\n0.0 gigabyte_ram", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "label": "Base RAM consumption\nof serverless cloud\nfunctions from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis =\n0.0 gigabyte_ram", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base RAM consumption of serverless cloud functions from e-footprint hypothesis", "to": "Occupied RAM per serverless cloud functions instance including services"}, {"arrows": "to", "from": "no value", "to": "Occupied RAM per serverless cloud functions instance including services"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
