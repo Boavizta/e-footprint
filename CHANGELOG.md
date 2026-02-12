@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.1] - 2026-02-12
+
+### Fixed
+- Fix EcoLogits dependency to force upgrades.
+- Add Dependabot configuration file to automate future EcoLogits updates.
+
 ## [16.0.0] - 2026-02-10
 
 ### Changed

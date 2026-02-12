@@ -5,7 +5,7 @@
 
 [tool.poetry]
 name = "efootprint"
-version = "16.0.0"
+version = "16.0.1"
 description = "Digital service environmental footprint model"
 authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"
@@ -40,14 +40,14 @@ exclude = '''
 
 [tool.poetry.dependencies]
 python = "^3.12"
-pint = '^0'
+pint = '^0.25'
 matplotlib = "^3.10"
 pytz = '2024.1'
 pyvis = '0.3.2'
 plotly = '5.19'
 pandas = '^2'
 requests = '^2.31'
-ecologits = "*"
+ecologits = "^0.9.2"
 boaviztapi = "^2"
 orjson = "^3.11"
 zstandard = "^0.23"
