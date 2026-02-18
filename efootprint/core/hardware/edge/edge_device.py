@@ -168,7 +168,7 @@ class EdgeDevice(ModelingObject):
                 total_energy_footprint += component.energy_footprint_per_usage_pattern[usage_pattern]
 
         self.energy_footprint_per_usage_pattern[usage_pattern] = total_energy_footprint.set_label(
-            f"{self.name} energy footprint for {usage_pattern.name}")
+            f"{self.name} energy footprint for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_usage_pattern(self):
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()

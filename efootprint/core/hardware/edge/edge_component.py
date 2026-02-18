@@ -120,7 +120,7 @@ class EdgeComponent(ModelingObject):
                 self.instances_energy_per_usage_pattern[usage_pattern] * usage_pattern.country.average_carbon_intensity)
 
         self.energy_footprint_per_usage_pattern[usage_pattern] = energy_footprint.set_label(
-            f"{self.name} energy footprint for {usage_pattern.name}")
+            f"{self.name} energy footprint for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_usage_pattern(self):
         """Calculate energy footprint per usage pattern."""
