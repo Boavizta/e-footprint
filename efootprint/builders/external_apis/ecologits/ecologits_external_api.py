@@ -218,8 +218,8 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
 
     def update_data_transferred(self):
         # One token is approximately 4 characters (4 bytes) + 1 byte json overhead
-        bytes_per_token = SourceValue(5 * u.B)
-        self.data_transferred = (bytes_per_token * self.output_token_count).set_label(
+        bytes_per_token = ExplainableQuantity(5 * u.B, label="Bytes per token")
+        self.data_transferred = (bytes_per_token * self.output_token_count).to(u.kB).set_label(
             f"Data transferred for {self.external_api.model_name}")
 
     def update_request_duration(self):
@@ -262,11 +262,15 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
             if ancestor in self.impacts.value:
                 ancestors[ancestor] = self.impacts.value[ancestor]
         formula = get_formula(attribute_name)
+        ecologits_unit = ECOLOGITS_UNIT_MAPPING[attribute_name]
+        value = attribute_value * ecologits_unit
+        if ecologits_unit == u.kWh and value.magnitude < 0.01:
+            value = value.to(u.Wh)
         attribute_explainable = EcoLogitsExplainableQuantity(
-            attribute_value * ECOLOGITS_UNIT_MAPPING[attribute_name],
+            value,
             f"Ecologits {attribute_name} for {self.external_api.model_name}",
             parent=self.impacts, operator="extraction", ancestors=dict(sorted(ancestors.items())), formula=formula,
-            source=ecologits_source)
+            source=compute_llm_impacts_dag_source)
         setattr(self, attribute_name, attribute_explainable)
 
 

@@ -28,8 +28,8 @@
       "explain_nested_tuples": null
     },
     "data_transferred": {
-      "value": 5000.0,
-      "unit": "byte",
+      "value": 5.0,
+      "unit": "kilobyte",
       "label": "Data transferred for gpt-4o",
       "direct_ancestors_with_id": [
         "('Test-Job', 'output_token_count', None)"
@@ -39,11 +39,7 @@
         {
           "value": 5.0,
           "unit": "byte",
-          "label": "unnamed source from e-footprint hypothesis",
-          "source": {
-            "name": "e-footprint hypothesis",
-            "link": null
-          }
+          "label": "Bytes per token"
         },
         "*",
         "('Test-Job', 'output_token_count', None)"
@@ -64,7 +60,7 @@
     "request_duration": {
       "value": 99.14607880459047,
       "unit": "second",
-      "label": "Ecologits generation_latency for gpt-4o from Ecologits",
+      "label": "Ecologits generation_latency for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'generation_latency', None)"
       ],
@@ -202,12 +198,12 @@
       ]
     },
     "gpu_energy": {
-      "value": 9.06377035298003e-05,
-      "unit": "kilowatt_hour",
-      "label": "Ecologits gpu_energy for gpt-4o from Ecologits",
+      "value": 0.0906377035298003,
+      "unit": "watt_hour",
+      "label": "Ecologits gpu_energy for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -231,10 +227,10 @@
     "generation_latency": {
       "value": 99.14607880459047,
       "unit": "second",
-      "label": "Ecologits generation_latency for gpt-4o from Ecologits",
+      "label": "Ecologits generation_latency for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -261,10 +257,10 @@
     "model_required_memory": {
       "value": 1056.0,
       "unit": "gigabyte",
-      "label": "Ecologits model_required_memory for gpt-4o from Ecologits",
+      "label": "Ecologits model_required_memory for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -284,10 +280,10 @@
     "gpu_required_count": {
       "value": 16.0,
       "unit": "dimensionless",
-      "label": "Ecologits gpu_required_count for gpt-4o from Ecologits",
+      "label": "Ecologits gpu_required_count for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -305,12 +301,12 @@
       "formula": "\ngpu_nb = math.ceil(model_required_memory / gpu_memory)\ngpu_required_count = 2 ** math.ceil(math.log2(gpu_nb))    # Round-up in base two\n"
     },
     "server_energy": {
-      "value": 0.001032771654214484,
-      "unit": "kilowatt_hour",
-      "label": "Ecologits server_energy for gpt-4o from Ecologits",
+      "value": 1.032771654214484,
+      "unit": "watt_hour",
+      "label": "Ecologits server_energy for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -331,12 +327,12 @@
       "formula": "\nserver_energy = (generation_latency / 3600) * server_power * (gpu_required_count / server_gpu_count) * (1 / batch_size)\n"
     },
     "request_energy": {
-      "value": 0.0029795698928295465,
-      "unit": "kilowatt_hour",
-      "label": "Ecologits request_energy for gpt-4o from Ecologits",
+      "value": 2.9795698928295464,
+      "unit": "watt_hour",
+      "label": "Ecologits request_energy for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -358,10 +354,10 @@
     "request_usage_gwp": {
       "value": 0.0011428140323947727,
       "unit": "kilogram",
-      "label": "Ecologits request_usage_gwp for gpt-4o from Ecologits",
+      "label": "Ecologits request_usage_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -381,10 +377,10 @@
     "server_gpu_embodied_gwp": {
       "value": 14024.0,
       "unit": "kilogram",
-      "label": "Ecologits server_gpu_embodied_gwp for gpt-4o from Ecologits",
+      "label": "Ecologits server_gpu_embodied_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
@@ -406,10 +402,10 @@
     "request_embodied_gwp": {
       "value": 0.00022963580794495064,
       "unit": "kilogram",
-      "label": "Ecologits request_embodied_gwp for gpt-4o from Ecologits",
+      "label": "Ecologits request_embodied_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
-        "name": "Ecologits",
-        "link": "https://github.com/genai-impact/ecologits"
+        "name": "Ecologits compute_llm_impacts_dag function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
       },
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
