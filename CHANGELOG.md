@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.2] - 2026-02-19
+
+### Fixed
+- Make ExplainableQuantity registration in ExplainableObject subclass registry more specific, so that EcoLogitsExplainableQuantities aren’t parsed as ExplainableQuantities.
+- ExternalAPI’s self_delete method to delete its server automatically, and EcoLogitsGenAIExternalAPIServer so that it handles the deletion without error (it recomputes before deleting, so must handle case where its external_api is gone).
+
+### Changed
+- Convert edge components and devices energy footprint to kg.
+- Improve EcoLogits calculations auditability by giving them a more precise source, and converting kWh to Wh when values are small.
+
 ## [16.0.1] - 2026-02-12
 
 ### Fixed

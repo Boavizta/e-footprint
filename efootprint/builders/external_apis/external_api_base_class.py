@@ -83,3 +83,7 @@ class ExternalAPI(ModelingObject):
     @property
     def energy_footprint(self) -> ExplainableHourlyQuantities:
         return self.server.energy_footprint
+
+    def self_delete(self):
+        super().self_delete()
+        self.server.self_delete()

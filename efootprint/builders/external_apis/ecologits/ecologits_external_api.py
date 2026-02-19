@@ -1,5 +1,5 @@
 import math
-from typing import List
+from typing import List, Optional
 
 from ecologits.electricity_mix_repository import electricity_mixes
 from ecologits.impacts.llm import compute_llm_impacts_dag
@@ -43,12 +43,22 @@ def _mean_value_or_range(value_or_range: ValueOrRange) -> float:
 
 class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
     @property
-    def external_api(self) -> "EcoLogitsGenAIExternalAPI":
-        return self.modeling_obj_containers[0]
+    def external_api(self) -> Optional["EcoLogitsGenAIExternalAPI"]:
+        if self.modeling_obj_containers:
+            return self.modeling_obj_containers[0]
+        return None
 
     @property
     def jobs(self) -> List["EcoLogitsGenAIExternalAPIJob"]:
-        return self.external_api.jobs
+        if self.external_api:
+            return self.external_api.jobs
+        return []
+    
+    @property
+    def external_api_model_name(self) -> str:
+        if self.external_api:
+            return str(self.external_api.model_name)
+        return "no external API"
 
     def update_instances_fabrication_footprint(self) -> None:
         instances_fabrication_footprint = EmptyExplainableObject()
@@ -57,7 +67,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
             instances_fabrication_footprint += job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
-            f"Instances fabrication footprint for {self.external_api.model_name}")
+            f"Instances fabrication footprint for {self.external_api_model_name}")
 
     def update_instances_energy(self) -> None:
         instances_energy = EmptyExplainableObject()
@@ -65,7 +75,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         for job in self.jobs:
             instances_energy += job.request_energy * job.hourly_occurrences_across_usage_patterns
 
-        self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api.model_name}")
+        self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
     def update_energy_footprint(self) -> None:
         energy_footprint = EmptyExplainableObject()
@@ -73,7 +83,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         for job in self.jobs:
             energy_footprint += job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns
 
-        self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api.model_name}")
+        self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):

@@ -160,6 +160,10 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
             self.assertGreater(len(models), 0)
             self.assertTrue(all(isinstance(m, SourceObject) for m in models))
 
+    def test_delete_external_api(self):
+        """Test that deleting the external API also deletes its server."""
+        self.external_api.self_delete()
+
 
 class TestEcoLogitsGenAIExternalAPIJob(TestCase):
     def setUp(self):
