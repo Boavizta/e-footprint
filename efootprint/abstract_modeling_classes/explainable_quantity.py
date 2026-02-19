@@ -8,7 +8,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.constants.units import get_unit
 
 
-@ExplainableObject.register_subclass(lambda d: "value" in d and "unit" in d)
+@ExplainableObject.register_subclass(lambda d: "value" in d and "unit" in d and "formula" not in d)
 class ExplainableQuantity(ExplainableObject):
     __slots__ = (
         '_ExplainableHourlyQuantities',

@@ -201,6 +201,7 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         self.job.compute_calculated_attributes()
         for ecologits_attr in ecologits_calculated_attributes:
             self.assertTrue(hasattr(self.job, ecologits_attr))
+            self.assertIsInstance(getattr(self.job, ecologits_attr), EcoLogitsExplainableQuantity)
 
     def test_calculated_attributes(self):
         calculated_attributes = [
