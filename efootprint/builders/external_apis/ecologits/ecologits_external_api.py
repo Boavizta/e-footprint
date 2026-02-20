@@ -276,6 +276,8 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
         value = attribute_value * ecologits_unit
         if ecologits_unit == u.kWh and value.magnitude < 0.01:
             value = value.to(u.Wh)
+        if ecologits_unit == u.kg and value.magnitude < 0.01:
+            value = value.to(u.g)
         attribute_explainable = EcoLogitsExplainableQuantity(
             value,
             f"Ecologits {attribute_name} for {self.external_api.model_name}",

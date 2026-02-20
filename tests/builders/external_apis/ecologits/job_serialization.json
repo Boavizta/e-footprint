@@ -352,8 +352,8 @@
       "formula": "\nrequest_energy = datacenter_pue * (server_energy + gpu_required_count * gpu_energy)\n"
     },
     "request_usage_gwp": {
-      "value": 0.0011428140323947727,
-      "unit": "kilogram",
+      "value": 1.1428140323947726,
+      "unit": "gram",
       "label": "Ecologits request_usage_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
         "name": "Ecologits compute_llm_impacts_dag function",
@@ -400,8 +400,8 @@
       "formula": "\nserver_gpu_embodied_gwp = (gpu_required_count / server_gpu_count) * server_embodied_gwp + gpu_required_count * gpu_embodied_gwp\n"
     },
     "request_embodied_gwp": {
-      "value": 0.00022963580794495064,
-      "unit": "kilogram",
+      "value": 0.22963580794495064,
+      "unit": "gram",
       "label": "Ecologits request_embodied_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
         "name": "Ecologits compute_llm_impacts_dag function",

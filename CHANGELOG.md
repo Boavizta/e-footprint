@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.3] - 2026-02-20
+
+### Changed
+- In EcoLogitsGenAIExternalAPIJob, set unit of EcoLogits calculated attributes to gCO2eq instead of kgCO2eq when values are small, to improve auditability of results.
+
 ## [16.0.2] - 2026-02-19
 
 ### Fixed
