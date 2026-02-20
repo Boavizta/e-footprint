@@ -248,6 +248,31 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
 
         os.remove(tmp_filepath)
 
+    def test_create_2_ecologits_external_api_jobs_then_delete_them(self):
+        """Test creating two jobs linked to the same external API, then deleting them."""
+        external_api = EcoLogitsGenAIExternalAPI(
+            name="Test EcoLogits API for Jobs deletion", provider=SourceObject("mistralai"),
+            model_name=SourceObject("open-mistral-7b"))
+        job1 = EcoLogitsGenAIExternalAPIJob(
+            name="Test Job 1", external_api=external_api, output_token_count=SourceValue(500 * u.dimensionless))
+        job2 = EcoLogitsGenAIExternalAPIJob(
+            name="Test Job 2", external_api=external_api, output_token_count=SourceValue(1500 * u.dimensionless))
+
+        self.assertIn(job1, external_api.jobs)
+        self.assertIn(job2, external_api.jobs)
+
+        job1.self_delete()
+        self.assertNotIn(job1, external_api.jobs)
+        self.assertIn(job2, external_api.jobs)
+
+        # There was a bug (resolved in efootprint 16.0.4) where serializing job2 wouldn’t work because
+        # the external API would have been recomputed after job2 had been recomputed.
+        # The serialization shouldn’t raise any error.
+        job2_serialization = job2.to_json(save_calculated_attributes=True)
+
+        job2.self_delete()
+        self.assertNotIn(job2, external_api.jobs)
+
 
 
 if __name__ == "__main__":

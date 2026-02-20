@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.4] - 2026-02-20
+
+### Fixed
+- Recomputation logic in ModelingObject’s self_delete. It would recompute all the computation chains of the attributes of the deleted object, when all that is necessary is only to compute the computation chain of the deleted object itself. This change significantly reduces the number of computations when deleting an object, and also prevents errors due to wrong recomputation order that can arise when adding computation chains that weren’t supposed to be added together. In particular, deleting an external api job would wrongly trigger recomputation of the external api object AFTER the recomputation of the potential other jobs linked to the same external api, which would lead to serialization problems because the external api jobs have attributes that depend on some external api attributes (which, being recomputed after, broke the natural computation order).
+
 ## [16.0.3] - 2026-02-20
 
 ### Changed

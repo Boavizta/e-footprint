@@ -55,8 +55,10 @@ class TestJob(TestCase):
         server.set_modeling_obj_container = MagicMock()
         job = Job.from_defaults("test job", server=server)
         server.contextual_modeling_obj_containers = [ContextualModelingObjectAttribute(server, job, "server")]
-        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
+                patch.object(Job, "networks", new_callable=PropertyMock) as mock_networks:
             mock_mod_obj_attributes.return_value = [server]
+            mock_networks.return_value = [network]
             job.trigger_modeling_updates = True
             job.self_delete()
             server.set_modeling_obj_container.assert_called_once_with(None, None)
