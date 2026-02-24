@@ -14,6 +14,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
+from efootprint.builders.external_apis.ecologits.ecologits_custom_external_api import EcoLogitsCustomGenAIExternalAPI
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIJob, ecologits_calculated_attributes)
 from efootprint.constants.units import u
@@ -304,6 +305,41 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
 
         job2.self_delete()
         self.assertNotIn(job2, external_api.jobs)
+
+
+class TestEcoLogitsCustomGenAIExternalAPI(TestCase):
+    def setUp(self):
+        self.external_api = EcoLogitsCustomGenAIExternalAPI.from_defaults(
+            "Custom EcoLogits API",
+            provider=SourceObject("openai"),
+            model_name=SourceObject("my-custom-model"),
+            custom_model_total_parameter_count=SourceValue(220 * u.billion),
+            custom_model_active_parameter_count=SourceValue(120 * u.billion),
+            custom_data_center_pue=SourceValue(1.15 * u.dimensionless),
+            custom_average_carbon_intensity=SourceValue(350 * u.g / u.kWh),
+        )
+
+    def test_compatible_jobs(self):
+        self.assertEqual([EcoLogitsGenAIExternalAPIJob], self.external_api.compatible_jobs())
+
+    def test_custom_parameters_are_used_for_calculated_attributes(self):
+        self.assertEqual(self.external_api.model_total_params.value, 220 * u.billion)
+        self.assertEqual(self.external_api.model_active_params.value, 120 * u.billion)
+        self.assertEqual(self.external_api.data_center_pue.value, 1.15 * u.dimensionless)
+        self.assertEqual(self.external_api.average_carbon_intensity.value.units, u.kg / u.kWh)
+        self.assertAlmostEqual(self.external_api.average_carbon_intensity.value.magnitude, 0.35)
+
+    def test_job_can_compute_impacts_with_custom_external_api(self):
+        job = EcoLogitsGenAIExternalAPIJob(
+            name="Custom external api job",
+            external_api=self.external_api,
+            output_token_count=SourceValue(1000 * u.dimensionless),
+        )
+
+        job.update_impacts()
+
+        self.assertIsNotNone(job.impacts)
+        self.assertIn("request_usage_gwp", job.impacts.value)
 
 
 
