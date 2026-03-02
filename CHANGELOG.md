@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.6] - 2026-03-03
+
+### Fixed
+- When upgrading system data dict from version 15 to version 16, create the EcoLogitsGenAIExternalAPIServer in the upgraded dict because it is created by the EcoLogitsGenAIExternalAPI. 
+
 ## [16.0.5] - 2026-03-02
 
 ### Updated

@@ -1,3 +1,4 @@
+import uuid
 from copy import deepcopy
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -274,14 +275,20 @@ def upgrade_version_15_to_16(system_dict, efootprint_classes_dict=None):
     if "GenAIModel" in system_dict:
         did_upgrade = True
         system_dict.setdefault("EcoLogitsGenAIExternalAPI", {})
+        system_dict.setdefault("EcoLogitsGenAIExternalAPIServer", {})
 
         for genai_model_id, genai_model_dict in list(system_dict["GenAIModel"].items()):
             new_external_api_id = genai_model_id
+            new_external_api_server_id = f"{new_external_api_id}_server"
             new_external_api_dict = {
                 "name": genai_model_dict.get("name"), "id": new_external_api_id,
-                "provider": genai_model_dict["provider"], "model_name": genai_model_dict["model_name"]}
+                "provider": genai_model_dict["provider"], "model_name": genai_model_dict["model_name"],
+                "server": new_external_api_server_id}
+            new_external_api_server_dict = {
+                "name": f"{genai_model_dict.get('name')} server", "id": new_external_api_server_id}
 
             system_dict["EcoLogitsGenAIExternalAPI"][new_external_api_id] = new_external_api_dict
+            system_dict["EcoLogitsGenAIExternalAPIServer"][new_external_api_server_id] = new_external_api_server_dict
 
         del system_dict["GenAIModel"]
 

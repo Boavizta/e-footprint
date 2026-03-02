@@ -536,7 +536,7 @@ class TestVersionUpgradeHandlers(TestCase):
         self.assertEqual(output_dict, expected_output)
 
     def test_upgrade_15_to_16_migrates_web_application_and_genai(self):
-        from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue, Sources
+        from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
         from efootprint.constants.units import u
         from efootprint.core.usage.job import Job
 
@@ -580,7 +580,14 @@ class TestVersionUpgradeHandlers(TestCase):
                     "id": "gaim_1",
                     "provider": "openai",
                     "model_name": "gpt-4o",
+                    "server": "gaim_1_server"
                 }
+            },
+            "EcoLogitsGenAIExternalAPIServer": {
+              "gaim_1_server": {
+                  "name": "LLM server",
+                  "id": "gaim_1_server"
+              }
             },
             "EcoLogitsGenAIExternalAPIJob": {
                 "gaij_1": {
