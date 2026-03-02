@@ -85,7 +85,7 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
             f"Recurrent storage needed for {self.name}")
 
     def after_init(self):
-        if not self.recurrent_edge_component_needs:
+        if not hasattr(self, "recurrent_edge_component_needs") or not self.recurrent_edge_component_needs:
             ram_need = RecurrentEdgeProcessRAMNeed(
                 name=f"{self.name} RAM need", edge_component=self.edge_device.ram_component)
             compute_need = RecurrentEdgeProcessCPUNeed(

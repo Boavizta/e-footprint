@@ -1,6 +1,8 @@
 from copy import deepcopy
 
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
+from efootprint.constants.units import u
 from efootprint.logger import logger
 
 
@@ -293,6 +295,11 @@ def upgrade_version_15_to_16(system_dict, efootprint_classes_dict=None):
             new_job_id = genai_job_dict.get("id", genai_job_id)
             new_job_dict = {"name": genai_job_dict.get("name"), "id": new_job_id, "external_api": external_api_id}
             new_job_dict["output_token_count"] = genai_job_dict.get("output_token_count")
+            new_job_dict["data_transferred"] = SourceValue(0 * u.MB).to_json()
+            new_job_dict["data_stored"] = SourceValue(0 * u.MB).to_json()
+            new_job_dict["request_duration"] = SourceValue(0 * u.s).to_json()
+            new_job_dict["compute_needed"] = SourceValue(0 * u.cpu_core).to_json()
+            new_job_dict["ram_needed"] = SourceValue(0 * u.GB_ram).to_json()
             system_dict["EcoLogitsGenAIExternalAPIJob"][new_job_id] = new_job_dict
 
         del system_dict["GenAIJob"]

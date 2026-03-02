@@ -588,6 +588,11 @@ class TestVersionUpgradeHandlers(TestCase):
                     "id": "gaij_1",
                     "external_api": "gaim_1",
                     "output_token_count": input_dict["GenAIJob"]["gaij_1"]["output_token_count"],
+                    "data_transferred": SourceValue(0 * u.MB).to_json(),
+                    "data_stored": SourceValue(0 * u.MB).to_json(),
+                    "request_duration": SourceValue(0 * u.s).to_json(),
+                    "compute_needed": SourceValue(0 * u.cpu_core).to_json(),
+                    "ram_needed": SourceValue(0 * u.GB_ram).to_json()
                 }
             },
         }

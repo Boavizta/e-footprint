@@ -157,7 +157,7 @@ class EdgeComputer(EdgeDevice):
             f"Structure fabrication carbon footprint of {self.name}")
 
     def after_init(self):
-        if not self.components:
+        if not hasattr(self, "components") or not self.components:
             ram_component = EdgeComputerRAMComponent(name=f"{self.name} RAM")
             cpu_component = EdgeComputerCPUComponent(name=f"{self.name} CPU")
 
