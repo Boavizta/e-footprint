@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [16.0.5] - 2026-03-02
+
+### Updated
+- Boaviztapi version 2.0.3 ==> small update in call_boaviztapi_from_package_dependency.
+
+### Fixed
+- Robustify json_to_system’s is_loaded_from_system_with_calculated_attributes setting logic and fix upgrade_version_15_to_16.
+
 ## [16.0.4] - 2026-02-20
 
 ### Fixed

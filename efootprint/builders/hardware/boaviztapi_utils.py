@@ -108,7 +108,7 @@ def call_boaviztapi_from_package_dependency(url, method="GET", params=None, json
     warnings.simplefilter("ignore", DeprecationWarning)
     warnings.simplefilter("ignore", UserWarning)
 
-    from boaviztapi.routers.cloud_router import instance_cloud_impact, server_get_all_provider_name, \
+    from boaviztapi.routers.cloud_router import instance_cloud_impact_from_model, server_get_all_provider_name, \
         server_get_all_archetype_name as server_get_all_archetype_name_cloud
     from boaviztapi.routers.server_router import (
         server_impact_from_model, server_get_all_archetype_name as server_get_all_archetype_name_server,
@@ -117,7 +117,7 @@ def call_boaviztapi_from_package_dependency(url, method="GET", params=None, json
     url_method_mapping = {
         "https://api.boavizta.org/v1/cloud/instance/all_providers": server_get_all_provider_name,
         "https://api.boavizta.org/v1/cloud/instance/all_instances": server_get_all_archetype_name_cloud,
-        "https://api.boavizta.org/v1/cloud/instance": instance_cloud_impact,
+        "https://api.boavizta.org/v1/cloud/instance": instance_cloud_impact_from_model,
         "https://api.boavizta.org/v1/server/": server_impact_from_model,
         "https://api.boavizta.org/v1/server/archetypes": server_get_all_archetype_name_server,
         "https://api.boavizta.org/v1/server/archetype_config": get_archetype_config,
