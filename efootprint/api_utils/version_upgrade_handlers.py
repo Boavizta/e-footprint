@@ -317,6 +317,12 @@ def upgrade_version_15_to_16(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_16_to_17(system_dict, efootprint_classes_dict=None):
+    # TODO: for next version upgrade logic, add in json to system tests a check that ensures that when saving again
+    # the same system dict is obtained (upgraded dict == saved dict after upgrade)
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
