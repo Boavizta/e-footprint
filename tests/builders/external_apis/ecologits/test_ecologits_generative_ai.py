@@ -11,7 +11,6 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
@@ -229,8 +228,6 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
                 self.assertIsInstance(ancestor, Quantity)
 
     def test_to_json(self):
-        for mod_obj in [self.external_api, self.external_api.server, self.job]:
-            mod_obj.id = css_escape(mod_obj.name)
         self.job.compute_calculated_attributes()
         root_dir = os.path.dirname(__file__)
         tmp_filepath = os.path.join(root_dir, f"job_serialization_tmp_file.json")

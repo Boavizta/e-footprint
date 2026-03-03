@@ -1,0 +1,3 @@
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+
+ModelingObject._use_name_as_id = True

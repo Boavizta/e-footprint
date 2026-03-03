@@ -131,6 +131,7 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
+    _use_name_as_id: bool = False
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
@@ -275,7 +276,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.trigger_modeling_updates = False
         self.name = name
-        self.id = str(uuid.uuid4())[:6]
+        self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
 
     @property

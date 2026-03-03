@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 import numpy as np
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
@@ -109,17 +108,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
-        edge_usage_pattern.id = css_escape(edge_usage_pattern.name)
-
         system = System("Edge system", [], edge_usage_patterns=[edge_usage_pattern])
-        mod_obj_list = [system] + system.all_linked_objects
-        for mod_obj in mod_obj_list:
-            if mod_obj != edge_usage_pattern:
-                mod_obj.id = css_escape(mod_obj.name)
-        for edge_process_need in edge_process.recurrent_edge_component_needs:
-            edge_process_need.id = css_escape(edge_process_need.name)
-        for edge_computer_component in edge_computer.components:
-            edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return system, start_date
 

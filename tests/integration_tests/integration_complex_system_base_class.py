@@ -1,11 +1,8 @@
 import os.path
 from copy import copy
 from datetime import datetime, timedelta, timezone
-import numpy as np
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-from pint import Quantity
 
-from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
@@ -124,20 +121,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                 [elt * 100 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], start_date)
         )
 
-        # Normalize usage pattern ids before computation is made because it is used as dictionary key in intermediary calculations
-        usage_pattern1.id = css_escape(usage_pattern1.name)
-        usage_pattern2.id = css_escape(usage_pattern2.name)
-        edge_usage_pattern.id = css_escape(edge_usage_pattern.name)
-
         system = System("system 1", [usage_pattern1, usage_pattern2], edge_usage_patterns=[edge_usage_pattern])
-        mod_obj_list = [system] + system.all_linked_objects
-        for mod_obj in mod_obj_list:
-            if mod_obj not in [usage_pattern1, usage_pattern2]:
-                mod_obj.id = css_escape(mod_obj.name)
-        for edge_process_need in edge_process.recurrent_edge_component_needs:
-            edge_process_need.id = css_escape(edge_process_need.name)
-        for edge_computer_component in edge_computer.components:
-            edge_computer_component.id = css_escape(edge_computer_component.name)
 
         return system, start_date
 

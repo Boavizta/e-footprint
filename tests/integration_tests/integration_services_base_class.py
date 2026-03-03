@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import EcoLogitsGenAIExternalAPI, \
     EcoLogitsGenAIExternalAPIJob
@@ -74,13 +73,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
-        usage_pattern.id = css_escape(usage_pattern.name)
-
         system = System("system 1", [usage_pattern], edge_usage_patterns=[])
-        mod_obj_list = [system] + system.all_linked_objects
-        for mod_obj in mod_obj_list:
-            if mod_obj != usage_pattern:
-                mod_obj.id = css_escape(mod_obj.name)
 
         return system, start_date
 

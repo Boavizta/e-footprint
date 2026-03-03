@@ -3,7 +3,6 @@ import os
 from datetime import datetime, timedelta, timezone
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import css_escape
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -62,15 +61,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             create_source_hourly_values_from_list(
                 [elt * 1000000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date))
 
-        # Normalize usage pattern id before computation is made because it is used as dictionary key in intermediary
-        # calculations
-        usage_pattern.id = css_escape(usage_pattern.name)
-
         system = System("system 1", [usage_pattern], edge_usage_patterns=[])
-        mod_obj_list = [system] + system.all_linked_objects
-        for mod_obj in mod_obj_list:
-            if mod_obj != usage_pattern:
-                mod_obj.id = css_escape(mod_obj.name)
 
         return system, start_date
 
@@ -341,7 +332,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_usage_journey(self):
         new_uj = UsageJourney("New version of daily Youtube usage", uj_steps=[self.uj_step_1])
-        new_uj.id = css_escape(new_uj.name)
         scenario = ObjectLinkScenario(
             name="update_usage_journey",
             updates_builder=[[self.usage_pattern.usage_journey, new_uj]],
