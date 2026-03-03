@@ -53,3 +53,7 @@ class EdgeUsageJourney(ModelingObject):
     @property
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(set([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return []

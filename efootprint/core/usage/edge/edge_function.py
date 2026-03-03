@@ -31,3 +31,7 @@ class EdgeFunction(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return []

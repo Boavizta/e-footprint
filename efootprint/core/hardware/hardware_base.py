@@ -23,8 +23,8 @@ class HardwareBase(ModelingObject):
         self.fraction_of_usage_time = fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return self.modeling_obj_containers
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
+        return []
 
 
 class InsufficientCapacityError(Exception):

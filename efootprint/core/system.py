@@ -8,6 +8,7 @@ from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.country import Country
+from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.hardware.network import Network
@@ -83,8 +84,9 @@ class System(ModelingObject):
         start = perf_counter()
         logger.info(f"Starting computing {self.name} modeling")
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
-        # System is automatically added back to computation chain by optimize_mod_objs_computation_chain
         optimized_chain = optimize_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
+        if len(optimized_chain) == 0 or optimized_chain[-1] != self:
+            optimized_chain.append(self)
         self.launch_mod_objs_computation_chain(optimized_chain)
         all_objects = self.all_linked_objects
         nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
@@ -142,6 +144,10 @@ class System(ModelingObject):
     @property
     def edge_usage_journeys(self) -> List[EdgeUsageJourney]:
         return list(set([eup.edge_usage_journey for eup in self.edge_usage_patterns]))
+
+    @property
+    def devices(self) -> List[Device]:
+        return list(set(sum([up.devices for up in self.usage_patterns], start=[])))
 
     @property
     def countries(self) -> List[Country]:
@@ -213,8 +219,8 @@ class System(ModelingObject):
             "ExternalAPIs": {external_api: external_api.instances_fabrication_footprint for external_api in
                              self.external_apis},
             "Network": {},
-            "Devices": {usage_pattern: usage_pattern.instances_fabrication_footprint
-                        for usage_pattern in self.usage_patterns},
+            "Devices": {device: device.instances_fabrication_footprint
+                        for device in self.devices},
             "EdgeDevices": {edge_device: edge_device.instances_fabrication_footprint
                             for edge_device in self.edge_devices},
         }
@@ -228,8 +234,8 @@ class System(ModelingObject):
             "Storage": {storage: storage.energy_footprint for storage in self.storages},
             "ExternalAPIs": {external_api: external_api.energy_footprint for external_api in self.external_apis},
             "Network": {network: network.energy_footprint for network in self.networks},
-            "Devices": {usage_pattern: usage_pattern.energy_footprint
-                        for usage_pattern in self.usage_patterns},
+            "Devices": {device: device.energy_footprint
+                        for device in self.devices},
             "EdgeDevices": {edge_device: edge_device.energy_footprint
                             for edge_device in self.edge_devices},
         }
@@ -249,8 +255,8 @@ class System(ModelingObject):
                                 start=EmptyExplainableObject()).to(u.kg).set_label(
                 "External APIs total fabrication footprint"),
             "Network": EmptyExplainableObject(),
-            "Devices": sum([usage_pattern.instances_fabrication_footprint
-                           for usage_pattern in self.usage_patterns], start=EmptyExplainableObject()).to(u.kg).set_label(
+            "Devices": sum([device.instances_fabrication_footprint
+                           for device in self.devices], start=EmptyExplainableObject()).to(u.kg).set_label(
                 "Devices total fabrication footprint"),
             "EdgeDevices": sum([edge_device.instances_fabrication_footprint for edge_device in self.edge_devices],
                                start=EmptyExplainableObject()).to(u.kg).set_label(
@@ -271,7 +277,7 @@ class System(ModelingObject):
                                 ).to(u.kg).set_label("External APIs total energy footprint"),
             "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
                            ).to(u.kg).set_label("Network total energy footprint"),
-            "Devices": sum([usage_pattern.energy_footprint for usage_pattern in self.usage_patterns],
+            "Devices": sum([device.energy_footprint for device in self.devices],
                            start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint"),
             "EdgeDevices": sum([edge_device.energy_footprint for edge_device in self.edge_devices],
                                start=EmptyExplainableObject()).to(u.kg).set_label("Edge devices total energy footprint"),

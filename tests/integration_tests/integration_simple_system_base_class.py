@@ -112,7 +112,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(uj_step_1)
         self._test_input_change(
             uj_step_1.user_time_spent, SourceValue(10 * u.min), uj_step_1, "user_time_spent",
-            calculated_attributes_that_should_be_updated=[uj.duration, usage_pattern.energy_footprint])
+            calculated_attributes_that_should_be_updated=[uj.duration, usage_pattern.devices[0].energy_footprint])
         self._test_variations_on_obj_inputs(
             server, attrs_to_skip=["fraction_of_usage_time", "server_type", "fixed_nb_of_instances"],
             special_mult={
@@ -204,7 +204,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.storage.base_storage_need = initial_base_storage_need
         self.storage.fixed_nb_of_instances = initial_storage_fixed_nb_of_instances
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern.devices[0]])
         self.assertEqual(initial_storage_need, self.storage.storage_needed)
         self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
 
@@ -315,7 +315,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             name="update_jobs",
             updates_builder=[[self.uj_step_1.jobs, self.uj_step_1.jobs + [new_job]]],
             expected_changed=[self.storage, self.server, self.network],
-            expected_unchanged=[self.usage_pattern],
+            expected_unchanged=[self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
 
@@ -335,7 +335,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         scenario = ObjectLinkScenario(
             name="update_usage_journey",
             updates_builder=[[self.usage_pattern.usage_journey, new_uj]],
-            expected_changed=[self.storage, self.server, self.network, self.usage_pattern],
+            expected_changed=[self.storage, self.server, self.network, self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
 
@@ -343,7 +343,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         scenario = ObjectLinkScenario(
             name="update_usage_pattern_country",
             updates_builder=[[self.usage_pattern.country, Countries.MALAYSIA()]],
-            expected_changed=[self.network, self.usage_pattern],
+            expected_changed=[self.network, self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
 
@@ -370,7 +370,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self.uj.uj_steps.append(step_without_job)
 
         self.footprint_has_not_changed([self.server, self.storage])
-        self.footprint_has_changed([self.usage_pattern])
+        self.footprint_has_changed([self.usage_pattern.devices[0]])
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
 
         logger.warning("Setting user time spent of the new step to 0s")
@@ -434,7 +434,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                 [self.usage_pattern.network, new_network],
                 [self.usage_pattern.hourly_usage_journey_starts, new_hourly],
             ],
-            expected_changed=[self.network, self.usage_pattern],
+            expected_changed=[self.network, self.usage_pattern.devices[0]],
             post_assertions=post_assertions,
             post_reset_assertions=post_reset,
         )
@@ -456,8 +456,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(self.system.simulation, simulation)
-        self.usage_pattern.devices_energy_footprint.plot(plt_show=False, cumsum=False)
-        self.usage_pattern.devices_energy_footprint.plot(plt_show=False, cumsum=True)
+        self.usage_pattern.devices[0].energy_footprint.plot(plt_show=False, cumsum=False)
+        self.usage_pattern.devices[0].energy_footprint.plot(plt_show=False, cumsum=True)
         self.system.total_footprint.plot(plt_show=False, cumsum=False)
         self.system.total_footprint.plot(plt_show=False, cumsum=True)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))

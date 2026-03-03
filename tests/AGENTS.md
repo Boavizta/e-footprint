@@ -145,6 +145,9 @@ def test_something(self, mock_property):
     mock_property.return_value = expected_value
 ```
 
+### Object ids in tests
+The ModelingObject class has a _use_name_as_id class attribute. It is set to True in tests/conftest.py, so that in a testing context, the id of an object is directly derived from its name. This makes it possible to have predictable ids in tests without needing to set them manually, but it can create bugs when several objects have the same name (because object ids are used as keys in dictionaries). To avoid this, make sure to give each object a unique name in tests, even if the name itself is not important for the test.
+
 ## Test Naming and Documentation
 
 - **Method names**: `test_<method_or_attribute>_<scenario>`

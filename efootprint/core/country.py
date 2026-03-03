@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 
 import pytz
 
@@ -7,6 +7,9 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.constants.units import u
+
+if TYPE_CHECKING:
+    from efootprint.core.usage.usage_pattern import UsagePattern
 
 
 class Country(ModelingObject):
@@ -24,13 +27,17 @@ class Country(ModelingObject):
         self.timezone = timezone.set_label(f"{self.name} timezone")
 
     @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return self.usage_patterns
+
+    @property
     def attributes_that_shouldnt_trigger_update_logic(self):
         return super().attributes_that_shouldnt_trigger_update_logic + ["short_name"]
 
     @property
-    def usage_patterns(self):
+    def usage_patterns(self) -> List["UsagePattern"]:
         return self.modeling_obj_containers
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_patterns
+    def calculated_attributes(self) -> List[str]:
+        return []

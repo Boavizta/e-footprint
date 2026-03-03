@@ -1,5 +1,6 @@
 from time import perf_counter
 
+from copy import copy
 import numpy as np
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from pint import Quantity
@@ -30,6 +31,7 @@ from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
+from efootprint.core.country import Country
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz, Countries
 from efootprint.constants.units import u
@@ -45,66 +47,95 @@ def generate_big_system(
         nb_of_edge_usage_patterns=3, nb_of_edge_processes_and_server_needs_per_edge_computer=3,
         nb_of_jobs_per_server_need=1, nb_years=5):
     start = perf_counter()
+    used_names = set()
+
+    def unique(name: str) -> str:
+        if name not in used_names:
+            used_names.add(name)
+            return name
+        i = 2
+        candidate = f"{name} ({i})"
+        while candidate in used_names:
+            i += 1
+            candidate = f"{name} ({i})"
+        used_names.add(candidate)
+        return candidate
+
+    france_template = Countries.FRANCE()
+
+    def new_france(name: str) -> Country:
+        return Country(
+            name,
+            france_template.short_name,
+            copy(france_template.average_carbon_intensity),
+            copy(france_template.timezone),
+        )
+
     usage_patterns = []
     all_jobs = []
     for server_index in range(1, nb_of_servers_of_each_type + 1):
         autoscaling_server = Server.from_defaults(
-            f"server {server_index}",
+            unique(f"server {server_index}"),
             server_type=ServerTypes.autoscaling(),
-            storage=Storage.ssd(f"storage of autoscaling server {server_index}")
+            storage=Storage.ssd(unique(f"storage of autoscaling server {server_index}"))
         )
 
         serverless_server = BoaviztaCloudServer.from_defaults(
-            f"serverless cloud functions {server_index}",
+            unique(f"serverless cloud functions {server_index}"),
             server_type=ServerTypes.serverless(),
-            storage=Storage.ssd(f"storage of serverless server {server_index}")
+            storage=Storage.ssd(unique(f"storage of serverless server {server_index}"))
         )
 
         on_premise_gpu_server = GPUServer.from_defaults(
-            f"on premise GPU server {server_index}",
+            unique(f"on premise GPU server {server_index}"),
             server_type=ServerTypes.on_premise(),
-            storage=Storage.ssd(f"storage of on-premise GPU server {server_index}")
+            storage=Storage.ssd(unique(f"storage of on-premise GPU server {server_index}"))
         )
 
-        video_streaming = VideoStreaming.from_defaults(f"Video streaming service {server_index}", server=autoscaling_server)
+        video_streaming = VideoStreaming.from_defaults(
+            unique(f"Video streaming service {server_index}"), server=autoscaling_server
+        )
 
         for uj_index in range(1, nb_of_uj_per_each_server_type + 1):
             uj_steps = []
             for uj_step_index in range(1, nb_of_uj_steps_per_uj + 1):
                 video_streaming_job = VideoStreamingJob.from_defaults(
-                    f"Video streaming job", service=video_streaming, video_duration=SourceValue(2.5 * u.hour))
+                    unique(f"Video streaming job uj {uj_index} uj_step {uj_step_index} server {server_index}"),
+                    service=video_streaming, video_duration=SourceValue(2.5 * u.hour))
                 manually_written_job = Job.from_defaults(
-                    f"Manually defined job uj {uj_index} uj_step {uj_step_index} server {server_index}",
+                    unique(f"Manually defined job uj {uj_index} uj_step {uj_step_index} server {server_index}"),
                     server=serverless_server)
                 custom_gpu_job = GPUJob.from_defaults(
-                    f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}", server=on_premise_gpu_server)
+                    unique(f"Manually defined GPU job uj {uj_index} uj_step {uj_step_index} server {server_index}"),
+                    server=on_premise_gpu_server)
                 new_jobs = [video_streaming_job, manually_written_job, custom_gpu_job]
                 all_jobs += new_jobs
                 uj_steps.append(UsageJourneyStep(
-                    f"20 min streaming {uj_index} step {uj_step_index}",
+                    unique(f"20 min streaming server {server_index} uj {uj_index} step {uj_step_index}"),
                     user_time_spent=SourceValue(20 * u.min, source=None),
                     jobs=new_jobs
                     ))
 
-            usage_journey = UsageJourney(f"user journey {uj_index}", uj_steps=uj_steps)
+            usage_journey = UsageJourney(unique(f"user journey server {server_index} uj {uj_index}"), uj_steps=uj_steps)
 
             network = Network(
-                    f"web network {uj_index}",
+                    unique(f"web network server {server_index} uj {uj_index}"),
                     bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
             for up_nb in range(1, nb_of_up_per_uj + 1):
                 usage_patterns.append(
                     UsagePattern(
-                        f"usage pattern {up_nb} of uj {uj_index}",
+                        unique(f"usage pattern {up_nb} of uj {uj_index} of server {server_index}"),
                         usage_journey=usage_journey,
                         devices=[
-                            Device(name=f"device on which the user journey {uj_index} is made",
+                            Device(name=unique(f"device for server {server_index} uj {uj_index} up {up_nb}"),
                                    carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
                                    power=SourceValue(50 * u.W, source=None),
                                    lifespan=SourceValue(6 * u.year, source=None),
                                    fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
                         network=network,
                         country=country_generator(
-                            f"devices country {uj_index}", "its 3 letter shortname, for example FRA",
+                            unique(f"devices country server {server_index} uj {uj_index} up {up_nb}"),
+                            "its 3 letter shortname, for example FRA",
                             SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
                         hourly_usage_journey_starts=create_hourly_usage_from_frequency(
                             timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
@@ -116,7 +147,7 @@ def generate_big_system(
     working_job_id = 0
     for edge_usage_pattern_index in range(1, nb_of_edge_usage_patterns + 1):
         edge_storage = EdgeStorage(
-            f"Edge SSD storage {edge_usage_pattern_index}",
+            unique(f"Edge SSD storage {edge_usage_pattern_index}"),
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
             power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB),
             lifespan=SourceValue(6 * u.years),
@@ -126,7 +157,7 @@ def generate_big_system(
         )
 
         edge_computer = EdgeComputer(
-            f"Default edge device {edge_usage_pattern_index}",
+            unique(f"Default edge device {edge_usage_pattern_index}"),
             carbon_footprint_fabrication=SourceValue(60 * u.kg),
             power=SourceValue(30 * u.W),
             lifespan=SourceValue(8 * u.year),
@@ -141,7 +172,7 @@ def generate_big_system(
         recurrent_server_needs = []
         for edge_process_index in range(1, nb_of_edge_processes_and_server_needs_per_edge_computer + 1):
             edge_process = RecurrentEdgeProcess(
-                f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}",
+                unique(f"Default edge process {edge_process_index} for edge device {edge_usage_pattern_index}"),
                 edge_device=edge_computer,
                 recurrent_compute_needed=SourceRecurrentValues(
                     Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
@@ -156,36 +187,55 @@ def generate_big_system(
                 jobs.append(all_jobs[working_job_id % len(all_jobs)])
                 working_job_id += 1
             recurrent_server_need = RecurrentServerNeed.from_defaults(
-                f"Recurrent server need {edge_process_index} made by edge device {edge_usage_pattern_index}",
+                unique(f"Recurrent server need {edge_process_index} made by edge device {edge_usage_pattern_index}"),
                 edge_device=edge_computer, jobs=jobs)
             recurrent_server_needs.append(recurrent_server_need)
 
         edge_function = EdgeFunction(
-            f"Default edge function {edge_usage_pattern_index}",
+            unique(f"Default edge function {edge_usage_pattern_index}"),
             recurrent_edge_device_needs=edge_processes,
             recurrent_server_needs=recurrent_server_needs
         )
 
         edge_usage_journey = EdgeUsageJourney(
-            f"Default edge usage journey {edge_usage_pattern_index}",
+            unique(f"Default edge usage journey {edge_usage_pattern_index}"),
             edge_functions=[edge_function],
             usage_span=SourceValue(6 * u.year)
         )
         network = Network(
-            f"edge network {edge_usage_pattern_index}",
+            unique(f"edge network {edge_usage_pattern_index}"),
             bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
         edge_usage_pattern = EdgeUsagePattern(
-            f"Default edge usage pattern {edge_usage_pattern_index}",
+            unique(f"Default edge usage pattern {edge_usage_pattern_index}"),
             edge_usage_journey=edge_usage_journey,
             network=network,
-            country=Countries.FRANCE(),
+            country=new_france(unique(f"France for edge usage pattern {edge_usage_pattern_index}")),
             hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
                 timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
                 active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
                 )
         edge_usage_patterns.append(edge_usage_pattern)
 
-    system = System("system", usage_patterns=usage_patterns, edge_usage_patterns=edge_usage_patterns)
+    system = System(unique("system"), usage_patterns=usage_patterns, edge_usage_patterns=edge_usage_patterns)
+    all_objects = [system, *system.all_linked_objects]
+    unique_objects = []
+    seen_object_ids = set()
+    for obj in all_objects:
+        obj_id = getattr(obj, "id", id(obj))
+        if obj_id in seen_object_ids:
+            continue
+        seen_object_ids.add(obj_id)
+        unique_objects.append(obj)
+
+    object_names = [obj.name for obj in unique_objects]
+    name_counts = {}
+    for name in object_names:
+        name_counts[name] = name_counts.get(name, 0) + 1
+    duplicate_names = {name: count for name, count in name_counts.items() if count > 1}
+    if duplicate_names:
+        sorted_duplicates = sorted(duplicate_names.items(), key=lambda x: (-x[1], x[0]))
+        msg = ", ".join([f"{name} x{count}" for name, count in sorted_duplicates[:10]])
+        raise ValueError(f"Duplicate modeling object names detected ({len(sorted_duplicates)}): {msg}")
     logger.info(f"Finished generating system in {round((perf_counter() - start), 3)} seconds")
 
     timed_system_to_json(system, save_calculated_attributes=False,

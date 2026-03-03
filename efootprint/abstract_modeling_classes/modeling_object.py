@@ -675,8 +675,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
         impact_repartition_weight_sum = self.impact_repartition_weight_sum
-        if (isinstance(impact_repartition_weight_sum, ExplainableQuantity)
-                or isinstance(impact_repartition_weight_sum, EmptyExplainableObject)
+        if ((isinstance(impact_repartition_weight_sum, ExplainableQuantity)
+                or isinstance(impact_repartition_weight_sum, EmptyExplainableObject))
                 and impact_repartition_weight_sum.magnitude == 0):
             repartition_value = EmptyExplainableObject()
         elif (isinstance(impact_repartition_weight_sum, ExplainableHourlyQuantities)

@@ -87,14 +87,14 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         network1 = Network.from_defaults("network 1")
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         usage_pattern1 = UsagePattern(
-            "Usage pattern 1", uj, [Device.laptop()], network1,
+            "Usage pattern 1", uj, [Device.laptop("Laptop 1")], network1,
             Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]], start_date=start_date))
 
         network2 = Network.from_defaults("network 2")
         usage_pattern2 = UsagePattern(
-            "Usage pattern 2", uj, [Device.laptop()], network2,
+            "Usage pattern 2", uj, [Device.laptop("Laptop 2")], network2,
             Countries.FRANCE(),
             create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]], start_date=start_date))
@@ -187,6 +187,8 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
             expected_changed=[self.server1, self.storage_1],
         )
         self._run_object_link_scenario(scenario)
+        new_uj_step.self_delete()
+        new_job.self_delete()
 
     def run_test_add_new_usage_pattern_with_new_network_and_edit_its_hourly_uj_starts(self):
         new_network = Network.wifi_network()
@@ -297,7 +299,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
-            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
             data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
@@ -340,12 +342,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
-            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            "new job 3", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
             data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job.from_defaults(
-            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            "new job 4", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
             data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
@@ -370,12 +372,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
-            "new job", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            "new job 5", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
             data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job.from_defaults(
-            "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
+            "new job 6", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
             data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 

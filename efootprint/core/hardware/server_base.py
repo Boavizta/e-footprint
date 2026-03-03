@@ -271,8 +271,8 @@ class ServerBase(InfraHardware):
         weight = EmptyExplainableObject()
         if modeling_object in self.jobs:
             weight = (((modeling_object.compute_needed / modeling_object.server.compute) +
-                       (modeling_object.ram_needed / modeling_object.server.ram)
-                       * modeling_object.hourly_avg_occurrences_across_usage_patterns)).to(u.concurrent).set_label(
+                       (modeling_object.ram_needed / modeling_object.server.ram))
+                       * modeling_object.hourly_avg_occurrences_across_usage_patterns).to(u.concurrent).set_label(
                 f"{self.name} weight in {modeling_object.name} impact repartition")
         elif modeling_object in self.installed_services:
             weight = (

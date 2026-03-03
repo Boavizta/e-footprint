@@ -206,7 +206,7 @@ class JobBase(ModelingObject):
             weight = sum([up.utc_hourly_usage_journey_starts for up in modeling_obj.usage_patterns],
                          start=EmptyExplainableObject())
         elif modeling_obj in self.recurrent_server_needs:
-            weight = sum([modeling_obj.unitary_hourly_volume_per_usage_pattern.values()],
+            weight = sum([val for val in modeling_obj.unitary_hourly_volume_per_usage_pattern.values()],
                          start=EmptyExplainableObject())
         else:
             raise ValueError(f"Modeling object {modeling_obj.name} is neither a UsageJourneyStep nor a RecurrentServerNeed, "

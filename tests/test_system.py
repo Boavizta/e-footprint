@@ -6,14 +6,20 @@ import unittest
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+from efootprint.core.country import Country
+from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.storage import Storage
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.job import Job
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -39,7 +45,7 @@ class TestSystem(TestCase):
             "ExternalAPIs": {},
             "Storage": {self.storage: self._hourly_kg()},
             "Network": {},
-            "Devices": {self.usage_pattern: self._hourly_kg()},
+            "Devices": {self.device: self._hourly_kg()},
             "EdgeDevices": {}
         }
 
@@ -48,7 +54,7 @@ class TestSystem(TestCase):
             "Servers": {self.server: self._hourly_kg()},
             "ExternalAPIs": {},
             "Storage": {self.storage: self._hourly_kg()},
-            "Devices": {self.usage_pattern: self._hourly_kg()},
+            "Devices": {self.device: self._hourly_kg()},
             "Network": {self.network: self._hourly_kg()},
             "EdgeDevices": {}
         }
@@ -80,6 +86,8 @@ class TestSystem(TestCase):
             edge_storage.energy_footprint = storage_energy
         edge_computer.storage = edge_storage
         edge_computer.components = [edge_storage]
+        edge_computer.efootprint_class = EdgeComputer
+        edge_storage.efootprint_class = EdgeStorage
         return edge_computer, edge_storage
 
     def _make_edge_usage_pattern(
@@ -96,10 +104,14 @@ class TestSystem(TestCase):
         network_energy=None
     ):
         edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern.efootprint_class = EdgeUsagePattern
         edge_usage_pattern.jobs = []
         edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        edge_usage_journey.efootprint_class = EdgeUsageJourney
         edge_function = MagicMock(spec=EdgeFunction)
+        edge_function.efootprint_class = EdgeFunction
         edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
+        edge_resource_need.efootprint_class = RecurrentEdgeDeviceNeed
         edge_computer, edge_storage = self._make_edge_device(with_ids=with_ids)
 
         edge_resource_need.edge_device = edge_computer
@@ -171,45 +183,55 @@ class TestSystem(TestCase):
         self.usage_pattern.name = "usage_pattern"
         self.usage_pattern.id = self.usage_pattern
         self.usage_pattern.systems = []
-        device = MagicMock()
-        self.usage_pattern.devices = [device]
-        device.systems = []
+        self.usage_pattern.efootprint_class = UsagePattern
+        self.device = MagicMock(spec=Device)
+        self.device.name = "device"
+        self.device.efootprint_class = Device
+        self.usage_pattern.devices = [self.device]
+        self.device.systems = []
         self.usage_pattern.country = MagicMock()
         self.usage_pattern.country.systems = []
+        self.usage_pattern.country.efootprint_class = Country
         self.usage_pattern.usage_journey = MagicMock()
         self.usage_pattern.usage_journey.systems = []
         uj_step = MagicMock()
+        uj_step.efootprint_class = UsageJourneyStep
         self.usage_pattern.usage_journey.uj_steps = [uj_step]
         uj_step.systems = []
         self.usage_pattern.usage_journey.systems = []
+        self.usage_pattern.usage_journey.efootprint_class = UsageJourney
         self.server = MagicMock(spec=Server)
         self.server.name = "server"
         self.server.id = "server_id"
         self.server.systems = []
+        self.server.efootprint_class = Server
         self.storage = MagicMock()
         self.storage.name = "storage"
         self.storage.id = "storage_id"
         self.storage.systems = []
+        self.storage.efootprint_class = Storage
         self.server.storage = self.storage
         job = MagicMock(spec=Job)
         uj_step.jobs = [job]
         job.systems = []
         job.server = self.server
+        job.efootprint_class = Job
         self.network = MagicMock()
         self.network.name = "network"
         self.network.id = "network_id"
         self.network.systems = []
+        self.network.efootprint_class = Network
 
         self.usage_pattern.network = self.network
         self.usage_pattern.jobs = [job]
 
         self.server.instances_fabrication_footprint = self._hourly_kg()
         self.storage.instances_fabrication_footprint = self._hourly_kg()
-        self.usage_pattern.instances_fabrication_footprint = self._hourly_kg()
+        self.device.instances_fabrication_footprint = self._hourly_kg()
 
         self.server.energy_footprint = self._hourly_kg()
         self.storage.energy_footprint = self._hourly_kg()
-        self.usage_pattern.energy_footprint = self._hourly_kg()
+        self.device.energy_footprint = self._hourly_kg()
         self.network.energy_footprint = self._hourly_kg()
 
         self.system = System(
@@ -345,14 +367,14 @@ class TestSystem(TestCase):
                 self._hourly_kg()},
             "Storage": {self.storage: 
                 self._hourly_kg()},
-            "Devices": {self.usage_pattern: 
+            "Devices": {self.device:
                 self._hourly_kg()},
             "Network": {"networks_id": EmptyExplainableObject()}
         }
         expected_dict = {
             "Servers": {self.server: ExplainableQuantity(6 * u.kg, label="server")},
             "Storage": {self.storage: ExplainableQuantity(6 * u.kg, label="storage")},
-            "Devices": {self.usage_pattern: ExplainableQuantity(6 * u.kg, label="devices")},
+            "Devices": {self.device: ExplainableQuantity(6 * u.kg, label="devices")},
             "Network": {"networks_id": EmptyExplainableObject()},
         }
 
@@ -443,12 +465,20 @@ class TestSystem(TestCase):
     @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
     def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
             self, mock_storages, mock_servers):
-        usage_pattern = MagicMock(spec=UsagePattern, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        usage_pattern = MagicMock(spec=UsagePattern)
         usage_pattern.name = "usage pattern"
         usage_pattern.id = "usage pattern id"
-        usage_pattern2 = MagicMock(spec=UsagePattern, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        device = MagicMock(spec=Device, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        device.name = "device"
+        device.id = "device id"
+        usage_pattern.devices = [device]
+        usage_pattern2 = MagicMock(spec=UsagePattern)
         usage_pattern2.name = "usage pattern2"
         usage_pattern2.id = "usage pattern2 id"
+        device2 = MagicMock(spec=Device, instances_fabrication_footprint=SourceValue(1 * u.kg))
+        device2.name = "device2"
+        device2.id = "device2 id"
+        usage_pattern2.devices = [device2]
         server = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
         server.name = "server"
         server.id = "server id"
@@ -480,12 +510,20 @@ class TestSystem(TestCase):
     @patch("efootprint.core.system.System.networks", new_callable=PropertyMock)
     def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
             self, mock_networks, mock_storages, mock_servers):
-        usage_pattern = MagicMock(spec=UsagePattern, energy_footprint=SourceValue(1 * u.kg))
+        usage_pattern = MagicMock(spec=UsagePattern)
         usage_pattern.name = "usage pattern"
         usage_pattern.id = "usage pattern id"
-        usage_pattern2 = MagicMock(spec=UsagePattern, energy_footprint=SourceValue(1 * u.kg))
+        device = MagicMock(spec=Device, energy_footprint=SourceValue(1 * u.kg))
+        device.name = "device"
+        device.id = "device id"
+        usage_pattern.devices = [device]
+        usage_pattern2 = MagicMock(spec=UsagePattern)
         usage_pattern2.name = "usage pattern2"
         usage_pattern2.id = "usage pattern2 id"
+        device2 = MagicMock(spec=Device, energy_footprint=SourceValue(1 * u.kg))
+        device2.name = "device2"
+        device2.id = "device2 id"
+        usage_pattern2.devices = [device2]
         server = MagicMock(energy_footprint=SourceValue(1 * u.kg))
         server.name = "server"
         server.id = "server id"
@@ -524,14 +562,14 @@ class TestSystem(TestCase):
         fab_footprints = {
             "Servers": {self.server: ExplainableQuantity(6 * u.kg, "server")},
             "Storage": {self.storage: ExplainableQuantity(6 * u.kg, "storage")},
-            "Devices": {self.usage_pattern: ExplainableQuantity(6 * u.kg, "usage_pattern")},
+            "Devices": {self.device: ExplainableQuantity(6 * u.kg, "devices")},
             "Network": {self.network: ExplainableQuantity(0 * u.kg, "network")}
         }
 
         energy_footprints = {
             "Servers": {self.server: ExplainableQuantity(5 * u.kg, "server")},
             "Storage": {self.storage: ExplainableQuantity(5 * u.kg, "storage")},
-            "Devices": {self.usage_pattern: ExplainableQuantity(5 * u.kg, "usage_pattern")},
+            "Devices": {self.device: ExplainableQuantity(5 * u.kg, "devices")},
             "Network": {self.network: ExplainableQuantity(5 * u.kg, "network")},
         }
 
@@ -750,13 +788,13 @@ class TestSystem(TestCase):
         fab_footprints = system.fabrication_footprints
         self.assertIn("Devices", fab_footprints)
         self.assertIn("EdgeDevices", fab_footprints)
-        self.assertIn(self.usage_pattern, fab_footprints["Devices"])
+        self.assertIn(self.device, fab_footprints["Devices"])
         self.assertIn(edge_computer, fab_footprints["EdgeDevices"])
 
         energy_footprints = system.energy_footprints
         self.assertIn("Devices", energy_footprints)
         self.assertIn("EdgeDevices", energy_footprints)
-        self.assertIn(self.usage_pattern, energy_footprints["Devices"])
+        self.assertIn(self.device, energy_footprints["Devices"])
         self.assertIn(edge_computer, energy_footprints["EdgeDevices"])
 
     def test_get_objects_linked_to_edge_usage_patterns(self):

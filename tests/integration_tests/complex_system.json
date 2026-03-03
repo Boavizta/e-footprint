@@ -30,7 +30,7 @@
             },
             "usage_journey": "Usage-journey",
             "devices": [
-                "Default-laptop"
+                "Laptop-1"
             ],
             "network": "network-1",
             "country": "France"
@@ -51,7 +51,7 @@
             },
             "usage_journey": "Usage-journey",
             "devices": [
-                "Default-laptop"
+                "Laptop-2"
             ],
             "network": "network-2",
             "country": "France"
@@ -1085,13 +1085,13 @@
         }
     },
     "Device": {
-        "Default-laptop": {
-            "name": "Default laptop",
-            "id": "Default-laptop",
+        "Laptop-1": {
+            "name": "Laptop 1",
+            "id": "Laptop-1",
             "carbon_footprint_fabrication": {
                 "value": 156.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
+                "label": "Carbon footprint fabrication of Laptop 1 from Base ADEME_V19",
                 "source": {
                     "name": "Base ADEME_V19",
                     "link": "https://data.ademe.fr/datasets/base-carbone(r)"
@@ -1100,7 +1100,7 @@
             "power": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Power of Default laptop from e-footprint hypothesis",
+                "label": "Power of Laptop 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1109,7 +1109,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Default laptop from e-footprint hypothesis",
+                "label": "Lifespan of Laptop 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1118,7 +1118,47 @@
             "fraction_of_usage_time": {
                 "value": 7.0,
                 "unit": "hour / day",
-                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "label": "Laptop 1 fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "source": {
+                    "name": "DATA.AI - STATE OF MOBILE",
+                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+                }
+            }
+        },
+        "Laptop-2": {
+            "name": "Laptop 2",
+            "id": "Laptop-2",
+            "carbon_footprint_fabrication": {
+                "value": 156.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication of Laptop 2 from Base ADEME_V19",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Power of Laptop 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan of Laptop 2 from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "label": "Laptop 2 fraction of usage time from DATA.AI - STATE OF MOBILE",
                 "source": {
                     "name": "DATA.AI - STATE OF MOBILE",
                     "link": "https://www.data.ai/en/GB/state-of-mobile-2022"

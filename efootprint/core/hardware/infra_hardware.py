@@ -20,10 +20,6 @@ class InfraHardware(HardwareBase):
         self.instances_fabrication_footprint = EmptyExplainableObject()
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return []
-
-    @property
     def calculated_attributes(self):
         return (
             ["raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",

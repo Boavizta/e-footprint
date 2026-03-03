@@ -112,7 +112,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             name="update_service_servers",
             updates_builder=updates,
             expected_changed=[self.server, self.gpu_server, self.storage],
-            expected_unchanged=[self.network, self.usage_pattern],
+            expected_unchanged=[self.network, self.usage_pattern.devices[0]],
             post_assertions=post_assertions,
         )
         self._run_object_link_scenario(scenario)
@@ -141,7 +141,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
             name="update_service_jobs",
             updates_builder=updates,
             expected_changed=[self.storage, self.server, self.gpu_server],
-            expected_unchanged=[self.network, self.usage_pattern],
+            expected_unchanged=[self.network, self.usage_pattern.devices[0]],
             expect_total_change=False,
             post_assertions=post_assertions,
         )
@@ -154,12 +154,12 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         self.assertEqual(set(self.server.installed_services),
                          {new_service, self.video_streaming_service})
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server])
+        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server])
 
         logger.info("Uninstalling new service from server")
         new_service.self_delete()
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern, self.gpu_server, self.server])
+        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server, self.server])
 
     def run_test_try_to_update_model_provider_and_get_error(self):
         previous_provider = self.genai_service.provider
