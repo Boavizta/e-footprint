@@ -33,14 +33,14 @@ class UsagePattern(ModelingObject):
         self.country = country
 
     @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.usage_journey]
+
+    @property
     def calculated_attributes(self):
         return ["utc_hourly_usage_journey_starts", "nb_usage_journeys_in_parallel", "devices_energy",
                 "devices_energy_footprint", "devices_fabrication_footprint", "energy_footprint",
                 "instances_fabrication_footprint"]
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return self.jobs
 
     @property
     def jobs(self) -> List[Job]:

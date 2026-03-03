@@ -6,6 +6,7 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.core.hardware.infra_hardware import InfraHardware
@@ -101,7 +102,11 @@ class ServerBase(InfraHardware):
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.concurrent)
         self.storage = storage
-        
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
+        return [self.storage]
+
     @property
     def compute_type(self) -> str:
         return str(self.compute.value.units)
@@ -112,7 +117,8 @@ class ServerBase(InfraHardware):
                 "occupied_ram_per_instance", "occupied_compute_per_instance",
                 "available_ram_per_instance", "available_compute_per_instance",
                 "raw_nb_of_instances", "nb_of_instances",
-                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+                "instances_fabrication_footprint", "instances_energy", "energy_footprint",
+                "impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
 
     @property
     def resources_unit_dict(self):
@@ -120,10 +126,10 @@ class ServerBase(InfraHardware):
 
     @property
     def jobs(self) -> List["JobBase"]:
-        from efootprint.core.usage.job import JobBase
+        from efootprint.core.usage.job import DirectServerJob
 
         return (
-            [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, JobBase)]
+            [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, DirectServerJob)]
             + sum([service.jobs for service in self.installed_services], [])
             )
 
@@ -133,10 +139,6 @@ class ServerBase(InfraHardware):
         from efootprint.builders.services.service_base_class import Service
 
         return [modeling_obj for modeling_obj in self.modeling_obj_containers if isinstance(modeling_obj, Service)]
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        return [self.storage]
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
@@ -264,3 +266,24 @@ class ServerBase(InfraHardware):
             ServerTypes.serverless(): self.serverless_update_nb_of_instances
         }
         logic_mapping[self.server_type]()
+
+    def update_dict_element_in_impact_repartition_weights(self, modeling_object):
+        weight = EmptyExplainableObject()
+        if modeling_object in self.jobs:
+            weight = (((modeling_object.compute_needed / modeling_object.server.compute) +
+                       (modeling_object.ram_needed / modeling_object.server.ram)
+                       * modeling_object.hourly_avg_occurrences_across_usage_patterns)).to(u.concurrent).set_label(
+                f"{self.name} weight in {modeling_object.name} impact repartition")
+        elif modeling_object in self.installed_services:
+            weight = (
+                ((modeling_object.base_compute_consumption / modeling_object.server.compute)
+                    + (modeling_object.base_ram_consumption / modeling_object.server.ram))
+                * modeling_object.server.nb_of_instances).to(u.concurrent).set_label(
+                f"{self.name} weight in {modeling_object.name} impact repartition")
+
+        self.impact_repartition_weights[modeling_object] = weight
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for modeling_object in self.jobs + self.installed_services:
+            self.update_dict_element_in_impact_repartition_weights(modeling_object)

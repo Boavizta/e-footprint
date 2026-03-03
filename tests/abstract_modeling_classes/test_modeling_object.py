@@ -166,8 +166,8 @@ class TestModelingObject(unittest.TestCase):
         magic_system = MagicMock()
         mod_obj2.systems = [magic_system]
 
-        mod_obj1.efootprint_class = UsageJourney
-        mod_obj2.efootprint_class = UsagePattern
+        mod_obj1.efootprint_class = UsagePattern
+        mod_obj2.efootprint_class = UsageJourney
         mod_obj3.efootprint_class = Job
 
         attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
@@ -185,8 +185,8 @@ class TestModelingObject(unittest.TestCase):
         for mod_obj in [mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5]:
             mod_obj.systems = None
 
-        mod_obj5.efootprint_class = UsageJourney
-        mod_obj1.efootprint_class = UsagePattern
+        mod_obj5.efootprint_class = UsagePattern
+        mod_obj1.efootprint_class = UsageJourney
         mod_obj2.efootprint_class = Job
         mod_obj4.efootprint_class = Server
         mod_obj3.efootprint_class = Storage

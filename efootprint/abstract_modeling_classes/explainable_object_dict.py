@@ -43,6 +43,13 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
 
         return update_func
 
+    def update(self, __m=None, **kwargs):
+        if __m is not None:
+            for key, value in (__m.items() if hasattr(__m, 'items') else __m):
+                self[key] = value
+        for key, value in kwargs.items():
+            self[key] = value
+
     def __setitem__(self, key, value: ExplainableObject):
         if not isinstance(value, ExplainableObject) and not isinstance(value, EmptyExplainableObject):
             raise ValueError(

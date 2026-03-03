@@ -2,7 +2,7 @@ from datetime import timedelta
 from typing import Dict, List, Optional
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
@@ -16,7 +16,7 @@ from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from efootprint.core.usage.job import Job, JobBase
+from efootprint.core.usage.job import JobBase
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -35,6 +35,10 @@ class System(ModelingObject):
         self.check_no_object_to_link_is_already_linked_to_another_system()
         self.simulation = None
         self.set_initial_and_previous_footprints()
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return self.edge_usage_patterns + self.usage_patterns
 
     def set_initial_and_previous_footprints(self):
         self.previous_change = None
@@ -71,10 +75,6 @@ class System(ModelingObject):
                                  f" e-footprint bug at https://github.com/Boavizta/e-footprint/issues")
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.edge_usage_patterns + self.usage_patterns
-
-    @property
     def systems(self) -> List:
         return [self]
 
@@ -83,8 +83,9 @@ class System(ModelingObject):
         start = perf_counter()
         logger.info(f"Starting computing {self.name} modeling")
         mod_obj_computation_chain_excluding_self = self.mod_objs_computation_chain[1:]
-        self.launch_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
-        self.compute_calculated_attributes()
+        # System is automatically added back to computation chain by optimize_mod_objs_computation_chain
+        optimized_chain = optimize_mod_objs_computation_chain(mod_obj_computation_chain_excluding_self)
+        self.launch_mod_objs_computation_chain(optimized_chain)
         all_objects = self.all_linked_objects
         nb_of_calculated_attributes = sum([len(obj.calculated_attributes) for obj in all_objects])
         if nb_of_calculated_attributes > 0:

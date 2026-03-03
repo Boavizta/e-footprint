@@ -5,6 +5,7 @@ from typing import List, TYPE_CHECKING, Optional
 import numpy as np
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -129,7 +130,8 @@ class Storage(InfraHardware):
             "carbon_footprint_fabrication", "power", "storage_needed", "storage_freed",
             "automatic_storage_dumps_after_storage_duration", "storage_delta", "full_cumulative_storage_need",
             "raw_nb_of_instances", "nb_of_instances", "nb_of_active_instances", "instances_fabrication_footprint",
-            "instances_energy", "energy_footprint"]
+            "instances_energy", "energy_footprint", "impact_repartition_weights", "impact_repartition_weight_sum",
+            "impact_repartition"]
 
     @property
     def jobs(self) -> List["JobBase"]:
@@ -306,3 +308,11 @@ class Storage(InfraHardware):
         storage_energy = (active_storage_energy + idle_storage_energy)
 
         self.instances_energy = storage_energy.to(u.kWh).set_label(f"Storage energy for {self.name}")
+
+    def update_dict_element_in_impact_repartition_weights(self, job: "JobBase"):
+        self.impact_repartition_weights[job] = ExplainableQuantity(1 * u.dimensionless, label="Impact repartition weight")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_impact_repartition_weights(job)

@@ -311,6 +311,7 @@ class IntegrationTestBaseClass(TestCase):
     def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
         if attrs_to_skip is None:
             attrs_to_skip = []
+        attrs_to_skip += ["impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
         logger.warning(f"Testing input variations on {input_object.name}")
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:

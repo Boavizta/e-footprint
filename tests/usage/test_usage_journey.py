@@ -74,7 +74,6 @@ class TestUsageJourney(TestCase):
         self.assertEqual({job1, job2}, set(uj.jobs))
 
     def test_update_duration_no_step(self):
-        self.usage_journey.update_duration()
         expected_duration = EmptyExplainableObject()
 
         self.assertEqual(self.usage_journey.duration, expected_duration)

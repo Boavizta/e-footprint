@@ -87,3 +87,7 @@ class ExternalAPI(ModelingObject):
     def self_delete(self):
         super().self_delete()
         self.server.self_delete()
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return []

@@ -2,6 +2,15 @@
   "job": {
     "name": "Test Job",
     "id": "Test-Job",
+    "impact_repartition_weights": {},
+    "impact_repartition_weight_sum": {
+      "value": null,
+      "label": "Sum of Test Job impact repartition weights",
+      "direct_ancestors_with_id": [],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": null
+    },
+    "impact_repartition": {},
     "hourly_occurrences_per_usage_pattern": {},
     "hourly_avg_occurrences_per_usage_pattern": {},
     "hourly_data_transferred_per_usage_pattern": {},

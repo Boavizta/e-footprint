@@ -1,7 +1,7 @@
 import math
 from abc import abstractmethod
 from copy import copy
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Union
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -53,11 +53,16 @@ class JobBase(ModelingObject):
         self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
 
     @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return self.networks
+
+    @property
     def calculated_attributes(self) -> List[str]:
         return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
                 "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
                 "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
-                "hourly_data_stored_across_usage_patterns"]
+                "hourly_data_stored_across_usage_patterns", "impact_repartition_weights",
+                "impact_repartition_weight_sum", "impact_repartition"]
 
     @property
     def duration_in_full_hours(self):
@@ -96,10 +101,6 @@ class JobBase(ModelingObject):
     @property
     def networks(self) -> List["Network"]:
         return list(set(up.network for up in self.usage_patterns))
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return self.networks
 
     def update_dict_element_in_hourly_occurrences_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
@@ -198,6 +199,27 @@ class JobBase(ModelingObject):
     def update_hourly_data_stored_across_usage_patterns(self):
         self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_stored_per_usage_pattern", "data stored")
+
+    def update_dict_element_in_impact_repartition_weights(
+            self, modeling_obj: Union["UsageJourneyStep", "RecurrentServerNeed"]):
+        if modeling_obj in self.usage_journey_steps:
+            weight = sum([up.utc_hourly_usage_journey_starts for up in modeling_obj.usage_patterns],
+                         start=EmptyExplainableObject())
+        elif modeling_obj in self.recurrent_server_needs:
+            weight = sum([modeling_obj.unitary_hourly_volume_per_usage_pattern.values()],
+                         start=EmptyExplainableObject())
+        else:
+            raise ValueError(f"Modeling object {modeling_obj.name} is neither a UsageJourneyStep nor a RecurrentServerNeed, "
+                            f"cannot compute its impact repartition weight for job {self.name}.")
+
+        nb_of_occurrences_per_container = self.nb_of_occurrences_per_container
+        self.impact_repartition_weights[modeling_obj] = (weight * nb_of_occurrences_per_container[modeling_obj]).set_label(
+            f"{modeling_obj.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for modeling_obj in self.usage_journey_steps + self.recurrent_server_needs:
+            self.update_dict_element_in_impact_repartition_weights(modeling_obj)
 
 
 class DirectServerJob(JobBase):

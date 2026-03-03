@@ -106,6 +106,16 @@ class EmptyExplainableObject(ExplainableObject):
     def __rmul__(self, other):
         return self.__mul__(other)
 
+    def __truediv__(self, other):
+        if isinstance(other, self._ExplainableQuantity):
+            assert other.value.magnitude != 0, "Cannot divide by a non-zero ExplainableQuantity"
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="/")
+        elif isinstance(other, self._ExplainableHourlyQuantities):
+            assert other.value.magnitude.sum() != 0, "Cannot divide by a non-zero ExplainableHourlyQuantities"
+            return EmptyExplainableObject(left_parent=self, right_parent=other, operator="/")
+        else:
+            raise ValueError(f"Cannot divide EmptyExplainableObject by object of type {type(other)}")
+
     def __str__(self):
         return "no value"
 

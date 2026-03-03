@@ -31,6 +31,10 @@ class EdgeUsageJourney(ModelingObject):
         return self.edge_functions
 
     @property
+    def impact_repartition_weight(self):
+        return sum(eup.nb_edge_usage_journeys_in_parallel for eup in self.edge_usage_patterns)
+
+    @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return self.modeling_obj_containers
 

@@ -14,6 +14,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.logger import logger
 from tests import root_test_dir
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
@@ -126,13 +127,6 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         )
 
     def test_system_with_calculated_attr_loaded_from_unique_uj_without_uj_step_and_linked_to_up_doesnt_fail(self):
-        """
-        This is a special case where the unique calculated attribute will be the empty duration of the UsageJourney.
-        Even though the duration is empty, the json_to_system function should still understand it’s loading a system
-        with calculated attributes, and therefore not try to launch the after_init method of the UsageJourney. In fact,
-        this would fail because the duration, however empty, has links to the UsagePattern in its children, but the
-        UsagePattern is loaded after the UsageJourney in the json_to_system function.
-        """
         uj = UsageJourney("Usage journey", uj_steps=[])
         up = UsagePattern(
             "usage pattern", usage_journey=uj, devices=[], network=Network.wifi_network(), country=Countries.FRANCE(),
@@ -148,4 +142,5 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(system_filepath, "r") as file:
             system_dict = json.load(file)
 
+        logger.warning(f"Loading system from json")
         class_obj_dict, flat_obj_dict = json_to_system(system_dict)

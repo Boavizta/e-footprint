@@ -126,6 +126,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
         self._value = None
         self.json_compressed_value_data = None
 
+    @property
+    def end_date(self):
+        return self.start_date + timedelta(hours=len(self.value))
+
     def to(self, unit_to_convert_to: Unit):
         self.value = self.value.to(unit_to_convert_to)
         validate_timeseries_unit(self.value, self.label)
@@ -363,7 +367,15 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def __truediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
-            raise NotImplementedError
+            assert self.start_date >= other.start_date and self.end_date <= other.end_date, \
+                (f"To divide two ExplainableHourlyQuantities, the second one must cover at least the same time range "
+                 f"as the first one. Got start_date {self.start_date} and end_date {self.end_date} for the first one, "
+                 f"and start_date {other.start_date} and end_date {other.end_date} for the second one.")
+            aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
+                self.value, self.start_date, other.value, other.start_date)
+            # aligned_second_array should be equal to other.value since other covers at least the same time range as self
+            return ExplainableHourlyQuantities(
+                Quantity(aligned_first_array / aligned_second_array, self.unit), self.start_date, "", self, other, "/")
         elif isinstance(other, self._ExplainableQuantity):
             other_value_to_divide = other.value
             if not isinstance(other_value_to_divide.magnitude, np.float32):
@@ -376,7 +388,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def __rtruediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
-            raise NotImplementedError
+            return other.__truediv__(self)
         elif isinstance(other, self._ExplainableQuantity):
             other_value_to_divide = other.value
             if not isinstance(other_value_to_divide.magnitude, np.float32):

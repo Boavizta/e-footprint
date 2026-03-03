@@ -208,13 +208,15 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
 
     def test_calculated_attributes(self):
         calculated_attributes = [
-            'data_transferred', 'impacts', 'gpu_energy', 'generation_latency', 'model_required_memory',
-            'gpu_required_count', 'server_energy', 'request_energy', 'request_usage_gwp', 'server_gpu_embodied_gwp',
-            'request_embodied_gwp', 'request_duration',
-            'hourly_occurrences_per_usage_pattern', 'hourly_avg_occurrences_per_usage_pattern',
-            'hourly_data_transferred_per_usage_pattern', 'hourly_data_stored_per_usage_pattern',
-            'hourly_avg_occurrences_across_usage_patterns', 'hourly_data_transferred_across_usage_patterns',
-            'hourly_data_stored_across_usage_patterns', 'hourly_occurrences_across_usage_patterns'
+            "data_transferred", "impacts", "gpu_energy", "generation_latency", "model_required_memory",
+            "gpu_required_count", "server_energy", "request_energy", "request_usage_gwp", "server_gpu_embodied_gwp",
+            "request_embodied_gwp", "request_duration",
+            "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
+            "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
+            "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
+            "hourly_data_stored_across_usage_patterns",
+            "impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition",
+            "hourly_occurrences_across_usage_patterns"
         ]
         self.assertEqual(self.job.calculated_attributes, calculated_attributes)
 
@@ -236,8 +238,8 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
         with open(tmp_filepath, "w") as f:
             json.dump(serialization_dict, f, indent=2)
 
-        with (open(os.path.join(root_dir, f"job_serialization.json"), 'r') as ref_file,
-              open(tmp_filepath, 'r') as tmp_file):
+        with (open(os.path.join(root_dir, f"job_serialization.json"), "r") as ref_file,
+              open(tmp_filepath, "r") as tmp_file):
             ref_file_content = ref_file.read()
             tmp_file_content = tmp_file.read()
 

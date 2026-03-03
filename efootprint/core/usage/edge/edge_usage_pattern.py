@@ -30,13 +30,17 @@ class EdgeUsagePattern(ModelingObject):
         self.country = country
 
     @property
-    def calculated_attributes(self):
-        return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (
+            List["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]):
+        return self.recurrent_edge_device_needs + self.recurrent_server_needs
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (
-            List)["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]:
-        return self.recurrent_edge_device_needs + self.recurrent_server_needs
+    def impact_repartition_weight(self):
+        return self.nb_edge_usage_journeys_in_parallel
+
+    @property
+    def calculated_attributes(self):
+        return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:

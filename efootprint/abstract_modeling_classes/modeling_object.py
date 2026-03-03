@@ -10,6 +10,7 @@ from collections import defaultdict
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
@@ -20,9 +21,11 @@ from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwo
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import get_init_signature_params
+from efootprint.constants.units import u
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
 compute_times = defaultdict(float)
 
@@ -274,10 +277,18 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return []
 
     def __init__(self, name):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
         self.trigger_modeling_updates = False
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
+
+        if {"impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"}.issubset(
+                self.calculated_attributes):
+            self.impact_repartition_weights = ExplainableObjectDict()
+            self.impact_repartition_weight_sum = EmptyExplainableObject()
+            self.impact_repartition = ExplainableObjectDict()
 
     @property
     def readable_id(self):
@@ -382,7 +393,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return []
+        return ["impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
 
     @property
     def systems(self) -> List:
@@ -636,3 +647,49 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         # Used in RecurrentEdgeProcess class for generating entanglements so that whenever device is updated,
         # component needs are updated too.
         return {}
+
+    @property
+    def nb_of_occurrences_per_container(self) -> dict["ModelingObject", ExplainableQuantity]:
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        output_dict = {}
+        for contextual_mod_obj_container in self.contextual_modeling_obj_containers:
+            if contextual_mod_obj_container.modeling_obj_container is None:
+                continue
+            if contextual_mod_obj_container.modeling_obj_container not in output_dict:
+                output_dict[contextual_mod_obj_container.modeling_obj_container] = 1
+            else:
+                output_dict[contextual_mod_obj_container.modeling_obj_container] += 1
+
+        return {key: ExplainableQuantity(
+            value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
+            for key, value in output_dict.items()}
+
+    def update_impact_repartition_weight_sum(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        impact_repartition_weight_sum = sum(self.impact_repartition_weights.values(), start=EmptyExplainableObject())
+        self.impact_repartition_weight_sum = impact_repartition_weight_sum.set_label(
+            f"Sum of {self.name} impact repartition weights")
+
+    def update_dict_element_in_impact_repartition(self, modeling_obj: "ModelingObject"):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        impact_repartition_weight_sum = self.impact_repartition_weight_sum
+        if (isinstance(impact_repartition_weight_sum, ExplainableQuantity)
+                or isinstance(impact_repartition_weight_sum, EmptyExplainableObject)
+                and impact_repartition_weight_sum.magnitude == 0):
+            repartition_value = EmptyExplainableObject()
+        elif (isinstance(impact_repartition_weight_sum, ExplainableHourlyQuantities)
+              and impact_repartition_weight_sum.sum().magnitude == 0):
+            repartition_value = EmptyExplainableObject()
+        else:
+            repartition_value = (self.impact_repartition_weights[modeling_obj] / impact_repartition_weight_sum).to(
+            u.concurrent).set_label(f"{self.name} impact attribution to {modeling_obj.name}")
+
+        self.impact_repartition[modeling_obj] = repartition_value
+
+    def update_impact_repartition(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        self.impact_repartition = ExplainableObjectDict()
+        for modeling_obj in self.impact_repartition_weights:
+            self.update_dict_element_in_impact_repartition(modeling_obj)

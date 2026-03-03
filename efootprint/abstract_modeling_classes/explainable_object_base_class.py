@@ -43,13 +43,14 @@ def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject
 
 
 def retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
-        mod_obj: "ModelingObject", attr_name: str, key_in_dict: "ModelingObject"):
+        mod_obj: "ModelingObject", attr_name: str):
     update_func_name = f"update_dict_element_in_{attr_name}"
     update_func = getattr(mod_obj, update_func_name, None)
 
     if update_func is None:
         raise AttributeError(
-            f"No dict element update function associated to {attr_name} in {mod_obj.id}, please create it.")
+            f"No dict element update function associated to {attr_name} in {mod_obj.class_as_simple_str} {mod_obj.id}, "
+            f"please create it.")
 
     return update_func
 
@@ -414,7 +415,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 self.modeling_obj_container, self.attr_name_in_mod_obj_container)
         else:
             update_func = retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
-                self.modeling_obj_container, self.attr_name_in_mod_obj_container, self.key_in_dict)
+                self.modeling_obj_container, self.attr_name_in_mod_obj_container)
 
         return update_func
 

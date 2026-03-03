@@ -104,7 +104,8 @@ custom_gpu_job = GPUJob.from_defaults("Manually defined GPU job", server=on_prem
 streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
-    jobs=[genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job]
+    jobs=[genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job,
+          manually_written_job]
     )
 
 usage_journey = UsageJourney("user journey", uj_steps=[streaming_step])
@@ -272,3 +273,6 @@ edge_usage_pattern = EdgeUsagePattern(
 system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 
 logger.info(f"computation took {round((perf_counter() - start), 3)} seconds")
+print(autoscaling_server.impact_repartition)
+print(manually_written_job.impact_repartition)
+print(streaming_step.impact_repartition)
