@@ -53,8 +53,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     @staticmethod
     def generate_simple_edge_system():
         # Create edge objects
+        # Exaggerate power_per_storage_capacity so that changes have a more visible impact in tests.
         edge_storage = EdgeStorage.from_defaults(
-            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W))
+            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W),
+            power_per_storage_capacity=SourceValue(1.3 * u.W / u.GB))
         edge_computer = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
 
         edge_process = RecurrentEdgeProcess.from_defaults(
@@ -335,7 +337,9 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_add_edge_process(self):
         new_edge_process = RecurrentEdgeProcess.from_defaults(
-            "Additional edge process", edge_device=self.edge_computer)
+            "Additional edge process", edge_device=self.edge_computer,
+            recurrent_storage_needed=SourceRecurrentValues(
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)))
 
         scenario = ObjectLinkScenario(
             name="add_edge_process",

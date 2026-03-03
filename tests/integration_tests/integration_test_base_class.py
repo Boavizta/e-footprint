@@ -210,6 +210,7 @@ class IntegrationTestBaseClass(TestCase):
                 new_footprint = obj.energy_footprint
                 if obj.class_as_simple_str != "Network":
                     initial_footprint += self.initial_fab_footprints[obj]
+                    new_footprint += obj.instances_fabrication_footprint
 
                 self.assertNotEqual(initial_footprint, new_footprint)
                 logger.info(

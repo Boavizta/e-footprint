@@ -263,7 +263,7 @@
             },
             "power_per_storage_capacity": {
                 "value": 1.3,
-                "unit": "watt / terabyte",
+                "unit": "watt / gigabyte",
                 "label": "Power of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
