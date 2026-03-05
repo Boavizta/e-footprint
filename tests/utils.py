@@ -32,6 +32,8 @@ def check_all_calculus_graph_dependencies_consistencies(system: System):
         for attr in obj.calculated_attributes:
             calculated_attr_value = getattr(obj, attr)
             if isinstance(calculated_attr_value, dict):
+                if len(calculated_attr_value) == 0:
+                    continue
                 calculated_attr_value = list(calculated_attr_value.values())[0]
             obj_canonical_index = get_canonical_class_index(obj)
             for ancestor in calculated_attr_value.direct_ancestors_with_id:

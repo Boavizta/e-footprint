@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "16.0.6",
+    "efootprint_version": "17.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -254,6 +254,15 @@
         "Default-SSD-storage": {
             "name": "Default SSD storage",
             "id": "Default-SSD-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power of Default SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -279,24 +288,6 @@
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_per_storage_capacity": {
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "idle_power": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Idle power of Default SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
                 }
             },
             "storage_capacity": {
@@ -343,6 +334,15 @@
         "Web-server-SSD-storage": {
             "name": "Web server SSD storage",
             "id": "Web-server-SSD-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power of Web server SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -368,24 +368,6 @@
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "power_per_storage_capacity": {
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "label": "Power of Web server SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
-            "idle_power": {
-                "value": 0.0,
-                "unit": "watt",
-                "label": "Idle power of Web server SSD storage from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
                 }
             },
             "storage_capacity": {

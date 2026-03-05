@@ -284,10 +284,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
 
-        if {"impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"}.issubset(
-                self.calculated_attributes):
+        if "impact_repartition_weights" in self.calculated_attributes:
             self.impact_repartition_weights = ExplainableObjectDict()
+        if "impact_repartition_weight_sum" in self.calculated_attributes:
             self.impact_repartition_weight_sum = EmptyExplainableObject()
+        if "impact_repartition" in self.calculated_attributes:
             self.impact_repartition = ExplainableObjectDict()
 
     @property

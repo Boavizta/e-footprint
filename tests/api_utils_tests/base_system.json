@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "16.0.6",
+    "efootprint_version": "17.0.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -324,15 +324,6 @@
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
                 }
             },
-            "power_per_storage_capacity": {
-                "label": "Power of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "source": {
-                    "name": "Dirty secret of SSDs: embodied carbon",
-                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
-                }
-            },
             "lifespan": {
                 "label": "Lifespan of Default SSD storage from hypothesis",
                 "value": 6,
@@ -346,15 +337,6 @@
                 "label": "Default SSD storage fraction of usage time from hypothesis",
                 "value": 1,
                 "unit": "dimensionless",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "idle_power": {
-                "label": "Idle power of Default SSD storage from hypothesis",
-                "value": 0.1,
-                "unit": "watt",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

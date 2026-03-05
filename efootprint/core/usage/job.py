@@ -30,10 +30,6 @@ class JobBase(ModelingObject):
     def default_values(cls):
         pass
 
-    @classmethod
-    def attributes_that_can_have_negative_values(cls):
-        return ["data_stored"]
-
     def __init__(self, name: str, data_transferred: ExplainableQuantity, data_stored: ExplainableQuantity,
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):

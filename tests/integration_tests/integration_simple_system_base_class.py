@@ -44,7 +44,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
     def generate_simple_system():
         storage = Storage.from_defaults(
             "Default SSD storage", fixed_nb_of_instances=SourceValue(10000 * u.dimensionless),
-            idle_power=SourceValue(0.5 * u.W), data_storage_duration=SourceValue(3 * u.hours))
+            data_storage_duration=SourceValue(3 * u.hours))
         server = Server.from_defaults("Default server", server_type=ServerTypes.on_premise(), storage=storage,
                                       base_ram_consumption=SourceValue(300 * u.MB),
                                       base_compute_consumption=SourceValue(2 * u.cpu_core))
@@ -126,7 +126,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_input_change(server.server_type, ServerTypes.serverless(), server, "server_type")
         self._test_input_change(server.server_type, ServerTypes.autoscaling(), server, "server_type")
         self._test_variations_on_obj_inputs(
-            storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"],)
+            storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need", "power", "data_replication_factor",
+                                    "data_storage_duration"],)
         self._test_input_change(
             storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
         storage.fixed_nb_of_instances = EmptyExplainableObject()
@@ -140,7 +141,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._test_variations_on_obj_inputs(uj)
         self._test_variations_on_obj_inputs(network)
         self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
-        self._test_variations_on_obj_inputs(job_1, special_mult={"data_stored": 1000})
+        self._test_variations_on_obj_inputs(job_1, attrs_to_skip=["data_stored"])
         self._test_input_change(
             self.usage_pattern.hourly_usage_journey_starts,
             create_source_hourly_values_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]),
@@ -162,51 +163,6 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         update.reset_values()
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
-
-    def run_test_update_footprint_job_datastored_from_positive_value_to_negative_value(self):
-        logger.warning("Updating job data_stored from positive to negative value")
-        # Release storage nb of instances constraint to make impact clearer
-        initial_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
-        initial_base_storage_need = self.storage.base_storage_need
-        ModelingUpdate([[self.storage.fixed_nb_of_instances, EmptyExplainableObject()],
-        [self.storage.base_storage_need, SourceValue(50 * u.TB)]])
-        self.footprint_has_changed([self.storage])
-        storage_footprint_before_updating_job = (self.storage.instances_fabrication_footprint
-                                                 + self.storage.energy_footprint)
-
-        initial_upload_data_stored = self.job_2.data_stored
-        initial_storage_need = self.storage.storage_needed
-        initial_storage_freed = self.storage.storage_freed
-        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
-        # data_stored is positive so storage_freed will be an EmptyExplainableObject
-
-        self.job_2.data_stored = SourceValue(-initial_upload_data_stored.value)
-
-        self.assertNotEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
-        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
-        self.assertGreaterEqual(self.storage.storage_needed.min().magnitude, 0)
-        self.assertLessEqual(self.storage.storage_freed.max().magnitude, 0)
-
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.assertNotEqual(initial_storage_need, self.storage.storage_needed)
-        self.assertNotEqual(initial_storage_freed, self.storage.storage_freed)
-
-        self.assertNotEqual(self.storage.instances_fabrication_footprint + self.storage.energy_footprint,
-                            storage_footprint_before_updating_job)
-
-        logger.warning("Changing back to previous datastored value")
-        self.job_2.data_stored = initial_upload_data_stored
-
-        self.assertEqual(initial_storage_need.value_as_float_list, self.storage.storage_needed.value_as_float_list)
-        self.assertEqual(initial_storage_freed, self.storage.storage_freed)
-
-        self.storage.base_storage_need = initial_base_storage_need
-        self.storage.fixed_nb_of_instances = initial_storage_fixed_nb_of_instances
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern.devices[0]])
-        self.assertEqual(initial_storage_need, self.storage.storage_needed)
-        self.assertIsInstance(self.storage.storage_freed, EmptyExplainableObject)
 
     def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
         """Test that InsufficientCapacityError is raised for server and storage when capacities are exceeded."""
@@ -314,7 +270,8 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         scenario = ObjectLinkScenario(
             name="update_jobs",
             updates_builder=[[self.uj_step_1.jobs, self.uj_step_1.jobs + [new_job]]],
-            expected_changed=[self.storage, self.server, self.network],
+            # storage doesn’t change since it has fixed number of instances.
+            expected_changed=[self.server, self.network],
             expected_unchanged=[self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
@@ -335,7 +292,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         scenario = ObjectLinkScenario(
             name="update_usage_journey",
             updates_builder=[[self.usage_pattern.usage_journey, new_uj]],
-            expected_changed=[self.storage, self.server, self.network, self.usage_pattern.devices[0]],
+            expected_changed=[self.server, self.network, self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
 

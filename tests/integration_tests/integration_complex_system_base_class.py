@@ -6,7 +6,7 @@ from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server import Server, ServerTypes
 from efootprint.core.usage.job import Job
@@ -64,12 +64,17 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
 
     @staticmethod
     def generate_complex_system():
-        storage_1 = Storage.from_defaults("Default SSD storage 1")
-        storage_2 = Storage.from_defaults("Default SSD storage 2")
+        # Give low storage capacity to storages so that changes in jobs are sure to impact their number of instances
+        storage_1 = Storage.from_defaults("Default SSD storage 1", storage_capacity=SourceValue(100 * u.kB),
+                                          carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB))
+        storage_2 = Storage.from_defaults("Default SSD storage 2", storage_capacity=SourceValue(100 * u.kB),
+                                          carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB))
         server1 = Server.from_defaults("Server 1", storage=storage_1)
         server2 = Server.from_defaults("Server 2", server_type=ServerTypes.on_premise(), storage=storage_2)
         server3 = Server.from_defaults(
-            "Server 3", server_type=ServerTypes.serverless(), storage=Storage.ssd("Default SSD storage 3"))
+            "Server 3", server_type=ServerTypes.serverless(),
+            storage=Storage.ssd("Default SSD storage 3", storage_capacity=SourceValue(100 * u.kB),
+                                carbon_footprint_fabrication_per_storage_capacity=SourceValue(1 * u.kg / u.kB)))
 
         server1_job1 = Job.from_defaults("server 1 job 1", server=server1)
         uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[server1_job1])

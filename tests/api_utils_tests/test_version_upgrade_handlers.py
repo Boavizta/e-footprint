@@ -1,7 +1,7 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
-    upgrade_version_15_to_16
+    upgrade_version_15_to_16, upgrade_version_16_to_17
 
 from unittest import TestCase
 
@@ -605,5 +605,49 @@ class TestVersionUpgradeHandlers(TestCase):
         }
 
         output_dict = upgrade_version_15_to_16(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_16_to_17_clamps_negative_data_stored_and_removes_storage_power_attributes(self):
+        input_dict = {
+            "Job": {
+                "job_1": {"id": "job_1", "data_stored": {"value": -1, "unit": "MB", "label": "data stored"}},
+                "job_2": {"id": "job_2", "data_stored": {"value": 2, "unit": "MB", "label": "data stored"}},
+            },
+            "GPUJob": {
+                "gpu_job_1": {"id": "gpu_job_1", "data_stored": {"value": -3.5, "unit": "MB", "label": "data stored"}},
+            },
+            "VideoStreamingJob": {
+                "vs_job_1": {"id": "vs_job_1", "data_stored": {"value": 0, "unit": "MB", "label": "data stored"}},
+            },
+            "Storage": {
+                "st_1": {
+                    "id": "st_1",
+                    "name": "Storage 1",
+                    "power_per_storage_capacity": {"value": 1, "unit": "W / TB", "label": "deprecated"},
+                    "idle_power": {"value": 2, "unit": "W", "label": "deprecated"},
+                    "some_other_attr": "keep_me",
+                },
+                "st_2": {"id": "st_2", "name": "Storage 2", "some_other_attr": "keep_me_too"},
+            },
+        }
+        expected_output = {
+            "Job": {
+                "job_1": {"id": "job_1", "data_stored": {"value": 0, "unit": "MB", "label": "data stored"}},
+                "job_2": {"id": "job_2", "data_stored": {"value": 2, "unit": "MB", "label": "data stored"}},
+            },
+            "GPUJob": {
+                "gpu_job_1": {"id": "gpu_job_1", "data_stored": {"value": 0, "unit": "MB", "label": "data stored"}},
+            },
+            "VideoStreamingJob": {
+                "vs_job_1": {"id": "vs_job_1", "data_stored": {"value": 0, "unit": "MB", "label": "data stored"}},
+            },
+            "Storage": {
+                "st_1": {"id": "st_1", "name": "Storage 1", "some_other_attr": "keep_me"},
+                "st_2": {"id": "st_2", "name": "Storage 2", "some_other_attr": "keep_me_too"},
+            },
+        }
+
+        output_dict = upgrade_version_16_to_17(input_dict)
 
         self.assertEqual(output_dict, expected_output)

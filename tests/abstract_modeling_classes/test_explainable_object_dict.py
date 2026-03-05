@@ -80,9 +80,13 @@ class TestExplainableObjectDict(unittest.TestCase):
     def test_str(self):
         mock_modeling_obj = MagicMock(spec=ModelingObject)
         mock_modeling_obj.id = "mock_modeling_obj_id"
+        mock_modeling_obj.name = "mock_modeling_obj"
+        mock_modeling_obj.class_as_simple_str = "ModelingObject"
         self.dict_obj[mock_modeling_obj] = self.mock_explainable_obj
         str_output = str(self.dict_obj)
         self.assertTrue("mock_modeling_obj_id" in str_output)
+        self.assertTrue("mock_modeling_obj" in str_output)
+        self.assertTrue("ModelingObject" in str_output)
 
 if __name__ == "__main__":
     unittest.main()

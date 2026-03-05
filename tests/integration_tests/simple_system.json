@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "16.0.6",
+    "efootprint_version": "17.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -310,6 +310,15 @@
         "Default-SSD-storage": {
             "name": "Default SSD storage",
             "id": "Default-SSD-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power of Default SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -332,24 +341,6 @@
                 "value": 160.0,
                 "unit": "kilogram / terabyte",
                 "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "power_per_storage_capacity": {
-                "value": 1.3,
-                "unit": "watt / terabyte",
-                "label": "Power of Default SSD storage per storage capacity from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "idle_power": {
-                "value": 0.5,
-                "unit": "watt",
-                "label": "Idle power of Default SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

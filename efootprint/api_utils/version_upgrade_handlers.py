@@ -318,6 +318,24 @@ def upgrade_version_15_to_16(system_dict, efootprint_classes_dict=None):
 
 
 def upgrade_version_16_to_17(system_dict, efootprint_classes_dict=None):
+    for job_class in ["Job", "GPUJob", "VideoStreamingJob"]:
+        if job_class in system_dict:
+            for job_id in system_dict[job_class]:
+                job_dict = system_dict[job_class][job_id]
+                if job_dict["data_stored"]["value"] < 0:
+                    job_dict["data_stored"]["value"] = 0
+    if "Storage" in system_dict:
+        for storage_id in system_dict["Storage"]:
+            storage_dict = system_dict["Storage"][storage_id]
+            for key in ["power_per_storage_capacity", "idle_power"]:
+                if key in storage_dict:
+                    del storage_dict[key]
+        logger.info("Upgraded system dict from version 16 to 17: removed power_per_storage_capacity and idle_power "
+                    "from Storage objects")
+    return system_dict
+
+
+def upgrade_version_17_to_18(system_dict, efootprint_classes_dict=None):
     # TODO: for next version upgrade logic, add in json to system tests a check that ensures that when saving again
     # the same system dict is obtained (upgraded dict == saved dict after upgrade)
     return system_dict
@@ -331,4 +349,5 @@ VERSION_UPGRADE_HANDLERS = {
     13: upgrade_version_13_to_14,
     14: upgrade_version_14_to_15,
     15: upgrade_version_15_to_16,
+    16: upgrade_version_16_to_17,
 }

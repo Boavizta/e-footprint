@@ -154,7 +154,7 @@
             },
             "data_stored": {
                 "label": "Data stored of request upload from hypothesis",
-                "value": 300,
+                "value": -300,
                 "unit": "megabyte",
                 "source": {
                     "name": "e-footprint hypothesis",

@@ -48,9 +48,7 @@ logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)}
 storage = Storage(
     "storage",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
-    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    idle_power=SourceValue(0 * u.W, source=None),
     storage_capacity=SourceValue(1 * u.TB, source=None),
     data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
     data_storage_duration=SourceValue(2 * u.year, source=None),
@@ -133,7 +131,6 @@ usage_pattern = UsagePattern(
 edge_storage = EdgeStorage(
     "edge SSD storage",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
-    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
     idle_power=SourceValue(0.1 * u.W, source=None),
     storage_capacity=SourceValue(256 * u.GB, source=None),
@@ -202,7 +199,6 @@ cpu_component = EdgeCPUComponent(
 storage_component = EdgeStorage(
     "edge storage component",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
-    power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
     idle_power=SourceValue(0.1 * u.W, source=None),
     storage_capacity=SourceValue(512 * u.GB, source=None),
