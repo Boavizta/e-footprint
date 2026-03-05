@@ -85,7 +85,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
 
         for key, value in self.items():
             if isinstance(key, ModelingObject):
-                return_str += f"{key.id}: {value}, \n"
+                return_str += f"{key.class_as_simple_str} {key.name} ({key.id}): {value}, \n"
             elif isinstance(key, str):
                 return_str += f"{key}: {value}, \n"
             else:

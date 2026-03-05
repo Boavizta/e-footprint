@@ -661,9 +661,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             else:
                 output_dict[contextual_mod_obj_container.modeling_obj_container] += 1
 
-        return {key: ExplainableQuantity(
+        return ExplainableObjectDict({key: ExplainableQuantity(
             value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
-            for key, value in output_dict.items()}
+            for key, value in output_dict.items()})
 
     def update_impact_repartition_weight_sum(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict

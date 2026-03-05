@@ -375,7 +375,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 self.value, self.start_date, other.value, other.start_date)
             # aligned_second_array should be equal to other.value since other covers at least the same time range as self
             return ExplainableHourlyQuantities(
-                Quantity(aligned_first_array / aligned_second_array, self.unit), self.start_date, "", self, other, "/")
+                Quantity(aligned_first_array / aligned_second_array, self.unit / other.unit), self.start_date, "", self, other, "/")
         elif isinstance(other, self._ExplainableQuantity):
             other_value_to_divide = other.value
             if not isinstance(other_value_to_divide.magnitude, np.float32):

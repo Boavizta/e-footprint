@@ -272,16 +272,15 @@ class ServerBase(InfraHardware):
         if modeling_object in self.jobs:
             weight = (((modeling_object.compute_needed / modeling_object.server.compute) +
                        (modeling_object.ram_needed / modeling_object.server.ram))
-                       * modeling_object.hourly_avg_occurrences_across_usage_patterns).to(u.concurrent).set_label(
-                f"{self.name} weight in {modeling_object.name} impact repartition")
+                       * modeling_object.hourly_avg_occurrences_across_usage_patterns)
         elif modeling_object in self.installed_services:
             weight = (
                 ((modeling_object.base_compute_consumption / modeling_object.server.compute)
                     + (modeling_object.base_ram_consumption / modeling_object.server.ram))
-                * modeling_object.server.nb_of_instances).to(u.concurrent).set_label(
-                f"{self.name} weight in {modeling_object.name} impact repartition")
+                * modeling_object.server.nb_of_instances)
 
-        self.impact_repartition_weights[modeling_object] = weight
+        self.impact_repartition_weights[modeling_object] = weight.to(u.concurrent).set_label(
+                f"{modeling_object.name} weight in {self.name} impact repartition")
 
     def update_impact_repartition_weights(self):
         self.impact_repartition_weights = ExplainableObjectDict()

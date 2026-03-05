@@ -1,6 +1,7 @@
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -9,6 +10,7 @@ from efootprint.core.hardware.hardware_base import HardwareBase
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.usage.usage_journey_step import UsageJourneyStep
 
 
 class Device(HardwareBase):
@@ -87,8 +89,12 @@ class Device(HardwareBase):
         return self.modeling_obj_containers
 
     @property
+    def usage_journey_steps(self) -> List["UsageJourneyStep"]:
+        return list(set(sum([usage_pattern.usage_journey.uj_steps for usage_pattern in self.usage_patterns], [])))
+
+    @property
     def calculated_attributes(self) -> List[str]:
-        return ["energy_footprint", "instances_fabrication_footprint"]
+        return ["energy_footprint", "instances_fabrication_footprint"] + super().calculated_attributes
 
     def update_energy_footprint(self):
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
@@ -117,3 +123,16 @@ class Device(HardwareBase):
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"Devices fabrication footprint of {self.name}")
+
+    def update_dict_element_in_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
+        self.impact_repartition_weights[uj_step] = (
+                uj_step.user_time_spent
+                * sum([self.nb_of_occurrences_per_container[up] * uj_step.nb_of_occurrences_per_container[up.usage_journey]
+                       * up.utc_hourly_usage_journey_starts
+                       for up in self.usage_patterns if up in uj_step.usage_patterns])).set_label(
+                f"{uj_step.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for uj_step in self.usage_journey_steps:
+            self.update_dict_element_in_impact_repartition_weights(uj_step)
