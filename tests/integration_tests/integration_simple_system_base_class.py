@@ -561,3 +561,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_check_all_calculus_graph_dependencies_consistencies(self):
         check_all_calculus_graph_dependencies_consistencies(self.system)
+
+    def run_test_impact_repartition_sankey(self):
+        from efootprint.utils.impact_repartition_sankey import ImpactRepartitionSankey
+        sankey = ImpactRepartitionSankey(self.system)
+        fig = sankey.figure()
+        print('Nodes:', sankey.node_labels)
+        print('Links:', list(zip(sankey.link_sources, sankey.link_targets, sankey.link_values)))

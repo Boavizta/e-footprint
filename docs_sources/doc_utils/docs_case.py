@@ -14,6 +14,7 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEd
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from efootprint.utils.impact_repartition_sankey import ImpactRepartitionSankey
 
 start = perf_counter()
 
@@ -276,3 +277,7 @@ logger.info(f"computation took {round((perf_counter() - start), 3)} seconds")
 print(autoscaling_server.impact_repartition)
 print(manually_written_job.impact_repartition)
 print(streaming_step.impact_repartition)
+
+sankey = ImpactRepartitionSankey(system)
+fig = sankey.figure()
+fig.show()
