@@ -39,10 +39,6 @@ class UsageJourneyStep(ModelingObject):
     def networks(self) -> List["Network"]:
         return list(set([up.network for up in self.usage_patterns]))
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return ["impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
-
     def update_dict_element_in_impact_repartition_weights(self, usage_journey: "UsageJourney"):
         nb_of_occurrences_per_container = self.nb_of_occurrences_per_container
         weight = (sum([up.utc_hourly_usage_journey_starts for up in usage_journey.usage_patterns],

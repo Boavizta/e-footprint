@@ -1,5 +1,6 @@
 from typing import List, TYPE_CHECKING
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -40,7 +41,7 @@ class Network(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["energy_footprint"]
+        return ["energy_footprint"] + super().calculated_attributes
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -70,3 +71,14 @@ class Network(ModelingObject):
             energy_footprint += up_network_consumption * up.country.average_carbon_intensity
 
         self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
+
+    def update_dict_element_in_impact_repartition_weights(self, job: "JobBase"):
+        weight = job.data_transferred * job.hourly_avg_occurrences_across_usage_patterns
+
+        self.impact_repartition_weights[job] = weight.to(u.concurrent).set_label(
+            f"{job.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_impact_repartition_weights(job)

@@ -1,5 +1,7 @@
 from typing import List
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
@@ -31,7 +33,7 @@ class UsagePattern(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["utc_hourly_usage_journey_starts"]
+        return ["utc_hourly_usage_journey_starts"] + super().calculated_attributes
 
     @property
     def jobs(self) -> List[Job]:
@@ -42,3 +44,10 @@ class UsagePattern(ModelingObject):
             local_timezone=self.country.timezone)
 
         self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(f"{self.name} UTC")
+
+    def update_dict_element_in_impact_repartition_weights(self, country: "Country"):
+        self.impact_repartition_weights[country] = ExplainableQuantity(1 * u.dimensionless, label="Impact repartition weight")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        self.update_dict_element_in_impact_repartition_weights(self.country)
