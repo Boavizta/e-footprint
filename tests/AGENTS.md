@@ -103,14 +103,24 @@ def test_update_total_energy(self):
     self.assertEqual(360000, self.test_object.total_energy)
 ```
 
-### Always Use spec Parameter for Mocks
+### Prefer create_mod_obj_mock for ModelingObject Mocks
+When mocking ModelingObject subclasses, always use `create_mod_obj_mock` from `tests.utils` instead of raw `MagicMock`. It sets `spec`, `name`, `id`, and `explainable_object_dicts_containers` correctly:
+
 ```python
+from tests.utils import create_mod_obj_mock
+
 # ✅ CORRECT
-mock_device = MagicMock(spec=EdgeDevice)
+mock_device = create_mod_obj_mock(EdgeDevice, "My device", power=SourceValue(100 * u.W))
 
 # ❌ WRONG
-mock_device = MagicMock()
+mock_device = MagicMock(spec=EdgeDevice)
+mock_device.name = "My device"
+mock_device.id = "my-device"
+mock_device.explainable_object_dicts_containers = []
+mock_device.power = SourceValue(100 * u.W)
 ```
+
+If `create_mod_obj_mock` is missing an attribute that your test needs, prefer extending `create_mod_obj_mock` (in a backwards-compatible way) rather than patching at the test level. This keeps test utility centralized and avoids duplicating setup boilerplate across tests.
 
 ### Use Real ExplainableObjects, Not Mocks
 ```python

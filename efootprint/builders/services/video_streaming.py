@@ -29,9 +29,6 @@ class VideoStreaming(Service):
         self.static_delivery_cpu_cost = static_delivery_cpu_cost.set_label(f"{self.name} CPU cost per static stream")
         self.ram_buffer_per_user = ram_buffer_per_user.set_label(f"{self.name} RAM buffer size per user")
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return []
 
 class VideoStreamingJob(ServiceJob):
     default_values =  {

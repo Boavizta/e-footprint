@@ -16,7 +16,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.job import JobBase
+    from efootprint.core.usage.job import JobBase, DirectServerJob
     from efootprint.builders.services.service_base_class import Service
 
 
@@ -78,14 +78,6 @@ class ServerBase(InfraHardware):
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.hour_by_hour_compute_need = EmptyExplainableObject()
-        self.hour_by_hour_ram_need = EmptyExplainableObject()
-        self.available_compute_per_instance = EmptyExplainableObject()
-        self.available_ram_per_instance = EmptyExplainableObject()
-        self.raw_nb_of_instances = EmptyExplainableObject()
-        self.nb_of_instances = EmptyExplainableObject()
-        self.occupied_ram_per_instance = EmptyExplainableObject()
-        self.occupied_compute_per_instance = EmptyExplainableObject()
         self.server_type = server_type.set_label(f"Server type of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}").to(u.GB_ram)
@@ -103,6 +95,16 @@ class ServerBase(InfraHardware):
             f"User defined number of {self.name} instances").to(u.concurrent)
         self.storage = storage
 
+        self.hour_by_hour_compute_need = EmptyExplainableObject()
+        self.hour_by_hour_ram_need = EmptyExplainableObject()
+        self.available_compute_per_instance = EmptyExplainableObject()
+        self.available_ram_per_instance = EmptyExplainableObject()
+        self.raw_nb_of_instances = EmptyExplainableObject()
+        self.nb_of_instances = EmptyExplainableObject()
+        self.occupied_ram_per_instance = EmptyExplainableObject()
+        self.occupied_compute_per_instance = EmptyExplainableObject()
+        self.service_total_job_volumes = ExplainableObjectDict()
+
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return [self.storage]
@@ -118,6 +120,7 @@ class ServerBase(InfraHardware):
                 "available_ram_per_instance", "available_compute_per_instance",
                 "raw_nb_of_instances", "nb_of_instances",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint",
+                "service_total_job_volumes",
                 "impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
 
     @property
@@ -267,22 +270,42 @@ class ServerBase(InfraHardware):
         }
         logic_mapping[self.server_type]()
 
-    def update_dict_element_in_impact_repartition_weights(self, modeling_object):
-        weight = EmptyExplainableObject()
-        if modeling_object in self.jobs:
-            weight = (((modeling_object.compute_needed / modeling_object.server.compute) +
-                       (modeling_object.ram_needed / modeling_object.server.ram))
-                       * modeling_object.hourly_avg_occurrences_across_usage_patterns)
-        elif modeling_object in self.installed_services:
-            weight = (
-                ((modeling_object.base_compute_consumption / modeling_object.server.compute)
-                    + (modeling_object.base_ram_consumption / modeling_object.server.ram))
-                * modeling_object.server.nb_of_instances)
+    def update_dict_element_in_service_total_job_volumes(self, service):
+        total_volume = EmptyExplainableObject()
+        for job in service.jobs:
+            total_volume += job.hourly_avg_occurrences_across_usage_patterns
+        self.service_total_job_volumes[service] = total_volume.set_label(
+            f"Total job volume for {service.name}")
 
-        self.impact_repartition_weights[modeling_object] = weight.to(u.concurrent).set_label(
-                f"{modeling_object.name} weight in {self.name} impact repartition")
+    def update_service_total_job_volumes(self):
+        self.service_total_job_volumes = ExplainableObjectDict()
+        for service in self.installed_services:
+            self.update_dict_element_in_service_total_job_volumes(service)
+
+    def update_dict_element_in_impact_repartition_weights(self, job: "JobBase"):
+        from efootprint.core.usage.job import DirectServerJob
+        if isinstance(job, DirectServerJob):
+            weight = (
+                    ((job.compute_needed / job.server.compute) + (job.ram_needed / job.server.ram))
+                    * job.hourly_avg_occurrences_across_usage_patterns)
+        else:
+            from efootprint.builders.services.service_job_base_class import ServiceJob
+            assert isinstance(job, ServiceJob)
+            service = job.service
+            service_base_weight = (
+                ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
+                * self.nb_of_instances)
+            job_volume_share = (
+                job.hourly_avg_occurrences_across_usage_patterns / self.service_total_job_volumes[service])
+            weight = (
+                service_base_weight * job_volume_share
+                + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
+                * job.hourly_avg_occurrences_across_usage_patterns)
+
+        self.impact_repartition_weights[job] = weight.to(u.concurrent).set_label(
+                f"{job.name} weight in {self.name} impact repartition")
 
     def update_impact_repartition_weights(self):
         self.impact_repartition_weights = ExplainableObjectDict()
-        for modeling_object in self.jobs + self.installed_services:
-            self.update_dict_element_in_impact_repartition_weights(modeling_object)
+        for job in self.jobs:
+            self.update_dict_element_in_impact_repartition_weights(job)

@@ -60,3 +60,7 @@ class Service(ModelingObject):
     @property
     def jobs(self) -> List[ModelingObject]:
         return self.modeling_obj_containers
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return []
