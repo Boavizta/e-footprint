@@ -13,7 +13,7 @@ from efootprint.core.hardware.edge.edge_storage import EdgeStorage, NegativeCumu
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestEdgeStorage(TestCase):
@@ -151,8 +151,8 @@ class TestEdgeStorage(TestCase):
         """Test update_unitary_storage_delta_per_usage_pattern aggregates all patterns."""
         from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_2.name = "Pattern 2"
         mock_pattern_1.id = "pattern1"
@@ -176,7 +176,7 @@ class TestEdgeStorage(TestCase):
         """Test update_dict_element_in_unitary_storage_delta_per_usage_pattern with no processes."""
         mock_device = MagicMock(spec=EdgeComputer)
         mock_device.edge_processes = []
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.id = "test_pattern_id"
         mock_pattern.name = "Test Pattern"
         
@@ -202,7 +202,7 @@ class TestEdgeStorage(TestCase):
         from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
         # Create mock usage pattern
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.id = "test_pattern_id"
         mock_pattern.name = "Test Pattern"
 
@@ -239,7 +239,7 @@ class TestEdgeStorage(TestCase):
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test pattern id"
         mock_pattern.edge_usage_journey = mock_journey
@@ -271,7 +271,7 @@ class TestEdgeStorage(TestCase):
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(3 * u.hour)
         mock_device.edge_usage_journey = mock_journey
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test Pattern id"
         mock_pattern.edge_usage_journey = mock_journey
@@ -299,7 +299,7 @@ class TestEdgeStorage(TestCase):
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.usage_span = SourceValue(2 * u.hour)
         mock_device.edge_usage_journey = mock_journey
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test pattern id"
         mock_pattern.edge_usage_journey = mock_journey
@@ -327,7 +327,7 @@ class TestEdgeStorage(TestCase):
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculation."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test pattern id"
         

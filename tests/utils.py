@@ -14,6 +14,11 @@ def set_modeling_obj_containers(efootprint_obj: ModelingObject, mod_obj_containe
 
     efootprint_obj.contextual_modeling_obj_containers = mock_contextual_containers
 
+
+def initialize_explainable_object_dict_key(modeling_obj):
+    modeling_obj.explainable_object_dicts_containers = []
+    return modeling_obj
+
 def get_canonical_class_index(obj: ModelingObject):
     from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
     index = 0

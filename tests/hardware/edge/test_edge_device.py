@@ -16,7 +16,7 @@ from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestEdgeDevice(TestCase):
@@ -142,8 +142,8 @@ class TestEdgeDevice(TestCase):
 
     def test_edge_usage_patterns_property_single_need(self):
         """Test edge_usage_patterns property with single need."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
 
         mock_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
         mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -154,9 +154,9 @@ class TestEdgeDevice(TestCase):
 
     def test_edge_usage_patterns_property_multiple_needs_with_deduplication(self):
         """Test edge_usage_patterns property deduplicates patterns across needs."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_3 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_3 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
 
         mock_need_1 = MagicMock(spec=RecurrentEdgeDeviceNeed)
         mock_need_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -174,7 +174,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_structure_only(self):
         """Test fabrication footprint calculation with structure only (no component footprints)."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
         mock_pattern.nb_edge_usage_journeys_in_parallel = create_source_hourly_values_from_list(
@@ -197,7 +197,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_with_components(self):
         """Test fabrication footprint calculation with component contributions."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
         mock_pattern.nb_edge_usage_journeys_in_parallel = create_source_hourly_values_from_list(
@@ -225,7 +225,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_instances_energy_per_usage_pattern_no_components(self):
         """Test energy calculation with no component contributions."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -239,7 +239,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_instances_energy_per_usage_pattern_with_components(self):
         """Test energy calculation with component contributions."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -265,7 +265,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_energy_footprint_per_usage_pattern_no_components(self):
         """Test energy footprint calculation with no component contributions."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -279,7 +279,7 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_energy_footprint_per_usage_pattern_with_components(self):
         """Test energy footprint calculation with component contributions."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -305,9 +305,9 @@ class TestEdgeDevice(TestCase):
 
     def test_update_instances_energy(self):
         """Test summing energy across all usage patterns."""
-        mock_pattern_1 = MagicMock()
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_1.id = "pattern_1"
-        mock_pattern_2 = MagicMock()
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_2.id = "pattern_2"
 
         energy_1 = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
@@ -327,9 +327,9 @@ class TestEdgeDevice(TestCase):
 
     def test_update_energy_footprint(self):
         """Test summing energy footprint across all usage patterns."""
-        mock_pattern_1 = MagicMock()
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_1.id = "pattern_1"
-        mock_pattern_2 = MagicMock()
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_2.id = "pattern_2"
 
         footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
@@ -349,9 +349,9 @@ class TestEdgeDevice(TestCase):
 
     def test_update_instances_fabrication_footprint(self):
         """Test summing fabrication footprint across all usage patterns."""
-        mock_pattern_1 = MagicMock()
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_1.id = "pattern_1"
-        mock_pattern_2 = MagicMock()
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock())
         mock_pattern_2.id = "pattern_2"
 
         footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)

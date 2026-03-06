@@ -14,6 +14,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job
+from tests.utils import initialize_explainable_object_dict_key
 
 
 class TestStorage(TestCase):
@@ -45,7 +46,7 @@ class TestStorage(TestCase):
         # job stores [2, 4, 6] TB across time, replication=1, storage duration=1 hour
         # rate = [2, 4, 6] TB, auto_dumps = -shift([2, 4, 6], 1) = [0, -2, -4]
         # delta = [2, 2, 2], cumsum = [2, 4, 6]
-        job = MagicMock(spec=Job)
+        job = initialize_explainable_object_dict_key(MagicMock(spec=Job))
         job.name = "job1"
         job.id = "job1"
         job.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list(
@@ -61,7 +62,7 @@ class TestStorage(TestCase):
         """Test per-job cumulative applies data_replication_factor."""
         # rate = [1, 2, 3] * 3 (replication) = [3, 6, 9], storage_duration=5h (no dumps within 3h)
         # delta = [3, 6, 9], cumsum = [3, 9, 18]
-        job = MagicMock(spec=Job)
+        job = initialize_explainable_object_dict_key(MagicMock(spec=Job))
         job.data_stored = SourceValue(1 * u.TB)
         job.name = "job_replication"
         job.id = "job_replication"
@@ -80,11 +81,11 @@ class TestStorage(TestCase):
         # sum = [3, 2, 7, 5, 10], + base=5 → [8, 7, 12, 10, 15]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        job1 = MagicMock(spec=Job)
+        job1 = initialize_explainable_object_dict_key(MagicMock(spec=Job))
         job1.data_stored = SourceValue(1 * u.TB)
         job1.name = "positive_job"
         job1.id = "positive_job"
-        job2 = MagicMock(spec=Job)
+        job2 = initialize_explainable_object_dict_key(MagicMock(spec=Job))
         job2.data_stored = SourceValue(-1 * u.TB)
         job2.name = "negative_job"
         job2.id = "negative_job"

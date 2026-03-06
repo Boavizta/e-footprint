@@ -9,10 +9,9 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
-from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestEdgeWorkloadComponent(TestCase):
@@ -36,7 +35,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern aggregates workloads."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -63,8 +62,8 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
-        mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern1.name = "Pattern 1"
         mock_pattern2.name = "Pattern 2"
         mock_pattern1.id = "pattern1"
@@ -94,7 +93,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculates power based on workload."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern"
 
@@ -114,7 +113,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_with_empty_workload(self):
         """Test power calculation with EmptyExplainableObject workload."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern"
 
@@ -129,8 +128,8 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_unitary_power_per_usage_pattern(self):
         """Test update_unitary_power_per_usage_pattern updates all patterns."""
-        mock_pattern1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern1.name = "Pattern 1"
         mock_pattern2.name = "Pattern 2"
         mock_pattern1.id = "pattern1"

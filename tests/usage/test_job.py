@@ -15,7 +15,7 @@ from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_pattern import UsagePattern
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestJob(TestCase):
@@ -90,7 +90,7 @@ class TestJob(TestCase):
         uj1.uj_steps = [uj_step11]
         uj_step11.jobs = [self.job]
         uj_step11.user_time_spent = SourceValue(90 * u.min)
-        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
         usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -113,7 +113,7 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(40 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
         usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -136,7 +136,7 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(61 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
         usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -163,7 +163,7 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         uj_step13.jobs = [self.job, self.job]
         uj_step13.user_time_spent = SourceValue(1 * u.min)
-        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
         usage_pattern.name = "usage pattern"
         usage_pattern.usage_journey = uj1
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
@@ -181,7 +181,7 @@ class TestJob(TestCase):
 
     def test_compute_job_hourly_data_exchange(self):
         data_exchange = "data_stored"
-        usage_pattern = MagicMock(spec=UsagePattern)
+        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
         usage_pattern.name = "usage pattern"
         usage_pattern.id = "usage_pattern_id"
         hourly_avg_occs_per_up = ExplainableObjectDict(
@@ -197,8 +197,8 @@ class TestJob(TestCase):
         self.assertEqual(u.MB, job_hourly_data_exchange.unit)
             
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
-        usage_pattern1 = MagicMock()
-        usage_pattern2 = MagicMock()
+        usage_pattern1 = initialize_explainable_object_dict_key(MagicMock())
+        usage_pattern2 = initialize_explainable_object_dict_key(MagicMock())
         hourly_calc_attr_per_up = ExplainableObjectDict({
             usage_pattern1: create_source_hourly_values_from_list([1, 2, 5]),
             usage_pattern2: create_source_hourly_values_from_list([3, 2, 4])})
@@ -276,7 +276,7 @@ class TestJob(TestCase):
     def test_compute_hourly_job_occurrences_for_edge_usage_pattern(self):
         """Test update_dict_element_in_hourly_occurrences_per_usage_pattern for EdgeUsagePattern."""
         # Setup edge usage pattern
-        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
+        edge_usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         edge_usage_pattern.class_as_simple_str = "EdgeUsagePattern"
         edge_usage_pattern.name = "Edge Pattern"
 

@@ -12,6 +12,7 @@ from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdge
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.constants.units import u
+from tests.utils import initialize_explainable_object_dict_key
 
 
 class TestRecurrentEdgeStorageNeed(TestCase):
@@ -38,7 +39,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_monday_start(self):
         """Test update when starting on Monday 00:00 - no values should be zeroed."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern Monday"
         mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         # 2025-01-06 is a Monday
@@ -69,7 +70,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_non_monday_start(self):
         """Test update when not starting on Monday 00:00 - values should be zeroed until first Monday."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern Wednesday"
         mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         # 2025-01-01 is a Wednesday at 00:00

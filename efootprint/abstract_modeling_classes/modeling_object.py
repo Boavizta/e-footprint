@@ -141,6 +141,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                        is_loaded_from_system_with_calculated_attributes=False):
         new_obj = cls.__new__(cls)
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
+        new_obj.__dict__["explainable_object_dicts_containers"] = []
         new_obj.trigger_modeling_updates = False
         explainable_object_dicts_to_create_after_objects_creation = {}
         for attr_key, attr_value in object_json_dict.items():
@@ -283,6 +284,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.name = name
         self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:6]
         self.contextual_modeling_obj_containers = []
+        self.explainable_object_dicts_containers = []
 
         if "impact_repartition_weights" in self.calculated_attributes:
             self.impact_repartition_weights = ExplainableObjectDict()
@@ -454,7 +456,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
-        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers"]
+        return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
+                "explainable_object_dicts_containers"]
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         current_attr = getattr(self, name, None)
@@ -694,3 +697,29 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.impact_repartition = ExplainableObjectDict()
         for modeling_obj in self.impact_repartition_weights:
             self.update_dict_element_in_impact_repartition(modeling_obj)
+
+    @property
+    def attributed_fabrication_footprint(self):
+        if hasattr(self, "instances_fabrication_footprint"):
+            return self.instances_fabrication_footprint
+        else:
+            attributed_fabrication_footprint = EmptyExplainableObject()
+            for expl_dict in self.explainable_object_dicts_containers:
+                if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
+                    attributed_fabrication_footprint += (
+                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint)
+
+        return attributed_fabrication_footprint.to(u.kg).set_label(f"{self.name} attributed fabrication footprint")
+
+    @property
+    def attributed_energy_footprint(self):
+        if hasattr(self, "energy_footprint"):
+            return self.energy_footprint
+        else:
+            attributed_energy_footprint = EmptyExplainableObject()
+            for expl_dict in self.explainable_object_dicts_containers:
+                if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
+                    attributed_energy_footprint += (
+                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint)
+
+        return attributed_energy_footprint.to(u.kg).set_label(f"{self.name} attributed energy footprint")

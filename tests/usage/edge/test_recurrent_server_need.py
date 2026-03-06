@@ -16,7 +16,7 @@ from efootprint.core.usage.job import JobBase
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestRecurrentServerNeed(TestCase):
@@ -79,8 +79,8 @@ class TestRecurrentServerNeed(TestCase):
 
     def test_edge_usage_patterns_property_with_deduplication(self):
         """Test edge_usage_patterns deduplicates across journeys."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
-        mock_pattern_2 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
 
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -132,7 +132,7 @@ class TestRecurrentServerNeed(TestCase):
 
     def test_update_unitary_hourly_volume_per_usage_pattern(self):
         """Test updating unitary hourly volume for all usage patterns."""
-        mock_pattern_1 = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern_1.name = "Pattern 1"
         mock_pattern_1.id = "pattern_1"
         start_date_1 = datetime(2023, 1, 1, 0, 0, 0)

@@ -196,7 +196,8 @@ if __name__ == '__main__':
     from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
 
     system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
-
+    print(system.usage_patterns[0].attributed_fabrication_footprint.sum())
+    print(system.usage_patterns[0].attributed_energy_footprint.sum())
     sankey = ImpactRepartitionSankey(system)
     fig = sankey.figure()
     fig.show()

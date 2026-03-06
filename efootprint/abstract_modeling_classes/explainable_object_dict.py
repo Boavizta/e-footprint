@@ -19,6 +19,12 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         for value in self.values():
             value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
+        if new_parent_modeling_object is None:
+            for key in self:
+                if not isinstance(key, ModelingObject):
+                    continue
+                key.explainable_object_dicts_containers = [elt for elt in key.explainable_object_dicts_containers
+                                                           if id(elt) != id(self)]
 
     @property
     def all_ancestors_with_id(self):
@@ -60,6 +66,9 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
+        if (isinstance(key, ModelingObject)
+                and id(self) not in [id(elt) for elt in key.explainable_object_dicts_containers]):
+            key.explainable_object_dicts_containers.append(self)
 
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}

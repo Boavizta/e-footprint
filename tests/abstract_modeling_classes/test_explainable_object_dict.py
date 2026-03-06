@@ -5,12 +5,13 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from tests.utils import initialize_explainable_object_dict_key
 
 
 class TestExplainableObjectDict(unittest.TestCase):
 
     def setUp(self):
-        self.mock_modeling_obj = MagicMock(spec=ModelingObject)
+        self.mock_modeling_obj = initialize_explainable_object_dict_key(MagicMock(spec=ModelingObject))
         self.mock_modeling_obj.id = "mock_id"
         self.mock_modeling_obj.name = "mock_modeling_obj"
 
@@ -78,7 +79,7 @@ class TestExplainableObjectDict(unittest.TestCase):
         self.assertTrue("mock_id" in repr_output)
 
     def test_str(self):
-        mock_modeling_obj = MagicMock(spec=ModelingObject)
+        mock_modeling_obj = initialize_explainable_object_dict_key(MagicMock(spec=ModelingObject))
         mock_modeling_obj.id = "mock_modeling_obj_id"
         mock_modeling_obj.name = "mock_modeling_obj"
         mock_modeling_obj.class_as_simple_str = "ModelingObject"

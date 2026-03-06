@@ -11,7 +11,7 @@ from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import set_modeling_obj_containers
+from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
 
 
 class TestEdgeCPUComponent(TestCase):
@@ -61,7 +61,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -89,7 +89,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
@@ -110,7 +110,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculation based on compute workload."""
-        mock_pattern = MagicMock(spec=EdgeUsagePattern)
+        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
         mock_pattern.name = "Test Pattern"
         mock_pattern.id = "test_pattern_id"
 
