@@ -50,7 +50,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         video_streaming_service = VideoStreaming.from_defaults(
             "Youtube streaming service", server=server)
         genai_service = EcoLogitsGenAIExternalAPI.from_defaults(
-            "GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"))
+            "GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-4"))
 
         video_streaming_job = VideoStreamingJob.from_defaults(
             "Streaming job", service=video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
@@ -125,8 +125,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
 
         new_video_streaming_service = VideoStreaming.from_defaults(
             "New Youtube streaming service", server=new_server)
-        new_genai_service = EcoLogitsGenAIExternalAPI.from_defaults(
-            "New GenAI service", provider=SourceObject("openai"), model_name=SourceObject("gpt-3.5-turbo-1106"))
+        new_genai_service = self.genai_service.copy_with("New GenAI service")
 
         updates = [
             [self.direct_gpu_job.server, new_gpu_server],

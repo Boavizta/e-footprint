@@ -11,6 +11,7 @@ from ecologits.utils.range_value import ValueOrRange
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_dag_structure import ECOLOGITS_DEPENDENCY_GRAPH, get_formula
@@ -84,6 +85,16 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
             energy_footprint += job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns
 
         self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
+
+    def update_dict_element_in_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
+        self.impact_repartition_weights[job] = (
+                job.output_token_count * job.hourly_avg_occurrences_across_usage_patterns).set_label(
+            f"{job.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_impact_repartition_weights(job)
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):

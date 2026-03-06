@@ -644,7 +644,7 @@
             "output_token_count": {
                 "value": 1000.0,
                 "unit": "dimensionless",
-                "label": "Output token count for gpt-3.5-turbo-1106 from e-footprint hypothesis",
+                "label": "Output token count for gpt-4 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -666,7 +666,7 @@
                 }
             },
             "model_name": {
-                "value": "gpt-3.5-turbo-1106",
+                "value": "gpt-4",
                 "label": "Model used from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

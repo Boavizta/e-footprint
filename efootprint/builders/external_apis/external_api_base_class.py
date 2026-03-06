@@ -19,7 +19,8 @@ class ExternalAPIServer(ModelingObject):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+        return (["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+                + super().calculated_attributes)
 
     @abstractmethod
     def update_instances_fabrication_footprint(self) -> None:
@@ -31,6 +32,14 @@ class ExternalAPIServer(ModelingObject):
 
     @abstractmethod
     def update_energy_footprint(self) -> None:
+        pass
+
+    @abstractmethod
+    def update_dict_element_in_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
+        pass
+
+    @abstractmethod
+    def update_impact_repartition_weights(self):
         pass
 
 
@@ -83,6 +92,10 @@ class ExternalAPI(ModelingObject):
     @property
     def energy_footprint(self) -> ExplainableHourlyQuantities:
         return self.server.energy_footprint
+
+    @property
+    def impact_repartition(self):
+        return self.server.impact_repartition
 
     def self_delete(self):
         super().self_delete()

@@ -107,7 +107,7 @@ class ImpactRepartitionSankey:
                     continue
                 expanded.add(node_idx)
                 obj = self.node_objects[node_idx]
-                if "impact_repartition" not in obj.calculated_attributes:
+                if not hasattr(obj, "impact_repartition"):
                     continue
                 total_tonnes = self.node_total_kg[node_idx] / 1000
                 footprint_type = self._get_footprint_type_for_node(node_idx)
@@ -193,9 +193,9 @@ class ImpactRepartitionSankey:
 
 
 if __name__ == '__main__':
-    from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
+    from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
 
-    system, start_date = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+    system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
 
     sankey = ImpactRepartitionSankey(system)
     fig = sankey.figure()
