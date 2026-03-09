@@ -149,9 +149,7 @@ def generate_big_system(
         edge_storage = EdgeStorage(
             unique(f"Edge SSD storage {edge_usage_pattern_index}"),
             carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.TB),
             lifespan=SourceValue(6 * u.years),
-            idle_power=SourceValue(0.1 * u.W),
             storage_capacity=SourceValue(1 * u.TB),
             base_storage_need=SourceValue(10 * u.GB),
         )

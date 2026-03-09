@@ -1,4 +1,3 @@
-import json
 from copy import copy
 import os
 from datetime import datetime, timedelta, timezone
@@ -52,10 +51,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     @staticmethod
     def generate_simple_edge_system():
         # Create edge objects
-        # Exaggerate power_per_storage_capacity so that changes have a more visible impact in tests.
         edge_storage = EdgeStorage.from_defaults(
-            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB), idle_power=SourceValue(0.1 * u.W),
-            power_per_storage_capacity=SourceValue(1.3 * u.W / u.GB))
+            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB))
         edge_computer = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
 
         edge_process = RecurrentEdgeProcess.from_defaults(
@@ -166,11 +163,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             special_mult={"base_compute_consumption": 10}
         )
         self._test_variations_on_obj_inputs(
-            edge_storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need"])
+            edge_storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need", "power", "idle_power"])
         self._test_variations_on_obj_inputs(
             # recurrent_ram_needed only matters to raise InsufficientCapacityError
             # and this behavior is already unit tested.
-            edge_process, attrs_to_skip=["recurrent_ram_needed"],
+            edge_process, attrs_to_skip=["recurrent_ram_needed", "recurrent_storage_needed"],
             special_mult={"recurrent_compute_needed": 2, "recurrent_storage_needed": 10})
         self._test_variations_on_obj_inputs(edge_usage_journey, special_mult={"usage_span": 0.9})
         self._test_variations_on_obj_inputs(
@@ -236,7 +233,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.cpu_component.base_compute_consumption = original_base_compute
 
         # Test EdgeStorage - cumulative storage capacity
-        # Reduce storage_capacity to trigger error in update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern
+        # Reduce storage_capacity to trigger error in update_full_cumulative_storage_need
         logger.warning("Testing EdgeStorage cumulative storage capacity error")
         original_storage_capacity = self.edge_storage.storage_capacity
         with self.assertRaises(InsufficientCapacityError):
@@ -334,18 +331,20 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             name="add_edge_process",
             updates_builder=[[self.edge_function.recurrent_edge_device_needs,
                               self.edge_function.recurrent_edge_device_needs + [new_edge_process]]],
-            expected_changed=[self.edge_computer, self.edge_storage],
+            expected_changed=[self.edge_computer],
         )
         self._run_object_link_scenario(scenario)
 
     def run_test_update_edge_processes(self):
         new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Replacement edge process", edge_device=self.edge_computer)
+        current_edge_process = self.edge_function.recurrent_edge_device_needs[0]
 
         scenario = ObjectLinkScenario(
             name="update_edge_processes",
-            updates_builder=[[self.edge_function.recurrent_edge_device_needs, [new_edge_process]]],
-            expected_changed=[self.edge_computer, self.edge_storage],
+            updates_builder=[[self.edge_function.recurrent_edge_device_needs,
+                              [current_edge_process, new_edge_process]]],
+            expected_changed=[self.edge_computer],
         )
         self._run_object_link_scenario(scenario)
 

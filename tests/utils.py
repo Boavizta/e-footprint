@@ -49,10 +49,11 @@ def check_all_calculus_graph_dependencies_consistencies(system: System):
             for ancestor in calculated_attr_value.direct_ancestors_with_id:
                 ancestor_obj = ancestor.modeling_obj_container
                 ancestor_canonical_index = get_canonical_class_index(ancestor_obj)
-                if ancestor_canonical_index > obj_canonical_index:
+                if (ancestor_canonical_index > obj_canonical_index
+                        and ancestor.attr_name_in_mod_obj_container in ancestor_obj.calculated_attributes):
                     raise ValueError(
                         f"Inconsistent calculus graph dependency found: object {obj.name} of class "
                         f"{obj.class_as_simple_str} (canonical index {obj_canonical_index}) has a calculated "
-                        f"attribute '{attr}' depending on ancestor object {ancestor_obj.name} of class "
+                        f"attribute '{attr}' depending on calculated ancestor object {ancestor_obj.name} of class "
                         f"{ancestor_obj.class_as_simple_str} (canonical index {ancestor_canonical_index})."
                     )

@@ -385,6 +385,8 @@ class IntegrationTestBaseClass(TestCase):
                 calc_attr_name: The attribute name
                 key_str: Optional string for dict keys (e.g., "[key_name]")
             """
+            if isinstance(calc_attr, EmptyExplainableObject):
+                return
             unit_str = str(calc_attr.unit)
             attr_path = f"{calc_attr_name}{key_str}"
 
@@ -412,8 +414,6 @@ class IntegrationTestBaseClass(TestCase):
                 if isinstance(calc_attr, ExplainableObjectDict):
                     for key, value in calc_attr.items():
                         check_unit(value, mod_obj, calc_attr_name, value.key_in_dict)
-                elif isinstance(calc_attr, EmptyExplainableObject):
-                    pass
                 else:
                     check_unit(calc_attr, mod_obj, calc_attr_name)
 

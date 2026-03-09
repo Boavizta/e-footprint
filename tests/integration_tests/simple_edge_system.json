@@ -234,6 +234,15 @@
         "Edge-SSD-storage": {
             "name": "Edge SSD storage",
             "id": "Edge-SSD-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -244,7 +253,7 @@
                 }
             },
             "idle_power": {
-                "value": 0.1,
+                "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
                 "source": {
@@ -256,15 +265,6 @@
                 "value": 160.0,
                 "unit": "kilogram / terabyte",
                 "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from e-footprint hypothesis",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
-            },
-            "power_per_storage_capacity": {
-                "value": 1.3,
-                "unit": "watt / gigabyte",
-                "label": "Power of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
