@@ -669,6 +669,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
             for key, value in output_dict.items()})
 
+    def update_dict_element_in_impact_repartition_weights(self, modeling_object: "ModelingObject"):
+        weight = (sum([val for val in modeling_object.impact_repartition_weights.values()],
+                      start=EmptyExplainableObject())
+                * self.nb_of_occurrences_per_container[modeling_object]).set_label(
+            f"{modeling_object.name} weight in {self.name} impact repartition")
+
+        self.impact_repartition_weights[modeling_object] = weight
+
+    def update_impact_repartition_weights(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for modeling_object in self.modeling_obj_containers:
+            self.update_dict_element_in_impact_repartition_weights(modeling_object)
+
     def update_impact_repartition_weight_sum(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         impact_repartition_weight_sum = sum(self.impact_repartition_weights.values(), start=EmptyExplainableObject())

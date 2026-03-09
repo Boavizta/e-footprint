@@ -1,7 +1,5 @@
 from typing import List, TYPE_CHECKING
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -38,17 +36,3 @@ class UsageJourneyStep(ModelingObject):
     @property
     def networks(self) -> List["Network"]:
         return list(set([up.network for up in self.usage_patterns]))
-
-    def update_dict_element_in_impact_repartition_weights(self, usage_journey: "UsageJourney"):
-        nb_of_occurrences_per_container = self.nb_of_occurrences_per_container
-        weight = (sum([up.utc_hourly_usage_journey_starts for up in usage_journey.usage_patterns],
-                      start=EmptyExplainableObject())
-                * nb_of_occurrences_per_container[usage_journey]).set_label(
-            f"{usage_journey.name} weight in {self.name} impact repartition")
-
-        self.impact_repartition_weights[usage_journey] = weight
-
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
-        for usage_journey in self.usage_journeys:
-            self.update_dict_element_in_impact_repartition_weights(usage_journey)

@@ -23,10 +23,6 @@ class UsageJourney(ModelingObject):
         self.duration = EmptyExplainableObject()
         self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()
 
-    def after_init(self):
-        super().after_init()
-        self.compute_calculated_attributes()
-
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["Device"] | List[UsageJourneyStep]:
         return self.devices + self.uj_steps
@@ -62,8 +58,7 @@ class UsageJourney(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern", "impact_repartition_weights",
-                "impact_repartition_weight_sum", "impact_repartition"]
+        return ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"] + super().calculated_attributes
 
     def update_duration(self):
         user_time_spent_sum = sum(
@@ -84,12 +79,8 @@ class UsageJourney(ModelingObject):
             self.update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(usage_pattern)
 
     def update_dict_element_in_impact_repartition_weights(self, usage_pattern: "UsagePattern"):
-        weight = usage_pattern.utc_hourly_usage_journey_starts.copy().set_label(
+        weight = (self.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+                  * self.nb_of_occurrences_per_container[usage_pattern]).set_label(
             f"{usage_pattern.name} weight in {self.name} impact repartition")
 
         self.impact_repartition_weights[usage_pattern] = weight
-
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_impact_repartition_weights(usage_pattern)

@@ -28,7 +28,7 @@ class UsagePattern(ModelingObject):
         self.utc_hourly_usage_journey_starts = EmptyExplainableObject()
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[UsageJourney]:
         return [self.usage_journey]
 
     @property
