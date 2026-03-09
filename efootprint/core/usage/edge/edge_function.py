@@ -21,17 +21,9 @@ class EdgeFunction(ModelingObject):
         return self.recurrent_edge_device_needs + self.recurrent_server_needs
 
     @property
-    def impact_repartition_weight(self):
-        return sum(eup.nb_edge_usage_journeys_in_parallel for eup in self.edge_usage_patterns)
-
-    @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
         return self.modeling_obj_containers
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
-
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return []

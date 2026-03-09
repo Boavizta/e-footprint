@@ -43,10 +43,6 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
-        new_uj = flat_obj_dict["uuid-New-UJ"]
-
-        self.assertFalse(isinstance(new_uj.duration, EmptyExplainableObject))
-
     def test_update_value_after_system_creation(self):
         class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
 

@@ -164,7 +164,7 @@ class ImpactRepartitionSankey:
             link_labels.append(f"{src_label} → {tgt_label}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
 
-    def figure(self, title=None, width=1200):
+    def figure(self, title=None, width=1800):
         import plotly.graph_objects as go
         self.build()
 
@@ -193,11 +193,12 @@ class ImpactRepartitionSankey:
 
 
 if __name__ == '__main__':
-    from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
-
-    system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
-    print(system.usage_patterns[0].attributed_fabrication_footprint.sum())
-    print(system.usage_patterns[0].attributed_energy_footprint.sum())
+    # from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
+    # system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
+    from tests.integration_tests.integration_simple_edge_system_base_class import IntegrationTestSimpleEdgeSystemBaseClass
+    system, start_date = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
+    print(system.edge_usage_patterns[0].attributed_fabrication_footprint.sum())
+    print(system.edge_usage_patterns[0].attributed_energy_footprint.sum())
     sankey = ImpactRepartitionSankey(system)
     fig = sankey.figure()
     fig.show()

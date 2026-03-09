@@ -57,6 +57,9 @@ class EmptyExplainableObject(ExplainableObject):
     def magnitude(self):
         return 0
 
+    def values(self):
+        return []
+
     def __copy__(self):
         return EmptyExplainableObject(label=copy(self.label))
 

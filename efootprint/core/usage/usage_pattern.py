@@ -46,7 +46,8 @@ class UsagePattern(ModelingObject):
         self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(f"{self.name} UTC")
 
     def update_dict_element_in_impact_repartition_weights(self, country: "Country"):
-        self.impact_repartition_weights[country] = ExplainableQuantity(1 * u.dimensionless, label="Impact repartition weight")
+        self.impact_repartition_weights[country] = ExplainableQuantity(1 * u.dimensionless,
+                                                                       label="Impact repartition weight")
 
     def update_impact_repartition_weights(self):
         self.impact_repartition_weights = ExplainableObjectDict()

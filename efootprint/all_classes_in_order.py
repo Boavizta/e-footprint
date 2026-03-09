@@ -65,8 +65,11 @@ ALL_EFOOTPRINT_CLASSES = (
         + [Network] + SERVER_CLASSES + EXTERNAL_API_SERVER_CLASSES + [Storage, System])
 
 CANONICAL_COMPUTATION_ORDER = [
-    Country, UsagePattern, UsageJourney, UsageJourneyStep, Device, EdgeUsageJourney, EdgeFunction,
-    EdgeUsagePattern, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed, EdgeComponent,
+    Country,
+    UsagePattern, UsageJourney, UsageJourneyStep, Device,
+    EdgeUsagePattern, EdgeUsageJourney, EdgeFunction,
+    RecurrentEdgeDeviceNeed, RecurrentServerNeed,
+    RecurrentEdgeComponentNeed, EdgeComponent,
     EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage, System]
 
 ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}

@@ -7,6 +7,7 @@ import re
 import time
 from collections import defaultdict
 
+import numpy as np
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -703,6 +704,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             repartition_value = (self.impact_repartition_weights[modeling_obj] / impact_repartition_weight_sum).to(
             u.concurrent).set_label(f"{self.name} impact attribution to {modeling_obj.name}")
+
+        if isinstance(repartition_value, ExplainableHourlyQuantities):
+            nan_values_mask = np.isnan(repartition_value.magnitude)
+            repartition_value.value[nan_values_mask] = 1
 
         self.impact_repartition[modeling_obj] = repartition_value
 

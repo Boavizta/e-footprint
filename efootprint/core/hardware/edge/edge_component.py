@@ -49,9 +49,10 @@ class EdgeComponent(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
+        return (["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+                + super().calculated_attributes)
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -86,7 +87,8 @@ class EdgeComponent(ModelingObject):
     def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):
         component_fabrication_intensity = (self.carbon_footprint_fabrication / self.lifespan)
-        nb_instances = usage_pattern.nb_edge_usage_journeys_in_parallel
+        nb_instances = (
+            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern)[usage_pattern]
 
         instances_fabrication_footprint = (
             nb_instances * component_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
@@ -101,7 +103,8 @@ class EdgeComponent(ModelingObject):
             self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
 
     def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
-        nb_instances = usage_pattern.nb_edge_usage_journeys_in_parallel
+        nb_instances = (
+            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern)[usage_pattern]
         unitary_energy = (self.unitary_power_per_usage_pattern[usage_pattern] *
                         ExplainableQuantity(1 * u.hour, "one hour"))
         instances_energy = nb_instances * unitary_energy
@@ -148,3 +151,18 @@ class EdgeComponent(ModelingObject):
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             f"{self.name} total energy footprint across usage patterns")
+
+    def update_dict_element_in_impact_repartition_weights(
+            self, recurrent_component_need: "RecurrentEdgeComponentNeed"):
+        weight = sum(
+            [recurrent_component_need.unitary_hourly_need_per_usage_pattern[eup]
+             * eup.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[eup]
+             for eup in recurrent_component_need.edge_usage_patterns],
+            start=EmptyExplainableObject())
+        self.impact_repartition_weights[recurrent_component_need] = weight.set_label(
+            f"{recurrent_component_need.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for recurrent_component_need in self.recurrent_edge_component_needs:
+            self.update_dict_element_in_impact_repartition_weights(recurrent_component_need)

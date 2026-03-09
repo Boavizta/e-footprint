@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, List, Optional
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
@@ -45,7 +46,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["validated_recurrent_need", "unitary_hourly_need_per_usage_pattern"]
+        return ["validated_recurrent_need", "unitary_hourly_need_per_usage_pattern"] + super().calculated_attributes
 
     @property
     def recurrent_edge_device_needs(self):
@@ -97,7 +98,21 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_need = self.recurrent_need.generate_hourly_quantities_over_timespan(
-            usage_pattern.nb_edge_usage_journeys_in_parallel, usage_pattern.country.timezone)
+            usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern],
+            usage_pattern.country.timezone)
+        nb_of_occurrences_of_self_within_usage_pattern = 0
+        for edge_function in usage_pattern.edge_usage_journey.edge_functions:
+            for recurrent_device_need in edge_function.recurrent_edge_device_needs:
+                for recurrent_component_need in recurrent_device_need.recurrent_edge_component_needs:
+                    if recurrent_component_need == self:
+                        nb_of_occurrences_of_self_within_usage_pattern += 1
+        assert nb_of_occurrences_of_self_within_usage_pattern > 0, (
+            f"{self.name} is not linked to any edge usage journey in {usage_pattern.name}, but it should be "
+            f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")
+
+        unitary_hourly_need *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
+                                                   label=f"Occurrences of {self.name} within {usage_pattern.name}")
+
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = unitary_hourly_need.set_label(
             f"{self.name} unitary hourly need for {usage_pattern.name}")
 

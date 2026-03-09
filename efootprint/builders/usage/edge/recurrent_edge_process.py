@@ -135,7 +135,3 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
     @property
     def unitary_hourly_storage_need_per_usage_pattern(self):
         return self.storage_need.unitary_hourly_need_per_usage_pattern
-
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return []

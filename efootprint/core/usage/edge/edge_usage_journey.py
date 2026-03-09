@@ -1,9 +1,11 @@
 from typing import List, TYPE_CHECKING
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 
 if TYPE_CHECKING:
@@ -24,15 +26,11 @@ class EdgeUsageJourney(ModelingObject):
         self.edge_functions = edge_functions
         self.usage_span = usage_span.set_label(f"Usage span of {self.name}")
 
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:
-        if self.edge_usage_patterns:
-            return self.edge_usage_patterns
-        return self.edge_functions
+        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
 
     @property
-    def impact_repartition_weight(self):
-        return sum(eup.nb_edge_usage_journeys_in_parallel for eup in self.edge_usage_patterns)
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeUsagePattern"] | List[EdgeFunction]:
+        return self.edge_functions
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
@@ -56,4 +54,23 @@ class EdgeUsageJourney(ModelingObject):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return []
+        return ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"] + super().calculated_attributes
+
+    def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
+            self, edge_usage_pattern: "EdgeUsagePattern"):
+        nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
+            edge_usage_pattern.utc_hourly_edge_usage_journey_starts, self.usage_span)
+        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern] = (
+            nb_of_edge_usage_journeys_in_parallel.to(u.concurrent)
+            .set_label(f"{self.name} hourly nb of edge usage journeys in parallel"))
+
+    def update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self):
+        self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
+        for edge_usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(edge_usage_pattern)
+
+    def update_dict_element_in_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
+        self.impact_repartition_weights[usage_pattern] = (
+            (self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+             * self.nb_of_occurrences_per_container[usage_pattern])
+            .to(u.concurrent).set_label(f"{usage_pattern.name} weight in {self.name} impact repartition"))

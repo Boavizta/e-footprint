@@ -48,10 +48,11 @@ class EdgeDevice(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["lifespan_validation", "component_needs_edge_device_validation",
+        return (["lifespan_validation", "component_needs_edge_device_validation",
                 "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+                + super().calculated_attributes)
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
@@ -127,7 +128,8 @@ class EdgeDevice(ModelingObject):
             self, usage_pattern: "EdgeUsagePattern"):
         # Sum fabrication footprints from all components plus device structure
         structure_fabrication_intensity = self.structure_carbon_footprint_fabrication / self.lifespan
-        nb_instances = usage_pattern.nb_edge_usage_journeys_in_parallel
+        nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
+            usage_pattern]
 
         structure_footprint = (
             nb_instances * structure_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
@@ -192,3 +194,13 @@ class EdgeDevice(ModelingObject):
             self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"{self.name} total fabrication footprint across usage patterns")
+
+    def update_dict_element_in_impact_repartition_weights(self, component: "EdgeComponent"):
+        self.impact_repartition_weights[component] = (
+                component.instances_fabrication_footprint + component.energy_footprint).set_label(
+            f"{component.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for component in self.components:
+            self.update_dict_element_in_impact_repartition_weights(component)

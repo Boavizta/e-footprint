@@ -1,5 +1,7 @@
 from typing import List, TYPE_CHECKING
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.core.country import Country
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
@@ -21,7 +23,6 @@ class EdgeUsagePattern(ModelingObject):
                  country: Country, hourly_edge_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
         self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
-        self.nb_edge_usage_journeys_in_parallel = EmptyExplainableObject()
 
         self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.to(u.occurrence).set_label(
             f"{self.name} hourly nb of edge device starts")
@@ -30,17 +31,12 @@ class EdgeUsagePattern(ModelingObject):
         self.country = country
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (
-            List["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]):
-        return self.recurrent_edge_device_needs + self.recurrent_server_needs
-
-    @property
-    def impact_repartition_weight(self):
-        return self.nb_edge_usage_journeys_in_parallel
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (List[EdgeUsageJourney]):
+        return [self.edge_usage_journey]
 
     @property
     def calculated_attributes(self):
-        return ["utc_hourly_edge_usage_journey_starts", "nb_edge_usage_journeys_in_parallel"]
+        return (["utc_hourly_edge_usage_journey_starts"] + super().calculated_attributes)
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
@@ -61,9 +57,10 @@ class EdgeUsagePattern(ModelingObject):
         self.utc_hourly_edge_usage_journey_starts = utc_hourly_edge_usage_journey_starts.set_label(
             f"{self.name} UTC")
 
-    def update_nb_edge_usage_journeys_in_parallel(self):
-        nb_of_edge_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(
-            self.utc_hourly_edge_usage_journey_starts, self.edge_usage_journey.usage_span)
+    def update_dict_element_in_impact_repartition_weights(self, country: "Country"):
+        self.impact_repartition_weights[country] = ExplainableQuantity(
+            1 * u.dimensionless, label="Impact repartition weight")
 
-        self.nb_edge_usage_journeys_in_parallel = nb_of_edge_usage_journeys_in_parallel.to(u.concurrent).set_label(
-            f"{self.name} hourly nb of edge usage journeys in parallel")
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        self.update_dict_element_in_impact_repartition_weights(self.country)

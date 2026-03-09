@@ -113,11 +113,10 @@ class JobBase(ModelingObject):
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
             for recurrent_server_need in self.recurrent_server_needs:
-                for recurrent_server_need_job in recurrent_server_need.jobs:
-                    if recurrent_server_need_job == self:
-                        unitary_hourly_occurrences = recurrent_server_need.unitary_hourly_volume_per_usage_pattern[
-                            usage_pattern]
-                        job_occurrences += unitary_hourly_occurrences * usage_pattern.nb_edge_usage_journeys_in_parallel
+                job_occurrences += (
+                        recurrent_server_need.unitary_hourly_volume_per_usage_pattern[usage_pattern]
+                        * usage_pattern.edge_usage_journey.
+                        nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern])
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
             f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
