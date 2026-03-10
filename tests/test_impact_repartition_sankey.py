@@ -109,3 +109,26 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual([0.1, 0.1], incoming_to_grandchild)
         self.assertEqual(0.2, sum(incoming_to_grandchild))
         self.assertEqual(200, sankey.node_total_kg[grandchild_idx])
+
+    def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+
+        node_idx = sankey._add_node("12345678901", ("long_name", "energy"))
+        sankey._total_system_kg = 1
+        sankey.node_total_kg[node_idx] = 1
+
+        self.assertEqual("1234567890...", sankey.node_labels[node_idx])
+        self.assertEqual("12345678901", sankey.full_node_labels[node_idx])
+        self.assertTrue(sankey._build_hover_labels()[node_idx].startswith("12345678901<br>"))
+
+    def test_node_label_max_length_is_configurable(self):
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, node_label_max_length=5)
+
+        node_idx = sankey._add_node("123456", ("custom_length", "energy"))
+
+        self.assertEqual("12345...", sankey.node_labels[node_idx])
+        self.assertEqual("123456", sankey.full_node_labels[node_idx])

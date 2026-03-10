@@ -12,10 +12,12 @@ _COLORS = [
 
 
 class ImpactRepartitionSankey:
-    def __init__(self, system, aggregation_threshold_percent=1):
+    def __init__(self, system, aggregation_threshold_percent=1, node_label_max_length=13):
         self.system = system
         self.aggregation_threshold_percent = aggregation_threshold_percent
+        self.node_label_max_length = node_label_max_length
         self.node_labels = []
+        self.full_node_labels = []
         self.node_indices = {}
         self.node_color_keys = []  # object id or structural key, for consistent coloring
         self.node_objects = {}
@@ -27,11 +29,17 @@ class ImpactRepartitionSankey:
         self._built = False
         self._total_system_kg = 0
 
+    def _truncate_node_label(self, label):
+        if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
+            return label
+        return f"{label[:self.node_label_max_length].strip()}..."
+
     def _add_node(self, label, key, color_key=None, obj=None):
         if key in self.node_indices:
             return self.node_indices[key]
         idx = len(self.node_labels)
-        self.node_labels.append(label)
+        self.node_labels.append(self._truncate_node_label(label))
+        self.full_node_labels.append(label)
         self.node_indices[key] = idx
         self.node_color_keys.append(color_key or label)
         self.node_total_kg.append(0.0)
@@ -164,7 +172,7 @@ class ImpactRepartitionSankey:
             return
 
         original_node_keys = {idx: key for key, idx in self.node_indices.items()}
-        original_labels = list(self.node_labels)
+        original_full_labels = list(self.full_node_labels)
         original_color_keys = list(self.node_color_keys)
         original_node_objects = dict(self.node_objects)
         original_links = list(zip(self.link_sources, self.link_targets, self.link_values))
@@ -172,6 +180,7 @@ class ImpactRepartitionSankey:
         nodes_to_aggregate = {node_idx for group in aggregate_groups.values() for node_idx in group}
 
         self.node_labels = []
+        self.full_node_labels = []
         self.node_indices = {}
         self.node_color_keys = []
         self.node_objects = {}
@@ -182,7 +191,7 @@ class ImpactRepartitionSankey:
         self.node_total_kg = []
 
         old_to_new_indices = {}
-        for old_idx, label in enumerate(original_labels):
+        for old_idx, label in enumerate(original_full_labels):
             if old_idx in nodes_to_aggregate:
                 continue
             new_idx = self._add_node(
@@ -194,7 +203,7 @@ class ImpactRepartitionSankey:
             aggregate_idx = self._add_node(
                 f"Other ({len(group_members)})", ("__aggregated__", column), color_key=f"__aggregated__{column}")
             self.aggregated_node_members[aggregate_idx] = [
-                (original_labels[idx], original_node_total_kg[idx]) for idx in group_members]
+                (original_full_labels[idx], original_node_total_kg[idx]) for idx in group_members]
             for old_idx in group_members:
                 old_to_new_indices[old_idx] = aggregate_idx
 
@@ -242,9 +251,9 @@ class ImpactRepartitionSankey:
                     f"{label}: {display_co2_amount(format_co2_amount(member_kg))} CO2eq"
                     for label, member_kg in self.aggregated_node_members[idx])
                 node_hover.append(
-                    f"{self.node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
+                    f"{self.full_node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
                 continue
-            node_hover.append(f"{self.node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
+            node_hover.append(f"{self.full_node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return node_hover
 
     def _build_link_labels(self):
@@ -253,8 +262,8 @@ class ImpactRepartitionSankey:
             kg = self.link_values[i] * 1000
             amount_str = display_co2_amount(format_co2_amount(kg))
             pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
-            src_label = self.node_labels[self.link_sources[i]]
-            tgt_label = self.node_labels[self.link_targets[i]]
+            src_label = self.full_node_labels[self.link_sources[i]]
+            tgt_label = self.full_node_labels[self.link_targets[i]]
             link_labels.append(f"{src_label} → {tgt_label}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
 
@@ -287,7 +296,7 @@ class ImpactRepartitionSankey:
 
 
 if __name__ == '__main__':
-    test = "edge"
+    test = "json"
     if test == "service":
         from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
         system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
@@ -303,6 +312,6 @@ if __name__ == '__main__':
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
-    sankey = ImpactRepartitionSankey(system)
+    sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=1)
     fig = sankey.figure()
     fig.show()
