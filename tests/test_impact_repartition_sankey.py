@@ -80,8 +80,69 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertNotIn("Other (2)", sankey.node_labels)
         self.assertEqual({}, sankey.aggregated_node_members)
 
-    def test_build_expands_recursive_repartition_for_each_incoming_contribution(self):
-        """Test recursive repartition is propagated from each incoming flow contribution."""
+    def test_aggregate_small_nodes_by_column_keeps_different_parents_separate(self):
+        """Test small nodes are aggregated separately when they do not share the same parent."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+
+        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
+        parent_a_idx = sankey._add_node("Parent A", ("parent_a", "energy"), obj=self._make_object("Parent A"))
+        parent_b_idx = sankey._add_node("Parent B", ("parent_b", "energy"), obj=self._make_object("Parent B"))
+        small_a1_idx = sankey._add_node("Small A1", ("small_a1", "energy"), obj=self._make_object("Small A1"))
+        small_a2_idx = sankey._add_node("Small A2", ("small_a2", "energy"), obj=self._make_object("Small A2"))
+        small_b1_idx = sankey._add_node("Small B1", ("small_b1", "energy"), obj=self._make_object("Small B1"))
+        small_b2_idx = sankey._add_node("Small B2", ("small_b2", "energy"), obj=self._make_object("Small B2"))
+
+        sankey._total_system_kg = 1000
+        sankey.node_total_kg[total_idx] = 1000
+        sankey._add_link(total_idx, parent_a_idx, 0.36)
+        sankey._add_link(total_idx, parent_b_idx, 0.36)
+        sankey._add_link(parent_a_idx, small_a1_idx, 0.10)
+        sankey._add_link(parent_a_idx, small_a2_idx, 0.08)
+        sankey._add_link(parent_b_idx, small_b1_idx, 0.10)
+        sankey._add_link(parent_b_idx, small_b2_idx, 0.08)
+
+        sankey._aggregate_small_nodes_by_column()
+        hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (2)<br>")]
+
+        self.assertNotIn("Other (4)", sankey.node_labels)
+        self.assertEqual(2, sankey.node_labels.count("Other (2)"))
+        self.assertEqual(2, len(sankey.aggregated_node_members))
+        self.assertEqual(2, len(hover_labels))
+        self.assertTrue(any("Small A1" in label and "Small A2" in label for label in hover_labels))
+        self.assertTrue(any("Small B1" in label and "Small B2" in label for label in hover_labels))
+        self.assertFalse(any("Small A1" in label and "Small B1" in label for label in hover_labels))
+
+    def test_aggregate_small_nodes_by_column_recomputes_children_after_parent_aggregation(self):
+        """Test child columns are re-aggregated after their parents collapse into an aggregated node."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+
+        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
+        parent_a_idx = sankey._add_node("Parent A", ("parent_a", "energy"), obj=self._make_object("Parent A"))
+        parent_b_idx = sankey._add_node("Parent B", ("parent_b", "energy"), obj=self._make_object("Parent B"))
+        child_a_idx = sankey._add_node("Child A", ("child_a", "energy"), obj=self._make_object("Child A"))
+        child_b_idx = sankey._add_node("Child B", ("child_b", "energy"), obj=self._make_object("Child B"))
+
+        sankey._total_system_kg = 1000
+        sankey.node_total_kg[total_idx] = 1000
+        sankey._add_link(total_idx, parent_a_idx, 0.08)
+        sankey._add_link(total_idx, parent_b_idx, 0.07)
+        sankey._add_link(parent_a_idx, child_a_idx, 0.08)
+        sankey._add_link(parent_b_idx, child_b_idx, 0.07)
+
+        sankey._aggregate_small_nodes_by_column()
+        hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (2)<br>")]
+
+        self.assertEqual(2, sankey.node_labels.count("Other (2)"))
+        self.assertEqual(2, len(hover_labels))
+        self.assertTrue(any("Parent A" in label and "Parent B" in label for label in hover_labels))
+        self.assertTrue(any("Child A" in label and "Child B" in label for label in hover_labels))
+
+    def test_build_merges_recursive_repartition_contributions_on_same_edge(self):
+        """Test recursive repartition contributions sharing an edge are merged into one flow."""
         grandchild = _DummyObject("Grandchild", "grandchild")
         child = _DummyObject("Child", "child")
         parent = _DummyObject("Parent", "parent")
@@ -107,9 +168,40 @@ class TestImpactRepartitionSankey(TestCase):
             if source == child_idx and target == grandchild_idx
         ]
 
-        self.assertEqual([0.1, 0.1], incoming_to_grandchild)
-        self.assertEqual(0.2, sum(incoming_to_grandchild))
+        self.assertEqual([0.2], incoming_to_grandchild)
         self.assertEqual(200, sankey.node_total_kg[grandchild_idx])
+
+    def test_skip_object_footprint_split_merges_identical_child_edges(self):
+        """Test skipping object nodes keeps a single outbound flow per parent-child pair."""
+        shared_child = _DummyObject("Shared child", "shared_child")
+        parent_a = _DummyObject("Parent A", "parent_a")
+        parent_b = _DummyObject("Parent B", "parent_b")
+        parent_a.impact_repartition = {shared_child: _DummyQuantity(1)}
+        parent_b.impact_repartition = {shared_child: _DummyQuantity(1)}
+
+        system = MagicMock()
+        system.name = "Test system"
+        system.total_fabrication_footprint_sum_over_period = {"edge": _DummyQuantity(180)}
+        system.total_energy_footprint_sum_over_period = {}
+        system.fabrication_footprint_sum_over_period = {"edge": {
+            parent_a: _DummyQuantity(100), parent_b: _DummyQuantity(80),
+        }}
+        system.energy_footprint_sum_over_period = {}
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skip_object_footprint_split=True)
+
+        sankey.build()
+
+        edge_idx = sankey.node_indices[("edge", "fabrication")]
+        shared_child_idx = sankey.node_indices[("shared_child", "fabrication")]
+        shared_child_links = [
+            value
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+            if source == edge_idx and target == shared_child_idx
+        ]
+
+        self.assertEqual([0.18], shared_child_links)
 
     def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
         system = MagicMock()
@@ -173,6 +265,31 @@ class TestImpactRepartitionSankey(TestCase):
             {"column_index": 1, "x_center": 0.5, "class_names": ["Parent", "SmallA", "SmallB"]},
             {"column_index": 2, "x_center": 0.8333333333333334, "class_names": ["ChildBig", "ChildSmallA", "ChildSmallB"]},
         ], column_metadata)
+
+    def test_compute_node_columns_places_shared_child_after_deepest_parent(self):
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+
+        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
+        direct_parent_idx = sankey._add_node("Direct parent", ("direct_parent", "energy"), obj=self._make_object("Direct parent"))
+        intermediate_idx = sankey._add_node("Intermediate", ("intermediate", "energy"), obj=self._make_object("Intermediate"))
+        deep_parent_idx = sankey._add_node("Deep parent", ("deep_parent", "energy"), obj=self._make_object("Deep parent"))
+        shared_child_idx = sankey._add_node("Shared child", ("shared_child", "energy"), obj=self._make_object("Shared child"))
+
+        sankey._add_link(total_idx, direct_parent_idx, 0.4)
+        sankey._add_link(total_idx, intermediate_idx, 0.3)
+        sankey._add_link(intermediate_idx, deep_parent_idx, 0.2)
+        sankey._add_link(direct_parent_idx, shared_child_idx, 0.1)
+        sankey._add_link(deep_parent_idx, shared_child_idx, 0.1)
+
+        self.assertEqual({
+            total_idx: 0,
+            direct_parent_idx: 1,
+            intermediate_idx: 1,
+            deep_parent_idx: 2,
+            shared_child_idx: 3,
+        }, sankey._compute_node_columns())
 
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         grandchild = _DummyObject("Grandchild", "grandchild")
