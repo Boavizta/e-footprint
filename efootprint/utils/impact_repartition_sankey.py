@@ -12,10 +12,21 @@ _COLORS = [
 
 
 class ImpactRepartitionSankey:
-    def __init__(self, system, aggregation_threshold_percent=1, node_label_max_length=13):
+    def __init__(
+            self, system, aggregation_threshold_percent=1, node_label_max_length=13,
+            skipped_impact_repartition_classes=None, skip_total_footprint_split=False,
+            skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
+            skip_object_footprint_split=False,
+            display_column_information=True):
         self.system = system
         self.aggregation_threshold_percent = aggregation_threshold_percent
         self.node_label_max_length = node_label_max_length
+        self.skipped_impact_repartition_classes = skipped_impact_repartition_classes or []
+        self.skip_total_footprint_split = skip_total_footprint_split
+        self.skip_phase_footprint_split = skip_phase_footprint_split
+        self.skip_object_category_footprint_split = skip_object_category_footprint_split
+        self.skip_object_footprint_split = skip_object_footprint_split
+        self.display_column_information = display_column_information
         self.node_labels = []
         self.full_node_labels = []
         self.node_indices = {}
@@ -29,6 +40,8 @@ class ImpactRepartitionSankey:
         self.node_total_kg = []
         self._built = False
         self._total_system_kg = 0
+        self._manual_column_information = []
+        self._impact_repartition_start_column = 0
 
     def _truncate_node_label(self, label):
         if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
@@ -41,6 +54,17 @@ class ImpactRepartitionSankey:
         if isinstance(class_name, str) and class_name:
             return class_name
         return obj.__class__.__name__.lstrip("_")
+
+    def _should_skip_object(self, obj):
+        obj_class_name = self._format_class_name(obj)
+        for skipped_class in self.skipped_impact_repartition_classes:
+            if isinstance(skipped_class, str):
+                if obj_class_name == skipped_class or obj.__class__.__name__ == skipped_class:
+                    return True
+                continue
+            if isinstance(skipped_class, type) and isinstance(obj, skipped_class):
+                return True
+        return False
 
     def _add_node(self, label, key, color_key=None, obj=None):
         if key in self.node_indices:
@@ -81,16 +105,31 @@ class ImpactRepartitionSankey:
             child_value = total_tonnes * self._get_fraction_magnitude(fraction)
             if child_value <= 0:
                 continue
-            child_key = (child_obj.id, footprint_type)
-            child_idx = self._add_node(child_obj.name, child_key, color_key=child_obj.id, obj=child_obj)
-            self._add_link(node_idx, child_idx, child_value)
-            self._expand_impact_repartition(
-                child_idx, child_obj, child_value, footprint_type, ancestor_ids=next_ancestor_ids)
+            self._add_object_impact_to_sankey(
+                node_idx, child_obj, child_value, footprint_type, ancestor_ids=next_ancestor_ids)
+
+    def _add_object_impact_to_sankey(
+            self, source_idx, obj, total_tonnes, footprint_type, ancestor_ids=None, skip_current_object=False):
+        if total_tonnes <= 0:
+            return
+        ancestor_ids = set() if ancestor_ids is None else ancestor_ids
+        if obj.id in ancestor_ids:
+            return
+        if skip_current_object or self._should_skip_object(obj):
+            self._expand_impact_repartition(source_idx, obj, total_tonnes, footprint_type, ancestor_ids=ancestor_ids)
+            return
+
+        obj_key = (obj.id, footprint_type)
+        obj_idx = self._add_node(obj.name, obj_key, color_key=obj.id, obj=obj)
+        self._add_link(source_idx, obj_idx, total_tonnes)
+        self._expand_impact_repartition(obj_idx, obj, total_tonnes, footprint_type, ancestor_ids=ancestor_ids)
 
     def build(self):
         if self._built:
             return
         self._built = True
+        self._manual_column_information = []
+        self._impact_repartition_start_column = 0
         system = self.system
 
         total_fab_dict = system.total_fabrication_footprint_sum_over_period
@@ -102,37 +141,83 @@ class ImpactRepartitionSankey:
             v.magnitude for v in total_energy_dict.values() if not isinstance(v, EmptyExplainableObject))
         self._total_system_kg = total_fab_kg + total_energy_kg
 
-        system_idx = self._add_node(system.name, ("system", "total"), color_key="__system__")
-        self.node_total_kg[system_idx] = self._total_system_kg
-        fab_idx = self._add_node("Fabrication", ("phase", "fabrication"), color_key="__fabrication__")
-        energy_idx = self._add_node("Energy", ("phase", "energy"), color_key="__energy__")
-        self._add_link(system_idx, fab_idx, total_fab_kg / 1000)
-        self._add_link(system_idx, energy_idx, total_energy_kg / 1000)
+        phase_parents = {"fabrication": None, "energy": None}
+        current_column_index = 0
+        if not self.skip_total_footprint_split:
+            system_idx = self._add_node(system.name, ("system", "total"), color_key="__system__")
+            self.node_total_kg[system_idx] = self._total_system_kg
+            phase_parents = {"fabrication": system_idx, "energy": system_idx}
+            self._manual_column_information.append({
+                "column_index": current_column_index,
+                "column_type": "manual_split",
+                "description": "Full system footprint",
+            })
+            current_column_index += 1
+
+        if not self.skip_phase_footprint_split:
+            fab_idx = self._add_node("Fabrication", ("phase", "fabrication"), color_key="__fabrication__")
+            energy_idx = self._add_node("Energy", ("phase", "energy"), color_key="__energy__")
+            if phase_parents["fabrication"] is not None:
+                self._add_link(phase_parents["fabrication"], fab_idx, total_fab_kg / 1000)
+            if phase_parents["energy"] is not None:
+                self._add_link(phase_parents["energy"], energy_idx, total_energy_kg / 1000)
+            phase_parents["fabrication"] = fab_idx
+            phase_parents["energy"] = energy_idx
+            self._manual_column_information.append({
+                "column_index": current_column_index,
+                "column_type": "manual_split",
+                "description": "Fabrication / energy footprint",
+            })
+            current_column_index += 1
 
         fab_by_obj = system.fabrication_footprint_sum_over_period
         energy_by_obj = system.energy_footprint_sum_over_period
+        category_nodes_created = False
+        object_nodes_created = False
 
-        for phase_label, phase_idx, total_dict, obj_dict in [
-            ("fabrication", fab_idx, total_fab_dict, fab_by_obj),
-            ("energy", energy_idx, total_energy_dict, energy_by_obj),
+        for phase_label, total_dict, obj_dict in [
+            ("fabrication", total_fab_dict, fab_by_obj),
+            ("energy", total_energy_dict, energy_by_obj),
         ]:
+            phase_parent_idx = phase_parents[phase_label]
             for category, category_total in total_dict.items():
                 cat_kg = category_total.magnitude if not isinstance(category_total, EmptyExplainableObject) else 0
                 cat_tonnes = cat_kg / 1000
                 if cat_tonnes <= 0:
                     continue
-                cat_idx = self._add_node(
-                    f"{category} {phase_label}", (category, phase_label), color_key=f"__cat_{category}__")
-                self._add_link(phase_idx, cat_idx, cat_tonnes)
+                object_parent_idx = phase_parent_idx
+                if not self.skip_object_category_footprint_split:
+                    cat_idx = self._add_node(
+                        f"{category} {phase_label}", (category, phase_label), color_key=f"__cat_{category}__")
+                    if phase_parent_idx is not None:
+                        self._add_link(phase_parent_idx, cat_idx, cat_tonnes)
+                    object_parent_idx = cat_idx
+                    category_nodes_created = True
 
                 for obj, obj_quantity in obj_dict[category].items():
                     obj_tonnes = obj_quantity.magnitude / 1000
                     if obj_tonnes <= 0:
                         continue
-                    obj_key = (obj.id, phase_label)
-                    obj_idx = self._add_node(obj.name, obj_key, color_key=obj.id, obj=obj)
-                    self._add_link(cat_idx, obj_idx, obj_tonnes)
-                    self._expand_impact_repartition(obj_idx, obj, obj_tonnes, phase_label)
+                    if not self.skip_object_footprint_split:
+                        object_nodes_created = True
+                    self._add_object_impact_to_sankey(
+                        object_parent_idx, obj, obj_tonnes, phase_label,
+                        skip_current_object=self.skip_object_footprint_split)
+        if category_nodes_created:
+            self._manual_column_information.append({
+                "column_index": current_column_index,
+                "column_type": "manual_split",
+                "description": "Per object category footprint",
+            })
+            current_column_index += 1
+        if object_nodes_created:
+            self._manual_column_information.append({
+                "column_index": current_column_index,
+                "column_type": "manual_split",
+                "description": "Per object footprint",
+            })
+            current_column_index += 1
+        self._impact_repartition_start_column = current_column_index
         self._aggregate_small_nodes_by_column()
 
     def _get_footprint_type_for_node(self, node_idx):
@@ -305,6 +390,29 @@ class ImpactRepartitionSankey:
             "class_names": sorted(class_names),
         } for column, class_names in sorted(classes_by_column.items()) if class_names]
 
+    def get_column_information(self):
+        if not self._built:
+            self.build()
+        return list(self._manual_column_information) + [{
+            "column_index": column_metadata["column_index"],
+            "column_type": "impact_repartition",
+            "class_names": column_metadata["class_names"],
+        } for column_metadata in self.get_column_metadata()
+            if column_metadata["column_index"] >= self._impact_repartition_start_column]
+
+    def _build_column_information_text(self):
+        column_information = self.get_column_information()
+        if not column_information:
+            return None
+        return "<br>".join([
+            (
+                f"Column {column_info['column_index']}: {column_info['description']}"
+                if column_info["column_type"] == "manual_split"
+                else f"Column {column_info['column_index']}: {', '.join(column_info['class_names'])}"
+            )
+            for column_info in column_information
+        ])
+
     def figure(self, title=None, width=1800):
         import plotly.graph_objects as go
         self.build()
@@ -317,6 +425,7 @@ class ImpactRepartitionSankey:
         link_labels = self._build_link_labels()
         node_colors = self._compute_node_colors()
         link_colors = [node_colors[src].replace("0.8)", "0.3)") for src in self.link_sources]
+        column_information_text = self._build_column_information_text() if self.display_column_information else None
 
         fig = go.Figure(data=[go.Sankey(
             arrangement="snap",
@@ -329,12 +438,35 @@ class ImpactRepartitionSankey:
                 color=link_colors, customdata=link_labels, hovertemplate="%{customdata}<extra></extra>",
             ),
         )])
-        fig.update_layout(title_text=title, font_size=12, height=800, width=width)
+        bottom_margin = 40
+        if column_information_text is not None:
+            line_count = column_information_text.count("<br>") + 1
+            bottom_margin = 40 + 18 * line_count
+            fig.add_annotation(
+                x=0,
+                y=-0.12,
+                xref="paper",
+                yref="paper",
+                xanchor="left",
+                yanchor="top",
+                align="left",
+                showarrow=False,
+                text=column_information_text,
+                font=dict(size=11),
+            )
+        fig.update_layout(title_text=title, font_size=12, height=800, width=width, margin=dict(b=bottom_margin))
         return fig
 
 
 if __name__ == '__main__':
+    from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
+    from efootprint.core.usage.job import JobBase
+    from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+    from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
     test = "json"
+    skipped_impact_repartition_classes = [
+        JobBase, EdgeWorkloadComponent, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed]
     if test == "service":
         from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
         system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
@@ -350,6 +482,8 @@ if __name__ == '__main__':
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
-    sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=1)
+    sankey = ImpactRepartitionSankey(
+        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=[],
+    skip_total_footprint_split=True)
     fig = sankey.figure()
     fig.show()
