@@ -267,13 +267,12 @@ class TestJob(TestCase):
     def test_compute_hourly_job_occurrences_for_edge_usage_pattern(self):
         """Test update_dict_element_in_hourly_occurrences_per_usage_pattern for EdgeUsagePattern."""
         # Setup edge usage pattern
-        edge_usage_pattern = create_mod_obj_mock(
-            EdgeUsagePattern, name="Edge Pattern", class_as_simple_str="EdgeUsagePattern"
-        )
+        edge_usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Edge Pattern",
+                                                 class_as_simple_str="EdgeUsagePattern")
 
         # Setup nb_edge_usage_journeys_in_parallel
         nb_parallel = create_source_hourly_values_from_list([2, 3, 4, 5])
-        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Edge Journey")
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             edge_usage_pattern: nb_parallel
         }
@@ -281,7 +280,7 @@ class TestJob(TestCase):
 
         # Setup recurrent server need with unitary hourly volume
         unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
-        mock_server_need = MagicMock(spec=RecurrentServerNeed)
+        mock_server_need = create_mod_obj_mock(RecurrentServerNeed, name="Mock recurrent server need")
         mock_server_need.jobs = [self.job, self.job] # Same job appears twice so volume is doubled
         mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
 

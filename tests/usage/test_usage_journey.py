@@ -8,6 +8,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from tests.utils import create_mod_obj_mock
 
 
 class TestUsageJourney(TestCase):
@@ -59,8 +60,8 @@ class TestUsageJourney(TestCase):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        uj_step1 = MagicMock(spec=UsageJourneyStep, id="uj_step1")
-        uj_step2 = MagicMock(spec=UsageJourneyStep, id="uj_step2")
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
+        uj_step2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2", id="uj_step2")
 
         uj_step1.jobs = [job1]
         uj_step2.jobs = [job2]
@@ -79,13 +80,14 @@ class TestUsageJourney(TestCase):
         self.assertEqual(self.usage_journey.duration, expected_duration)
 
     def test_update_duration_with_multiple_steps(self):
-        uj_step1 = MagicMock(spec=UsageJourneyStep, id="uj_step1")
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
         uj_step1.user_time_spent = SourceValue(5 * u.min)
         uj_step1.user_time_spent.set_modeling_obj_container(uj_step1, "user_time_spent")
-        uj_step2 = MagicMock(spec=UsageJourneyStep, id="uj_step2")
+        uj_step2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2", id="uj_step2")
         uj_step2.user_time_spent = SourceValue(3 * u.min)
         uj_step2.user_time_spent.set_modeling_obj_container(uj_step2, "user_time_spent")
         uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
+        uj.update_duration()
 
         self.assertEqual(SourceValue(8 * u.min), uj.duration)
 

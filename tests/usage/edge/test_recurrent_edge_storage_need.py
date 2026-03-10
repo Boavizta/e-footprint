@@ -9,6 +9,8 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
@@ -27,11 +29,8 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         self.recurrent_storage_needed = SourceRecurrentValues(
             Quantity(np.array([2.0] * 168, dtype=np.float32), u.GB))
 
-        self.storage_need = RecurrentEdgeStorageNeed(
-            name="Test Storage Need",
-            edge_component=self.mock_storage,
-            recurrent_need=self.recurrent_storage_needed
-        )
+        self.storage_need = RecurrentEdgeStorageNeed(name="Test Storage Need", edge_component=self.mock_storage,
+                                                     recurrent_need=self.recurrent_storage_needed)
 
     def test_init(self):
         """Test initialization of RecurrentEdgeStorageNeed."""
@@ -46,20 +45,27 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-06T00:00:00")
         mock_country = MagicMock()
         mock_timezone = MagicMock()
-        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
 
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern: mock_nb_euj_in_parallel
         }
+        mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
+        mock_recurrent_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
+        mock_recurrent_device_need.recurrent_edge_component_needs = [self.storage_need]
+        mock_edge_function.recurrent_edge_device_needs = [mock_recurrent_device_need]
+        mock_edge_usage_journey.edge_functions = [mock_edge_function]
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
         # Create mock result with magnitude array
-        base_storage_result = MagicMock(spec=ExplainableHourlyQuantities)
         original_values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        base_storage_result.magnitude = original_values.copy()
-        base_storage_result.set_label = MagicMock(return_value=base_storage_result)
+        base_storage_result = ExplainableHourlyQuantities(
+            original_values * u.GB,
+            mock_nb_euj_in_parallel.start_date,
+            "base storage result"
+        )
 
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',
@@ -69,8 +75,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
             # Since we start on Monday 00:00, no values should be zeroed
             result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
             np.testing.assert_array_equal(result.magnitude, original_values)
-            # Verify set_label was called with the correct label (may be called multiple times during parent/child updates)
-            result.set_label.assert_called_with("Test Storage Need unitary hourly need for Test Pattern Monday")
+            self.assertEqual("Test Storage Need unitary hourly need for Test Pattern Monday", result.label)
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_non_monday_start(self):
         """Test update when not starting on Monday 00:00 - values should be zeroed until first Monday."""
@@ -80,21 +85,28 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-01T00:00:00")
         mock_country = MagicMock()
         mock_timezone = MagicMock()
-        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
 
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern: mock_nb_euj_in_parallel
         }
+        mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
+        mock_recurrent_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
+        mock_recurrent_device_need.recurrent_edge_component_needs = [self.storage_need]
+        mock_edge_function.recurrent_edge_device_needs = [mock_recurrent_device_need]
+        mock_edge_usage_journey.edge_functions = [mock_edge_function]
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
         # Create mock result with magnitude array - enough hours to cover until first Monday
         # From Wednesday 00:00 to Monday 00:00 = 5 days = 120 hours
-        base_storage_result = MagicMock(spec=ExplainableHourlyQuantities)
         original_values = np.array([1.0, 2.0, 3.0] * 50)  # 150 values
-        base_storage_result.magnitude = original_values.copy()
-        base_storage_result.set_label = MagicMock(return_value=base_storage_result)
+        base_storage_result = ExplainableHourlyQuantities(
+            original_values * u.GB,
+            mock_nb_euj_in_parallel.start_date,
+            "base storage result"
+        )
 
         # Patch at class level because __slots__ prevents instance-level patching
         with patch.object(SourceRecurrentValues, 'generate_hourly_quantities_over_timespan',

@@ -103,9 +103,8 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         nb_of_occurrences_of_self_within_usage_pattern = 0
         for edge_function in usage_pattern.edge_usage_journey.edge_functions:
             for recurrent_device_need in edge_function.recurrent_edge_device_needs:
-                for recurrent_component_need in recurrent_device_need.recurrent_edge_component_needs:
-                    if recurrent_component_need == self:
-                        nb_of_occurrences_of_self_within_usage_pattern += 1
+                nb_of_occurrences_of_self_within_usage_pattern += (
+                    recurrent_device_need.recurrent_edge_component_needs.count(self))
         assert nb_of_occurrences_of_self_within_usage_pattern > 0, (
             f"{self.name} is not linked to any edge usage journey in {usage_pattern.name}, but it should be "
             f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")

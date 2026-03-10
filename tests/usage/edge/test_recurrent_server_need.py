@@ -140,13 +140,15 @@ class TestRecurrentServerNeed(TestCase):
         mock_country_1.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
         mock_pattern_1.country = mock_country_1
 
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
         mock_journey.edge_usage_patterns = [mock_pattern_1]
         mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {mock_pattern_1: mock_nb_parallel}
         mock_pattern_1.edge_usage_journey = mock_journey
 
-        mock_function = MagicMock(spec=EdgeFunction)
+        mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_journey]
+        mock_function.recurrent_server_needs = [self.server_need]
+        mock_journey.edge_functions = [mock_function]
 
         set_modeling_obj_containers(self.server_need, [mock_function])
 

@@ -1,50 +1,46 @@
 import unittest
+from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
+import numpy as np
+
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.core.country import Country
+from efootprint.core.hardware.network import Network
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.constants.units import u
-from tests.utils import set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestEdgeUsageJourney(TestCase):
     def setUp(self):
-        self.mock_edge_device = MagicMock(spec=EdgeDevice)
-        self.mock_edge_device.id = "mock_device"
-        self.mock_edge_device.name = "Mock Device"
+        self.mock_edge_device = create_mod_obj_mock(EdgeDevice, name="Mock Device")
         self.mock_edge_device.lifespan = SourceValue(4 * u.year)
 
-        self.mock_edge_need_1 = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        self.mock_edge_need_1.id = "mock_need_1"
-        self.mock_edge_need_1.name = "Mock Need 1"
+        self.mock_edge_need_1 = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need 1")
         self.mock_edge_need_1.edge_device = self.mock_edge_device
 
-        self.mock_edge_need_2 = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        self.mock_edge_need_2.id = "mock_need_2"
-        self.mock_edge_need_2.name = "Mock Need 2"
+        self.mock_edge_need_2 = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need 2")
         self.mock_edge_need_2.edge_device = self.mock_edge_device
 
-        self.mock_edge_function_1 = MagicMock(spec=EdgeFunction)
-        self.mock_edge_function_1.id = "mock_function_1"
-        self.mock_edge_function_1.name = "Mock Function 1"
+        self.mock_edge_function_1 = create_mod_obj_mock(EdgeFunction, name="Mock Function 1")
         self.mock_edge_function_1.recurrent_edge_device_needs = [self.mock_edge_need_1]
 
-        self.mock_edge_function_2 = MagicMock(spec=EdgeFunction)
-        self.mock_edge_function_2.id = "mock_function_2"
-        self.mock_edge_function_2.name = "Mock Function 2"
+        self.mock_edge_function_2 = create_mod_obj_mock(EdgeFunction, name="Mock Function 2")
         self.mock_edge_function_2.recurrent_edge_device_needs = [self.mock_edge_need_2]
 
         self.usage_span = SourceValue(2 * u.year)
 
-        self.edge_usage_journey = EdgeUsageJourney(
-            "test edge usage journey",
-            edge_functions=[self.mock_edge_function_1, self.mock_edge_function_2],
-            usage_span=self.usage_span
-        )
+        self.edge_usage_journey = EdgeUsageJourney("test edge usage journey",
+                                                   edge_functions=[self.mock_edge_function_1, self.mock_edge_function_2],
+                                                   usage_span=self.usage_span)
 
     def test_init(self):
         """Test EdgeUsageJourney initialization."""
@@ -64,15 +60,13 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual([self.mock_edge_device], edge_devices)
 
     def test_changing_to_usage_span_not_superior_to_edge_device_lifespan_doesnt_raise_error(self):
-        mock_edge_device = MagicMock(spec=EdgeDevice)
-        mock_edge_device.id = "mock_device"
-        mock_edge_device.name = "Mock Device"
+        mock_edge_device = create_mod_obj_mock(EdgeDevice, name="Mock Device")
         mock_edge_device.lifespan = SourceValue(2 * u.year)
 
-        mock_edge_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
+        mock_edge_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need")
         mock_edge_need.edge_device = mock_edge_device
 
-        mock_edge_function = MagicMock(spec=EdgeFunction)
+        mock_edge_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_edge_function.recurrent_edge_device_needs = [mock_edge_need]
 
         usage_span = SourceValue(1 * u.year)
@@ -82,10 +76,8 @@ class TestEdgeUsageJourney(TestCase):
 
     def test_edge_usage_patterns_property_multiple_containers(self):
         """Test edge_usage_patterns property returns all containers."""
-        mock_pattern_1 = MagicMock()
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_2 = MagicMock()
-        mock_pattern_2.name = "Pattern 2"
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsageJourney, name="Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsageJourney, name="Pattern 2")
 
         set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
 
@@ -108,8 +100,8 @@ class TestEdgeUsageJourney(TestCase):
 
     def test_systems_property_multiple_patterns(self):
         """Test systems property aggregates across multiple patterns."""
-        mock_pattern_1 = MagicMock()
-        mock_pattern_2 = MagicMock()
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsageJourney, name="Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsageJourney, name="Pattern 2")
         mock_system_1 = MagicMock()
         mock_system_2 = MagicMock()
         mock_system_3 = MagicMock()
@@ -133,18 +125,42 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual(expected_objects, dependent_objects)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me_with_edge_usage_patterns(self):
-        """Test that all edge_usage_patterns are returned as dependent objects when present."""
-        mock_pattern_1 = MagicMock()
-        mock_pattern_1.name = "Mock Pattern 1"
-        mock_pattern_2 = MagicMock()
-        mock_pattern_2.name = "Mock Pattern 2"
+        """Test that edge_functions stay as direct dependents even when patterns are linked."""
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsageJourney, name="Mock Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsageJourney, name="Mock Pattern 2")
 
         set_modeling_obj_containers(self.edge_usage_journey, [mock_pattern_1, mock_pattern_2])
 
         dependent_objects = self.edge_usage_journey.modeling_objects_whose_attributes_depend_directly_on_me
-        expected_objects = [mock_pattern_1, mock_pattern_2]
-        self.assertEqual(set(expected_objects), set(dependent_objects))
+        expected_objects = [self.mock_edge_function_1, self.mock_edge_function_2]
+        self.assertEqual(expected_objects, dependent_objects)
         self.assertEqual(len(expected_objects), len(dependent_objects))
+
+    @patch('efootprint.core.usage.edge.edge_usage_journey.compute_nb_avg_hourly_occurrences')
+    def test_update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self, mock_compute_nb_avg):
+        """Test updating journey-level parallel counts per edge usage pattern."""
+        mock_result = EmptyExplainableObject()
+        mock_compute_nb_avg.return_value = mock_result
+
+        mock_country = create_mod_obj_mock(Country, name="Mock Country")
+        mock_country.timezone = MagicMock()
+        mock_network = create_mod_obj_mock(Network, name="Mock Network")
+        hourly_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
+                                                    datetime(2023, 1, 1, 0, 0, 0), "test hourly starts")
+        edge_usage_pattern = EdgeUsagePattern("test edge usage pattern", edge_usage_journey=self.edge_usage_journey,
+                                              network=mock_network, country=mock_country,
+                                              hourly_edge_usage_journey_starts=hourly_starts)
+        utc_starts = ExplainableHourlyQuantities(np.array([1.0, 2.0, 3.0]) * u.concurrent,
+                                                 datetime(2023, 1, 1, 0, 0, 0), "UTC starts")
+        edge_usage_pattern.utc_hourly_edge_usage_journey_starts = utc_starts
+        set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern])
+
+        self.edge_usage_journey.update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern()
+
+        mock_compute_nb_avg.assert_called_once_with(utc_starts, self.usage_span)
+        self.assertEqual(
+            self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern],
+            mock_result)
 
 
 if __name__ == "__main__":

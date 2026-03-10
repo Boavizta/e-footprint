@@ -287,7 +287,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_country_2.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
         mock_pattern_2.country = mock_country_2
 
-        mock_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Mock Journey")
         mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
         mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern_1: mock_nb_parallel_1,
@@ -296,11 +296,15 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_pattern_1.edge_usage_journey = mock_journey
         mock_pattern_2.edge_usage_journey = mock_journey
 
-        mock_function = MagicMock(spec=EdgeFunction)
+        mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
         mock_function.edge_usage_journeys = [mock_journey]
+        mock_function.recurrent_edge_device_needs = []
+        mock_journey.edge_functions = [mock_function]
 
-        mock_device_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
+        mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
         mock_device_need.edge_functions = [mock_function]
+        mock_device_need.recurrent_edge_component_needs = [self.component_need]
+        mock_function.recurrent_edge_device_needs = [mock_device_need]
 
         set_modeling_obj_containers(self.component_need, [mock_device_need])
 
