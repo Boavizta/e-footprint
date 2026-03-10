@@ -54,6 +54,23 @@ class ImpactRepartitionSankey:
             return float(fraction.mean().magnitude)
         return float(fraction.magnitude)
 
+    def _expand_impact_repartition(self, node_idx, obj, total_tonnes, footprint_type, ancestor_ids=None):
+        if not hasattr(obj, "impact_repartition"):
+            return
+        ancestor_ids = set() if ancestor_ids is None else ancestor_ids
+        if obj.id in ancestor_ids:
+            return
+        next_ancestor_ids = ancestor_ids | {obj.id}
+        for child_obj, fraction in obj.impact_repartition.items():
+            child_value = total_tonnes * self._get_fraction_magnitude(fraction)
+            if child_value <= 0:
+                continue
+            child_key = (child_obj.id, footprint_type)
+            child_idx = self._add_node(child_obj.name, child_key, color_key=child_obj.id, obj=child_obj)
+            self._add_link(node_idx, child_idx, child_value)
+            self._expand_impact_repartition(
+                child_idx, child_obj, child_value, footprint_type, ancestor_ids=next_ancestor_ids)
+
     def build(self):
         if self._built:
             return
@@ -99,31 +116,7 @@ class ImpactRepartitionSankey:
                     obj_key = (obj.id, phase_label)
                     obj_idx = self._add_node(obj.name, obj_key, color_key=obj.id, obj=obj)
                     self._add_link(cat_idx, obj_idx, obj_tonnes)
-
-        expanded = set()
-        queue = [idx for idx in self.node_objects]
-        while queue:
-            next_queue = []
-            for node_idx in queue:
-                if node_idx in expanded:
-                    continue
-                expanded.add(node_idx)
-                obj = self.node_objects[node_idx]
-                if not hasattr(obj, "impact_repartition"):
-                    continue
-                total_tonnes = self.node_total_kg[node_idx] / 1000
-                footprint_type = self._get_footprint_type_for_node(node_idx)
-                for child_obj, fraction in obj.impact_repartition.items():
-                    frac_val = self._get_fraction_magnitude(fraction)
-                    child_value = total_tonnes * frac_val
-                    if child_value <= 0:
-                        continue
-                    child_key = (child_obj.id, footprint_type)
-                    child_idx = self._add_node(child_obj.name, child_key, color_key=child_obj.id, obj=child_obj)
-                    self._add_link(node_idx, child_idx, child_value)
-                    if child_idx not in expanded:
-                        next_queue.append(child_idx)
-            queue = next_queue
+                    self._expand_impact_repartition(obj_idx, obj, obj_tonnes, phase_label)
         self._aggregate_small_nodes_by_column()
 
     def _get_footprint_type_for_node(self, node_idx):
@@ -294,7 +287,7 @@ class ImpactRepartitionSankey:
 
 
 if __name__ == '__main__':
-    test = "json"
+    test = "edge"
     if test == "service":
         from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
         system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()

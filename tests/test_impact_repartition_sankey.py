@@ -4,6 +4,21 @@ from unittest.mock import MagicMock
 from efootprint.utils.impact_repartition_sankey import ImpactRepartitionSankey
 
 
+class _DummyQuantity:
+    def __init__(self, magnitude):
+        self.magnitude = magnitude
+
+
+class _DummyObject:
+    def __init__(self, name, object_id):
+        self.name = name
+        self.id = object_id
+        self.impact_repartition = {}
+
+    def __hash__(self):
+        return hash(self.id)
+
+
 class TestImpactRepartitionSankey(TestCase):
     def _make_object(self, name):
         obj = MagicMock()
@@ -63,3 +78,34 @@ class TestImpactRepartitionSankey(TestCase):
 
         self.assertNotIn("Other (2)", sankey.node_labels)
         self.assertEqual({}, sankey.aggregated_node_members)
+
+    def test_build_expands_recursive_repartition_for_each_incoming_contribution(self):
+        """Test recursive repartition is propagated from each incoming flow contribution."""
+        grandchild = _DummyObject("Grandchild", "grandchild")
+        child = _DummyObject("Child", "child")
+        parent = _DummyObject("Parent", "parent")
+        child.impact_repartition = {grandchild: _DummyQuantity(1)}
+        parent.impact_repartition = {child: _DummyQuantity(1)}
+
+        system = MagicMock()
+        system.name = "Test system"
+        system.total_fabrication_footprint_sum_over_period = {"edge": _DummyQuantity(200)}
+        system.total_energy_footprint_sum_over_period = {}
+        system.fabrication_footprint_sum_over_period = {"edge": {child: _DummyQuantity(100), parent: _DummyQuantity(100)}}
+        system.energy_footprint_sum_over_period = {}
+
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+
+        sankey.build()
+
+        child_idx = sankey.node_indices[("child", "fabrication")]
+        grandchild_idx = sankey.node_indices[("grandchild", "fabrication")]
+        incoming_to_grandchild = [
+            value
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+            if source == child_idx and target == grandchild_idx
+        ]
+
+        self.assertEqual([0.1, 0.1], incoming_to_grandchild)
+        self.assertEqual(0.2, sum(incoming_to_grandchild))
+        self.assertEqual(200, sankey.node_total_kg[grandchild_idx])
