@@ -13,6 +13,7 @@ class _DummyObject:
     def __init__(self, name, object_id):
         self.name = name
         self.id = object_id
+        self.class_as_simple_str = self.__class__.__name__.lstrip("_")
         self.impact_repartition = {}
 
     def __hash__(self):
@@ -115,13 +116,13 @@ class TestImpactRepartitionSankey(TestCase):
         system.name = "Test system"
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
 
-        node_idx = sankey._add_node("12345678901", ("long_name", "energy"))
+        node_idx = sankey._add_node("12345678901234", ("long_name", "energy"))
         sankey._total_system_kg = 1
         sankey.node_total_kg[node_idx] = 1
 
-        self.assertEqual("1234567890...", sankey.node_labels[node_idx])
-        self.assertEqual("12345678901", sankey.full_node_labels[node_idx])
-        self.assertTrue(sankey._build_hover_labels()[node_idx].startswith("12345678901<br>"))
+        self.assertEqual("1234567890123...", sankey.node_labels[node_idx])
+        self.assertEqual("12345678901234", sankey.full_node_labels[node_idx])
+        self.assertTrue(sankey._build_hover_labels()[node_idx].startswith("12345678901234<br>"))
 
     def test_node_label_max_length_is_configurable(self):
         system = MagicMock()
@@ -132,3 +133,43 @@ class TestImpactRepartitionSankey(TestCase):
 
         self.assertEqual("12345...", sankey.node_labels[node_idx])
         self.assertEqual("123456", sankey.full_node_labels[node_idx])
+
+    def test_get_column_metadata_returns_unique_class_names_and_positions(self):
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+
+        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
+        server = _DummyObject("Server", "server")
+        server.class_as_simple_str = "Server"
+        device = _DummyObject("Device", "device")
+        device.class_as_simple_str = "Device"
+        router = _DummyObject("Router", "router")
+        router.class_as_simple_str = "Router"
+        server_idx = sankey._add_node("Server", ("server", "energy"), obj=server)
+        device_idx = sankey._add_node("Device", ("device", "energy"), obj=device)
+        router_idx = sankey._add_node("Router", ("router", "energy"), obj=router)
+        sankey._total_system_kg = 1000
+        sankey.node_total_kg[total_idx] = 1000
+        sankey._add_link(total_idx, server_idx, 0.4)
+        sankey._add_link(total_idx, device_idx, 0.3)
+        sankey._add_link(server_idx, router_idx, 0.2)
+
+        column_metadata = sankey.get_column_metadata()
+
+        self.assertEqual([
+            {"column_index": 1, "x_center": 0.5, "class_names": ["Device", "Server"]},
+            {"column_index": 2, "x_center": 0.8333333333333334, "class_names": ["Router"]},
+        ], column_metadata)
+
+    def test_get_column_metadata_includes_aggregated_member_classes(self):
+        sankey = self._build_sankey(aggregation_threshold_percent=15)
+        for node in sankey.node_objects.values():
+            node.class_as_simple_str = node.name.replace(" ", "")
+
+        column_metadata = sankey.get_column_metadata()
+
+        self.assertEqual([
+            {"column_index": 1, "x_center": 0.5, "class_names": ["Parent", "SmallA", "SmallB"]},
+            {"column_index": 2, "x_center": 0.8333333333333334, "class_names": ["ChildBig", "ChildSmallA", "ChildSmallB"]},
+        ], column_metadata)

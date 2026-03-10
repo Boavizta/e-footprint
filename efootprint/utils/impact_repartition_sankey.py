@@ -22,6 +22,7 @@ class ImpactRepartitionSankey:
         self.node_color_keys = []  # object id or structural key, for consistent coloring
         self.node_objects = {}
         self.aggregated_node_members = {}
+        self.aggregated_node_classes = {}
         self.link_sources = []
         self.link_targets = []
         self.link_values = []
@@ -33,6 +34,13 @@ class ImpactRepartitionSankey:
         if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
             return label
         return f"{label[:self.node_label_max_length].strip()}..."
+
+    @staticmethod
+    def _format_class_name(obj):
+        class_name = getattr(obj, "class_as_simple_str", None)
+        if isinstance(class_name, str) and class_name:
+            return class_name
+        return obj.__class__.__name__.lstrip("_")
 
     def _add_node(self, label, key, color_key=None, obj=None):
         if key in self.node_indices:
@@ -185,6 +193,7 @@ class ImpactRepartitionSankey:
         self.node_color_keys = []
         self.node_objects = {}
         self.aggregated_node_members = {}
+        self.aggregated_node_classes = {}
         self.link_sources = []
         self.link_targets = []
         self.link_values = []
@@ -204,6 +213,11 @@ class ImpactRepartitionSankey:
                 f"Other ({len(group_members)})", ("__aggregated__", column), color_key=f"__aggregated__{column}")
             self.aggregated_node_members[aggregate_idx] = [
                 (original_full_labels[idx], original_node_total_kg[idx]) for idx in group_members]
+            self.aggregated_node_classes[aggregate_idx] = sorted({
+                self._format_class_name(original_node_objects[idx])
+                for idx in group_members
+                if idx in original_node_objects
+            })
             for old_idx in group_members:
                 old_to_new_indices[old_idx] = aggregate_idx
 
@@ -266,6 +280,30 @@ class ImpactRepartitionSankey:
             tgt_label = self.full_node_labels[self.link_targets[i]]
             link_labels.append(f"{src_label} → {tgt_label}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
+
+    def get_column_metadata(self):
+        if not self._built:
+            self.build()
+        node_columns = self._compute_node_columns()
+        if not node_columns:
+            return []
+
+        classes_by_column = {}
+        for node_idx, column in node_columns.items():
+            if node_idx in self.node_objects:
+                classes_by_column.setdefault(column, set()).add(self._format_class_name(self.node_objects[node_idx]))
+            if node_idx in self.aggregated_node_classes:
+                classes_by_column.setdefault(column, set()).update(self.aggregated_node_classes[node_idx])
+
+        if not classes_by_column:
+            return []
+
+        max_column = max(node_columns.values())
+        return [{
+            "column_index": column,
+            "x_center": 0.5 if max_column == 0 else (column + 0.5) / (max_column + 1),
+            "class_names": sorted(class_names),
+        } for column, class_names in sorted(classes_by_column.items()) if class_names]
 
     def figure(self, title=None, width=1800):
         import plotly.graph_objects as go
