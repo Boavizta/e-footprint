@@ -9,10 +9,11 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.constants.units import u
-from tests.utils import initialize_explainable_object_dict_key
+from tests.utils import create_mod_obj_mock
 
 
 class TestRecurrentEdgeStorageNeed(TestCase):
@@ -39,15 +40,18 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_monday_start(self):
         """Test update when starting on Monday 00:00 - no values should be zeroed."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern Monday"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern Monday")
         mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         # 2025-01-06 is a Monday
         mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-06T00:00:00")
         mock_country = MagicMock()
         mock_timezone = MagicMock()
+        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
 
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
+        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: mock_nb_euj_in_parallel
+        }
+        mock_pattern.edge_usage_journey = mock_edge_usage_journey
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 
@@ -70,15 +74,18 @@ class TestRecurrentEdgeStorageNeed(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_non_monday_start(self):
         """Test update when not starting on Monday 00:00 - values should be zeroed until first Monday."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern Wednesday"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern Wednesday")
         mock_nb_euj_in_parallel = MagicMock(spec=ExplainableHourlyQuantities)
         # 2025-01-01 is a Wednesday at 00:00
         mock_nb_euj_in_parallel.start_date = ciso8601.parse_datetime("2025-01-01T00:00:00")
         mock_country = MagicMock()
         mock_timezone = MagicMock()
+        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
 
-        mock_pattern.nb_edge_usage_journeys_in_parallel = mock_nb_euj_in_parallel
+        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: mock_nb_euj_in_parallel
+        }
+        mock_pattern.edge_usage_journey = mock_edge_usage_journey
         mock_pattern.country = mock_country
         mock_country.timezone = mock_timezone
 

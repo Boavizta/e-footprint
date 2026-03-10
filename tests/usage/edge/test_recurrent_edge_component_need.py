@@ -17,7 +17,7 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
-from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestRecurrentEdgeComponentNeed(TestCase):
@@ -126,9 +126,9 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
     def test_edge_usage_patterns_property_multiple_journeys_with_deduplication(self):
         """Test edge_usage_patterns property deduplicates across journeys."""
-        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_3 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        mock_pattern_3 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 3")
 
         mock_journey_1 = MagicMock(spec=EdgeUsageJourney)
         mock_journey_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -268,25 +268,20 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
     def test_update_unitary_hourly_need_per_usage_pattern(self):
         """Test updating unitary hourly need for all usage patterns."""
-        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_1.id = "pattern_1"
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         start_date_1 = datetime(2023, 1, 1, 0, 0, 0)
         hourly_data_1 = np.array([5.0] * 10000) * u.concurrent
-        mock_pattern_1.nb_edge_usage_journeys_in_parallel = ExplainableHourlyQuantities(
-            hourly_data_1, start_date_1, "test parallel journeys 1")
+        mock_nb_parallel_1 = ExplainableHourlyQuantities(hourly_data_1, start_date_1, "test parallel journeys 1")
 
         mock_country_1 = MagicMock()
         mock_country_1.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
         mock_pattern_1.country = mock_country_1
 
-        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_2.name = "Pattern 2"
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
 
         start_date_2 = datetime(2023, 1, 8, 0, 0, 0)
         hourly_data_2 = np.array([10.0] * 1000) * u.concurrent
-        mock_pattern_2.nb_edge_usage_journeys_in_parallel = ExplainableHourlyQuantities(
-            hourly_data_2, start_date_2, "test parallel journeys 2")
+        mock_nb_parallel_2 = ExplainableHourlyQuantities(hourly_data_2, start_date_2, "test parallel journeys 2")
         mock_pattern_2.id = "pattern_2"
         mock_country_2 = MagicMock()
         mock_country_2.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
@@ -294,6 +289,12 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern_1: mock_nb_parallel_1,
+            mock_pattern_2: mock_nb_parallel_2,
+        }
+        mock_pattern_1.edge_usage_journey = mock_journey
+        mock_pattern_2.edge_usage_journey = mock_journey
 
         mock_function = MagicMock(spec=EdgeFunction)
         mock_function.edge_usage_journeys = [mock_journey]

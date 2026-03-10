@@ -15,9 +15,14 @@ def set_modeling_obj_containers(efootprint_obj: ModelingObject, mod_obj_containe
     efootprint_obj.contextual_modeling_obj_containers = mock_contextual_containers
 
 
-def initialize_explainable_object_dict_key(modeling_obj):
-    modeling_obj.explainable_object_dicts_containers = []
-    return modeling_obj
+def create_mod_obj_mock(efootprint_class, name: str = None, **kwargs):
+    mock_obj = MagicMock(spec=efootprint_class)
+    mock_obj.name = name if name else "Mock " + efootprint_class.__name__
+    mock_obj.id = mock_obj.name.replace(" ", "-").lower()
+    mock_obj.explainable_object_dicts_containers = []
+    for key, value in kwargs.items():
+        setattr(mock_obj, key, value)
+    return mock_obj
 
 def get_canonical_class_index(obj: ModelingObject):
     from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER

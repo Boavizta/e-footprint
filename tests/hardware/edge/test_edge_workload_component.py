@@ -11,7 +11,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestEdgeWorkloadComponent(TestCase):
@@ -35,9 +35,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern aggregates workloads."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern_id"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
         mock_need_1 = MagicMock(spec=RecurrentEdgeComponentNeed)
         mock_need_2 = MagicMock(spec=RecurrentEdgeComponentNeed)
@@ -62,12 +60,8 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
-        mock_pattern1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern1.name = "Pattern 1"
-        mock_pattern2.name = "Pattern 2"
-        mock_pattern1.id = "pattern1"
-        mock_pattern2.id = "pattern2"
+        mock_pattern1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        mock_pattern2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
 
         mock_need = MagicMock(spec=RecurrentEdgeComponentNeed)
         mock_need.edge_usage_patterns = [mock_pattern1, mock_pattern2]
@@ -93,9 +87,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculates power based on workload."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", id="test_pattern")
 
         workload_values = create_source_hourly_values_from_list([0.0, 0.5, 1.0], pint_unit=u.concurrent)
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = workload_values
@@ -113,9 +105,7 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_with_empty_workload(self):
         """Test power calculation with EmptyExplainableObject workload."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern", id="test_pattern")
 
         self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern] = EmptyExplainableObject()
 
@@ -128,12 +118,8 @@ class TestEdgeWorkloadComponent(TestCase):
 
     def test_update_unitary_power_per_usage_pattern(self):
         """Test update_unitary_power_per_usage_pattern updates all patterns."""
-        mock_pattern1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern1.name = "Pattern 1"
-        mock_pattern2.name = "Pattern 2"
-        mock_pattern1.id = "pattern1"
-        mock_pattern2.id = "pattern2"
+        mock_pattern1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        mock_pattern2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
 
         workload_values1 = create_source_hourly_values_from_list([0.2], pint_unit=u.concurrent)
         workload_values2 = create_source_hourly_values_from_list([0.5], pint_unit=u.concurrent)

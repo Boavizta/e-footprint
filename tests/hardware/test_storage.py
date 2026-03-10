@@ -14,7 +14,7 @@ from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job
-from tests.utils import initialize_explainable_object_dict_key
+from tests.utils import create_mod_obj_mock
 
 
 class TestStorage(TestCase):
@@ -46,11 +46,9 @@ class TestStorage(TestCase):
         # job stores [2, 4, 6] TB across time, replication=1, storage duration=1 hour
         # rate = [2, 4, 6] TB, auto_dumps = -shift([2, 4, 6], 1) = [0, -2, -4]
         # delta = [2, 2, 2], cumsum = [2, 4, 6]
-        job = initialize_explainable_object_dict_key(MagicMock(spec=Job))
-        job.name = "job1"
-        job.id = "job1"
-        job.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list(
-            [2, 4, 6], pint_unit=u.TB)
+        job = create_mod_obj_mock(
+            Job, name="job1", hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([2, 4, 6], pint_unit=u.TB)
+        )
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(1 * u.dimensionless)), \
                 patch.object(self.storage_base, "data_storage_duration", SourceValue(1 * u.hours)):
@@ -62,12 +60,12 @@ class TestStorage(TestCase):
         """Test per-job cumulative applies data_replication_factor."""
         # rate = [1, 2, 3] * 3 (replication) = [3, 6, 9], storage_duration=5h (no dumps within 3h)
         # delta = [3, 6, 9], cumsum = [3, 9, 18]
-        job = initialize_explainable_object_dict_key(MagicMock(spec=Job))
-        job.data_stored = SourceValue(1 * u.TB)
-        job.name = "job_replication"
-        job.id = "job_replication"
-        job.hourly_data_stored_across_usage_patterns = create_source_hourly_values_from_list(
-            [1, 2, 3], pint_unit=u.TB)
+        job = create_mod_obj_mock(
+            Job,
+            name="job_replication",
+            data_stored=SourceValue(1 * u.TB),
+            hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB),
+        )
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)), \
                 patch.object(self.storage_base, "data_storage_duration", SourceValue(5 * u.hours)):
@@ -81,14 +79,8 @@ class TestStorage(TestCase):
         # sum = [3, 2, 7, 5, 10], + base=5 → [8, 7, 12, 10, 15]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        job1 = initialize_explainable_object_dict_key(MagicMock(spec=Job))
-        job1.data_stored = SourceValue(1 * u.TB)
-        job1.name = "positive_job"
-        job1.id = "positive_job"
-        job2 = initialize_explainable_object_dict_key(MagicMock(spec=Job))
-        job2.data_stored = SourceValue(-1 * u.TB)
-        job2.name = "negative_job"
-        job2.id = "negative_job"
+        job1 = create_mod_obj_mock(Job, name="positive_job", data_stored=SourceValue(1 * u.TB))
+        job2 = create_mod_obj_mock(Job, name="negative_job", data_stored=SourceValue(-1 * u.TB))
         per_job = ExplainableObjectDict({
             job1: create_source_hourly_values_from_list([2, 0, 4, 1, 5], start_date, pint_unit=u.TB),
             job2: create_source_hourly_values_from_list([1, 2, 3, 4, 5], start_date, pint_unit=u.TB),

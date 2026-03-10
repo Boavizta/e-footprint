@@ -5,15 +5,13 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from tests.utils import initialize_explainable_object_dict_key
+from tests.utils import create_mod_obj_mock
 
 
 class TestExplainableObjectDict(unittest.TestCase):
 
     def setUp(self):
-        self.mock_modeling_obj = initialize_explainable_object_dict_key(MagicMock(spec=ModelingObject))
-        self.mock_modeling_obj.id = "mock_id"
-        self.mock_modeling_obj.name = "mock_modeling_obj"
+        self.mock_modeling_obj = create_mod_obj_mock(ModelingObject, name="mock_modeling_obj", id="mock_id")
 
         self.mock_explainable_obj = MagicMock(spec=ExplainableObject)
         self.mock_explainable_obj.id = "mock_explainable_id"
@@ -36,9 +34,7 @@ class TestExplainableObjectDict(unittest.TestCase):
         self.assertEqual(self.dict_obj.attr_name_in_mod_obj_container, "attr_name")
 
         # Test setting a conflicting modeling object
-        other_mock_modeling_obj = MagicMock()
-        other_mock_modeling_obj.id = "other_mock_id"
-        other_mock_modeling_obj.name = "other_mock_modeling_obj"
+        other_mock_modeling_obj = create_mod_obj_mock(ModelingObject, name="other_mock_modeling_obj", id="other_mock_id")
 
         with self.assertRaises(PermissionError):
             self.dict_obj.set_modeling_obj_container(other_mock_modeling_obj, "another_attr")
@@ -79,10 +75,9 @@ class TestExplainableObjectDict(unittest.TestCase):
         self.assertTrue("mock_id" in repr_output)
 
     def test_str(self):
-        mock_modeling_obj = initialize_explainable_object_dict_key(MagicMock(spec=ModelingObject))
-        mock_modeling_obj.id = "mock_modeling_obj_id"
-        mock_modeling_obj.name = "mock_modeling_obj"
-        mock_modeling_obj.class_as_simple_str = "ModelingObject"
+        mock_modeling_obj = create_mod_obj_mock(
+            ModelingObject, name="mock_modeling_obj", id="mock_modeling_obj_id", class_as_simple_str="ModelingObject"
+        )
         self.dict_obj[mock_modeling_obj] = self.mock_explainable_obj
         str_output = str(self.dict_obj)
         self.assertTrue("mock_modeling_obj_id" in str_output)

@@ -16,7 +16,7 @@ from efootprint.core.usage.job import JobBase
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestRecurrentServerNeed(TestCase):
@@ -79,8 +79,8 @@ class TestRecurrentServerNeed(TestCase):
 
     def test_edge_usage_patterns_property_with_deduplication(self):
         """Test edge_usage_patterns deduplicates across journeys."""
-        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_2 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
 
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
@@ -132,19 +132,18 @@ class TestRecurrentServerNeed(TestCase):
 
     def test_update_unitary_hourly_volume_per_usage_pattern(self):
         """Test updating unitary hourly volume for all usage patterns."""
-        mock_pattern_1 = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern_1.name = "Pattern 1"
-        mock_pattern_1.id = "pattern_1"
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         start_date_1 = datetime(2023, 1, 1, 0, 0, 0)
         hourly_data_1 = np.array([5.0] * 1000) * u.concurrent
-        mock_pattern_1.nb_edge_usage_journeys_in_parallel = ExplainableHourlyQuantities(
-            hourly_data_1, start_date_1, "test parallel journeys 1")
+        mock_nb_parallel = ExplainableHourlyQuantities(hourly_data_1, start_date_1, "test parallel journeys 1")
         mock_country_1 = MagicMock()
         mock_country_1.timezone = SourceTimezone(pytz.timezone("Europe/Paris"))
         mock_pattern_1.country = mock_country_1
 
         mock_journey = MagicMock(spec=EdgeUsageJourney)
         mock_journey.edge_usage_patterns = [mock_pattern_1]
+        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {mock_pattern_1: mock_nb_parallel}
+        mock_pattern_1.edge_usage_journey = mock_journey
 
         mock_function = MagicMock(spec=EdgeFunction)
         mock_function.edge_usage_journeys = [mock_journey]

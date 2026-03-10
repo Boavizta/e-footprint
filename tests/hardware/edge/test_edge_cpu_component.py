@@ -11,7 +11,7 @@ from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestEdgeCPUComponent(TestCase):
@@ -61,9 +61,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern_id"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
         mock_need_1 = MagicMock(spec=RecurrentEdgeComponentNeed)
         mock_need_2 = MagicMock(spec=RecurrentEdgeComponentNeed)
@@ -89,9 +87,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern_id"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
         mock_need = MagicMock(spec=RecurrentEdgeComponentNeed)
         compute_need = create_source_hourly_values_from_list([0.5, 1.0, 10.0], pint_unit=u.cpu_core)  # Peak of 10.0 cpu_core
@@ -110,9 +106,7 @@ class TestEdgeCPUComponent(TestCase):
 
     def test_update_dict_element_in_unitary_power_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_power_per_usage_pattern calculation based on compute workload."""
-        mock_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        mock_pattern.name = "Test Pattern"
-        mock_pattern.id = "test_pattern_id"
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
         compute_need = create_source_hourly_values_from_list([0, 4, 7], pint_unit=u.cpu_core)
         self.cpu_component.unitary_hourly_compute_need_per_usage_pattern = {mock_pattern: compute_need}

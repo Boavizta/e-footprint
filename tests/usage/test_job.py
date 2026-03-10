@@ -11,11 +11,12 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.server import Server
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.constants.units import u
 from efootprint.core.usage.usage_pattern import UsagePattern
-from tests.utils import initialize_explainable_object_dict_key, set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestJob(TestCase):
@@ -90,9 +91,7 @@ class TestJob(TestCase):
         uj1.uj_steps = [uj_step11]
         uj_step11.jobs = [self.job]
         uj_step11.user_time_spent = SourceValue(90 * u.min)
-        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
-        usage_pattern.name = "usage pattern"
-        usage_pattern.usage_journey = uj1
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -113,9 +112,7 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(40 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
-        usage_pattern.name = "usage pattern"
-        usage_pattern.usage_journey = uj1
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -136,9 +133,7 @@ class TestJob(TestCase):
         uj_step11.user_time_spent = SourceValue(61 * u.min)
         uj_step12.jobs = [self.job]
         uj_step12.user_time_spent = SourceValue(4 * u.min)
-        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
-        usage_pattern.name = "usage pattern"
-        usage_pattern.usage_journey = uj1
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -163,9 +158,7 @@ class TestJob(TestCase):
         uj_step12.user_time_spent = SourceValue(4 * u.min)
         uj_step13.jobs = [self.job, self.job]
         uj_step13.user_time_spent = SourceValue(1 * u.min)
-        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
-        usage_pattern.name = "usage pattern"
-        usage_pattern.usage_journey = uj1
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
         hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
         usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
@@ -181,9 +174,7 @@ class TestJob(TestCase):
 
     def test_compute_job_hourly_data_exchange(self):
         data_exchange = "data_stored"
-        usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=UsagePattern))
-        usage_pattern.name = "usage pattern"
-        usage_pattern.id = "usage_pattern_id"
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", id="usage_pattern_id")
         hourly_avg_occs_per_up = ExplainableObjectDict(
             {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
@@ -197,8 +188,8 @@ class TestJob(TestCase):
         self.assertEqual(u.MB, job_hourly_data_exchange.unit)
             
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
-        usage_pattern1 = initialize_explainable_object_dict_key(MagicMock())
-        usage_pattern2 = initialize_explainable_object_dict_key(MagicMock())
+        usage_pattern1 = create_mod_obj_mock(UsagePattern, name="usage pattern 1")
+        usage_pattern2 = create_mod_obj_mock(UsagePattern, name="usage pattern 2")
         hourly_calc_attr_per_up = ExplainableObjectDict({
             usage_pattern1: create_source_hourly_values_from_list([1, 2, 5]),
             usage_pattern2: create_source_hourly_values_from_list([3, 2, 4])})
@@ -276,13 +267,17 @@ class TestJob(TestCase):
     def test_compute_hourly_job_occurrences_for_edge_usage_pattern(self):
         """Test update_dict_element_in_hourly_occurrences_per_usage_pattern for EdgeUsagePattern."""
         # Setup edge usage pattern
-        edge_usage_pattern = initialize_explainable_object_dict_key(MagicMock(spec=EdgeUsagePattern))
-        edge_usage_pattern.class_as_simple_str = "EdgeUsagePattern"
-        edge_usage_pattern.name = "Edge Pattern"
+        edge_usage_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="Edge Pattern", class_as_simple_str="EdgeUsagePattern"
+        )
 
         # Setup nb_edge_usage_journeys_in_parallel
         nb_parallel = create_source_hourly_values_from_list([2, 3, 4, 5])
-        edge_usage_pattern.nb_edge_usage_journeys_in_parallel = nb_parallel
+        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            edge_usage_pattern: nb_parallel
+        }
+        edge_usage_pattern.edge_usage_journey = mock_edge_usage_journey
 
         # Setup recurrent server need with unitary hourly volume
         unitary_volume = create_source_hourly_values_from_list([1, 1, 1, 1])
