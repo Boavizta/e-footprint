@@ -12,12 +12,14 @@ _COLORS = [
 
 
 class ImpactRepartitionSankey:
-    def __init__(self, system):
+    def __init__(self, system, aggregation_threshold_percent=1):
         self.system = system
+        self.aggregation_threshold_percent = aggregation_threshold_percent
         self.node_labels = []
         self.node_indices = {}
         self.node_color_keys = []  # object id or structural key, for consistent coloring
         self.node_objects = {}
+        self.aggregated_node_members = {}
         self.link_sources = []
         self.link_targets = []
         self.link_values = []
@@ -122,12 +124,101 @@ class ImpactRepartitionSankey:
                     if child_idx not in expanded:
                         next_queue.append(child_idx)
             queue = next_queue
+        self._aggregate_small_nodes_by_column()
 
     def _get_footprint_type_for_node(self, node_idx):
         for key, idx in self.node_indices.items():
             if idx == node_idx:
                 return key[1]
         return "unknown"
+
+    def _compute_node_columns(self):
+        if not self.link_sources:
+            return {idx: 0 for idx in range(len(self.node_labels))}
+        adjacency = {}
+        incoming_count = {idx: 0 for idx in range(len(self.node_labels))}
+        for source, target in zip(self.link_sources, self.link_targets):
+            adjacency.setdefault(source, []).append(target)
+            incoming_count[target] = incoming_count.get(target, 0) + 1
+            incoming_count.setdefault(source, 0)
+        root_nodes = [idx for idx, nb_incoming in incoming_count.items() if nb_incoming == 0]
+        node_columns = {root_idx: 0 for root_idx in root_nodes}
+        queue = list(root_nodes)
+        while queue:
+            node_idx = queue.pop(0)
+            for child_idx in adjacency.get(node_idx, []):
+                next_col = node_columns[node_idx] + 1
+                if child_idx not in node_columns or next_col < node_columns[child_idx]:
+                    node_columns[child_idx] = next_col
+                    queue.append(child_idx)
+        return node_columns
+
+    def _aggregate_small_nodes_by_column(self):
+        if self.aggregation_threshold_percent <= 0 or self._total_system_kg <= 0:
+            return
+        node_columns = self._compute_node_columns()
+        threshold_kg = self._total_system_kg * self.aggregation_threshold_percent / 100
+        aggregate_groups = {}
+        for node_idx in self.node_objects:
+            if self.node_total_kg[node_idx] >= threshold_kg:
+                continue
+            column = node_columns.get(node_idx)
+            if column is None:
+                continue
+            aggregate_groups.setdefault(column, []).append(node_idx)
+        aggregate_groups = {column: group for column, group in aggregate_groups.items() if len(group) >= 2}
+        if not aggregate_groups:
+            return
+
+        original_node_keys = {idx: key for key, idx in self.node_indices.items()}
+        original_labels = list(self.node_labels)
+        original_color_keys = list(self.node_color_keys)
+        original_node_objects = dict(self.node_objects)
+        original_links = list(zip(self.link_sources, self.link_targets, self.link_values))
+        original_node_total_kg = list(self.node_total_kg)
+        nodes_to_aggregate = {node_idx for group in aggregate_groups.values() for node_idx in group}
+
+        self.node_labels = []
+        self.node_indices = {}
+        self.node_color_keys = []
+        self.node_objects = {}
+        self.aggregated_node_members = {}
+        self.link_sources = []
+        self.link_targets = []
+        self.link_values = []
+        self.node_total_kg = []
+
+        old_to_new_indices = {}
+        for old_idx, label in enumerate(original_labels):
+            if old_idx in nodes_to_aggregate:
+                continue
+            new_idx = self._add_node(
+                label, original_node_keys[old_idx], color_key=original_color_keys[old_idx], obj=original_node_objects.get(old_idx))
+            old_to_new_indices[old_idx] = new_idx
+
+        for column, group in aggregate_groups.items():
+            group_members = sorted(group, key=lambda idx: original_node_total_kg[idx], reverse=True)
+            aggregate_idx = self._add_node(
+                f"Other ({len(group_members)})", ("__aggregated__", column), color_key=f"__aggregated__{column}")
+            self.aggregated_node_members[aggregate_idx] = [
+                (original_labels[idx], original_node_total_kg[idx]) for idx in group_members]
+            for old_idx in group_members:
+                old_to_new_indices[old_idx] = aggregate_idx
+
+        combined_links = {}
+        for source, target, value in original_links:
+            new_source = old_to_new_indices[source]
+            new_target = old_to_new_indices[target]
+            if new_source == new_target:
+                continue
+            combined_links[(new_source, new_target)] = combined_links.get((new_source, new_target), 0) + value
+
+        for (source, target), value in combined_links.items():
+            self._add_link(source, target, value)
+
+        for old_idx, new_idx in old_to_new_indices.items():
+            if old_idx not in nodes_to_aggregate and original_node_total_kg[old_idx] > self.node_total_kg[new_idx]:
+                self.node_total_kg[new_idx] = original_node_total_kg[old_idx]
 
     def _compute_node_colors(self):
         # Map each unique color_key to a consistent color
@@ -137,6 +228,9 @@ class ImpactRepartitionSankey:
         key_to_color["__system__"] = "rgba(100,100,100,0.8)"
         key_to_color["__fabrication__"] = "rgba(180,80,80,0.8)"
         key_to_color["__energy__"] = "rgba(80,120,180,0.8)"
+        for key in unique_keys:
+            if isinstance(key, str) and key.startswith("__aggregated__"):
+                key_to_color[key] = "rgba(160,160,160,0.8)"
         color_idx = 0
         for key in unique_keys:
             if key not in key_to_color:
@@ -150,6 +244,13 @@ class ImpactRepartitionSankey:
             kg = self.node_total_kg[idx]
             amount_str = display_co2_amount(format_co2_amount(kg))
             pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
+            if idx in self.aggregated_node_members:
+                members_str = "<br>".join(
+                    f"{label}: {display_co2_amount(format_co2_amount(member_kg))} CO2eq"
+                    for label, member_kg in self.aggregated_node_members[idx])
+                node_hover.append(
+                    f"{self.node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
+                continue
             node_hover.append(f"{self.node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return node_hover
 
@@ -188,17 +289,27 @@ class ImpactRepartitionSankey:
                 color=link_colors, customdata=link_labels, hovertemplate="%{customdata}<extra></extra>",
             ),
         )])
-        fig.update_layout(title_text=title, font_size=12, height=600, width=width)
+        fig.update_layout(title_text=title, font_size=12, height=800, width=width)
         return fig
 
 
 if __name__ == '__main__':
-    # from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
-    # system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
-    from tests.integration_tests.integration_simple_edge_system_base_class import IntegrationTestSimpleEdgeSystemBaseClass
-    system, start_date = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
-    print(system.edge_usage_patterns[0].attributed_fabrication_footprint.sum())
-    print(system.edge_usage_patterns[0].attributed_energy_footprint.sum())
+    test = "json"
+    if test == "service":
+        from tests.integration_tests.integration_services_base_class import IntegrationTestServicesBaseClass
+        system, start_date = IntegrationTestServicesBaseClass.generate_system_with_services()
+    elif test == "edge":
+        from tests.integration_tests.integration_simple_edge_system_base_class import IntegrationTestSimpleEdgeSystemBaseClass
+        system, start_date = IntegrationTestSimpleEdgeSystemBaseClass.generate_simple_edge_system()
+        print(system.edge_usage_patterns[0].attributed_fabrication_footprint.sum())
+        print(system.edge_usage_patterns[0].attributed_energy_footprint.sum())
+    elif test == "json":
+        from efootprint.api_utils.json_to_system import json_to_system
+        import json
+        with open("scenarioC_smart_building_system.json", "r") as f:
+            json_data = json.load(f)
+        class_obj_dict, flat_obj_dict = json_to_system(json_data)
+        system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(system)
     fig = sankey.figure()
     fig.show()
