@@ -14,7 +14,7 @@ _COLORS = [
 class ImpactRepartitionSankey:
     def __init__(
             self, system, aggregation_threshold_percent=1, node_label_max_length=13,
-            skipped_impact_repartition_classes=None, skip_total_footprint_split=False,
+            skipped_impact_repartition_classes=None, skip_total_footprint_split=True,
             skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
             skip_object_footprint_split=False,
             display_column_information=True):
@@ -149,7 +149,7 @@ class ImpactRepartitionSankey:
         self._total_system_kg = total_fab_kg + total_energy_kg
 
         phase_parents = {"fabrication": None, "energy": None}
-        current_column_index = 0
+        current_column_index = 1
         if not self.skip_total_footprint_split:
             system_idx = self._add_node(system.name, ("system", "total"), color_key="__system__")
             self.node_total_kg[system_idx] = self._total_system_kg
@@ -245,7 +245,7 @@ class ImpactRepartitionSankey:
             incoming_count[target] = incoming_count.get(target, 0) + 1
             incoming_count.setdefault(source, 0)
         root_nodes = [idx for idx, nb_incoming in incoming_count.items() if nb_incoming == 0]
-        node_columns = {root_idx: 0 for root_idx in root_nodes}
+        node_columns = {root_idx: 1 for root_idx in root_nodes}
         remaining_incoming = dict(incoming_count)
         queue = deque(root_nodes)
         while queue:
@@ -498,6 +498,8 @@ if __name__ == '__main__':
     from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
     from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
     test = "json"
+    json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
+                  "scenarioC_smart_building_system.json", "basic-edge.json"]
     skipped_impact_repartition_classes__full = [
         JobBase, EdgeWorkloadComponent, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed]
     skipped_impact_repartition_classes = [
@@ -513,12 +515,11 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open("scenarioC_smart_building_system.json", "r") as f:
+        with open(json_files[4], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
-        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=skipped_impact_repartition_classes,
-    skip_total_footprint_split=True, skip_object_footprint_split=True)
+        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=[])
     fig = sankey.figure()
     fig.show()
