@@ -47,8 +47,9 @@ SERVICE_JOB_CLASSES = [VideoStreamingJob]
 EXTERNAL_API_SERVER_CLASSES = [EcoLogitsGenAIExternalAPIServer]
 from efootprint.builders.external_apis.ecologits import ecologits_custom_external_api
 EcoLogitsCustomGenAIExternalAPI = ecologits_custom_external_api.EcoLogitsCustomGenAIExternalAPI
+EcoLogitsCustomGenAIExternalAPIJob = ecologits_custom_external_api.EcoLogitsCustomGenAIExternalAPIJob
 EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI, EcoLogitsCustomGenAIExternalAPI]
-EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob]
+EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob, EcoLogitsCustomGenAIExternalAPIJob]
 SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 EDGE_COMPONENT_CLASSES = [EdgeRAMComponent, EdgeCPUComponent, EdgeWorkloadComponent, EdgeStorage]
