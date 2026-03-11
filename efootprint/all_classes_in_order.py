@@ -45,6 +45,8 @@ from efootprint.builders.external_apis.ecologits.ecologits_custom_external_api i
 SERVICE_CLASSES = [VideoStreaming]
 SERVICE_JOB_CLASSES = [VideoStreamingJob]
 EXTERNAL_API_SERVER_CLASSES = [EcoLogitsGenAIExternalAPIServer]
+from efootprint.builders.external_apis.ecologits import ecologits_custom_external_api
+EcoLogitsCustomGenAIExternalAPI = ecologits_custom_external_api.EcoLogitsCustomGenAIExternalAPI
 EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI, EcoLogitsCustomGenAIExternalAPI]
 EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob]
 SERVER_CLASSES = [Server, GPUServer]
