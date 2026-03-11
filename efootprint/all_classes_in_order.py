@@ -78,3 +78,15 @@ ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION
 ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
 ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
 ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)
+
+SANKEY_COLUMNS = [
+    [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
+    [EdgeComponent],
+    [RecurrentEdgeComponentNeed],
+    [JobBase],
+    [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
+    [EdgeFunction, UsageJourneyStep],
+    [UsageJourney, EdgeUsageJourney],
+    [UsagePattern, EdgeUsagePattern],
+    [Country]
+]
