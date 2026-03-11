@@ -26,7 +26,7 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
         "custom_model_total_parameter_count": SourceValue(100 * ECOLOGITS_UNIT_MAPPING["model_total_parameter_count"]),
         "custom_model_active_parameter_count": SourceValue(100 * ECOLOGITS_UNIT_MAPPING["model_active_parameter_count"]),
         "custom_data_center_pue": SourceValue(1.2 * u.dimensionless),
-        "custom_average_carbon_intensity": SourceValue(500 * ECOLOGITS_UNIT_MAPPING["if_electricity_mix_gwp"]),
+        "custom_average_carbon_intensity": SourceValue(100 * u.g / u.kWh),
         "custom_batch_size": SourceValue(64 * ECOLOGITS_UNIT_MAPPING["batch_size"]),
         "custom_model_quantization_bits": SourceValue(16 * ECOLOGITS_UNIT_MAPPING["model_quantization_bits"]),
         "custom_server_power": SourceValue(1.2 * ECOLOGITS_UNIT_MAPPING["server_power"]),
@@ -36,6 +36,18 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
 
     list_values = {"provider": EcoLogitsGenAIExternalAPI.list_values["provider"]}
     conditional_list_values = {}
+
+    @classmethod
+    def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
+                       is_loaded_from_system_with_calculated_attributes=False):
+        new_obj, explainable_object_dicts_to_create_after_objects_creation = super().from_json_dict(
+            object_json_dict, flat_obj_dict, set_trigger_modeling_updates_to_true,
+            is_loaded_from_system_with_calculated_attributes)
+
+        if isinstance(getattr(new_obj, "custom_average_carbon_intensity", None), ExplainableQuantity):
+            new_obj.custom_average_carbon_intensity.to(u.g / u.kWh)
+
+        return new_obj, explainable_object_dicts_to_create_after_objects_creation
 
     def __init__(self, name: str, provider: ExplainableObject, model_name: ExplainableObject,
                  custom_model_total_parameter_count: ExplainableQuantity,
@@ -68,7 +80,7 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
 
     def update_model_total_params(self) -> None:
         self.model_total_params = ExplainableQuantity(
-            self.custom_model_total_parameter_count.to(ECOLOGITS_UNIT_MAPPING["model_total_parameter_count"]).value,
+            self.custom_model_total_parameter_count.value.to(ECOLOGITS_UNIT_MAPPING["model_total_parameter_count"]),
             f"{self.model_name} total parameter count (in billions)",
             left_parent=self.custom_model_total_parameter_count,
             operator="use custom inference parameter",
@@ -77,7 +89,7 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
 
     def update_model_active_params(self) -> None:
         self.model_active_params = ExplainableQuantity(
-            self.custom_model_active_parameter_count.to(ECOLOGITS_UNIT_MAPPING["model_active_parameter_count"]).value,
+            self.custom_model_active_parameter_count.value.to(ECOLOGITS_UNIT_MAPPING["model_active_parameter_count"]),
             f"{self.model_name} active parameter count (in billions)",
             left_parent=self.custom_model_active_parameter_count,
             operator="use custom inference parameter",
@@ -86,7 +98,7 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
 
     def update_data_center_pue(self) -> None:
         self.data_center_pue = ExplainableQuantity(
-            self.custom_data_center_pue.to(u.dimensionless).value,
+            self.custom_data_center_pue.value.to(u.dimensionless),
             f"Datacenter PUE for {self.provider}",
             left_parent=self.custom_data_center_pue,
             operator="use custom inference parameter",
@@ -95,7 +107,7 @@ class EcoLogitsCustomGenAIExternalAPI(EcoLogitsGenAIExternalAPI):
 
     def update_average_carbon_intensity(self) -> None:
         self.average_carbon_intensity = ExplainableQuantity(
-            self.custom_average_carbon_intensity.to(ECOLOGITS_UNIT_MAPPING["if_electricity_mix_gwp"]).value,
+            self.custom_average_carbon_intensity.value.to(ECOLOGITS_UNIT_MAPPING["if_electricity_mix_gwp"]),
             f"Average carbon intensity of electricity mix for {self.provider}",
             left_parent=self.custom_average_carbon_intensity,
             operator="use custom inference parameter",
@@ -114,20 +126,20 @@ class EcoLogitsCustomGenAIExternalAPIJob(EcoLogitsGenAIExternalAPIJob):
             model_active_parameter_count=self.external_api.model_active_params.value.magnitude,
             model_total_parameter_count=self.external_api.model_total_params.value.magnitude,
             output_token_count=self.output_token_count.value.magnitude,
-            request_latency=self.external_api.custom_request_latency.to(
-                ECOLOGITS_UNIT_MAPPING["request_latency"]).value.magnitude,
+            request_latency=self.external_api.custom_request_latency.value.to(
+                ECOLOGITS_UNIT_MAPPING["request_latency"]).magnitude,
             if_electricity_mix_adpe=0,
             if_electricity_mix_pe=0,
             if_electricity_mix_gwp=self.external_api.average_carbon_intensity.value.magnitude,
             if_electricity_mix_wue=0,
             datacenter_pue=self.external_api.data_center_pue.value.magnitude,
             datacenter_wue=datacenter_wue,
-            batch_size=self.external_api.custom_batch_size.to(ECOLOGITS_UNIT_MAPPING["batch_size"]).value.magnitude,
-            model_quantization_bits=self.external_api.custom_model_quantization_bits.to(
-                ECOLOGITS_UNIT_MAPPING["model_quantization_bits"]).value.magnitude,
-            server_power=self.external_api.custom_server_power.to(ECOLOGITS_UNIT_MAPPING["server_power"]).value.magnitude,
-            server_gpu_count=self.external_api.custom_server_gpu_count.to(
-                ECOLOGITS_UNIT_MAPPING["server_gpu_count"]).value.magnitude,
+            batch_size=self.external_api.custom_batch_size.value.to(ECOLOGITS_UNIT_MAPPING["batch_size"]).magnitude,
+            model_quantization_bits=self.external_api.custom_model_quantization_bits.value.to(
+                ECOLOGITS_UNIT_MAPPING["model_quantization_bits"]).magnitude,
+            server_power=self.external_api.custom_server_power.value.to(ECOLOGITS_UNIT_MAPPING["server_power"]).magnitude,
+            server_gpu_count=self.external_api.custom_server_gpu_count.value.to(
+                ECOLOGITS_UNIT_MAPPING["server_gpu_count"]).magnitude,
         )
 
         self.impacts = ExplainableDict(
