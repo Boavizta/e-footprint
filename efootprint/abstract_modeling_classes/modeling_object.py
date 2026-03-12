@@ -1,6 +1,7 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 from copy import copy
+from functools import cached_property
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
 import re
@@ -137,6 +138,12 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
+    _impact_repartition_cached_property_names = (
+        "attributed_fabrication_footprint_per_source",
+        "attributed_fabrication_footprint",
+        "attributed_energy_footprint_per_source",
+        "attributed_energy_footprint",
+    )
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
@@ -587,6 +594,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
                     or key in self.attributes_that_shouldnt_trigger_update_logic
+                    or key in self._impact_repartition_cached_property_names
             ):
                 continue
             elif value is None or isinstance(value, str):
@@ -636,7 +644,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_str += f"{self.class_as_simple_str} {self.id}\n \nname: {self.name}\n"
 
         for key, attr_value in self.__dict__.items():
-            if key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes:
+            if (key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes
+                    or key in self._impact_repartition_cached_property_names):
                 continue
             output_str += key_value_to_str(key, attr_value)
 
@@ -714,9 +723,31 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def update_impact_repartition(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        current_impact_repartition = getattr(self, "impact_repartition", None)
+        old_impacted_objects = set(current_impact_repartition.keys()) if isinstance(current_impact_repartition, dict) else set()
         self.impact_repartition = ExplainableObjectDict()
         for modeling_obj in self.impact_repartition_weights:
             self.update_dict_element_in_impact_repartition(modeling_obj)
+        for modeling_obj in old_impacted_objects | set(self.impact_repartition.keys()):
+            if isinstance(modeling_obj, ModelingObject):
+                modeling_obj.invalidate_impact_repartition_cache(recursive=True)
+
+    def invalidate_impact_repartition_cache(self, recursive=False, visited=None):
+        visited = set() if visited is None else visited
+        if self.id in visited:
+            return
+        visited.add(self.id)
+
+        for cached_property_name in self._impact_repartition_cached_property_names:
+            self.__dict__.pop(cached_property_name, None)
+
+        if recursive:
+            impact_repartition = getattr(self, "impact_repartition", None)
+            if not isinstance(impact_repartition, dict):
+                return
+            for modeling_obj in impact_repartition:
+                if isinstance(modeling_obj, ModelingObject):
+                    modeling_obj.invalidate_impact_repartition_cache(recursive=True, visited=visited)
 
     @property
     def is_impact_source(self):
@@ -729,7 +760,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             LifeCyclePhases.USAGE: self.attributed_energy_footprint_per_source
         }
             
-    @property
+    @cached_property
     def attributed_fabrication_footprint_per_source(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         attributed_fabrication_footprint_per_source = ExplainableObjectDict()
@@ -744,14 +775,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 
         return attributed_fabrication_footprint_per_source
 
-    @property
+    @cached_property
     def attributed_fabrication_footprint(self):
         attributed_fabrication_footprint = sum(
             [val for val in self.attributed_fabrication_footprint_per_source.values()], start=EmptyExplainableObject())
         
         return attributed_fabrication_footprint.to(u.kg).set_label(f"{self.name} attributed fabrication footprint")
 
-    @property
+    @cached_property
     def attributed_energy_footprint_per_source(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         attributed_energy_footprint_per_source = ExplainableObjectDict()
@@ -766,10 +797,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return attributed_energy_footprint_per_source
 
-    @property
+    @cached_property
     def attributed_energy_footprint(self):
         attributed_energy_footprint = sum(
             [val for val in self.attributed_energy_footprint_per_source.values()], start=EmptyExplainableObject())
 
         return attributed_energy_footprint.to(u.kg).set_label(f"{self.name} attributed energy footprint")
-    

@@ -1,7 +1,9 @@
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock, call
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
@@ -49,6 +51,33 @@ class ModelingObjectForTesting(ModelingObject):
     @property
     def systems(self):
         return []
+
+
+class ImpactRepartitionCachingModelingObject(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, targets: list = None, energy_footprint: ExplainableObject = None):
+        super().__init__(name)
+        self.targets = targets or []
+        if energy_footprint is not None:
+            self.energy_footprint = energy_footprint
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+    @property
+    def systems(self):
+        return []
+
+    def update_dict_element_in_impact_repartition_weights(self, modeling_object):
+        self.impact_repartition_weights[modeling_object] = ExplainableQuantity(
+            1 * u.concurrent, label=f"{modeling_object.name} weight in {self.name} impact repartition")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for modeling_object in self.targets:
+            self.update_dict_element_in_impact_repartition_weights(modeling_object)
 
 
 class TestModelingObject(unittest.TestCase):
@@ -280,6 +309,46 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(copied.mod_obj_input1, new_child)
         self.assertEqual(copied.custom_list_input, [new_child])
         self.assertEqual(copied.custom_input.value, parent.custom_input.value)
+
+    def test_update_impact_repartition_invalidates_cached_attributed_energy_footprint_recursively(self):
+        root = ImpactRepartitionCachingModelingObject("root", energy_footprint=SourceValue(10 * u.kg))
+        grandchild = ImpactRepartitionCachingModelingObject("grandchild")
+        child = ImpactRepartitionCachingModelingObject("child", targets=[grandchild])
+        root.trigger_modeling_updates = False
+        root.targets = [child]
+        root.trigger_modeling_updates = True
+
+        child.update_impact_repartition_weights()
+        child.update_impact_repartition_weight_sum()
+        child.update_impact_repartition()
+        root.update_impact_repartition_weights()
+        root.update_impact_repartition_weight_sum()
+        root.update_impact_repartition()
+
+        self.assertEqual(10, grandchild.attributed_energy_footprint.magnitude)
+        self.assertIn("attributed_energy_footprint", child.__dict__)
+        self.assertIn("attributed_energy_footprint", grandchild.__dict__)
+
+        root.trigger_modeling_updates = False
+        root.targets = []
+        root.trigger_modeling_updates = True
+
+        root.update_impact_repartition_weights()
+        root.update_impact_repartition_weight_sum()
+        root.update_impact_repartition()
+
+        self.assertNotIn("attributed_energy_footprint", child.__dict__)
+        self.assertNotIn("attributed_energy_footprint", grandchild.__dict__)
+        self.assertEqual(0, grandchild.attributed_energy_footprint.magnitude)
+
+    def test_to_json_skips_cached_impact_repartition_properties(self):
+        source = ImpactRepartitionCachingModelingObject("source", energy_footprint=SourceValue(10 * u.kg))
+        _ = source.attributed_energy_footprint
+
+        json_output = source.to_json()
+
+        self.assertNotIn("attributed_energy_footprint", json_output)
+        self.assertNotIn("attributed_energy_footprint_per_source", json_output)
 
 if __name__ == "__main__":
     unittest.main()
