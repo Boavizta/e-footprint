@@ -532,6 +532,18 @@ class ImpactRepartitionSankey:
                 text=column_information_text,
                 font=dict(size=11),
             )
+        if self.display_column_information:
+            node_columns = self._compute_node_columns()
+            column_set = {col for idx, col in node_columns.items() if idx not in self._spacer_nodes}
+            if column_set:
+                min_col = min(node_columns.values())
+                max_col = max(node_columns.values())
+                for col in sorted(column_set):
+                    x = 0.5 if max_col == min_col else 0.006 + (col - min_col) / (max_col + 0.09 - min_col)
+                    fig.add_annotation(
+                        x=x, y=-0.08, xref="paper", yref="paper", xanchor="center", yanchor="bottom",
+                        showarrow=False, text=str(col), font=dict(size=12, color="gray"),
+                    )
         fig.update_layout(title_text=title, font_size=12, height=800, width=width, margin=dict(b=bottom_margin))
         return fig
 
@@ -573,6 +585,6 @@ if __name__ == '__main__':
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
-        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=[])
+        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=skipped_impact_repartition_classes__full,)
     fig = sankey.figure()
     fig.show()

@@ -331,11 +331,17 @@ class TestImpactRepartitionSankey(TestCase):
 
         fig = ImpactRepartitionSankey(system, aggregation_threshold_percent=0).figure()
 
-        self.assertEqual(1, len(fig.layout.annotations))
-        self.assertIn("Column 1: Fabrication / energy footprint", fig.layout.annotations[0]["text"])
-        self.assertIn("Column 2: Per object category footprint", fig.layout.annotations[0]["text"])
-        self.assertIn("Column 3: Child", fig.layout.annotations[0]["text"])
-        self.assertIn("Column 4: Grandchild", fig.layout.annotations[0]["text"])
+        annotations = fig.layout.annotations
+        column_number_annotations = [a for a in annotations if a["y"] < 0 and a["xanchor"] == "center"]
+        bottom_annotations = [a for a in annotations if a["y"] < 0 and a["xanchor"] == "left"]
+        self.assertEqual(1, len(bottom_annotations))
+        self.assertIn("Column 1: Fabrication / energy footprint", bottom_annotations[0]["text"])
+        self.assertIn("Column 2: Per object category footprint", bottom_annotations[0]["text"])
+        self.assertIn("Column 3: Child", bottom_annotations[0]["text"])
+        self.assertIn("Column 4: Grandchild", bottom_annotations[0]["text"])
+        self.assertEqual(4, len(column_number_annotations))
+        self.assertEqual(
+            ["1", "2", "3", "4"], [a["text"] for a in sorted(column_number_annotations, key=lambda a: a["x"])])
 
     def test_figure_can_hide_column_information(self):
         system = MagicMock()
