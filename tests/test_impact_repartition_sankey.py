@@ -99,8 +99,8 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertNotIn("Other (2)", sankey.node_labels)
         self.assertEqual({}, sankey.aggregated_node_members)
 
-    def test_aggregate_small_nodes_by_column_keeps_different_parents_separate(self):
-        """Test small nodes are aggregated separately when they do not share the same parent."""
+    def test_aggregate_small_nodes_by_column_merges_across_parents(self):
+        """Test small nodes in the same column are aggregated together regardless of parent."""
         system = MagicMock()
         system.name = "Test system"
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
@@ -127,15 +127,14 @@ class TestImpactRepartitionSankey(TestCase):
         sankey._add_link(parent_b_idx, small_b2_idx, 0.08)
 
         sankey._aggregate_small_nodes_by_column()
-        hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (2)<br>")]
+        hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (4)<br>")]
 
-        self.assertNotIn("Other (4)", sankey.node_labels)
-        self.assertEqual(2, sankey.node_labels.count("Other (2)"))
-        self.assertEqual(2, len(sankey.aggregated_node_members))
-        self.assertEqual(2, len(hover_labels))
-        self.assertTrue(any("Small A1" in label and "Small A2" in label for label in hover_labels))
-        self.assertTrue(any("Small B1" in label and "Small B2" in label for label in hover_labels))
-        self.assertFalse(any("Small A1" in label and "Small B1" in label for label in hover_labels))
+        self.assertEqual(1, sankey.node_labels.count("Other (4)"))
+        self.assertEqual(1, len(sankey.aggregated_node_members))
+        self.assertEqual(1, len(hover_labels))
+        self.assertTrue(any(
+            "Small A1" in label and "Small A2" in label and "Small B1" in label and "Small B2" in label
+            for label in hover_labels))
 
     def test_aggregate_small_nodes_by_column_recomputes_children_after_parent_aggregation(self):
         """Test child columns are re-aggregated after their parents collapse into an aggregated node."""
@@ -232,7 +231,7 @@ class TestImpactRepartitionSankey(TestCase):
     def test_node_labels_are_truncated_but_hover_keeps_full_name(self):
         system = MagicMock()
         system.name = "Test system"
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, node_label_max_length=13)
 
         node_idx = sankey._add_node("12345678901234", ("long_name", "energy"))
         sankey._total_system_kg = 1

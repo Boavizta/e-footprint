@@ -13,7 +13,7 @@ _COLORS = [
 
 class ImpactRepartitionSankey:
     def __init__(
-            self, system, aggregation_threshold_percent=1.0, node_label_max_length=13,
+            self, system, aggregation_threshold_percent=1.0, node_label_max_length=15,
             skipped_impact_repartition_classes=None, skip_total_footprint_split=True,
             skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
             skip_object_footprint_split=False,
@@ -296,18 +296,10 @@ class ImpactRepartitionSankey:
     def _compute_node_columns(self):
         return dict(self._node_columns)
 
-    def _compute_node_parents(self):
-        node_parents = {idx: set() for idx in range(len(self.node_labels))}
-        for source, target in zip(self.link_sources, self.link_targets):
-            node_parents.setdefault(target, set()).add(source)
-            node_parents.setdefault(source, set())
-        return {node_idx: tuple(sorted(parent_indices)) for node_idx, parent_indices in node_parents.items()}
-
     def _aggregate_small_nodes_by_column_once(self):
         if self.aggregation_threshold_percent <= 0 or self._total_system_kg <= 0:
             return False
         node_columns = self._compute_node_columns()
-        node_parents = self._compute_node_parents()
         threshold_kg = self._total_system_kg * self.aggregation_threshold_percent / 100
         aggregate_groups = {}
         for node_idx in self.node_objects:
@@ -316,8 +308,7 @@ class ImpactRepartitionSankey:
             column = node_columns.get(node_idx)
             if column is None:
                 continue
-            parent_group = node_parents.get(node_idx, ())
-            aggregate_groups.setdefault((column, parent_group), []).append(node_idx)
+            aggregate_groups.setdefault(column, []).append(node_idx)
         aggregate_groups = {group_key: group for group_key, group in aggregate_groups.items() if len(group) >= 2}
         if not aggregate_groups:
             return False
@@ -361,12 +352,12 @@ class ImpactRepartitionSankey:
             if old_idx in original_node_columns:
                 self._node_columns[new_idx] = original_node_columns[old_idx]
 
-        for (column, parent_group), group in aggregate_groups.items():
+        for column, group in aggregate_groups.items():
             group_members = sorted(group, key=lambda idx: original_node_total_kg[idx], reverse=True)
             aggregate_idx = self._add_node(
                 f"Other ({len(group_members)})",
-                ("__aggregated__", column, parent_group),
-                color_key=f"__aggregated__{column}_{'_'.join(str(parent_idx) for parent_idx in parent_group)}")
+                ("__aggregated__", column),
+                color_key=f"__aggregated__{column}")
             self.aggregated_node_members[aggregate_idx] = [
                 (original_full_labels[idx], original_node_total_kg[idx]) for idx in group_members]
             self.aggregated_node_classes[aggregate_idx] = sorted({
@@ -577,11 +568,11 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[2], "r") as f:
+        with open(json_files[3], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
-        system, aggregation_threshold_percent=2.5, skipped_impact_repartition_classes=[])
+        system, aggregation_threshold_percent=1, skipped_impact_repartition_classes=[])
     fig = sankey.figure()
     fig.show()
