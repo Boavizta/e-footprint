@@ -538,6 +538,35 @@ class TestImpactRepartitionSankey(TestCase):
 
         self.assertEqual((), fig.layout.annotations)
 
+    def test_figure_displays_column_information_as_top_annotations(self):
+        """Test figure places column information above the Sankey at the matching x positions."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey._built = True
+        sankey._manual_column_information = [{
+            "column_index": 2,
+            "column_type": "manual_split",
+            "description": "Manufacturing / usage footprint",
+        }]
+        total_idx = sankey._add_node("Test system", ("root", "total"))
+        aggregate_idx = sankey._add_node("Other (2)", ("__aggregated__", 3))
+        sankey._node_columns = {total_idx: 1, aggregate_idx: 3}
+        sankey.aggregated_node_classes[aggregate_idx] = ["Device", "Storage"]
+        sankey._total_system_kg = 100
+        sankey.node_total_kg[total_idx] = 100
+        sankey.node_total_kg[aggregate_idx] = 60
+
+        fig = sankey.figure()
+
+        self.assertEqual(2, len(fig.layout.annotations))
+        annotation_by_text = {annotation.text: annotation for annotation in fig.layout.annotations}
+        self.assertIn("Manufacturing / usage footprint", annotation_by_text)
+        self.assertIn("Device<br>Storage", annotation_by_text)
+        self.assertAlmostEqual(sankey._column_x_center(2), annotation_by_text["Manufacturing / usage footprint"].x)
+        self.assertAlmostEqual(sankey._column_x_center(3), annotation_by_text["Device<br>Storage"].x)
+        self.assertTrue(all(annotation.y > 1 for annotation in fig.layout.annotations))
+
     def test_lifecycle_phase_filter_shows_only_filtered_phase(self):
         """Test that lifecycle_phase_filter limits to one phase."""
         fab_leaf = _DummyObject("FabLeaf", "fab_leaf", is_impact_source=True)

@@ -633,6 +633,48 @@ class ImpactRepartitionSankey:
             for column_info in column_information
         ])
 
+    def _get_displayed_column_information(self):
+        if not self._built:
+            self.build()
+        manual_columns = {
+            info["column_index"]: dict(info) for info in self._manual_column_information}
+        displayed_columns = {}
+        for column_index, info in manual_columns.items():
+            displayed_columns[column_index] = {
+                "column_index": column_index,
+                "column_type": info["column_type"],
+                "description": info["description"],
+            }
+        for metadata in self.get_column_metadata():
+            if metadata["column_index"] in displayed_columns:
+                continue
+            displayed_columns[metadata["column_index"]] = {
+                "column_index": metadata["column_index"],
+                "column_type": "impact_repartition",
+                "class_names": metadata["class_names"],
+            }
+        return [displayed_columns[column_index] for column_index in sorted(displayed_columns)]
+
+    @staticmethod
+    def _format_column_header_text(column_info):
+        if column_info["column_type"] == "manual_split":
+            return column_info["description"]
+        return "<br>".join(column_info["class_names"])
+
+    def _build_column_header_annotations(self):
+        annotations = []
+        max_line_count = 0
+        for column_info in self._get_displayed_column_information():
+            text = self._format_column_header_text(column_info)
+            max_line_count = max(max_line_count, text.count("<br>") + 1)
+            annotations.append(dict(
+                x=self._column_x_center(column_info["column_index"]), y=1.03, xref="paper", yref="paper",
+                xanchor="center", yanchor="bottom", align="center", showarrow=False, text=text,
+                font=dict(size=11), bordercolor="rgba(210,210,210,1)", borderwidth=1, borderpad=4,
+                bgcolor="rgba(250,250,250,0.95)",
+            ))
+        return annotations, max_line_count
+
     @time_it
     def figure(self, title=None, width=1800):
         import plotly.graph_objects as go
@@ -664,23 +706,15 @@ class ImpactRepartitionSankey:
                 color=link_colors, customdata=link_labels, hovertemplate="%{customdata}<extra></extra>",
             ),
         )])
-        bottom_margin = 100
+        top_margin = 100
         if column_information_text is not None:
-            line_count = column_information_text.count("<br>") + 1
-            bottom_margin = 100 + 18 * line_count
-            fig.add_annotation(
-                x=0, y=-0.12, xref="paper", yref="paper", xanchor="left", yanchor="top",
-                align="left", showarrow=False, text=column_information_text, font=dict(size=11),
-            )
-        if self.display_column_information and self._node_columns:
-            column_set = {col for idx, col in self._node_columns.items() if idx not in self._spacer_nodes}
-            for col in sorted(column_set):
-                fig.add_annotation(
-                    x=self._column_x_center(col), y=-0.08, xref="paper", yref="paper",
-                    xanchor="center", yanchor="bottom",
-                    showarrow=False, text=str(col), font=dict(size=12, color="gray"),
-                )
-        fig.update_layout(title_text=title, font_size=12, height=800, width=width, margin=dict(b=bottom_margin))
+            column_annotations, max_line_count = self._build_column_header_annotations()
+            top_margin = 110 + 20 * max_line_count
+            for annotation in column_annotations:
+                fig.add_annotation(**annotation)
+        fig.update_layout(
+            title=dict(text=title, pad=dict(b=24)),
+            font_size=12, height=800, width=width, margin=dict(t=top_margin, b=100))
         return fig
 
 
@@ -720,9 +754,9 @@ if __name__ == '__main__':
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=[System, Country],
+        skipped_impact_repartition_classes=[System],
         skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
-        skip_object_footprint_split=False, excluded_object_types=[Device], lifecycle_phase_filter=LifeCyclePhases.USAGE,
+        skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=LifeCyclePhases.USAGE,
         display_column_information=True
     )
     fig = sankey.figure()
