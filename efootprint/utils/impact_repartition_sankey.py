@@ -219,14 +219,17 @@ class ImpactRepartitionSankey:
                 else:
                     self.node_total_kg[cat_idx] += value_kg
                 leaf_parent_idx = cat_idx
+        skip_source = self._should_skip_object(source)
         if not self.skip_object_footprint_split:
-            source_key = (source.id, phase_context)
-            source_idx = self._add_node(source.name, source_key, color_key=source.id, obj=source)
-            self._leaf_node_indices.add(source_idx)
-            if leaf_parent_idx is not None:
-                self._add_link(leaf_parent_idx, source_idx, value_kg / 1000)
-            else:
-                self.node_total_kg[source_idx] += value_kg
+            source_idx = leaf_parent_idx
+            if not skip_source:
+                source_key = (source.id, phase_context)
+                source_idx = self._add_node(source.name, source_key, color_key=source.id, obj=source)
+                self._leaf_node_indices.add(source_idx)
+                if leaf_parent_idx is not None:
+                    self._add_link(leaf_parent_idx, source_idx, value_kg / 1000)
+                else:
+                    self.node_total_kg[source_idx] += value_kg
             if (
                 original_source is not None and original_source is not source
                 and isinstance(original_source, EdgeComponent) and isinstance(source, EdgeDevice)
@@ -236,7 +239,10 @@ class ImpactRepartitionSankey:
                 component_idx = self._add_node(
                     original_source.name, component_key, color_key=original_source.id, obj=original_source)
                 self._post_leaf_node_indices.add(component_idx)
-                self._add_link(source_idx, component_idx, value_kg / 1000)
+                if source_idx is not None:
+                    self._add_link(source_idx, component_idx, value_kg / 1000)
+                else:
+                    self.node_total_kg[component_idx] += value_kg
 
     def build(self):
         if self._built:
@@ -703,7 +709,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[3], "r") as f:
+        with open(json_files[2], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))

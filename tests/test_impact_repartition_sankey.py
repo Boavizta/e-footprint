@@ -674,6 +674,31 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
         self.assertNotIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
 
+    def test_skipped_impact_repartition_classes_skips_normalized_edge_device_leaf(self):
+        """Test skipping the normalized EdgeDevice removes that node while preserving component breakdown."""
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        intermediate = _DummyObject("Intermediate", "intermediate")
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
+            LifeCyclePhases.USAGE: {},
+        }
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True,
+            skipped_impact_repartition_classes=[EdgeComputer])
+        sankey.build()
+
+        self.assertNotIn((edge_device.id, "Manufacturing"), sankey.node_indices)
+        self.assertIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
+        intermediate_idx = sankey.node_indices[("intermediate", "Manufacturing")]
+        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
+        incoming_sources = [source for source, target in zip(sankey.link_sources, sankey.link_targets) if target == edge_storage_idx]
+        self.assertTrue(incoming_sources)
+        self.assertTrue(any(source == intermediate_idx or sankey._spacer_original_source.get(source) == intermediate_idx
+                            for source in incoming_sources))
+
     def test_terminal_server_leaves_move_to_sink_column_when_edge_components_add_depth(self):
         """Test terminal leaves share the sink column instead of the EdgeDevice column when post-leaf nodes exist."""
         edge_storage = EdgeStorage.from_defaults("Edge storage")
