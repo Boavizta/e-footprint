@@ -1,7 +1,7 @@
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.utils.tools import format_co2_amount, display_co2_amount
+from efootprint.utils.tools import format_co2_amount, display_co2_amount, time_it
 
 # Palette for consistent object coloring across fabrication/energy chains
 _COLORS = [
@@ -50,6 +50,7 @@ class ImpactRepartitionSankey:
         self._spacer_original_source = {}
         self._category_node_indices = set()
         self._leaf_node_indices = set()
+        self._post_leaf_node_indices = set()
 
     def _truncate_node_label(self, label):
         if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
@@ -66,6 +67,8 @@ class ImpactRepartitionSankey:
     @staticmethod
     def _normalize_sankey_source(obj):
         from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+        from efootprint.core.hardware.edge.edge_component import EdgeComponent
+        from efootprint.core.hardware.edge.edge_device import EdgeDevice
 
         if isinstance(obj, ExternalAPIServer):
             external_api = getattr(obj, "external_api", None)
@@ -74,6 +77,10 @@ class ImpactRepartitionSankey:
             for container in getattr(obj, "modeling_obj_containers", []):
                 if isinstance(container, ExternalAPI):
                     return container
+        if isinstance(obj, EdgeComponent):
+            edge_device = getattr(obj, "edge_device", None)
+            if isinstance(edge_device, EdgeDevice):
+                return edge_device
         return obj
 
     def _should_skip_object(self, obj):
@@ -147,8 +154,10 @@ class ImpactRepartitionSankey:
             return 0
         next_visited = visited | {obj.id}
         total = 0
-        for source, value in obj.attributed_footprint_per_source[phase].items():
-            source = self._normalize_sankey_source(source)
+        for original_source, value in obj.attributed_footprint_per_source[phase].items():
+            source = self._normalize_sankey_source(original_source)
+            if original_source is not source and self._is_excluded(original_source):
+                continue
             if self._is_excluded(source):
                 continue
             value_kg = self._get_value_kg(value)
@@ -163,8 +172,10 @@ class ImpactRepartitionSankey:
             return
         next_visited = visited | {obj.id}
         footprint_dict = obj.attributed_footprint_per_source[phase]
-        for source, value in footprint_dict.items():
-            source = self._normalize_sankey_source(source)
+        for original_source, value in footprint_dict.items():
+            source = self._normalize_sankey_source(original_source)
+            if original_source is not source and self._is_excluded(original_source):
+                continue
             if self._is_excluded(source):
                 continue
             value_kg = self._get_value_kg(value)
@@ -173,7 +184,7 @@ class ImpactRepartitionSankey:
             if value_kg <= 0:
                 continue
             if source.is_impact_source:
-                self._handle_impact_source(source, value_kg, phase_context, parent_idx)
+                self._handle_impact_source(source, value_kg, phase_context, parent_idx, original_source=original_source)
                 continue
             if self._should_skip_object(source):
                 self._traverse(source, phase, phase_context, parent_idx, next_visited)
@@ -186,7 +197,9 @@ class ImpactRepartitionSankey:
                 self.node_total_kg[source_idx] += value_kg
             self._traverse(source, phase, phase_context, source_idx, next_visited)
 
-    def _handle_impact_source(self, source, value_kg, phase_context, parent_idx):
+    def _handle_impact_source(self, source, value_kg, phase_context, parent_idx, original_source=None):
+        from efootprint.core.hardware.edge.edge_component import EdgeComponent
+        from efootprint.core.hardware.edge.edge_device import EdgeDevice
         from efootprint.all_classes_in_order import OBJECT_CATEGORIES
         leaf_parent_idx = parent_idx
         if not self.skip_object_category_footprint_split:
@@ -214,6 +227,16 @@ class ImpactRepartitionSankey:
                 self._add_link(leaf_parent_idx, source_idx, value_kg / 1000)
             else:
                 self.node_total_kg[source_idx] += value_kg
+            if (
+                original_source is not None and original_source is not source
+                and isinstance(original_source, EdgeComponent) and isinstance(source, EdgeDevice)
+                and not self._should_skip_object(original_source)
+            ):
+                component_key = (original_source.id, phase_context)
+                component_idx = self._add_node(
+                    original_source.name, component_key, color_key=original_source.id, obj=original_source)
+                self._post_leaf_node_indices.add(component_idx)
+                self._add_link(source_idx, component_idx, value_kg / 1000)
 
     def build(self):
         if self._built:
@@ -225,6 +248,7 @@ class ImpactRepartitionSankey:
         self._spacer_original_source = {}
         self._category_node_indices = set()
         self._leaf_node_indices = set()
+        self._post_leaf_node_indices = set()
 
         root = self.system
         phases = self._get_phases()
@@ -292,7 +316,8 @@ class ImpactRepartitionSankey:
         for node_idx, obj in self.node_objects.items():
             if node_idx in self._node_columns:
                 continue
-            if node_idx in self._category_node_indices or node_idx in self._leaf_node_indices:
+            if (node_idx in self._category_node_indices or node_idx in self._leaf_node_indices
+                    or node_idx in self._post_leaf_node_indices):
                 continue
             for group_idx, group in enumerate(SANKEY_COLUMNS):
                 if any(isinstance(obj, cls) for cls in group):
@@ -308,7 +333,8 @@ class ImpactRepartitionSankey:
         for node_idx in range(len(self.node_labels)):
             if node_idx in self._node_columns:
                 continue
-            if node_idx in self._category_node_indices or node_idx in self._leaf_node_indices:
+            if (node_idx in self._category_node_indices or node_idx in self._leaf_node_indices
+                    or node_idx in self._post_leaf_node_indices):
                 continue
             parent_cols = [
                 self._node_columns[src]
@@ -320,7 +346,7 @@ class ImpactRepartitionSankey:
                 self._node_columns[node_idx] = self._impact_repartition_start_column
 
     def _assign_category_and_leaf_columns(self):
-        if not self._category_node_indices and not self._leaf_node_indices:
+        if not self._category_node_indices and not self._leaf_node_indices and not self._post_leaf_node_indices:
             return
         max_col = max(self._node_columns.values()) if self._node_columns else self._impact_repartition_start_column - 1
         category_col = max_col + 1
@@ -333,9 +359,19 @@ class ImpactRepartitionSankey:
                 "description": "Per object category footprint",
             })
         leaf_col = (category_col + 1) if self._category_node_indices else category_col
+        post_leaf_col = leaf_col + 1
+        leaf_nodes_with_post_leaf_children = {
+            source for source, target in zip(self.link_sources, self.link_targets) if target in self._post_leaf_node_indices
+        }
         if self._leaf_node_indices:
             for leaf_idx in self._leaf_node_indices:
-                self._node_columns[leaf_idx] = leaf_col
+                if self._post_leaf_node_indices and leaf_idx not in leaf_nodes_with_post_leaf_children:
+                    self._node_columns[leaf_idx] = post_leaf_col
+                else:
+                    self._node_columns[leaf_idx] = leaf_col
+        if self._post_leaf_node_indices:
+            for node_idx in self._post_leaf_node_indices:
+                self._node_columns[node_idx] = post_leaf_col
 
     def _insert_spacer_nodes(self):
         original_links = list(zip(self.link_sources, self.link_targets, self.link_values))
@@ -556,6 +592,7 @@ class ImpactRepartitionSankey:
             for column_info in column_information
         ])
 
+    @time_it
     def figure(self, title=None, width=1800):
         import plotly.graph_objects as go
         self.build()
@@ -607,7 +644,7 @@ class ImpactRepartitionSankey:
 
 
 if __name__ == '__main__':
-    from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
+    from efootprint.core.hardware.edge.edge_component import EdgeComponent
     from efootprint.core.usage.job import JobBase
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
     from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
@@ -620,7 +657,7 @@ if __name__ == '__main__':
     json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
                   "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json"]
     skipped_impact_repartition_classes__full = [
-        System, Country, JobBase, EdgeWorkloadComponent, RecurrentEdgeDeviceNeed, RecurrentServerNeed,
+        System, Country, EdgeComponent, JobBase, RecurrentEdgeDeviceNeed, RecurrentServerNeed,
         RecurrentEdgeComponentNeed, RecurrentEdgeWorkloadNeed]
     skipped_impact_repartition_classes = [
         System, JobBase, RecurrentEdgeDeviceNeed, RecurrentServerNeed, RecurrentEdgeComponentNeed]
@@ -635,14 +672,14 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[2], "r") as f:
+        with open(json_files[3], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=skipped_impact_repartition_classes__full,
-        skip_phase_footprint_split=True, skip_object_category_footprint_split=False,
+        skipped_impact_repartition_classes=[],
+        skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
         skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
         display_column_information=True
     )

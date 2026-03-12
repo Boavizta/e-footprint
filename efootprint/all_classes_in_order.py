@@ -88,8 +88,8 @@ SANKEY_COLUMNS = [
     [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
     [JobBase],
     [RecurrentEdgeComponentNeed],
-    [EdgeComponent],
     [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
+    [EdgeComponent],
 ]
 
 OBJECT_CATEGORIES = {

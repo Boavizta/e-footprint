@@ -2,7 +2,9 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.utils.impact_repartition_sankey import ImpactRepartitionSankey
 
 
@@ -592,3 +594,82 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn(("ExternalAPIs", "Manufacturing"), sankey.node_indices)
         self.assertIn((external_api.id, "Manufacturing"), sankey.node_indices)
         self.assertNotIn((external_api.server.id, "Manufacturing"), sankey.node_indices)
+
+    def test_edge_component_sources_expand_from_edge_device_to_edge_component(self):
+        """Test EdgeComponent impact sources display the EdgeDevice and continue breakdown to the component."""
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        intermediate = _DummyObject("Intermediate", "intermediate")
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
+            LifeCyclePhases.USAGE: {},
+        }
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey.build()
+
+        self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
+        self.assertIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
+        edge_device_idx = sankey.node_indices[(edge_device.id, "Manufacturing")]
+        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
+        self.assertIn(edge_device_idx, sankey.link_targets)
+        self.assertIn((edge_device_idx, edge_storage_idx), list(zip(sankey.link_sources, sankey.link_targets)))
+        self.assertEqual(sankey._node_columns[edge_device_idx] + 1, sankey._node_columns[edge_storage_idx])
+
+    def test_excluded_object_types_excludes_edge_component_impact_before_normalization(self):
+        """Test excluding an EdgeComponent removes its impact entirely even when normalized to EdgeDevice."""
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        intermediate = _DummyObject("Intermediate", "intermediate")
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
+            LifeCyclePhases.USAGE: {},
+        }
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, excluded_object_types=[EdgeStorage])
+        sankey.build()
+
+        self.assertEqual(0, sankey._total_system_kg)
+        self.assertNotIn((edge_device.id, "Manufacturing"), sankey.node_indices)
+        self.assertNotIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
+
+    def test_skipped_impact_repartition_classes_skips_edge_component_breakdown_only(self):
+        """Test skipping an EdgeComponent keeps the EdgeDevice leaf but removes the appended component node."""
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        intermediate = _DummyObject("Intermediate", "intermediate")
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
+            LifeCyclePhases.USAGE: {},
+        }
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[EdgeStorage])
+        sankey.build()
+
+        self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
+        self.assertNotIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
+
+    def test_terminal_server_leaves_move_to_sink_column_when_edge_components_add_depth(self):
+        """Test terminal leaves share the sink column instead of the EdgeDevice column when post-leaf nodes exist."""
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        server_leaf = _DummyObject("Server leaf", "server_leaf", is_impact_source=True)
+        intermediate = _DummyObject("Intermediate", "intermediate")
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(60), server_leaf: _DummyQuantity(40)},
+            LifeCyclePhases.USAGE: {},
+        }
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+        sankey.build()
+
+        edge_device_idx = sankey.node_indices[(edge_device.id, "Manufacturing")]
+        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
+        server_leaf_idx = sankey.node_indices[(server_leaf.id, "Manufacturing")]
+        self.assertEqual(sankey._node_columns[edge_storage_idx], sankey._node_columns[server_leaf_idx])
+        self.assertEqual(sankey._node_columns[edge_device_idx] + 1, sankey._node_columns[server_leaf_idx])
