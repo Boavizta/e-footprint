@@ -39,7 +39,7 @@ class System(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.edge_usage_patterns + self.usage_patterns
+        return self.countries + self.edge_usage_patterns + self.usage_patterns
 
     def set_initial_and_previous_footprints(self):
         self.previous_change = None

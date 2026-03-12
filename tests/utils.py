@@ -19,6 +19,7 @@ def create_mod_obj_mock(efootprint_class, name: str = None, **kwargs):
     mock_obj = MagicMock(spec=efootprint_class)
     mock_obj.name = name if name else "Mock " + efootprint_class.__name__
     mock_obj.id = mock_obj.name.replace(" ", "-").lower()
+    mock_obj.efootprint_class = efootprint_class
     mock_obj.explainable_object_dicts_containers = []
     for key, value in kwargs.items():
         setattr(mock_obj, key, value)

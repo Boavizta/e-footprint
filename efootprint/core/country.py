@@ -2,6 +2,7 @@ from typing import List, TYPE_CHECKING
 
 import pytz
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -10,6 +11,7 @@ from efootprint.constants.units import u
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
+    from efootprint.core.system import System
 
 
 class Country(ModelingObject):
@@ -38,6 +40,12 @@ class Country(ModelingObject):
     def usage_patterns(self) -> List["UsagePattern"]:
         return self.modeling_obj_containers
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return []
+    def update_dict_element_in_impact_repartition_weights(self, system: "System"):
+        self.impact_repartition_weights[system] = ExplainableQuantity(
+            1 * u.dimensionless, label="Impact repartition weight")
+
+    def update_impact_repartition_weights(self):
+        self.impact_repartition_weights = ExplainableObjectDict()
+        for system in self.systems:
+            self.update_dict_element_in_impact_repartition_weights(system)
+            

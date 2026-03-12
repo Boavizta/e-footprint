@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.core.system import System
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 # Palette for consistent object coloring across fabrication/energy chains
@@ -22,6 +23,8 @@ class ImpactRepartitionSankey:
         self.aggregation_threshold_percent = aggregation_threshold_percent
         self.node_label_max_length = node_label_max_length
         self.skipped_impact_repartition_classes = skipped_impact_repartition_classes or []
+        if System not in self.skipped_impact_repartition_classes:
+            self.skipped_impact_repartition_classes.append(System)
         self.skip_total_footprint_split = skip_total_footprint_split
         self.skip_phase_footprint_split = skip_phase_footprint_split
         self.skip_object_category_footprint_split = skip_object_category_footprint_split

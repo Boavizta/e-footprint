@@ -9,8 +9,7 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.usage_pattern import UsagePattern
 
-from model_builder.domain.entities.efootprint_extensions.explainable_hourly_quantities_from_form_inputs import \
-    ExplainableHourlyQuantitiesFromFormInputs
+from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 
 
 class CalculusGraphTest(TestCase):

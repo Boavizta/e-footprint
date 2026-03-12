@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 import unittest
 
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
@@ -27,17 +28,13 @@ from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests import root_test_dir
+from tests.utils import create_mod_obj_mock
 
 
 class TestSystem(TestCase):
     @staticmethod
     def _hourly_kg(values=(1, 2, 3)):
         return create_source_hourly_values_from_list(list(values), pint_unit=u.kg)
-
-    @staticmethod
-    def _set_systems_empty(*objects):
-        for obj in objects:
-            obj.systems = []
 
     def _base_fabrication_footprints(self):
         return {
@@ -68,14 +65,8 @@ class TestSystem(TestCase):
         storage_energy=None,
         with_ids=False
     ):
-        edge_computer = MagicMock(spec=EdgeComputer)
-        edge_storage = MagicMock(spec=EdgeStorage)
-        if with_ids:
-            edge_computer.name = "edge_computer"
-            edge_computer.id = "edge_computer_id"
-            edge_storage.name = "storage_from_edge"
-            edge_storage.id = "storage_from_edge_id"
-            self._set_systems_empty(edge_computer, edge_storage)
+        edge_computer = create_mod_obj_mock(EdgeComputer, name="edge_computer", id="edge_computer_id", systems=[])
+        edge_storage = create_mod_obj_mock(EdgeStorage, name="storage_from_edge", id="storage_from_edge_id", systems=[])
         if fab is not None:
             edge_computer.instances_fabrication_footprint = fab
         if energy is not None:
@@ -86,8 +77,6 @@ class TestSystem(TestCase):
             edge_storage.energy_footprint = storage_energy
         edge_computer.storage = edge_storage
         edge_computer.components = [edge_storage]
-        edge_computer.efootprint_class = EdgeComputer
-        edge_storage.efootprint_class = EdgeStorage
         return edge_computer, edge_storage
 
     def _make_edge_usage_pattern(
@@ -103,15 +92,13 @@ class TestSystem(TestCase):
         edge_energy=None,
         network_energy=None
     ):
-        edge_usage_pattern = MagicMock(spec=EdgeUsagePattern)
-        edge_usage_pattern.efootprint_class = EdgeUsagePattern
+        edge_usage_pattern = create_mod_obj_mock(
+            EdgeUsagePattern, name="edge_usage_pattern", id="edge_usage_pattern_id", systems=[]
+        )
         edge_usage_pattern.jobs = []
-        edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
-        edge_usage_journey.efootprint_class = EdgeUsageJourney
-        edge_function = MagicMock(spec=EdgeFunction)
-        edge_function.efootprint_class = EdgeFunction
-        edge_resource_need = MagicMock(spec=RecurrentEdgeDeviceNeed)
-        edge_resource_need.efootprint_class = RecurrentEdgeDeviceNeed
+        edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, name="edge_usage_journey", systems=[])
+        edge_function = create_mod_obj_mock(EdgeFunction, name="edge_function", systems=[])
+        edge_resource_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="edge_resource_need", systems=[])
         edge_computer, edge_storage = self._make_edge_device(with_ids=with_ids)
 
         edge_resource_need.edge_device = edge_computer
@@ -122,11 +109,11 @@ class TestSystem(TestCase):
         server_need = None
         job = None
         if with_server_need:
-            server_need = MagicMock(spec=RecurrentServerNeed)
+            server_need = create_mod_obj_mock(RecurrentServerNeed, name="server_need", systems=[])
             server_need.edge_device = edge_computer
             server_need.jobs = []
             if with_job:
-                job = MagicMock(spec=Job)
+                job = create_mod_obj_mock(Job, name="job", systems=[])
                 server_need.jobs = [job]
                 job.server = self.server
                 edge_usage_pattern.jobs = [job]
@@ -135,24 +122,8 @@ class TestSystem(TestCase):
         edge_usage_journey.edge_functions = [edge_function]
         edge_usage_journey.edge_devices = [edge_computer]
         edge_usage_pattern.edge_usage_journey = edge_usage_journey
-        edge_usage_pattern.country = MagicMock()
-        edge_usage_pattern.network = MagicMock()
-
-        if with_ids:
-            edge_usage_pattern.name = "edge_usage_pattern"
-            edge_usage_pattern.id = "edge_usage_pattern_id"
-            self._set_systems_empty(
-                edge_usage_pattern,
-                edge_usage_journey,
-                edge_function,
-                edge_resource_need,
-                edge_usage_pattern.country,
-                edge_usage_pattern.network,
-            )
-            if server_need is not None:
-                self._set_systems_empty(server_need)
-            if job is not None:
-                self._set_systems_empty(job)
+        edge_usage_pattern.country = create_mod_obj_mock(Country, name="edge_usage_country", systems=[])
+        edge_usage_pattern.network = create_mod_obj_mock(Network, name="edge_usage_network", systems=[])
 
         if with_footprints:
             edge_usage_pattern.instances_fabrication_footprint = pattern_fab or self._hourly_kg()
@@ -179,48 +150,20 @@ class TestSystem(TestCase):
         self.mock_check_value_type = patcher.start()
         self.addCleanup(patcher.stop)
 
-        self.usage_pattern = MagicMock(spec=UsagePattern)
-        self.usage_pattern.name = "usage_pattern"
-        self.usage_pattern.id = self.usage_pattern
-        self.usage_pattern.systems = []
-        self.usage_pattern.efootprint_class = UsagePattern
-        self.device = MagicMock(spec=Device)
-        self.device.name = "device"
-        self.device.efootprint_class = Device
+        self.usage_pattern = create_mod_obj_mock(UsagePattern, name="usage_pattern", id="usage_pattern_id", systems=[])
+        self.device = create_mod_obj_mock(Device, name="device", systems=[])
         self.usage_pattern.devices = [self.device]
-        self.device.systems = []
-        self.usage_pattern.country = MagicMock()
-        self.usage_pattern.country.systems = []
-        self.usage_pattern.country.efootprint_class = Country
-        self.usage_pattern.usage_journey = MagicMock()
-        self.usage_pattern.usage_journey.systems = []
-        uj_step = MagicMock()
-        uj_step.efootprint_class = UsageJourneyStep
+        self.usage_pattern.country = create_mod_obj_mock(Country, name="country", systems=[])
+        self.usage_pattern.usage_journey = create_mod_obj_mock(UsageJourney, name="usage_journey", systems=[])
+        uj_step = create_mod_obj_mock(UsageJourneyStep, name="usage_journey_step", systems=[])
         self.usage_pattern.usage_journey.uj_steps = [uj_step]
-        uj_step.systems = []
-        self.usage_pattern.usage_journey.systems = []
-        self.usage_pattern.usage_journey.efootprint_class = UsageJourney
-        self.server = MagicMock(spec=Server)
-        self.server.name = "server"
-        self.server.id = "server_id"
-        self.server.systems = []
-        self.server.efootprint_class = Server
-        self.storage = MagicMock()
-        self.storage.name = "storage"
-        self.storage.id = "storage_id"
-        self.storage.systems = []
-        self.storage.efootprint_class = Storage
+        self.server = create_mod_obj_mock(Server, name="server", id="server_id", systems=[])
+        self.storage = create_mod_obj_mock(Storage, name="storage", id="storage_id", systems=[])
         self.server.storage = self.storage
-        job = MagicMock(spec=Job)
+        job = create_mod_obj_mock(Job, name="job", systems=[])
         uj_step.jobs = [job]
-        job.systems = []
         job.server = self.server
-        job.efootprint_class = Job
-        self.network = MagicMock()
-        self.network.name = "network"
-        self.network.id = "network_id"
-        self.network.systems = []
-        self.network.efootprint_class = Network
+        self.network = create_mod_obj_mock(Network, name="network", id="network_id", systems=[])
 
         self.usage_pattern.network = self.network
         self.usage_pattern.jobs = [job]
@@ -280,7 +223,7 @@ class TestSystem(TestCase):
                 self.system.check_no_object_to_link_is_already_linked_to_another_system()
 
     def test_an_object_cant_be_linked_to_several_systems(self):
-        new_server = MagicMock()
+        new_server = create_mod_obj_mock(Server, name="new_server")
         other_system = MagicMock()
         other_system.id = "other id"
         new_server.systems = [other_system]
@@ -292,8 +235,7 @@ class TestSystem(TestCase):
                 new_system = System("new system", usage_patterns=[self.usage_pattern], edge_usage_patterns=[])
 
     def test_cant_compute_calculated_attributes_with_usage_patterns_already_linked_to_another_system(self):
-        new_up = MagicMock(spec=UsagePattern)
-        new_up.name = "new up"
+        new_up = create_mod_obj_mock(UsagePattern, name="new up")
         other_system = MagicMock(spec=System)
         other_system.id = "other id"
         other_system.name = "other system"
@@ -312,9 +254,7 @@ class TestSystem(TestCase):
         self.assertDictEqual(self._base_energy_footprints(), self.system.energy_footprints)
 
     def test_external_apis_have_their_own_category_in_footprints(self):
-        external_api = MagicMock()
-        external_api.name = "external_api"
-        external_api.systems = []
+        external_api = create_mod_obj_mock(ModelingObject, name="external_api", systems=[])
         external_api.instances_fabrication_footprint = self._hourly_kg(values=(4, 4, 4))
         external_api.energy_footprint = self._hourly_kg(values=(2, 2, 2))
         self.usage_pattern.jobs[0].external_api = external_api
@@ -465,33 +405,24 @@ class TestSystem(TestCase):
     @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
     def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
             self, mock_storages, mock_servers):
-        usage_pattern = MagicMock(spec=UsagePattern)
-        usage_pattern.name = "usage pattern"
-        usage_pattern.id = "usage pattern id"
-        device = MagicMock(spec=Device, instances_fabrication_footprint=SourceValue(1 * u.kg))
-        device.name = "device"
-        device.id = "device id"
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", id="usage pattern id")
+        device = create_mod_obj_mock(
+            Device, name="device", id="device id", instances_fabrication_footprint=SourceValue(1 * u.kg)
+        )
         usage_pattern.devices = [device]
-        usage_pattern2 = MagicMock(spec=UsagePattern)
-        usage_pattern2.name = "usage pattern2"
-        usage_pattern2.id = "usage pattern2 id"
-        device2 = MagicMock(spec=Device, instances_fabrication_footprint=SourceValue(1 * u.kg))
-        device2.name = "device2"
-        device2.id = "device2 id"
+        usage_pattern2 = create_mod_obj_mock(UsagePattern, name="usage pattern2", id="usage pattern2 id")
+        device2 = create_mod_obj_mock(
+            Device, name="device2", id="device2 id", instances_fabrication_footprint=SourceValue(1 * u.kg)
+        )
         usage_pattern2.devices = [device2]
-        server = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
-        server.name = "server"
-        server.id = "server id"
-        server2 = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
-        server2.name = "server2"
-        server2.id = "server2 id"
-        storage = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
-        storage.name = "storage"
-        storage.id = "storage id"
-        # same name
-        storage2 = MagicMock(instances_fabrication_footprint=SourceValue(1 * u.kg))
-        storage2.name = "storage"
-        storage2.id = "storage2 id"
+        server = create_mod_obj_mock(Server, name="server", id="server id",
+                                     instances_fabrication_footprint=SourceValue(1 * u.kg))
+        server2 = create_mod_obj_mock(Server, name="server2", id="server2 id",
+                                      instances_fabrication_footprint=SourceValue(1 * u.kg))
+        storage = create_mod_obj_mock(Storage, name="storage", id="storage id",
+                                      instances_fabrication_footprint=SourceValue(1 * u.kg))
+        storage2 = create_mod_obj_mock(Storage, name="storage", id="storage2 id",
+                                       instances_fabrication_footprint=SourceValue(1 * u.kg))
 
         mock_servers.return_value = [server, server2]
         mock_storages.return_value = [storage, storage2]
@@ -510,39 +441,30 @@ class TestSystem(TestCase):
     @patch("efootprint.core.system.System.networks", new_callable=PropertyMock)
     def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
             self, mock_networks, mock_storages, mock_servers):
-        usage_pattern = MagicMock(spec=UsagePattern)
-        usage_pattern.name = "usage pattern"
-        usage_pattern.id = "usage pattern id"
-        device = MagicMock(spec=Device, energy_footprint=SourceValue(1 * u.kg))
-        device.name = "device"
-        device.id = "device id"
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", id="usage pattern id")
+        device = create_mod_obj_mock(Device, name="device", id="device id", energy_footprint=SourceValue(1 * u.kg))
         usage_pattern.devices = [device]
-        usage_pattern2 = MagicMock(spec=UsagePattern)
-        usage_pattern2.name = "usage pattern2"
-        usage_pattern2.id = "usage pattern2 id"
-        device2 = MagicMock(spec=Device, energy_footprint=SourceValue(1 * u.kg))
-        device2.name = "device2"
-        device2.id = "device2 id"
+        usage_pattern2 = create_mod_obj_mock(UsagePattern, name="usage pattern2", id="usage pattern2 id")
+        device2 = create_mod_obj_mock(
+            Device, name="device2", id="device2 id", energy_footprint=SourceValue(1 * u.kg)
+        )
         usage_pattern2.devices = [device2]
-        server = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        server.name = "server"
-        server.id = "server id"
-        server2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        server2.name = "server2"
-        server2.id = "server2 id"
-        storage = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        storage.name = "storage"
-        storage.id = "storage id"
-        # same name
-        storage2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        storage2.name = "storage"
-        storage2.id = "storage2 id"
-        network = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        network.name = "network"
-        network.id = "network id"
-        network2 = MagicMock(energy_footprint=SourceValue(1 * u.kg))
-        network2.name = "network2"
-        network2.id = "network2 id"
+        server = create_mod_obj_mock(Server, name="server", id="server id", energy_footprint=SourceValue(1 * u.kg))
+        server2 = create_mod_obj_mock(
+            Server, name="server2", id="server2 id", energy_footprint=SourceValue(1 * u.kg)
+        )
+        storage = create_mod_obj_mock(
+            Storage, name="storage", id="storage id", energy_footprint=SourceValue(1 * u.kg)
+        )
+        storage2 = create_mod_obj_mock(
+            Storage, name="storage", id="storage2 id", energy_footprint=SourceValue(1 * u.kg)
+        )
+        network = create_mod_obj_mock(
+            Network, name="network", id="network id", energy_footprint=SourceValue(1 * u.kg)
+        )
+        network2 = create_mod_obj_mock(
+            Network, name="network2", id="network2 id", energy_footprint=SourceValue(1 * u.kg)
+        )
 
         mock_servers.return_value = [server, server2]
         mock_storages.return_value = [storage, storage2]
