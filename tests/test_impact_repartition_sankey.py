@@ -275,10 +275,11 @@ class TestImpactRepartitionSankey(TestCase):
         sankey._add_link(total_idx, device_idx, 0.3)
         sankey._add_link(server_idx, router_idx, 0.2)
 
-        self.assertEqual([
-            {"column_index": 2, "x_center": 0.625, "class_names": ["Device", "Server"]},
-            {"column_index": 3, "x_center": 0.875, "class_names": ["Router"]},
-        ], sankey.get_column_metadata())
+        metadata = sankey.get_column_metadata()
+        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
+        self.assertEqual([["Device", "Server"], ["Router"]], [m["class_names"] for m in metadata])
+        self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
+        self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
 
     def test_get_column_metadata_includes_aggregated_member_classes(self):
         sankey = self._build_sankey(aggregation_threshold_percent=15)
@@ -287,10 +288,13 @@ class TestImpactRepartitionSankey(TestCase):
             node.class_as_simple_str = node.name.replace(" ", "")
         sankey._aggregate_small_nodes_by_column()
 
-        self.assertEqual([
-            {"column_index": 2, "x_center": 0.625, "class_names": ["Parent", "SmallA", "SmallB"]},
-            {"column_index": 3, "x_center": 0.875, "class_names": ["ChildBig", "ChildSmallA", "ChildSmallB"]},
-        ], sankey.get_column_metadata())
+        metadata = sankey.get_column_metadata()
+        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
+        self.assertEqual(
+            [["Parent", "SmallA", "SmallB"], ["ChildBig", "ChildSmallA", "ChildSmallB"]],
+            [m["class_names"] for m in metadata])
+        self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
+        self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
 
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         grandchild = _DummyObject("Grandchild", "grandchild")

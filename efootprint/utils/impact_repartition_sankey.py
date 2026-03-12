@@ -293,32 +293,26 @@ class ImpactRepartitionSankey:
             else:
                 self._add_link(source, target, value)
 
-    def _compute_node_columns(self):
-        return dict(self._node_columns)
-
-    def _aggregate_small_nodes_by_column_once(self):
+    def _aggregate_small_nodes_by_column(self):
         if self.aggregation_threshold_percent <= 0 or self._total_system_kg <= 0:
-            return False
-        node_columns = self._compute_node_columns()
+            return
         threshold_kg = self._total_system_kg * self.aggregation_threshold_percent / 100
         aggregate_groups = {}
         for node_idx in self.node_objects:
             if self.node_total_kg[node_idx] >= threshold_kg:
                 continue
-            column = node_columns.get(node_idx)
+            column = self._node_columns.get(node_idx)
             if column is None:
                 continue
             aggregate_groups.setdefault(column, []).append(node_idx)
         aggregate_groups = {group_key: group for group_key, group in aggregate_groups.items() if len(group) >= 2}
         if not aggregate_groups:
-            return False
+            return
 
         original_node_keys = {idx: key for key, idx in self.node_indices.items()}
         original_full_labels = list(self.full_node_labels)
         original_color_keys = list(self.node_color_keys)
         original_node_objects = dict(self.node_objects)
-        original_aggregated_node_members = dict(self.aggregated_node_members)
-        original_aggregated_node_classes = dict(self.aggregated_node_classes)
         original_links = list(zip(self.link_sources, self.link_targets, self.link_values))
         original_node_total_kg = list(self.node_total_kg)
         original_node_columns = dict(self._node_columns)
@@ -343,12 +337,9 @@ class ImpactRepartitionSankey:
             if old_idx in nodes_to_aggregate:
                 continue
             new_idx = self._add_node(
-                label, original_node_keys[old_idx], color_key=original_color_keys[old_idx], obj=original_node_objects.get(old_idx))
+                label, original_node_keys[old_idx], color_key=original_color_keys[old_idx],
+                obj=original_node_objects.get(old_idx))
             old_to_new_indices[old_idx] = new_idx
-            if old_idx in original_aggregated_node_members:
-                self.aggregated_node_members[new_idx] = list(original_aggregated_node_members[old_idx])
-            if old_idx in original_aggregated_node_classes:
-                self.aggregated_node_classes[new_idx] = list(original_aggregated_node_classes[old_idx])
             if old_idx in original_node_columns:
                 self._node_columns[new_idx] = original_node_columns[old_idx]
 
@@ -383,11 +374,6 @@ class ImpactRepartitionSankey:
         for old_idx, new_idx in old_to_new_indices.items():
             if old_idx not in nodes_to_aggregate and original_node_total_kg[old_idx] > self.node_total_kg[new_idx]:
                 self.node_total_kg[new_idx] = original_node_total_kg[old_idx]
-        return True
-
-    def _aggregate_small_nodes_by_column(self):
-        while self._aggregate_small_nodes_by_column_once():
-            pass
 
     def _compute_node_colors(self):
         unique_keys = list(dict.fromkeys(self.node_color_keys))
@@ -436,15 +422,21 @@ class ImpactRepartitionSankey:
             link_labels.append(f"{src_label} → {tgt_label}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
 
+    def _column_x_center(self, column):
+        min_col = min(self._node_columns.values())
+        max_col = max(self._node_columns.values())
+        if max_col == min_col:
+            return 0.5
+        return 0.006 + (column - min_col) / (max_col + 0.09 - min_col)
+
     def get_column_metadata(self):
         if not self._built:
             self.build()
-        node_columns = self._compute_node_columns()
-        if not node_columns:
+        if not self._node_columns:
             return []
 
         classes_by_column = {}
-        for node_idx, column in node_columns.items():
+        for node_idx, column in self._node_columns.items():
             if node_idx in self._spacer_nodes:
                 continue
             if node_idx in self.node_objects:
@@ -455,10 +447,9 @@ class ImpactRepartitionSankey:
         if not classes_by_column:
             return []
 
-        max_column = max(node_columns.values())
         return [{
             "column_index": column,
-            "x_center": 0.5 if max_column == 0 else (column + 0.5) / (max_column + 1),
+            "x_center": self._column_x_center(column),
             "class_names": sorted(class_names),
         } for column, class_names in sorted(classes_by_column.items()) if class_names]
 
@@ -532,18 +523,14 @@ class ImpactRepartitionSankey:
                 text=column_information_text,
                 font=dict(size=11),
             )
-        if self.display_column_information:
-            node_columns = self._compute_node_columns()
-            column_set = {col for idx, col in node_columns.items() if idx not in self._spacer_nodes}
-            if column_set:
-                min_col = min(node_columns.values())
-                max_col = max(node_columns.values())
-                for col in sorted(column_set):
-                    x = 0.5 if max_col == min_col else 0.006 + (col - min_col) / (max_col + 0.09 - min_col)
-                    fig.add_annotation(
-                        x=x, y=-0.08, xref="paper", yref="paper", xanchor="center", yanchor="bottom",
-                        showarrow=False, text=str(col), font=dict(size=12, color="gray"),
-                    )
+        if self.display_column_information and self._node_columns:
+            column_set = {col for idx, col in self._node_columns.items() if idx not in self._spacer_nodes}
+            for col in sorted(column_set):
+                fig.add_annotation(
+                    x=self._column_x_center(col), y=-0.08, xref="paper", yref="paper",
+                    xanchor="center", yanchor="bottom",
+                    showarrow=False, text=str(col), font=dict(size=12, color="gray"),
+                )
         fig.update_layout(title_text=title, font_size=12, height=800, width=width, margin=dict(b=bottom_margin))
         return fig
 
