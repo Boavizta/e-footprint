@@ -457,6 +457,27 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
         self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
 
+    def test_build_link_labels_keeps_visible_endpoints_across_spacer_nodes(self):
+        """Test spacer-segmented links keep the original visible source and target in hover labels."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+
+        source_idx = sankey._add_node("Source", ("source", "energy"))
+        target_idx = sankey._add_node("Target", ("target", "energy"))
+        sankey._total_system_kg = 100
+        sankey.node_total_kg[source_idx] = 100
+        sankey._node_columns = {source_idx: 1, target_idx: 4}
+        sankey._add_link(source_idx, target_idx, 0.1)
+
+        sankey._insert_spacer_nodes()
+        link_labels = sankey._build_link_labels()
+
+        self.assertEqual(3, len(link_labels))
+        self.assertEqual(1, len(set(link_labels)))
+        self.assertTrue(all(label.startswith("Source → Target<br>") for label in link_labels))
+        self.assertTrue(all(label.endswith("CO2eq (100.0%)") for label in link_labels))
+
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         """Test column information reports both manual split and impact repartition columns."""
         leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)

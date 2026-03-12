@@ -525,13 +525,43 @@ class ImpactRepartitionSankey:
         return node_hover
 
     def _build_link_labels(self):
+        incoming_by_target = {}
+        outgoing_by_source = {}
+        for source, target in zip(self.link_sources, self.link_targets):
+            incoming_by_target.setdefault(target, []).append(source)
+            outgoing_by_source.setdefault(source, []).append(target)
+
+        def resolve_visible_source(node_idx):
+            current = node_idx
+            visited = set()
+            while current in self._spacer_nodes and current not in visited:
+                visited.add(current)
+                incoming = incoming_by_target.get(current, [])
+                if not incoming:
+                    break
+                current = incoming[0]
+            return current
+
+        def resolve_visible_target(node_idx):
+            current = node_idx
+            visited = set()
+            while current in self._spacer_nodes and current not in visited:
+                visited.add(current)
+                outgoing = outgoing_by_source.get(current, [])
+                if not outgoing:
+                    break
+                current = outgoing[0]
+            return current
+
         link_labels = []
         for i in range(len(self.link_values)):
             kg = self.link_values[i] * 1000
             amount_str = display_co2_amount(format_co2_amount(kg))
             pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
-            src_label = self.full_node_labels[self.link_sources[i]]
-            tgt_label = self.full_node_labels[self.link_targets[i]]
+            src_idx = resolve_visible_source(self.link_sources[i])
+            tgt_idx = resolve_visible_target(self.link_targets[i])
+            src_label = self.full_node_labels[src_idx]
+            tgt_label = self.full_node_labels[tgt_idx]
             link_labels.append(f"{src_label} → {tgt_label}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
 
@@ -653,6 +683,7 @@ if __name__ == '__main__':
     from efootprint.core.system import System
     from efootprint.core.country import Country
     from efootprint.core.hardware.device import Device
+    from efootprint.core.hardware.edge.edge_device import EdgeDevice
     test = "json"
     json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
                   "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json"]
@@ -678,8 +709,8 @@ if __name__ == '__main__':
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=[],
-        skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
+        skipped_impact_repartition_classes=[System, Country, EdgeDevice],
+        skip_phase_footprint_split=False, skip_object_category_footprint_split=True,
         skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
         display_column_information=True
     )
