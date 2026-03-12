@@ -86,8 +86,7 @@ SANKEY_COLUMNS = [
     [UsageJourney, EdgeUsageJourney],
     [EdgeFunction, UsageJourneyStep],
     [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
-    [JobBase],
-    [RecurrentEdgeComponentNeed],
+    [JobBase, RecurrentEdgeComponentNeed],
     [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
     [EdgeComponent],
 ]

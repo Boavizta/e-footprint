@@ -249,6 +249,7 @@ class ImpactRepartitionSankey:
                 else:
                     self.node_total_kg[component_idx] += value_kg
 
+    @time_it
     def build(self):
         if self._built:
             return
@@ -696,7 +697,7 @@ if __name__ == '__main__':
     from efootprint.core.hardware.edge.edge_device import EdgeDevice
     test = "json"
     json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
-                  "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json"]
+                  "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json", "smart building test.json"]
     skipped_impact_repartition_classes__full = [
         System, Country, EdgeComponent, JobBase, RecurrentEdgeDeviceNeed, RecurrentServerNeed,
         RecurrentEdgeComponentNeed, RecurrentEdgeWorkloadNeed]
@@ -713,15 +714,15 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[2], "r") as f:
+        with open(json_files[-1], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=[System, Country, EdgeDevice],
+        skipped_impact_repartition_classes=[System, Country],
         skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
-        skip_object_footprint_split=False, excluded_object_types=[Device], lifecycle_phase_filter=None,
+        skip_object_footprint_split=False, excluded_object_types=[Device], lifecycle_phase_filter=LifeCyclePhases.USAGE,
         display_column_information=True
     )
     fig = sankey.figure()
