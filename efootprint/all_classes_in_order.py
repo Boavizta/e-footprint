@@ -80,13 +80,23 @@ ALL_EFOOTPRINT_CLASSES_DICT = copy(ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT)
 ALL_EFOOTPRINT_CLASSES_DICT.update(ALL_CANONICAL_CLASSES_DICT)
 
 SANKEY_COLUMNS = [
-    [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
-    [EdgeComponent],
-    [RecurrentEdgeComponentNeed],
-    [JobBase],
-    [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
-    [EdgeFunction, UsageJourneyStep],
-    [UsageJourney, EdgeUsageJourney],
+    [System],
+    [Country],
     [UsagePattern, EdgeUsagePattern],
-    [Country]
+    [UsageJourney, EdgeUsageJourney],
+    [EdgeFunction, UsageJourneyStep],
+    [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
+    [JobBase],
+    [RecurrentEdgeComponentNeed],
+    [EdgeComponent],
+    [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
 ]
+
+OBJECT_CATEGORIES = {
+    "Servers": [ServerBase],
+    "Storage": [Storage],
+    "ExternalAPIs": [ExternalAPI],
+    "Network": [Network],
+    "Devices": [Device],
+    "EdgeDevices": [EdgeDevice],
+}

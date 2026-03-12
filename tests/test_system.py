@@ -41,7 +41,7 @@ class TestSystem(TestCase):
             "Servers": {self.server: self._hourly_kg()},
             "ExternalAPIs": {},
             "Storage": {self.storage: self._hourly_kg()},
-            "Network": {},
+            "Network": {self.network: EmptyExplainableObject()},
             "Devices": {self.device: self._hourly_kg()},
             "EdgeDevices": {}
         }
@@ -133,6 +133,7 @@ class TestSystem(TestCase):
             edge_storage.instances_fabrication_footprint = self._hourly_kg(values=(1, 1, 1))
             edge_storage.energy_footprint = self._hourly_kg(values=(1, 1, 1))
             edge_usage_pattern.network.energy_footprint = network_energy or self._hourly_kg(values=(2, 3, 4))
+            edge_usage_pattern.network.instances_fabrication_footprint = EmptyExplainableObject()
 
         return {
             "edge_usage_pattern": edge_usage_pattern,
@@ -171,6 +172,7 @@ class TestSystem(TestCase):
         self.server.instances_fabrication_footprint = self._hourly_kg()
         self.storage.instances_fabrication_footprint = self._hourly_kg()
         self.device.instances_fabrication_footprint = self._hourly_kg()
+        self.network.instances_fabrication_footprint = EmptyExplainableObject()
 
         self.server.energy_footprint = self._hourly_kg()
         self.storage.energy_footprint = self._hourly_kg()
@@ -254,9 +256,12 @@ class TestSystem(TestCase):
         self.assertDictEqual(self._base_energy_footprints(), self.system.energy_footprints)
 
     def test_external_apis_have_their_own_category_in_footprints(self):
-        external_api = create_mod_obj_mock(ModelingObject, name="external_api", systems=[])
+        from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
+        external_api = create_mod_obj_mock(ExternalAPI, name="external_api", systems=[])
         external_api.instances_fabrication_footprint = self._hourly_kg(values=(4, 4, 4))
         external_api.energy_footprint = self._hourly_kg(values=(2, 2, 2))
+        external_api.server = MagicMock()
+        external_api.server.installed_services = []
         self.usage_pattern.jobs[0].external_api = external_api
 
         fab_footprints = self.system.fabrication_footprints
@@ -352,13 +357,12 @@ class TestSystem(TestCase):
 
     def test_total_fabrication_footprint_sum_over_period(self):
         fab_footprints = {
-            "Servers": {"server": 
-                self._hourly_kg()},
-            "Storage": {"storage": 
-                self._hourly_kg()},
-            "Devices": {"usage_pattern": 
-                self._hourly_kg()},
-            "Network": {"networks": EmptyExplainableObject()}
+            "Servers": {"server": self._hourly_kg()},
+            "ExternalAPIs": {},
+            "Storage": {"storage": self._hourly_kg()},
+            "Devices": {"usage_pattern": self._hourly_kg()},
+            "Network": {"networks": EmptyExplainableObject()},
+            "EdgeDevices": {}
         }
 
         expected_dict = {
@@ -377,14 +381,12 @@ class TestSystem(TestCase):
 
     def test_total_energy_footprint_sum_over_period(self):
         energy_footprints = {
-            "Servers": {"server": 
-                self._hourly_kg()},
-            "Storage": {"storage": 
-                self._hourly_kg()},
-            "Devices": {"usage_pattern": 
-                self._hourly_kg()},
-            "Network": {"networks": 
-                self._hourly_kg()}
+            "Servers": {"server": self._hourly_kg()},
+            "ExternalAPIs": {},
+            "Storage": {"storage": self._hourly_kg()},
+            "Devices": {"usage_pattern": self._hourly_kg()},
+            "Network": {"networks": self._hourly_kg()},
+            "EdgeDevices": {}
         }
 
         expected_dict = {
@@ -401,20 +403,11 @@ class TestSystem(TestCase):
             total_energy_footprint_sum_over_period = self.system.total_energy_footprint_sum_over_period
             self.assertDictEqual(expected_dict, total_energy_footprint_sum_over_period)
 
-    @patch("efootprint.core.system.System.servers", new_callable=PropertyMock)
-    @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
-    def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
-            self, mock_storages, mock_servers):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", id="usage pattern id")
+    def test_fabrication_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
         device = create_mod_obj_mock(
-            Device, name="device", id="device id", instances_fabrication_footprint=SourceValue(1 * u.kg)
-        )
-        usage_pattern.devices = [device]
-        usage_pattern2 = create_mod_obj_mock(UsagePattern, name="usage pattern2", id="usage pattern2 id")
+            Device, name="device", id="device id", instances_fabrication_footprint=SourceValue(1 * u.kg))
         device2 = create_mod_obj_mock(
-            Device, name="device2", id="device2 id", instances_fabrication_footprint=SourceValue(1 * u.kg)
-        )
-        usage_pattern2.devices = [device2]
+            Device, name="device2", id="device2 id", instances_fabrication_footprint=SourceValue(1 * u.kg))
         server = create_mod_obj_mock(Server, name="server", id="server id",
                                      instances_fabrication_footprint=SourceValue(1 * u.kg))
         server2 = create_mod_obj_mock(Server, name="server2", id="server2 id",
@@ -424,61 +417,41 @@ class TestSystem(TestCase):
         storage2 = create_mod_obj_mock(Storage, name="storage", id="storage2 id",
                                        instances_fabrication_footprint=SourceValue(1 * u.kg))
 
-        mock_servers.return_value = [server, server2]
-        mock_storages.return_value = [storage, storage2]
-
         system2 = System.__new__(System)
         system2.trigger_modeling_updates = False
-        system2.usage_patterns = [usage_pattern, usage_pattern2]
+        system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
-        for category in ["Servers", "Storage", "Devices"]:
-            self.assertEqual(
-                len(list(system2.fabrication_footprints[category].values())), 2, f"{category} doesn’t have right len")
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
+            mock_all.return_value = [device, device2, server, server2, storage, storage2]
+            for category in ["Servers", "Storage", "Devices"]:
+                self.assertEqual(
+                    len(list(system2.fabrication_footprints[category].values())), 2,
+                    f"{category} doesn’t have right len")
 
-    @patch("efootprint.core.system.System.servers", new_callable=PropertyMock)
-    @patch("efootprint.core.system.System.storages", new_callable=PropertyMock)
-    @patch("efootprint.core.system.System.networks", new_callable=PropertyMock)
-    def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(
-            self, mock_networks, mock_storages, mock_servers):
-        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", id="usage pattern id")
+    def test_energy_footprints_has_as_many_values_as_nb_of_objects_even_if_some_objects_have_same_name(self):
         device = create_mod_obj_mock(Device, name="device", id="device id", energy_footprint=SourceValue(1 * u.kg))
-        usage_pattern.devices = [device]
-        usage_pattern2 = create_mod_obj_mock(UsagePattern, name="usage pattern2", id="usage pattern2 id")
-        device2 = create_mod_obj_mock(
-            Device, name="device2", id="device2 id", energy_footprint=SourceValue(1 * u.kg)
-        )
-        usage_pattern2.devices = [device2]
+        device2 = create_mod_obj_mock(Device, name="device2", id="device2 id", energy_footprint=SourceValue(1 * u.kg))
         server = create_mod_obj_mock(Server, name="server", id="server id", energy_footprint=SourceValue(1 * u.kg))
-        server2 = create_mod_obj_mock(
-            Server, name="server2", id="server2 id", energy_footprint=SourceValue(1 * u.kg)
-        )
-        storage = create_mod_obj_mock(
-            Storage, name="storage", id="storage id", energy_footprint=SourceValue(1 * u.kg)
-        )
+        server2 = create_mod_obj_mock(Server, name="server2", id="server2 id", energy_footprint=SourceValue(1 * u.kg))
+        storage = create_mod_obj_mock(Storage, name="storage", id="storage id", energy_footprint=SourceValue(1 * u.kg))
         storage2 = create_mod_obj_mock(
-            Storage, name="storage", id="storage2 id", energy_footprint=SourceValue(1 * u.kg)
-        )
-        network = create_mod_obj_mock(
-            Network, name="network", id="network id", energy_footprint=SourceValue(1 * u.kg)
-        )
+            Storage, name="storage", id="storage2 id", energy_footprint=SourceValue(1 * u.kg))
+        network = create_mod_obj_mock(Network, name="network", id="network id", energy_footprint=SourceValue(1 * u.kg))
         network2 = create_mod_obj_mock(
-            Network, name="network2", id="network2 id", energy_footprint=SourceValue(1 * u.kg)
-        )
-
-        mock_servers.return_value = [server, server2]
-        mock_storages.return_value = [storage, storage2]
-        mock_networks.return_value = [network, network2]
+            Network, name="network2", id="network2 id", energy_footprint=SourceValue(1 * u.kg))
 
         system2 = System.__new__(System)
         system2.trigger_modeling_updates = False
-        system2.usage_patterns = [usage_pattern, usage_pattern2]
+        system2.usage_patterns = []
         system2.edge_usage_patterns = []
 
-        for category in ["Servers", "Storage", "Devices", "Network"]:
-            self.assertEqual(
-                len(list(system2.energy_footprints[category].values())), 2,
-                f"{category} doesn’t have right len")
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
+            mock_all.return_value = [device, device2, server, server2, storage, storage2, network, network2]
+            for category in ["Servers", "Storage", "Devices", "Network"]:
+                self.assertEqual(
+                    len(list(system2.energy_footprints[category].values())), 2,
+                    f"{category} doesn’t have right len")
 
     def test_footprints_by_category_and_object(self):
         fab_footprints = {
@@ -575,8 +548,9 @@ class TestSystem(TestCase):
             with_ids=True
         )
 
-        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
-            mock_edge_devices.return_value = [edge_computer]
+        base_objects = self.system.all_linked_objects
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
+            mock_all.return_value = base_objects + [edge_computer]
             fab_footprints = self.system.fabrication_footprints
 
             expected_dict["EdgeDevices"] = {edge_computer: edge_computer.instances_fabrication_footprint}
@@ -606,11 +580,12 @@ class TestSystem(TestCase):
             storage_fab=self._hourly_kg(values=(1, 1, 1))
         )
 
-        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
-            mock_edge_devices.return_value = [edge_computer]
+        base_objects = self.system.all_linked_objects
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
+            mock_all.return_value = base_objects + [edge_computer]
             total_fab_footprints = self.system.total_fabrication_footprints
 
-            self.assertEqual("Edge devices total fabrication footprint", total_fab_footprints["EdgeDevices"].label)
+            self.assertEqual("EdgeDevices total fabrication footprint", total_fab_footprints["EdgeDevices"].label)
             self.assertEqual(edge_computer.instances_fabrication_footprint, total_fab_footprints["EdgeDevices"])
 
     def test_total_energy_footprints_includes_edge_devices(self):
@@ -619,11 +594,12 @@ class TestSystem(TestCase):
             storage_energy=self._hourly_kg(values=(1, 1, 1))
         )
 
-        with patch.object(System, "edge_devices", new_callable=PropertyMock) as mock_edge_devices:
-            mock_edge_devices.return_value = [edge_computer]
+        base_objects = self.system.all_linked_objects
+        with patch.object(System, "all_linked_objects", new_callable=PropertyMock) as mock_all:
+            mock_all.return_value = base_objects + [edge_computer]
             total_energy_footprints = self.system.total_energy_footprints
 
-            self.assertEqual("Edge devices total energy footprint", total_energy_footprints["EdgeDevices"].label)
+            self.assertEqual("EdgeDevices total energy footprint", total_energy_footprints["EdgeDevices"].label)
             self.assertEqual(edge_computer.energy_footprint, total_energy_footprints["EdgeDevices"])
 
     def test_total_fabrication_footprint_sum_over_period_includes_edge_devices(self):

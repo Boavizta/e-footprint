@@ -211,79 +211,38 @@ class System(ModelingObject):
                 return efootprint_obj
         return None
 
+    def _objects_by_category(self):
+        from efootprint.all_classes_in_order import OBJECT_CATEGORIES
+        result = {category: [] for category in OBJECT_CATEGORIES}
+        for obj in self.all_linked_objects:
+            for category_name, category_classes in OBJECT_CATEGORIES.items():
+                if any(isinstance(obj, cls) for cls in category_classes):
+                    result[category_name].append(obj)
+                    break
+        return result
+
     @property
     def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
-        fab_footprints = {
-            "Servers": {server: server.instances_fabrication_footprint for server in self.servers},
-            "Storage": {storage: storage.instances_fabrication_footprint for storage in self.storages},
-            "ExternalAPIs": {external_api: external_api.instances_fabrication_footprint for external_api in
-                             self.external_apis},
-            "Network": {},
-            "Devices": {device: device.instances_fabrication_footprint
-                        for device in self.devices},
-            "EdgeDevices": {edge_device: edge_device.instances_fabrication_footprint
-                            for edge_device in self.edge_devices},
-        }
-
-        return fab_footprints
+        return {category: {obj: obj.instances_fabrication_footprint for obj in objs
+                           if hasattr(obj, "instances_fabrication_footprint")}
+                for category, objs in self._objects_by_category().items()}
 
     @property
     def energy_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
-        energy_footprints = {
-            "Servers": {server: server.energy_footprint for server in self.servers},
-            "Storage": {storage: storage.energy_footprint for storage in self.storages},
-            "ExternalAPIs": {external_api: external_api.energy_footprint for external_api in self.external_apis},
-            "Network": {network: network.energy_footprint for network in self.networks},
-            "Devices": {device: device.energy_footprint
-                        for device in self.devices},
-            "EdgeDevices": {edge_device: edge_device.energy_footprint
-                            for edge_device in self.edge_devices},
-        }
-
-        return energy_footprints
+        return {category: {obj: obj.energy_footprint for obj in objs if hasattr(obj, "energy_footprint")}
+                for category, objs in self._objects_by_category().items()}
 
     @property
     def total_fabrication_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
-        fab_footprints = {
-            "Servers": sum([server.instances_fabrication_footprint for server in self.servers],
-                           start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Servers total fabrication footprint"),
-            "Storage": sum([storage.instances_fabrication_footprint for storage in self.storages],
-                           start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Storage total fabrication footprint"),
-            "ExternalAPIs": sum([external_api.instances_fabrication_footprint for external_api in self.external_apis],
-                                start=EmptyExplainableObject()).to(u.kg).set_label(
-                "External APIs total fabrication footprint"),
-            "Network": EmptyExplainableObject(),
-            "Devices": sum([device.instances_fabrication_footprint
-                           for device in self.devices], start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Devices total fabrication footprint"),
-            "EdgeDevices": sum([edge_device.instances_fabrication_footprint for edge_device in self.edge_devices],
-                               start=EmptyExplainableObject()).to(u.kg).set_label(
-                "Edge devices total fabrication footprint"),
-        }
-
-        return fab_footprints
+        return {category: sum(objs.values(), start=EmptyExplainableObject()).to(u.kg).set_label(
+            f"{category} total fabrication footprint")
+            for category, objs in self.fabrication_footprints.items()}
 
     @property
     def total_energy_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
-        energy_footprints = {
-            "Servers": sum([server.energy_footprint for server in self.servers], start=EmptyExplainableObject()
-                           ).to(u.kg).set_label("Servers total energy footprint"),
-            "Storage": sum([storage.energy_footprint for storage in self.storages], start=EmptyExplainableObject()
-                           ).to(u.kg).set_label("Storage total energy footprint"),
-            "ExternalAPIs": sum([external_api.energy_footprint for external_api in self.external_apis],
-                                start=EmptyExplainableObject()
-                                ).to(u.kg).set_label("External APIs total energy footprint"),
-            "Network": sum([network.energy_footprint for network in self.networks], start=EmptyExplainableObject()
-                           ).to(u.kg).set_label("Network total energy footprint"),
-            "Devices": sum([device.energy_footprint for device in self.devices],
-                           start=EmptyExplainableObject()).to(u.kg).set_label("Devices total energy footprint"),
-            "EdgeDevices": sum([edge_device.energy_footprint for edge_device in self.edge_devices],
-                               start=EmptyExplainableObject()).to(u.kg).set_label("Edge devices total energy footprint"),
-        }
-
-        return energy_footprints
+        return {category: sum(objs.values(), start=EmptyExplainableObject()).to(u.kg).set_label(
+            f"{category} total energy footprint")
+            for category, objs in self.energy_footprints.items()}
 
     @staticmethod
     def sum_and_remove_empty_explainable_object(expl_obj):

@@ -36,12 +36,13 @@ class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
         self.energy_footprint = EmptyExplainableObject()
+        self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
             f"bandwith energy intensity of {self.name}")
 
     @property
     def calculated_attributes(self):
-        return ["energy_footprint"] + super().calculated_attributes
+        return ["instances_fabrication_footprint", "energy_footprint"] + super().calculated_attributes
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -82,3 +83,6 @@ class Network(ModelingObject):
         self.impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_impact_repartition_weights(job)
+
+    def update_instances_fabrication_footprint(self):
+        self.instances_fabrication_footprint = EmptyExplainableObject()

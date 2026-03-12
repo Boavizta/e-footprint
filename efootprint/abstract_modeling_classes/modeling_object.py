@@ -23,6 +23,7 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import get_init_signature_params
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
@@ -718,27 +719,57 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             self.update_dict_element_in_impact_repartition(modeling_obj)
 
     @property
-    def attributed_fabrication_footprint(self):
-        if hasattr(self, "instances_fabrication_footprint"):
-            return self.instances_fabrication_footprint
+    def is_impact_source(self):
+        return hasattr(self, "instances_fabrication_footprint") or hasattr(self, "energy_footprint")
+
+    @property
+    def attributed_footprint_per_source(self):
+        return {
+            LifeCyclePhases.MANUFACTURING: self.attributed_fabrication_footprint_per_source,
+            LifeCyclePhases.USAGE: self.attributed_energy_footprint_per_source
+        }
+            
+    @property
+    def attributed_fabrication_footprint_per_source(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        attributed_fabrication_footprint_per_source = ExplainableObjectDict()
+        if self.is_impact_source:
+            attributed_fabrication_footprint_per_source[self] = self.instances_fabrication_footprint
         else:
-            attributed_fabrication_footprint = EmptyExplainableObject()
             for expl_dict in self.explainable_object_dicts_containers:
                 if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
-                    attributed_fabrication_footprint += (
-                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint)
+                    attributed_fabrication_footprint_per_source[expl_dict.modeling_obj_container] = (
+                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint
+                    ).set_label(f"{self.name} fabrication footprint due to {expl_dict.modeling_obj_container.name}")
+                
+        return attributed_fabrication_footprint_per_source
 
+    @property
+    def attributed_fabrication_footprint(self):
+        attributed_fabrication_footprint = sum(
+            [val for val in self.attributed_fabrication_footprint_per_source.values()], start=EmptyExplainableObject())
+        
         return attributed_fabrication_footprint.to(u.kg).set_label(f"{self.name} attributed fabrication footprint")
 
     @property
-    def attributed_energy_footprint(self):
-        if hasattr(self, "energy_footprint"):
-            return self.energy_footprint
+    def attributed_energy_footprint_per_source(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        attributed_energy_footprint_per_source = ExplainableObjectDict()
+        if self.is_impact_source:
+            attributed_energy_footprint_per_source[self] = self.energy_footprint
         else:
-            attributed_energy_footprint = EmptyExplainableObject()
             for expl_dict in self.explainable_object_dicts_containers:
                 if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
-                    attributed_energy_footprint += (
-                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint)
+                    attributed_energy_footprint_per_source[expl_dict.modeling_obj_container] = (
+                            expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint
+                    ).set_label(f"{self.name} energy footprint due to {expl_dict.modeling_obj_container.name}")
+
+        return attributed_energy_footprint_per_source
+
+    @property
+    def attributed_energy_footprint(self):
+        attributed_energy_footprint = sum(
+            [val for val in self.attributed_energy_footprint_per_source.values()], start=EmptyExplainableObject())
 
         return attributed_energy_footprint.to(u.kg).set_label(f"{self.name} attributed energy footprint")
+    
