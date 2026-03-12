@@ -174,8 +174,12 @@ class ImpactRepartitionSankey:
             self._node_columns[energy_idx] = current_column_index
             if phase_parents["fabrication"] is not None:
                 self._add_link(phase_parents["fabrication"], fab_idx, total_fab_kg / 1000)
+            else:
+                self.node_total_kg[fab_idx] = total_fab_kg
             if phase_parents["energy"] is not None:
                 self._add_link(phase_parents["energy"], energy_idx, total_energy_kg / 1000)
+            else:
+                self.node_total_kg[energy_idx] = total_energy_kg
             phase_parents["fabrication"] = fab_idx
             phase_parents["energy"] = energy_idx
             self._manual_column_information.append({
@@ -206,6 +210,8 @@ class ImpactRepartitionSankey:
                     self._node_columns[cat_idx] = current_column_index
                     if phase_parent_idx is not None:
                         self._add_link(phase_parent_idx, cat_idx, cat_tonnes)
+                    else:
+                        self.node_total_kg[cat_idx] = cat_kg
                     object_parent_idx = cat_idx
                     category_nodes_created = True
 
@@ -298,7 +304,7 @@ class ImpactRepartitionSankey:
             return
         threshold_kg = self._total_system_kg * self.aggregation_threshold_percent / 100
         aggregate_groups = {}
-        for node_idx in self.node_objects:
+        for node_idx in range(len(self.node_labels)):
             if self.node_total_kg[node_idx] >= threshold_kg:
                 continue
             column = self._node_columns.get(node_idx)
