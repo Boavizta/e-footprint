@@ -592,10 +592,13 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual(60, sankey._total_system_kg)
         intermediate_idx = sankey.node_indices[("intermediate", "Manufacturing")]
         phase_idx = sankey.node_indices[("phase", "Manufacturing")]
+        root_idx = sankey.node_indices[("root", "total")]
+        self.assertEqual(60, sankey.node_total_kg[phase_idx])
         self.assertEqual(60, sankey.node_total_kg[intermediate_idx])
         link_values_by_edge = {
             (source, target): value for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
         }
+        self.assertEqual(0.06, link_values_by_edge[(root_idx, phase_idx)])
         self.assertEqual(0.06, link_values_by_edge[(phase_idx, intermediate_idx)])
         self.assertEqual(0.06, link_values_by_edge[(intermediate_idx, sankey.node_indices[("leaf_a", "Manufacturing")])])
 

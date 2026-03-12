@@ -149,6 +149,11 @@ class ImpactRepartitionSankey:
             return None
         return phase.value
 
+    def _get_phase_total_kg(self, root, root_footprint, phase):
+        if self.excluded_object_types:
+            return self._sum_leaf_values(root, phase, set())
+        return sum(self._get_value_kg(v) for s, v in root_footprint[phase].items() if not self._is_excluded(s))
+
     def _sum_leaf_values(self, obj, phase, visited):
         if obj.id in visited:
             return 0
@@ -285,8 +290,7 @@ class ImpactRepartitionSankey:
                 color_key = "__fabrication__" if phase == LifeCyclePhases.MANUFACTURING else "__energy__"
                 phase_idx = self._add_node(phase.value, ("phase", phase.value), color_key=color_key)
                 self._node_columns[phase_idx] = current_column_index
-                phase_kg = sum(self._get_value_kg(v) for s, v in root_footprint[phase].items()
-                               if not self._is_excluded(s))
+                phase_kg = self._get_phase_total_kg(root, root_footprint, phase)
                 if root_idx is not None:
                     self._add_link(root_idx, phase_idx, phase_kg / 1000)
                 else:
@@ -716,8 +720,8 @@ if __name__ == '__main__':
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
         skipped_impact_repartition_classes=[System, Country, EdgeDevice],
-        skip_phase_footprint_split=False, skip_object_category_footprint_split=True,
-        skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
+        skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
+        skip_object_footprint_split=False, excluded_object_types=[Device], lifecycle_phase_filter=None,
         display_column_information=True
     )
     fig = sankey.figure()
