@@ -10,13 +10,14 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIJob, ecologits_calculated_attributes)
 from efootprint.constants.units import u
-from tests.utils import set_modeling_obj_containers
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestEcoLogitsGenAIExternalAPI(TestCase):
@@ -40,23 +41,22 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
     def test_jobs_property_returns_modeling_obj_containers(self):
         """Test that jobs property returns the modeling_obj_containers."""
-        mock_job1 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job2 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
+        mock_job1 = create_mod_obj_mock(EcoLogitsGenAIExternalAPIJob, "Job 1")
+        mock_job2 = create_mod_obj_mock(EcoLogitsGenAIExternalAPIJob, "Job 2")
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
 
         self.assertEqual(set(self.external_api.jobs), {mock_job1, mock_job2})
 
     def test_update_instances_fabrication_footprint_with_multiple_jobs(self):
         """Test instances fabrication footprint calculation with multiple jobs."""
-        mock_job1 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job1.request_embodied_gwp = ExplainableQuantity(10 * u.kg, "test embodied gwp 1")
-        mock_job1.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([5] * 24), u.occurrence), self.start_date, "test occurrences 1")
-
-        mock_job2 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job2.request_embodied_gwp = ExplainableQuantity(20 * u.kg, "test embodied gwp 2")
-        mock_job2.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([3] * 24), u.occurrence), self.start_date, "test occurrences 2")
+        mock_job1 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 1", request_embodied_gwp=ExplainableQuantity(10 * u.kg, "gwp 1"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([5] * 24), u.occurrence), self.start_date, "test occurrences 1"))
+        mock_job2 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 2", request_embodied_gwp=ExplainableQuantity(20 * u.kg, "gwp 2"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([3] * 24), u.occurrence), self.start_date, "test occurrences 2"))
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns)
@@ -77,15 +77,14 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
     def test_update_instances_energy_with_multiple_jobs(self):
         """Test instances energy calculation with multiple jobs."""
-        mock_job1 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job1.request_energy = ExplainableQuantity(100 * u.kWh, "test energy 1")
-        mock_job1.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([8] * 24), u.occurrence), self.start_date, "test occurrences 1")
-
-        mock_job2 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job2.request_energy = ExplainableQuantity(50 * u.kWh, "test energy 2")
-        mock_job2.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([4] * 24), u.occurrence), self.start_date, "test occurrences 2")
+        mock_job1 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 1", request_energy=ExplainableQuantity(100 * u.kWh, "energy 1"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([8] * 24), u.occurrence), self.start_date, "test occurrences 1"))
+        mock_job2 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 2", request_energy=ExplainableQuantity(50 * u.kWh, "energy 2"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([4] * 24), u.occurrence), self.start_date, "test occurrences 2"))
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_energy * job.hourly_occurrences_across_usage_patterns)
@@ -106,15 +105,14 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
     def test_update_energy_footprint_with_multiple_jobs(self):
         """Test energy footprint calculation with multiple jobs."""
-        mock_job1 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job1.request_usage_gwp = ExplainableQuantity(25 * u.kg, "test usage gwp 1")
-        mock_job1.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([6] * 24), u.occurrence), self.start_date, "test occurrences 1")
-
-        mock_job2 = MagicMock(spec=EcoLogitsGenAIExternalAPIJob)
-        mock_job2.request_usage_gwp = ExplainableQuantity(15 * u.kg, "test usage gwp 2")
-        mock_job2.hourly_occurrences_across_usage_patterns = ExplainableHourlyQuantities(
-            Quantity(np.array([10] * 24), u.occurrence), self.start_date, "test occurrences 2")
+        mock_job1 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 1", request_usage_gwp=ExplainableQuantity(25 * u.kg, "usage 1"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([6] * 24), u.occurrence), self.start_date, "test occurrences 1"))
+        mock_job2 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob, "Job 2", request_usage_gwp=ExplainableQuantity(15 * u.kg, "usage 2"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([10] * 24), u.occurrence), self.start_date, "test occurrences 2"))
 
         set_modeling_obj_containers(self.external_api, [mock_job1, mock_job2])
         # Formula: sum(job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns)
@@ -132,6 +130,41 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
         self.external_api.server.update_energy_footprint()
 
         self.assertIsInstance(self.external_api.server.energy_footprint, EmptyExplainableObject)
+
+    def test_update_impact_repartition_weights_uses_total_request_footprint_per_job(self):
+        """Test server weights combine embodied and usage request impacts, scaled by hourly occurrences."""
+        mock_job_1 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob,
+            name="Job 1",
+            request_embodied_gwp=ExplainableQuantity(2 * u.kg, "test embodied gwp 1"),
+            request_usage_gwp=ExplainableQuantity(3 * u.kg, "test usage gwp 1"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([4] * 24), u.occurrence), self.start_date, "test occurrences 1"),
+        )
+
+        mock_job_2 = create_mod_obj_mock(
+            EcoLogitsGenAIExternalAPIJob,
+            name="Job 2",
+            request_embodied_gwp=ExplainableQuantity(1 * u.kg, "test embodied gwp 2"),
+            request_usage_gwp=ExplainableQuantity(1 * u.kg, "test usage gwp 2"),
+            hourly_occurrences_across_usage_patterns=ExplainableHourlyQuantities(
+                Quantity(np.array([10] * 24), u.occurrence), self.start_date, "test occurrences 2"),
+        )
+
+        set_modeling_obj_containers(self.external_api, [mock_job_1, mock_job_2])
+
+        self.external_api.server.update_impact_repartition_weights()
+
+        self.assertTrue(np.allclose([20] * 24, self.external_api.server.impact_repartition_weights[mock_job_1].magnitude))
+        self.assertTrue(np.allclose([20] * 24, self.external_api.server.impact_repartition_weights[mock_job_2].magnitude))
+
+    def test_impact_repartition_property_returns_server_impact_repartition(self):
+        """Test ExternalAPI exposes the server-level impact repartition without copying it."""
+        mock_job = create_mod_obj_mock(EcoLogitsGenAIExternalAPIJob, name="Job")
+        expected_repartition = ExplainableObjectDict({mock_job: SourceValue(1 * u.concurrent)})
+        self.external_api.server.impact_repartition = expected_repartition
+
+        self.assertIs(expected_repartition, self.external_api.impact_repartition)
 
     def test_provider_list_values_contains_valid_providers(self):
         """Test that list_values contains valid provider options."""

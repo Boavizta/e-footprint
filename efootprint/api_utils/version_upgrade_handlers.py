@@ -336,7 +336,7 @@ def upgrade_version_16_to_17(system_dict, efootprint_classes_dict=None):
             log_upgrade = True
     if log_upgrade:
         logger.info("Upgraded system dict from version 16 to 17: removed power_per_storage_capacity and idle_power "
-                    "from Storage and EdgeStorage objects")
+                    "from Storage and EdgeStorage objects, and set negative data stored by jobs to 0.")
     return system_dict
 
 

@@ -7,6 +7,7 @@ import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.country import Country
 from efootprint.core.hardware.network import Network
@@ -161,6 +162,26 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual(
             self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern],
             mock_result)
+
+    def test_update_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
+        self.edge_usage_journey.trigger_modeling_updates = False
+        edge_usage_pattern_a = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern A")
+        edge_usage_pattern_b = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern B")
+        set_modeling_obj_containers(
+            # It is currently not possible for an edge usage journey to be linked several times to the same
+            # usage pattern, but it might happen someday and the logic will be already tested.
+            self.edge_usage_journey, [edge_usage_pattern_a, edge_usage_pattern_a, edge_usage_pattern_b])
+        self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict({
+            edge_usage_pattern_a: SourceValue(2 * u.concurrent),
+            edge_usage_pattern_b: SourceValue(5 * u.concurrent),
+        })
+
+        self.edge_usage_journey.update_impact_repartition_weights()
+
+        self.assertEqual(4, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_a].magnitude)
+        self.assertEqual(5, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_b].magnitude)
+        self.assertEqual(u.concurrent, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_a].unit)
+
 
 
 if __name__ == "__main__":

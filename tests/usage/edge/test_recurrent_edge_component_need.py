@@ -319,6 +319,28 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         self.assertIsInstance(result_2, ExplainableHourlyQuantities)
         self.assertEqual(len(hourly_data_2), len(result_2.value))
 
+    def test_update_unitary_hourly_need_per_usage_pattern_counts_repeated_need_links(self):
+        """Test repeated component-need and device-need links are accounted for."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern")
+        mock_pattern.country = MagicMock(timezone=SourceTimezone(pytz.timezone("Europe/Paris")))
+        mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Journey", edge_usage_patterns=[mock_pattern])
+        mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: ExplainableHourlyQuantities(np.array([1.0, 1.0], dtype=np.float32) * u.concurrent,
+                                                      datetime(2023, 1, 2, 0, 0, 0), "parallel journeys")}
+        mock_pattern.edge_usage_journey = mock_journey
+
+        mock_function = create_mod_obj_mock(EdgeFunction, name="Function", edge_usage_journeys=[mock_journey])
+        mock_journey.edge_functions = [mock_function, mock_function]
+        mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Device Need", edge_functions=[mock_function])
+        mock_device_need.recurrent_edge_component_needs = [self.component_need, self.component_need]
+        mock_function.recurrent_edge_device_needs = [mock_device_need, mock_device_need]
+        set_modeling_obj_containers(self.component_need, [mock_device_need])
+
+        self.component_need.update_unitary_hourly_need_per_usage_pattern()
+
+        self.assertTrue(np.allclose(
+            [4.0, 4.0], self.component_need.unitary_hourly_need_per_usage_pattern[mock_pattern].magnitude))
+
 
 if __name__ == "__main__":
     unittest.main()

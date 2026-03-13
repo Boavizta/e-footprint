@@ -21,13 +21,8 @@ from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 class TestEdgeDevice(TestCase):
     def setUp(self):
-        self.mock_component_1 = MagicMock(spec=EdgeComponent)
-        self.mock_component_1.name = "Component 1"
-        self.mock_component_1.id = "component_1"
-
-        self.mock_component_2 = MagicMock(spec=EdgeComponent)
-        self.mock_component_2.name = "Component 2"
-        self.mock_component_2.id = "component_2"
+        self.mock_component_1 = create_mod_obj_mock(EdgeComponent, "Component 1")
+        self.mock_component_2 = create_mod_obj_mock(EdgeComponent, "Component 2")
 
         self.edge_device = EdgeDevice(
             name="Test Device",
@@ -354,6 +349,18 @@ class TestEdgeDevice(TestCase):
         result = self.edge_device.instances_fabrication_footprint
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
         self.assertIn("Test Device", result.label)
+
+    def test_update_impact_repartition_weights_uses_component_total_impacts(self):
+        """Test edge device weights each component by its total fabrication plus energy footprint."""
+        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
+        self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
+        self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
+        self.mock_component_2.energy_footprint = SourceValue(9 * u.kg)
+
+        self.edge_device.update_impact_repartition_weights()
+
+        self.assertAlmostEqual(5, self.edge_device.impact_repartition_weights[self.mock_component_1].magnitude)
+        self.assertAlmostEqual(15, self.edge_device.impact_repartition_weights[self.mock_component_2].magnitude)
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)

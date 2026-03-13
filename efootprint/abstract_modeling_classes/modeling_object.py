@@ -466,7 +466,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
         return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
-                "explainable_object_dicts_containers"]
+                "explainable_object_dicts_containers"] + list(self._impact_repartition_cached_property_names)
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         current_attr = getattr(self, name, None)
@@ -594,7 +594,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
                     or key in self.attributes_that_shouldnt_trigger_update_logic
-                    or key in self._impact_repartition_cached_property_names
             ):
                 continue
             elif value is None or isinstance(value, str):
@@ -644,8 +643,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         output_str += f"{self.class_as_simple_str} {self.id}\n \nname: {self.name}\n"
 
         for key, attr_value in self.__dict__.items():
-            if (key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes
-                    or key in self._impact_repartition_cached_property_names):
+            if (key in self.attributes_that_shouldnt_trigger_update_logic or key in self.calculated_attributes):
                 continue
             output_str += key_value_to_str(key, attr_value)
 

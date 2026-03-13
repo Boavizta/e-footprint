@@ -1,6 +1,5 @@
-import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import numpy as np
 
@@ -11,6 +10,7 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from tests.utils import create_mod_obj_mock
 
 
@@ -42,7 +42,7 @@ class TestEdgeComponent(TestCase):
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self):
         """Test fabrication footprint calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
-        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern: SourceValue(10 * u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
@@ -62,7 +62,7 @@ class TestEdgeComponent(TestCase):
     def test_update_dict_element_in_instances_energy_per_usage_pattern(self):
         """Test energy calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
-        mock_edge_usage_journey = MagicMock(spec=EdgeUsageJourney)
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern: create_source_hourly_values_from_list([10, 20], pint_unit=u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
@@ -151,6 +151,38 @@ class TestEdgeComponent(TestCase):
         result = self.component.energy_footprint
         self.assertTrue(np.allclose([1.5, 3], result.value.to(u.kg).magnitude))
 
+    @patch("efootprint.core.hardware.edge.edge_component.EdgeComponent.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_impact_repartition_weights_scales_component_needs_by_parallel_usage(self, mock_needs):
+        """Test component weights aggregate hourly need times the number of parallel edge usage journeys."""
+        usage_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        usage_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        usage_pattern_1.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 1")
+        usage_pattern_2.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 2")
+        usage_pattern_1.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            usage_pattern_1: create_source_hourly_values_from_list([2, 2], pint_unit=u.concurrent)}
+        usage_pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            usage_pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.concurrent)}
 
-if __name__ == "__main__":
-    unittest.main()
+        need_1 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed,
+            name="Need 1",
+            edge_usage_patterns=[usage_pattern_1, usage_pattern_2],
+            unitary_hourly_need_per_usage_pattern={
+                usage_pattern_1: create_source_hourly_values_from_list([1, 1], pint_unit=u.cpu_core),
+                usage_pattern_2: create_source_hourly_values_from_list([2, 2], pint_unit=u.cpu_core),
+            },
+        )
+        need_2 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed,
+            name="Need 2",
+            edge_usage_patterns=[usage_pattern_1],
+            unitary_hourly_need_per_usage_pattern={
+                usage_pattern_1: create_source_hourly_values_from_list([3, 3], pint_unit=u.cpu_core)},
+        )
+        mock_needs.return_value = [need_1, need_2]
+
+        self.component.update_impact_repartition_weights()
+
+        self.assertTrue(np.allclose([10, 10], self.component.impact_repartition_weights[need_1].magnitude))
+        self.assertTrue(np.allclose([6, 6], self.component.impact_repartition_weights[need_2].magnitude))

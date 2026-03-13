@@ -3,12 +3,14 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.usage_journey import UsageJourney
 from efootprint.constants.units import u
+from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.usage_journey_step import UsageJourneyStep
-from tests.utils import create_mod_obj_mock
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class TestUsageJourney(TestCase):
@@ -90,6 +92,23 @@ class TestUsageJourney(TestCase):
         uj.update_duration()
 
         self.assertEqual(SourceValue(8 * u.min), uj.duration)
+
+    def test_update_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
+        usage_pattern_a = create_mod_obj_mock(UsagePattern, name="Usage Pattern A")
+        usage_pattern_b = create_mod_obj_mock(UsagePattern, name="Usage Pattern B")
+        # It is currently not possible for a usage journey to be linked several times to the same
+        # usage pattern, but it might happen someday and the logic will be already tested.
+        set_modeling_obj_containers(self.usage_journey, [usage_pattern_a, usage_pattern_a, usage_pattern_b])
+        self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict({
+            usage_pattern_a: SourceValue(3 * u.concurrent),
+            usage_pattern_b: SourceValue(4 * u.concurrent),
+        })
+
+        self.usage_journey.update_impact_repartition_weights()
+
+        self.assertEqual(6, self.usage_journey.impact_repartition_weights[usage_pattern_a].magnitude)
+        self.assertEqual(4, self.usage_journey.impact_repartition_weights[usage_pattern_b].magnitude)
+        self.assertEqual(u.concurrent, self.usage_journey.impact_repartition_weights[usage_pattern_a].unit)
 
 
 if __name__ == "__main__":

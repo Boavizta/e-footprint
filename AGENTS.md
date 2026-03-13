@@ -82,3 +82,7 @@ All quantities use Pint for unit handling. Custom units are defined in `efootpri
 
 ### Testing Requirements  
 Always run tests before committing changes. The codebase has comprehensive test coverage including performance benchmarks for large system models.
+- When working in `tests/`, also read and follow `tests/AGENTS.md`.
+- When working in `tests/integration_tests/`, also read and follow `tests/integration_tests/AGENTS.md`.
+- In tests, when mocking e-footprint modeling objects, use `create_mod_obj_mock` from `tests/utils.py` instead of raw `MagicMock(spec=...)`, unless there is a specific reason not to.
+- When using `create_mod_obj_mock`, prefer passing mocked attributes directly as keyword arguments at construction time, and keep simple fixture setup compact when readability is not harmed.

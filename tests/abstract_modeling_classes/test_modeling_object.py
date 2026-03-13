@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock, PropertyMock, call
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
@@ -10,6 +11,7 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job
@@ -309,6 +311,139 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(copied.mod_obj_input1, new_child)
         self.assertEqual(copied.custom_list_input, [new_child])
         self.assertEqual(copied.custom_input.value, parent.custom_input.value)
+
+    def test_nb_of_occurrences_per_container_counts_repeated_links_and_ignores_detached_containers(self):
+        child = ModelingObjectForTesting("occurrence_child")
+        parent_a = ModelingObjectForTesting(
+            "occurrence_parent_a", mod_obj_input1=child, mod_obj_input2=child)
+        parent_b = ModelingObjectForTesting(
+            "occurrence_parent_b", custom_list_input=ListLinkedToModelingObj([child, child]))
+        other_child = ModelingObjectForTesting("other_occurrence_child")
+        detached_parent = ModelingObjectForTesting(
+            "detached_occurrence_parent", custom_list_input=ListLinkedToModelingObj([child, other_child]))
+        detached_parent.trigger_modeling_updates = False
+        detached_parent.custom_list_input = ListLinkedToModelingObj([other_child])
+        detached_parent.trigger_modeling_updates = True
+
+        occurrences = child.nb_of_occurrences_per_container
+
+        self.assertEqual(2, len(occurrences))
+        self.assertEqual(2, occurrences[parent_a].magnitude)
+        self.assertEqual(2, occurrences[parent_b].magnitude)
+        self.assertEqual(u.dimensionless, occurrences[parent_a].unit)
+        self.assertEqual(u.dimensionless, occurrences[parent_b].unit)
+        self.assertNotIn(detached_parent, occurrences)
+
+    def test_update_impact_repartition_weights_uses_container_weight_sums_and_occurrences(self):
+        child = ModelingObjectForTesting("weighted_child")
+        parent_a = ModelingObjectForTesting("weighted_parent_a", mod_obj_input1=child, mod_obj_input2=child)
+        parent_b = ModelingObjectForTesting("weighted_parent_b", mod_obj_input1=child)
+        weight_target_a = ModelingObjectForTesting("weight_target_a")
+        weight_target_b = ModelingObjectForTesting("weight_target_b")
+        weight_target_c = ModelingObjectForTesting("weight_target_c")
+        parent_a.impact_repartition_weights = ExplainableObjectDict({
+            weight_target_a: ExplainableQuantity(2 * u.concurrent, label="parent a weight 1"),
+            weight_target_b: ExplainableQuantity(3 * u.concurrent, label="parent a weight 2"),
+        })
+        parent_b.impact_repartition_weights = ExplainableObjectDict({
+            weight_target_c: ExplainableQuantity(7 * u.concurrent, label="parent b weight"),
+        })
+
+        child.update_impact_repartition_weights()
+
+        self.assertEqual(10, child.impact_repartition_weights[parent_a].magnitude)
+        self.assertEqual(7, child.impact_repartition_weights[parent_b].magnitude)
+        self.assertEqual(u.concurrent, child.impact_repartition_weights[parent_a].unit)
+
+    def test_update_impact_repartition_normalizes_weights(self):
+        child = ModelingObjectForTesting("repartition_child")
+        parent_a = ModelingObjectForTesting("repartition_parent_a")
+        parent_b = ModelingObjectForTesting("repartition_parent_b")
+        child.impact_repartition_weights = ExplainableObjectDict({
+            parent_a: ExplainableQuantity(2 * u.concurrent, label="parent a weight"),
+            parent_b: ExplainableQuantity(6 * u.concurrent, label="parent b weight"),
+        })
+
+        child.update_impact_repartition_weight_sum()
+        child.update_impact_repartition()
+
+        self.assertEqual(8, child.impact_repartition_weight_sum.magnitude)
+        self.assertAlmostEqual(0.25, child.impact_repartition[parent_a].magnitude)
+        self.assertAlmostEqual(0.75, child.impact_repartition[parent_b].magnitude)
+        self.assertEqual(u.concurrent, child.impact_repartition[parent_a].unit)
+
+    def test_update_dict_element_in_impact_repartition_returns_empty_object_when_weight_sum_is_zero(self):
+        child = ModelingObjectForTesting("zero_weight_child")
+        parent = ModelingObjectForTesting("zero_weight_parent")
+        child.impact_repartition_weights = ExplainableObjectDict({
+            parent: ExplainableQuantity(0 * u.concurrent, label="zero weight"),
+        })
+
+        child.update_impact_repartition_weight_sum()
+        child.update_dict_element_in_impact_repartition(parent)
+
+        self.assertIsInstance(child.impact_repartition[parent], EmptyExplainableObject)
+
+    def test_attributed_footprint_per_source_returns_source_values_for_impact_sources(self):
+        source = ModelingObjectForTesting("full_source")
+        source.trigger_modeling_updates = False
+        source.__setattr__("energy_footprint", SourceValue(5 * u.kg), check_input_validity=False)
+        source.__setattr__("instances_fabrication_footprint", SourceValue(2 * u.kg), check_input_validity=False)
+        source.trigger_modeling_updates = True
+
+        attributed_footprint_per_source = source.attributed_footprint_per_source
+
+        self.assertTrue(source.is_impact_source)
+        self.assertEqual(2, attributed_footprint_per_source[LifeCyclePhases.MANUFACTURING][source].magnitude)
+        self.assertEqual(5, attributed_footprint_per_source[LifeCyclePhases.USAGE][source].magnitude)
+
+    def test_attributed_energy_footprint_per_source_propagates_through_impact_repartition(self):
+        source = ModelingObjectForTesting("energy_source")
+        source.trigger_modeling_updates = False
+        source.__setattr__("energy_footprint", SourceValue(12 * u.kg), check_input_validity=False)
+        source.trigger_modeling_updates = True
+        child = ModelingObjectForTesting("energy_child")
+        source.impact_repartition = ExplainableObjectDict({
+            child: ExplainableQuantity(0.25 * u.concurrent, label="source to child energy attribution"),
+        })
+
+        attributed_energy_footprint_per_source = child.attributed_energy_footprint_per_source
+
+        self.assertEqual(3, attributed_energy_footprint_per_source[source].magnitude)
+        self.assertEqual(3, child.attributed_energy_footprint.magnitude)
+
+    def test_attributed_fabrication_footprint_per_source_propagates_through_impact_repartition(self):
+        source = ModelingObjectForTesting("fabrication_source")
+        source.trigger_modeling_updates = False
+        source.__setattr__("instances_fabrication_footprint", SourceValue(8 * u.kg), check_input_validity=False)
+        source.trigger_modeling_updates = True
+        child = ModelingObjectForTesting("fabrication_child")
+        source.impact_repartition = ExplainableObjectDict({
+            child: ExplainableQuantity(0.5 * u.concurrent, label="source to child fabrication attribution"),
+        })
+
+        attributed_fabrication_footprint_per_source = child.attributed_fabrication_footprint_per_source
+
+        self.assertEqual(4, attributed_fabrication_footprint_per_source[source].magnitude)
+        self.assertEqual(4, child.attributed_fabrication_footprint.magnitude)
+
+    def test_invalidate_impact_repartition_cache_non_recursive_only_clears_current_object_cache(self):
+        source = ModelingObjectForTesting("cache_source")
+        source.trigger_modeling_updates = False
+        source.__setattr__("energy_footprint", SourceValue(10 * u.kg), check_input_validity=False)
+        source.trigger_modeling_updates = True
+        child = ModelingObjectForTesting("cache_child")
+        source.impact_repartition = ExplainableObjectDict({
+            child: ExplainableQuantity(1 * u.concurrent, label="source to child attribution"),
+        })
+
+        _ = source.attributed_energy_footprint
+        _ = child.attributed_energy_footprint
+
+        source.invalidate_impact_repartition_cache()
+
+        self.assertNotIn("attributed_energy_footprint", source.__dict__)
+        self.assertIn("attributed_energy_footprint", child.__dict__)
 
     def test_update_impact_repartition_invalidates_cached_attributed_energy_footprint_recursively(self):
         root = ImpactRepartitionCachingModelingObject("root", energy_footprint=SourceValue(10 * u.kg))

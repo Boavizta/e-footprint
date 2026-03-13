@@ -154,6 +154,8 @@ class EdgeComponent(ModelingObject):
 
     def update_dict_element_in_impact_repartition_weights(
             self, recurrent_component_need: "RecurrentEdgeComponentNeed"):
+        # Structural repetitions of the same need in the edge-function graph are already folded into
+        # unitary_hourly_need_per_usage_pattern by RecurrentEdgeComponentNeed.
         weight = sum(
             [recurrent_component_need.unitary_hourly_need_per_usage_pattern[eup]
              * eup.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[eup]

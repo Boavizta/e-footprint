@@ -151,9 +151,8 @@ class TestStorage(TestCase):
     def test_update_energy_footprint(self):
         """Test energy_footprint = instances_energy * average_carbon_intensity."""
         instance_energy = create_source_hourly_values_from_list([0.9, 1.8, 2.7], pint_unit=u.kWh)
-        server_mock = MagicMock(spec=Server)
-        server_mock.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
-        server_mock.storage = self.storage_base
+        server_mock = create_mod_obj_mock(
+            Server, "Server", average_carbon_intensity=SourceValue(100 * u.g / u.kWh), storage=self.storage_base)
         self.storage_base.contextual_modeling_obj_containers = [
             ContextualModelingObjectAttribute(self.storage_base, server_mock, "storage")]
 
