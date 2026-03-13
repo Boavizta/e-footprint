@@ -28,6 +28,9 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual(self.hourly_usage1.label, "Usage 1")
         self.assertEqual(len(self.hourly_usage1.value), 24)
 
+    def test_end_date(self):
+        self.assertEqual(self.start_date + timedelta(hours=24), self.hourly_usage1.end_date)
+
     def test_addition_between_hourly_quantities_with_same_unit(self):
         sum_hourly_usage = self.hourly_usage1 + self.hourly_usage2
         self.assertEqual([3] * 24, sum_hourly_usage.value_as_float_list)
@@ -107,6 +110,63 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
                          mul_hourly_usage.value_as_float_list[:nb_hours_shifted])
         self.assertEqual([0] * nb_hours_shifted,
                          mul_hourly_usage.value_as_float_list[-nb_hours_shifted:])
+
+    def test_division_by_quantity(self):
+        division_result = self.hourly_usage2 / ExplainableQuantity(2 * u.W, "2W")
+
+        self.assertTrue(isinstance(division_result, ExplainableHourlyQuantities))
+        self.assertEqual([1] * 24, division_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage2.start_date, division_result.start_date)
+        self.assertEqual(self.hourly_usage2, division_result.left_parent)
+        self.assertEqual("/", division_result.operator)
+
+    def test_quantity_division_by_hourly_quantities(self):
+        quantity = ExplainableQuantity(8 * u.W, "8W")
+        division_result = quantity / self.hourly_usage2
+
+        self.assertTrue(isinstance(division_result, ExplainableHourlyQuantities))
+        self.assertEqual([4] * 24, division_result.value_as_float_list)
+        self.assertEqual(self.hourly_usage2.start_date, division_result.start_date)
+        self.assertEqual(quantity, division_result.left_parent)
+        self.assertEqual("/", division_result.operator)
+
+    def test_division_between_hourly_quantities_with_covered_timerange(self):
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([10, 20], dtype=np.float32), u.W),
+            self.start_date + timedelta(hours=1),
+            "Numerator",
+        )
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([1, 2, 4, 8], dtype=np.float32), u.W),
+            self.start_date,
+            "Denominator",
+        )
+
+        division_result = numerator / denominator
+
+        self.assertTrue(isinstance(division_result, ExplainableHourlyQuantities))
+        self.assertEqual([0, 5, 5, 0], division_result.value_as_float_list)
+        self.assertEqual(denominator.start_date, division_result.start_date)
+        self.assertEqual(numerator, division_result.left_parent)
+        self.assertEqual(denominator, division_result.right_parent)
+        self.assertEqual("/", division_result.operator)
+
+    def test_division_between_hourly_quantities_raises_when_denominator_does_not_cover_timerange(self):
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([10, 20, 30], dtype=np.float32), u.W),
+            self.start_date,
+            "Numerator",
+        )
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([2, 4], dtype=np.float32), u.W),
+            self.start_date + timedelta(hours=1),
+            "Denominator",
+        )
+
+        with self.assertRaises(AssertionError) as context:
+            numerator / denominator
+
+        self.assertIn("must cover at least the same time range", str(context.exception))
 
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1

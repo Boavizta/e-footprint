@@ -159,6 +159,12 @@ When fixing, adding or editing tests, make all changes at once for a given test 
 
 If a test modifies shared state, either reset it at test end or use a patch. Shouldn’t be common since unit tests use setUp for fresh state.
 
+## Matplotlib Backend
+
+When running test modules that exercise plotting code, prefer `MPLBACKEND=Agg poetry run pytest ...` in this environment.
+
+Reason: in the current shell environment, `matplotlib` may try to use the macOS GUI backend and abort the Python process instead of failing cleanly.
+
 ## Important Concepts
 
 - **default_values**: Parameters can be omitted in `.from_defaults()`, NOT in `__init__`
