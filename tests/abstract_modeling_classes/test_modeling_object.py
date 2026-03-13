@@ -341,6 +341,31 @@ class TestModelingObject(unittest.TestCase):
         self.assertNotIn("attributed_energy_footprint", grandchild.__dict__)
         self.assertEqual(0, grandchild.attributed_energy_footprint.magnitude)
 
+    def test_replacing_impact_repartition_updates_explainable_object_dicts_containers(self):
+        parent = ImpactRepartitionCachingModelingObject("parent_source", energy_footprint=SourceValue(10 * u.kg))
+        old_child = ImpactRepartitionCachingModelingObject("old_child")
+        new_child = ImpactRepartitionCachingModelingObject("new_child")
+        old_repartition = ExplainableObjectDict({
+            old_child: ExplainableQuantity(1 * u.concurrent, label="old child repartition")})
+
+        parent.impact_repartition = old_repartition
+
+        self.assertEqual([old_repartition], old_child.explainable_object_dicts_containers)
+        self.assertEqual(10, old_child.attributed_energy_footprint.magnitude)
+
+        parent.impact_repartition = ExplainableObjectDict({
+            new_child: ExplainableQuantity(1 * u.concurrent, label="new child repartition")})
+
+        self.assertIsNone(old_repartition.modeling_obj_container)
+        self.assertEqual([], old_child.explainable_object_dicts_containers)
+        self.assertEqual([parent.impact_repartition], new_child.explainable_object_dicts_containers)
+
+        old_child.invalidate_impact_repartition_cache(recursive=True)
+        new_child.invalidate_impact_repartition_cache(recursive=True)
+
+        self.assertEqual(0, old_child.attributed_energy_footprint.magnitude)
+        self.assertEqual(10, new_child.attributed_energy_footprint.magnitude)
+
     def test_to_json_skips_cached_impact_repartition_properties(self):
         source = ImpactRepartitionCachingModelingObject("source", energy_footprint=SourceValue(10 * u.kg))
         _ = source.attributed_energy_footprint

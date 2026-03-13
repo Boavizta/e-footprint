@@ -3,9 +3,29 @@ from unittest.mock import MagicMock
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
 from tests.utils import create_mod_obj_mock
+
+
+class ModelingObjectForContainerTest(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name):
+        super().__init__(name)
+        self.attr_name = None
+        self.other_attr = None
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+    @property
+    def systems(self):
+        return []
 
 
 class TestExplainableObjectDict(unittest.TestCase):
@@ -63,6 +83,59 @@ class TestExplainableObjectDict(unittest.TestCase):
     def test_setitem_with_invalid_value(self):
         with self.assertRaises(ValueError):
             self.dict_obj["key"] = "Invalid value"
+
+    def test_set_modeling_obj_container_registers_and_unregisters_modeling_object_keys(self):
+        modeled_key = create_mod_obj_mock(ModelingObject, name="tracked_key", id="tracked_key")
+        self.dict_obj[modeled_key] = SourceValue(1 * u.dimensionless, label="tracked value")
+
+        self.assertEqual([], modeled_key.explainable_object_dicts_containers)
+
+        self.dict_obj.set_modeling_obj_container(self.mock_modeling_obj, "attr_name")
+        self.assertEqual([self.dict_obj], modeled_key.explainable_object_dicts_containers)
+
+        self.dict_obj.set_modeling_obj_container(None, None)
+        self.assertEqual([], modeled_key.explainable_object_dicts_containers)
+
+    def test_delitem_unregisters_modeling_object_keys_and_unlinks_removed_values(self):
+        modeled_key = create_mod_obj_mock(
+            ModelingObject, name="tracked_key_for_deletion", id="tracked_key_for_deletion")
+        tracked_value = SourceValue(2 * u.dimensionless, label="tracked deletion value")
+        self.dict_obj.set_modeling_obj_container(self.mock_modeling_obj, "attr_name")
+        self.dict_obj[modeled_key] = tracked_value
+
+        del self.dict_obj[modeled_key]
+
+        self.assertEqual([], modeled_key.explainable_object_dicts_containers)
+        self.assertIsNone(tracked_value.modeling_obj_container)
+        self.assertIsNone(tracked_value.attr_name_in_mod_obj_container)
+
+    def test_clear_unregisters_all_modeling_object_keys(self):
+        first_key = create_mod_obj_mock(ModelingObject, name="first_tracked_key", id="first_tracked_key")
+        second_key = create_mod_obj_mock(ModelingObject, name="second_tracked_key", id="second_tracked_key")
+        self.dict_obj.set_modeling_obj_container(self.mock_modeling_obj, "attr_name")
+        self.dict_obj[first_key] = SourceValue(1 * u.dimensionless, label="first clear value")
+        self.dict_obj[second_key] = SourceValue(2 * u.dimensionless, label="second clear value")
+
+        self.dict_obj.clear()
+
+        self.assertEqual([], first_key.explainable_object_dicts_containers)
+        self.assertEqual([], second_key.explainable_object_dicts_containers)
+        self.assertEqual(0, len(self.dict_obj))
+
+    def test_detached_dict_does_not_unlink_already_modeled_values(self):
+        real_modeling_obj = ModelingObjectForContainerTest("real_modeling_obj")
+        modeled_value = ExplainableQuantity(3 * u.dimensionless, label="modeled value")
+        modeled_value.set_modeling_obj_container(real_modeling_obj, "attr_name")
+        modeled_child = ExplainableQuantity(
+            6 * u.dimensionless, label="modeled child", left_parent=modeled_value, operator="duplicate")
+        modeled_child.set_modeling_obj_container(real_modeling_obj, "other_attr")
+
+        detached_dict = ExplainableObjectDict()
+        detached_dict["preserved"] = modeled_value
+
+        self.assertEqual(real_modeling_obj, modeled_value.modeling_obj_container)
+        self.assertEqual("attr_name", modeled_value.attr_name_in_mod_obj_container)
+        self.assertIn(modeled_child, modeled_value.direct_children_with_id)
 
     def test_to_json(self):
         self.dict_obj[self.mock_modeling_obj] = self.mock_explainable_obj

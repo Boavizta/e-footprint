@@ -312,6 +312,7 @@ class IntegrationTestBaseClass(TestCase):
         if attrs_to_skip is None:
             attrs_to_skip = []
         attrs_to_skip += ["impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
+        attrs_to_skip += list(getattr(input_object, "_impact_repartition_cached_property_names", ()))
         logger.warning(f"Testing input variations on {input_object.name}")
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:

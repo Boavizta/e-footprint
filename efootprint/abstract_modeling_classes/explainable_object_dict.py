@@ -21,10 +21,10 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
         if new_parent_modeling_object is None:
             for key in self:
-                if not isinstance(key, ModelingObject):
-                    continue
-                key.explainable_object_dicts_containers = [elt for elt in key.explainable_object_dicts_containers
-                                                           if id(elt) != id(self)]
+                self._remove_self_from_key_containers(key)
+        else:
+            for key in self:
+                self._add_self_to_key_containers(key)
 
     @property
     def all_ancestors_with_id(self):
@@ -61,14 +61,58 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             raise ValueError(
                 f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")
-        if key in self:
+        if key in self and self.modeling_obj_container is not None:
             self[key].set_modeling_obj_container(None, None)  # Remove the old modeling object container
         super().__setitem__(key, value)
-        value.set_modeling_obj_container(
+        if self.modeling_obj_container is not None:
+            value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
-        if (isinstance(key, ModelingObject)
+        self._add_self_to_key_containers(key)
+
+    def __delitem__(self, key):
+        if self.modeling_obj_container is not None:
+            self[key].set_modeling_obj_container(None, None)
+        super().__delitem__(key)
+        self._remove_self_from_key_containers(key)
+
+    def pop(self, key, *args):
+        if key in self:
+            value = self[key]
+            self.__delitem__(key)
+            return value
+        if len(args) > 1:
+            raise TypeError(f"pop expected at most 2 arguments, got {len(args) + 1}")
+        if args:
+            return args[0]
+        raise KeyError(key)
+
+    def popitem(self):
+        key, value = super().popitem()
+        if self.modeling_obj_container is not None:
+            value.set_modeling_obj_container(None, None)
+        self._remove_self_from_key_containers(key)
+        return key, value
+
+    def clear(self):
+        for key in list(self.keys()):
+            self.__delitem__(key)
+
+    def setdefault(self, key, default=None):
+        if key in self:
+            return self[key]
+        self[key] = default
+        return self[key]
+
+    def _add_self_to_key_containers(self, key):
+        if (self.modeling_obj_container is not None and isinstance(key, ModelingObject)
                 and id(self) not in [id(elt) for elt in key.explainable_object_dicts_containers]):
             key.explainable_object_dicts_containers.append(self)
+
+    def _remove_self_from_key_containers(self, key):
+        if not isinstance(key, ModelingObject):
+            return
+        key.explainable_object_dicts_containers = [elt for elt in key.explainable_object_dicts_containers
+                                                   if id(elt) != id(self)]
 
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}
