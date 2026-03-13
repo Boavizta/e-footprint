@@ -1,11 +1,13 @@
 from unittest import TestCase
 from unittest.mock import MagicMock
+import re
 
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
-from efootprint.utils.impact_repartition_sankey import ImpactRepartitionSankey
+from efootprint.utils.sankey import ImpactRepartitionSankey
+from tests.utils import set_modeling_obj_containers
 
 
 class _DummyQuantity:
@@ -36,6 +38,22 @@ class _DummyObject:
         return hash(self.id)
 
 
+class _SkippedObject(_DummyObject):
+    pass
+
+
+class _DummySystemObject(_DummyObject):
+    pass
+
+
+class _TypeAObject(_DummyObject):
+    pass
+
+
+class _TypeBObject(_DummyObject):
+    pass
+
+
 class _DummyExternalAPIServer(ExternalAPIServer):
     def update_instances_fabrication_footprint(self) -> None:
         return None
@@ -59,11 +77,51 @@ class _DummyExternalAPI(ExternalAPI):
 
 
 class TestImpactRepartitionSankey(TestCase):
-    def _make_object(self, name):
-        obj = MagicMock()
-        obj.name = name
-        obj.id = name.lower().replace(" ", "_")
+    @staticmethod
+    def _make_object_id(name):
+        normalized_name = name.replace(" ", "_")
+        return re.sub(r"(?<!^)(?=[A-Z])", "_", normalized_name).lower()
+
+    def _make_object(self, name, is_impact_source=False, class_name=None, obj_cls=_DummyObject):
+        obj = obj_cls(name, self._make_object_id(name), is_impact_source=is_impact_source)
+        if class_name is not None:
+            obj.class_as_simple_str = class_name
         return obj
+
+    def _make_leaf(self, name, manufacturing_kg=0, usage_kg=0, class_name=None, obj_cls=_DummyObject):
+        leaf = self._make_object(name, is_impact_source=True, class_name=class_name, obj_cls=obj_cls)
+        leaf._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(manufacturing_kg)} if manufacturing_kg else {},
+            LifeCyclePhases.USAGE: {leaf: _DummyQuantity(usage_kg)} if usage_kg else {},
+        }
+        return leaf
+
+    def _make_intermediate(self, name, manufacturing_sources=None, usage_sources=None, class_name=None, obj_cls=_DummyObject):
+        intermediate = self._make_object(name, class_name=class_name, obj_cls=obj_cls)
+        intermediate._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {
+                source: _DummyQuantity(value) for source, value in (manufacturing_sources or {}).items()
+            },
+            LifeCyclePhases.USAGE: {
+                source: _DummyQuantity(value) for source, value in (usage_sources or {}).items()
+            },
+        }
+        return intermediate
+
+    def _make_simple_system_with_attributed_footprint(self, fab_sources=None, energy_sources=None, system_cls=_DummyObject):
+        system = system_cls("Test system", "test_system")
+        system._attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {s: _DummyQuantity(v) for s, v in (fab_sources or {}).items()},
+            LifeCyclePhases.USAGE: {s: _DummyQuantity(v) for s, v in (energy_sources or {}).items()},
+        }
+        return system
+
+    def _build_edge_storage_case(self, **sankey_kwargs):
+        edge_storage = EdgeStorage.from_defaults("Edge storage")
+        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={edge_storage: 100})
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+        return edge_storage, edge_device, ImpactRepartitionSankey(system, aggregation_threshold_percent=0, **sankey_kwargs)
 
     def test_all_canonical_classes_are_in_sankey_columns(self):
         from efootprint.all_classes_in_order import ALL_CANONICAL_CLASSES_DICT, SANKEY_COLUMNS
@@ -204,27 +262,10 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertTrue(any("Parent A" in label and "Parent B" in label for label in hover_labels))
         self.assertTrue(any("Child A" in label and "Child B" in label for label in hover_labels))
 
-    def _make_simple_system_with_attributed_footprint(self, fab_sources=None, energy_sources=None):
-        """Create a system mock with attributed_footprint_per_source."""
-        system = _DummyObject("Test system", "test_system")
-        system._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {s: _DummyQuantity(v) for s, v in (fab_sources or {}).items()},
-            LifeCyclePhases.USAGE: {s: _DummyQuantity(v) for s, v in (energy_sources or {}).items()},
-        }
-        return system
-
     def test_build_traverses_attributed_footprint_per_source(self):
         """Test basic traversal from root through intermediate to leaf objects."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf: 100})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
@@ -235,26 +276,13 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_build_skips_configured_impact_repartition_classes(self):
         """Test that objects matching skipped classes are passed through."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        skipped = _DummyObject("Skipped", "skipped")
-        skipped.class_as_simple_str = "SkippedClass"
-        skipped._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {skipped: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        skipped = self._make_intermediate("Skipped", manufacturing_sources={leaf: 100}, obj_cls=_SkippedObject)
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={skipped: 100})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=["SkippedClass"])
+            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_SkippedObject])
         sankey.build()
 
         self.assertNotIn(("skipped", "Manufacturing"), sankey.node_indices)
@@ -262,22 +290,13 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_system_in_skipped_classes_removes_system_node(self):
         """Test that putting root's class in skipped_impact_repartition_classes removes the root node."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate.class_as_simple_str = "Intermediate"
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-        system.class_as_simple_str = "SystemClass"
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf: 100}, class_name="Intermediate")
+        system = self._make_simple_system_with_attributed_footprint(
+            fab_sources={intermediate: 100}, system_cls=_DummySystemObject)
 
         sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=["SystemClass"])
+            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_DummySystemObject])
         sankey.build()
 
         self.assertNotIn(("root", "total"), sankey.node_indices)
@@ -285,11 +304,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skip_phase_footprint_split_removes_phase_nodes(self):
         """Test that skip_phase_footprint_split=True omits phase nodes."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
         system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
 
         sankey = ImpactRepartitionSankey(
@@ -303,11 +318,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skip_phase_footprint_split_sums_phase_flows_into_same_nodes(self):
         """Test disabling phase split merges manufacturing and usage flows into the same Sankey nodes."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(60)},
-            LifeCyclePhases.USAGE: {leaf: _DummyQuantity(40)},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=60, usage_kg=40)
         system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 60}, energy_sources={leaf: 40})
 
         sankey = ImpactRepartitionSankey(
@@ -328,17 +339,13 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skip_phase_footprint_split_sums_first_column_nodes_when_root_is_skipped(self):
         """Test merged phase totals accumulate on the first visible column when the root node is skipped."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(60)},
-            LifeCyclePhases.USAGE: {leaf: _DummyQuantity(40)},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 60}, energy_sources={leaf: 40})
-        system.class_as_simple_str = "SystemClass"
+        leaf = self._make_leaf("Leaf", manufacturing_kg=60, usage_kg=40)
+        system = self._make_simple_system_with_attributed_footprint(
+            fab_sources={leaf: 60}, energy_sources={leaf: 40}, system_cls=_DummySystemObject)
 
         sankey = ImpactRepartitionSankey(
             system, aggregation_threshold_percent=0, skip_phase_footprint_split=True,
-            skip_object_category_footprint_split=True, skipped_impact_repartition_classes=["SystemClass"])
+            skip_object_category_footprint_split=True, skipped_impact_repartition_classes=[_DummySystemObject])
         sankey.build()
 
         leaf_idx = sankey.node_indices[("leaf", None)]
@@ -349,16 +356,8 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_phase_split_creates_phase_nodes_for_both_phases(self):
         """Test that with both phases, phase split creates Manufacturing and Usage nodes."""
-        fab_leaf = _DummyObject("FabLeaf", "fab_leaf", is_impact_source=True)
-        fab_leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {fab_leaf: _DummyQuantity(60)},
-            LifeCyclePhases.USAGE: {},
-        }
-        energy_leaf = _DummyObject("EnergyLeaf", "energy_leaf", is_impact_source=True)
-        energy_leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {},
-            LifeCyclePhases.USAGE: {energy_leaf: _DummyQuantity(40)},
-        }
+        fab_leaf = self._make_leaf("FabLeaf", manufacturing_kg=60)
+        energy_leaf = self._make_leaf("EnergyLeaf", usage_kg=40)
         system = self._make_simple_system_with_attributed_footprint(
             fab_sources={fab_leaf: 60}, energy_sources={energy_leaf: 40})
 
@@ -372,11 +371,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skip_object_category_footprint_split_removes_category_nodes(self):
         """Test that skip_object_category_footprint_split=True omits category grouping."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
         system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
 
         sankey = ImpactRepartitionSankey(
@@ -480,18 +475,9 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         """Test column information reports both manual split and impact repartition columns."""
-        leaf = _DummyObject("Leaf", "leaf", is_impact_source=True)
-        leaf.class_as_simple_str = "Leaf"
-        leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate.class_as_simple_str = "Intermediate"
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100, class_name="Leaf")
+        intermediate = self._make_intermediate(
+            "Intermediate", manufacturing_sources={leaf: 100}, class_name="Intermediate")
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(
@@ -569,16 +555,8 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_lifecycle_phase_filter_shows_only_filtered_phase(self):
         """Test that lifecycle_phase_filter limits to one phase."""
-        fab_leaf = _DummyObject("FabLeaf", "fab_leaf", is_impact_source=True)
-        fab_leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {fab_leaf: _DummyQuantity(60)},
-            LifeCyclePhases.USAGE: {},
-        }
-        energy_leaf = _DummyObject("EnergyLeaf", "energy_leaf", is_impact_source=True)
-        energy_leaf._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {},
-            LifeCyclePhases.USAGE: {energy_leaf: _DummyQuantity(40)},
-        }
+        fab_leaf = self._make_leaf("FabLeaf", manufacturing_kg=60)
+        energy_leaf = self._make_leaf("EnergyLeaf", usage_kg=40)
         system = self._make_simple_system_with_attributed_footprint(
             fab_sources={fab_leaf: 60}, energy_sources={energy_leaf: 40})
 
@@ -593,27 +571,13 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_excluded_object_types_removes_objects_and_reduces_total(self):
         """Test that excluded_object_types excludes objects and reduces total footprint."""
-        leaf_a = _DummyObject("LeafA", "leaf_a", is_impact_source=True)
-        leaf_a.class_as_simple_str = "TypeA"
-        leaf_a._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf_a: _DummyQuantity(60)},
-            LifeCyclePhases.USAGE: {},
-        }
-        leaf_b = _DummyObject("LeafB", "leaf_b", is_impact_source=True)
-        leaf_b.class_as_simple_str = "TypeB"
-        leaf_b._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf_b: _DummyQuantity(40)},
-            LifeCyclePhases.USAGE: {},
-        }
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {leaf_a: _DummyQuantity(60), leaf_b: _DummyQuantity(40)},
-            LifeCyclePhases.USAGE: {},
-        }
+        leaf_a = self._make_leaf("LeafA", manufacturing_kg=60, obj_cls=_TypeAObject)
+        leaf_b = self._make_leaf("LeafB", manufacturing_kg=40, obj_cls=_TypeBObject)
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={leaf_a: 60, leaf_b: 40})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, excluded_object_types=["TypeB"],
+            system, aggregation_threshold_percent=0, excluded_object_types=[_TypeBObject],
             skip_object_category_footprint_split=True)
         sankey.build()
 
@@ -634,11 +598,8 @@ class TestImpactRepartitionSankey(TestCase):
     def test_external_api_server_sources_are_normalized_to_external_api(self):
         """Test ExternalAPIServer impact sources are displayed as ExternalAPI category and leaf."""
         external_api = _DummyExternalAPI("External API")
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {external_api.server: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
+        set_modeling_obj_containers(external_api.server, [external_api])
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={external_api.server: 100})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
@@ -650,16 +611,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_edge_component_sources_expand_from_edge_device_to_edge_component(self):
         """Test EdgeComponent impact sources display the EdgeDevice and continue breakdown to the component."""
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        edge_storage, edge_device, sankey = self._build_edge_storage_case()
         sankey.build()
 
         self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
@@ -672,16 +624,7 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_excluded_object_types_excludes_edge_component_impact_before_normalization(self):
         """Test excluding an EdgeComponent removes its impact entirely even when normalized to EdgeDevice."""
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, excluded_object_types=[EdgeStorage])
+        edge_storage, edge_device, sankey = self._build_edge_storage_case(excluded_object_types=[EdgeStorage])
         sankey.build()
 
         self.assertEqual(0, sankey._total_system_kg)
@@ -690,17 +633,8 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skipped_impact_repartition_classes_skips_edge_component_breakdown_only(self):
         """Test skipping an EdgeComponent keeps the EdgeDevice leaf but removes the appended component node."""
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[EdgeStorage])
+        edge_storage, edge_device, sankey = self._build_edge_storage_case(
+            skipped_impact_repartition_classes=[EdgeStorage])
         sankey.build()
 
         self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
@@ -708,18 +642,8 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_skipped_impact_repartition_classes_skips_normalized_edge_device_leaf(self):
         """Test skipping the normalized EdgeDevice removes that node while preserving component breakdown."""
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(100)},
-            LifeCyclePhases.USAGE: {},
-        }
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-
-        sankey = ImpactRepartitionSankey(
-            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True,
-            skipped_impact_repartition_classes=[EdgeComputer])
+        edge_storage, edge_device, sankey = self._build_edge_storage_case(
+            skip_object_category_footprint_split=True, skipped_impact_repartition_classes=[EdgeComputer])
         sankey.build()
 
         self.assertNotIn((edge_device.id, "Manufacturing"), sankey.node_indices)
@@ -735,12 +659,9 @@ class TestImpactRepartitionSankey(TestCase):
         """Test terminal leaves share the sink column instead of the EdgeDevice column when post-leaf nodes exist."""
         edge_storage = EdgeStorage.from_defaults("Edge storage")
         edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        server_leaf = _DummyObject("Server leaf", "server_leaf", is_impact_source=True)
-        intermediate = _DummyObject("Intermediate", "intermediate")
-        intermediate._attributed_footprint_per_source = {
-            LifeCyclePhases.MANUFACTURING: {edge_storage: _DummyQuantity(60), server_leaf: _DummyQuantity(40)},
-            LifeCyclePhases.USAGE: {},
-        }
+        server_leaf = self._make_object("Server leaf", is_impact_source=True)
+        intermediate = self._make_intermediate(
+            "Intermediate", manufacturing_sources={edge_storage: 60, server_leaf: 40})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)

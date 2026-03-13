@@ -18,6 +18,10 @@ class ExternalAPIServer(ModelingObject):
         return []
 
     @property
+    def external_api(self) -> "ExternalAPI":
+        return self.modeling_obj_containers[0]
+
+    @property
     def calculated_attributes(self) -> List[str]:
         return (["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
                 + super().calculated_attributes)
