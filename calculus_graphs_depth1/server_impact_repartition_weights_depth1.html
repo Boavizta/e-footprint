@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_691cd8 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_691cd8" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_691cd8');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job weight in server impact repartition", "label": "Manually defined job\nweight in server\nimpact repartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in server impact repartition\n=\nHourly Manually defined job average occurrences across usage patterns * (cpu\ncores needed on server server to process Manually defined job from e-footprint\nhypothesis / Nb cpu cores of server + RAM needed on server server to process\nManually defined job from e-footprint hypothesis / RAM of server)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.56],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28] * (0.1\ncpu_core / 24.0 cpu_core + 50.0 megabyte_ram / 128.0 gigabyte_ram)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly Manually defined job average occurrences across usage patterns", "label": "Hourly Manually\ndefined job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job average occurrences across usage patterns\n=\nAverage hourly Manually defined job occurrences in usage pattern + no value +\nAverage hourly Manually defined job occurrences in Default edge usage pattern\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value +\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.55],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.56],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "cpu cores needed on server server to process Manually defined job from e-footprint hypothesis", "label": "cpu cores needed on\nserver server to\nprocess Manually\ndefined job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "cpu cores needed on server server to process Manually defined job from\ne-footprint hypothesis = 0.1 cpu_core", "x": -150.0, "y": 1050}, {"color": null, "id": "Nb cpu cores of server", "label": "Nb cpu cores of\nserver", "shape": "dot", "size": 15, "title": "Nb cpu cores of server = 24.0 cpu_core", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "RAM needed on server server to process Manually defined job from e-footprint hypothesis", "label": "RAM needed on server\nserver to process\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "RAM needed on server server to process Manually defined job from e-footprint\nhypothesis = 50.0 megabyte_ram", "x": 150.0, "y": 1050}, {"color": null, "id": "RAM of server", "label": "RAM of server", "shape": "dot", "size": 15, "title": "RAM of server = 128.0 gigabyte_ram", "x": 300.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Manually defined job average occurrences across usage patterns", "to": "Manually defined job weight in server impact repartition"}, {"arrows": "to", "from": "cpu cores needed on server server to process Manually defined job from e-footprint hypothesis", "to": "Manually defined job weight in server impact repartition"}, {"arrows": "to", "from": "Nb cpu cores of server", "to": "Manually defined job weight in server impact repartition"}, {"arrows": "to", "from": "RAM needed on server server to process Manually defined job from e-footprint hypothesis", "to": "Manually defined job weight in server impact repartition"}, {"arrows": "to", "from": "RAM of server", "to": "Manually defined job weight in server impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

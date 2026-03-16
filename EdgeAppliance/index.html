@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1548,6 +1548,39 @@
     <span class="md-ellipsis">
       
         energy_footprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
       
     </span>
   </a>
@@ -3381,6 +3414,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3461,7 +3527,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_980957 {
+             #mynetwork_2f980b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3483,7 +3549,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_980957" class="card-body"></div>
+            <div id="mynetwork_2f980b" class="card-body"></div>
         </div>
 
 
@@ -3513,7 +3579,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_980957');
+                  var container = document.getElementById('mynetwork_2f980b');
 
 
 
@@ -3626,7 +3692,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4fd765 {
+             #mynetwork_ba654c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3648,7 +3714,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4fd765" class="card-body"></div>
+            <div id="mynetwork_ba654c" class="card-body"></div>
         </div>
 
 
@@ -3678,7 +3744,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4fd765');
+                  var container = document.getElementById('mynetwork_ba654c');
 
 
 
@@ -3790,7 +3856,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_05a15c {
+             #mynetwork_5dd94d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3812,7 +3878,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_05a15c" class="card-body"></div>
+            <div id="mynetwork_5dd94d" class="card-body"></div>
         </div>
 
 
@@ -3842,7 +3908,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_05a15c');
+                  var container = document.getElementById('mynetwork_5dd94d');
 
 
 
@@ -3918,13 +3984,13 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly edge appliance instances fabrication footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-0af567: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],<br />
     last 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeUsagePattern/#nb_edge_usage_journeys_in_parallel">Default edge usage pattern hourly nb of edge usage journeys in parallel</a></li>
+<li><a href="../EdgeUsageJourney/#nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern">edge usage journey hourly nb of edge usage journeys in parallel</a></li>
 <li><a href="./#structure_carbon_footprint_fabrication">Structure fabrication carbon footprint of edge appliance</a></li>
 <li><a href="./#lifespan">Lifespan of edge appliance</a></li>
 <li><a href="../EdgeApplianceComponent/#instances_fabrication_footprint_per_usage_pattern">Hourly edge appliance appliance instances fabrication footprint for Default edge usage pattern</a>  </li>
@@ -3963,7 +4029,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ed4f9f {
+             #mynetwork_935621 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3985,7 +4051,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ed4f9f" class="card-body"></div>
+            <div id="mynetwork_935621" class="card-body"></div>
         </div>
 
 
@@ -4015,13 +4081,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ed4f9f');
+                  var container = document.getElementById('mynetwork_935621');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nDefault edge usage pattern hourly nb of edge usage journeys in parallel *\n(Structure fabrication carbon footprint of edge appliance / Lifespan of edge\nappliance) * one hour + Hourly edge appliance appliance instances fabrication\nfootprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (60.0 kilogram / 8.0 year) * 1.0 hour + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -75.0, "y": 450}, {"color": null, "id": "Structure fabrication carbon footprint of edge appliance", "label": "Structure\nfabrication carbon\nfootprint of edge\nappliance", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint of edge appliance\n=\nduplicate (Carbon footprint fabrication of edge appliance)\n=\nduplicate (60.0 kilogram)\n=\n60.0 kilogram", "x": -150.0, "y": 600}, {"color": null, "id": "Lifespan of edge appliance", "label": "Lifespan of edge\nappliance", "shape": "dot", "size": 15, "title": "Lifespan of edge appliance = 8.0 year", "x": 200.0, "y": 300}, {"color": null, "id": "Hourly edge appliance appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance appliance\ninstances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance appliance instances fabrication footprint for Default edge\nusage pattern\n=\nDefault edge usage pattern hourly nb of edge usage journeys in parallel *\n(Carbon footprint fabrication of edge appliance appliance from e-footprint\nhypothesis / Lifespan of edge appliance appliance) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (0.0 kilogram / 8.0 year) * 1.0 hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 150.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Structure fabrication carbon footprint of edge appliance", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of edge appliance", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge appliance appliance instances fabrication footprint for Default edge usage pattern", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of edge appliance / Lifespan of edge appliance) *\none hour + Hourly edge appliance appliance instances fabrication footprint for\nDefault edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (60.0 kilogram / 8.0 year) * 1.0 hour + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -75.0, "y": 450}, {"color": null, "id": "Structure fabrication carbon footprint of edge appliance", "label": "Structure\nfabrication carbon\nfootprint of edge\nappliance", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint of edge appliance\n=\nduplicate (Carbon footprint fabrication of edge appliance)\n=\nduplicate (60.0 kilogram)\n=\n60.0 kilogram", "x": -150.0, "y": 600}, {"color": null, "id": "Lifespan of edge appliance", "label": "Lifespan of edge\nappliance", "shape": "dot", "size": 15, "title": "Lifespan of edge appliance = 8.0 year", "x": 200.0, "y": 300}, {"color": null, "id": "Hourly edge appliance appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance appliance\ninstances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance appliance instances fabrication footprint for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge appliance appliance from e-footprint hypothesis /\nLifespan of edge appliance appliance) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (0.0 kilogram / 8.0 year) * 1.0 hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 150.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Structure fabrication carbon footprint of edge appliance", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of edge appliance", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge appliance appliance instances fabrication footprint for Default edge usage pattern", "to": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4091,7 +4157,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly energy consumed by edge appliance instances for default edge usage pattern as values, in concurrent ** 2 * hour * watt.  </p>
 <p>Example value: {<br />
-0af567: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent ** 2 * h * W:<br />
+EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent ** 2 * h * W:<br />
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],<br />
     last 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22, 69927.82, 52437.9, 34958.6, 17447.44], <br />
 }  </p>
@@ -4133,7 +4199,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0e2cc2 {
+             #mynetwork_83d032 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4155,7 +4221,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0e2cc2" class="card-body"></div>
+            <div id="mynetwork_83d032" class="card-body"></div>
         </div>
 
 
@@ -4185,12 +4251,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0e2cc2');
+                  var container = document.getElementById('mynetwork_83d032');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge appliance instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nappliance instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge appliance instances for Default edge usage\npattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by edge appliance appliance instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nappliance appliance\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern\n=\nDefault edge usage pattern hourly nb of edge usage journeys in parallel * edge\nappliance appliance unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent * W:\nfirst 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5],\nlast 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5] * 1.0\nhour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge appliance instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nappliance instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge appliance instances for Default edge usage\npattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by edge appliance appliance instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nappliance appliance\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge appliance\nappliance unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent * W:\nfirst 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5],\nlast 10 vals [17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5, 17.5] * 1.0\nhour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge appliance appliance instances for Default edge usage pattern", "to": "Hourly energy consumed by edge appliance instances for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4259,11 +4325,11 @@
 <p>You can also visit the <a href='../calculus_graphs/edge_appliance_instances_energy_per_usage_pattern.html' target='_blank'>link to Hourly energy consumed by edge appliance instances for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="energy_footprint_per_usage_pattern">energy_footprint_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
-                        Edge appliance energy footprint for default edge usage pattern as values, in concurrent ** 2 * gram * hour * watt / kilowatt_hour.  </p>
+                        Edge appliance energy footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-0af567: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent ** 2 * g * h * W / kWh:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06, 2.9712552e+06],<br />
-    last 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06, 7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06, 1.4830325e+06], <br />
+EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],<br />
+    last 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4303,7 +4369,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_06394f {
+             #mynetwork_2f8301 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4325,7 +4391,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_06394f" class="card-body"></div>
+            <div id="mynetwork_2f8301" class="card-body"></div>
         </div>
 
 
@@ -4355,12 +4421,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_06394f');
+                  var container = document.getElementById('mynetwork_2f8301');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge appliance appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nappliance energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge appliance appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nappliance energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge appliance appliance energy footprint for Default edge usage pattern", "to": "edge appliance energy footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4470,7 +4536,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1c5ff4 {
+             #mynetwork_aa8372 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4492,7 +4558,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1c5ff4" class="card-body"></div>
+            <div id="mynetwork_aa8372" class="card-body"></div>
         </div>
 
 
@@ -4522,12 +4588,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1c5ff4');
+                  var container = document.getElementById('mynetwork_aa8372');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total fabrication footprint across usage patterns", "label": "edge appliance total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge appliance total fabrication footprint across usage patterns\n=\nHourly edge appliance instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nDefault edge usage pattern hourly nb of edge usage journeys in parallel *\n(Structure fabrication carbon footprint of edge appliance / Lifespan of edge\nappliance) * one hour + Hourly edge appliance appliance instances fabrication\nfootprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (60.0 kilogram / 8.0 year) * 1.0 hour + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total fabrication footprint across usage patterns", "label": "edge appliance total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge appliance total fabrication footprint across usage patterns\n=\nHourly edge appliance instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of edge appliance / Lifespan of edge appliance) *\none hour + Hourly edge appliance appliance instances fabrication footprint for\nDefault edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (60.0 kilogram / 8.0 year) * 1.0 hour + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "to": "edge appliance total fabrication footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -4637,7 +4703,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_406bfd {
+             #mynetwork_e48f4a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4659,7 +4725,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_406bfd" class="card-body"></div>
+            <div id="mynetwork_e48f4a" class="card-body"></div>
         </div>
 
 
@@ -4689,7 +4755,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_406bfd');
+                  var container = document.getElementById('mynetwork_e48f4a');
 
 
 
@@ -4762,10 +4828,10 @@
 
 <p>You can also visit the <a href='../calculus_graphs/edge_appliance_instances_energy.html' target='_blank'>link to edge appliance total energy consumed across usage patterns’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
-<p>Edge appliance total energy footprint across usage patterns in concurrent ** 2 * gram * hour * watt / kilowatt_hour.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent ** 2 * g * h * W / kWh:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06, 2.9712552e+06],<br />
-    last 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06, 7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06, 1.4830325e+06]  </p>
+<p>Edge appliance total energy footprint across usage patterns in kilogram.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],<br />
+    last 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#energy_footprint_per_usage_pattern">edge appliance energy footprint for Default edge usage pattern</a>  </li>
@@ -4804,7 +4870,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_86861e {
+             #mynetwork_4a4f94 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4826,7 +4892,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_86861e" class="card-body"></div>
+            <div id="mynetwork_4a4f94" class="card-body"></div>
         </div>
 
 
@@ -4856,12 +4922,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_86861e');
+                  var container = document.getElementById('mynetwork_4a4f94');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total energy footprint across usage patterns", "label": "edge appliance total\nenergy footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "edge appliance total energy footprint across usage patterns\n=\nedge appliance energy footprint for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1500}, {"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * g * h * W / kWh:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.4865302e+06,\n2.9712552e+06],\nlast 10 vals [7.435924e+06, 7.433216e+06, 7.4314105e+06, 7.4323135e+06,\n7.435924e+06, 7.4341185e+06, 5.9438645e+06, 4.4572215e+06, 2.9714812e+06,\n1.4830325e+06]", "x": 0.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total energy footprint across usage patterns", "label": "edge appliance total\nenergy footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "edge appliance total energy footprint across usage patterns\n=\nedge appliance energy footprint for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1500}, {"color": null, "id": "edge appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance energy footprint for Default edge usage pattern\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge appliance energy footprint for Default edge usage pattern", "to": "edge appliance total energy footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -4928,6 +4994,516 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_appliance_energy_footprint.html' target='_blank'>link to edge appliance total energy footprint across usage patterns’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weights">impact_repartition_weights</h3>
+<p>Dictionary with RecurrentEdgeWorkloadNeed as keys and 
+                        Edge workload workload need weight in edge appliance impact repartition as values, in kilogram.  </p>
+<p>Example value: {<br />
+RecurrentEdgeWorkloadNeed edge workload workload need (b37b86): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],<br />
+    last 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../EdgeApplianceComponent/#instances_fabrication_footprint">edge appliance appliance total fabrication footprint across usage patterns</a></li>
+<li><a href="../EdgeApplianceComponent/#energy_footprint">edge appliance appliance total energy footprint across usage patterns</a></li>
+<li><a href="../RecurrentEdgeWorkloadNeed/#total_hourly_need_across_usage_patterns">edge workload workload need total hourly need across usage patterns</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_39252a {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_39252a" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_39252a');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge workload workload need weight in edge appliance impact repartition", "label": "edge workload\nworkload need weight\nin edge appliance\nimpact repartition", "shape": "dot", "size": 15, "title": "edge workload workload need weight in edge appliance impact repartition\n=\n(edge appliance appliance total fabrication footprint across usage patterns +\nedge appliance appliance total energy footprint across usage patterns) * (edge\nworkload workload need total hourly need across usage patterns / (edge workload\nworkload need total hourly need across usage patterns + no value))\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]) *\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] / (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] + no value))\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1500}, {"color": null, "id": "edge appliance appliance total fabrication footprint across usage patterns", "label": "edge appliance\nappliance total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge appliance appliance total fabrication footprint across usage patterns\n=\nHourly edge appliance appliance instances fabrication footprint for Default edge\nusage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": -400.0, "y": 1350}, {"color": null, "id": "edge appliance appliance total energy footprint across usage patterns", "label": "edge appliance\nappliance total\nenergy footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "edge appliance appliance total energy footprint across usage patterns\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge workload workload need total hourly need across usage patterns", "label": "edge workload\nworkload need total\nhourly need across\nusage patterns", "shape": "dot", "size": 15, "title": "edge workload workload need total hourly need across usage patterns\n=\nedge workload workload need unitary hourly need for Default edge usage pattern *\nedge usage journey hourly nb of edge usage journeys in parallel + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5] * 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5]", "x": 400.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge appliance appliance total fabrication footprint across usage patterns", "to": "edge workload workload need weight in edge appliance impact repartition"}, {"arrows": "to", "from": "edge appliance appliance total energy footprint across usage patterns", "to": "edge workload workload need weight in edge appliance impact repartition"}, {"arrows": "to", "from": "edge workload workload need total hourly need across usage patterns", "to": "edge workload workload need weight in edge appliance impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_appliance_impact_repartition_weights.html' target='_blank'>link to edge workload workload need weight in edge appliance impact repartition’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weight_sum">impact_repartition_weight_sum</h3>
+<p>Sum of edge appliance impact repartition weights in kilogram.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],<br />
+    last 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">edge workload workload need weight in edge appliance impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b4126b {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b4126b" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b4126b');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge appliance impact repartition weights", "label": "Sum of edge\nappliance impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge appliance impact repartition weights\n=\nedge workload workload need weight in edge appliance impact repartition + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1650}, {"color": null, "id": "edge workload workload need weight in edge appliance impact repartition", "label": "edge workload\nworkload need weight\nin edge appliance\nimpact repartition", "shape": "dot", "size": 15, "title": "edge workload workload need weight in edge appliance impact repartition\n=\n(edge appliance appliance total fabrication footprint across usage patterns +\nedge appliance appliance total energy footprint across usage patterns) * (edge\nworkload workload need total hourly need across usage patterns / (edge workload\nworkload need total hourly need across usage patterns + no value))\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]) *\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] / (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] + no value))\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge workload workload need weight in edge appliance impact repartition", "to": "Sum of edge appliance impact repartition weights"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_appliance_impact_repartition_weight_sum.html' target='_blank'>link to Sum of edge appliance impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="impact_repartition">impact_repartition</h3>
+<p>Dictionary with RecurrentEdgeWorkloadNeed as keys and 
+                        Edge appliance impact attribution to edge workload workload need as values, in concurrent.  </p>
+<p>Example value: {<br />
+RecurrentEdgeWorkloadNeed edge workload workload need (b37b86): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">edge workload workload need weight in edge appliance impact repartition</a></li>
+<li><a href="./#impact_repartition_weight_sum">Sum of edge appliance impact repartition weights</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_47f523 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_47f523" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_47f523');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance impact attribution to edge workload workload need", "label": "edge appliance\nimpact attribution\nto edge workload\nworkload need", "shape": "dot", "size": 15, "title": "edge appliance impact attribution to edge workload workload need\n=\nedge workload workload need weight in edge appliance impact repartition / Sum of\nedge appliance impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] /\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "edge workload workload need weight in edge appliance impact repartition", "label": "edge workload\nworkload need weight\nin edge appliance\nimpact repartition", "shape": "dot", "size": 15, "title": "edge workload workload need weight in edge appliance impact repartition\n=\n(edge appliance appliance total fabrication footprint across usage patterns +\nedge appliance appliance total energy footprint across usage patterns) * (edge\nworkload workload need total hourly need across usage patterns / (edge workload\nworkload need total hourly need across usage patterns + no value))\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nkg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]) *\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] / (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent ** 2:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 499.67, 998.74],\nlast 10 vals [2499.47, 2498.56, 2497.95, 2498.26, 2499.47, 2498.86, 1997.94,\n1498.23, 998.82, 498.5] + no value))\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1500}, {"color": null, "id": "Sum of edge appliance impact repartition weights", "label": "Sum of edge\nappliance impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge appliance impact repartition weights\n=\nedge workload workload need weight in edge appliance impact repartition + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge workload workload need weight in edge appliance impact repartition", "to": "edge appliance impact attribution to edge workload workload need"}, {"arrows": "to", "from": "Sum of edge appliance impact repartition weights", "to": "edge appliance impact attribution to edge workload workload need"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_appliance_impact_repartition.html' target='_blank'>link to edge appliance impact attribution to edge workload workload need’s full calculation graph</a>.</p>
 
 
 

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -2538,6 +2538,50 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#total_hourly_need_across_usage_patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_hourly_need_across_usage_patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3183,6 +3227,50 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#total_hourly_need_across_usage_patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_hourly_need_across_usage_patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3258,7 +3346,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b78e35 {
+             #mynetwork_989084 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3280,7 +3368,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b78e35" class="card-body"></div>
+            <div id="mynetwork_989084" class="card-body"></div>
         </div>
 
 
@@ -3310,7 +3398,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b78e35');
+                  var container = document.getElementById('mynetwork_989084');
 
 
 
@@ -3424,7 +3512,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_65ee6a {
+             #mynetwork_398be8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3446,7 +3534,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_65ee6a" class="card-body"></div>
+            <div id="mynetwork_398be8" class="card-body"></div>
         </div>
 
 
@@ -3476,7 +3564,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_65ee6a');
+                  var container = document.getElementById('mynetwork_398be8');
 
 
 
@@ -3552,14 +3640,14 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process ram need unitary hourly need for default edge usage pattern as values, in gigabyte_ram.  </p>
 <p>Example value: {<br />
-0af567: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB_ram:<br />
+EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in GB_ram:<br />
     first 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],<br />
     last 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_need">edge process RAM need recurrent need</a></li>
-<li><a href="../EdgeUsagePattern/#nb_edge_usage_journeys_in_parallel">Default edge usage pattern hourly nb of edge usage journeys in parallel</a></li>
+<li><a href="../EdgeUsageJourney/#nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern">edge usage journey hourly nb of edge usage journeys in parallel</a></li>
 <li><a href="../Country/#timezone">devices country timezone from user data</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
@@ -3596,7 +3684,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8dc610 {
+             #mynetwork_62a221 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3618,7 +3706,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8dc610" class="card-body"></div>
+            <div id="mynetwork_62a221" class="card-body"></div>
         </div>
 
 
@@ -3648,13 +3736,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8dc610');
+                  var container = document.getElementById('mynetwork_62a221');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process RAM need unitary hourly need for Default edge usage pattern", "label": "edge process RAM\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process RAM need unitary hourly need for Default edge usage pattern\n=\nedge process RAM need recurrent need expanded over timespan Default edge usage\npattern hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data\n=\n168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nGB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process RAM need recurrent need", "label": "edge process RAM\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process RAM need recurrent need\n=\nduplicate (Recurrent RAM needed for edge process)\n=\nduplicate (168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])\n=\n168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "label": "Default edge usage\npattern hourly nb of\nedge usage journeys\nin parallel", "shape": "dot", "size": 15, "title": "Default edge usage pattern hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process RAM need recurrent need", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "Default edge usage pattern hourly nb of edge usage journeys in parallel", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process RAM need unitary hourly need for Default edge usage pattern", "label": "edge process RAM\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process RAM need unitary hourly need for Default edge usage pattern\n=\n(edge process RAM need recurrent need expanded over timespan edge usage journey\nhourly nb of edge usage journeys in parallel converted to UTC from devices\ncountry timezone from user data) * Occurrences of edge process RAM need within\nDefault edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nGB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process RAM need recurrent need", "label": "edge process RAM\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process RAM need recurrent need\n=\nduplicate (Recurrent RAM needed for edge process)\n=\nduplicate (168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0])\n=\n168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -150.0, "y": 450}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process RAM need recurrent need", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process RAM need unitary hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3720,6 +3808,682 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_process_RAM_need_unitary_hourly_need_per_usage_pattern.html' target='_blank'>link to edge process RAM need unitary hourly need for Default edge usage pattern’s full calculation graph</a>.</p>
+<h3 id="total_hourly_need_across_usage_patterns">total_hourly_need_across_usage_patterns</h3>
+<p>Edge process ram need total hourly need across usage patterns in concurrent * gigabyte_ram.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent * GB_ram:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1998.7, 3994.97],<br />
+    last 10 vals [9997.88, 9994.24, 9991.81, 9993.03, 9997.88, 9995.45, 7991.75, 5992.9, 3995.27, 1993.99]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#unitary_hourly_need_per_usage_pattern">edge process RAM need unitary hourly need for Default edge usage pattern</a></li>
+<li><a href="../EdgeUsageJourney/#nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern">edge usage journey hourly nb of edge usage journeys in parallel</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_fd9f80 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_fd9f80" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_fd9f80');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process RAM need total hourly need across usage patterns", "label": "edge process RAM\nneed total hourly\nneed across usage\npatterns", "shape": "dot", "size": 15, "title": "edge process RAM need total hourly need across usage patterns\n=\nedge process RAM need unitary hourly need for Default edge usage pattern * edge\nusage journey hourly nb of edge usage journeys in parallel + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nGB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] * 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent * GB_ram:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1998.7, 3994.97],\nlast 10 vals [9997.88, 9994.24, 9991.81, 9993.03, 9997.88, 9995.45, 7991.75,\n5992.9, 3995.27, 1993.99]", "x": 0.0, "y": 750}, {"color": null, "id": "edge process RAM need unitary hourly need for Default edge usage pattern", "label": "edge process RAM\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process RAM need unitary hourly need for Default edge usage pattern\n=\n(edge process RAM need recurrent need expanded over timespan edge usage journey\nhourly nb of edge usage journeys in parallel converted to UTC from devices\ncountry timezone from user data) * Occurrences of edge process RAM need within\nDefault edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] converted to UTC from Europe/Paris) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nGB_ram:\nfirst 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0],\nlast 10 vals [2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0]", "x": -187.5, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -93.75, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process RAM need unitary hourly need for Default edge usage pattern", "to": "edge process RAM need total hourly need across usage patterns"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "edge process RAM need total hourly need across usage patterns"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_process_RAM_need_total_hourly_need_across_usage_patterns.html' target='_blank'>link to edge process RAM need total hourly need across usage patterns’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weights">impact_repartition_weights</h3>
+<p>Dictionary with RecurrentEdgeProcess as keys and 
+                        Edge process weight in edge process ram need impact repartition as values, in concurrent.  </p>
+<p>Example value: {<br />
+RecurrentEdgeProcess edge process (e02048): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],<br />
+    last 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88, 2996.45, 1997.63, 997.0], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../RecurrentEdgeProcess/#impact_repartition_weights">edge function weight in edge process impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_a21fd4 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_a21fd4" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_a21fd4');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process RAM need impact repartition", "label": "edge process weight\nin edge process RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process RAM need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process RAM need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\n(edge usage journey weight in edge function impact repartition + no value) *\nNumber of occurrences of edge process in edge function\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in edge process impact repartition", "to": "edge process weight in edge process RAM need impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_process_RAM_need_impact_repartition_weights.html' target='_blank'>link to edge process weight in edge process RAM need impact repartition’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weight_sum">impact_repartition_weight_sum</h3>
+<p>Sum of edge process ram need impact repartition weights in concurrent.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],<br />
+    last 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88, 2996.45, 1997.63, 997.0]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">edge process weight in edge process RAM need impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b578c0 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b578c0" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b578c0');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process RAM need impact repartition weights", "label": "Sum of edge process\nRAM need impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process RAM need impact repartition weights\n=\nedge process weight in edge process RAM need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process RAM need impact repartition", "label": "edge process weight\nin edge process RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process RAM need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process RAM need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process RAM need impact repartition", "to": "Sum of edge process RAM need impact repartition weights"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_process_RAM_need_impact_repartition_weight_sum.html' target='_blank'>link to Sum of edge process RAM need impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="impact_repartition">impact_repartition</h3>
+<p>Dictionary with RecurrentEdgeProcess as keys and 
+                        Edge process ram need impact attribution to edge process as values, in concurrent.  </p>
+<p>Example value: {<br />
+RecurrentEdgeProcess edge process (e02048): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">edge process weight in edge process RAM need impact repartition</a></li>
+<li><a href="./#impact_repartition_weight_sum">Sum of edge process RAM need impact repartition weights</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_0d9963 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_0d9963" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_0d9963');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process RAM need impact attribution to edge process", "label": "edge process RAM\nneed impact\nattribution to edge\nprocess", "shape": "dot", "size": 15, "title": "edge process RAM need impact attribution to edge process\n=\nedge process weight in edge process RAM need impact repartition / Sum of edge\nprocess RAM need impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] / 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge process weight in edge process RAM need impact repartition", "label": "edge process weight\nin edge process RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process RAM need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process RAM need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value) * 1.0 dimensionless\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Sum of edge process RAM need impact repartition weights", "label": "Sum of edge process\nRAM need impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process RAM need impact repartition weights\n=\nedge process weight in edge process RAM need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": 0.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process RAM need impact repartition", "to": "edge process RAM need impact attribution to edge process"}, {"arrows": "to", "from": "Sum of edge process RAM need impact repartition weights", "to": "edge process RAM need impact attribution to edge process"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_process_RAM_need_impact_repartition.html' target='_blank'>link to edge process RAM need impact attribution to edge process’s full calculation graph</a>.</p>
 
 
 

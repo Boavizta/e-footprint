@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_067d28 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_067d28" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_067d28');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "network impact attribution to Generative AI model job", "label": "network impact\nattribution to\nGenerative AI model\njob", "shape": "dot", "size": 15, "title": "network impact attribution to Generative AI model job\n=\nGenerative AI model job weight in network impact repartition / Sum of network\nimpact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29] / 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10,\n1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10,\n9.953956e+09],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Generative AI model job weight in network impact repartition", "label": "Generative AI model\njob weight in\nnetwork impact\nrepartition", "shape": "dot", "size": 15, "title": "Generative AI model job weight in network impact repartition\n=\nHourly Generative AI model job average occurrences across usage patterns * Data\ntransferred for claude-opus-4-5\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * 5.0\nkilobyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29]", "x": -675.0, "y": 1350}, {"color": null, "id": "Sum of network impact repartition weights", "label": "Sum of network\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of network impact repartition weights\n=\nGenerative AI model job weight in network impact repartition + no value + Video\nstreaming job weight in network impact repartition + Manually defined job weight\nin network impact repartition + Manually defined GPU job weight in network\nimpact repartition\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29] + no value + 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [7.46496e+09, 2.48832e+09, 2.48832e+09, 1.492992e+10,\n1.7418242e+10, 1.2441601e+10, 9.95328e+09, 1.492992e+10, 2.239488e+10,\n9.95328e+09],\nlast 10 vals [1.2441601e+10, 1.492992e+10, 1.7418242e+10, 4.97664e+09,\n1.990656e+10, 2.48832e+09, 1.492992e+10, 2.239488e+10, 7.46496e+09, 4.97664e+09]\n+ 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2000.0, 666.67, 666.67, 4000.0, 4666.67, 3333.33, 2666.67,\n4000.0, 339116.1, 668494.25],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25] +\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1000.0, 333.33, 333.33, 2000.0, 2333.33, 1666.67, 1333.33,\n2000.0, 3000.0, 1333.33],\nlast 10 vals [1666.67, 2000.0, 2333.33, 666.67, 2666.67, 333.33, 2000.0, 3000.0,\n1000.0, 666.67]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10,\n1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10,\n9.953956e+09],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]", "x": 0.0, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job weight in network impact repartition", "to": "network impact attribution to Generative AI model job"}, {"arrows": "to", "from": "Sum of network impact repartition weights", "to": "network impact attribution to Generative AI model job"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
     
     
       
@@ -1053,10 +1053,54 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#instances_fabrication_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        instances_fabrication_footprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#energy_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
         energy_footprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
       
     </span>
   </a>
@@ -3123,10 +3167,54 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#instances_fabrication_footprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        instances_fabrication_footprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#energy_footprint" class="md-nav__link">
     <span class="md-ellipsis">
       
         energy_footprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        impact_repartition
       
     </span>
   </a>
@@ -3171,17 +3259,181 @@
 </li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
+<h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
+<p>Example value: no value  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li></li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_8b2c6d {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_8b2c6d" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_8b2c6d');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/network_instances_fabrication_footprint.html' target='_blank'>link to no value’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>Hourly network energy footprint in kilogram.  </p>
 <p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
-    first 10 vals [0.01, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03],<br />
+    first 10 vals [0.01, 0.0, 0.0, 0.02, 0.03, 0.02, 0.02, 0.02, 0.04, 0.02],<br />
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../EcoLogitsGenAIExternalAPIJob/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Generative AI model job in usage pattern</a></li>
-<li><a href="../GPUJob/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Manually defined GPU job in usage pattern</a></li>
 <li><a href="../VideoStreamingJob/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Video streaming job in usage pattern</a></li>
 <li><a href="../Job/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Manually defined job in usage pattern</a></li>
+<li><a href="../GPUJob/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Manually defined GPU job in usage pattern</a></li>
 <li><a href="./#bandwidth_energy_intensity">bandwith energy intensity of network</a></li>
 <li><a href="../Country/#average_carbon_intensity">Average carbon intensity of devices country</a></li>
 <li><a href="../Job/#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Manually defined job in Default edge usage pattern</a></li>
@@ -3221,7 +3473,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4f2c65 {
+             #mynetwork_457e17 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3243,7 +3495,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4f2c65" class="card-body"></div>
+            <div id="mynetwork_457e17" class="card-body"></div>
         </div>
 
 
@@ -3273,13 +3525,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4f2c65');
+                  var container = document.getElementById('mynetwork_457e17');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly network energy footprint", "label": "Hourly network\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly network energy footprint\n=\n(Hourly data transferred for Generative AI model job in usage pattern + no value\n+ Hourly data transferred for Manually defined GPU job in usage pattern + Hourly\ndata transferred for Video streaming job in usage pattern + Hourly data\ntransferred for Manually defined job in usage pattern) * bandwith energy\nintensity of network * Average carbon intensity of devices country + no value +\n(Hourly data transferred for Manually defined job in Default edge usage pattern\n+ no value) * bandwith energy intensity of network * Average carbon intensity of\ndevices country\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.01, 0.02, 0.02, 0.04, 0.02, 0.01, 0.02, 0.03, 0.01, 0.03],\nlast 10 vals [0.02, 0.02, 0.04, 0.03, 0.02, 0.02, 0.03, 0.02, 0.02, 0.02] + no\nvalue + 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00\nin MB:\nfirst 10 vals [0.3, 0.6, 0.6, 1.2, 0.6, 0.3, 0.45, 0.9, 0.3, 0.9],\nlast 10 vals [0.6, 0.45, 1.05, 0.9, 0.45, 0.75, 0.9, 0.6, 0.75, 0.6] + 26298\nvalues from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [1866.24, 3732.48, 3732.48, 7464.96, 3732.48, 1866.24, 2799.36,\n5598.72, 1866.24, 5598.72],\nlast 10 vals [3732.48, 2799.36, 6531.84, 5598.72, 2799.36, 4665.6, 5598.72,\n3732.48, 4665.6, 3732.48] + 26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.3, 0.6, 0.6, 1.2, 0.6, 0.3, 0.45, 0.9, 0.3, 0.9],\nlast 10 vals [0.6, 0.45, 1.05, 0.9, 0.45, 0.75, 0.9, 0.6, 0.75, 0.6]) * 0.05\nkilowatt_hour / gigabyte * 85.0 gram / kilowatt_hour + no value + (105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 149.9, 299.62],\nlast 10 vals [749.84, 749.57, 749.39, 749.48, 749.84, 749.66, 599.38, 449.47,\n299.65, 149.55] + no value) * 0.05 kilowatt_hour / gigabyte * 85.0 gram /\nkilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.02, 0.02, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.07, 0.14, 0.14, 0.29, 0.14, 0.07, 0.11, 0.22, 0.07, 0.22],\nlast 10 vals [0.14, 0.11, 0.25, 0.22, 0.11, 0.18, 0.22, 0.14, 0.18, 0.14] *\n(5000.0 byte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.01, 0.02, 0.02, 0.04, 0.02, 0.01, 0.02, 0.03, 0.01, 0.03],\nlast 10 vals [0.02, 0.02, 0.04, 0.03, 0.02, 0.02, 0.03, 0.02, 0.02, 0.02]", "x": -771.4285714285713, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.3, 0.6, 0.6, 1.2, 0.6, 0.3, 0.45, 0.9, 0.3, 0.9],\nlast 10 vals [0.6, 0.45, 1.05, 0.9, 0.45, 0.75, 0.9, 0.6, 0.75, 0.6]", "x": -514.2857142857142, "y": 1200}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.67, 1.33, 1.33, 2.67, 1.33, 0.67, 1.0, 2.0, 0.67, 2.0],\nlast 10 vals [1.33, 1.0, 2.33, 2.0, 1.0, 1.67, 2.0, 1.33, 1.67, 1.33] * (0.93\ngigabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [1866.24, 3732.48, 3732.48, 7464.96, 3732.48, 1866.24, 2799.36,\n5598.72, 1866.24, 5598.72],\nlast 10 vals [3732.48, 2799.36, 6531.84, 5598.72, 2799.36, 4665.6, 5598.72,\n3732.48, 4665.6, 3732.48]", "x": -257.1428571428571, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.3, 0.6, 0.6, 1.2, 0.6, 0.3, 0.45, 0.9, 0.3, 0.9],\nlast 10 vals [0.6, 0.45, 1.05, 0.9, 0.45, 0.75, 0.9, 0.6, 0.75, 0.6]", "x": 0.0, "y": 1200}, {"color": null, "id": "bandwith energy intensity of network", "label": "bandwith energy\nintensity of network", "shape": "dot", "size": 15, "title": "bandwith energy intensity of network = 0.05 kilowatt_hour / gigabyte", "x": 257.1428571428571, "y": 1200}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 514.2857142857142, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in Default edge usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis * one hour / Request duration of Manually defined job\nfrom e-footprint hypothesis)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.55],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28] *\n(150.0 kilobyte * 1.0 hour / 1.0 second)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 149.9, 299.62],\nlast 10 vals [749.84, 749.57, 749.39, 749.48, 749.84, 749.66, 599.38, 449.47,\n299.65, 149.55]", "x": 771.4285714285713, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Generative AI model job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined GPU job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Video streaming job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "bandwith energy intensity of network", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined job in Default edge usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Hourly network energy footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly network energy footprint", "label": "Hourly network\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly network energy footprint\n=\n(Hourly data transferred for Generative AI model job in usage pattern + no value\n+ Hourly data transferred for Video streaming job in usage pattern + Hourly data\ntransferred for Manually defined job in usage pattern + Hourly data transferred\nfor Manually defined GPU job in usage pattern) * bandwith energy intensity of\nnetwork * Average carbon intensity of devices country + no value + (Hourly data\ntransferred for Manually defined job in Default edge usage pattern + no value) *\nbandwith energy intensity of network * Average carbon intensity of devices\ncountry\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01] + no\nvalue + 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00\nin MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24] + 26298 values from 2024-12-31 23:00:00+00:00 to\n2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.9, 0.3, 0.3, 1.8, 2.1, 1.5, 1.2, 1.8, 2.7, 1.2],\nlast 10 vals [1.5, 1.8, 2.1, 0.6, 2.4, 0.3, 1.8, 2.7, 0.9, 0.6] + 26298 values\nfrom 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.45, 0.15, 0.15, 0.9, 1.05, 0.75, 0.6, 0.9, 1.35, 0.6],\nlast 10 vals [0.75, 0.9, 1.05, 0.3, 1.2, 0.15, 0.9, 1.35, 0.45, 0.3]) * 0.05\nkilowatt_hour / gigabyte * 85.0 gram / kilowatt_hour + no value + (105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 149.9, 299.62],\nlast 10 vals [749.84, 749.57, 749.39, 749.48, 749.84, 749.66, 599.38, 449.47,\n299.65, 149.55] + no value) * 0.05 kilowatt_hour / gigabyte * 85.0 gram /\nkilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.01, 0.0, 0.0, 0.02, 0.03, 0.02, 0.02, 0.02, 0.04, 0.02],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits compute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * (5.0\nkilobyte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01]", "x": -771.4285714285713, "y": 1200}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * (0.93\ngigabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24]", "x": -514.2857142857142, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.9, 0.3, 0.3, 1.8, 2.1, 1.5, 1.2, 1.8, 2.7, 1.2],\nlast 10 vals [1.5, 1.8, 2.1, 0.6, 2.4, 0.3, 1.8, 2.7, 0.9, 0.6]", "x": -257.1428571428571, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined GPU job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined GPU\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined GPU job in usage pattern\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern * (Sum of\nall data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis * one hour / Request duration of Manually defined GPU job\nfrom e-footprint hypothesis)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * (150.0\nkilobyte * 1.0 hour / 1.0 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.45, 0.15, 0.15, 0.9, 1.05, 0.75, 0.6, 0.9, 1.35, 0.6],\nlast 10 vals [0.75, 0.9, 1.05, 0.3, 1.2, 0.15, 0.9, 1.35, 0.45, 0.3]", "x": 0.0, "y": 1200}, {"color": null, "id": "bandwith energy intensity of network", "label": "bandwith energy\nintensity of network", "shape": "dot", "size": 15, "title": "bandwith energy intensity of network = 0.05 kilowatt_hour / gigabyte", "x": 257.1428571428571, "y": 1200}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 514.2857142857142, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in Default edge usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis * one hour / Request duration of Manually defined job\nfrom e-footprint hypothesis)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.55],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28] *\n(150.0 kilobyte * 1.0 hour / 1.0 second)\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 149.9, 299.62],\nlast 10 vals [749.84, 749.57, 749.39, 749.48, 749.84, 749.66, 599.38, 449.47,\n299.65, 149.55]", "x": 771.4285714285713, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Generative AI model job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Video streaming job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined GPU job in usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "bandwith energy intensity of network", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined job in Default edge usage pattern", "to": "Hourly network energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Hourly network energy footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -3345,6 +3597,536 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/network_energy_footprint.html' target='_blank'>link to Hourly network energy footprint’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weights">impact_repartition_weights</h3>
+<p>Dictionary with EcoLogitsGenAIExternalAPIJob as keys and 
+                        Generative ai model job weight in network impact repartition as values, in concurrent.  </p>
+<p>Example value: {<br />
+EcoLogitsGenAIExternalAPIJob Generative AI model job (f634b8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
+    first 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59, 8667.88, 13001.82, 5778.59],<br />
+    last 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88, 13001.82, 4333.94, 2889.29], <br />
+VideoStreamingJob Video streaming job (18d4e4): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
+    first 10 vals [7.46496e+09, 2.48832e+09, 2.48832e+09, 1.492992e+10, 1.7418242e+10, 1.2441601e+10, 9.95328e+09, 1.492992e+10, 2.239488e+10, 9.95328e+09],<br />
+    last 10 vals [1.2441601e+10, 1.492992e+10, 1.7418242e+10, 4.97664e+09, 1.990656e+10, 2.48832e+09, 1.492992e+10, 2.239488e+10, 7.46496e+09, 4.97664e+09], <br />
+Job Manually defined job (8ec763): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [2000.0, 666.67, 666.67, 4000.0, 4666.67, 3333.33, 2666.67, 4000.0, 339116.1, 668494.25],<br />
+    last 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06, 1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25], <br />
+GPUJob Manually defined GPU job (26daa8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
+    first 10 vals [1000.0, 333.33, 333.33, 2000.0, 2333.33, 1666.67, 1333.33, 2000.0, 3000.0, 1333.33],<br />
+    last 10 vals [1666.67, 2000.0, 2333.33, 666.67, 2666.67, 333.33, 2000.0, 3000.0, 1000.0, 666.67], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../EcoLogitsGenAIExternalAPIJob/#hourly_avg_occurrences_across_usage_patterns">Hourly Generative AI model job average occurrences across usage patterns</a></li>
+<li><a href="../EcoLogitsGenAIExternalAPIJob/#data_transferred">Data transferred for claude-opus-4-5</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_5a2907 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_5a2907" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_5a2907');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job weight in network impact repartition", "label": "Generative AI model\njob weight in\nnetwork impact\nrepartition", "shape": "dot", "size": 15, "title": "Generative AI model job weight in network impact repartition\n=\nHourly Generative AI model job average occurrences across usage patterns * Data\ntransferred for claude-opus-4-5\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * 5.0\nkilobyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": -150.0, "y": 1200}, {"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5 from e-footprint\nhypothesis\n=\n5.0 byte * 1000.0 dimensionless\n=\n5.0 kilobyte", "x": 150.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job average occurrences across usage patterns", "to": "Generative AI model job weight in network impact repartition"}, {"arrows": "to", "from": "Data transferred for claude-opus-4-5", "to": "Generative AI model job weight in network impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/network_impact_repartition_weights.html' target='_blank'>link to Generative AI model job weight in network impact repartition’s full calculation graph</a>.</p>
+<h3 id="impact_repartition_weight_sum">impact_repartition_weight_sum</h3>
+<p>Sum of network impact repartition weights in concurrent.  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10, 1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10, 9.953956e+09],<br />
+    last 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06, 1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">Generative AI model job weight in network impact repartition</a></li>
+<li><a href="./#impact_repartition_weights">Video streaming job weight in network impact repartition</a></li>
+<li><a href="./#impact_repartition_weights">Manually defined job weight in network impact repartition</a></li>
+<li><a href="./#impact_repartition_weights">Manually defined GPU job weight in network impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_8d869c {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_8d869c" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_8d869c');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of network impact repartition weights", "label": "Sum of network\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of network impact repartition weights\n=\nGenerative AI model job weight in network impact repartition + no value + Video\nstreaming job weight in network impact repartition + Manually defined job weight\nin network impact repartition + Manually defined GPU job weight in network\nimpact repartition\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29] + no value + 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [7.46496e+09, 2.48832e+09, 2.48832e+09, 1.492992e+10,\n1.7418242e+10, 1.2441601e+10, 9.95328e+09, 1.492992e+10, 2.239488e+10,\n9.95328e+09],\nlast 10 vals [1.2441601e+10, 1.492992e+10, 1.7418242e+10, 4.97664e+09,\n1.990656e+10, 2.48832e+09, 1.492992e+10, 2.239488e+10, 7.46496e+09, 4.97664e+09]\n+ 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2000.0, 666.67, 666.67, 4000.0, 4666.67, 3333.33, 2666.67,\n4000.0, 339116.1, 668494.25],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25] +\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1000.0, 333.33, 333.33, 2000.0, 2333.33, 1666.67, 1333.33,\n2000.0, 3000.0, 1333.33],\nlast 10 vals [1666.67, 2000.0, 2333.33, 666.67, 2666.67, 333.33, 2000.0, 3000.0,\n1000.0, 666.67]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10,\n1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10,\n9.953956e+09],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]", "x": 0.0, "y": 1500}, {"color": null, "id": "Generative AI model job weight in network impact repartition", "label": "Generative AI model\njob weight in\nnetwork impact\nrepartition", "shape": "dot", "size": 15, "title": "Generative AI model job weight in network impact repartition\n=\nHourly Generative AI model job average occurrences across usage patterns * Data\ntransferred for claude-opus-4-5\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * 5.0\nkilobyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29]", "x": -675.0, "y": 1350}, {"color": null, "id": "Video streaming job weight in network impact repartition", "label": "Video streaming job\nweight in network\nimpact repartition", "shape": "dot", "size": 15, "title": "Video streaming job weight in network impact repartition\n=\nHourly Video streaming job average occurrences across usage patterns * Video\nstreaming job data transferred\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * 0.93\ngigabyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [7.46496e+09, 2.48832e+09, 2.48832e+09, 1.492992e+10,\n1.7418242e+10, 1.2441601e+10, 9.95328e+09, 1.492992e+10, 2.239488e+10,\n9.95328e+09],\nlast 10 vals [1.2441601e+10, 1.492992e+10, 1.7418242e+10, 4.97664e+09,\n1.990656e+10, 2.48832e+09, 1.492992e+10, 2.239488e+10, 7.46496e+09, 4.97664e+09]", "x": -225.0, "y": 1350}, {"color": null, "id": "Manually defined job weight in network impact repartition", "label": "Manually defined job\nweight in network\nimpact repartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in network impact repartition\n=\nHourly Manually defined job average occurrences across usage patterns * Sum of\nall data uploads and downloads for request Manually defined job from e-footprint\nhypothesis\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.28, 0.56],\nlast 10 vals [1.39, 1.39, 1.39, 1.39, 1.39, 1.39, 1.11, 0.83, 0.55, 0.28] *\n150.0 kilobyte\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2000.0, 666.67, 666.67, 4000.0, 4666.67, 3333.33, 2666.67,\n4000.0, 339116.1, 668494.25],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]", "x": 225.0, "y": 1350}, {"color": null, "id": "Manually defined GPU job weight in network impact repartition", "label": "Manually defined GPU\njob weight in\nnetwork impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined GPU job weight in network impact repartition\n=\nHourly Manually defined GPU job average occurrences across usage patterns * Sum\nof all data uploads and downloads for request Manually defined GPU job from\ne-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] * 150.0 kilobyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1000.0, 333.33, 333.33, 2000.0, 2333.33, 1666.67, 1333.33,\n2000.0, 3000.0, 1333.33],\nlast 10 vals [1666.67, 2000.0, 2333.33, 666.67, 2666.67, 333.33, 2000.0, 3000.0,\n1000.0, 666.67]", "x": 675.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job weight in network impact repartition", "to": "Sum of network impact repartition weights"}, {"arrows": "to", "from": "Video streaming job weight in network impact repartition", "to": "Sum of network impact repartition weights"}, {"arrows": "to", "from": "Manually defined job weight in network impact repartition", "to": "Sum of network impact repartition weights"}, {"arrows": "to", "from": "Manually defined GPU job weight in network impact repartition", "to": "Sum of network impact repartition weights"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/network_impact_repartition_weight_sum.html' target='_blank'>link to Sum of network impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="impact_repartition">impact_repartition</h3>
+<p>Dictionary with EcoLogitsGenAIExternalAPIJob as keys and 
+                        Network impact attribution to generative ai model job as values, in concurrent.  </p>
+<p>Example value: {<br />
+EcoLogitsGenAIExternalAPIJob Generative AI model job (f634b8): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
+VideoStreamingJob Video streaming job (18d4e4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
+Job Manually defined job (8ec763): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+GPUJob Manually defined GPU job (26daa8): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in concurrent:<br />
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impact_repartition_weights">Generative AI model job weight in network impact repartition</a></li>
+<li><a href="./#impact_repartition_weight_sum">Sum of network impact repartition weights</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_067d28 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_067d28" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_067d28');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "network impact attribution to Generative AI model job", "label": "network impact\nattribution to\nGenerative AI model\njob", "shape": "dot", "size": 15, "title": "network impact attribution to Generative AI model job\n=\nGenerative AI model job weight in network impact repartition / Sum of network\nimpact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29] / 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in concurrent:\nfirst 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10,\n1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10,\n9.953956e+09],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Generative AI model job weight in network impact repartition", "label": "Generative AI model\njob weight in\nnetwork impact\nrepartition", "shape": "dot", "size": 15, "title": "Generative AI model job weight in network impact repartition\n=\nHourly Generative AI model job average occurrences across usage patterns * Data\ntransferred for claude-opus-4-5\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * 5.0\nkilobyte\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29]", "x": -675.0, "y": 1350}, {"color": null, "id": "Sum of network impact repartition weights", "label": "Sum of network\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of network impact repartition weights\n=\nGenerative AI model job weight in network impact repartition + no value + Video\nstreaming job weight in network impact repartition + Manually defined job weight\nin network impact repartition + Manually defined GPU job weight in network\nimpact repartition\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [4333.94, 1444.65, 1444.65, 8667.88, 10112.53, 7223.24, 5778.59,\n8667.88, 13001.82, 5778.59],\nlast 10 vals [7223.24, 8667.88, 10112.53, 2889.29, 11557.18, 1444.65, 8667.88,\n13001.82, 4333.94, 2889.29] + no value + 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:\nfirst 10 vals [7.46496e+09, 2.48832e+09, 2.48832e+09, 1.492992e+10,\n1.7418242e+10, 1.2441601e+10, 9.95328e+09, 1.492992e+10, 2.239488e+10,\n9.95328e+09],\nlast 10 vals [1.2441601e+10, 1.492992e+10, 1.7418242e+10, 4.97664e+09,\n1.990656e+10, 2.48832e+09, 1.492992e+10, 2.239488e+10, 7.46496e+09, 4.97664e+09]\n+ 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [2000.0, 666.67, 666.67, 4000.0, 4666.67, 3333.33, 2666.67,\n4000.0, 339116.1, 668494.25],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25] +\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1000.0, 333.33, 333.33, 2000.0, 2333.33, 1666.67, 1333.33,\n2000.0, 3000.0, 1333.33],\nlast 10 vals [1666.67, 2000.0, 2333.33, 666.67, 2666.67, 333.33, 2000.0, 3000.0,\n1000.0, 666.67]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [7.464967e+09, 2.4883226e+09, 2.4883226e+09, 1.4929934e+10,\n1.7418258e+10, 1.2441613e+10, 9.95329e+09, 1.4929934e+10, 2.2395234e+10,\n9.953956e+09],\nlast 10 vals [1.6663136e+06, 1.6657068e+06, 1.6653021e+06, 1.6655044e+06,\n1.6663136e+06, 1.6659088e+06, 1.3319585e+06, 998817.1, 665878.1, 332332.25]", "x": 0.0, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model job weight in network impact repartition", "to": "network impact attribution to Generative AI model job"}, {"arrows": "to", "from": "Sum of network impact repartition weights", "to": "network impact attribution to Generative AI model job"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/network_impact_repartition.html' target='_blank'>link to network impact attribution to Generative AI model job’s full calculation graph</a>.</p>
 
 
 
