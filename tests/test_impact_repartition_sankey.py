@@ -1,7 +1,8 @@
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import re
 
+from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.sankey import ImpactRepartitionSankey
@@ -74,6 +75,7 @@ class _DummyExternalAPI(ExternalAPI):
     server_class = _DummyExternalAPIServer
 
 
+@patch('efootprint.all_classes_in_order.SANKEY_COLUMNS', SANKEY_COLUMNS + [[_DummyObject]])
 class TestImpactRepartitionSankey(TestCase):
     @staticmethod
     def _make_object_id(name):
@@ -135,18 +137,19 @@ class TestImpactRepartitionSankey(TestCase):
         }
         return system
 
-    def test_all_canonical_classes_are_in_sankey_columns(self):
-        from efootprint.all_classes_in_order import ALL_CANONICAL_CLASSES_DICT, SANKEY_COLUMNS
+    def test_all_canonical_classes_are_in_sankey_columns_or_breakdown_only(self):
+        from efootprint.all_classes_in_order import (
+            ALL_CANONICAL_CLASSES_DICT, SANKEY_COLUMNS, SANKEY_BREAKDOWN_ONLY_CLASSES)
 
         excluded_classes = ["System", "Service"]
         canonical_classes_dict_without_excluded = {
             name: cls for name, cls in ALL_CANONICAL_CLASSES_DICT.items() if name not in excluded_classes}
 
-        sankey_column_classes = set()
+        known_classes = set(SANKEY_BREAKDOWN_ONLY_CLASSES)
         for column_list in SANKEY_COLUMNS:
-            sankey_column_classes.update(column_list)
+            known_classes.update(column_list)
 
-        missing_classes = set(canonical_classes_dict_without_excluded.values()) - sankey_column_classes
+        missing_classes = set(canonical_classes_dict_without_excluded.values()) - known_classes
         self.assertFalse(missing_classes,
                          f"The following canonical classes are missing from sankey columns: {missing_classes}")
 
@@ -273,6 +276,29 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual(2, len(hover_labels))
         self.assertTrue(any("Parent A" in label and "Parent B" in label for label in hover_labels))
         self.assertTrue(any("Child A" in label and "Child B" in label for label in hover_labels))
+
+    def test_aggregate_small_nodes_preserves_root_node_totals_when_aggregated(self):
+        """Test that root nodes (no incoming links, total set directly) have their totals preserved in aggregates."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=15)
+
+        # Two root nodes with directly-set totals (no incoming links, simulating skipped system root)
+        root_a_idx = sankey._add_node("Root A", ("root_a", "energy"), obj=self._make_object("Root A"))
+        root_b_idx = sankey._add_node("Root B", ("root_b", "energy"), obj=self._make_object("Root B"))
+        child_idx = sankey._add_node("Child", ("child", "energy"), obj=self._make_object("Child"))
+
+        sankey._total_system_kg = 1000
+        sankey.node_total_kg[root_a_idx] = 80  # Set directly, no incoming link
+        sankey.node_total_kg[root_b_idx] = 70  # Set directly, no incoming link
+        sankey._node_columns = {root_a_idx: 1, root_b_idx: 1, child_idx: 2}
+        sankey._add_link(root_a_idx, child_idx, 0.08)
+        sankey._add_link(root_b_idx, child_idx, 0.07)
+
+        sankey._aggregate_small_nodes_by_column()
+
+        aggregate_idx = next(idx for idx in sankey.aggregated_node_members)
+        self.assertEqual(150, sankey.node_total_kg[aggregate_idx])
 
     def test_build_traverses_attributed_footprint_per_source(self):
         """Test basic traversal from root through intermediate to leaf objects."""
@@ -501,7 +527,7 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertTrue(len(manual_cols) >= 1)
         self.assertTrue(len(impact_cols) >= 1)
 
-    def test_build_column_information_text_orders_columns_by_index(self):
+    def test_displayed_column_information_orders_columns_by_index(self):
         """Test displayed column information is ordered by column index."""
         system = MagicMock()
         system.name = "Test system"
@@ -518,9 +544,11 @@ class TestImpactRepartitionSankey(TestCase):
         sankey._node_columns = {aggregate_idx: 2}
         sankey.aggregated_node_classes[aggregate_idx] = ["Storage", "Device"]
 
-        column_text = sankey._build_column_information_text()
+        displayed = sankey._get_displayed_column_information()
 
-        self.assertEqual("Column 2: Device, Storage<br>Column 3: Manual column", column_text)
+        self.assertEqual([2, 3], [info["column_index"] for info in displayed])
+        self.assertEqual(["Device", "Storage"], displayed[0]["class_names"])
+        self.assertEqual("Manual column", displayed[1]["description"])
 
     def test_figure_can_hide_column_information(self):
         """Test figure without column information annotations."""

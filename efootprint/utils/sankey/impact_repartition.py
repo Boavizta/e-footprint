@@ -25,7 +25,6 @@ ColumnInformation: TypeAlias = dict[str, Any]
 
 @dataclass(frozen=True)
 class _ResolvedFootprintSource:
-    original_source: ModelingObject
     source: ModelingObject
     value_kg: float
 
@@ -118,15 +117,9 @@ class ImpactRepartitionSankey:
         return obj
 
     def _matches_configured_class(self, obj: ModelingObject, configured_classes: Sequence[ConfiguredClass]) -> bool:
-        for configured_class in configured_classes:
-            resolved_class = (
-                ALL_EFOOTPRINT_CLASSES_DICT.get(configured_class)
-                if isinstance(configured_class, str)
-                else configured_class
-            )
-            if isinstance(resolved_class, type) and isinstance(obj, resolved_class):
-                return True
-        return False
+        def _resolve(cc):
+            return ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
+        return any(isinstance(obj, cls) for cls in map(_resolve, configured_classes) if isinstance(cls, type))
 
     def _should_skip_object(self, obj: ModelingObject) -> bool:
         return self._matches_configured_class(obj, self.skipped_impact_repartition_classes)
@@ -180,7 +173,7 @@ class ImpactRepartitionSankey:
                 continue
             if self._is_excluded(source):
                 continue
-            yield _ResolvedFootprintSource(original_source=original_source, source=source, value_kg=self._get_value_kg(value))
+            yield _ResolvedFootprintSource(source=source, value_kg=self._get_value_kg(value))
 
     def _get_phase_total_kg(
             self, root: ModelingObject, root_footprint: dict[LifeCyclePhases, dict[ModelingObject, Any]],
@@ -250,8 +243,7 @@ class ImpactRepartitionSankey:
         breakdown_by_source = getattr(source, "footprint_breakdown_by_source", None)
         if not isinstance(breakdown_by_source, dict):
             return {}
-        phase_breakdown = breakdown_by_source.get(phase, {})
-        return phase_breakdown if isinstance(phase_breakdown, dict) else {}
+        return breakdown_by_source.get(phase, {})
 
     def _expand_impact_source_breakdown(
             self, source: ModelingObject, source_idx: int, phase: LifeCyclePhases, phase_context: str | None,
@@ -291,7 +283,6 @@ class ImpactRepartitionSankey:
         if self.skip_object_footprint_split:
             return
 
-        source_idx = leaf_parent_idx
         if not self._should_skip_object(source):
             source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
             self._leaf_node_indices.add(source_idx)
@@ -303,7 +294,6 @@ class ImpactRepartitionSankey:
         if self._built:
             return
         self._reset_build_state()
-        self._built = True
 
         root = self.system
         phases = self._get_phases()
@@ -312,9 +302,8 @@ class ImpactRepartitionSankey:
         if self.excluded_object_types:
             self._total_system_kg = sum(self._sum_leaf_values(root, phase, set()) for phase in phases)
         else:
-            for phase in phases:
-                for value in root_footprint[phase].values():
-                    self._total_system_kg += self._get_value_kg(value)
+            self._total_system_kg = sum(
+                self._get_value_kg(v) for phase in phases for v in root_footprint[phase].values())
 
         current_column_index = 1
         root_idx = None
@@ -351,13 +340,13 @@ class ImpactRepartitionSankey:
         self._assign_category_leaf_and_breakdown_columns()
         self._aggregate_small_nodes_by_column()
         self._insert_spacer_nodes()
+        self._built = True
 
-    def _should_assign_regular_column(self, node_idx: int) -> bool:
+    def _is_intermediate_node(self, node_idx: int) -> bool:
+        """Intermediate traversal nodes: not root/phase (already in _node_columns) nor category/leaf/breakdown."""
         return (
-            node_idx not in self._node_columns
-            and node_idx not in self._category_node_indices
-            and node_idx not in self._leaf_node_indices
-            and node_idx not in self._breakdown_node_indices
+            node_idx not in self._node_columns and node_idx not in self._category_node_indices
+            and node_idx not in self._leaf_node_indices and node_idx not in self._breakdown_node_indices
         )
 
     def _assign_columns(self) -> None:
@@ -365,29 +354,28 @@ class ImpactRepartitionSankey:
 
         node_to_group = {}
         for node_idx, obj in self.node_objects.items():
-            if not self._should_assign_regular_column(node_idx):
+            if not self._is_intermediate_node(node_idx):
                 continue
             for group_idx, group in enumerate(SANKEY_COLUMNS):
                 if any(isinstance(obj, cls) for cls in group):
                     node_to_group[node_idx] = group_idx
                     break
 
+        unmatched = [
+            self.node_objects[idx] for idx in self.node_objects
+            if self._is_intermediate_node(idx) and idx not in node_to_group
+        ]
+        if unmatched:
+            names = [f"{obj.name} ({type(obj).__name__})" for obj in unmatched]
+            raise ValueError(f"Intermediate nodes not matching any SANKEY_COLUMNS group: {', '.join(names)}")
+
         used_groups = sorted(set(node_to_group.values()))
-        group_to_column = {group_idx: self._impact_repartition_start_column + offset for offset, group_idx in enumerate(used_groups)}
+        group_to_column = {
+            group_idx: self._impact_repartition_start_column + offset
+            for offset, group_idx in enumerate(used_groups)
+        }
         for node_idx, group_idx in node_to_group.items():
             self._node_columns[node_idx] = group_to_column[group_idx]
-
-        for node_idx in range(len(self.node_labels)):
-            if not self._should_assign_regular_column(node_idx):
-                continue
-            parent_columns = [
-                self._node_columns[source]
-                for source, target in zip(self.link_sources, self.link_targets)
-                if target == node_idx and source in self._node_columns
-            ]
-            self._node_columns[node_idx] = (
-                max(parent_columns) + 1 if parent_columns else self._impact_repartition_start_column
-            )
 
     def _assign_category_leaf_and_breakdown_columns(self) -> None:
         if not self._category_node_indices and not self._leaf_node_indices and not self._breakdown_node_indices:
@@ -418,9 +406,9 @@ class ImpactRepartitionSankey:
     def _insert_spacer_nodes(self) -> None:
         original_links = self._graph.reset_links_preserving_root_totals()
         for source, target, value in original_links:
-            source_column = self._node_columns.get(source)
-            target_column = self._node_columns.get(target)
-            if source_column is not None and target_column is not None and target_column > source_column + 1:
+            source_column = self._node_columns[source]
+            target_column = self._node_columns[target]
+            if target_column > source_column + 1:
                 previous_idx = source
                 for column in range(source_column + 1, target_column):
                     spacer_idx = self._add_node("", ("__spacer__", source, target, column), color_key=self.node_color_keys[source])
@@ -502,9 +490,12 @@ class ImpactRepartitionSankey:
         for (source, target), value in combined_links.items():
             self._add_link(source, target, value)
 
+        # Restore node_total_kg for root nodes (no incoming links, so _add_link didn't accumulate their totals).
+        # Uses snapshot targets so aggregated root nodes also get their total added to the aggregate.
+        snapshot_targets = {target for _, target, _ in graph_snapshot.links}
         for old_idx, new_idx in old_to_new_indices.items():
-            if old_idx not in nodes_to_aggregate and graph_snapshot.node_total_kg[old_idx] > self.node_total_kg[new_idx]:
-                self.node_total_kg[new_idx] = graph_snapshot.node_total_kg[old_idx]
+            if old_idx not in snapshot_targets:
+                self.node_total_kg[new_idx] += graph_snapshot.node_total_kg[old_idx]
 
     def _compute_node_colors(self) -> list[str]:
         unique_keys = list(dict.fromkeys(self.node_color_keys))
@@ -513,12 +504,13 @@ class ImpactRepartitionSankey:
             "__fabrication__": "rgba(180,80,80,0.8)",
             "__energy__": "rgba(80,120,180,0.8)",
         }
-        for key in unique_keys:
-            if isinstance(key, str) and key.startswith("__aggregated__"):
-                key_to_color[key] = "rgba(160,160,160,0.8)"
         color_idx = 0
         for key in unique_keys:
-            if key not in key_to_color:
+            if key in key_to_color:
+                continue
+            if isinstance(key, str) and key.startswith("__aggregated__"):
+                key_to_color[key] = "rgba(160,160,160,0.8)"
+            else:
                 key_to_color[key] = _COLORS[color_idx % len(_COLORS)]
                 color_idx += 1
         return [key_to_color[key] for key in self.node_color_keys]
@@ -550,26 +542,13 @@ class ImpactRepartitionSankey:
             incoming_by_target.setdefault(target, []).append(source)
             outgoing_by_source.setdefault(source, []).append(target)
 
-        def resolve_visible_source(node_idx):
+        def resolve_visible(node_idx, adjacency):
             current = node_idx
-            visited = set()
-            while current in self._spacer_nodes and current not in visited:
-                visited.add(current)
-                incoming_nodes = incoming_by_target.get(current, [])
-                if not incoming_nodes:
+            while current in self._spacer_nodes:
+                neighbors = adjacency.get(current, [])
+                if not neighbors:
                     break
-                current = incoming_nodes[0]
-            return current
-
-        def resolve_visible_target(node_idx):
-            current = node_idx
-            visited = set()
-            while current in self._spacer_nodes and current not in visited:
-                visited.add(current)
-                outgoing_nodes = outgoing_by_source.get(current, [])
-                if not outgoing_nodes:
-                    break
-                current = outgoing_nodes[0]
+                current = neighbors[0]
             return current
 
         link_labels = []
@@ -577,8 +556,8 @@ class ImpactRepartitionSankey:
             kg = self.link_values[link_idx] * 1000
             amount_str = display_co2_amount(format_co2_amount(kg))
             pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
-            source_idx = resolve_visible_source(self.link_sources[link_idx])
-            target_idx = resolve_visible_target(self.link_targets[link_idx])
+            source_idx = resolve_visible(self.link_sources[link_idx], incoming_by_target)
+            target_idx = resolve_visible(self.link_targets[link_idx], outgoing_by_source)
             link_labels.append(
                 f"{self.full_node_labels[source_idx]} → {self.full_node_labels[target_idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
@@ -622,39 +601,8 @@ class ImpactRepartitionSankey:
             if column_metadata["column_index"] >= self._impact_repartition_start_column
             and not any(column_metadata["column_index"] == info["column_index"] for info in self._manual_column_information)]
 
-    def _build_column_information_text(self) -> str | None:
-        column_information = sorted(self.get_column_information(), key=lambda column_info: column_info["column_index"])
-        if not column_information:
-            return None
-        return "<br>".join([
-            (
-                f"Column {column_info['column_index']}: {column_info['description']}"
-                if column_info["column_type"] == "manual_split"
-                else f"Column {column_info['column_index']}: {', '.join(column_info['class_names'])}"
-            )
-            for column_info in column_information
-        ])
-
     def _get_displayed_column_information(self) -> list[ColumnInformation]:
-        if not self._built:
-            self.build()
-        displayed_columns = {
-            info["column_index"]: {
-                "column_index": info["column_index"],
-                "column_type": info["column_type"],
-                "description": info["description"],
-            }
-            for info in self._manual_column_information
-        }
-        for metadata in self.get_column_metadata():
-            if metadata["column_index"] in displayed_columns:
-                continue
-            displayed_columns[metadata["column_index"]] = {
-                "column_index": metadata["column_index"],
-                "column_type": "impact_repartition",
-                "class_names": metadata["class_names"],
-            }
-        return [displayed_columns[column_index] for column_index in sorted(displayed_columns)]
+        return sorted(self.get_column_information(), key=lambda info: info["column_index"])
 
     @staticmethod
     def _format_column_header_text(column_info: ColumnInformation) -> str:
@@ -698,8 +646,6 @@ class ImpactRepartitionSankey:
             color.replace("0.8)", "0.3)") if idx in self._spacer_nodes else color
             for idx, color in enumerate(node_colors)
         ]
-        column_information_text = self._build_column_information_text() if self.display_column_information else None
-
         fig = go.Figure(data=[go.Sankey(
             arrangement="snap",
             node=dict(
@@ -712,11 +658,12 @@ class ImpactRepartitionSankey:
             ),
         )])
         top_margin = 100
-        if column_information_text is not None:
+        if self.display_column_information:
             column_annotations, max_line_count = self._build_column_header_annotations()
-            top_margin = 110 + 20 * max_line_count
-            for annotation in column_annotations:
-                fig.add_annotation(**annotation)
+            if column_annotations:
+                top_margin = 110 + 20 * max_line_count
+                for annotation in column_annotations:
+                    fig.add_annotation(**annotation)
         fig.update_layout(
             title=dict(text=title, pad=dict(b=24)),
             font_size=12, height=800, width=width, margin=dict(t=top_margin, b=100))
@@ -743,7 +690,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[-1], "r") as f:
+        with open(json_files[2], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))

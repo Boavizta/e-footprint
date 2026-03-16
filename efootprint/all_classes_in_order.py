@@ -88,8 +88,10 @@ SANKEY_COLUMNS = [
     [RecurrentEdgeDeviceNeed, RecurrentServerNeed],
     [JobBase, RecurrentEdgeComponentNeed],
     [Device, EdgeDevice, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage],
-    [EdgeComponent],
 ]
+
+# Classes that appear only as breakdown children (via footprint_breakdown_by_source), not as intermediate traversal nodes
+SANKEY_BREAKDOWN_ONLY_CLASSES = [EdgeComponent]
 
 OBJECT_CATEGORIES = {
     "Servers": [ServerBase],
