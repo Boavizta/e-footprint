@@ -14,7 +14,7 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEd
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-from efootprint.utils.sankey import ImpactRepartitionSankey
+from efootprint.utils.impact_repartition import ImpactRepartitionSankey
 
 start = perf_counter()
 

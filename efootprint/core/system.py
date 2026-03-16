@@ -382,17 +382,17 @@ class System(ModelingObject):
                 xshift=x_shift
             )
 
-        if notebook:
-            from IPython.display import HTML
+        if notebook and filename is None:
+            filename = f"{self.name} footprints.html"
 
-            if filename is None:
-                filename = f"{self.name} footprints.html"
-
+        if filename is not None:
             plotly.offline.plot(fig, filename=filename, auto_open=False)
 
+        if notebook:
+            from IPython.display import HTML
             return HTML(filename)
-        else:
-            return fig
+
+        return fig
 
     def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
         import os

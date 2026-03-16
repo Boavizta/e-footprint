@@ -5,7 +5,7 @@ import re
 from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.utils.sankey import ImpactRepartitionSankey
+from efootprint.utils.impact_repartition import ImpactRepartitionSankey
 from tests.utils import set_modeling_obj_containers
 
 
@@ -563,6 +563,83 @@ class TestImpactRepartitionSankey(TestCase):
             system, aggregation_threshold_percent=0, display_column_information=False).figure()
 
         self.assertEqual((), fig.layout.annotations)
+
+    def test_figure_returns_resized_plotly_figure_when_notebook_false(self):
+        """Test figure returns a Plotly figure with the requested size when notebook is disabled."""
+        system = MagicMock()
+        system.name = "Test system"
+        system.attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
+        system.id = "test_system"
+        system.class_as_simple_str = "System"
+
+        fig = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, display_column_information=False).figure(
+                width=1234, height=567, notebook=False)
+
+        self.assertEqual(1234, fig.layout.width)
+        self.assertEqual(567, fig.layout.height)
+
+    @patch("plotly.offline.plot")
+    def test_figure_exports_html_when_filename_is_provided_calls_plotly(self, plot_mock):
+        """Test figure writes the HTML file when filename is provided."""
+        system = MagicMock()
+        system.name = "Test system"
+        system.attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
+        system.id = "test_system"
+        system.class_as_simple_str = "System"
+
+        fig = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, display_column_information=False).figure(
+                filename="impact.html", notebook=False)
+
+        self.assertEqual((), fig.layout.annotations)
+        plot_mock.assert_called_once()
+        self.assertEqual("impact.html", plot_mock.call_args.kwargs["filename"])
+        self.assertFalse(plot_mock.call_args.kwargs["auto_open"])
+
+    def test_figure_exports_default_html_when_notebook_true_and_no_filename(self):
+        """Test figure exports the default HTML file when notebook is enabled without filename."""
+        system = MagicMock()
+        system.name = "Test system"
+        system.attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
+        system.id = "test_system"
+        system.class_as_simple_str = "System"
+
+        with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
+            html_mock.return_value = "html object"
+
+            result = ImpactRepartitionSankey(
+                system, aggregation_threshold_percent=0, display_column_information=False).figure(notebook=True)
+
+        self.assertEqual("html object", result)
+        plot_mock.assert_called_once()
+        self.assertEqual("Test system impact repartition.html", plot_mock.call_args.kwargs["filename"])
+        self.assertFalse(plot_mock.call_args.kwargs["auto_open"])
+        html_mock.assert_called_once_with(filename="Test system impact repartition.html")
+
+    def test_figure_returns_file_backed_html_when_notebook_true_and_filename_is_provided(self):
+        """Test figure returns file-backed HTML when notebook is enabled with a filename."""
+        system = MagicMock()
+        system.name = "Test system"
+        system.attributed_footprint_per_source = {
+            LifeCyclePhases.MANUFACTURING: {}, LifeCyclePhases.USAGE: {}}
+        system.id = "test_system"
+        system.class_as_simple_str = "System"
+
+        with patch("plotly.offline.plot") as plot_mock, patch("IPython.display.HTML") as html_mock:
+            html_mock.return_value = "html object"
+
+            result = ImpactRepartitionSankey(
+                system, aggregation_threshold_percent=0, display_column_information=False).figure(
+                    filename="impact.html", notebook=True)
+
+        self.assertEqual("html object", result)
+        plot_mock.assert_called_once()
+        self.assertEqual("impact.html", plot_mock.call_args.kwargs["filename"])
+        html_mock.assert_called_once_with(filename="impact.html")
 
     def test_figure_displays_column_information_as_top_annotations(self):
         """Test figure places column information above the Sankey at the matching x positions."""

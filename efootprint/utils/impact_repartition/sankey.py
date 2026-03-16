@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.utils.sankey._graph import SankeyGraph
+from efootprint.utils.impact_repartition._graph import SankeyGraph
 from efootprint.utils.tools import display_co2_amount, format_co2_amount, time_it
 
 # Palette for consistent object coloring across fabrication/energy chains
@@ -47,6 +47,8 @@ class ImpactRepartitionSankey:
         self.aggregation_threshold_percent = aggregation_threshold_percent
         self.node_label_max_length = node_label_max_length
         self.skipped_impact_repartition_classes: list[ConfiguredClass] = list(skipped_impact_repartition_classes or [])
+        if "System" not in self.skipped_impact_repartition_classes:
+            self.skipped_impact_repartition_classes.append("System")
         self.skip_phase_footprint_split = skip_phase_footprint_split
         self.skip_object_category_footprint_split = skip_object_category_footprint_split
         self.skip_object_footprint_split = skip_object_footprint_split
@@ -324,7 +326,7 @@ class ImpactRepartitionSankey:
             self._manual_column_information.append({
                 "column_index": current_column_index,
                 "column_type": "manual_split",
-                "description": "Manufacturing / usage footprint",
+                "description": "Life cycle phase",
             })
             current_column_index += 1
         else:
@@ -625,8 +627,11 @@ class ImpactRepartitionSankey:
         return annotations, max_line_count
 
     @time_it
-    def figure(self, title: str | None = None, width: int = 1800) -> Any:
+    def figure(
+            self, title: str | None = None, filename: str | None = None, height: int = None, width: int = None,
+            notebook: bool = False) -> Any:
         import plotly.graph_objects as go
+        import plotly
 
         self.build()
         if title is None:
@@ -664,9 +669,20 @@ class ImpactRepartitionSankey:
                 top_margin = 110 + 20 * max_line_count
                 for annotation in column_annotations:
                     fig.add_annotation(**annotation)
+        if height is None:
+            height = 600 if notebook else 800
+        if width is None:
+            width = 1100 if notebook else 1800
         fig.update_layout(
             title=dict(text=title, pad=dict(b=24)),
-            font_size=12, height=800, width=width, margin=dict(t=top_margin, b=100))
+            font_size=12, height=height, width=width, margin=dict(t=top_margin, b=100))
+        if notebook and filename is None:
+            filename = f"{self.system.name} impact repartition.html"
+        if filename is not None:
+            plotly.offline.plot(fig, filename=filename, auto_open=False)
+        if notebook:
+            from IPython.display import HTML
+            return HTML(filename=filename)
         return fig
 
 
@@ -696,7 +712,7 @@ if __name__ == '__main__':
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
-        skipped_impact_repartition_classes=["System"],
+        skipped_impact_repartition_classes=None,
         skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
         skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
         display_column_information=True
