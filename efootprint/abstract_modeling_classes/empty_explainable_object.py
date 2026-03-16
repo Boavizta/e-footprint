@@ -57,6 +57,10 @@ class EmptyExplainableObject(ExplainableObject):
     def magnitude(self):
         return 0
 
+    @property
+    def unit(self):
+        return "dimensionless"
+
     def values(self):
         return []
 

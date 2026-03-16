@@ -18,6 +18,7 @@ from docs_sources.doc_utils.docs_case import (
     edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload,
     cpu_component, ram_component, edge_device, ram_need, cpu_need, storage_need, edge_device_need,
     recurrent_server_need)
+from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
 
@@ -130,6 +131,11 @@ def write_object_reference_file(mod_obj):
 
     for attr in mod_obj.calculated_attributes:
         calc_attr = getattr(mod_obj, attr)
+        if isinstance(calc_attr, dict) and len(calc_attr) == 0:
+            # The case for service_total_job_volumes in serverless server for example
+            logger.warning(f"Attribute {attr} of {mod_obj_dict['class']} is an empty dict "
+                           f"and won't be included in the documentation.")
+            continue
         mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
 
     with open(os.path.join(doc_utils_path, 'obj_template.md'), 'r') as file:

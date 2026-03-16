@@ -132,7 +132,6 @@ edge_storage = EdgeStorage(
     "edge SSD storage",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    idle_power=SourceValue(0.1 * u.W, source=None),
     storage_capacity=SourceValue(256 * u.GB, source=None),
     base_storage_need=SourceValue(10 * u.GB, source=None),
 )
@@ -200,7 +199,6 @@ storage_component = EdgeStorage(
     "edge storage component",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    idle_power=SourceValue(0.1 * u.W, source=None),
     storage_capacity=SourceValue(512 * u.GB, source=None),
     base_storage_need=SourceValue(20 * u.GB, source=None),
 )
@@ -270,10 +268,3 @@ edge_usage_pattern = EdgeUsagePattern(
 system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 
 logger.info(f"computation took {round((perf_counter() - start), 3)} seconds")
-print(autoscaling_server.impact_repartition)
-print(manually_written_job.impact_repartition)
-print(streaming_step.impact_repartition)
-
-sankey = ImpactRepartitionSankey(system)
-fig = sankey.figure()
-fig.show()

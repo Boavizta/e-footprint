@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [17.0.0] - 2026-03-16
+
+### Added
+- Major e-footprint feature: impact attribution throughout the whole object chain. Now the impact of material objects (servers, networks, devices, edge devices, storage) is attributed to all the functional and usage objects that are linked to them (jobs, usage patterns, usage journeys, etc.) and not only to the object itself. This allows for a much more precise impact analysis and for the identification of the most impactful objects in the system, both from a material and a function prospectives.
+
+### Changed
+- Neglect the energy footprint from storage objects for simplification.
+- Don’t allow negative data stored for Job object anymore, as it was logically incompatible with the notion of data storage duration on the Storage object side.
+
 ## [16.0.6] - 2026-03-03
 
 ### Fixed

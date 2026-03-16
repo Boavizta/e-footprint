@@ -1,3 +1,4 @@
+import colorsys
 import hashlib
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
@@ -10,14 +11,6 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.impact_repartition._graph import SankeyGraph
 from efootprint.utils.tools import display_co2_amount, format_co2_amount, time_it
-
-# Palette for consistent object coloring across fabrication/energy chains
-_COLORS = [
-    "rgba(31,119,180,0.8)", "rgba(255,127,14,0.8)", "rgba(44,160,44,0.8)", "rgba(214,39,40,0.8)",
-    "rgba(148,103,189,0.8)", "rgba(140,86,75,0.8)", "rgba(227,119,194,0.8)", "rgba(127,127,127,0.8)",
-    "rgba(188,189,34,0.8)", "rgba(23,190,207,0.8)", "rgba(174,199,232,0.8)", "rgba(255,187,120,0.8)",
-    "rgba(152,223,138,0.8)", "rgba(255,152,150,0.8)", "rgba(197,176,213,0.8)", "rgba(196,156,148,0.8)",
-]
 
 ConfiguredClass: TypeAlias = type[ModelingObject] | str
 NodeKey: TypeAlias = tuple[str, str | None] | tuple[str, str | int | None, int] | tuple[str, int, int, int]
@@ -397,7 +390,7 @@ class ImpactRepartitionSankey:
             self._manual_column_information.append({
                 "column_index": category_column,
                 "column_type": "manual_split",
-                "description": "Per object category footprint",
+                "description": "Object category",
             })
         leaf_column = category_column + 1 if self._category_node_indices else category_column
         breakdown_column = leaf_column + 1
@@ -516,7 +509,11 @@ class ImpactRepartitionSankey:
         if key.startswith("__aggregated__"):
             return "rgba(160,160,160,0.8)"
         digest = hashlib.blake2b(key.encode("utf-8"), digest_size=8).digest()
-        return _COLORS[int.from_bytes(digest, "big") % len(_COLORS)]
+        hue = int.from_bytes(digest[:2], "big") % 360
+        saturation = 0.34 + digest[2] / 255 * 0.16
+        lightness = 0.43 + digest[3] / 255 * 0.14
+        red, green, blue = colorsys.hls_to_rgb(hue / 360, lightness, saturation)
+        return f"rgba({round(red * 255)},{round(green * 255)},{round(blue * 255)},0.8)"
 
     def _build_hover_labels(self) -> list[str]:
         node_hover = []
@@ -715,7 +712,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[2], "r") as f:
+        with open(json_files[3], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
