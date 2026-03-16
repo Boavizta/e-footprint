@@ -66,7 +66,7 @@ class ImpactRepartitionSankey:
         self._spacer_original_source: dict[int, int] = {}
         self._category_node_indices: set[int] = set()
         self._leaf_node_indices: set[int] = set()
-        self._post_leaf_node_indices: set[int] = set()
+        self._breakdown_node_indices: set[int] = set()
 
     @property
     def node_labels(self) -> list[str]:
@@ -112,12 +112,9 @@ class ImpactRepartitionSankey:
     @staticmethod
     def _normalize_sankey_source(obj: ModelingObject) -> ModelingObject:
         from efootprint.builders.external_apis.external_api_base_class import ExternalAPIServer
-        from efootprint.core.hardware.edge.edge_component import EdgeComponent
 
         if isinstance(obj, ExternalAPIServer):
             return obj.external_api
-        if isinstance(obj, EdgeComponent):
-            return obj.edge_device
         return obj
 
     def _matches_configured_class(self, obj: ModelingObject, configured_classes: Sequence[ConfiguredClass]) -> bool:
@@ -149,7 +146,7 @@ class ImpactRepartitionSankey:
         self._spacer_original_source = {}
         self._category_node_indices = set()
         self._leaf_node_indices = set()
-        self._post_leaf_node_indices = set()
+        self._breakdown_node_indices = set()
 
     def _add_node(
             self, label: str, key: NodeKey, color_key: str | None = None, obj: ModelingObject | None = None) -> int:
@@ -224,8 +221,7 @@ class ImpactRepartitionSankey:
             if value_kg <= 0:
                 continue
             if source.is_impact_source:
-                self._handle_impact_source(
-                    source, value_kg, phase_context, parent_idx, original_source=resolved_source.original_source)
+                self._handle_impact_source(source, value_kg, phase, phase_context, parent_idx)
                 continue
             if self._should_skip_object(source):
                 self._traverse(source, phase, phase_context, parent_idx, next_visited)
@@ -243,21 +239,45 @@ class ImpactRepartitionSankey:
                 return category_name
         return None
 
-    def _get_post_leaf_source(
-            self, original_source: ModelingObject | None, normalized_source: ModelingObject) -> ModelingObject | None:
-        from efootprint.core.hardware.edge.edge_component import EdgeComponent
+    @staticmethod
+    def _get_source_phase_footprint(source: ModelingObject, phase: LifeCyclePhases) -> Any:
+        if phase == LifeCyclePhases.MANUFACTURING:
+            return source.instances_fabrication_footprint
+        return source.energy_footprint
 
-        if original_source is None or original_source is normalized_source:
-            return None
-        if not isinstance(original_source, EdgeComponent):
-            return None
-        if self._should_skip_object(original_source):
-            return None
-        return original_source
+    @staticmethod
+    def _get_footprint_breakdown_by_source(source: ModelingObject, phase: LifeCyclePhases) -> dict[ModelingObject, Any]:
+        breakdown_by_source = getattr(source, "footprint_breakdown_by_source", None)
+        if not isinstance(breakdown_by_source, dict):
+            return {}
+        phase_breakdown = breakdown_by_source.get(phase, {})
+        return phase_breakdown if isinstance(phase_breakdown, dict) else {}
+
+    def _expand_impact_source_breakdown(
+            self, source: ModelingObject, source_idx: int, phase: LifeCyclePhases, phase_context: str | None,
+            value_kg: float) -> None:
+        source_phase_footprint_kg = self._get_value_kg(self._get_source_phase_footprint(source, phase))
+        if source_phase_footprint_kg <= 0:
+            return
+
+        for breakdown_source, breakdown_value in self._get_footprint_breakdown_by_source(source, phase).items():
+            if breakdown_source is source or self._is_excluded(breakdown_source) or self._should_skip_object(breakdown_source):
+                continue
+            breakdown_value_kg = self._get_value_kg(breakdown_value) * value_kg / source_phase_footprint_kg
+            if breakdown_value_kg <= 0:
+                continue
+            breakdown_idx = self._add_node(
+                breakdown_source.name,
+                (breakdown_source.id, phase_context),
+                color_key=breakdown_source.id,
+                obj=breakdown_source,
+            )
+            self._breakdown_node_indices.add(breakdown_idx)
+            self._add_flow_to_node(source_idx, breakdown_idx, breakdown_value_kg)
 
     def _handle_impact_source(
-            self, source: ModelingObject, value_kg: float, phase_context: str | None, parent_idx: int | None,
-            original_source: ModelingObject | None = None) -> None:
+            self, source: ModelingObject, value_kg: float, phase: LifeCyclePhases, phase_context: str | None,
+            parent_idx: int | None) -> None:
         leaf_parent_idx = parent_idx
         if not self.skip_object_category_footprint_split:
             category_name = self._find_object_category_name(source)
@@ -276,17 +296,7 @@ class ImpactRepartitionSankey:
             source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
             self._leaf_node_indices.add(source_idx)
             self._add_flow_to_node(leaf_parent_idx, source_idx, value_kg)
-
-        post_leaf_source = self._get_post_leaf_source(original_source, source)
-        if post_leaf_source is not None:
-            component_idx = self._add_node(
-                post_leaf_source.name,
-                (post_leaf_source.id, phase_context),
-                color_key=post_leaf_source.id,
-                obj=post_leaf_source,
-            )
-            self._post_leaf_node_indices.add(component_idx)
-            self._add_flow_to_node(source_idx, component_idx, value_kg)
+            self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value_kg)
 
     @time_it
     def build(self) -> None:
@@ -338,7 +348,7 @@ class ImpactRepartitionSankey:
             self._traverse(root, phase, self._get_phase_context(phase), phase_parents[phase], visited=set())
 
         self._assign_columns()
-        self._assign_category_and_leaf_columns()
+        self._assign_category_leaf_and_breakdown_columns()
         self._aggregate_small_nodes_by_column()
         self._insert_spacer_nodes()
 
@@ -347,7 +357,7 @@ class ImpactRepartitionSankey:
             node_idx not in self._node_columns
             and node_idx not in self._category_node_indices
             and node_idx not in self._leaf_node_indices
-            and node_idx not in self._post_leaf_node_indices
+            and node_idx not in self._breakdown_node_indices
         )
 
     def _assign_columns(self) -> None:
@@ -379,8 +389,8 @@ class ImpactRepartitionSankey:
                 max(parent_columns) + 1 if parent_columns else self._impact_repartition_start_column
             )
 
-    def _assign_category_and_leaf_columns(self) -> None:
-        if not self._category_node_indices and not self._leaf_node_indices and not self._post_leaf_node_indices:
+    def _assign_category_leaf_and_breakdown_columns(self) -> None:
+        if not self._category_node_indices and not self._leaf_node_indices and not self._breakdown_node_indices:
             return
         max_column = max(self._node_columns.values()) if self._node_columns else self._impact_repartition_start_column - 1
         category_column = max_column + 1
@@ -393,17 +403,17 @@ class ImpactRepartitionSankey:
                 "description": "Per object category footprint",
             })
         leaf_column = category_column + 1 if self._category_node_indices else category_column
-        post_leaf_column = leaf_column + 1
-        leaf_nodes_with_post_leaf_children = {
-            source for source, target in zip(self.link_sources, self.link_targets) if target in self._post_leaf_node_indices
+        breakdown_column = leaf_column + 1
+        leaf_nodes_with_breakdown_children = {
+            source for source, target in zip(self.link_sources, self.link_targets) if target in self._breakdown_node_indices
         }
         for leaf_idx in self._leaf_node_indices:
-            if self._post_leaf_node_indices and leaf_idx not in leaf_nodes_with_post_leaf_children:
-                self._node_columns[leaf_idx] = post_leaf_column
+            if self._breakdown_node_indices and leaf_idx not in leaf_nodes_with_breakdown_children:
+                self._node_columns[leaf_idx] = breakdown_column
             else:
                 self._node_columns[leaf_idx] = leaf_column
-        for node_idx in self._post_leaf_node_indices:
-            self._node_columns[node_idx] = post_leaf_column
+        for node_idx in self._breakdown_node_indices:
+            self._node_columns[node_idx] = breakdown_column
 
     def _insert_spacer_nodes(self) -> None:
         original_links = self._graph.reset_links_preserving_root_totals()
@@ -449,7 +459,7 @@ class ImpactRepartitionSankey:
         self._node_columns = {}
         self._category_node_indices = set()
         self._leaf_node_indices = set()
-        self._post_leaf_node_indices = set()
+        self._breakdown_node_indices = set()
 
         old_to_new_indices = {}
         for old_idx, label in enumerate(graph_snapshot.full_node_labels):
@@ -740,8 +750,8 @@ if __name__ == '__main__':
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,
         skipped_impact_repartition_classes=["System"],
-        skip_phase_footprint_split=False, skip_object_category_footprint_split=True,
-        skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=LifeCyclePhases.USAGE,
+        skip_phase_footprint_split=False, skip_object_category_footprint_split=False,
+        skip_object_footprint_split=False, excluded_object_types=None, lifecycle_phase_filter=None,
         display_column_information=True
     )
     fig = sankey.figure()

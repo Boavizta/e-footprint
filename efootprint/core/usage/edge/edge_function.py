@@ -26,4 +26,4 @@ class EdgeFunction(ModelingObject):
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
+        return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))

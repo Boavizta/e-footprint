@@ -1,8 +1,6 @@
 from typing import List, TYPE_CHECKING
 
 import numpy as np
-from pint import Quantity
-
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -14,7 +12,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
-    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+    from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 
 
 class NegativeCumulativeStorageNeedError(Exception):
@@ -76,48 +74,44 @@ class EdgeStorage(EdgeComponent):
             .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
-        self.cumulative_unitary_storage_need_per_recurrent_need = ExplainableObjectDict()
-        self.full_cumulative_storage_need = EmptyExplainableObject()
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
+
+    @property
+    def recurrent_edge_storage_needs(self) -> List["RecurrentEdgeStorageNeed"]:
+        from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
+        recurrent_edge_storage_needs = [
+            container for container in self.modeling_obj_containers if isinstance(container, RecurrentEdgeStorageNeed)
+        ]
+        invalid_component_needs = [
+            need for need in self.recurrent_edge_component_needs if need not in recurrent_edge_storage_needs
+        ]
+        if invalid_component_needs:
+            raise ValueError(
+                f"EdgeStorage object {self.name} has recurrent component needs that are not "
+                f"RecurrentEdgeStorageNeed objects: "
+                f"{[need.name for need in invalid_component_needs]}. "
+                f"Please check your model structure.")
+        return recurrent_edge_storage_needs
 
     @property
     def calculated_attributes(self):
-        return ([
-            "carbon_footprint_fabrication", "cumulative_unitary_storage_need_per_recurrent_need",
-            "full_cumulative_storage_need"]
-                + [elt for elt in super().calculated_attributes if elt != "impact_repartition_weights"])
+        return (["carbon_footprint_fabrication", "cumulative_unitary_storage_need_per_usage_pattern"]
+                + super().calculated_attributes)
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
             f"Carbon footprint of {self.name}")
 
-    def update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need(
-            self, recurrent_need: "RecurrentEdgeComponentNeed"):
-        recurrent_need_storage_rate = sum(
-            [recurrent_need.unitary_hourly_need_per_usage_pattern[eup] for eup in recurrent_need.edge_usage_patterns],
-            start=EmptyExplainableObject())
-
-        if isinstance(recurrent_need_storage_rate, EmptyExplainableObject):
-            self.cumulative_unitary_storage_need_per_recurrent_need[recurrent_need] = EmptyExplainableObject(
-                left_parent=recurrent_need_storage_rate,
-                label=f"Cumulative storage for {recurrent_need.name} in {self.name}")
-            return
-
-        rate_array = np.copy(recurrent_need_storage_rate.value.magnitude)
-        rate_units = recurrent_need_storage_rate.value.units
-        cumulative_quantity = Quantity(np.cumsum(rate_array, dtype=np.float32), rate_units)
-        self.cumulative_unitary_storage_need_per_recurrent_need[recurrent_need] = ExplainableHourlyQuantities(
-            cumulative_quantity, start_date=recurrent_need_storage_rate.start_date,
-            label=f"Cumulative storage for {recurrent_need.name} in {self.name}",
-            left_parent=recurrent_need_storage_rate, operator="cumulative sum")
-
-    def update_cumulative_unitary_storage_need_per_recurrent_need(self):
-        self.cumulative_unitary_storage_need_per_recurrent_need = ExplainableObjectDict()
-        for recurrent_need in self.recurrent_edge_component_needs:
-            self.update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need(recurrent_need)
-
-    def update_full_cumulative_storage_need(self):
-        total = sum(self.cumulative_unitary_storage_need_per_recurrent_need.values(), start=EmptyExplainableObject())
+    def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
+        total = sum(
+            [
+                recurrent_need.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]
+                for recurrent_need in self.recurrent_edge_storage_needs
+                if usage_pattern in recurrent_need.cumulative_unitary_storage_need_per_usage_pattern
+            ],
+            start=EmptyExplainableObject(),
+        )
         if not isinstance(total, EmptyExplainableObject):
             total = total + self.base_storage_need
             if np.min(total.magnitude) < 0:
@@ -127,16 +121,16 @@ class EdgeStorage(EdgeComponent):
                 raise InsufficientCapacityError(
                     self, "storage capacity", self.storage_capacity,
                     ExplainableQuantity(total.value.max(), label=f"{self.name} cumulative storage need"))
+        self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = total.set_label(
+            f"{self.name} cumulative storage need for {usage_pattern.name}"
+        ).generate_explainable_object_with_logical_dependency(self.storage_capacity)
 
-        self.full_cumulative_storage_need = (
-            total.set_label(f"{self.name} cumulative storage need")
-            .generate_explainable_object_with_logical_dependency(self.storage_capacity))
+    def update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
     def update_unitary_power_per_usage_pattern(self):
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.unitary_power_per_usage_pattern[usage_pattern] = EmptyExplainableObject()
-
-    @property
-    def impact_repartition_weights(self):
-        return self.cumulative_unitary_storage_need_per_recurrent_need

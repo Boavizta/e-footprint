@@ -3,9 +3,7 @@ from unittest.mock import MagicMock
 import re
 
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
-from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
 from efootprint.core.lifecycle_phases import LifeCyclePhases
-from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.utils.sankey import ImpactRepartitionSankey
 from tests.utils import set_modeling_obj_containers
 
@@ -90,9 +88,30 @@ class TestImpactRepartitionSankey(TestCase):
 
     def _make_leaf(self, name, manufacturing_kg=0, usage_kg=0, class_name=None, obj_cls=_DummyObject):
         leaf = self._make_object(name, is_impact_source=True, class_name=class_name, obj_cls=obj_cls)
+        leaf.instances_fabrication_footprint = _DummyQuantity(manufacturing_kg)
+        leaf.energy_footprint = _DummyQuantity(usage_kg)
         leaf._attributed_footprint_per_source = {
             LifeCyclePhases.MANUFACTURING: {leaf: _DummyQuantity(manufacturing_kg)} if manufacturing_kg else {},
             LifeCyclePhases.USAGE: {leaf: _DummyQuantity(usage_kg)} if usage_kg else {},
+        }
+        leaf.footprint_breakdown_by_source = {
+            LifeCyclePhases.MANUFACTURING: {},
+            LifeCyclePhases.USAGE: {},
+        }
+        return leaf
+
+    def _make_breakdown_leaf(
+            self, name, manufacturing_kg=0, usage_kg=0, manufacturing_breakdown=None, usage_breakdown=None,
+            class_name=None, obj_cls=_DummyObject):
+        leaf = self._make_leaf(
+            name, manufacturing_kg=manufacturing_kg, usage_kg=usage_kg, class_name=class_name, obj_cls=obj_cls)
+        leaf.footprint_breakdown_by_source = {
+            LifeCyclePhases.MANUFACTURING: {
+                source: _DummyQuantity(value) for source, value in (manufacturing_breakdown or {}).items()
+            },
+            LifeCyclePhases.USAGE: {
+                source: _DummyQuantity(value) for source, value in (usage_breakdown or {}).items()
+            },
         }
         return leaf
 
@@ -115,13 +134,6 @@ class TestImpactRepartitionSankey(TestCase):
             LifeCyclePhases.USAGE: {s: _DummyQuantity(v) for s, v in (energy_sources or {}).items()},
         }
         return system
-
-    def _build_edge_storage_case(self, **sankey_kwargs):
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={edge_storage: 100})
-        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
-        return edge_storage, edge_device, ImpactRepartitionSankey(system, aggregation_threshold_percent=0, **sankey_kwargs)
 
     def test_all_canonical_classes_are_in_sankey_columns(self):
         from efootprint.all_classes_in_order import ALL_CANONICAL_CLASSES_DICT, SANKEY_COLUMNS
@@ -609,66 +621,53 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn((external_api.id, "Manufacturing"), sankey.node_indices)
         self.assertNotIn((external_api.server.id, "Manufacturing"), sankey.node_indices)
 
-    def test_edge_component_sources_expand_from_edge_device_to_edge_component(self):
-        """Test EdgeComponent impact sources display the EdgeDevice and continue breakdown to the component."""
-        edge_storage, edge_device, sankey = self._build_edge_storage_case()
+    def test_impact_source_breakdown_scales_child_flows_from_leaf_share(self):
+        """Test impact-source breakdown is expanded generically and scaled to the attributed leaf flow."""
+        child_a = self._make_leaf("Child A", manufacturing_kg=25)
+        child_b = self._make_leaf("Child B", manufacturing_kg=75)
+        breakdown_leaf = self._make_breakdown_leaf(
+            "Breakdown source",
+            manufacturing_kg=100,
+            manufacturing_breakdown={child_a: 25, child_b: 75},
+        )
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={breakdown_leaf: 40})
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 40})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
         sankey.build()
 
-        self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
-        self.assertIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
-        edge_device_idx = sankey.node_indices[(edge_device.id, "Manufacturing")]
-        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
-        self.assertIn(edge_device_idx, sankey.link_targets)
-        self.assertIn((edge_device_idx, edge_storage_idx), list(zip(sankey.link_sources, sankey.link_targets)))
-        self.assertEqual(sankey._node_columns[edge_device_idx] + 1, sankey._node_columns[edge_storage_idx])
+        breakdown_leaf_idx = sankey.node_indices[(breakdown_leaf.id, "Manufacturing")]
+        child_a_idx = sankey.node_indices[(child_a.id, "Manufacturing")]
+        child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
+        link_values_by_edge = {
+            (source, target): value for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+        }
+        self.assertEqual(0.01, link_values_by_edge[(breakdown_leaf_idx, child_a_idx)])
+        self.assertEqual(0.03, link_values_by_edge[(breakdown_leaf_idx, child_b_idx)])
+        self.assertEqual(sankey._node_columns[breakdown_leaf_idx] + 1, sankey._node_columns[child_a_idx])
+        self.assertEqual(sankey._node_columns[child_a_idx], sankey._node_columns[child_b_idx])
 
-    def test_excluded_object_types_excludes_edge_component_impact_before_normalization(self):
-        """Test excluding an EdgeComponent removes its impact entirely even when normalized to EdgeDevice."""
-        edge_storage, edge_device, sankey = self._build_edge_storage_case(excluded_object_types=[EdgeStorage])
-        sankey.build()
-
-        self.assertEqual(0, sankey._total_system_kg)
-        self.assertNotIn((edge_device.id, "Manufacturing"), sankey.node_indices)
-        self.assertNotIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
-
-    def test_skipped_impact_repartition_classes_skips_edge_component_breakdown_only(self):
-        """Test skipping an EdgeComponent keeps the EdgeDevice leaf but removes the appended component node."""
-        edge_storage, edge_device, sankey = self._build_edge_storage_case(
-            skipped_impact_repartition_classes=[EdgeStorage])
-        sankey.build()
-
-        self.assertIn((edge_device.id, "Manufacturing"), sankey.node_indices)
-        self.assertNotIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
-
-    def test_skipped_impact_repartition_classes_skips_normalized_edge_device_leaf(self):
-        """Test skipping the normalized EdgeDevice removes that node while preserving component breakdown."""
-        edge_storage, edge_device, sankey = self._build_edge_storage_case(
-            skip_object_category_footprint_split=True, skipped_impact_repartition_classes=[EdgeComputer])
-        sankey.build()
-
-        self.assertNotIn((edge_device.id, "Manufacturing"), sankey.node_indices)
-        self.assertIn((edge_storage.id, "Manufacturing"), sankey.node_indices)
-        intermediate_idx = sankey.node_indices[("intermediate", "Manufacturing")]
-        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
-        incoming_sources = [source for source, target in zip(sankey.link_sources, sankey.link_targets) if target == edge_storage_idx]
-        self.assertTrue(incoming_sources)
-        self.assertTrue(any(source == intermediate_idx or sankey._spacer_original_source.get(source) == intermediate_idx
-                            for source in incoming_sources))
-
-    def test_terminal_server_leaves_move_to_sink_column_when_edge_components_add_depth(self):
-        """Test terminal leaves share the sink column instead of the EdgeDevice column when post-leaf nodes exist."""
-        edge_storage = EdgeStorage.from_defaults("Edge storage")
-        edge_device = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
-        server_leaf = self._make_object("Server leaf", is_impact_source=True)
-        intermediate = self._make_intermediate(
-            "Intermediate", manufacturing_sources={edge_storage: 60, server_leaf: 40})
+    def test_skipped_impact_repartition_classes_skip_breakdown_children(self):
+        """Test skipped classes remove matching breakdown children while keeping the parent impact source."""
+        child_a = self._make_leaf("Child A", manufacturing_kg=25)
+        child_b = self._make_leaf("Child B", manufacturing_kg=75, obj_cls=_SkippedObject)
+        breakdown_leaf = self._make_breakdown_leaf(
+            "Breakdown source",
+            manufacturing_kg=100,
+            manufacturing_breakdown={child_a: 25, child_b: 75},
+        )
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={breakdown_leaf: 100})
         system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
 
-        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+        sankey = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=0,
+            skip_object_category_footprint_split=True,
+            skipped_impact_repartition_classes=[_SkippedObject],
+        )
         sankey.build()
 
-        edge_device_idx = sankey.node_indices[(edge_device.id, "Manufacturing")]
-        edge_storage_idx = sankey.node_indices[(edge_storage.id, "Manufacturing")]
-        server_leaf_idx = sankey.node_indices[(server_leaf.id, "Manufacturing")]
-        self.assertEqual(sankey._node_columns[edge_storage_idx], sankey._node_columns[server_leaf_idx])
-        self.assertEqual(sankey._node_columns[edge_device_idx] + 1, sankey._node_columns[server_leaf_idx])
+        self.assertIn((breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
+        self.assertIn((child_a.id, "Manufacturing"), sankey.node_indices)
+        self.assertNotIn((child_b.id, "Manufacturing"), sankey.node_indices)

@@ -1,21 +1,25 @@
 from typing import List, TYPE_CHECKING
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
     from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_function import EdgeFunction
-    from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
     from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
 
@@ -70,20 +74,20 @@ class EdgeDevice(ModelingObject):
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
-        return list(set(sum([need.recurrent_edge_component_needs
-                             for need in self.recurrent_edge_device_needs], start=[])))
+        return list(dict.fromkeys(sum(
+            [need.recurrent_edge_component_needs for need in self.recurrent_edge_device_needs], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return list(set(sum([need.edge_usage_journeys for need in self.recurrent_needs], start=[])))
+        return list(dict.fromkeys(sum([need.edge_usage_journeys for need in self.recurrent_needs], start=[])))
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
-        return list(set(sum([need.edge_functions for need in self.recurrent_needs], start=[])))
+        return list(dict.fromkeys(sum([need.edge_functions for need in self.recurrent_needs], start=[])))
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
+        return list(dict.fromkeys(sum([need.edge_usage_patterns for need in self.recurrent_needs], start=[])))
 
     def _filter_component_by_type(self, component_type: type) -> List[EdgeComponent]:
         components_of_type = []
@@ -195,12 +199,59 @@ class EdgeDevice(ModelingObject):
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"{self.name} total fabrication footprint across usage patterns")
 
-    def update_dict_element_in_impact_repartition_weights(self, component: "EdgeComponent"):
-        self.impact_repartition_weights[component] = (
-                component.instances_fabrication_footprint + component.energy_footprint).set_label(
-            f"{component.name} weight in {self.name} impact repartition")
+    @property
+    def fabrication_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
+        breakdown = ExplainableObjectDict()
+        if not self.components:
+            return breakdown
+
+        equal_structure_share = self.structure_carbon_footprint_fabrication / ExplainableQuantity(
+            len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
+        for component in self.components:
+            breakdown[component] = component.instances_fabrication_footprint + equal_structure_share
+        return breakdown
+
+    @property
+    def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
+        return ExplainableObjectDict({
+            component: component.energy_footprint
+            for component in self.components
+        })
+
+    @property
+    def footprint_breakdown_by_source(self) -> dict[LifeCyclePhases, ExplainableObjectDict]:
+        return {
+            LifeCyclePhases.MANUFACTURING: self.fabrication_footprint_breakdown_by_source,
+            LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
+        }
+
+    def update_dict_element_in_impact_repartition_weights(self, source_obj):
+        from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+
+        if not isinstance(source_obj, RecurrentEdgeComponentNeed):
+            raise TypeError(f"Unsupported edge device impact repartition source: {type(source_obj)}")
+
+        component = source_obj.edge_component
+        component_need_demand = source_obj.total_hourly_need_across_usage_patterns
+        sibling_need_demand = sum(
+            [recurrent_component_need.total_hourly_need_across_usage_patterns
+             for recurrent_component_need in self.recurrent_edge_component_needs
+             if recurrent_component_need.edge_component == component],
+            start=EmptyExplainableObject())
+        if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
+            weight = EmptyExplainableObject()
+        else:
+            component_total_impact = component.instances_fabrication_footprint + component.energy_footprint
+            with np.errstate(invalid="ignore", divide="ignore"):
+                weight = component_total_impact * (component_need_demand / sibling_need_demand)
+            if isinstance(weight, ExplainableHourlyQuantities):
+                invalid_values_mask = np.isnan(weight.magnitude) | np.isinf(weight.magnitude)
+                weight.magnitude[invalid_values_mask] = 0
+
+        self.impact_repartition_weights[source_obj] = weight.set_label(
+            f"{source_obj.name} weight in {self.name} impact repartition")
 
     def update_impact_repartition_weights(self):
         self.impact_repartition_weights = ExplainableObjectDict()
-        for component in self.components:
-            self.update_dict_element_in_impact_repartition_weights(component)
+        for recurrent_component_need in self.recurrent_edge_component_needs:
+            self.update_dict_element_in_impact_repartition_weights(recurrent_component_need)

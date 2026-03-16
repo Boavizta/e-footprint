@@ -38,19 +38,19 @@ class EdgeUsageJourney(ModelingObject):
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:
-        return list(set(sum([ef.recurrent_edge_device_needs for ef in self.edge_functions], start=[])))
+        return list(dict.fromkeys(sum([ef.recurrent_edge_device_needs for ef in self.edge_functions], start=[])))
 
     @property
     def recurrent_server_needs(self) -> List["RecurrentServerNeed"]:
-        return list(set(sum([ef.recurrent_server_needs for ef in self.edge_functions], start=[])))
+        return list(dict.fromkeys(sum([ef.recurrent_server_needs for ef in self.edge_functions], start=[])))
 
     @property
     def jobs(self) -> List["JobBase"]:
-        return list(set(sum([rsn.jobs for rsn in self.recurrent_server_needs], start=[])))
+        return list(dict.fromkeys(sum([rsn.jobs for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def edge_devices(self) -> List["EdgeDevice"]:
-        return list(set([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
+        return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
     @property
     def calculated_attributes(self) -> List[str]:

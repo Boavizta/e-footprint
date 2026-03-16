@@ -12,10 +12,13 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
@@ -350,17 +353,45 @@ class TestEdgeDevice(TestCase):
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
         self.assertIn("Test Device", result.label)
 
-    def test_update_impact_repartition_weights_uses_component_total_impacts(self):
-        """Test edge device weights each component by its total fabrication plus energy footprint."""
-        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
-        self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
-        self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
-        self.mock_component_2.energy_footprint = SourceValue(9 * u.kg)
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_impact_repartition_weights_distributes_component_impact_across_component_needs(
+            self, mock_component_needs):
+        """Test edge device distributes each component impact across its own recurrent needs."""
+        self.mock_component_1.instances_fabrication_footprint = SourceValue(6 * u.kg)
+        self.mock_component_1.energy_footprint = SourceValue(2 * u.kg)
+
+        component_need_1 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
+        component_need_2 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_1)
+        component_need_1.total_hourly_need_across_usage_patterns = create_source_hourly_values_from_list(
+            [10, 10], pint_unit=u.cpu_core * u.concurrent)
+        component_need_2.total_hourly_need_across_usage_patterns = create_source_hourly_values_from_list(
+            [6, 6], pint_unit=u.cpu_core * u.concurrent)
+        mock_component_needs.return_value = [component_need_1, component_need_2]
 
         self.edge_device.update_impact_repartition_weights()
 
-        self.assertAlmostEqual(5, self.edge_device.impact_repartition_weights[self.mock_component_1].magnitude)
-        self.assertAlmostEqual(15, self.edge_device.impact_repartition_weights[self.mock_component_2].magnitude)
+        self.assertTrue(np.allclose([5, 5], self.edge_device.impact_repartition_weights[component_need_1].magnitude))
+        self.assertTrue(np.allclose([3, 3], self.edge_device.impact_repartition_weights[component_need_2].magnitude))
+
+    def test_footprint_breakdown_by_source_distributes_structure_across_components_and_keeps_energy(self):
+        """Test footprint_breakdown_by_source distributes device structure equally across components."""
+        self.edge_device.energy_footprint = SourceValue(6 * u.kg)
+        # structure_carbon_footprint_fabrication is 100 kg and will be split equally amongst components.
+        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
+        self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
+        self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
+        self.mock_component_2.energy_footprint = SourceValue(5 * u.kg)
+
+        breakdown = self.edge_device.footprint_breakdown_by_source
+
+        self.assertEqual(54, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_1].magnitude)
+        self.assertEqual(56, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_2].magnitude)
+        self.assertNotIn(self.edge_device, breakdown[LifeCyclePhases.MANUFACTURING])
+        self.assertEqual(1, breakdown[LifeCyclePhases.USAGE][self.mock_component_1].magnitude)
+        self.assertEqual(5, breakdown[LifeCyclePhases.USAGE][self.mock_component_2].magnitude)
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)

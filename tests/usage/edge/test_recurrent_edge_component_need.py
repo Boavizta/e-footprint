@@ -7,6 +7,7 @@ import pytz
 
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceTimezone
 from efootprint.constants.units import u
 from efootprint.core.usage.edge.recurrent_edge_component_need import (
@@ -340,6 +341,37 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         self.assertTrue(np.allclose(
             [4.0, 4.0], self.component_need.unitary_hourly_need_per_usage_pattern[mock_pattern].magnitude))
+
+    def test_update_total_hourly_need_across_usage_patterns(self):
+        """Test total hourly need combines per-pattern need with parallel journey counts."""
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        mock_pattern_1.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 1")
+        mock_pattern_2.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 2")
+        mock_pattern_1.edge_usage_journey.edge_usage_patterns = [mock_pattern_1]
+        mock_pattern_2.edge_usage_journey.edge_usage_patterns = [mock_pattern_2]
+        mock_pattern_1.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern_1: ExplainableHourlyQuantities(
+                np.array([2.0, 2.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 1")}
+        mock_pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern_2: ExplainableHourlyQuantities(
+                np.array([4.0, 4.0], dtype=np.float32) * u.concurrent, datetime(2023, 1, 1), "parallel 2")}
+        self.component_need.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: ExplainableHourlyQuantities(
+                np.array([1.0, 1.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 1"),
+            mock_pattern_2: ExplainableHourlyQuantities(
+                np.array([2.0, 2.0], dtype=np.float32) * u.cpu_core, datetime(2023, 1, 1), "need 2"),
+        })
+        mock_function = create_mod_obj_mock(EdgeFunction, name="Mock Function")
+        mock_function.edge_usage_journeys = [mock_pattern_1.edge_usage_journey, mock_pattern_2.edge_usage_journey]
+        mock_device_need = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Device Need")
+        mock_device_need.edge_functions = [mock_function]
+        set_modeling_obj_containers(self.component_need, [mock_device_need])
+
+        self.component_need.update_total_hourly_need_across_usage_patterns()
+
+        self.assertTrue(np.allclose([10.0, 10.0], self.component_need.total_hourly_need_across_usage_patterns.magnitude))
+        self.assertEqual(u.cpu_core * u.concurrent, self.component_need.total_hourly_need_across_usage_patterns.unit)
 
 
 if __name__ == "__main__":

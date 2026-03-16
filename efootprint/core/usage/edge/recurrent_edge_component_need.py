@@ -39,6 +39,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         self.recurrent_need = recurrent_need.set_label(f"{self.name} recurrent need")
         self.validated_recurrent_need = EmptyExplainableObject()
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
+        self.total_hourly_need_across_usage_patterns = EmptyExplainableObject()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[EdgeComponent]:
@@ -46,7 +47,9 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["validated_recurrent_need", "unitary_hourly_need_per_usage_pattern"] + super().calculated_attributes
+        return [
+            "validated_recurrent_need", "unitary_hourly_need_per_usage_pattern",
+            "total_hourly_need_across_usage_patterns"] + super().calculated_attributes
 
     @property
     def recurrent_edge_device_needs(self):
@@ -60,15 +63,15 @@ class RecurrentEdgeComponentNeed(ModelingObject):
 
     @property
     def edge_functions(self) -> List["EdgeFunction"]:
-        return list(set(sum([need.edge_functions for need in self.recurrent_edge_device_needs], start=[])))
+        return list(dict.fromkeys(sum([need.edge_functions for need in self.recurrent_edge_device_needs], start=[])))
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return list(set(sum([ef.edge_usage_journeys for ef in self.edge_functions], start=[])))
+        return list(dict.fromkeys(sum([ef.edge_usage_journeys for ef in self.edge_functions], start=[])))
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
+        return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
     @staticmethod
     def assert_recurrent_workload_is_between_0_and_1(
@@ -119,3 +122,11 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_need_per_usage_pattern(usage_pattern)
+
+    def update_total_hourly_need_across_usage_patterns(self):
+        self.total_hourly_need_across_usage_patterns = sum(
+            [self.unitary_hourly_need_per_usage_pattern[usage_pattern]
+             * usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+             for usage_pattern in self.edge_usage_patterns],
+            start=EmptyExplainableObject(),
+        ).set_label(f"{self.name} total hourly need across usage patterns")

@@ -1,12 +1,11 @@
 import unittest
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -14,6 +13,7 @@ from efootprint.core.hardware.edge.edge_storage import EdgeStorage, NegativeCumu
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
@@ -35,8 +35,7 @@ class TestEdgeStorage(TestCase):
         self.assertEqual(160 * u.kg / u.TB, self.edge_storage.carbon_footprint_fabrication_per_storage_capacity.value)
         self.assertEqual(0 * u.TB, self.edge_storage.base_storage_need.value)
         self.assertEqual(6 * u.years, self.edge_storage.lifespan.value)
-        self.assertIsInstance(self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need, ExplainableObjectDict)
-        self.assertIsInstance(self.edge_storage.full_cumulative_storage_need, EmptyExplainableObject)
+        self.assertIsInstance(self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern, dict)
 
     def test_ssd_classmethod(self):
         """Test SSD factory method."""
@@ -90,137 +89,111 @@ class TestEdgeStorage(TestCase):
             self.assertEqual("Carbon footprint of Test EdgeStorage",
                              self.edge_storage.carbon_footprint_fabrication.label)
 
-    def test_update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need_empty(self):
-        """Test cumulative storage is EmptyExplainableObject when recurrent need has no usage patterns."""
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Empty need", id="empty_need_id")
-        mock_need.edge_usage_patterns = []
+    def test_recurrent_edge_storage_needs_raises_for_non_storage_component_need(self):
+        """Test recurrent_edge_storage_needs raises when a non-storage component need is linked."""
+        invalid_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Invalid need", id="invalid_need_id")
+        valid_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Valid storage need", id="valid_storage_need_id")
+        set_modeling_obj_containers(self.edge_storage, [invalid_need, valid_need])
 
-        set_modeling_obj_containers(self.edge_storage, [mock_need])
-        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need(mock_need)
+        with self.assertRaises(ValueError) as ctx:
+            _ = self.edge_storage.recurrent_edge_storage_needs
 
-        result = self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need[mock_need]
-        self.assertIsInstance(result, EmptyExplainableObject)
-        self.assertIn("Cumulative storage for Empty need in Test EdgeStorage", result.label)
-
+        self.assertIn("Invalid need", str(ctx.exception))
+        self.assertIn("not RecurrentEdgeStorageNeed objects", str(ctx.exception))
         set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need_single_pattern(self):
-        """Test cumulative storage is the cumsum of the unitary hourly need."""
-        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern A", id="pattern_a_id")
-
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Storage need A", id="storage_need_a_id")
-        mock_need.edge_usage_patterns = [mock_pattern]
-        # Unitary hourly storage delta: [10, 20, 30] GB per hour
-        mock_need.unitary_hourly_need_per_usage_pattern = {
-            mock_pattern: create_source_hourly_values_from_list([10, 20, 30], pint_unit=u.GB)}
-
-        set_modeling_obj_containers(self.edge_storage, [mock_need])
-        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need(mock_need)
-
-        result = self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need[mock_need]
-        # cumsum([10, 20, 30]) = [10, 30, 60]
-        self.assertTrue(np.allclose([10, 30, 60], result.value_as_float_list))
-        self.assertEqual(u.GB, result.unit)
-        self.assertIn("Cumulative storage for Storage need A in Test EdgeStorage", result.label)
-
+    def test_update_cumulative_unitary_storage_need_per_usage_pattern_empty(self):
+        """Test cumulative storage dict stays empty when no recurrent needs."""
         set_modeling_obj_containers(self.edge_storage, [])
+        self.edge_storage.update_cumulative_unitary_storage_need_per_usage_pattern()
+        self.assertEqual({}, self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern)
 
-    def test_update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need_multiple_patterns(self):
-        """Test cumulative storage sums unitary rates across usage patterns before taking cumsum."""
-        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1_id")
-        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2_id")
-
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Storage need multi",
-                                        id="storage_need_multi_id")
-        mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
-        mock_need.unitary_hourly_need_per_usage_pattern = {
-            mock_pattern_1: create_source_hourly_values_from_list([10, 0, 5], pint_unit=u.GB),
-            mock_pattern_2: create_source_hourly_values_from_list([0, 20, 5], pint_unit=u.GB),
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_data(self):
+        """Test storage cumulative need is computed independently for one usage pattern."""
+        usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern full", id="pattern_full_id")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need full", id="need_full_id")
+        mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            usage_pattern: create_source_hourly_values_from_list([10, 30, 60], pint_unit=u.GB)
         }
-
         set_modeling_obj_containers(self.edge_storage, [mock_need])
-        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need(mock_need)
-
-        result = self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need[mock_need]
-        # Rate sum: [10+0, 0+20, 5+5] = [10, 20, 10], cumsum = [10, 30, 40]
-        self.assertTrue(np.allclose([10, 30, 40], result.value_as_float_list))
-
-        set_modeling_obj_containers(self.edge_storage, [])
-
-    def test_update_cumulative_unitary_storage_need_per_recurrent_need(self):
-        """Test update method resets the dict and iterates over all recurrent needs."""
-        mock_need_1 = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Need 1", id="need_1_id")
-        mock_need_2 = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Need 2", id="need_2_id")
-
-        set_modeling_obj_containers(self.edge_storage, [mock_need_1, mock_need_2])
-
-        with patch.object(EdgeStorage,
-                          "update_dict_element_in_cumulative_unitary_storage_need_per_recurrent_need") as mock_update:
-            self.edge_storage.update_cumulative_unitary_storage_need_per_recurrent_need()
-
-            self.assertEqual(2, mock_update.call_count)
-            mock_update.assert_any_call(mock_need_1)
-            mock_update.assert_any_call(mock_need_2)
-
-        set_modeling_obj_containers(self.edge_storage, [])
-
-    def test_update_full_cumulative_storage_need_empty(self):
-        """Test full_cumulative_storage_need is EmptyExplainableObject when no recurrent needs."""
-        self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need = ExplainableObjectDict()
-        self.edge_storage.update_full_cumulative_storage_need()
-        self.assertIsInstance(self.edge_storage.full_cumulative_storage_need, EmptyExplainableObject)
-
-    def test_update_full_cumulative_storage_need_with_data(self):
-        """Test full_cumulative_storage_need sums per-need cumulatives and adds base_storage_need."""
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Need full", id="need_full_id")
-        # Per-need cumulative already computed: [10, 30, 60] GB
-        self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need = {
-            mock_need: create_source_hourly_values_from_list([10, 30, 60], pint_unit=u.GB)}
 
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
-            self.edge_storage.update_full_cumulative_storage_need()
+            self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
         # Expected: [10+5, 30+5, 60+5] = [15, 35, 65]
-        self.assertTrue(np.allclose([15, 35, 65], self.edge_storage.full_cumulative_storage_need.value_as_float_list))
+        self.assertTrue(np.allclose(
+            [15, 35, 65], self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern].value_as_float_list
+        ))
+        set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_update_full_cumulative_storage_need_negative_cumulative_error(self):
-        """Test NegativeCumulativeStorageNeedError raised when total goes negative."""
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Negative need", id="negative_need_id")
-        # base_storage_need (5 GB) + [-10, -20, -5] GB = [-5, -15, 0] GB — negative
-        self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need = {
-            mock_need: create_source_hourly_values_from_list([-10, -20, -5], pint_unit=u.GB)}
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_negative_cumulative_error(self):
+        """Test NegativeCumulativeStorageNeedError raised when one usage pattern goes negative."""
+        usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern negative", id="pattern_negative_id")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Negative need", id="negative_need_id")
+        mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            usage_pattern: create_source_hourly_values_from_list([-10, -20, -5], pint_unit=u.GB)
+        }
+        set_modeling_obj_containers(self.edge_storage, [mock_need])
 
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
             with self.assertRaises(NegativeCumulativeStorageNeedError) as ctx:
-                self.edge_storage.update_full_cumulative_storage_need()
+                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
         self.assertEqual(self.edge_storage, ctx.exception.storage_obj)
         self.assertIn("negative cumulative storage need detected", str(ctx.exception))
+        set_modeling_obj_containers(self.edge_storage, [])
 
-    def test_update_full_cumulative_storage_need_insufficient_capacity_error(self):
-        """Test InsufficientCapacityError raised when total cumulative exceeds storage_capacity."""
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Large need", id="large_need_id")
-        # base_storage_need (10 GB) + max(cumulative) [80 GB] = 90 GB > 50 GB capacity
-        self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need = {
-            mock_need: create_source_hourly_values_from_list([40, 80], pint_unit=u.GB)}
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_insufficient_capacity_error(self):
+        """Test InsufficientCapacityError raised when one usage pattern exceeds storage_capacity."""
+        usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern large", id="pattern_large_id")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Large need", id="large_need_id")
+        mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            usage_pattern: create_source_hourly_values_from_list([40, 80], pint_unit=u.GB)
+        }
+        set_modeling_obj_containers(self.edge_storage, [mock_need])
 
         with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB)), \
              patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB)):
             with self.assertRaises(InsufficientCapacityError) as ctx:
-                self.edge_storage.update_full_cumulative_storage_need()
+                self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
         self.assertEqual("storage capacity", ctx.exception.capacity_type)
         self.assertEqual(self.edge_storage, ctx.exception.overloaded_object)
         self.assertEqual(90 * u.GB, ctx.exception.requested_capacity.value)
+        set_modeling_obj_containers(self.edge_storage, [])
+
+    def test_update_cumulative_unitary_storage_need_per_usage_pattern_with_two_deployments(self):
+        """Test two usage patterns are kept separate instead of being summed together."""
+        pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1_id")
+        pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2_id")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need multi", id="need_multi_id")
+        mock_need.edge_usage_patterns = [pattern_1, pattern_2]
+        mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            pattern_1: create_source_hourly_values_from_list([10, 30], pint_unit=u.GB),
+            pattern_2: create_source_hourly_values_from_list([40, 50], pint_unit=u.GB),
+        }
+        set_modeling_obj_containers(self.edge_storage, [mock_need])
+
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
+             patch.object(EdgeStorage, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]):
+            self.edge_storage.update_cumulative_unitary_storage_need_per_usage_pattern()
+
+        self.assertTrue(np.allclose(
+            [15, 35], self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[pattern_1].value_as_float_list
+        ))
+        self.assertTrue(np.allclose(
+            [45, 55], self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[pattern_2].value_as_float_list
+        ))
+        set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_unitary_power_per_usage_pattern_returns_empty(self):
         """Test that energy is neglected: all usage patterns get EmptyExplainableObject power."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern power 1", id="pattern_power_1_id")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern power 2", id="pattern_power_2_id")
 
-        mock_need = create_mod_obj_mock(RecurrentEdgeComponentNeed, name="Power need", id="power_need_id")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Power need", id="power_need_id")
         mock_need.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
 
         set_modeling_obj_containers(self.edge_storage, [mock_need])
@@ -230,11 +203,6 @@ class TestEdgeStorage(TestCase):
         self.assertIsInstance(self.edge_storage.unitary_power_per_usage_pattern[mock_pattern_2], EmptyExplainableObject)
 
         set_modeling_obj_containers(self.edge_storage, [])
-
-    def test_impact_repartition_weights_returns_cumulative_per_recurrent_need(self):
-        """Test impact_repartition_weights property returns cumulative_unitary_storage_need_per_recurrent_need."""
-        self.assertIs(self.edge_storage.cumulative_unitary_storage_need_per_recurrent_need,
-                      self.edge_storage.impact_repartition_weights)
 
     def test_negative_cumulative_storage_need_error_message(self):
         """Test NegativeCumulativeStorageNeedError message formatting."""

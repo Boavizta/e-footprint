@@ -1,5 +1,11 @@
 from typing import TYPE_CHECKING
 
+import numpy as np
+from pint import Quantity
+
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
@@ -11,6 +17,17 @@ if TYPE_CHECKING:
 class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
     def __init__(self, name: str, edge_component: EdgeStorage, recurrent_need: ExplainableRecurrentQuantities):
         super().__init__(name, edge_component, recurrent_need)
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
+
+    @property
+    def calculated_attributes(self):
+        base_attrs = super().calculated_attributes
+        total_hourly_need_attr_index = base_attrs.index("total_hourly_need_across_usage_patterns")
+        return (
+            base_attrs[:total_hourly_need_attr_index]
+            + ["cumulative_unitary_storage_need_per_usage_pattern"]
+            + base_attrs[total_hourly_need_attr_index:]
+        )
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         # First compute the base hourly need using parent logic
@@ -34,3 +51,34 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         # Re-set with updated label
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = base_storage_need.set_label(
             f"{self.name} unitary hourly need for {usage_pattern.name}")
+
+    def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        storage_rate = self.unitary_hourly_need_per_usage_pattern[usage_pattern]
+        if isinstance(storage_rate, EmptyExplainableObject):
+            self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = EmptyExplainableObject(
+                left_parent=storage_rate, label=f"{self.name} cumulative unitary storage need for {usage_pattern.name}")
+            return
+
+        cumulative_quantity = Quantity(np.cumsum(storage_rate.magnitude, dtype=np.float32), storage_rate.unit)
+        self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = ExplainableHourlyQuantities(
+            cumulative_quantity,
+            start_date=storage_rate.start_date,
+            label=f"{self.name} cumulative unitary storage need for {usage_pattern.name}",
+            left_parent=storage_rate,
+            operator="cumulative sum",
+        )
+
+    def update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+
+    def update_total_hourly_need_across_usage_patterns(self):
+        self.total_hourly_need_across_usage_patterns = sum(
+            [
+                self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]
+                * usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+                for usage_pattern in self.edge_usage_patterns
+            ],
+            start=EmptyExplainableObject(),
+        ).set_label(f"{self.name} total hourly need across usage patterns")

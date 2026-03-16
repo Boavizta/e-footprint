@@ -30,8 +30,8 @@ class RecurrentEdgeDeviceNeed(ModelingObject):
 
     @property
     def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
-        return list(set(sum([ef.edge_usage_journeys for ef in self.edge_functions], start=[])))
+        return list(dict.fromkeys(sum([ef.edge_usage_journeys for ef in self.edge_functions], start=[])))
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
+        return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))

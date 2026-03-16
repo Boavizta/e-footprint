@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
 import ciso8601
 import numpy as np
@@ -120,6 +120,67 @@ class TestRecurrentEdgeStorageNeed(TestCase):
             np.testing.assert_array_equal(result.magnitude[:expected_zeros], np.zeros(expected_zeros))
             # After the zeros, values should be original
             np.testing.assert_array_equal(result.magnitude[expected_zeros:], original_values[expected_zeros:])
+
+    def test_update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        """Test cumulative unitary storage need per usage pattern is computed independently."""
+        pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        self.storage_need.unitary_hourly_need_per_usage_pattern = {
+            pattern: ExplainableHourlyQuantities(
+                np.array([1.0, 0.0, 2.0], dtype=np.float32) * u.GB,
+                ciso8601.parse_datetime("2025-01-06T00:00:00"),
+                "pattern need",
+            )
+        }
+
+        self.storage_need.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(pattern)
+
+        np.testing.assert_array_equal(
+            self.storage_need.cumulative_unitary_storage_need_per_usage_pattern[pattern].magnitude,
+            np.array([1.0, 1.0, 3.0]),
+        )
+
+    def test_update_total_hourly_need_across_usage_patterns_uses_cumulative_per_pattern(self):
+        """Test total hourly need across usage patterns uses cumulative per-pattern need and parallel journeys."""
+        pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        pattern_1.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 1")
+        pattern_2.edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey 2")
+        pattern_1.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            pattern_1: ExplainableHourlyQuantities(
+                np.array([2.0, 2.0, 2.0], dtype=np.float32) * u.concurrent,
+                ciso8601.parse_datetime("2025-01-06T00:00:00"),
+                "pattern 1 journeys",
+            )
+        }
+        pattern_2.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            pattern_2: ExplainableHourlyQuantities(
+                np.array([3.0, 3.0, 3.0], dtype=np.float32) * u.concurrent,
+                ciso8601.parse_datetime("2025-01-06T00:00:00"),
+                "pattern 2 journeys",
+            )
+        }
+        self.storage_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            pattern_1: ExplainableHourlyQuantities(
+                np.array([1.0, 1.0, 3.0], dtype=np.float32) * u.GB,
+                ciso8601.parse_datetime("2025-01-06T00:00:00"),
+                "pattern 1 cumulative need",
+            ),
+            pattern_2: ExplainableHourlyQuantities(
+                np.array([0.0, 2.0, 2.0], dtype=np.float32) * u.GB,
+                ciso8601.parse_datetime("2025-01-06T00:00:00"),
+                "pattern 2 cumulative need",
+            ),
+        }
+
+        with patch.object(
+            RecurrentEdgeStorageNeed, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]
+        ):
+            self.storage_need.update_total_hourly_need_across_usage_patterns()
+
+        np.testing.assert_array_equal(
+            self.storage_need.total_hourly_need_across_usage_patterns.magnitude,
+            np.array([2.0, 8.0, 12.0]),
+        )
 
 
 if __name__ == '__main__':

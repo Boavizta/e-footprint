@@ -49,10 +49,9 @@ class EdgeComponent(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return (["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
+        return ["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
-                + super().calculated_attributes)
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -78,7 +77,7 @@ class EdgeComponent(ModelingObject):
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
+        return list(dict.fromkeys(sum([need.edge_usage_patterns for need in self.recurrent_edge_component_needs], start=[])))
 
     @abstractmethod
     def update_unitary_power_per_usage_pattern(self):
@@ -151,20 +150,3 @@ class EdgeComponent(ModelingObject):
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             f"{self.name} total energy footprint across usage patterns")
-
-    def update_dict_element_in_impact_repartition_weights(
-            self, recurrent_component_need: "RecurrentEdgeComponentNeed"):
-        # Structural repetitions of the same need in the edge-function graph are already folded into
-        # unitary_hourly_need_per_usage_pattern by RecurrentEdgeComponentNeed.
-        weight = sum(
-            [recurrent_component_need.unitary_hourly_need_per_usage_pattern[eup]
-             * eup.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[eup]
-             for eup in recurrent_component_need.edge_usage_patterns],
-            start=EmptyExplainableObject())
-        self.impact_repartition_weights[recurrent_component_need] = weight.set_label(
-            f"{recurrent_component_need.name} weight in {self.name} impact repartition")
-
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
-        for recurrent_component_need in self.recurrent_edge_component_needs:
-            self.update_dict_element_in_impact_repartition_weights(recurrent_component_need)
