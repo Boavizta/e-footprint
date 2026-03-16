@@ -1,3 +1,4 @@
+import hashlib
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, TypeAlias
@@ -30,6 +31,12 @@ class _ResolvedFootprintSource:
 
 
 class ImpactRepartitionSankey:
+    _FIXED_KEY_COLORS = {
+        "__system__": "rgba(100,100,100,0.8)",
+        "__fabrication__": "rgba(180,80,80,0.8)",
+        "__energy__": "rgba(80,120,180,0.8)",
+    }
+
     def __init__(
             self,
             system: ModelingObject,
@@ -500,22 +507,16 @@ class ImpactRepartitionSankey:
                 self.node_total_kg[new_idx] += graph_snapshot.node_total_kg[old_idx]
 
     def _compute_node_colors(self) -> list[str]:
-        unique_keys = list(dict.fromkeys(self.node_color_keys))
-        key_to_color = {
-            "__system__": "rgba(100,100,100,0.8)",
-            "__fabrication__": "rgba(180,80,80,0.8)",
-            "__energy__": "rgba(80,120,180,0.8)",
-        }
-        color_idx = 0
-        for key in unique_keys:
-            if key in key_to_color:
-                continue
-            if isinstance(key, str) and key.startswith("__aggregated__"):
-                key_to_color[key] = "rgba(160,160,160,0.8)"
-            else:
-                key_to_color[key] = _COLORS[color_idx % len(_COLORS)]
-                color_idx += 1
-        return [key_to_color[key] for key in self.node_color_keys]
+        return [self._compute_color_for_key(key) for key in self.node_color_keys]
+
+    @classmethod
+    def _compute_color_for_key(cls, key: str) -> str:
+        if key in cls._FIXED_KEY_COLORS:
+            return cls._FIXED_KEY_COLORS[key]
+        if key.startswith("__aggregated__"):
+            return "rgba(160,160,160,0.8)"
+        digest = hashlib.blake2b(key.encode("utf-8"), digest_size=8).digest()
+        return _COLORS[int.from_bytes(digest, "big") % len(_COLORS)]
 
     def _build_hover_labels(self) -> list[str]:
         node_hover = []
@@ -635,8 +636,16 @@ class ImpactRepartitionSankey:
 
         self.build()
         if title is None:
+            lifecycle_info = ""
+            if self.lifecycle_phase_filter:
+                lifecycle_info = self.lifecycle_phase_filter.lower() + " "
+            excluded_classes_info = ""
+            if self.excluded_object_types:
+                excluded_classes_info = " excluding " + ", ".join(
+                    cls if isinstance(cls, str) else cls.__name__ for cls in self.excluded_object_types
+                )
             title = (
-                f"{self.system.name} impact repartition: "
+                f"{self.system.name} {lifecycle_info}impact repartition{excluded_classes_info}: "
                 f"{display_co2_amount(format_co2_amount(self._total_system_kg))} CO2eq"
             )
 

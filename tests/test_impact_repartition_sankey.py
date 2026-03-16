@@ -326,6 +326,36 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertNotIn(("skipped", "Manufacturing"), sankey.node_indices)
         self.assertIn(("intermediate", "Manufacturing"), sankey.node_indices)
 
+    def test_node_colors_stay_stable_when_skipping_a_class(self):
+        """Test shared nodes keep the same color when another class is skipped from the Sankey."""
+        skipped_leaf = self._make_leaf("Skipped leaf", manufacturing_kg=40, obj_cls=_SkippedObject)
+        kept_leaf = self._make_leaf("Kept leaf", manufacturing_kg=60)
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={skipped_leaf: 40, kept_leaf: 60})
+
+        baseline = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=0,
+            lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING,
+            skip_object_category_footprint_split=True,
+        )
+        baseline.build()
+        baseline_colors = baseline._compute_node_colors()
+        baseline_kept_leaf_color = baseline_colors[baseline.node_indices[(kept_leaf.id, "Manufacturing")]]
+
+        filtered = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=0,
+            lifecycle_phase_filter=LifeCyclePhases.MANUFACTURING,
+            skip_object_category_footprint_split=True,
+            skipped_impact_repartition_classes=[_SkippedObject],
+        )
+        filtered.build()
+        filtered_colors = filtered._compute_node_colors()
+        filtered_kept_leaf_color = filtered_colors[filtered.node_indices[(kept_leaf.id, "Manufacturing")]]
+
+        self.assertNotIn((skipped_leaf.id, "Manufacturing"), filtered.node_indices)
+        self.assertEqual(baseline_kept_leaf_color, filtered_kept_leaf_color)
+
     def test_system_in_skipped_classes_removes_system_node(self):
         """Test that putting root's class in skipped_impact_repartition_classes removes the root node."""
         leaf = self._make_leaf("Leaf", manufacturing_kg=100)
