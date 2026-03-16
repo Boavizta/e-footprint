@@ -11,8 +11,7 @@ import numpy as np
 import zstandard as zstd
 import ciso8601
 
-from efootprint.abstract_modeling_classes.explainable_object_base_class import (
-    ExplainableObject, Source)
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
@@ -373,9 +372,19 @@ class ExplainableHourlyQuantities(ExplainableObject):
                  f"and start_date {other.start_date} and end_date {other.end_date} for the second one.")
             aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
                 self.value, self.start_date, other.value, other.start_date)
-            # aligned_second_array should be equal to other.value since other covers at least the same time range as self
+            zero_denominator_mask = aligned_second_array == 0
+            if not zero_denominator_mask.any():
+                result_array = aligned_first_array / aligned_second_array
+            else:
+                nonzero_numerator_on_zero_denominator_mask = zero_denominator_mask & (aligned_first_array != 0)
+                if nonzero_numerator_on_zero_denominator_mask.any():
+                    raise ZeroDivisionError(
+                        "Cannot divide ExplainableHourlyQuantities by zero when the numerator is non-zero.")
+                result_array = np.empty_like(aligned_first_array, dtype=np.float32)
+                result_array.fill(np.nan)
+                np.divide(aligned_first_array, aligned_second_array, out=result_array, where=~zero_denominator_mask)
             return ExplainableHourlyQuantities(
-                Quantity(aligned_first_array / aligned_second_array, self.unit / other.unit), common_start, "", self, other, "/")
+                Quantity(result_array, self.unit / other.unit), common_start, "", self, other, "/")
         elif isinstance(other, self._ExplainableQuantity):
             other_value_to_divide = other.value
             if not isinstance(other_value_to_divide.magnitude, np.float32):

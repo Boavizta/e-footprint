@@ -168,6 +168,41 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         self.assertIn("must cover at least the same time range", str(context.exception))
 
+    def test_division_between_hourly_quantities_allows_zero_over_zero(self):
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([0, 2, 0], dtype=np.float32), u.W),
+            self.start_date,
+            "Numerator",
+        )
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([0, 2, 0], dtype=np.float32), u.W),
+            self.start_date,
+            "Denominator",
+        )
+
+        division_result = numerator / denominator
+
+        self.assertTrue(np.isnan(division_result.magnitude[0]))
+        self.assertEqual(1, division_result.magnitude[1])
+        self.assertTrue(np.isnan(division_result.magnitude[2]))
+
+    def test_division_between_hourly_quantities_raises_for_nonzero_over_zero(self):
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([1, 0], dtype=np.float32), u.W),
+            self.start_date,
+            "Numerator",
+        )
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([0, 1], dtype=np.float32), u.W),
+            self.start_date,
+            "Denominator",
+        )
+
+        with self.assertRaises(ZeroDivisionError) as context:
+            numerator / denominator
+
+        self.assertIn("non-zero", str(context.exception))
+
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1
         self.assertEqual([1] * 24, result.value_as_float_list)

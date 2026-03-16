@@ -242,11 +242,10 @@ class EdgeDevice(ModelingObject):
             weight = EmptyExplainableObject()
         else:
             component_total_impact = component.instances_fabrication_footprint + component.energy_footprint
-            with np.errstate(invalid="ignore", divide="ignore"):
-                weight = component_total_impact * (component_need_demand / sibling_need_demand)
+            weight = component_total_impact * (component_need_demand / sibling_need_demand)
             if isinstance(weight, ExplainableHourlyQuantities):
-                invalid_values_mask = np.isnan(weight.magnitude) | np.isinf(weight.magnitude)
-                weight.magnitude[invalid_values_mask] = 0
+                nan_values_mask = np.isnan(weight.magnitude)
+                weight.magnitude[nan_values_mask] = 0
 
         self.impact_repartition_weights[source_obj] = weight.set_label(
             f"{source_obj.name} weight in {self.name} impact repartition")
