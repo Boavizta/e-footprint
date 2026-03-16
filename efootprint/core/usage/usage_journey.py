@@ -38,7 +38,7 @@ class UsageJourney(ModelingObject):
 
     @property
     def storages(self) -> List[Storage]:
-        return list(set([server.storage for server in self.servers]))
+        return list(dict.fromkeys([server.storage for server in self.servers]))
 
     @property
     def usage_patterns(self):
@@ -46,7 +46,7 @@ class UsageJourney(ModelingObject):
 
     @property
     def devices(self) -> List["Device"]:
-        return list(set(sum([up.devices for up in self.usage_patterns], [])))
+        return list(dict.fromkeys(sum([up.devices for up in self.usage_patterns], [])))
 
     @property
     def jobs(self) -> List[Job]:

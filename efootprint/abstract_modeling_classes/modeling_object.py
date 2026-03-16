@@ -375,7 +375,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def modeling_obj_containers(self):
-        return list(set(
+        return list(dict.fromkeys(
             [contextual_mod_obj_container.modeling_obj_container
              for contextual_mod_obj_container in self.contextual_modeling_obj_containers
              if contextual_mod_obj_container.modeling_obj_container is not None]))
@@ -409,7 +409,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def systems(self) -> List:
-        return list(set(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
+        return list(dict.fromkeys(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
 
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")

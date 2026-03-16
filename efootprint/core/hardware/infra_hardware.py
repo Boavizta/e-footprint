@@ -39,7 +39,7 @@ class InfraHardware(HardwareBase):
 
     @property
     def systems(self) -> List:
-        return list(set(sum([job.systems for job in self.jobs], start=[])))
+        return list(dict.fromkeys(sum([job.systems for job in self.jobs], start=[])))
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = (

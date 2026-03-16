@@ -90,7 +90,7 @@ class Device(HardwareBase):
 
     @property
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
-        return list(set(sum([usage_pattern.usage_journey.uj_steps for usage_pattern in self.usage_patterns], [])))
+        return list(dict.fromkeys(sum([usage_pattern.usage_journey.uj_steps for usage_pattern in self.usage_patterns], [])))
 
     @property
     def calculated_attributes(self) -> List[str]:

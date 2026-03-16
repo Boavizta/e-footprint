@@ -79,15 +79,15 @@ class JobBase(ModelingObject):
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
-        return list(set(sum([rsn.edge_usage_patterns for rsn in self.recurrent_server_needs], start=[])))
+        return list(dict.fromkeys(sum([rsn.edge_usage_patterns for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def usage_journeys(self) -> List["UsageJourney"]:
-        return list(set(sum([uj_step.usage_journeys for uj_step in self.usage_journey_steps], start=[])))
+        return list(dict.fromkeys(sum([uj_step.usage_journeys for uj_step in self.usage_journey_steps], start=[])))
 
     @property
     def web_usage_patterns(self) -> List["UsagePattern"]:
-        return list(set(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
+        return list(dict.fromkeys(sum([uj_step.usage_patterns for uj_step in self.usage_journey_steps], start=[])))
 
     @property
     def usage_patterns(self) -> List["UsagePattern| EdgeUsagePattern"]:
@@ -95,7 +95,7 @@ class JobBase(ModelingObject):
 
     @property
     def networks(self) -> List["Network"]:
-        return list(set(up.network for up in self.usage_patterns))
+        return list(dict.fromkeys(up.network for up in self.usage_patterns))
 
     def update_dict_element_in_hourly_occurrences_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):

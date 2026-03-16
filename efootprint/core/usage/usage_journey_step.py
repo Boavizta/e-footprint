@@ -31,8 +31,8 @@ class UsageJourneyStep(ModelingObject):
 
     @property
     def usage_patterns(self) -> List["UsagePattern"]:
-        return list(set(sum([uj.usage_patterns for uj in self.usage_journeys], start=[])))
+        return list(dict.fromkeys(sum([uj.usage_patterns for uj in self.usage_journeys], start=[])))
 
     @property
     def networks(self) -> List["Network"]:
-        return list(set([up.network for up in self.usage_patterns]))
+        return list(dict.fromkeys([up.network for up in self.usage_patterns]))

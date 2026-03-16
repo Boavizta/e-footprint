@@ -105,7 +105,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         "model_name": SourceObject("claude-opus-4-5")
     }
 
-    sorted_provider_names = sorted(list(set([model.provider.name for model in models.list_models()])))
+    sorted_provider_names = sorted(list(dict.fromkeys([model.provider.name for model in models.list_models()])))
     list_values = {"provider": [SourceObject(provider_name) for provider_name in sorted_provider_names]}
 
     @staticmethod

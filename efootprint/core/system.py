@@ -104,8 +104,8 @@ class System(ModelingObject):
             self, usage_patterns: List[UsagePattern]) -> List[ModelingObject]:
         output_list =  self.storages + usage_patterns
         usage_journeys = self.usage_journeys
-        uj_steps = list(set(sum([uj.uj_steps for uj in usage_journeys], start=[])))
-        devices = list(set(sum([up.devices for up in usage_patterns], start=[])))
+        uj_steps = list(dict.fromkeys(sum([uj.uj_steps for uj in usage_journeys], start=[])))
+        devices = list(dict.fromkeys(sum([up.devices for up in usage_patterns], start=[])))
         all_modeling_objects = output_list + usage_journeys + uj_steps + devices
 
         return all_modeling_objects
@@ -114,7 +114,7 @@ class System(ModelingObject):
             self, edge_usage_patterns: List[EdgeUsagePattern]) -> List[ModelingObject]:
         output_list = self.edge_storages + edge_usage_patterns
         edge_usage_journeys = self.edge_usage_journeys
-        edge_functions = list(set(sum([euj.edge_functions for euj in edge_usage_journeys], start=[])))
+        edge_functions = list(dict.fromkeys(sum([euj.edge_functions for euj in edge_usage_journeys], start=[])))
         recurrent_edge_device_needs = list(
             set(sum([ef.recurrent_edge_device_needs for ef in edge_functions], start=[])))
         recurrent_server_needs = list(
@@ -122,7 +122,7 @@ class System(ModelingObject):
         recurrent_edge_component_needs = list(
             set(sum([redn.recurrent_edge_component_needs for redn in recurrent_edge_device_needs], start=[])))
         edge_devices = self.edge_devices
-        edge_devices_components = list(set(sum([ed.components for ed in edge_devices], start=[])))
+        edge_devices_components = list(dict.fromkeys(sum([ed.components for ed in edge_devices], start=[])))
         all_modeling_objects = (
                 output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
                 + recurrent_server_needs + recurrent_edge_component_needs
@@ -139,52 +139,52 @@ class System(ModelingObject):
 
     @property
     def usage_journeys(self) -> List[UsageJourney]:
-        return list(set([up.usage_journey for up in self.usage_patterns]))
+        return list(dict.fromkeys([up.usage_journey for up in self.usage_patterns]))
 
     @property
     def edge_usage_journeys(self) -> List[EdgeUsageJourney]:
-        return list(set([eup.edge_usage_journey for eup in self.edge_usage_patterns]))
+        return list(dict.fromkeys([eup.edge_usage_journey for eup in self.edge_usage_patterns]))
 
     @property
     def devices(self) -> List[Device]:
-        return list(set(sum([up.devices for up in self.usage_patterns], start=[])))
+        return list(dict.fromkeys(sum([up.devices for up in self.usage_patterns], start=[])))
 
     @property
     def countries(self) -> List[Country]:
-        countries = list(set([up.country for up in self.usage_patterns]
+        countries = list(dict.fromkeys([up.country for up in self.usage_patterns]
                              + [eup.country for eup in self.edge_usage_patterns]))
         return countries
 
     @property
     def networks(self) -> List[Network]:
-        return list(set([up.network for up in self.usage_patterns] + [eup.network for eup in self.edge_usage_patterns]))
+        return list(dict.fromkeys([up.network for up in self.usage_patterns] + [eup.network for eup in self.edge_usage_patterns]))
 
     @property
     def jobs(self) -> List[JobBase]:
         jobs_from_usage_patterns = sum([up.jobs for up in self.usage_patterns], start=[])
         jobs_from_edge_usage_patterns = sum([eup.jobs for eup in self.edge_usage_patterns], start=[])
-        return list(set(jobs_from_usage_patterns + jobs_from_edge_usage_patterns))
+        return list(dict.fromkeys(jobs_from_usage_patterns + jobs_from_edge_usage_patterns))
 
     @property
     def servers(self) -> List[Server]:
-        return list(set([job.server for job in self.jobs if hasattr(job, "server")
+        return list(dict.fromkeys([job.server for job in self.jobs if hasattr(job, "server")
                          and isinstance(job.server, ServerBase)]))
 
     @property
     def services(self) -> List[Service]:
-        return list(set(sum([server.installed_services for server in self.servers], start=[])))
+        return list(dict.fromkeys(sum([server.installed_services for server in self.servers], start=[])))
 
     @property
     def external_apis(self) -> List[ExternalAPI]:
-        return list(set([job.external_api for job in self.jobs if hasattr(job, "external_api")]))
+        return list(dict.fromkeys([job.external_api for job in self.jobs if hasattr(job, "external_api")]))
 
     @property
     def external_api_servers(self) -> List[ExternalAPIServer]:
-        return list(set([external_api.server for external_api in self.external_apis]))
+        return list(dict.fromkeys([external_api.server for external_api in self.external_apis]))
 
     @property
     def edge_devices(self) -> List[EdgeDevice]:
-        return list(set(sum([euj.edge_devices for euj in self.edge_usage_journeys], start=[])))
+        return list(dict.fromkeys(sum([euj.edge_devices for euj in self.edge_usage_journeys], start=[])))
 
     @property
     def edge_computers(self) -> List[EdgeComputer]:
@@ -192,7 +192,7 @@ class System(ModelingObject):
 
     @property
     def storages(self) -> List[Storage]:
-        return list(set([server.storage for server in self.servers]))
+        return list(dict.fromkeys([server.storage for server in self.servers]))
 
     @property
     def edge_storages(self) -> List[EdgeStorage]:
@@ -201,7 +201,7 @@ class System(ModelingObject):
             for component in edge_device.components:
                 if isinstance(component, EdgeStorage):
                     edge_storages.append(component)
-        return list(set(edge_storages))
+        return list(dict.fromkeys(edge_storages))
 
     @staticmethod
     def get_efootprint_obj_by_name(

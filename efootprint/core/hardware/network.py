@@ -54,7 +54,7 @@ class Network(ModelingObject):
 
     @property
     def jobs(self) -> List["JobBase"]:
-        return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
+        return list(dict.fromkeys(sum([up.jobs for up in self.usage_patterns], start=[])))
 
     def update_energy_footprint(self):
         hourly_data_transferred_per_up = {up: EmptyExplainableObject() for up in self.usage_patterns}
