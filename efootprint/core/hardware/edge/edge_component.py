@@ -62,18 +62,17 @@ class EdgeComponent(ModelingObject):
     @property
     def edge_device(self) -> Optional["EdgeDevice"]:
         from efootprint.core.hardware.edge.edge_device import EdgeDevice
-        output = None
-        for container in self.modeling_obj_containers:
-            if isinstance(container, EdgeDevice):
-                if output is not None and container != output:
-                    raise PermissionError(
-                        f"EdgeComponent object can only be associated with one EdgeDevice object but {self.name} "
-                        f"is associated "
-                        f"with {[mod_obj.name for mod_obj in self.modeling_obj_containers 
-                                 if isinstance(mod_obj, EdgeDevice)]}.")
-                output = container
+        edge_device_containers = [mod_obj for mod_obj in self.modeling_obj_containers
+                                 if isinstance(mod_obj, EdgeDevice)]
+        if len(edge_device_containers) > 1:
+            raise PermissionError(
+                f"EdgeComponent object can only be associated once with one EdgeDevice object but {self.name} "
+                f"is associated "
+                f"with {[mod_obj.name for mod_obj in edge_device_containers]}.")
+        elif len(edge_device_containers) == 1:
+            return edge_device_containers[0]
 
-        return output
+        return None
 
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
