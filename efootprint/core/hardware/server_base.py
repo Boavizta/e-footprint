@@ -291,16 +291,19 @@ class ServerBase(InfraHardware):
         else:
             from efootprint.builders.services.service_job_base_class import ServiceJob
             assert isinstance(job, ServiceJob)
-            service = job.service
-            service_base_weight = (
-                ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
-                * self.nb_of_instances)
-            job_volume_share = (
-                job.hourly_avg_occurrences_across_usage_patterns / self.service_total_job_volumes[service])
-            weight = (
-                service_base_weight * job_volume_share
-                + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
-                * job.hourly_avg_occurrences_across_usage_patterns)
+            if isinstance(job.hourly_avg_occurrences_across_usage_patterns, EmptyExplainableObject):
+                weight = job.hourly_avg_occurrences_across_usage_patterns.copy()
+            else:
+                service = job.service
+                service_base_weight = (
+                    ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
+                    * self.nb_of_instances)
+                job_volume_share = (
+                    job.hourly_avg_occurrences_across_usage_patterns / self.service_total_job_volumes[service])
+                weight = (
+                    service_base_weight * job_volume_share
+                    + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
+                    * job.hourly_avg_occurrences_across_usage_patterns)
 
         self.impact_repartition_weights[job] = weight.to(u.concurrent).set_label(
                 f"{job.name} weight in {self.name} impact repartition")
