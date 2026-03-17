@@ -67,3 +67,7 @@ pretty-jupyter = "*"
 setuptools = "^75.1.0"
 line-profiler = "4.2.0"
 memory-profiler = "^0.61"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -18,6 +18,12 @@ Every `poetry run` command will use python virtual env.
 
 If you want to be "inside" the virtual env you can type `poetry shell`.
 
+If you want to use `efootprint` from another Poetry project in local development mode, add the local checkout as an editable dependency:
+
+```shell
+poetry add /path/to/e-footprint --editable
+```
+
 # Launch tests
 
 ```shell
@@ -78,4 +84,3 @@ python -m ipykernel install --user --name=e-footprint
 ```
 
 If you have trouble managing the python versions on your laptop you can check out [pyenv](https://github.com/pyenv/pyenv) and also manage your virtual environments with [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
-
