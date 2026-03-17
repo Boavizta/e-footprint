@@ -205,7 +205,12 @@ class EdgeDevice(ModelingObject):
         if not self.components:
             return breakdown
 
-        equal_structure_share = self.structure_carbon_footprint_fabrication / ExplainableQuantity(
+        component_fabrication_total = sum(
+            (component.instances_fabrication_footprint for component in self.components),
+            start=EmptyExplainableObject(),
+        )
+        structure_fabrication_total = self.instances_fabrication_footprint - component_fabrication_total
+        equal_structure_share = structure_fabrication_total / ExplainableQuantity(
             len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
         for component in self.components:
             breakdown[component] = component.instances_fabrication_footprint + equal_structure_share

@@ -376,10 +376,10 @@ class TestEdgeDevice(TestCase):
         self.assertTrue(np.allclose([5, 5], self.edge_device.impact_repartition_weights[component_need_1].magnitude))
         self.assertTrue(np.allclose([3, 3], self.edge_device.impact_repartition_weights[component_need_2].magnitude))
 
-    def test_footprint_breakdown_by_source_distributes_structure_across_components_and_keeps_energy(self):
-        """Test footprint_breakdown_by_source distributes device structure equally across components."""
+    def test_footprint_breakdown_by_source_distributes_computed_structure_across_components_and_keeps_energy(self):
+        """Test footprint_breakdown_by_source conserves computed device fabrication and keeps energy unchanged."""
+        self.edge_device.instances_fabrication_footprint = SourceValue(110 * u.kg)
         self.edge_device.energy_footprint = SourceValue(6 * u.kg)
-        # structure_carbon_footprint_fabrication is 100 kg and will be split equally amongst components.
         self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
         self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
         self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
@@ -389,6 +389,10 @@ class TestEdgeDevice(TestCase):
 
         self.assertEqual(54, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_1].magnitude)
         self.assertEqual(56, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_2].magnitude)
+        self.assertEqual(
+            110,
+            sum(breakdown[LifeCyclePhases.MANUFACTURING].values(), start=EmptyExplainableObject()).magnitude,
+        )
         self.assertNotIn(self.edge_device, breakdown[LifeCyclePhases.MANUFACTURING])
         self.assertEqual(1, breakdown[LifeCyclePhases.USAGE][self.mock_component_1].magnitude)
         self.assertEqual(5, breakdown[LifeCyclePhases.USAGE][self.mock_component_2].magnitude)
