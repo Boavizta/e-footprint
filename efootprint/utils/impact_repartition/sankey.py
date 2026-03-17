@@ -105,6 +105,10 @@ class ImpactRepartitionSankey:
     def node_total_kg(self) -> list[float]:
         return self._graph.node_total_kg
 
+    @property
+    def total_system_kg(self) -> float:
+        return self._total_system_kg
+
     def _truncate_node_label(self, label: str) -> str:
         if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
             return label
@@ -593,13 +597,16 @@ class ImpactRepartitionSankey:
     def get_column_information(self) -> list[ColumnInformation]:
         if not self._built:
             self.build()
-        return list(self._manual_column_information) + [{
+        manual = [{**info, "x_center": self._column_x_center(info["column_index"])} for info in self._manual_column_information]
+        impact = [{
             "column_index": column_metadata["column_index"],
+            "x_center": column_metadata["x_center"],
             "column_type": "impact_repartition",
             "class_names": column_metadata["class_names"],
         } for column_metadata in self.get_column_metadata()
             if column_metadata["column_index"] >= self._impact_repartition_start_column
             and not any(column_metadata["column_index"] == info["column_index"] for info in self._manual_column_information)]
+        return manual + impact
 
     def _get_displayed_column_information(self) -> list[ColumnInformation]:
         return sorted(self.get_column_information(), key=lambda info: info["column_index"])
@@ -712,7 +719,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[3], "r") as f:
+        with open(json_files[-2], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
