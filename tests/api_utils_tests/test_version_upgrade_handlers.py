@@ -651,3 +651,59 @@ class TestVersionUpgradeHandlers(TestCase):
         output_dict = upgrade_version_16_to_17(input_dict)
 
         self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_16_to_17_moves_edge_storage_component_needs_to_recurrent_edge_storage_needs(self):
+        input_dict = {
+            "EdgeStorage": {
+                "edge_storage_1": {
+                    "id": "edge_storage_1",
+                    "name": "Edge storage 1",
+                    "power_per_storage_capacity": {"value": 1, "unit": "W / TB", "label": "deprecated"},
+                }
+            },
+            "EdgeRAMComponent": {
+                "edge_ram_1": {"id": "edge_ram_1", "name": "Edge RAM 1"}
+            },
+            "RecurrentEdgeComponentNeed": {
+                "storage_need_1": {
+                    "id": "storage_need_1",
+                    "name": "Storage need 1",
+                    "edge_component": "edge_storage_1",
+                    "recurrent_need": {"recurring_values": "[1.0]", "unit": "GB", "label": "need"},
+                },
+                "ram_need_1": {
+                    "id": "ram_need_1",
+                    "name": "RAM need 1",
+                    "edge_component": "edge_ram_1",
+                    "recurrent_need": {"recurring_values": "[2.0]", "unit": "GB_ram", "label": "need"},
+                },
+            },
+        }
+        expected_output = {
+            "EdgeStorage": {
+                "edge_storage_1": {"id": "edge_storage_1", "name": "Edge storage 1"}
+            },
+            "EdgeRAMComponent": {
+                "edge_ram_1": {"id": "edge_ram_1", "name": "Edge RAM 1"}
+            },
+            "RecurrentEdgeComponentNeed": {
+                "ram_need_1": {
+                    "id": "ram_need_1",
+                    "name": "RAM need 1",
+                    "edge_component": "edge_ram_1",
+                    "recurrent_need": {"recurring_values": "[2.0]", "unit": "GB_ram", "label": "need"},
+                },
+            },
+            "RecurrentEdgeStorageNeed": {
+                "storage_need_1": {
+                    "id": "storage_need_1",
+                    "name": "Storage need 1",
+                    "edge_component": "edge_storage_1",
+                    "recurrent_need": {"recurring_values": "[1.0]", "unit": "GB", "label": "need"},
+                },
+            },
+        }
+
+        output_dict = upgrade_version_16_to_17(input_dict)
+
+        self.assertEqual(output_dict, expected_output)

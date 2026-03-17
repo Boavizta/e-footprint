@@ -334,9 +334,22 @@ def upgrade_version_16_to_17(system_dict, efootprint_classes_dict=None):
                     if key in storage_dict:
                         del storage_dict[key]
             log_upgrade = True
+    if "RecurrentEdgeComponentNeed" in system_dict and "EdgeStorage" in system_dict:
+        edge_storage_ids = set(system_dict["EdgeStorage"])
+        storage_needs_to_move = {
+            need_id: need_dict for need_id, need_dict in system_dict["RecurrentEdgeComponentNeed"].items()
+            if need_dict.get("edge_component") in edge_storage_ids
+        }
+        if storage_needs_to_move:
+            system_dict.setdefault("RecurrentEdgeStorageNeed", {})
+            system_dict["RecurrentEdgeStorageNeed"].update(storage_needs_to_move)
+            for need_id in storage_needs_to_move:
+                del system_dict["RecurrentEdgeComponentNeed"][need_id]
+            log_upgrade = True
     if log_upgrade:
         logger.info("Upgraded system dict from version 16 to 17: removed power_per_storage_capacity and idle_power "
-                    "from Storage and EdgeStorage objects, and set negative data stored by jobs to 0.")
+                    "from Storage and EdgeStorage objects, set negative data stored by jobs to 0, and migrated "
+                    "RecurrentEdgeComponentNeeds targeting EdgeStorage to RecurrentEdgeStorageNeeds.")
     return system_dict
 
 
