@@ -49,12 +49,25 @@ def check_type_homogeneity_within_list_or_set(input_list_or_set):
         return type_set.pop()
 
 
+def get_canonical_class_for_cls(modeling_object_class: type) -> type:
+    from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
+
+    for canonical_class in CANONICAL_COMPUTATION_ORDER:
+        if issubclass(modeling_object_class, canonical_class):
+            return canonical_class
+    return modeling_object_class
+
+
 class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
         instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
         instance.after_init()
 
         return instance
+
+    @property
+    def canonical_class(cls):
+        return get_canonical_class_for_cls(cls)
 
 
 class ABCAfterInitMeta(AfterInitMeta, ABCMeta):
@@ -612,6 +625,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def class_as_simple_str(self):
         return type(self).__name__
+
+    @property
+    def canonical_class(self):
+        return type(self).canonical_class
 
     def __repr__(self):
         return str(self)

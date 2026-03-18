@@ -4,6 +4,8 @@ import re
 
 from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.core.hardware.device import Device
+from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.impact_repartition import ImpactRepartitionSankey
 from tests.utils import set_modeling_obj_containers
@@ -33,6 +35,17 @@ class _DummyObject:
     def attributed_footprint_per_source(self):
         return self._attributed_footprint_per_source
 
+    @property
+    def canonical_class(self):
+        if hasattr(self, "_canonical_class_override"):
+            return self._canonical_class_override
+        from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
+
+        for canonical_class in CANONICAL_COMPUTATION_ORDER:
+            if isinstance(self, canonical_class):
+                return canonical_class
+        return type(self)
+
     def __hash__(self):
         return hash(self.id)
 
@@ -50,6 +63,18 @@ class _TypeAObject(_DummyObject):
 
 
 class _TypeBObject(_DummyObject):
+    pass
+
+
+class CanonicalParentObject(_DummyObject):
+    pass
+
+
+class CanonicalChildAObject(CanonicalParentObject):
+    pass
+
+
+class CanonicalChildBObject(CanonicalParentObject):
     pass
 
 
@@ -483,11 +508,11 @@ class TestImpactRepartitionSankey(TestCase):
 
         total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
         server = _DummyObject("Server", "server")
-        server.class_as_simple_str = "Server"
+        server._canonical_class_override = ServerBase
         device = _DummyObject("Device", "device")
-        device.class_as_simple_str = "Device"
+        device._canonical_class_override = Device
         router = _DummyObject("Router", "router")
-        router.class_as_simple_str = "Router"
+        router._canonical_class_override = type("Router", (), {})
         server_idx = sankey._add_node("Server", ("server", "energy"), obj=server)
         device_idx = sankey._add_node("Device", ("device", "energy"), obj=device)
         router_idx = sankey._add_node("Router", ("router", "energy"), obj=router)
@@ -500,16 +525,41 @@ class TestImpactRepartitionSankey(TestCase):
 
         metadata = sankey.get_column_metadata()
         self.assertEqual([2, 3], [m["column_index"] for m in metadata])
-        self.assertEqual([["Device", "Server"], ["Router"]], [m["class_names"] for m in metadata])
+        self.assertEqual([["Device", "ServerBase"], ["Router"]], [m["class_names"] for m in metadata])
         self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
         self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
+
+    @patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [CanonicalParentObject])
+    def test_get_column_metadata_aggregates_objects_by_canonical_class(self):
+        """Test column metadata collapses concrete objects into their canonical class names."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey._built = True
+
+        total_idx = sankey._add_node("Test system", ("system", "total"), color_key="__system__")
+        child_a_idx = sankey._add_node(
+            "Child A", ("child_a", "energy"), obj=CanonicalChildAObject("Child A", "child_a"))
+        child_b_idx = sankey._add_node(
+            "Child B", ("child_b", "energy"), obj=CanonicalChildBObject("Child B", "child_b"))
+        fallback = _DummyObject("Fallback", "fallback")
+        fallback._canonical_class_override = type("DummyObject", (), {})
+        fallback_idx = sankey._add_node("Fallback", ("fallback", "energy"), obj=fallback)
+        sankey._total_system_kg = 1000
+        sankey.node_total_kg[total_idx] = 1000
+        sankey._node_columns = {total_idx: 1, child_a_idx: 2, child_b_idx: 2, fallback_idx: 3}
+
+        metadata = sankey.get_column_metadata()
+
+        self.assertEqual([2, 3], [m["column_index"] for m in metadata])
+        self.assertEqual([["CanonicalParentObject"], ["DummyObject"]], [m["class_names"] for m in metadata])
 
     def test_get_column_metadata_includes_aggregated_member_classes(self):
         """Test column metadata includes classes from aggregated nodes."""
         sankey = self._build_sankey(aggregation_threshold_percent=15)
         sankey._built = True
         for node in sankey.node_objects.values():
-            node.class_as_simple_str = node.name.replace(" ", "")
+            node._canonical_class_override = type(node.name.replace(" ", ""), (), {})
         sankey._aggregate_small_nodes_by_column()
 
         metadata = sankey.get_column_metadata()

@@ -124,6 +124,9 @@ mock_device.power = SourceValue(100 * u.W)
 
 If `create_mod_obj_mock` is missing an attribute that your test needs, prefer extending `create_mod_obj_mock` (in a backwards-compatible way) rather than patching at the test level. This keeps test utility centralized and avoids duplicating setup boilerplate across tests.
 
+Tests must adapt to production interfaces, not the reverse. If a production API changes, update test doubles and helpers
+to match the real contract instead of adding production fallbacks purely to satisfy unrealistic test fixtures.
+
 Prefer compact test setup. If a mocked ModelingObject fits cleanly on one line and stays under the 120 character
 limit, keep it on one line.
 

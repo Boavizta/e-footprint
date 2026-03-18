@@ -82,6 +82,14 @@ class ImpactRepartitionCachingModelingObject(ModelingObject):
             self.update_dict_element_in_impact_repartition_weights(modeling_object)
 
 
+class CanonicalParentModelingObject(ModelingObjectForTesting):
+    pass
+
+
+class CanonicalChildModelingObject(CanonicalParentModelingObject):
+    pass
+
+
 class TestModelingObject(unittest.TestCase):
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
@@ -128,6 +136,14 @@ class TestModelingObject(unittest.TestCase):
 
         new_input.set_modeling_obj_container.assert_called_once_with(parent_obj, "custom_input")
         custom_input.set_modeling_obj_container.assert_has_calls([call(parent_obj, "custom_input"), call(None, None)])
+
+    @patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [CanonicalParentModelingObject])
+    def test_canonical_class_returns_first_matching_canonical_class(self):
+        """Test canonical class property resolves the first matching canonical class."""
+        child_obj = CanonicalChildModelingObject("child_object")
+
+        self.assertIs(CanonicalParentModelingObject, CanonicalChildModelingObject.canonical_class)
+        self.assertIs(CanonicalParentModelingObject, child_obj.canonical_class)
 
     def test_attributes_computation_chain(self):
         dep1 = MagicMock()

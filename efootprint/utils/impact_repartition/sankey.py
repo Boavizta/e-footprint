@@ -127,6 +127,22 @@ class ImpactRepartitionSankey:
             return ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
         return any(isinstance(obj, cls) for cls in map(_resolve, configured_classes) if isinstance(cls, type))
 
+    @staticmethod
+    def _get_canonical_class_name(obj: ModelingObject) -> str:
+        return obj.canonical_class.__name__
+
+    @classmethod
+    def _sort_class_names(cls, class_names: set[str]) -> list[str]:
+        from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
+
+        canonical_order = {
+            canonical_class.__name__: index for index, canonical_class in enumerate(CANONICAL_COMPUTATION_ORDER)
+        }
+        return sorted(
+            class_names,
+            key=lambda class_name: (class_name not in canonical_order, canonical_order.get(class_name), class_name),
+        )
+
     def _should_skip_object(self, obj: ModelingObject) -> bool:
         return self._matches_configured_class(obj, self.skipped_impact_repartition_classes)
 
@@ -476,8 +492,8 @@ class ImpactRepartitionSankey:
             self.aggregated_node_members[aggregate_idx] = [
                 (graph_snapshot.full_node_labels[idx], graph_snapshot.node_total_kg[idx]) for idx in group_members
             ]
-            self.aggregated_node_classes[aggregate_idx] = sorted({
-                graph_snapshot.node_objects[idx].class_as_simple_str
+            self.aggregated_node_classes[aggregate_idx] = self._sort_class_names({
+                self._get_canonical_class_name(graph_snapshot.node_objects[idx])
                 for idx in group_members
                 if idx in graph_snapshot.node_objects
             })
@@ -584,14 +600,14 @@ class ImpactRepartitionSankey:
             if node_idx in self._spacer_nodes:
                 continue
             if node_idx in self.node_objects:
-                classes_by_column.setdefault(column, set()).add(self.node_objects[node_idx].class_as_simple_str)
+                classes_by_column.setdefault(column, set()).add(self._get_canonical_class_name(self.node_objects[node_idx]))
             if node_idx in self.aggregated_node_classes:
                 classes_by_column.setdefault(column, set()).update(self.aggregated_node_classes[node_idx])
 
         return [{
             "column_index": column,
             "x_center": self._column_x_center(column),
-            "class_names": sorted(class_names),
+            "class_names": self._sort_class_names(class_names),
         } for column, class_names in sorted(classes_by_column.items()) if class_names]
 
     def get_column_information(self) -> list[ColumnInformation]:
