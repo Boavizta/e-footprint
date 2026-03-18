@@ -224,10 +224,12 @@ class ImpactRepartitionSankey:
 
     def _traverse(
             self, obj: ModelingObject, phase: LifeCyclePhases, phase_context: str | None, parent_idx: int | None,
-            visited: set[str]) -> None:
+            obj_flow_kg: float, visited: set[str]) -> None:
         if obj.id in visited:
             return
         next_visited = visited | {obj.id}
+        resolved_sources: list[tuple[ModelingObject, float]] = []
+        obj_phase_total_kg = 0.0
         for resolved_source in self._iter_resolved_sources(obj, phase):
             source = resolved_source.source
             value_kg = resolved_source.value_kg
@@ -235,15 +237,26 @@ class ImpactRepartitionSankey:
                 value_kg = self._sum_leaf_values(source, phase, next_visited)
             if value_kg <= 0:
                 continue
+            resolved_sources.append((source, value_kg))
+            obj_phase_total_kg += value_kg
+
+        if obj_phase_total_kg <= 0:
+            return
+
+        flow_scale = obj_flow_kg / obj_phase_total_kg
+        for source, source_phase_value_kg in resolved_sources:
+            value_kg = source_phase_value_kg * flow_scale
+            if value_kg <= 0:
+                continue
             if source.is_impact_source:
                 self._handle_impact_source(source, value_kg, phase, phase_context, parent_idx)
                 continue
             if self._should_skip_object(source):
-                self._traverse(source, phase, phase_context, parent_idx, next_visited)
+                self._traverse(source, phase, phase_context, parent_idx, value_kg, next_visited)
                 continue
             source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
             self._add_flow_to_node(parent_idx, source_idx, value_kg)
-            self._traverse(source, phase, phase_context, source_idx, next_visited)
+            self._traverse(source, phase, phase_context, source_idx, value_kg, next_visited)
 
     @staticmethod
     def _find_object_category_name(source: ModelingObject) -> str | None:
@@ -356,7 +369,14 @@ class ImpactRepartitionSankey:
         self._impact_repartition_start_column = current_column_index
 
         for phase in phases:
-            self._traverse(root, phase, self._get_phase_context(phase), phase_parents[phase], visited=set())
+            self._traverse(
+                root,
+                phase,
+                self._get_phase_context(phase),
+                phase_parents[phase],
+                self._get_phase_total_kg(root, root_footprint, phase),
+                visited=set(),
+            )
 
         self._assign_columns()
         self._assign_category_leaf_and_breakdown_columns()
@@ -718,7 +738,8 @@ class ImpactRepartitionSankey:
 if __name__ == '__main__':
     test = "json"
     json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
-                  "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json", "smart building test.json"]
+                  "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json", "smart building test.json",
+                  "scenarioC_smart_building_system_from_process_counts.json"]
     skipped_impact_repartition_classes__full = [
         "System", "Country", "EdgeComponent", "JobBase", "RecurrentEdgeDeviceNeed", "RecurrentServerNeed",
         "RecurrentEdgeComponentNeed", "RecurrentEdgeWorkloadNeed"]
@@ -735,7 +756,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[-2], "r") as f:
+        with open(json_files[-1], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))

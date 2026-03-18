@@ -337,6 +337,28 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn(("root", "total"), sankey.node_indices)
         self.assertIn(("intermediate", "Manufacturing"), sankey.node_indices)
 
+    def test_build_scales_shared_downstream_repartition_by_parent_share(self):
+        """Test shared downstream objects keep conservation when reached from multiple parents."""
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        shared = self._make_intermediate("Shared", manufacturing_sources={leaf: 100})
+        parent_a = self._make_intermediate("Parent A", manufacturing_sources={shared: 60})
+        parent_b = self._make_intermediate("Parent B", manufacturing_sources={shared: 40})
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={parent_a: 60, parent_b: 40})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+        sankey.build()
+
+        shared_idx = sankey.node_indices[(shared.id, "Manufacturing")]
+        leaf_idx = sankey.node_indices[(leaf.id, "Manufacturing")]
+        links = list(zip(sankey.link_sources, sankey.link_targets, sankey.link_values))
+
+        self.assertEqual(100, sankey.node_total_kg[shared_idx])
+        self.assertEqual(100, sankey.node_total_kg[leaf_idx])
+        # Test that the shared node passes 100 / 1000 = 0.1 to the leaf node, meaning there has been no impact
+        # deduplication even though this node has 2 parents.
+        self.assertEqual([(shared_idx, leaf_idx, 0.1)], [link for link in links if link[0] == shared_idx])
+
     def test_build_skips_configured_impact_repartition_classes(self):
         """Test that objects matching skipped classes are passed through."""
         leaf = self._make_leaf("Leaf", manufacturing_kg=100)
