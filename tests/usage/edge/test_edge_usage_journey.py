@@ -167,6 +167,10 @@ class TestEdgeUsageJourney(TestCase):
         self.edge_usage_journey.trigger_modeling_updates = False
         edge_usage_pattern_a = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern A")
         edge_usage_pattern_b = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern B")
+        edge_usage_pattern_a.country = MagicMock()
+        edge_usage_pattern_a.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        edge_usage_pattern_b.country = MagicMock()
+        edge_usage_pattern_b.country.average_carbon_intensity = SourceValue(200 * u.g / u.kWh)
         set_modeling_obj_containers(
             # It is currently not possible for an edge usage journey to be linked several times to the same
             # usage pattern, but it might happen someday and the logic will be already tested.
@@ -176,11 +180,14 @@ class TestEdgeUsageJourney(TestCase):
             edge_usage_pattern_b: SourceValue(5 * u.concurrent),
         })
 
-        self.edge_usage_journey.update_impact_repartition_weights()
+        self.edge_usage_journey.update_fabrication_impact_repartition_weights()
+        self.edge_usage_journey.update_usage_impact_repartition_weights()
 
-        self.assertEqual(4, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_a].magnitude)
-        self.assertEqual(5, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_b].magnitude)
-        self.assertEqual(u.concurrent, self.edge_usage_journey.impact_repartition_weights[edge_usage_pattern_a].unit)
+        self.assertEqual(4, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_a].magnitude)
+        self.assertEqual(5, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_b].magnitude)
+        self.assertEqual(u.concurrent, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_a].unit)
+        self.assertEqual(400, self.edge_usage_journey.usage_impact_repartition_weights[edge_usage_pattern_a].magnitude)
+        self.assertEqual(1000, self.edge_usage_journey.usage_impact_repartition_weights[edge_usage_pattern_b].magnitude)
 
 
 

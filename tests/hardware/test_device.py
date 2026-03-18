@@ -15,7 +15,7 @@ from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 class TestDevice(TestCase):
     def test_update_energy_footprint_sums_over_usage_patterns(self):
-        """Test energy footprint sums per usage_pattern with its carbon intensity."""
+        """Test energy footprint sums precomputed per-usage-pattern values."""
         device = Device(
             "Test device",
             carbon_footprint_fabrication=SourceValue(1 * u.kg),
@@ -40,6 +40,7 @@ class TestDevice(TestCase):
 
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
+        device.update_energy_footprint_per_usage_pattern()
         device.update_energy_footprint()
 
         self.assertEqual(u.kg, device.energy_footprint.unit)
@@ -75,9 +76,9 @@ class TestDevice(TestCase):
         self.assertTrue(np.allclose([2, 6, 6], device.instances_fabrication_footprint.magnitude))
 
     @patch("efootprint.core.hardware.device.Device.usage_journey_steps", new_callable=PropertyMock)
-    def test_update_impact_repartition_weights_scales_steps_by_time_spent_and_matching_patterns(
+    def test_update_usage_impact_repartition_weights_scales_steps_by_time_spent_and_carbon_intensity(
             self, mock_usage_journey_steps):
-        """Test device weights each step by user time spent across the usage patterns where the step appears."""
+        """Test device usage weights follow direct step weights and usage-pattern carbon intensity."""
         device = Device(
             "Test device",
             carbon_footprint_fabrication=SourceValue(1 * u.kg),
@@ -88,22 +89,68 @@ class TestDevice(TestCase):
         device.trigger_modeling_updates = False
 
         usage_journey = MagicMock()
+        usage_journey.duration = SourceValue(40 * u.min)
         step_1 = create_mod_obj_mock(UsageJourneyStep, "Step 1", user_time_spent=SourceValue(10 * u.min))
         step_2 = create_mod_obj_mock(UsageJourneyStep, "Step 2", user_time_spent=SourceValue(30 * u.min))
         step_1.nb_of_occurrences_per_container = {usage_journey: SourceValue(1 * u.dimensionless)}
         step_2.nb_of_occurrences_per_container = {usage_journey: SourceValue(1 * u.dimensionless)}
 
         usage_pattern_1 = create_mod_obj_mock(UsagePattern, "Pattern 1", usage_journey=usage_journey)
+        usage_pattern_1.country = MagicMock()
+        usage_pattern_1.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         usage_pattern_1.utc_hourly_usage_journey_starts = create_source_hourly_values_from_list([2], pint_unit=u.occurrence)
         usage_pattern_2 = create_mod_obj_mock(UsagePattern, "Pattern 2", usage_journey=usage_journey)
+        usage_pattern_2.country = MagicMock()
+        usage_pattern_2.country.average_carbon_intensity = SourceValue(200 * u.g / u.kWh)
         usage_pattern_2.utc_hourly_usage_journey_starts = create_source_hourly_values_from_list([1], pint_unit=u.occurrence)
+        usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = {
+            usage_pattern_1: create_source_hourly_values_from_list([2], pint_unit=u.concurrent),
+            usage_pattern_2: create_source_hourly_values_from_list([1], pint_unit=u.concurrent),
+        }
 
         step_1.usage_patterns = [usage_pattern_1, usage_pattern_2]
         step_2.usage_patterns = [usage_pattern_1]
         mock_usage_journey_steps.return_value = [step_1, step_2]
         set_modeling_obj_containers(device, [usage_pattern_1, usage_pattern_2])
 
-        device.update_impact_repartition_weights()
+        device.update_energy_footprint_per_usage_pattern()
+        device.update_usage_impact_repartition_weights()
 
-        self.assertTrue(np.allclose([30], device.impact_repartition_weights[step_1].magnitude))
-        self.assertTrue(np.allclose([60], device.impact_repartition_weights[step_2].magnitude))
+        self.assertEqual(u.kg * u.min, device.usage_impact_repartition_weights[step_1].unit)
+        self.assertEqual(u.kg * u.min, device.usage_impact_repartition_weights[step_2].unit)
+        self.assertTrue(np.allclose([0.04], device.usage_impact_repartition_weights[step_1].magnitude))
+        self.assertTrue(np.allclose([0.06], device.usage_impact_repartition_weights[step_2].magnitude))
+
+    @patch("efootprint.core.hardware.device.Device.usage_journey_steps", new_callable=PropertyMock)
+    def test_update_usage_impact_repartition_weights_handles_zero_usage_journey_duration(self, mock_usage_journey_steps):
+        """Test device usage weights do not depend on usage-journey duration."""
+        device = Device(
+            "Test device",
+            carbon_footprint_fabrication=SourceValue(1 * u.kg),
+            power=SourceValue(10 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            fraction_of_usage_time=SourceValue(1 * u.hour / u.day),
+        )
+        device.trigger_modeling_updates = False
+
+        usage_journey = MagicMock()
+        usage_journey.duration = SourceValue(0 * u.min)
+        step = create_mod_obj_mock(UsageJourneyStep, "Step 1", user_time_spent=SourceValue(10 * u.min))
+        step.nb_of_occurrences_per_container = {usage_journey: SourceValue(1 * u.dimensionless)}
+
+        usage_pattern = create_mod_obj_mock(UsagePattern, "Pattern 1", usage_journey=usage_journey)
+        usage_pattern.country = MagicMock()
+        usage_pattern.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = {
+            usage_pattern: create_source_hourly_values_from_list([2], pint_unit=u.concurrent),
+        }
+
+        step.usage_patterns = [usage_pattern]
+        mock_usage_journey_steps.return_value = [step]
+        set_modeling_obj_containers(device, [usage_pattern])
+
+        device.update_energy_footprint_per_usage_pattern()
+        device.update_usage_impact_repartition_weights()
+
+        self.assertEqual(u.kg * u.min, device.usage_impact_repartition_weights[step].unit)
+        self.assertTrue(np.allclose([0.02], device.usage_impact_repartition_weights[step].magnitude))

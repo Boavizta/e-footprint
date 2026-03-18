@@ -69,8 +69,28 @@ class EdgeUsageJourney(ModelingObject):
         for edge_usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(edge_usage_pattern)
 
-    def update_dict_element_in_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
-        self.impact_repartition_weights[usage_pattern] = (
-            (self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
-             * self.nb_of_occurrences_per_container[usage_pattern])
-            .to(u.concurrent).set_label(f"{usage_pattern.name} weight in {self.name} impact repartition"))
+    def _edge_usage_pattern_base_weight(self, usage_pattern: "EdgeUsagePattern"):
+        return (
+            self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
+            * self.nb_of_occurrences_per_container[usage_pattern]
+        ).to(u.concurrent)
+
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
+        self.fabrication_impact_repartition_weights[usage_pattern] = self._edge_usage_pattern_base_weight(
+            usage_pattern
+        ).set_label(f"{usage_pattern.name} fabrication weight in {self.name} impact repartition")
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
+        self.usage_impact_repartition_weights[usage_pattern] = (
+            self._edge_usage_pattern_base_weight(usage_pattern) * usage_pattern.country.average_carbon_intensity
+        ).set_label(f"{usage_pattern.name} usage weight in {self.name} impact repartition")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

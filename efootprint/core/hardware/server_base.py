@@ -120,8 +120,7 @@ class ServerBase(InfraHardware):
                 "available_ram_per_instance", "available_compute_per_instance",
                 "raw_nb_of_instances", "nb_of_instances",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint",
-                "service_total_job_volumes",
-                "impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
+                "service_total_job_volumes"] + super().calculated_attributes
 
     @property
     def resources_unit_dict(self):
@@ -282,7 +281,7 @@ class ServerBase(InfraHardware):
         for service in self.installed_services:
             self.update_dict_element_in_service_total_job_volumes(service)
 
-    def update_dict_element_in_impact_repartition_weights(self, job: "JobBase"):
+    def _job_repartition_weight(self, job: "JobBase"):
         from efootprint.core.usage.job import DirectServerJob
         if isinstance(job, DirectServerJob):
             weight = (
@@ -305,10 +304,22 @@ class ServerBase(InfraHardware):
                     + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
                     * job.hourly_avg_occurrences_across_usage_patterns)
 
-        self.impact_repartition_weights[job] = weight.to(u.concurrent).set_label(
-                f"{job.name} weight in {self.name} impact repartition")
+        return weight.to(u.concurrent)
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
+        self.fabrication_impact_repartition_weights[job] = self._job_repartition_weight(job).set_label(
+            f"{job.name} fabrication weight in {self.name} impact repartition")
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
-            self.update_dict_element_in_impact_repartition_weights(job)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, job: "JobBase"):
+        self.usage_impact_repartition_weights[job] = self._job_repartition_weight(job).set_label(
+            f"{job.name} usage weight in {self.name} impact repartition")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_usage_impact_repartition_weights(job)

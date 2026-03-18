@@ -81,6 +81,7 @@ class Device(HardwareBase):
                  lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, fraction_of_usage_time)
 
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
 
@@ -94,20 +95,31 @@ class Device(HardwareBase):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["energy_footprint", "instances_fabrication_footprint"] + super().calculated_attributes
+        return [
+            "energy_footprint_per_usage_pattern",
+            "energy_footprint",
+            "instances_fabrication_footprint",
+        ] + super().calculated_attributes
+
+    def update_dict_element_in_energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
+        instances_energy = (
+            usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+            * energy_spent_over_one_full_hour_by_one_device
+        ).to(u.kWh)
+        self.energy_footprint_per_usage_pattern[usage_pattern] = (
+            instances_energy * usage_pattern.country.average_carbon_intensity
+        ).to(u.kg).set_label(f"{self.name} usage footprint for {usage_pattern.name}")
+
+    def update_energy_footprint_per_usage_pattern(self):
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.usage_patterns:
+            self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
 
     def update_energy_footprint(self):
-        energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")
-
-        energy_footprint = EmptyExplainableObject()
-
-        for usage_pattern in self.usage_patterns:
-            instances_energy = (
-                    usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
-                    * energy_spent_over_one_full_hour_by_one_device).to(u.kWh)
-            energy_footprint += (instances_energy * usage_pattern.country.average_carbon_intensity).to(u.kg)
-
-        self.energy_footprint = energy_footprint.set_label(f"Devices energy footprint of {self.name}")
+        self.energy_footprint = sum(
+            self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
+        ).set_label(f"Devices energy footprint of {self.name}")
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = EmptyExplainableObject()
@@ -124,15 +136,42 @@ class Device(HardwareBase):
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"Devices fabrication footprint of {self.name}")
 
-    def update_dict_element_in_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
-        self.impact_repartition_weights[uj_step] = (
-                uj_step.user_time_spent
-                * sum([self.nb_of_occurrences_per_container[up] * uj_step.nb_of_occurrences_per_container[up.usage_journey]
-                       * up.utc_hourly_usage_journey_starts
-                       for up in self.usage_patterns if up in uj_step.usage_patterns])).set_label(
-                f"{uj_step.name} weight in {self.name} impact repartition")
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
+        weight = EmptyExplainableObject()
+        for usage_pattern in self.usage_patterns:
+            if usage_pattern not in uj_step.usage_patterns:
+                continue
+            weight += (
+                self.nb_of_occurrences_per_container[usage_pattern]
+                * uj_step.nb_of_occurrences_per_container[usage_pattern.usage_journey]
+                * usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+                * uj_step.user_time_spent
+            )
+        self.fabrication_impact_repartition_weights[uj_step] = weight.set_label(
+            f"{uj_step.name} fabrication weight in {self.name} impact repartition"
+        )
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for uj_step in self.usage_journey_steps:
-            self.update_dict_element_in_impact_repartition_weights(uj_step)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(uj_step)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
+        weight = EmptyExplainableObject()
+        for usage_pattern in self.usage_patterns:
+            if usage_pattern not in uj_step.usage_patterns:
+                continue
+            weight += (
+                self.energy_footprint_per_usage_pattern[usage_pattern]
+                * self.nb_of_occurrences_per_container[usage_pattern]
+                * uj_step.nb_of_occurrences_per_container[usage_pattern.usage_journey]
+                * uj_step.user_time_spent
+            )
+        self.usage_impact_repartition_weights[uj_step] = weight.set_label(
+            f"{uj_step.name} usage weight in {self.name} impact repartition"
+        )
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for uj_step in self.usage_journey_steps:
+            self.update_dict_element_in_usage_impact_repartition_weights(uj_step)

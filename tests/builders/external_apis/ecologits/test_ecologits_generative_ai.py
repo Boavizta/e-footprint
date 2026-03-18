@@ -131,8 +131,8 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         self.assertIsInstance(self.external_api.server.energy_footprint, EmptyExplainableObject)
 
-    def test_update_impact_repartition_weights_uses_total_request_footprint_per_job(self):
-        """Test server weights combine embodied and usage request impacts, scaled by hourly occurrences."""
+    def test_update_phase_specific_impact_repartition_weights_use_matching_request_footprints_per_job(self):
+        """Test server weights split embodied and usage request impacts by phase."""
         mock_job_1 = create_mod_obj_mock(
             EcoLogitsGenAIExternalAPIJob,
             name="Job 1",
@@ -153,18 +153,21 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         set_modeling_obj_containers(self.external_api, [mock_job_1, mock_job_2])
 
-        self.external_api.server.update_impact_repartition_weights()
+        self.external_api.server.update_fabrication_impact_repartition_weights()
+        self.external_api.server.update_usage_impact_repartition_weights()
 
-        self.assertTrue(np.allclose([20] * 24, self.external_api.server.impact_repartition_weights[mock_job_1].magnitude))
-        self.assertTrue(np.allclose([20] * 24, self.external_api.server.impact_repartition_weights[mock_job_2].magnitude))
+        self.assertTrue(np.allclose([8] * 24, self.external_api.server.fabrication_impact_repartition_weights[mock_job_1].magnitude))
+        self.assertTrue(np.allclose([10] * 24, self.external_api.server.fabrication_impact_repartition_weights[mock_job_2].magnitude))
+        self.assertTrue(np.allclose([12] * 24, self.external_api.server.usage_impact_repartition_weights[mock_job_1].magnitude))
+        self.assertTrue(np.allclose([10] * 24, self.external_api.server.usage_impact_repartition_weights[mock_job_2].magnitude))
 
-    def test_impact_repartition_property_returns_server_impact_repartition(self):
-        """Test ExternalAPI exposes the server-level impact repartition without copying it."""
+    def test_usage_impact_repartition_property_returns_server_usage_impact_repartition(self):
+        """Test ExternalAPI exposes the server-level usage impact repartition without copying it."""
         mock_job = create_mod_obj_mock(EcoLogitsGenAIExternalAPIJob, name="Job")
         expected_repartition = ExplainableObjectDict({mock_job: SourceValue(1 * u.concurrent)})
-        self.external_api.server.impact_repartition = expected_repartition
+        self.external_api.server.usage_impact_repartition = expected_repartition
 
-        self.assertIs(expected_repartition, self.external_api.impact_repartition)
+        self.assertIs(expected_repartition, self.external_api.usage_impact_repartition)
 
     def test_provider_list_values_contains_valid_providers(self):
         """Test that list_values contains valid provider options."""
@@ -248,7 +251,9 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
             "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
             "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
             "hourly_data_stored_across_usage_patterns",
-            "impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition",
+            "fabrication_impact_repartition_weights", "fabrication_impact_repartition_weight_sum",
+            "fabrication_impact_repartition", "usage_impact_repartition_weights",
+            "usage_impact_repartition_weight_sum", "usage_impact_repartition",
             "hourly_occurrences_across_usage_patterns"
         ]
         self.assertEqual(self.job.calculated_attributes, calculated_attributes)

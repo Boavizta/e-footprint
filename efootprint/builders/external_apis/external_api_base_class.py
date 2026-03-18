@@ -39,11 +39,19 @@ class ExternalAPIServer(ModelingObject):
         pass
 
     @abstractmethod
-    def update_dict_element_in_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
         pass
 
     @abstractmethod
-    def update_impact_repartition_weights(self):
+    def update_fabrication_impact_repartition_weights(self):
+        pass
+
+    @abstractmethod
+    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_obj: "ModelingObject"):
+        pass
+
+    @abstractmethod
+    def update_usage_impact_repartition_weights(self):
         pass
 
 
@@ -98,8 +106,12 @@ class ExternalAPI(ModelingObject):
         return self.server.energy_footprint
 
     @property
-    def impact_repartition(self):
-        return self.server.impact_repartition
+    def fabrication_impact_repartition(self):
+        return self.server.fabrication_impact_repartition
+
+    @property
+    def usage_impact_repartition(self):
+        return self.server.usage_impact_repartition
 
     def self_delete(self):
         super().self_delete()

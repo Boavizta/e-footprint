@@ -40,12 +40,21 @@ class Country(ModelingObject):
     def usage_patterns(self) -> List["UsagePattern"]:
         return self.modeling_obj_containers
 
-    def update_dict_element_in_impact_repartition_weights(self, system: "System"):
-        self.impact_repartition_weights[system] = ExplainableQuantity(
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, system: "System"):
+        self.fabrication_impact_repartition_weights[system] = ExplainableQuantity(
             1 * u.dimensionless, label="Impact repartition weight")
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for system in self.systems:
-            self.update_dict_element_in_impact_repartition_weights(system)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(system)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, system: "System"):
+        self.usage_impact_repartition_weights[system] = ExplainableQuantity(
+            1 * u.dimensionless, label="Impact repartition weight")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for system in self.systems:
+            self.update_dict_element_in_usage_impact_repartition_weights(system)
             

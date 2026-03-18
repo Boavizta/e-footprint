@@ -151,12 +151,13 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
-    _impact_repartition_cached_property_names = (
+    _attributed_footprint_cached_property_names = (
         "attributed_fabrication_footprint_per_source",
         "attributed_fabrication_footprint",
         "attributed_energy_footprint_per_source",
         "attributed_energy_footprint",
     )
+    _impact_repartition_phases = ("fabrication", "usage")
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
@@ -308,12 +309,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.contextual_modeling_obj_containers = []
         self.explainable_object_dicts_containers = []
 
-        if "impact_repartition_weights" in self.calculated_attributes:
-            self.impact_repartition_weights = ExplainableObjectDict()
-        if "impact_repartition_weight_sum" in self.calculated_attributes:
-            self.impact_repartition_weight_sum = EmptyExplainableObject()
-        if "impact_repartition" in self.calculated_attributes:
-            self.impact_repartition = ExplainableObjectDict()
+        for phase in self._impact_repartition_phases:
+            weights_attr = f"{phase}_impact_repartition_weights"
+            weight_sum_attr = f"{phase}_impact_repartition_weight_sum"
+            repartition_attr = f"{phase}_impact_repartition"
+            if weights_attr in self.calculated_attributes:
+                self.__setattr__(weights_attr, ExplainableObjectDict(), check_input_validity=False)
+            if weight_sum_attr in self.calculated_attributes:
+                self.__setattr__(weight_sum_attr, EmptyExplainableObject(), check_input_validity=False)
+            if repartition_attr in self.calculated_attributes:
+                self.__setattr__(repartition_attr, ExplainableObjectDict(), check_input_validity=False)
 
     @property
     def readable_id(self):
@@ -418,7 +423,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @property
     def calculated_attributes(self) -> List[str]:
-        return ["impact_repartition_weights", "impact_repartition_weight_sum", "impact_repartition"]
+        return [
+            "fabrication_impact_repartition_weights",
+            "fabrication_impact_repartition_weight_sum",
+            "fabrication_impact_repartition",
+            "usage_impact_repartition_weights",
+            "usage_impact_repartition_weight_sum",
+            "usage_impact_repartition",
+        ]
 
     @property
     def systems(self) -> List:
@@ -479,7 +491,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
         return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
-                "explainable_object_dicts_containers"] + list(self._impact_repartition_cached_property_names)
+                "explainable_object_dicts_containers"] + list(self._attributed_footprint_cached_property_names)
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         current_attr = getattr(self, name, None)
@@ -695,30 +707,51 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             value * u.dimensionless, label=f"Number of occurrences of {self.name} in {key.name}")
             for key, value in output_dict.items()})
 
-    def update_dict_element_in_impact_repartition_weights(self, modeling_object: "ModelingObject"):
-        weight = (sum([val for val in modeling_object.impact_repartition_weights.values()],
+    def _compute_default_impact_repartition_weight(
+            self, modeling_object: "ModelingObject", phase: str):
+        weight = (sum([val for val in getattr(modeling_object, f"{phase}_impact_repartition_weights").values()],
                       start=EmptyExplainableObject())
                 * self.nb_of_occurrences_per_container[modeling_object]).set_label(
             f"{modeling_object.name} weight in {self.name} impact repartition")
+        return weight
 
-        self.impact_repartition_weights[modeling_object] = weight
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_object: "ModelingObject"):
+        self.fabrication_impact_repartition_weights[modeling_object] = self._compute_default_impact_repartition_weight(
+            modeling_object, "fabrication")
 
-    def update_impact_repartition_weights(self):
+    def update_fabrication_impact_repartition_weights(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        self.impact_repartition_weights = ExplainableObjectDict()
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for modeling_object in self.modeling_obj_containers:
-            self.update_dict_element_in_impact_repartition_weights(modeling_object)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(modeling_object)
 
-    def update_impact_repartition_weight_sum(self):
+    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_object: "ModelingObject"):
+        self.usage_impact_repartition_weights[modeling_object] = self._compute_default_impact_repartition_weight(
+            modeling_object, "usage")
+
+    def update_usage_impact_repartition_weights(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        impact_repartition_weight_sum = sum(self.impact_repartition_weights.values(), start=EmptyExplainableObject())
-        self.impact_repartition_weight_sum = impact_repartition_weight_sum.set_label(
-            f"Sum of {self.name} impact repartition weights")
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for modeling_object in self.modeling_obj_containers:
+            self.update_dict_element_in_usage_impact_repartition_weights(modeling_object)
 
-    def update_dict_element_in_impact_repartition(self, modeling_obj: "ModelingObject"):
-        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+    def _update_impact_repartition_weight_sum(self, phase: str):
+        impact_repartition_weight_sum = sum(
+            getattr(self, f"{phase}_impact_repartition_weights").values(), start=EmptyExplainableObject())
+        setattr(
+            self,
+            f"{phase}_impact_repartition_weight_sum",
+            impact_repartition_weight_sum.set_label(f"Sum of {self.name} {phase} impact repartition weights"),
+        )
 
-        impact_repartition_weight_sum = self.impact_repartition_weight_sum
+    def update_fabrication_impact_repartition_weight_sum(self):
+        self._update_impact_repartition_weight_sum("fabrication")
+
+    def update_usage_impact_repartition_weight_sum(self):
+        self._update_impact_repartition_weight_sum("usage")
+
+    def _update_dict_element_in_impact_repartition(self, phase: str, modeling_obj: "ModelingObject"):
+        impact_repartition_weight_sum = getattr(self, f"{phase}_impact_repartition_weight_sum")
         if ((isinstance(impact_repartition_weight_sum, ExplainableQuantity)
                 or isinstance(impact_repartition_weight_sum, EmptyExplainableObject))
                 and impact_repartition_weight_sum.magnitude == 0):
@@ -727,25 +760,40 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
               and impact_repartition_weight_sum.sum().magnitude == 0):
             repartition_value = EmptyExplainableObject()
         else:
-            repartition_value = (self.impact_repartition_weights[modeling_obj] / impact_repartition_weight_sum).to(
-            u.concurrent).set_label(f"{self.name} impact attribution to {modeling_obj.name}")
+            repartition_value = (
+                getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj] / impact_repartition_weight_sum
+            ).to(u.concurrent).set_label(f"{self.name} {phase} impact attribution to {modeling_obj.name}")
 
         if isinstance(repartition_value, ExplainableHourlyQuantities):
             nan_values_mask = np.isnan(repartition_value.magnitude)
             repartition_value.value[nan_values_mask] = 1
 
-        self.impact_repartition[modeling_obj] = repartition_value
+        getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
 
-    def update_impact_repartition(self):
+    def update_dict_element_in_fabrication_impact_repartition(self, modeling_obj: "ModelingObject"):
+        self._update_dict_element_in_impact_repartition("fabrication", modeling_obj)
+
+    def update_dict_element_in_usage_impact_repartition(self, modeling_obj: "ModelingObject"):
+        self._update_dict_element_in_impact_repartition("usage", modeling_obj)
+
+    def _update_impact_repartition(self, phase: str):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        current_impact_repartition = getattr(self, "impact_repartition", None)
+        current_impact_repartition = getattr(self, f"{phase}_impact_repartition", None)
         old_impacted_objects = set(current_impact_repartition.keys()) if isinstance(current_impact_repartition, dict) else set()
-        self.impact_repartition = ExplainableObjectDict()
-        for modeling_obj in self.impact_repartition_weights:
-            self.update_dict_element_in_impact_repartition(modeling_obj)
-        for modeling_obj in old_impacted_objects | set(self.impact_repartition.keys()):
+        repartition_attr_name = f"{phase}_impact_repartition"
+        weights = getattr(self, f"{phase}_impact_repartition_weights")
+        setattr(self, repartition_attr_name, ExplainableObjectDict())
+        for modeling_obj in weights:
+            getattr(self, f"update_dict_element_in_{phase}_impact_repartition")(modeling_obj)
+        for modeling_obj in old_impacted_objects | set(getattr(self, repartition_attr_name).keys()):
             if isinstance(modeling_obj, ModelingObject):
                 modeling_obj.invalidate_impact_repartition_cache(recursive=True)
+
+    def update_fabrication_impact_repartition(self):
+        self._update_impact_repartition("fabrication")
+
+    def update_usage_impact_repartition(self):
+        self._update_impact_repartition("usage")
 
     def invalidate_impact_repartition_cache(self, recursive=False, visited=None):
         visited = set() if visited is None else visited
@@ -753,16 +801,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return
         visited.add(self.id)
 
-        for cached_property_name in self._impact_repartition_cached_property_names:
+        for cached_property_name in self._attributed_footprint_cached_property_names:
             self.__dict__.pop(cached_property_name, None)
 
         if recursive:
-            impact_repartition = getattr(self, "impact_repartition", None)
-            if not isinstance(impact_repartition, dict):
-                return
-            for modeling_obj in impact_repartition:
-                if isinstance(modeling_obj, ModelingObject):
-                    modeling_obj.invalidate_impact_repartition_cache(recursive=True, visited=visited)
+            for phase in self._impact_repartition_phases:
+                impact_repartition = getattr(self, f"{phase}_impact_repartition", None)
+                if not isinstance(impact_repartition, dict):
+                    continue
+                for modeling_obj in impact_repartition:
+                    if isinstance(modeling_obj, ModelingObject):
+                        modeling_obj.invalidate_impact_repartition_cache(recursive=True, visited=visited)
 
     @property
     def is_impact_source(self):
@@ -783,7 +832,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             attributed_fabrication_footprint_per_source[self] = self.instances_fabrication_footprint
         else:
             for expl_dict in self.explainable_object_dicts_containers:
-                if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
+                if expl_dict.attr_name_in_mod_obj_container == "fabrication_impact_repartition":
                     attributed_fabrication_footprint_per_source[expl_dict.modeling_obj_container] = (
                             expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint
                     ).set_label(f"{self.name} fabrication footprint due to {expl_dict.modeling_obj_container.name}")
@@ -805,7 +854,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             attributed_energy_footprint_per_source[self] = self.energy_footprint
         else:
             for expl_dict in self.explainable_object_dicts_containers:
-                if expl_dict.attr_name_in_mod_obj_container == "impact_repartition":
+                if expl_dict.attr_name_in_mod_obj_container == "usage_impact_repartition":
                     attributed_energy_footprint_per_source[expl_dict.modeling_obj_container] = (
                             expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint
                     ).set_label(f"{self.name} energy footprint due to {expl_dict.modeling_obj_container.name}")

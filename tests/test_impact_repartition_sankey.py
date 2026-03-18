@@ -88,10 +88,16 @@ class _DummyExternalAPIServer(ExternalAPIServer):
     def update_energy_footprint(self) -> None:
         return None
 
-    def update_dict_element_in_impact_repartition_weights(self, modeling_obj):
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_obj):
         return None
 
-    def update_impact_repartition_weights(self):
+    def update_fabrication_impact_repartition_weights(self):
+        return None
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, modeling_obj):
+        return None
+
+    def update_usage_impact_repartition_weights(self):
         return None
 
 

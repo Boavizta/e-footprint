@@ -44,6 +44,7 @@ class TestEdgeDevice(TestCase):
 
         self.assertIsInstance(self.edge_device.instances_energy_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_device.energy_footprint_per_usage_pattern, ExplainableObjectDict)
+        self.assertIsInstance(self.edge_device.structure_fabrication_footprint_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_device.instances_fabrication_footprint_per_usage_pattern, ExplainableObjectDict)
         self.assertIsInstance(self.edge_device.instances_fabrication_footprint, EmptyExplainableObject)
         self.assertIsInstance(self.edge_device.instances_energy, EmptyExplainableObject)
@@ -181,6 +182,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
 
+        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
         self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
 
         # Structure intensity: 100 kg / 5 year = 20 kg/year
@@ -211,6 +213,7 @@ class TestEdgeDevice(TestCase):
             mock_pattern: component_2_footprint
         })
 
+        self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
         self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
 
         # Structure footprint: 10 * (100 / 5) / (365.25 * 24) kg
@@ -355,26 +358,113 @@ class TestEdgeDevice(TestCase):
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)
-    def test_update_impact_repartition_weights_distributes_component_impact_across_component_needs(
+    def test_update_fabrication_impact_repartition_weights_distributes_component_impact_across_component_needs(
             self, mock_component_needs):
-        """Test edge device distributes each component impact across its own recurrent needs."""
-        self.mock_component_1.instances_fabrication_footprint = SourceValue(6 * u.kg)
-        self.mock_component_1.energy_footprint = SourceValue(2 * u.kg)
+        """Test edge device distributes component fabrication impact across its own recurrent needs."""
+        pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
+            pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
+        })
+        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([0, 0], pint_unit=u.kg),
+            pattern_2: create_source_hourly_values_from_list([0, 0], pint_unit=u.kg),
+        })
 
         component_need_1 = create_mod_obj_mock(
             RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
         component_need_2 = create_mod_obj_mock(
             RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_1)
-        component_need_1.total_hourly_need_across_usage_patterns = create_source_hourly_values_from_list(
-            [10, 10], pint_unit=u.cpu_core * u.concurrent)
-        component_need_2.total_hourly_need_across_usage_patterns = create_source_hourly_values_from_list(
-            [6, 6], pint_unit=u.cpu_core * u.concurrent)
+        component_need_1.edge_usage_patterns = [pattern_1, pattern_2]
+        component_need_2.edge_usage_patterns = [pattern_1, pattern_2]
+        component_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+            pattern_2: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        component_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
+            pattern_2: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
+        })
         mock_component_needs.return_value = [component_need_1, component_need_2]
 
-        self.edge_device.update_impact_repartition_weights()
+        self.edge_device.update_fabrication_impact_repartition_weights()
 
-        self.assertTrue(np.allclose([5, 5], self.edge_device.impact_repartition_weights[component_need_1].magnitude))
-        self.assertTrue(np.allclose([3, 3], self.edge_device.impact_repartition_weights[component_need_2].magnitude))
+        self.assertTrue(np.allclose([5, 5], self.edge_device.fabrication_impact_repartition_weights[component_need_1].magnitude))
+        self.assertTrue(np.allclose([3, 3], self.edge_device.fabrication_impact_repartition_weights[component_need_2].magnitude))
+
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_fabrication_impact_repartition_weights_evenly_distributes_structure_across_components(
+            self, mock_component_needs):
+        """Test edge device fabrication repartition gives each component an equal share of structure footprint."""
+        pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
+        })
+        self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([8, 8], pint_unit=u.kg),
+        })
+        self.edge_device.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([18, 18], pint_unit=u.kg),
+        })
+        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([6, 6], pint_unit=u.kg),
+        })
+
+        component_need_1 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
+        component_need_2 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_2)
+        component_need_1.edge_usage_patterns = [pattern]
+        component_need_2.edge_usage_patterns = [pattern]
+        component_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        component_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        mock_component_needs.return_value = [component_need_1, component_need_2]
+
+        self.edge_device.update_fabrication_impact_repartition_weights()
+
+        self.assertTrue(
+            np.allclose([7, 7], self.edge_device.fabrication_impact_repartition_weights[component_need_1].magnitude)
+        )
+        self.assertTrue(
+            np.allclose([11, 11], self.edge_device.fabrication_impact_repartition_weights[component_need_2].magnitude)
+        )
+
+    @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
+           new_callable=PropertyMock)
+    def test_update_usage_impact_repartition_weights_uses_usage_pattern_energy_impact(
+            self, mock_component_needs):
+        """Test edge device usage repartition reflects per-pattern energy impact, including carbon intensity effects."""
+        pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
+        pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
+        self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([2, 2], pint_unit=u.kg),
+            pattern_2: create_source_hourly_values_from_list([6, 6], pint_unit=u.kg),
+        })
+
+        component_need_1 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
+        component_need_2 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_1)
+        component_need_1.edge_usage_patterns = [pattern_1]
+        component_need_2.edge_usage_patterns = [pattern_2]
+        component_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        component_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_2: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        mock_component_needs.return_value = [component_need_1, component_need_2]
+
+        self.edge_device.update_usage_impact_repartition_weights()
+
+        self.assertTrue(np.allclose([2, 2], self.edge_device.usage_impact_repartition_weights[component_need_1].magnitude))
+        self.assertTrue(np.allclose([6, 6], self.edge_device.usage_impact_repartition_weights[component_need_2].magnitude))
 
     def test_footprint_breakdown_by_source_distributes_computed_structure_across_components_and_keeps_energy(self):
         """Test footprint_breakdown_by_source conserves computed device fabrication and keeps energy unchanged."""

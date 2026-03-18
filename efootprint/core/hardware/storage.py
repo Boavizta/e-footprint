@@ -96,7 +96,9 @@ class Storage(InfraHardware):
         return [
             "carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need",
             "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint",
-            "instances_energy", "energy_footprint", "impact_repartition_weight_sum", "impact_repartition"]
+            "instances_energy", "energy_footprint",
+            "fabrication_impact_repartition_weight_sum", "fabrication_impact_repartition",
+            "usage_impact_repartition_weight_sum", "usage_impact_repartition"]
 
     @property
     def jobs(self) -> List["JobBase"]:
@@ -196,5 +198,9 @@ class Storage(InfraHardware):
         self.instances_energy = EmptyExplainableObject()
 
     @property
-    def impact_repartition_weights(self):
+    def fabrication_impact_repartition_weights(self):
+        return self.full_cumulative_storage_need_per_job
+
+    @property
+    def usage_impact_repartition_weights(self):
         return self.full_cumulative_storage_need_per_job

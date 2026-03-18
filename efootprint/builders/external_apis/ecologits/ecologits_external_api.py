@@ -86,15 +86,25 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
 
         self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
 
-    def update_dict_element_in_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
-        self.impact_repartition_weights[job] = ((
-                (job.request_embodied_gwp + job.request_usage_gwp) * job.hourly_occurrences_across_usage_patterns)
-        .set_label(f"{job.name} weight in {self.name} impact repartition"))
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
+        self.fabrication_impact_repartition_weights[job] = (
+            job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns
+        ).set_label(f"{job.name} fabrication weight in {self.name} impact repartition")
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
-            self.update_dict_element_in_impact_repartition_weights(job)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
+        self.usage_impact_repartition_weights[job] = (
+            job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns
+        ).set_label(f"{job.name} usage weight in {self.name} impact repartition")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_usage_impact_repartition_weights(job)
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):

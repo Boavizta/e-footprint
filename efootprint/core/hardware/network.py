@@ -73,16 +73,35 @@ class Network(ModelingObject):
 
         self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
 
-    def update_dict_element_in_impact_repartition_weights(self, job: "JobBase"):
+    def _activity_based_job_weight(self, job: "JobBase"):
         weight = job.data_transferred * job.hourly_avg_occurrences_across_usage_patterns
+        return weight.to(u.concurrent)
 
-        self.impact_repartition_weights[job] = weight.to(u.concurrent).set_label(
-            f"{job.name} weight in {self.name} impact repartition")
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
+        self.fabrication_impact_repartition_weights[job] = self._activity_based_job_weight(job).set_label(
+            f"{job.name} fabrication weight in {self.name} impact repartition")
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
-            self.update_dict_element_in_impact_repartition_weights(job)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, job: "JobBase"):
+        weight = EmptyExplainableObject()
+        for usage_pattern in [up for up in job.usage_patterns if up in self.usage_patterns]:
+            weight += (
+                self.bandwidth_energy_intensity
+                * job.hourly_data_transferred_per_usage_pattern[usage_pattern]
+            ).to(u.kWh) * usage_pattern.country.average_carbon_intensity
+
+        self.usage_impact_repartition_weights[job] = weight.to(u.kg).set_label(
+            f"{job.name} usage weight in {self.name} impact repartition"
+        )
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_usage_impact_repartition_weights(job)
 
     def update_instances_fabrication_footprint(self):
         self.instances_fabrication_footprint = EmptyExplainableObject()

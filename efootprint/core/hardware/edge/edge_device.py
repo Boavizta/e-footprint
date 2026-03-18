@@ -39,6 +39,7 @@ class EdgeDevice(ModelingObject):
 
         self.lifespan_validation = EmptyExplainableObject()
         self.component_needs_edge_device_validation = EmptyExplainableObject()
+        self.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -53,6 +54,7 @@ class EdgeDevice(ModelingObject):
     @property
     def calculated_attributes(self):
         return (["lifespan_validation", "component_needs_edge_device_validation",
+                "structure_fabrication_footprint_per_usage_pattern",
                 "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
                 "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
@@ -128,17 +130,23 @@ class EdgeDevice(ModelingObject):
 
         self.component_needs_edge_device_validation = EmptyExplainableObject()
 
-    def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
-            self, usage_pattern: "EdgeUsagePattern"):
-        # Sum fabrication footprints from all components plus device structure
+    def update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         structure_fabrication_intensity = self.structure_carbon_footprint_fabrication / self.lifespan
         nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
             usage_pattern]
+        self.structure_fabrication_footprint_per_usage_pattern[usage_pattern] = (
+            nb_instances * structure_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour")
+        ).to(u.kg).set_label(f"Hourly {self.name} structure fabrication footprint for {usage_pattern.name}")
 
-        structure_footprint = (
-            nb_instances * structure_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour"))
+    def update_structure_fabrication_footprint_per_usage_pattern(self):
+        self.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(usage_pattern)
 
-        total_footprint = structure_footprint
+    def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(
+            self, usage_pattern: "EdgeUsagePattern"):
+        total_footprint = self.structure_fabrication_footprint_per_usage_pattern.get(
+            usage_pattern, EmptyExplainableObject())
         for component in self.components:
             if usage_pattern in component.instances_fabrication_footprint_per_usage_pattern:
                 total_footprint += component.instances_fabrication_footprint_per_usage_pattern[usage_pattern]
@@ -230,32 +238,68 @@ class EdgeDevice(ModelingObject):
             LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
         }
 
-    def update_dict_element_in_impact_repartition_weights(self, source_obj):
+    def _compute_component_need_weight(
+            self, component_need: "RecurrentEdgeComponentNeed", component_impact_per_usage_pattern):
         from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
-        if not isinstance(source_obj, RecurrentEdgeComponentNeed):
-            raise TypeError(f"Unsupported edge device impact repartition source: {type(source_obj)}")
+        if not isinstance(component_need, RecurrentEdgeComponentNeed):
+            raise TypeError(f"Unsupported edge device impact repartition source: {type(component_need)}")
 
-        component = source_obj.edge_component
-        component_need_demand = source_obj.total_hourly_need_across_usage_patterns
-        sibling_need_demand = sum(
-            [recurrent_component_need.total_hourly_need_across_usage_patterns
-             for recurrent_component_need in self.recurrent_edge_component_needs
-             if recurrent_component_need.edge_component == component],
-            start=EmptyExplainableObject())
-        if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
-            weight = EmptyExplainableObject()
-        else:
-            component_total_impact = component.instances_fabrication_footprint + component.energy_footprint
-            weight = component_total_impact * (component_need_demand / sibling_need_demand)
-            if isinstance(weight, ExplainableHourlyQuantities):
-                nan_values_mask = np.isnan(weight.magnitude)
-                weight.magnitude[nan_values_mask] = 0
+        component = component_need.edge_component
+        weight = EmptyExplainableObject()
+        for usage_pattern in component_need.edge_usage_patterns:
+            component_need_demand = component_need.unitary_hourly_need_per_usage_pattern.get(
+                usage_pattern, EmptyExplainableObject())
+            sibling_need_demand = sum(
+                [
+                    recurrent_component_need.unitary_hourly_need_per_usage_pattern.get(
+                        usage_pattern, EmptyExplainableObject())
+                    for recurrent_component_need in self.recurrent_edge_component_needs
+                    if recurrent_component_need.edge_component == component
+                ],
+                start=EmptyExplainableObject(),
+            )
+            if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
+                continue
+            component_pattern_impact = component_impact_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
+            if isinstance(component_pattern_impact, EmptyExplainableObject):
+                continue
+            weight += component_pattern_impact * (component_need_demand / sibling_need_demand)
 
-        self.impact_repartition_weights[source_obj] = weight.set_label(
-            f"{source_obj.name} weight in {self.name} impact repartition")
+        if isinstance(weight, ExplainableHourlyQuantities):
+            nan_values_mask = np.isnan(weight.magnitude)
+            weight.magnitude[nan_values_mask] = 0
+        return weight
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
+    def _fabrication_impact_per_usage_pattern_for_component(self, component: EdgeComponent):
+        structure_component_share = ExplainableQuantity(
+            len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
+        return ExplainableObjectDict({
+            usage_pattern: (
+                component.instances_fabrication_footprint_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
+                + structure_fabrication / structure_component_share
+            )
+            for usage_pattern, structure_fabrication in self.structure_fabrication_footprint_per_usage_pattern.items()
+        })
+
+    def update_dict_element_in_fabrication_impact_repartition_weights(
+            self, component_need: "RecurrentEdgeComponentNeed"):
+        self.fabrication_impact_repartition_weights[component_need] = self._compute_component_need_weight(
+            component_need,
+            self._fabrication_impact_per_usage_pattern_for_component(component_need.edge_component),
+        ).set_label(f"{component_need.name} fabrication weight in {self.name} impact repartition")
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for recurrent_component_need in self.recurrent_edge_component_needs:
-            self.update_dict_element_in_impact_repartition_weights(recurrent_component_need)
+            self.update_dict_element_in_fabrication_impact_repartition_weights(recurrent_component_need)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, component_need: "RecurrentEdgeComponentNeed"):
+        self.usage_impact_repartition_weights[component_need] = self._compute_component_need_weight(
+            component_need, component_need.edge_component.energy_footprint_per_usage_pattern
+        ).set_label(f"{component_need.name} usage weight in {self.name} impact repartition")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for recurrent_component_need in self.recurrent_edge_component_needs:
+            self.update_dict_element_in_usage_impact_repartition_weights(recurrent_component_need)

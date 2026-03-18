@@ -78,9 +78,28 @@ class UsageJourney(ModelingObject):
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(usage_pattern)
 
-    def update_dict_element_in_impact_repartition_weights(self, usage_pattern: "UsagePattern"):
-        weight = (self.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
-                  * self.nb_of_occurrences_per_container[usage_pattern]).set_label(
-            f"{usage_pattern.name} weight in {self.name} impact repartition")
+    def _usage_pattern_base_weight(self, usage_pattern: "UsagePattern"):
+        return (
+            self.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+            * self.nb_of_occurrences_per_container[usage_pattern]
+        )
 
-        self.impact_repartition_weights[usage_pattern] = weight
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, usage_pattern: "UsagePattern"):
+        self.fabrication_impact_repartition_weights[usage_pattern] = self._usage_pattern_base_weight(
+            usage_pattern
+        ).set_label(f"{usage_pattern.name} fabrication weight in {self.name} impact repartition")
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+        for usage_pattern in self.usage_patterns:
+            self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, usage_pattern: "UsagePattern"):
+        self.usage_impact_repartition_weights[usage_pattern] = (
+            self._usage_pattern_base_weight(usage_pattern) * usage_pattern.country.average_carbon_intensity
+        ).set_label(f"{usage_pattern.name} usage weight in {self.name} impact repartition")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        for usage_pattern in self.usage_patterns:
+            self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

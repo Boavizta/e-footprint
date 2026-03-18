@@ -96,6 +96,10 @@ class TestUsageJourney(TestCase):
     def test_update_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
         usage_pattern_a = create_mod_obj_mock(UsagePattern, name="Usage Pattern A")
         usage_pattern_b = create_mod_obj_mock(UsagePattern, name="Usage Pattern B")
+        usage_pattern_a.country = MagicMock()
+        usage_pattern_a.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
+        usage_pattern_b.country = MagicMock()
+        usage_pattern_b.country.average_carbon_intensity = SourceValue(200 * u.g / u.kWh)
         # It is currently not possible for a usage journey to be linked several times to the same
         # usage pattern, but it might happen someday and the logic will be already tested.
         set_modeling_obj_containers(self.usage_journey, [usage_pattern_a, usage_pattern_a, usage_pattern_b])
@@ -104,11 +108,14 @@ class TestUsageJourney(TestCase):
             usage_pattern_b: SourceValue(4 * u.concurrent),
         })
 
-        self.usage_journey.update_impact_repartition_weights()
+        self.usage_journey.update_fabrication_impact_repartition_weights()
+        self.usage_journey.update_usage_impact_repartition_weights()
 
-        self.assertEqual(6, self.usage_journey.impact_repartition_weights[usage_pattern_a].magnitude)
-        self.assertEqual(4, self.usage_journey.impact_repartition_weights[usage_pattern_b].magnitude)
-        self.assertEqual(u.concurrent, self.usage_journey.impact_repartition_weights[usage_pattern_a].unit)
+        self.assertEqual(6, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_a].magnitude)
+        self.assertEqual(4, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_b].magnitude)
+        self.assertEqual(u.concurrent, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_a].unit)
+        self.assertEqual(600, self.usage_journey.usage_impact_repartition_weights[usage_pattern_a].magnitude)
+        self.assertEqual(800, self.usage_journey.usage_impact_repartition_weights[usage_pattern_b].magnitude)
 
 
 if __name__ == "__main__":

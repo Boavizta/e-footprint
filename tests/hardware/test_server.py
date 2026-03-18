@@ -300,7 +300,7 @@ class TestServer(TestCase):
         self.assertAlmostEqual(40, self.server_base.service_total_job_volumes[service_a].value.magnitude)
         self.assertAlmostEqual(5, self.server_base.service_total_job_volumes[service_b].value.magnitude)
 
-    def test_update_impact_repartition_weights_direct_server_job(self):
+    def test_update_usage_impact_repartition_weights_direct_server_job(self):
         """Test weight for DirectServerJob: (compute/server_compute + ram/server_ram) * occurrences."""
         job = create_mod_obj_mock(DirectServerJob, "Direct job",
                                   compute_needed=SourceValue(2 * u.cpu_core),
@@ -313,12 +313,12 @@ class TestServer(TestCase):
                 patch.object(Server, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job]
             self.server_base.update_service_total_job_volumes()
-            self.server_base.update_impact_repartition_weights()
+            self.server_base.update_usage_impact_repartition_weights()
 
         # weight = (2/10 + 4/20) * 10 = (0.2 + 0.2) * 10 = 4.0
-        self.assertAlmostEqual(4.0, self.server_base.impact_repartition_weights[job].value.magnitude)
+        self.assertAlmostEqual(4.0, self.server_base.usage_impact_repartition_weights[job].value.magnitude)
 
-    def test_update_impact_repartition_weights_service_jobs(self):
+    def test_update_usage_impact_repartition_weights_service_jobs(self):
         """Test weight for ServiceJobs: base service consumption is distributed proportionally to job volumes."""
         service = create_mod_obj_mock(Service, "Test service",
                                       base_compute_consumption=SourceValue(2 * u.cpu_core),
@@ -347,15 +347,15 @@ class TestServer(TestCase):
             mock_services.return_value = [service]
             mock_jobs.return_value = [job1, job2]
             self.server_base.update_service_total_job_volumes()
-            self.server_base.update_impact_repartition_weights()
+            self.server_base.update_usage_impact_repartition_weights()
 
         # service_base_weight = (2/10 + 4/20) * 2 = 0.4 * 2 = 0.8
         # total_volume = 30 + 10 = 40
         # job1_volume_share = 30 / 40 = 0.75
         # job1_own_weight = (1/10 + 2/20) * 30 = 0.2 * 30 = 6.0
         # job1_weight = 0.8 * 0.75 + 6.0 = 0.6 + 6.0 = 6.6
-        self.assertAlmostEqual(6.6, self.server_base.impact_repartition_weights[job1].value.magnitude, places=5)
+        self.assertAlmostEqual(6.6, self.server_base.usage_impact_repartition_weights[job1].value.magnitude, places=5)
         # job2_volume_share = 10 / 40 = 0.25
         # job2_own_weight = (1/10 + 2/20) * 10 = 0.2 * 10 = 2.0
         # job2_weight = 0.8 * 0.25 + 2.0 = 0.2 + 2.0 = 2.2
-        self.assertAlmostEqual(2.2, self.server_base.impact_repartition_weights[job2].value.magnitude, places=5)
+        self.assertAlmostEqual(2.2, self.server_base.usage_impact_repartition_weights[job2].value.magnitude, places=5)

@@ -57,10 +57,18 @@ class EdgeUsagePattern(ModelingObject):
         self.utc_hourly_edge_usage_journey_starts = utc_hourly_edge_usage_journey_starts.set_label(
             f"{self.name} UTC")
 
-    def update_dict_element_in_impact_repartition_weights(self, country: "Country"):
-        self.impact_repartition_weights[country] = ExplainableQuantity(
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, country: "Country"):
+        self.fabrication_impact_repartition_weights[country] = ExplainableQuantity(
             1 * u.dimensionless, label="Impact repartition weight")
 
-    def update_impact_repartition_weights(self):
-        self.impact_repartition_weights = ExplainableObjectDict()
-        self.update_dict_element_in_impact_repartition_weights(self.country)
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+        self.update_dict_element_in_fabrication_impact_repartition_weights(self.country)
+
+    def update_dict_element_in_usage_impact_repartition_weights(self, country: "Country"):
+        self.usage_impact_repartition_weights[country] = ExplainableQuantity(
+            1 * u.dimensionless, label="Impact repartition weight")
+
+    def update_usage_impact_repartition_weights(self):
+        self.usage_impact_repartition_weights = ExplainableObjectDict()
+        self.update_dict_element_in_usage_impact_repartition_weights(self.country)
