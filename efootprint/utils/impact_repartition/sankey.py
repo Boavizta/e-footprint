@@ -318,11 +318,14 @@ class ImpactRepartitionSankey:
         if self.skip_object_footprint_split:
             return
 
-        if not self._should_skip_object(source):
-            source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
-            self._leaf_node_indices.add(source_idx)
-            self._add_flow_to_node(leaf_parent_idx, source_idx, value_kg)
-            self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value_kg)
+        if self._should_skip_object(source):
+            self._expand_impact_source_breakdown(source, leaf_parent_idx, phase, phase_context, value_kg)
+            return
+
+        source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
+        self._leaf_node_indices.add(source_idx)
+        self._add_flow_to_node(leaf_parent_idx, source_idx, value_kg)
+        self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value_kg)
 
     @time_it
     def build(self) -> None:

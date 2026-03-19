@@ -884,3 +884,36 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertIn((breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
         self.assertIn((child_a.id, "Manufacturing"), sankey.node_indices)
         self.assertNotIn((child_b.id, "Manufacturing"), sankey.node_indices)
+
+    def test_skipped_impact_repartition_classes_keep_breakdown_children_of_skipped_parent(self):
+        """Test skipped impact-source nodes still expand their visible breakdown children."""
+        child_a = self._make_leaf("Child A", manufacturing_kg=25)
+        child_b = self._make_leaf("Child B", manufacturing_kg=75)
+        skipped_breakdown_leaf = self._make_breakdown_leaf(
+            "Skipped breakdown source",
+            manufacturing_kg=100,
+            manufacturing_breakdown={child_a: 25, child_b: 75},
+            obj_cls=_SkippedObject,
+        )
+        intermediate = self._make_intermediate("Intermediate", manufacturing_sources={skipped_breakdown_leaf: 100})
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={intermediate: 100})
+
+        sankey = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=0,
+            skip_object_category_footprint_split=True,
+            skipped_impact_repartition_classes=[_SkippedObject],
+        )
+        sankey.build()
+
+        child_a_idx = sankey.node_indices[(child_a.id, "Manufacturing")]
+        child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
+        incoming_value_by_target = {}
+        for target, value in zip(sankey.link_targets, sankey.link_values):
+            incoming_value_by_target[target] = incoming_value_by_target.get(target, 0) + value
+
+        self.assertNotIn((skipped_breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
+        self.assertEqual(25, sankey.node_total_kg[child_a_idx])
+        self.assertEqual(75, sankey.node_total_kg[child_b_idx])
+        self.assertEqual(0.025, incoming_value_by_target[child_a_idx])
+        self.assertEqual(0.075, incoming_value_by_target[child_b_idx])
