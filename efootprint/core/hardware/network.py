@@ -35,6 +35,7 @@ class Network(ModelingObject):
 
     def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
+        self.energy_footprint_per_job = ExplainableObjectDict()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
@@ -42,7 +43,13 @@ class Network(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["instances_fabrication_footprint", "energy_footprint"] + super().calculated_attributes
+        return [
+            "energy_footprint_per_job",
+            "instances_fabrication_footprint",
+            "energy_footprint",
+        ] + [
+            attr for attr in super().calculated_attributes if attr != "usage_impact_repartition_weights"
+        ]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -56,52 +63,43 @@ class Network(ModelingObject):
     def jobs(self) -> List["JobBase"]:
         return list(dict.fromkeys(sum([up.jobs for up in self.usage_patterns], start=[])))
 
-    def update_energy_footprint(self):
-        hourly_data_transferred_per_up = {up: EmptyExplainableObject() for up in self.usage_patterns}
-        for job in self.jobs:
-            job_ups_in_network_ups = [up for up in job.usage_patterns if up in self.usage_patterns]
-            for up in job_ups_in_network_ups:
-                hourly_data_transferred_per_up[up] += job.hourly_data_transferred_per_usage_pattern[up]
+    def update_instances_fabrication_footprint(self):
+        self.instances_fabrication_footprint = EmptyExplainableObject()
 
+    def update_dict_element_in_energy_footprint_per_job(self, job: "JobBase"):
         energy_footprint = EmptyExplainableObject()
-        for up in self.usage_patterns:
-            up_network_consumption = (
-                        self.bandwidth_energy_intensity * hourly_data_transferred_per_up[up]).to(u.kWh).set_label(
-                f"{up.name} network energy consumption")
-
-            energy_footprint += up_network_consumption * up.country.average_carbon_intensity
-
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
-
-    def _activity_based_job_weight(self, job: "JobBase"):
-        weight = job.data_transferred * job.hourly_avg_occurrences_across_usage_patterns
-        return weight.to(u.concurrent)
-
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
-        self.fabrication_impact_repartition_weights[job] = self._activity_based_job_weight(job).set_label(
-            f"{job.name} fabrication weight in {self.name} impact repartition")
-
-    def update_fabrication_impact_repartition_weights(self):
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, job: "JobBase"):
-        weight = EmptyExplainableObject()
         for usage_pattern in [up for up in job.usage_patterns if up in self.usage_patterns]:
-            weight += (
+            energy_footprint += (
                 self.bandwidth_energy_intensity
                 * job.hourly_data_transferred_per_usage_pattern[usage_pattern]
             ).to(u.kWh) * usage_pattern.country.average_carbon_intensity
 
-        self.usage_impact_repartition_weights[job] = weight.to(u.kg).set_label(
-            f"{job.name} usage weight in {self.name} impact repartition"
+        self.energy_footprint_per_job[job] = energy_footprint.to(u.kg).set_label(
+            f"{job.name} energy footprint in {self.name}"
         )
 
-    def update_usage_impact_repartition_weights(self):
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
+    def update_energy_footprint_per_job(self):
+        self.energy_footprint_per_job = ExplainableObjectDict()
         for job in self.jobs:
-            self.update_dict_element_in_usage_impact_repartition_weights(job)
+            self.update_dict_element_in_energy_footprint_per_job(job)
 
-    def update_instances_fabrication_footprint(self):
-        self.instances_fabrication_footprint = EmptyExplainableObject()
+    def update_energy_footprint(self):
+        self.energy_footprint = sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
+            f"Hourly {self.name} energy footprint"
+        )
+
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
+        raise NotImplementedError(
+            f"Fabrication impact repartition is not implemented for {self.name} when Network has a fabrication footprint."
+        )
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+        if isinstance(self.instances_fabrication_footprint, EmptyExplainableObject):
+            return
+        for job in self.jobs:
+            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+
+    @property
+    def usage_impact_repartition_weights(self):
+        return self.energy_footprint_per_job
