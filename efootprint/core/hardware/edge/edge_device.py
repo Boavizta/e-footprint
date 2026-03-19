@@ -250,14 +250,8 @@ class EdgeDevice(ModelingObject):
         for usage_pattern in component_need.edge_usage_patterns:
             component_need_demand = component_need.unitary_hourly_need_per_usage_pattern.get(
                 usage_pattern, EmptyExplainableObject())
-            sibling_need_demand = sum(
-                [
-                    recurrent_component_need.unitary_hourly_need_per_usage_pattern.get(
-                        usage_pattern, EmptyExplainableObject())
-                    for recurrent_component_need in self.recurrent_edge_component_needs
-                    if recurrent_component_need.edge_component == component
-                ],
-                start=EmptyExplainableObject(),
+            sibling_need_demand = component.total_unitary_hourly_need_per_usage_pattern.get(
+                usage_pattern, EmptyExplainableObject()
             )
             if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
                 continue

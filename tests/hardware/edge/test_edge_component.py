@@ -10,7 +10,8 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-from tests.utils import create_mod_obj_mock
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
 class ConcreteEdgeComponent(EdgeComponent):
@@ -95,6 +96,32 @@ class TestEdgeComponent(TestCase):
 
         result = self.component.energy_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
+
+    def test_update_total_unitary_hourly_need_per_usage_pattern(self):
+        """Test summing unitary hourly need across recurrent component needs."""
+        mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
+        mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
+        mock_need_1 = create_mod_obj_mock(RecurrentEdgeComponentNeed, "Need 1")
+        mock_need_2 = create_mod_obj_mock(RecurrentEdgeComponentNeed, "Need 2")
+        mock_need_1.edge_usage_patterns = [mock_pattern_1, mock_pattern_2]
+        mock_need_2.edge_usage_patterns = [mock_pattern_1]
+        mock_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+            mock_pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.cpu_core * u.concurrent),
+        })
+        mock_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern_1: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
+        })
+        set_modeling_obj_containers(self.component, [mock_need_1, mock_need_2])
+
+        self.component.update_total_unitary_hourly_need_per_usage_pattern()
+
+        self.assertTrue(np.allclose(
+            [16, 16], self.component.total_unitary_hourly_need_per_usage_pattern[mock_pattern_1].magnitude
+        ))
+        self.assertTrue(np.allclose(
+            [4, 4], self.component.total_unitary_hourly_need_per_usage_pattern[mock_pattern_2].magnitude
+        ))
 
     def test_update_instances_fabrication_footprint(self):
         """Test summing fabrication footprint across patterns."""

@@ -34,6 +34,7 @@ class EdgeComponent(ModelingObject):
         self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
+        self.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -51,7 +52,8 @@ class EdgeComponent(ModelingObject):
     def calculated_attributes(self):
         return ["unitary_power_per_usage_pattern", "instances_fabrication_footprint_per_usage_pattern",
                 "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
-                "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+                "instances_fabrication_footprint", "instances_energy", "energy_footprint",
+                "total_unitary_hourly_need_per_usage_pattern"]
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -149,3 +151,17 @@ class EdgeComponent(ModelingObject):
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             f"{self.name} total energy footprint across usage patterns")
+
+    def update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
+        self.total_unitary_hourly_need_per_usage_pattern[usage_pattern] = sum(
+            [
+                recurrent_need.unitary_hourly_need_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
+                for recurrent_need in self.recurrent_edge_component_needs
+            ],
+            start=EmptyExplainableObject(),
+        ).set_label(f"Total hourly need on {self.name} for {usage_pattern.name}")
+
+    def update_total_unitary_hourly_need_per_usage_pattern(self):
+        self.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.edge_usage_patterns:
+            self.update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(usage_pattern)

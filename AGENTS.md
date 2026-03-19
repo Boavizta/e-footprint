@@ -53,6 +53,17 @@ New modeling objects (be it builder or core) need to be added to the ALL_EFOOTPR
 Objects automatically track dependencies and trigger recalculation when inputs change. Object dependencies are managed through the modeling_objects_whose_attributes_depend_directly_on_me property in the ModelingObject class. When changing a numerical input, the calculation graph managed by ExplainableObject ensures only affected calculations are recomputed.
 The ModelingUpdate object in efootprint/abstract_modeling_classes/modeling_update.py module handles all recomputation logic.
 
+### Modeling Refactor Preferences
+- When a modeling object needs different attribution rules for fabrication and usage, prefer explicit phase-specific calculated attributes and update methods over compatibility bridges or legacy fallback machinery.
+- In `ModelingObject` subclasses that override `calculated_attributes`, prefer `super().calculated_attributes` and append local attributes rather than duplicating base-class-managed names.
+- Prefer computing reusable per-pattern quantities once as calculated attributes, then aggregating from them. For example, if usage attribution depends on per-usage-pattern energy footprint, compute `*_per_usage_pattern` first and let totals sum that dict rather than recomputing the same formula in repartition methods.
+- For fabrication repartition, do not introduce per-pattern calculated attributes when a simple proportional activity weight is sufficient. Fabrication and usage repartition weights do not need to be coherent with one another; they only need internal coherence within the same phase on the same object.
+- Repartition weights do not need local normalization. Use direct proportional weights when possible and let final repartition normalization happen downstream.
+- Units of repartition weights do not need to match across phases. They only need to remain Pint-coherent within a given phase/object weight set.
+- When a costly aggregate is reused across several repartition calculations, prefer introducing a dedicated calculated attribute on the natural owning object rather than ad hoc helper caching. Example: component-level totals belong on `EdgeComponent`, not in a transient cache inside `EdgeDevice`.
+- Prefer phase-specific logic that makes the allocated impact explicit over generic helpers with a `phase` switch when the underlying formula differs materially between fabrication and usage.
+- If a structure or parent-level impact is evenly shared across children, keep that logic at the parent object level unless there is a strong ownership reason to move it. Do not pollute child attributes with parent-specific policy if a parent cached attribute can express it cleanly.
+
 ### Units and Calculations
 All quantities use Pint for unit handling. Custom units are defined in `efootprint/constants/custom_units.txt`. Calculations are explainable with dependency graphs.
 
@@ -86,3 +97,5 @@ Always run tests before committing changes. The codebase has comprehensive test 
 - When working in `tests/integration_tests/`, also read and follow `tests/integration_tests/AGENTS.md`.
 - In tests, when mocking e-footprint modeling objects, use `create_mod_obj_mock` from `tests/utils.py` instead of raw `MagicMock(spec=...)`, unless there is a specific reason not to.
 - When using `create_mod_obj_mock`, prefer passing mocked attributes directly as keyword arguments at construction time, and keep simple fixture setup compact when readability is not harmed.
+- Keep modeling tests focused on the exact code path under test. Avoid populating calculated attributes or fixture state that is no longer consumed by the method being tested.
+- For impact repartition tests, prefer exercising real share logic instead of only trivial one-need cases. If the code is supposed to split impact across sibling needs, include at least one test where a component has several needs so the proportional split is actually covered.

@@ -367,6 +367,10 @@ class TestEdgeDevice(TestCase):
             pattern_1: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
             pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
         })
+        self.mock_component_1.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([16, 16], pint_unit=u.cpu_core * u.concurrent),
+            pattern_2: create_source_hourly_values_from_list([16, 16], pint_unit=u.cpu_core * u.concurrent),
+        })
         self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern_1: create_source_hourly_values_from_list([0, 0], pint_unit=u.kg),
             pattern_2: create_source_hourly_values_from_list([0, 0], pint_unit=u.kg),
@@ -397,7 +401,7 @@ class TestEdgeDevice(TestCase):
            new_callable=PropertyMock)
     def test_update_fabrication_impact_repartition_weights_evenly_distributes_structure_across_components(
             self, mock_component_needs):
-        """Test edge device fabrication repartition gives each component an equal share of structure footprint."""
+        """Test edge device fabrication repartition gives each component an equal structure share before need splits."""
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
@@ -405,8 +409,11 @@ class TestEdgeDevice(TestCase):
         self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([8, 8], pint_unit=u.kg),
         })
-        self.edge_device.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
-            pattern: create_source_hourly_values_from_list([18, 18], pint_unit=u.kg),
+        self.mock_component_1.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        self.mock_component_2.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
         })
         self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([6, 6], pint_unit=u.kg),
@@ -415,56 +422,80 @@ class TestEdgeDevice(TestCase):
         component_need_1 = create_mod_obj_mock(
             RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
         component_need_2 = create_mod_obj_mock(
-            RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_2)
+            RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_1)
+        component_need_3 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 3", edge_component=self.mock_component_2)
         component_need_1.edge_usage_patterns = [pattern]
         component_need_2.edge_usage_patterns = [pattern]
+        component_need_3.edge_usage_patterns = [pattern]
         component_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
-            pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+            pattern: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
         })
         component_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern: create_source_hourly_values_from_list([4, 4], pint_unit=u.cpu_core * u.concurrent),
+        })
+        component_need_3.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
         })
-        mock_component_needs.return_value = [component_need_1, component_need_2]
+        mock_component_needs.return_value = [component_need_1, component_need_2, component_need_3]
 
         self.edge_device.update_fabrication_impact_repartition_weights()
 
         self.assertTrue(
-            np.allclose([7, 7], self.edge_device.fabrication_impact_repartition_weights[component_need_1].magnitude)
+            np.allclose([4.2, 4.2], self.edge_device.fabrication_impact_repartition_weights[component_need_1].magnitude)
         )
         self.assertTrue(
-            np.allclose([11, 11], self.edge_device.fabrication_impact_repartition_weights[component_need_2].magnitude)
+            np.allclose([2.8, 2.8], self.edge_device.fabrication_impact_repartition_weights[component_need_2].magnitude)
+        )
+        self.assertTrue(
+            np.allclose([11, 11], self.edge_device.fabrication_impact_repartition_weights[component_need_3].magnitude)
         )
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)
     def test_update_usage_impact_repartition_weights_uses_usage_pattern_energy_impact(
             self, mock_component_needs):
-        """Test edge device usage repartition reflects per-pattern energy impact, including carbon intensity effects."""
+        """Test edge device usage repartition reflects per-pattern energy impact and intra-component need shares."""
         pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
         self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern_1: create_source_hourly_values_from_list([2, 2], pint_unit=u.kg),
+        })
+        self.mock_component_2.energy_footprint_per_usage_pattern = ExplainableObjectDict({
             pattern_2: create_source_hourly_values_from_list([6, 6], pint_unit=u.kg),
+        })
+        self.mock_component_1.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+        })
+        self.mock_component_2.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_2: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
         })
 
         component_need_1 = create_mod_obj_mock(
             RecurrentEdgeComponentNeed, name="Component need 1", edge_component=self.mock_component_1)
         component_need_2 = create_mod_obj_mock(
             RecurrentEdgeComponentNeed, name="Component need 2", edge_component=self.mock_component_1)
+        component_need_3 = create_mod_obj_mock(
+            RecurrentEdgeComponentNeed, name="Component need 3", edge_component=self.mock_component_2)
         component_need_1.edge_usage_patterns = [pattern_1]
-        component_need_2.edge_usage_patterns = [pattern_2]
+        component_need_2.edge_usage_patterns = [pattern_1]
+        component_need_3.edge_usage_patterns = [pattern_2]
         component_need_1.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
-            pattern_1: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
+            pattern_1: create_source_hourly_values_from_list([6, 6], pint_unit=u.cpu_core * u.concurrent),
         })
         component_need_2.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
+            pattern_1: create_source_hourly_values_from_list([4, 4], pint_unit=u.cpu_core * u.concurrent),
+        })
+        component_need_3.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
             pattern_2: create_source_hourly_values_from_list([10, 10], pint_unit=u.cpu_core * u.concurrent),
         })
-        mock_component_needs.return_value = [component_need_1, component_need_2]
+        mock_component_needs.return_value = [component_need_1, component_need_2, component_need_3]
 
         self.edge_device.update_usage_impact_repartition_weights()
 
-        self.assertTrue(np.allclose([2, 2], self.edge_device.usage_impact_repartition_weights[component_need_1].magnitude))
-        self.assertTrue(np.allclose([6, 6], self.edge_device.usage_impact_repartition_weights[component_need_2].magnitude))
+        self.assertTrue(np.allclose([1.2, 1.2], self.edge_device.usage_impact_repartition_weights[component_need_1].magnitude))
+        self.assertTrue(np.allclose([0.8, 0.8], self.edge_device.usage_impact_repartition_weights[component_need_2].magnitude))
+        self.assertTrue(np.allclose([6, 6], self.edge_device.usage_impact_repartition_weights[component_need_3].magnitude))
 
     def test_footprint_breakdown_by_source_distributes_computed_structure_across_components_and_keeps_energy(self):
         """Test footprint_breakdown_by_source conserves computed device fabrication and keeps energy unchanged."""
