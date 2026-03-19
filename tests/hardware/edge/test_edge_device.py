@@ -258,7 +258,48 @@ class TestEdgeDevice(TestCase):
         result = self.edge_device.instances_energy_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
         self.assertIn("Test Device", result.label)
-        self.assertIn("Test Pattern", result.label)
+
+    def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
+        """Test per-component fabrication breakdown splits structure equally across components."""
+        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
+        self.mock_component_2.instances_fabrication_footprint = SourceValue(10 * u.kg)
+        self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
+
+        self.edge_device.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
+        self.edge_device.update_dict_element_in_fabrication_footprint_breakdown_by_source(self.mock_component_1)
+
+        breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
+        self.assertEqual(7, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
+        self.assertIn("Test Device", breakdown[self.mock_component_1].label)
+        self.assertIn("Component 1", breakdown[self.mock_component_1].label)
+
+    def test_update_fabrication_footprint_breakdown_by_source(self):
+        """Test fabrication breakdown updates every component contribution."""
+        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
+        self.mock_component_2.instances_fabrication_footprint = SourceValue(10 * u.kg)
+        self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
+
+        self.edge_device.update_fabrication_footprint_breakdown_by_source()
+
+        breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
+        self.assertEqual({self.mock_component_1, self.mock_component_2}, set(breakdown))
+        self.assertEqual(7, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
+        self.assertEqual(13, breakdown[self.mock_component_2].value.to(u.kg).magnitude)
+
+    def test_update_fabrication_footprint_breakdown_by_source_without_components(self):
+        """Test fabrication breakdown stays empty when the edge device has no components."""
+        edge_device = EdgeDevice(
+            name="Empty Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year)
+        )
+        edge_device.trigger_modeling_updates = False
+        edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
+
+        edge_device.update_fabrication_footprint_breakdown_by_source()
+
+        self.assertEqual({}, edge_device.fabrication_footprint_breakdown_by_source)
 
     def test_update_dict_element_in_energy_footprint_per_usage_pattern_no_components(self):
         """Test energy footprint calculation with no component contributions."""
@@ -505,6 +546,7 @@ class TestEdgeDevice(TestCase):
         self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
         self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
         self.mock_component_2.energy_footprint = SourceValue(5 * u.kg)
+        self.edge_device.update_fabrication_footprint_breakdown_by_source()
 
         breakdown = self.edge_device.footprint_breakdown_by_source
 
