@@ -9,6 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
@@ -104,6 +105,7 @@ class ServerBase(InfraHardware):
         self.occupied_ram_per_instance = EmptyExplainableObject()
         self.occupied_compute_per_instance = EmptyExplainableObject()
         self.service_total_job_volumes = ExplainableObjectDict()
+        self.job_repartition_weights = ExplainableObjectDict()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -115,12 +117,21 @@ class ServerBase(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return ["hour_by_hour_ram_need", "hour_by_hour_compute_need",
-                "occupied_ram_per_instance", "occupied_compute_per_instance",
-                "available_ram_per_instance", "available_compute_per_instance",
-                "raw_nb_of_instances", "nb_of_instances",
-                "instances_fabrication_footprint", "instances_energy", "energy_footprint",
-                "service_total_job_volumes"] + super().calculated_attributes
+        return [
+            "hour_by_hour_ram_need",
+            "hour_by_hour_compute_need",
+            "occupied_ram_per_instance",
+            "occupied_compute_per_instance",
+            "available_ram_per_instance",
+            "available_compute_per_instance",
+        ] + InfraHardware.calculated_attributes.fget(self) + [
+            "service_total_job_volumes",
+            "job_repartition_weights",
+        ] + [
+            attr
+            for attr in ModelingObject.calculated_attributes.fget(self)
+            if attr not in {"fabrication_impact_repartition_weights", "usage_impact_repartition_weights"}
+        ]
 
     @property
     def resources_unit_dict(self):
@@ -281,7 +292,7 @@ class ServerBase(InfraHardware):
         for service in self.installed_services:
             self.update_dict_element_in_service_total_job_volumes(service)
 
-    def _job_repartition_weight(self, job: "JobBase"):
+    def update_dict_element_in_job_repartition_weights(self, job: "JobBase"):
         from efootprint.core.usage.job import DirectServerJob
         if isinstance(job, DirectServerJob):
             weight = (
@@ -304,22 +315,19 @@ class ServerBase(InfraHardware):
                     + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
                     * job.hourly_avg_occurrences_across_usage_patterns)
 
-        return weight.to(u.concurrent)
+        self.job_repartition_weights[job] = weight.to(u.concurrent).set_label(
+            f"{job.name} weight in {self.name} impact repartition"
+        )
 
-    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
-        self.fabrication_impact_repartition_weights[job] = self._job_repartition_weight(job).set_label(
-            f"{job.name} fabrication weight in {self.name} impact repartition")
-
-    def update_fabrication_impact_repartition_weights(self):
-        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+    def update_job_repartition_weights(self):
+        self.job_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
-            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+            self.update_dict_element_in_job_repartition_weights(job)
 
-    def update_dict_element_in_usage_impact_repartition_weights(self, job: "JobBase"):
-        self.usage_impact_repartition_weights[job] = self._job_repartition_weight(job).set_label(
-            f"{job.name} usage weight in {self.name} impact repartition")
+    @property
+    def fabrication_impact_repartition_weights(self):
+        return self.job_repartition_weights
 
-    def update_usage_impact_repartition_weights(self):
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for job in self.jobs:
-            self.update_dict_element_in_usage_impact_repartition_weights(job)
+    @property
+    def usage_impact_repartition_weights(self):
+        return self.job_repartition_weights

@@ -5,7 +5,6 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.core.country import Country
 from efootprint.core.hardware.network import Network
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
-from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
     ExplainableHourlyQuantities)
