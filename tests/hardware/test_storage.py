@@ -6,6 +6,7 @@ import numpy as np
 
 from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -162,3 +163,39 @@ class TestStorage(TestCase):
             self.storage_base.update_energy_footprint()
             self.assertTrue(np.allclose([0.09, 0.18, 0.27], self.storage_base.energy_footprint.magnitude))
             self.assertEqual(u.kg, self.storage_base.energy_footprint.unit)
+
+    def test_update_fabrication_impact_repartition_weights_shares_unused_and_base_storage_equally(self):
+        """Test fabrication weights add equal unused/base storage share on top of each job cumulative need."""
+        job_1 = create_mod_obj_mock(Job, name="Job 1")
+        job_2 = create_mod_obj_mock(Job, name="Job 2")
+
+        with patch.object(Storage, "jobs", new_callable=PropertyMock) as mock_jobs:
+            mock_jobs.return_value = [job_1, job_2]
+            self.storage_base.full_cumulative_storage_need_per_job = ExplainableObjectDict({
+                job_1: create_source_hourly_values_from_list([2], pint_unit=u.TB),
+                job_2: create_source_hourly_values_from_list([4], pint_unit=u.TB),
+            })
+            self.storage_base.full_cumulative_storage_need = create_source_hourly_values_from_list([8], pint_unit=u.TB)
+            self.storage_base.nb_of_instances = create_source_hourly_values_from_list([5], pint_unit=u.concurrent)
+            self.storage_base.storage_capacity = SourceValue(2 * u.TB)
+            self.storage_base.base_storage_need = SourceValue(2 * u.TB)
+
+            self.storage_base.update_fabrication_impact_repartition_weights()
+
+        # full cumulative = 8 TB (including 2 TB base), total provisioned = 10 TB, unused = 2 TB, shared = 2 TB/job
+        self.assertTrue(np.allclose([4], self.storage_base.fabrication_impact_repartition_weights[job_1].magnitude))
+        self.assertTrue(np.allclose([6], self.storage_base.fabrication_impact_repartition_weights[job_2].magnitude))
+        self.assertEqual(u.TB, self.storage_base.fabrication_impact_repartition_weights[job_1].unit)
+
+    def test_usage_impact_repartition_weights_returns_empty_dict_when_energy_is_empty(self):
+        """Test storage usage repartition weights are empty while storage energy footprint is empty."""
+        self.storage_base.energy_footprint = EmptyExplainableObject()
+
+        self.assertEqual({}, self.storage_base.usage_impact_repartition_weights)
+
+    def test_usage_impact_repartition_weights_raises_when_energy_logic_is_missing(self):
+        """Test storage usage repartition raises if a non-empty energy footprint exists without attribution logic."""
+        self.storage_base.energy_footprint = SourceValue(1 * u.kg)
+
+        with self.assertRaises(NotImplementedError):
+            _ = self.storage_base.usage_impact_repartition_weights

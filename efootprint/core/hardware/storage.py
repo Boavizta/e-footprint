@@ -200,10 +200,25 @@ class Storage(InfraHardware):
     def update_instances_energy(self):
         self.instances_energy = EmptyExplainableObject()
 
-    @property
-    def fabrication_impact_repartition_weights(self):
-        return self.full_cumulative_storage_need_per_job
+    def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
+        unused_storage = (self.nb_of_instances * self.storage_capacity - self.full_cumulative_storage_need).to(u.GB)
+        shared_storage_per_job = (
+            (unused_storage + self.base_storage_need)
+            / ExplainableQuantity(len(self.jobs) * u.dimensionless, "Number of jobs")
+        ).to(u.GB)
+        self.fabrication_impact_repartition_weights[job] = (
+            self.full_cumulative_storage_need_per_job[job] + shared_storage_per_job
+        ).set_label(f"{job.name} fabrication weight in {self.name} impact repartition")
+
+    def update_fabrication_impact_repartition_weights(self):
+        self.fabrication_impact_repartition_weights = ExplainableObjectDict()
+        for job in self.jobs:
+            self.update_dict_element_in_fabrication_impact_repartition_weights(job)
 
     @property
     def usage_impact_repartition_weights(self):
-        return self.full_cumulative_storage_need_per_job
+        if isinstance(self.energy_footprint, EmptyExplainableObject):
+            return ExplainableObjectDict()
+        raise NotImplementedError(
+            f"Usage impact repartition is not implemented for {self.name} when Storage has a non-empty energy footprint."
+        )
