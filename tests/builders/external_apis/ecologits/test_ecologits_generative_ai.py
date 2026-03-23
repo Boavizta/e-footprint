@@ -3,7 +3,6 @@ import os
 import unittest
 from datetime import datetime
 from unittest import TestCase
-from unittest.mock import MagicMock
 
 import numpy as np
 from pint import Quantity

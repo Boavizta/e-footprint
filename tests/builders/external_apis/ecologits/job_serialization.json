@@ -76,7 +76,7 @@
       "explain_nested_tuples": null
     },
     "request_duration": {
-      "value": 99.14607880459047,
+      "value": 25.41562189054726,
       "unit": "second",
       "label": "Ecologits generation_latency for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "direct_ancestors_with_id": [
@@ -156,9 +156,9 @@
         "latency_beta": 0.0003119310311688259,
         "latency_gamma": 0.019473717579473387,
         "gpu_memory": 80,
-        "gpu_embodied_gwp": 164,
-        "gpu_embodied_adpe": 0.0051,
-        "gpu_embodied_pe": 1828,
+        "gpu_embodied_gwp": 273,
+        "gpu_embodied_adpe": 0.00895,
+        "gpu_embodied_pe": 3721,
         "server_gpu_count": 8,
         "server_power": 1.2,
         "server_embodied_gwp": 5700,
@@ -166,29 +166,33 @@
         "server_embodied_pe": 70000,
         "server_lifetime": 94608000,
         "batch_size": 64,
+        "tps": 40.2,
+        "ttft": 0.54,
         "gpu_energy": 9.06377035298003e-05,
-        "generation_latency": 99.14607880459047,
+        "generation_latency": 25.41562189054726,
         "model_required_memory": 1056.0,
         "gpu_required_count": 16,
-        "server_energy": 0.001032771654214484,
-        "server_gpu_embodied_gwp": 14024.0,
-        "server_gpu_embodied_adpe": 0.8216,
-        "server_gpu_embodied_pe": 169248.0,
-        "request_energy": 0.0029795698928295465,
-        "request_embodied_gwp": 0.00022963580794495064,
-        "request_embodied_adpe": 1.3453278651424087e-08,
-        "request_embodied_pe": 0.002771349203013905,
-        "request_usage_gwp": 0.0011428140323947727,
+        "server_energy": 0.0002647460613598673,
+        "server_gpu_embodied_gwp": 15768.0,
+        "server_gpu_embodied_adpe": 0.8832,
+        "server_gpu_embodied_pe": 199536.0,
+        "request_energy": 0.0020579391814040063,
+        "request_embodied_gwp": 6.618651533996682e-05,
+        "request_embodied_adpe": 3.7072507831214295e-09,
+        "request_embodied_pe": 0.0008375566035562924,
+        "request_usage_gwp": 0.0007893225730275066,
         "request_usage_adpe": 0.0,
         "request_usage_pe": 0.0,
-        "request_usage_wcf": 0.0016953752690200118
+        "request_usage_wcf": 0.0011709673942188795
       },
       "label": "Ecologits impacts for Test Job from Ecologits compute_llm_impacts_dag function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'model_active_params', None)",
         "('Test-EcoLogits-API', 'model_total_params', None)",
         "('Test-Job', 'output_token_count', None)",
-        "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
+        "('Test-EcoLogits-API', 'average_carbon_intensity', None)",
+        "('Test-EcoLogits-API', 'tokens_per_second', None)",
+        "('Test-EcoLogits-API', 'time_to_first_token', None)"
       ],
       "direct_children_with_id": [
         "('Test-Job', 'gpu_energy', None)",
@@ -204,15 +208,23 @@
       "explain_nested_tuples": [
         [
           [
-            "('Test-EcoLogits-API', 'model_active_params', None)",
-            "compute impacts with EcoLogits compute_llm_impacts_dag function",
-            "('Test-EcoLogits-API', 'model_total_params', None)"
+            [
+              [
+                "('Test-EcoLogits-API', 'model_active_params', None)",
+                "compute impacts with EcoLogits compute_llm_impacts_dag function",
+                "('Test-EcoLogits-API', 'model_total_params', None)"
+              ],
+              "logically dependent on",
+              "('Test-Job', 'output_token_count', None)"
+            ],
+            "logically dependent on",
+            "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
           ],
           "logically dependent on",
-          "('Test-Job', 'output_token_count', None)"
+          "('Test-EcoLogits-API', 'tokens_per_second', None)"
         ],
         "logically dependent on",
-        "('Test-EcoLogits-API', 'average_carbon_intensity', None)"
+        "('Test-EcoLogits-API', 'time_to_first_token', None)"
       ]
     },
     "gpu_energy": {
@@ -243,7 +255,7 @@
       "formula": "\ngpu_energy_per_token = gpu_energy_alpha * math.exp(gpu_energy_beta * batch_size) * model_active_parameter_count + \\\n    gpu_energy_gamma\ngpu_energy_per_token /= 1000    # convert to kWh\ngpu_energy = output_token_count * gpu_energy_per_token\n"
     },
     "generation_latency": {
-      "value": 99.14607880459047,
+      "value": 25.41562189054726,
       "unit": "second",
       "label": "Ecologits generation_latency for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -268,9 +280,11 @@
         "latency_gamma": 0.019473717579473387,
         "model_active_parameter_count": 88.0,
         "output_token_count": 1000.0,
-        "request_latency": Infinity
+        "request_latency": Infinity,
+        "tps": 40.2,
+        "ttft": 0.54
       },
-      "formula": "\nlatency_per_token = latency_alpha * model_active_parameter_count + latency_beta * batch_size + latency_gamma\ngpu_latency = output_token_count * latency_per_token\nif request_latency < gpu_latency:\n    generation_latency = request_latency\ngeneration_latency = gpu_latency\n"
+      "formula": "\nif tps is None:\n    latency_per_token = latency_alpha * model_active_parameter_count + latency_beta * batch_size + latency_gamma\nelse:\n    latency_per_token = 1 / tps\nlatency_first_token = ttft or 0\ngpu_latency = output_token_count * latency_per_token + latency_first_token\nif request_latency < gpu_latency:\n    generation_latency = request_latency\ngeneration_latency = gpu_latency\n"
     },
     "model_required_memory": {
       "value": 1056.0,
@@ -319,7 +333,7 @@
       "formula": "\ngpu_nb = math.ceil(model_required_memory / gpu_memory)\ngpu_required_count = 2 ** math.ceil(math.log2(gpu_nb))    # Round-up in base two\n"
     },
     "server_energy": {
-      "value": 1.032771654214484,
+      "value": 0.2647460613598673,
       "unit": "watt_hour",
       "label": "Ecologits server_energy for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -337,7 +351,7 @@
       ],
       "ancestors": {
         "batch_size": 64,
-        "generation_latency": 99.14607880459047,
+        "generation_latency": 25.41562189054726,
         "gpu_required_count": 16,
         "server_gpu_count": 8,
         "server_power": 1.2
@@ -345,7 +359,7 @@
       "formula": "\nserver_energy = (generation_latency / 3600) * server_power * (gpu_required_count / server_gpu_count) * (1 / batch_size)\n"
     },
     "request_energy": {
-      "value": 2.9795698928295464,
+      "value": 2.0579391814040062,
       "unit": "watt_hour",
       "label": "Ecologits request_energy for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -365,12 +379,12 @@
         "datacenter_pue": 1.2,
         "gpu_energy": 9.06377035298003e-05,
         "gpu_required_count": 16,
-        "server_energy": 0.001032771654214484
+        "server_energy": 0.0002647460613598673
       },
       "formula": "\nrequest_energy = datacenter_pue * (server_energy + gpu_required_count * gpu_energy)\n"
     },
     "request_usage_gwp": {
-      "value": 1.1428140323947726,
+      "value": 0.7893225730275066,
       "unit": "gram",
       "label": "Ecologits request_usage_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -388,12 +402,12 @@
       ],
       "ancestors": {
         "if_electricity_mix_gwp": 0.38355,
-        "request_energy": 0.0029795698928295465
+        "request_energy": 0.0020579391814040063
       },
       "formula": "\nrequest_usage_gwp = request_energy * if_electricity_mix_gwp\n"
     },
     "server_gpu_embodied_gwp": {
-      "value": 14024.0,
+      "value": 15768.0,
       "unit": "kilogram",
       "label": "Ecologits server_gpu_embodied_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -410,7 +424,7 @@
         null
       ],
       "ancestors": {
-        "gpu_embodied_gwp": 164,
+        "gpu_embodied_gwp": 273,
         "gpu_required_count": 16,
         "server_embodied_gwp": 5700,
         "server_gpu_count": 8
@@ -418,7 +432,7 @@
       "formula": "\nserver_gpu_embodied_gwp = (gpu_required_count / server_gpu_count) * server_embodied_gwp + gpu_required_count * gpu_embodied_gwp\n"
     },
     "request_embodied_gwp": {
-      "value": 0.22963580794495064,
+      "value": 0.06618651533996682,
       "unit": "gram",
       "label": "Ecologits request_embodied_gwp for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
@@ -436,8 +450,8 @@
       ],
       "ancestors": {
         "batch_size": 64,
-        "generation_latency": 99.14607880459047,
-        "server_gpu_embodied_gwp": 14024.0,
+        "generation_latency": 25.41562189054726,
+        "server_gpu_embodied_gwp": 15768.0,
         "server_lifetime": 94608000
       },
       "formula": "\nrequest_embodied_gwp = generation_latency * server_gpu_embodied_gwp / (server_lifetime * batch_size)\n"
@@ -458,6 +472,8 @@
       "direct_children_with_id": [
         "('Test-EcoLogits-API', 'model_total_params', None)",
         "('Test-EcoLogits-API', 'model_active_params', None)",
+        "('Test-EcoLogits-API', 'tokens_per_second', None)",
+        "('Test-EcoLogits-API', 'time_to_first_token', None)",
         "('Test-EcoLogits-API', 'datacenter_location', None)",
         "('Test-EcoLogits-API', 'data_center_pue', None)"
       ],
@@ -473,7 +489,9 @@
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [
         "('Test-EcoLogits-API', 'model_total_params', None)",
-        "('Test-EcoLogits-API', 'model_active_params', None)"
+        "('Test-EcoLogits-API', 'model_active_params', None)",
+        "('Test-EcoLogits-API', 'tokens_per_second', None)",
+        "('Test-EcoLogits-API', 'time_to_first_token', None)"
       ],
       "explain_nested_tuples": null
     },
@@ -502,6 +520,48 @@
       "value": 88.0,
       "unit": "billion",
       "label": "gpt-4o active parameter count (in billions) from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits model repository with",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ]
+    },
+    "tokens_per_second": {
+      "value": 40.2,
+      "unit": "dimensionless",
+      "label": "gpt-4o token per second from Ecologits llm_impacts function",
+      "source": {
+        "name": "Ecologits llm_impacts function",
+        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
+      },
+      "direct_ancestors_with_id": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ],
+      "direct_children_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "explain_nested_tuples": [
+        "('Test-EcoLogits-API', 'provider', None)",
+        "query EcoLogits model repository with",
+        "('Test-EcoLogits-API', 'model_name', None)"
+      ]
+    },
+    "time_to_first_token": {
+      "value": 0.54,
+      "unit": "second",
+      "label": "gpt-4o time to first token from Ecologits llm_impacts function",
       "source": {
         "name": "Ecologits llm_impacts function",
         "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"

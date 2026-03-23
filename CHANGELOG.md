@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [17.0.1] - 2026-03-23
+
+### Fixed
+- ServiceJob deletion logic. update_dict_element_in_impact_repartition_weights in ServerBase needed to handle the case where the service job’s hourly_avg_occurrences_across_usage_patterns was an EmptyExplainableObject.
+- upgrade_version_16_to_17 to turn RecurrentEdgeComponentNeed pointing to EdgeStorage into RecurrentStorageNeeds,because now EdgeStorage type checking has become stricter.
+- Introduced a distinction between fabrication and usage impact repartition logics. Indeed, the usage repartition logic needs to take into account the electricity carbon intensity of countries, which fabrication repartition logic doesn’t. This change increases substantially the weight of json files when saving a modeling with calculated attributes. This will be addressed in a future release.
+- Fixed Storage impact repartition by attributing equally unused and base storage to jobs. Otherwise, a Storage object not called by any job wouldn’t attribute any impact at all.
+- Various Sankey diagram fixes.
+- New country not recomputed when appending EdgeUsagePattern to system. When computing the modeling objects computation chain for list/object changes, dynamic properties on the container (e.g. System.countries) were evaluated before the change was applied, missing newly discoverable objects. Fix by temporarily applying the new value during chain computation.
+
+### Updated
+- EcoLogits to version 10.0.0. Introduced the notion of tokens per second and time to first token in the EcoLogitsGenAIExternalAPI class.
+
+### Added
+- Sankey object type aggregation by canonical class in column titles.
+- Instruction for local use of e-footprint as dependency using poetry.
+
 ## [17.0.0] - 2026-03-16
 
 ### Added

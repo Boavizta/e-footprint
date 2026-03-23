@@ -135,6 +135,8 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         self.model_name = model_name.set_label(f"Model used")
         self.model_total_params = EmptyExplainableObject()
         self.model_active_params = EmptyExplainableObject()
+        self.tokens_per_second = EmptyExplainableObject()
+        self.time_to_first_token = EmptyExplainableObject()
         self.datacenter_location = EmptyExplainableObject()
         self.data_center_pue = EmptyExplainableObject()
         self.average_carbon_intensity = EmptyExplainableObject()
@@ -142,8 +144,8 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
     @property
     def calculated_attributes(self) -> List[str]:
         return super().calculated_attributes + [
-            "model_total_params", "model_active_params", "datacenter_location", "data_center_pue",
-            "average_carbon_intensity"]
+            "model_total_params", "model_active_params", "tokens_per_second", "time_to_first_token",
+            "datacenter_location", "data_center_pue", "average_carbon_intensity"]
 
 
     def _get_model_or_raise(self):
@@ -187,6 +189,40 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
             operator="query EcoLogits model repository with",
             source=llm_impacts_function_source,
         )
+
+    def update_tokens_per_second(self) -> None:
+        model = self._get_model_or_raise()
+        tps = model.deployment.tps if model.deployment else None
+        if tps is None:
+            self.tokens_per_second = EmptyExplainableObject(
+                f"{self.model_name} token per second", left_parent=self.provider, right_parent=self.model_name,
+                operator="query EcoLogits model repository with", source=llm_impacts_function_source)
+        else:
+            self.tokens_per_second = ExplainableQuantity(
+                tps * ECOLOGITS_UNIT_MAPPING["tps"],
+                f"{self.model_name} token per second",
+                left_parent=self.provider,
+                right_parent=self.model_name,
+                operator="query EcoLogits model repository with",
+                source=llm_impacts_function_source
+            )
+
+    def update_time_to_first_token(self) -> None:
+        model = self._get_model_or_raise()
+        ttft = model.deployment.ttft if model.deployment else None
+        if ttft is None:
+            self.time_to_first_token = EmptyExplainableObject(
+                f"{self.model_name} time to first token", left_parent=self.provider, right_parent=self.model_name,
+                operator="query EcoLogits model repository with", source=llm_impacts_function_source)
+        else:
+            self.time_to_first_token = ExplainableQuantity(
+                ttft * ECOLOGITS_UNIT_MAPPING["ttft"],
+                f"{self.model_name} time to first token",
+                left_parent=self.provider,
+                right_parent=self.model_name,
+                operator="query EcoLogits model repository with",
+                source=llm_impacts_function_source
+            )
 
     def update_datacenter_location(self) -> None:
         datacenter_location = PROVIDER_CONFIG_MAP[self.provider.value].datacenter_location
@@ -274,6 +310,10 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
             if_electricity_mix_wue=0,
             datacenter_pue=self.external_api.data_center_pue.value.magnitude,
             datacenter_wue=datacenter_wue,
+            tps = self.external_api.tokens_per_second.value.magnitude
+            if not isinstance(self.external_api.tokens_per_second, EmptyExplainableObject) else None,
+            ttft = self.external_api.time_to_first_token.value.magnitude
+            if not isinstance(self.external_api.time_to_first_token, EmptyExplainableObject) else None,
         )
 
         self.impacts = ExplainableDict(
@@ -282,7 +322,9 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
             operator="compute impacts with EcoLogits compute_llm_impacts_dag function",
             source=compute_llm_impacts_dag_source).generate_explainable_object_with_logical_dependency(
             self.output_token_count).generate_explainable_object_with_logical_dependency(
-            self.external_api.average_carbon_intensity)
+            self.external_api.average_carbon_intensity).generate_explainable_object_with_logical_dependency(
+            self.external_api.tokens_per_second).generate_explainable_object_with_logical_dependency(
+            self.external_api.time_to_first_token)
 
     def update_ecologits_calculated_attribute(self, attribute_name: str) -> None:
         if attribute_name not in self.impacts.value:

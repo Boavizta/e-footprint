@@ -554,8 +554,8 @@ class TestImpactRepartitionSankey(TestCase):
         metadata = sankey.get_column_metadata()
         self.assertEqual([2, 3], [m["column_index"] for m in metadata])
         self.assertEqual([["Device", "ServerBase"], ["Router"]], [m["class_names"] for m in metadata])
-        self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
-        self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
+        self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
+        self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
 
     @patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [CanonicalParentObject])
     def test_get_column_metadata_aggregates_objects_by_canonical_class(self):
@@ -595,8 +595,8 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual(
             [["Parent", "SmallA", "SmallB"], ["ChildBig", "ChildSmallA", "ChildSmallB"]],
             [m["class_names"] for m in metadata])
-        self.assertAlmostEqual(sankey._column_x_center(2), metadata[0]["x_center"])
-        self.assertAlmostEqual(sankey._column_x_center(3), metadata[1]["x_center"])
+        self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
+        self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
 
     def test_build_link_labels_keeps_visible_endpoints_across_spacer_nodes(self):
         """Test spacer-segmented links keep the original visible source and target in hover labels."""
@@ -750,7 +750,7 @@ class TestImpactRepartitionSankey(TestCase):
         html_mock.assert_called_once_with(filename="impact.html")
 
     def test_figure_displays_column_information_as_top_annotations(self):
-        """Test figure places column information above the Sankey at the matching x positions."""
+        """Test figure places left-aligned column information above the matching node columns."""
         system = MagicMock()
         system.name = "Test system"
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
@@ -772,10 +772,13 @@ class TestImpactRepartitionSankey(TestCase):
 
         self.assertEqual(2, len(fig.layout.annotations))
         annotation_by_text = {annotation.text: annotation for annotation in fig.layout.annotations}
-        self.assertIn("Manufacturing / usage footprint", annotation_by_text)
-        self.assertIn("Device<br>Storage", annotation_by_text)
-        self.assertAlmostEqual(sankey._column_x_center(2), annotation_by_text["Manufacturing / usage footprint"].x)
-        self.assertAlmostEqual(sankey._column_x_center(3), annotation_by_text["Device<br>Storage"].x)
+        self.assertIn("<b>Manufacturing / usage footprint</b>", annotation_by_text)
+        self.assertIn("<b>Device<br>Storage</b>", annotation_by_text)
+        self.assertAlmostEqual(sankey._column_x_left(2), annotation_by_text["<b>Manufacturing / usage footprint</b>"].x)
+        self.assertAlmostEqual(sankey._column_x_left(3), annotation_by_text["<b>Device<br>Storage</b>"].x)
+        self.assertTrue(all(annotation.xanchor == "left" for annotation in fig.layout.annotations))
+        self.assertTrue(all(annotation.xshift == sankey.get_column_header_x_shift_px() for annotation in fig.layout.annotations))
+        self.assertTrue(all(annotation.font.size == 13 for annotation in fig.layout.annotations))
         self.assertTrue(all(annotation.y > 1 for annotation in fig.layout.annotations))
 
     def test_lifecycle_phase_filter_shows_only_filtered_phase(self):

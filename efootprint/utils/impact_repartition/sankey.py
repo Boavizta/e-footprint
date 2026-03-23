@@ -24,6 +24,7 @@ class _ResolvedFootprintSource:
 
 
 class ImpactRepartitionSankey:
+    NODE_THICKNESS_PX = 20
     _FIXED_KEY_COLORS = {
         "__system__": "rgba(100,100,100,0.8)",
         "__fabrication__": "rgba(180,80,80,0.8)",
@@ -309,7 +310,7 @@ class ImpactRepartitionSankey:
         if not self.skip_object_category_footprint_split:
             category_name = self._find_object_category_name(source)
             if category_name:
-                category_label = f"{category_name} {phase_context}" if phase_context is not None else category_name
+                category_label = f"{category_name} {phase_context.lower()}" if phase_context is not None else category_name
                 cat_idx = self._add_node(category_label, (category_name, phase_context), color_key=f"__cat_{category_name}__")
                 self._category_node_indices.add(cat_idx)
                 self._add_flow_to_node(parent_idx, cat_idx, value_kg)
@@ -605,12 +606,16 @@ class ImpactRepartitionSankey:
                 f"{self.full_node_labels[source_idx]} → {self.full_node_labels[target_idx]}<br>{amount_str} CO2eq ({pct:.1f}%)")
         return link_labels
 
-    def _column_x_center(self, column: int) -> float:
+    def _column_x_left(self, column: int) -> float:
         min_col = min(self._node_columns.values())
         max_col = max(self._node_columns.values())
         if max_col == min_col:
             return 0.5
         return 0.006 + (column - min_col) / (max_col + 0.09 - min_col)
+
+    @classmethod
+    def get_column_header_x_shift_px(cls) -> int:
+        return -(cls.NODE_THICKNESS_PX // 2)
 
     def get_column_metadata(self) -> list[ColumnInformation]:
         if not self._built:
@@ -629,17 +634,17 @@ class ImpactRepartitionSankey:
 
         return [{
             "column_index": column,
-            "x_center": self._column_x_center(column),
+            "x_left": self._column_x_left(column),
             "class_names": self._sort_class_names(class_names),
         } for column, class_names in sorted(classes_by_column.items()) if class_names]
 
     def get_column_information(self) -> list[ColumnInformation]:
         if not self._built:
             self.build()
-        manual = [{**info, "x_center": self._column_x_center(info["column_index"])} for info in self._manual_column_information]
+        manual = [{**info, "x_left": self._column_x_left(info["column_index"])} for info in self._manual_column_information]
         impact = [{
             "column_index": column_metadata["column_index"],
-            "x_center": column_metadata["x_center"],
+            "x_left": column_metadata["x_left"],
             "column_type": "impact_repartition",
             "class_names": column_metadata["class_names"],
         } for column_metadata in self.get_column_metadata()
@@ -663,9 +668,10 @@ class ImpactRepartitionSankey:
             text = self._format_column_header_text(column_info)
             max_line_count = max(max_line_count, text.count("<br>") + 1)
             annotations.append(dict(
-                x=self._column_x_center(column_info["column_index"]), y=1.03, xref="paper", yref="paper",
-                xanchor="center", yanchor="bottom", align="center", showarrow=False, text=text,
-                font=dict(size=11), bordercolor="rgba(210,210,210,1)", borderwidth=1, borderpad=4,
+                x=column_info["x_left"], y=1.03, xref="paper", yref="paper",
+                xanchor="left", yanchor="bottom", align="left", showarrow=False, text=f"<b>{text}</b>",
+                xshift=self.get_column_header_x_shift_px(),
+                font=dict(size=13), bordercolor="rgba(210,210,210,1)", borderwidth=1, borderpad=4,
                 bgcolor="rgba(250,250,250,0.95)",
             ))
         return annotations, max_line_count
@@ -705,8 +711,9 @@ class ImpactRepartitionSankey:
         ]
         fig = go.Figure(data=[go.Sankey(
             arrangement="snap",
+            textfont=dict(size=14),
             node=dict(
-                label=self.node_labels, pad=20, thickness=20, color=display_node_colors, line=dict(width=0),
+                label=self.node_labels, pad=20, thickness=self.NODE_THICKNESS_PX, color=display_node_colors, line=dict(width=0),
                 customdata=node_hover, hovertemplate="%{customdata}<extra></extra>",
             ),
             link=dict(
@@ -742,7 +749,8 @@ if __name__ == '__main__':
     test = "json"
     json_files = ["basic-model.json", "basic-2.json", "chatbot-efootprint-model.json",
                   "scenarioC_smart_building_system.json", "basic-edge.json", "curling.json", "smart building test.json",
-                  "scenarioC_smart_building_system_from_process_counts.json"]
+                  "scenarioC_smart_building_system_from_process_counts.json",
+                  "2026-03-23 09_10 UTC 10 protection relays virtualized in M shoebox with US.e-f.json"]
     skipped_impact_repartition_classes__full = [
         "System", "Country", "EdgeComponent", "JobBase", "RecurrentEdgeDeviceNeed", "RecurrentServerNeed",
         "RecurrentEdgeComponentNeed", "RecurrentEdgeWorkloadNeed"]
