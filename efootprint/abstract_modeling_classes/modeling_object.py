@@ -535,6 +535,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         mod_objs_computation_chain = input_value.mod_objs_computation_chain + old_value.mod_objs_computation_chain
 
+        # Preventive: compute self.mod_objs_computation_chain for both old and new states, because
+        # dynamic properties on self (e.g. System.countries) may discover different objects depending
+        # on the attribute value. Old state catches objects being removed, new state catches objects
+        # being added.
+        mod_objs_computation_chain += self.mod_objs_computation_chain
+        attr_name = old_value.attr_name_in_mod_obj_container
+        self.__dict__[attr_name] = input_value
+        mod_objs_computation_chain += self.mod_objs_computation_chain
+        self.__dict__[attr_name] = old_value
+
         if optimize_chain:
             optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
             return optimized_chain
@@ -553,7 +563,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
                 mod_objs_computation_chain += obj.mod_objs_computation_chain
 
+        # Compute self.mod_objs_computation_chain for both old and new states, because dynamic properties
+        # on self (e.g. System.countries derived from self.edge_usage_patterns) may discover different
+        # objects depending on the list contents. Old state catches objects being removed, new state
+        # catches objects being added.
         mod_objs_computation_chain += self.mod_objs_computation_chain
+        attr_name = old_value.attr_name_in_mod_obj_container
+        self.__dict__[attr_name] = input_value
+        mod_objs_computation_chain += self.mod_objs_computation_chain
+        self.__dict__[attr_name] = old_value
 
         if optimize_chain:
             optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)

@@ -549,5 +549,46 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
         self.check_semantic_units_in_calculated_attributes(self.system)
 
+    def run_test_append_edge_usage_pattern_with_new_country_computes_country(self):
+        """Test that appending an EdgeUsagePattern with a new Country properly computes the Country's attributes."""
+        new_country = Countries.MALAYSIA()
+        edge_function = EdgeFunction(
+            "bug repro edge function", recurrent_edge_device_needs=[], recurrent_server_needs=[])
+        edge_usage_journey = EdgeUsageJourney.from_defaults(
+            "bug repro edge usage journey", edge_functions=[edge_function])
+        edge_usage_pattern = EdgeUsagePattern(
+            "bug repro edge usage pattern", edge_usage_journey=edge_usage_journey,
+            network=Network.wifi_network(), country=new_country,
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], self.start_date))
+
+        self.system.edge_usage_patterns.append(edge_usage_pattern)
+
+        self.assertIn(new_country, self.system.countries)
+        self.assertGreater(len(new_country.fabrication_impact_repartition_weights), 0,
+                           "New country's fabrication_impact_repartition_weights should be computed after append")
+        self.assertGreater(len(new_country.usage_impact_repartition_weights), 0,
+                           "New country's usage_impact_repartition_weights should be computed after append")
+
+        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
+        edge_usage_pattern.self_delete()
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_remove_edge_usage_pattern_clears_old_country(self):
+        """Test that removing an EdgeUsagePattern recomputes the old Country's attributes."""
+        old_country = self.edge_usage_pattern.country
+        self.assertGreater(len(old_country.fabrication_impact_repartition_weights), 0)
+
+        self.system.edge_usage_patterns = []
+
+        self.assertNotIn(old_country, self.system.countries)
+        self.assertEqual(len(old_country.fabrication_impact_repartition_weights), 0,
+                         "Old country's fabrication_impact_repartition_weights should be cleared after removal")
+        self.assertEqual(len(old_country.usage_impact_repartition_weights), 0,
+                         "Old country's usage_impact_repartition_weights should be cleared after removal")
+
+        self.system.edge_usage_patterns = [self.edge_usage_pattern]
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
     def run_test_check_all_calculus_graph_dependencies_consistencies(self):
         check_all_calculus_graph_dependencies_consistencies(self.system)
