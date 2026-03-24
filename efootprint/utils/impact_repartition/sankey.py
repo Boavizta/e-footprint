@@ -485,6 +485,9 @@ class ImpactRepartitionSankey:
 
         graph_snapshot = self._graph.snapshot()
         original_node_columns = dict(self._node_columns)
+        original_category_node_indices = set(self._category_node_indices)
+        original_leaf_node_indices = set(self._leaf_node_indices)
+        original_breakdown_node_indices = set(self._breakdown_node_indices)
         nodes_to_aggregate = {node_idx for group in aggregate_groups.values() for node_idx in group}
 
         self._graph.reset()
@@ -508,6 +511,12 @@ class ImpactRepartitionSankey:
             old_to_new_indices[old_idx] = new_idx
             if old_idx in original_node_columns:
                 self._node_columns[new_idx] = original_node_columns[old_idx]
+            if old_idx in original_category_node_indices:
+                self._category_node_indices.add(new_idx)
+            if old_idx in original_leaf_node_indices:
+                self._leaf_node_indices.add(new_idx)
+            if old_idx in original_breakdown_node_indices:
+                self._breakdown_node_indices.add(new_idx)
 
         for column, group in aggregate_groups.items():
             group_members = sorted(group, key=lambda idx: graph_snapshot.node_total_kg[idx], reverse=True)

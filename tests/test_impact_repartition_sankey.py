@@ -598,6 +598,66 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertAlmostEqual(sankey._column_x_left(2), metadata[0]["x_left"])
         self.assertAlmostEqual(sankey._column_x_left(3), metadata[1]["x_left"])
 
+    def test_aggregate_small_nodes_preserves_category_leaf_and_breakdown_markers_for_remaining_nodes(self):
+        """Test aggregation keeps node-type markers for nodes that are not aggregated away."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=10)
+
+        root_idx = sankey._add_node("Root", ("root", "total"))
+        category_big_idx = sankey._add_node("Devices usage", ("Devices", "usage"))
+        category_small_a_idx = sankey._add_node("Servers usage", ("Servers", "usage"))
+        category_small_b_idx = sankey._add_node("Network usage", ("Network", "usage"))
+        leaf_big_idx = sankey._add_node("Device A", ("device_a", "usage"))
+        leaf_small_a_idx = sankey._add_node("Server A", ("server_a", "usage"))
+        leaf_small_b_idx = sankey._add_node("Network A", ("network_a", "usage"))
+        breakdown_big_idx = sankey._add_node("Component A", ("component_a", "usage"))
+        breakdown_small_a_idx = sankey._add_node("Component B", ("component_b", "usage"))
+        breakdown_small_b_idx = sankey._add_node("Component C", ("component_c", "usage"))
+
+        sankey._total_system_kg = 100
+        sankey.node_total_kg[root_idx] = 100
+        sankey._node_columns = {
+            root_idx: 1,
+            category_big_idx: 2,
+            category_small_a_idx: 2,
+            category_small_b_idx: 2,
+            leaf_big_idx: 3,
+            leaf_small_a_idx: 3,
+            leaf_small_b_idx: 3,
+            breakdown_big_idx: 4,
+            breakdown_small_a_idx: 4,
+            breakdown_small_b_idx: 4,
+        }
+        sankey._category_node_indices = {category_big_idx, category_small_a_idx, category_small_b_idx}
+        sankey._leaf_node_indices = {leaf_big_idx, leaf_small_a_idx, leaf_small_b_idx}
+        sankey._breakdown_node_indices = {breakdown_big_idx, breakdown_small_a_idx, breakdown_small_b_idx}
+
+        for source, target, value in [
+            (root_idx, category_big_idx, 0.9),
+            (root_idx, category_small_a_idx, 0.05),
+            (root_idx, category_small_b_idx, 0.05),
+            (category_big_idx, leaf_big_idx, 0.9),
+            (category_small_a_idx, leaf_small_a_idx, 0.05),
+            (category_small_b_idx, leaf_small_b_idx, 0.05),
+            (leaf_big_idx, breakdown_big_idx, 0.9),
+            (leaf_small_a_idx, breakdown_small_a_idx, 0.05),
+            (leaf_small_b_idx, breakdown_small_b_idx, 0.05),
+        ]:
+            sankey._add_link(source, target, value)
+
+        sankey._aggregate_small_nodes_by_column()
+
+        self.assertIn("Devices usage", sankey.node_labels)
+        self.assertIn("Device A", sankey.node_labels)
+        self.assertIn("Component A", sankey.node_labels)
+        devices_idx = sankey.node_labels.index("Devices usage")
+        leaf_idx = sankey.node_labels.index("Device A")
+        breakdown_idx = sankey.node_labels.index("Component A")
+        self.assertIn(devices_idx, sankey._category_node_indices)
+        self.assertIn(leaf_idx, sankey._leaf_node_indices)
+        self.assertIn(breakdown_idx, sankey._breakdown_node_indices)
+
     def test_build_link_labels_keeps_visible_endpoints_across_spacer_nodes(self):
         """Test spacer-segmented links keep the original visible source and target in hover labels."""
         system = MagicMock()
