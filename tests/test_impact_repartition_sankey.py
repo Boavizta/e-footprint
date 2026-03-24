@@ -694,6 +694,38 @@ class TestImpactRepartitionSankey(TestCase):
         impact_cols = [c for c in col_info if c["column_type"] == "impact_repartition"]
         self.assertTrue(len(manual_cols) >= 1)
         self.assertTrue(len(impact_cols) >= 1)
+        self.assertIn("Total impact", [c["description"] for c in manual_cols])
+
+    def test_get_column_information_includes_total_impact_for_visible_system_root(self):
+        """Test visible root column is exposed as a manual Total impact column."""
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={leaf: 100})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skip_object_category_footprint_split=True)
+
+        self.assertIn(
+            {"column_index": 1, "column_type": "manual_split", "description": "Total impact", "x_left": 0.006},
+            sankey.get_column_information(),
+        )
+
+    def test_get_column_information_omits_total_impact_when_system_root_is_skipped(self):
+        """Test Total impact column is not exposed when the root system node is skipped."""
+        leaf = self._make_leaf("Leaf", manufacturing_kg=100)
+        system = self._make_simple_system_with_attributed_footprint(
+            fab_sources={leaf: 100}, system_cls=_DummySystemObject)
+
+        sankey = ImpactRepartitionSankey(
+            system,
+            aggregation_threshold_percent=0,
+            skip_object_category_footprint_split=True,
+            skipped_impact_repartition_classes=[_DummySystemObject],
+        )
+
+        self.assertNotIn(
+            "Total impact",
+            [c["description"] for c in sankey.get_column_information() if c["column_type"] == "manual_split"],
+        )
 
     def test_displayed_column_information_orders_columns_by_index(self):
         """Test displayed column information is ordered by column index."""

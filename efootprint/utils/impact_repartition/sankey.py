@@ -48,8 +48,6 @@ class ImpactRepartitionSankey:
         self.aggregation_threshold_percent = aggregation_threshold_percent
         self.node_label_max_length = node_label_max_length
         self.skipped_impact_repartition_classes: list[ConfiguredClass] = list(skipped_impact_repartition_classes or [])
-        if "System" not in self.skipped_impact_repartition_classes:
-            self.skipped_impact_repartition_classes.append("System")
         self.skip_phase_footprint_split = skip_phase_footprint_split
         self.skip_object_category_footprint_split = skip_object_category_footprint_split
         self.skip_object_footprint_split = skip_object_footprint_split
@@ -350,6 +348,11 @@ class ImpactRepartitionSankey:
             root_idx = self._add_node(root.name, ("root", "total"), color_key="__system__", obj=root)
             self.node_total_kg[root_idx] = self._total_system_kg
             self._node_columns[root_idx] = current_column_index
+            self._manual_column_information.append({
+                "column_index": current_column_index,
+                "column_type": "manual_split",
+                "description": "Total impact",
+            })
             current_column_index += 1
 
         phase_parents = {}

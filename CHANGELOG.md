@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [17.0.2] - 2026-03-23
+
+### Changed
+- Remove automatic addition of System class to ImpactRepartitionSankey’s skipped_impact_repartition_classes.
+
 ## [17.0.1] - 2026-03-23
 
 ### Fixed
