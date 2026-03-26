@@ -437,6 +437,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         ]
 
     @property
+    def validation_attributes(self) -> List[str]:
+        return [attr for attr in self.calculated_attributes if attr.endswith("_validation")]
+
+    @property
+    def calculated_attributes_without_validations(self) -> List[str]:
+        return [attr for attr in self.calculated_attributes if not attr.endswith("_validation")]
+
+    @property
     def systems(self) -> List:
         return list(dict.fromkeys(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
 
