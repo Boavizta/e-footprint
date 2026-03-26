@@ -517,6 +517,15 @@ class TestModelingObject(unittest.TestCase):
         self.assertEqual(0, old_child.attributed_energy_footprint.magnitude)
         self.assertEqual(10, new_child.attributed_energy_footprint.magnitude)
 
+    def test_from_json_dict_initializes_dict_calculated_attributes_as_explainable_object_dict(self):
+        """Test that from_json_dict uses ExplainableObjectDict for attributes with update_dict_element_in_ methods."""
+        obj = ImpactRepartitionCachingModelingObject("dict_attr_obj", targets=[])
+        json_dict = obj.to_json()
+
+        restored, _ = ImpactRepartitionCachingModelingObject.from_json_dict(json_dict, flat_obj_dict={})
+
+        self.assertIsInstance(restored.usage_impact_repartition_weights, ExplainableObjectDict)
+
     def test_to_json_skips_cached_impact_repartition_properties(self):
         source = ImpactRepartitionCachingModelingObject("source", energy_footprint=SourceValue(10 * u.kg))
         _ = source.attributed_energy_footprint

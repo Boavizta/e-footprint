@@ -1,16 +1,28 @@
+from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock
 
 import numpy as np
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
+from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
+from efootprint.core.hardware.network import Network
+from efootprint.core.system import System
+from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
@@ -176,3 +188,43 @@ class TestEdgeComponent(TestCase):
         # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
         result = self.component.energy_footprint
         self.assertTrue(np.allclose([1.5, 3], result.value.to(u.kg).magnitude))
+
+
+class TestEdgeComponentJsonRoundTrip(TestCase):
+    def test_json_round_trip_with_used_and_unused_components(self):
+        """Test JSON save and reload of an edge system where one component is used and another is unused."""
+        # Create two components: one will be linked to a need, the other unused
+        cpu_component = EdgeCPUComponent.from_defaults("used CPU component")
+        ram_component = EdgeRAMComponent.from_defaults("unused RAM component")
+
+        edge_device = EdgeDevice.from_defaults(
+            "test edge device", components=[cpu_component, ram_component])
+
+        # Only create a need for the CPU component, leaving RAM unused
+        cpu_need = RecurrentEdgeComponentNeed(
+            "CPU need", edge_component=cpu_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
+
+        edge_device_need = RecurrentEdgeDeviceNeed(
+            "test edge device need", edge_device=edge_device,
+            recurrent_edge_component_needs=[cpu_need])
+
+        edge_function = EdgeFunction(
+            "test edge function", recurrent_edge_device_needs=[edge_device_need], recurrent_server_needs=[])
+
+        edge_usage_journey = EdgeUsageJourney.from_defaults(
+            "test edge usage journey", edge_functions=[edge_function])
+
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        edge_usage_pattern = EdgeUsagePattern(
+            "test edge usage pattern", edge_usage_journey=edge_usage_journey,
+            network=Network.wifi_network(), country=Countries.FRANCE(),
+            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
+                [1000, 1000, 2000, 2000, 3000, 3000, 1000, 1000, 2000], start_date))
+
+        system = System("test edge system", [], edge_usage_patterns=[edge_usage_pattern])
+
+        # Save to JSON without calculated attributes and reload
+        # That tests that the RAM dict calculated attributes have been duly initialized as dicts.
+        system_json = system_to_json(system, save_calculated_attributes=False)
+        _, flat_obj_dict = json_to_system(system_json)

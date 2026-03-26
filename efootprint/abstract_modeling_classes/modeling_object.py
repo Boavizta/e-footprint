@@ -187,8 +187,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if not is_loaded_from_system_with_calculated_attributes:
             for calculated_attribute_name in new_obj.calculated_attributes:
                 if getattr(new_obj, calculated_attribute_name, None) is None:
-                    new_obj.__setattr__(
-                        calculated_attribute_name, EmptyExplainableObject(), check_input_validity=False)
+                    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+                    if hasattr(new_obj, f"update_dict_element_in_{calculated_attribute_name}"):
+                        default_value = ExplainableObjectDict()
+                    else:
+                        default_value = EmptyExplainableObject()
+                    new_obj.__setattr__(calculated_attribute_name, default_value, check_input_validity=False)
 
         if set_trigger_modeling_updates_to_true:
             new_obj.trigger_modeling_updates = True
