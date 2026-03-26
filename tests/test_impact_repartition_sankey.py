@@ -4,6 +4,7 @@ import re
 
 from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.server_base import ServerBase
 from efootprint.core.lifecycle_phases import LifeCyclePhases
@@ -14,6 +15,7 @@ from tests.utils import set_modeling_obj_containers
 class _DummyQuantity:
     def __init__(self, magnitude):
         self.magnitude = magnitude
+        self.value = magnitude * u.kg
 
     def sum(self):
         return self
@@ -109,6 +111,14 @@ class _DummyExternalAPI(ExternalAPI):
 @patch('efootprint.all_classes_in_order.SANKEY_COLUMNS', SANKEY_COLUMNS + [[_DummyObject]])
 class TestImpactRepartitionSankey(TestCase):
     @staticmethod
+    def _kg(value):
+        return value * u.kg
+
+    @staticmethod
+    def _tonne(value):
+        return value * u.tonne
+
+    @staticmethod
     def _make_object_id(name):
         normalized_name = name.replace(" ", "_")
         return re.sub(r"(?<!^)(?=[A-Z])", "_", normalized_name).lower()
@@ -199,18 +209,18 @@ class TestImpactRepartitionSankey(TestCase):
         child_small_b_idx = sankey._add_node(
             "Child Small B", ("child_small_b", "energy"), color_key="child_small_b", obj=self._make_object("Child Small B"))
 
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[total_idx] = 1000
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[total_idx] = self._kg(1000)
         sankey._node_columns = {
             total_idx: 1, parent_idx: 2, small_a_idx: 2, small_b_idx: 2,
             child_big_idx: 3, child_small_a_idx: 3, child_small_b_idx: 3,
         }
-        sankey._add_link(total_idx, parent_idx, 0.72)
-        sankey._add_link(total_idx, small_a_idx, 0.10)
-        sankey._add_link(total_idx, small_b_idx, 0.08)
-        sankey._add_link(parent_idx, child_big_idx, 0.54)
-        sankey._add_link(parent_idx, child_small_a_idx, 0.10)
-        sankey._add_link(parent_idx, child_small_b_idx, 0.08)
+        sankey._add_link(total_idx, parent_idx, self._tonne(0.72))
+        sankey._add_link(total_idx, small_a_idx, self._tonne(0.10))
+        sankey._add_link(total_idx, small_b_idx, self._tonne(0.08))
+        sankey._add_link(parent_idx, child_big_idx, self._tonne(0.54))
+        sankey._add_link(parent_idx, child_small_a_idx, self._tonne(0.10))
+        sankey._add_link(parent_idx, child_small_b_idx, self._tonne(0.08))
         return sankey
 
     def test_aggregate_small_nodes_by_column_groups_only_same_column(self):
@@ -223,7 +233,7 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual(2, sankey.node_labels.count("Other (2)"))
         self.assertEqual(2, len(sankey.aggregated_node_members))
         links_to_aggregates = sorted(
-            round(value, 2)
+            round(value.to(u.tonne).magnitude, 2)
             for target, value in zip(sankey.link_targets, sankey.link_values)
             if target in sankey.aggregated_node_members)
         self.assertEqual([0.18, 0.18], links_to_aggregates)
@@ -255,18 +265,18 @@ class TestImpactRepartitionSankey(TestCase):
         small_b1_idx = sankey._add_node("Small B1", ("small_b1", "energy"), obj=self._make_object("Small B1"))
         small_b2_idx = sankey._add_node("Small B2", ("small_b2", "energy"), obj=self._make_object("Small B2"))
 
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[total_idx] = 1000
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[total_idx] = self._kg(1000)
         sankey._node_columns = {
             total_idx: 1, parent_a_idx: 2, parent_b_idx: 2,
             small_a1_idx: 3, small_a2_idx: 3, small_b1_idx: 3, small_b2_idx: 3,
         }
-        sankey._add_link(total_idx, parent_a_idx, 0.36)
-        sankey._add_link(total_idx, parent_b_idx, 0.36)
-        sankey._add_link(parent_a_idx, small_a1_idx, 0.10)
-        sankey._add_link(parent_a_idx, small_a2_idx, 0.08)
-        sankey._add_link(parent_b_idx, small_b1_idx, 0.10)
-        sankey._add_link(parent_b_idx, small_b2_idx, 0.08)
+        sankey._add_link(total_idx, parent_a_idx, self._tonne(0.36))
+        sankey._add_link(total_idx, parent_b_idx, self._tonne(0.36))
+        sankey._add_link(parent_a_idx, small_a1_idx, self._tonne(0.10))
+        sankey._add_link(parent_a_idx, small_a2_idx, self._tonne(0.08))
+        sankey._add_link(parent_b_idx, small_b1_idx, self._tonne(0.10))
+        sankey._add_link(parent_b_idx, small_b2_idx, self._tonne(0.08))
 
         sankey._aggregate_small_nodes_by_column()
         hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (4)<br>")]
@@ -290,15 +300,15 @@ class TestImpactRepartitionSankey(TestCase):
         child_a_idx = sankey._add_node("Child A", ("child_a", "energy"), obj=self._make_object("Child A"))
         child_b_idx = sankey._add_node("Child B", ("child_b", "energy"), obj=self._make_object("Child B"))
 
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[total_idx] = 1000
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[total_idx] = self._kg(1000)
         sankey._node_columns = {
             total_idx: 1, parent_a_idx: 2, parent_b_idx: 2, child_a_idx: 3, child_b_idx: 3,
         }
-        sankey._add_link(total_idx, parent_a_idx, 0.08)
-        sankey._add_link(total_idx, parent_b_idx, 0.07)
-        sankey._add_link(parent_a_idx, child_a_idx, 0.08)
-        sankey._add_link(parent_b_idx, child_b_idx, 0.07)
+        sankey._add_link(total_idx, parent_a_idx, self._tonne(0.08))
+        sankey._add_link(total_idx, parent_b_idx, self._tonne(0.07))
+        sankey._add_link(parent_a_idx, child_a_idx, self._tonne(0.08))
+        sankey._add_link(parent_b_idx, child_b_idx, self._tonne(0.07))
 
         sankey._aggregate_small_nodes_by_column()
         hover_labels = [label for label in sankey._build_hover_labels() if label.startswith("Other (2)<br>")]
@@ -319,17 +329,17 @@ class TestImpactRepartitionSankey(TestCase):
         root_b_idx = sankey._add_node("Root B", ("root_b", "energy"), obj=self._make_object("Root B"))
         child_idx = sankey._add_node("Child", ("child", "energy"), obj=self._make_object("Child"))
 
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[root_a_idx] = 80  # Set directly, no incoming link
-        sankey.node_total_kg[root_b_idx] = 70  # Set directly, no incoming link
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[root_a_idx] = self._kg(80)  # Set directly, no incoming link
+        sankey.node_total_values[root_b_idx] = self._kg(70)  # Set directly, no incoming link
         sankey._node_columns = {root_a_idx: 1, root_b_idx: 1, child_idx: 2}
-        sankey._add_link(root_a_idx, child_idx, 0.08)
-        sankey._add_link(root_b_idx, child_idx, 0.07)
+        sankey._add_link(root_a_idx, child_idx, self._tonne(0.08))
+        sankey._add_link(root_b_idx, child_idx, self._tonne(0.07))
 
         sankey._aggregate_small_nodes_by_column()
 
         aggregate_idx = next(idx for idx in sankey.aggregated_node_members)
-        self.assertEqual(150, sankey.node_total_kg[aggregate_idx])
+        self.assertEqual(self._kg(150), sankey.node_total_values[aggregate_idx])
 
     def test_build_traverses_attributed_footprint_per_source(self):
         """Test basic traversal from root through intermediate to leaf objects."""
@@ -357,10 +367,13 @@ class TestImpactRepartitionSankey(TestCase):
 
         shared_idx = sankey.node_indices[(shared.id, "Manufacturing")]
         leaf_idx = sankey.node_indices[(leaf.id, "Manufacturing")]
-        links = list(zip(sankey.link_sources, sankey.link_targets, sankey.link_values))
+        links = [
+            (source, target, value.to(u.tonne).magnitude)
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+        ]
 
-        self.assertEqual(100, sankey.node_total_kg[shared_idx])
-        self.assertEqual(100, sankey.node_total_kg[leaf_idx])
+        self.assertEqual(self._kg(100), sankey.node_total_values[shared_idx])
+        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
         # Test that the shared node passes 100 / 1000 = 0.1 to the leaf node, meaning there has been no impact
         # deduplication even though this node has 2 parents.
         self.assertEqual([(shared_idx, leaf_idx, 0.1)], [link for link in links if link[0] == shared_idx])
@@ -452,10 +465,11 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertNotIn(("leaf", "Usage"), sankey.node_indices)
         leaf_idx = sankey.node_indices[("leaf", None)]
         root_idx = sankey.node_indices[("root", "total")]
-        self.assertEqual(100, sankey.node_total_kg[leaf_idx])
+        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
         self.assertEqual(
             [(root_idx, leaf_idx, 0.1)],
-            list(zip(sankey.link_sources, sankey.link_targets, sankey.link_values)),
+            [(source, target, value.to(u.tonne).magnitude) for source, target, value in zip(
+                sankey.link_sources, sankey.link_targets, sankey.link_values)],
         )
 
     def test_skip_phase_footprint_split_sums_first_column_nodes_when_root_is_skipped(self):
@@ -470,7 +484,7 @@ class TestImpactRepartitionSankey(TestCase):
         sankey.build()
 
         leaf_idx = sankey.node_indices[("leaf", None)]
-        self.assertEqual(100, sankey.node_total_kg[leaf_idx])
+        self.assertEqual(self._kg(100), sankey.node_total_values[leaf_idx])
         self.assertEqual([], sankey.link_sources)
         self.assertEqual([], sankey.link_targets)
         self.assertEqual([], sankey.link_values)
@@ -509,8 +523,8 @@ class TestImpactRepartitionSankey(TestCase):
         sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0, node_label_max_length=13)
 
         node_idx = sankey._add_node("12345678901234", ("long_name", "energy"))
-        sankey._total_system_kg = 1
-        sankey.node_total_kg[node_idx] = 1
+        sankey._total_system_value = self._kg(1)
+        sankey.node_total_values[node_idx] = self._kg(1)
 
         self.assertEqual("1234567890123...", sankey.node_labels[node_idx])
         self.assertEqual("12345678901234", sankey.full_node_labels[node_idx])
@@ -544,12 +558,12 @@ class TestImpactRepartitionSankey(TestCase):
         server_idx = sankey._add_node("Server", ("server", "energy"), obj=server)
         device_idx = sankey._add_node("Device", ("device", "energy"), obj=device)
         router_idx = sankey._add_node("Router", ("router", "energy"), obj=router)
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[total_idx] = 1000
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[total_idx] = self._kg(1000)
         sankey._node_columns = {total_idx: 1, server_idx: 2, device_idx: 2, router_idx: 3}
-        sankey._add_link(total_idx, server_idx, 0.4)
-        sankey._add_link(total_idx, device_idx, 0.3)
-        sankey._add_link(server_idx, router_idx, 0.2)
+        sankey._add_link(total_idx, server_idx, self._tonne(0.4))
+        sankey._add_link(total_idx, device_idx, self._tonne(0.3))
+        sankey._add_link(server_idx, router_idx, self._tonne(0.2))
 
         metadata = sankey.get_column_metadata()
         self.assertEqual([2, 3], [m["column_index"] for m in metadata])
@@ -573,8 +587,8 @@ class TestImpactRepartitionSankey(TestCase):
         fallback = _DummyObject("Fallback", "fallback")
         fallback._canonical_class_override = type("DummyObject", (), {})
         fallback_idx = sankey._add_node("Fallback", ("fallback", "energy"), obj=fallback)
-        sankey._total_system_kg = 1000
-        sankey.node_total_kg[total_idx] = 1000
+        sankey._total_system_value = self._kg(1000)
+        sankey.node_total_values[total_idx] = self._kg(1000)
         sankey._node_columns = {total_idx: 1, child_a_idx: 2, child_b_idx: 2, fallback_idx: 3}
 
         metadata = sankey.get_column_metadata()
@@ -615,8 +629,8 @@ class TestImpactRepartitionSankey(TestCase):
         breakdown_small_a_idx = sankey._add_node("Component B", ("component_b", "usage"))
         breakdown_small_b_idx = sankey._add_node("Component C", ("component_c", "usage"))
 
-        sankey._total_system_kg = 100
-        sankey.node_total_kg[root_idx] = 100
+        sankey._total_system_value = self._kg(100)
+        sankey.node_total_values[root_idx] = self._kg(100)
         sankey._node_columns = {
             root_idx: 1,
             category_big_idx: 2,
@@ -644,7 +658,7 @@ class TestImpactRepartitionSankey(TestCase):
             (leaf_small_a_idx, breakdown_small_a_idx, 0.05),
             (leaf_small_b_idx, breakdown_small_b_idx, 0.05),
         ]:
-            sankey._add_link(source, target, value)
+            sankey._add_link(source, target, self._tonne(value))
 
         sankey._aggregate_small_nodes_by_column()
 
@@ -666,10 +680,10 @@ class TestImpactRepartitionSankey(TestCase):
 
         source_idx = sankey._add_node("Source", ("source", "energy"))
         target_idx = sankey._add_node("Target", ("target", "energy"))
-        sankey._total_system_kg = 100
-        sankey.node_total_kg[source_idx] = 100
+        sankey._total_system_value = self._kg(100)
+        sankey.node_total_values[source_idx] = self._kg(100)
         sankey._node_columns = {source_idx: 1, target_idx: 4}
-        sankey._add_link(source_idx, target_idx, 0.1)
+        sankey._add_link(source_idx, target_idx, self._tonne(0.1))
 
         sankey._insert_spacer_nodes()
         link_labels = sankey._build_link_labels()
@@ -678,6 +692,16 @@ class TestImpactRepartitionSankey(TestCase):
         self.assertEqual(1, len(set(link_labels)))
         self.assertTrue(all(label.startswith("Source → Target<br>") for label in link_labels))
         self.assertTrue(all(label.endswith("CO2eq (100.0%)") for label in link_labels))
+
+    def test_format_value_in_root_unit_rounds_before_rendering(self):
+        """Test Sankey string formatting keeps display rounding and trims trailing zeros."""
+        system = MagicMock()
+        system.name = "Test system"
+        sankey = ImpactRepartitionSankey(system, aggregation_threshold_percent=0)
+        sankey._total_system_value = self._kg(123456)
+
+        self.assertEqual("123 t", sankey.format_value_in_root_unit(self._kg(123456)))
+        self.assertEqual("1.23 t", sankey.format_value_in_root_unit(self._kg(1234.56)))
 
     def test_get_column_information_distinguishes_manual_and_impact_columns(self):
         """Test column information reports both manual split and impact repartition columns."""
@@ -856,9 +880,9 @@ class TestImpactRepartitionSankey(TestCase):
         aggregate_idx = sankey._add_node("Other (2)", ("__aggregated__", 3))
         sankey._node_columns = {total_idx: 1, aggregate_idx: 3}
         sankey.aggregated_node_classes[aggregate_idx] = ["Device", "Storage"]
-        sankey._total_system_kg = 100
-        sankey.node_total_kg[total_idx] = 100
-        sankey.node_total_kg[aggregate_idx] = 60
+        sankey._total_system_value = self._kg(100)
+        sankey.node_total_values[total_idx] = self._kg(100)
+        sankey.node_total_values[aggregate_idx] = self._kg(60)
 
         fig = sankey.figure()
 
@@ -887,7 +911,7 @@ class TestImpactRepartitionSankey(TestCase):
         sankey.build()
 
         # Only manufacturing phase should appear, total should be 60
-        self.assertEqual(60, sankey._total_system_kg)
+        self.assertEqual(self._kg(60), sankey.total_system_value)
 
     def test_excluded_object_types_removes_objects_and_reduces_total(self):
         """Test that excluded_object_types excludes objects and reduces total footprint."""
@@ -902,14 +926,15 @@ class TestImpactRepartitionSankey(TestCase):
         sankey.build()
 
         # Total should exclude TypeB's 40kg
-        self.assertEqual(60, sankey._total_system_kg)
+        self.assertEqual(self._kg(60), sankey.total_system_value)
         intermediate_idx = sankey.node_indices[("intermediate", "Manufacturing")]
         phase_idx = sankey.node_indices[("phase", "Manufacturing")]
         root_idx = sankey.node_indices[("root", "total")]
-        self.assertEqual(60, sankey.node_total_kg[phase_idx])
-        self.assertEqual(60, sankey.node_total_kg[intermediate_idx])
+        self.assertEqual(self._kg(60), sankey.node_total_values[phase_idx])
+        self.assertEqual(self._kg(60), sankey.node_total_values[intermediate_idx])
         link_values_by_edge = {
-            (source, target): value for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+            (source, target): value.to(u.tonne).magnitude
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
         }
         self.assertEqual(0.06, link_values_by_edge[(root_idx, phase_idx)])
         self.assertEqual(0.06, link_values_by_edge[(phase_idx, intermediate_idx)])
@@ -949,7 +974,8 @@ class TestImpactRepartitionSankey(TestCase):
         child_a_idx = sankey.node_indices[(child_a.id, "Manufacturing")]
         child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
         link_values_by_edge = {
-            (source, target): value for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+            (source, target): value.to(u.tonne).magnitude
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
         }
         self.assertEqual(0.01, link_values_by_edge[(breakdown_leaf_idx, child_a_idx)])
         self.assertEqual(0.03, link_values_by_edge[(breakdown_leaf_idx, child_b_idx)])
@@ -1005,10 +1031,10 @@ class TestImpactRepartitionSankey(TestCase):
         child_b_idx = sankey.node_indices[(child_b.id, "Manufacturing")]
         incoming_value_by_target = {}
         for target, value in zip(sankey.link_targets, sankey.link_values):
-            incoming_value_by_target[target] = incoming_value_by_target.get(target, 0) + value
+            incoming_value_by_target[target] = incoming_value_by_target.get(target, 0 * u.kg) + value.to(u.kg)
 
         self.assertNotIn((skipped_breakdown_leaf.id, "Manufacturing"), sankey.node_indices)
-        self.assertEqual(25, sankey.node_total_kg[child_a_idx])
-        self.assertEqual(75, sankey.node_total_kg[child_b_idx])
-        self.assertEqual(0.025, incoming_value_by_target[child_a_idx])
-        self.assertEqual(0.075, incoming_value_by_target[child_b_idx])
+        self.assertEqual(self._kg(25), sankey.node_total_values[child_a_idx])
+        self.assertEqual(self._kg(75), sankey.node_total_values[child_b_idx])
+        self.assertEqual(self._kg(25), incoming_value_by_target[child_a_idx])
+        self.assertEqual(self._kg(75), incoming_value_by_target[child_b_idx])

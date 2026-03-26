@@ -4,6 +4,8 @@ from typing import Optional
 import numpy as np
 from pint import Quantity
 
+from efootprint.utils.display import best_display_unit, human_readable_unit
+
 
 def get_time_axis(start_date: datetime, length: int) -> np.ndarray:
     return np.array([start_date + timedelta(hours=i) for i in range(length)])
@@ -21,9 +23,11 @@ def plot_baseline_and_simulation_data(
     import matplotlib.dates as mdates
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+    display_unit = best_display_unit(baseline_q)
+    baseline_q = baseline_q.to(display_unit)
 
     if simulated_q is not None:
-        simulated_q = simulated_q.to(baseline_q.units)
+        simulated_q = simulated_q.to(display_unit)
 
     if xlims is not None:
         start, end = xlims
@@ -62,7 +66,7 @@ def plot_baseline_and_simulation_data(
         ax.plot(time_sim_plot, simulated_plot_q.magnitude, label="simulated")
 
     ax.legend()
-    plt.ylabel(f"{baseline_q.units:~}")
+    plt.ylabel(human_readable_unit(display_unit))
 
     locator = mdates.AutoDateLocator(minticks=3, maxticks=12)
     formatter = mdates.ConciseDateFormatter(locator)

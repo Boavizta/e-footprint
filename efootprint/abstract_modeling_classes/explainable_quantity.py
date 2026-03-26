@@ -6,6 +6,7 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.constants.units import get_unit
+from efootprint.utils.display import format_display_number, format_quantity_for_display, human_readable_unit
 
 
 @ExplainableObject.register_subclass(lambda d: "value" in d and "unit" in d and "formula" not in d)
@@ -70,6 +71,14 @@ class ExplainableQuantity(ExplainableObject):
     @property
     def magnitude(self):
         return self.value.magnitude
+
+    @property
+    def display_quantity(self):
+        return format_quantity_for_display(self.value)
+
+    @property
+    def display_unit(self):
+        return self.display_quantity.units
 
     def compare_with_and_return_max(self, other):
         if isinstance(other, ExplainableQuantity):
@@ -209,7 +218,8 @@ class ExplainableQuantity(ExplainableObject):
 
     def __str__(self):
         if isinstance(self.value, Quantity):
-            return f"{round(self.value, 2)}"
+            display = format_quantity_for_display(self.value)
+            return f"{format_display_number(display.magnitude)} {human_readable_unit(display.units)}"
         else:
             return str(self.value)
 

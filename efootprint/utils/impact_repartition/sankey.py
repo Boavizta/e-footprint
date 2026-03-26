@@ -4,13 +4,17 @@ from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, TypeAlias
 
+from pint import Quantity
+
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 from efootprint.utils.impact_repartition._graph import SankeyGraph
-from efootprint.utils.tools import display_co2_amount, format_co2_amount, time_it
+from efootprint.utils.tools import time_it
 
 ConfiguredClass: TypeAlias = type[ModelingObject] | str
 NodeKey: TypeAlias = tuple[str, str | None] | tuple[str, str | int | None, int] | tuple[str, int, int, int]
@@ -20,7 +24,7 @@ ColumnInformation: TypeAlias = dict[str, Any]
 @dataclass(frozen=True)
 class _ResolvedFootprintSource:
     source: ModelingObject
-    value_kg: float
+    value: Quantity
 
 
 class ImpactRepartitionSankey:
@@ -55,10 +59,10 @@ class ImpactRepartitionSankey:
         self.lifecycle_phase_filter = lifecycle_phase_filter
         self.display_column_information = display_column_information
         self._graph = SankeyGraph(self._truncate_node_label)
-        self.aggregated_node_members: dict[int, list[tuple[str, float]]] = {}
+        self.aggregated_node_members: dict[int, list[tuple[str, Quantity]]] = {}
         self.aggregated_node_classes: dict[int, list[str]] = {}
         self._built: bool = False
-        self._total_system_kg: float = 0
+        self._total_system_value: Quantity = 0 * u.kg
         self._manual_column_information: list[ColumnInformation] = []
         self._impact_repartition_start_column: int = 0
         self._node_columns: dict[int, int] = {}
@@ -97,16 +101,16 @@ class ImpactRepartitionSankey:
         return self._graph.link_targets
 
     @property
-    def link_values(self) -> list[float]:
+    def link_values(self) -> list[Quantity]:
         return self._graph.link_values
 
     @property
-    def node_total_kg(self) -> list[float]:
-        return self._graph.node_total_kg
+    def node_total_values(self) -> list[Quantity]:
+        return self._graph.node_total_values
 
     @property
-    def total_system_kg(self) -> float:
-        return self._total_system_kg
+    def total_system_value(self) -> Quantity:
+        return self._total_system_value
 
     def _truncate_node_label(self, label: str) -> str:
         if self.node_label_max_length is None or len(label) <= self.node_label_max_length:
@@ -152,7 +156,7 @@ class ImpactRepartitionSankey:
         self._graph.reset()
         self.aggregated_node_members = {}
         self.aggregated_node_classes = {}
-        self._total_system_kg = 0
+        self._total_system_value = 0 * u.kg
         self._manual_column_information = []
         self._impact_repartition_start_column = 0
         self._node_columns = {}
@@ -166,16 +170,20 @@ class ImpactRepartitionSankey:
             self, label: str, key: NodeKey, color_key: str | None = None, obj: ModelingObject | None = None) -> int:
         return self._graph.add_node(label, key, color_key=color_key, obj=obj)
 
-    def _add_link(self, source: int, target: int, value_tonnes: float) -> None:
-        self._graph.add_link(source, target, value_tonnes)
+    def _add_link(self, source: int, target: int, value: Quantity) -> None:
+        self._graph.add_link(source, target, value)
 
     @staticmethod
-    def _get_value_kg(value: Any) -> float:
+    def _get_total_value(value: Any) -> Quantity:
         if isinstance(value, EmptyExplainableObject):
-            return 0.0
+            return 0.0 * u.kg
         if isinstance(value, ExplainableHourlyQuantities):
-            return float(value.sum().magnitude)
-        return float(value.magnitude)
+            return value.sum().value
+        if isinstance(value, Quantity):
+            return value
+        if hasattr(value, "value"):
+            return value.value
+        raise TypeError(f"Unsupported footprint value type: {type(value)}")
 
     def _get_phases(self) -> list[LifeCyclePhases]:
         if self.lifecycle_phase_filter is not None:
@@ -194,68 +202,76 @@ class ImpactRepartitionSankey:
                 continue
             if self._is_excluded(source):
                 continue
-            yield _ResolvedFootprintSource(source=source, value_kg=self._get_value_kg(value))
+            yield _ResolvedFootprintSource(source=source, value=self._get_total_value(value))
 
-    def _get_phase_total_kg(
+    def _get_phase_total_value(
             self, root: ModelingObject, root_footprint: dict[LifeCyclePhases, dict[ModelingObject, Any]],
-            phase: LifeCyclePhases) -> float:
+            phase: LifeCyclePhases) -> Quantity:
         if self.excluded_object_types:
             return self._sum_leaf_values(root, phase, set())
-        return sum(self._get_value_kg(value) for value in root_footprint[phase].values())
+        return sum((self._get_total_value(value) for value in root_footprint[phase].values()), start=0 * u.kg)
 
-    def _sum_leaf_values(self, obj: ModelingObject, phase: LifeCyclePhases, visited: set[str]) -> float:
+    def _sum_leaf_values(self, obj: ModelingObject, phase: LifeCyclePhases, visited: set[str]) -> Quantity:
         if obj.id in visited:
-            return 0
+            return 0 * u.kg
         next_visited = visited | {obj.id}
-        total = 0
+        total = 0 * u.kg
         for resolved_source in self._iter_resolved_sources(obj, phase):
             if resolved_source.source.is_impact_source:
-                total += resolved_source.value_kg
+                total += resolved_source.value
                 continue
             total += self._sum_leaf_values(resolved_source.source, phase, next_visited)
         return total
 
-    def _add_flow_to_node(self, parent_idx: int | None, node_idx: int, value_kg: float) -> None:
+    @staticmethod
+    def _is_positive(quantity: Quantity) -> bool:
+        return quantity.magnitude > 0
+
+    def _in_reference_unit(self, quantity: Quantity, reference_quantity: Quantity | None = None) -> Quantity:
+        reference = reference_quantity or self.total_system_value
+        return quantity.to(reference.units)
+
+    def _add_flow_to_node(self, parent_idx: int | None, node_idx: int, value: Quantity) -> None:
         if parent_idx is not None:
-            self._add_link(parent_idx, node_idx, value_kg / 1000)
+            self._add_link(parent_idx, node_idx, value)
         else:
-            self.node_total_kg[node_idx] += value_kg
+            self.node_total_values[node_idx] += value
 
     def _traverse(
             self, obj: ModelingObject, phase: LifeCyclePhases, phase_context: str | None, parent_idx: int | None,
-            obj_flow_kg: float, visited: set[str]) -> None:
+            obj_flow_value: Quantity, visited: set[str]) -> None:
         if obj.id in visited:
             return
         next_visited = visited | {obj.id}
-        resolved_sources: list[tuple[ModelingObject, float]] = []
-        obj_phase_total_kg = 0.0
+        resolved_sources: list[tuple[ModelingObject, Quantity]] = []
+        obj_phase_total_value = 0 * u.kg
         for resolved_source in self._iter_resolved_sources(obj, phase):
             source = resolved_source.source
-            value_kg = resolved_source.value_kg
+            value = resolved_source.value
             if self.excluded_object_types and not source.is_impact_source:
-                value_kg = self._sum_leaf_values(source, phase, next_visited)
-            if value_kg <= 0:
+                value = self._sum_leaf_values(source, phase, next_visited)
+            if not self._is_positive(value):
                 continue
-            resolved_sources.append((source, value_kg))
-            obj_phase_total_kg += value_kg
+            resolved_sources.append((source, value))
+            obj_phase_total_value += value
 
-        if obj_phase_total_kg <= 0:
+        if not self._is_positive(obj_phase_total_value):
             return
 
-        flow_scale = obj_flow_kg / obj_phase_total_kg
-        for source, source_phase_value_kg in resolved_sources:
-            value_kg = source_phase_value_kg * flow_scale
-            if value_kg <= 0:
+        flow_scale = obj_flow_value / obj_phase_total_value
+        for source, source_phase_value in resolved_sources:
+            value = source_phase_value * flow_scale
+            if not self._is_positive(value):
                 continue
             if source.is_impact_source:
-                self._handle_impact_source(source, value_kg, phase, phase_context, parent_idx)
+                self._handle_impact_source(source, value, phase, phase_context, parent_idx)
                 continue
             if self._should_skip_object(source):
-                self._traverse(source, phase, phase_context, parent_idx, value_kg, next_visited)
+                self._traverse(source, phase, phase_context, parent_idx, value, next_visited)
                 continue
             source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
-            self._add_flow_to_node(parent_idx, source_idx, value_kg)
-            self._traverse(source, phase, phase_context, source_idx, value_kg, next_visited)
+            self._add_flow_to_node(parent_idx, source_idx, value)
+            self._traverse(source, phase, phase_context, source_idx, value, next_visited)
 
     @staticmethod
     def _find_object_category_name(source: ModelingObject) -> str | None:
@@ -281,16 +297,16 @@ class ImpactRepartitionSankey:
 
     def _expand_impact_source_breakdown(
             self, source: ModelingObject, source_idx: int, phase: LifeCyclePhases, phase_context: str | None,
-            value_kg: float) -> None:
-        source_phase_footprint_kg = self._get_value_kg(self._get_source_phase_footprint(source, phase))
-        if source_phase_footprint_kg <= 0:
+            value: Quantity) -> None:
+        source_phase_footprint = self._get_total_value(self._get_source_phase_footprint(source, phase))
+        if not self._is_positive(source_phase_footprint):
             return
 
         for breakdown_source, breakdown_value in self._get_footprint_breakdown_by_source(source, phase).items():
             if breakdown_source is source or self._is_excluded(breakdown_source) or self._should_skip_object(breakdown_source):
                 continue
-            breakdown_value_kg = self._get_value_kg(breakdown_value) * value_kg / source_phase_footprint_kg
-            if breakdown_value_kg <= 0:
+            breakdown_source_value = self._get_total_value(breakdown_value) * value / source_phase_footprint
+            if not self._is_positive(breakdown_source_value):
                 continue
             breakdown_idx = self._add_node(
                 breakdown_source.name,
@@ -299,10 +315,10 @@ class ImpactRepartitionSankey:
                 obj=breakdown_source,
             )
             self._breakdown_node_indices.add(breakdown_idx)
-            self._add_flow_to_node(source_idx, breakdown_idx, breakdown_value_kg)
+            self._add_flow_to_node(source_idx, breakdown_idx, breakdown_source_value)
 
     def _handle_impact_source(
-            self, source: ModelingObject, value_kg: float, phase: LifeCyclePhases, phase_context: str | None,
+            self, source: ModelingObject, value: Quantity, phase: LifeCyclePhases, phase_context: str | None,
             parent_idx: int | None) -> None:
         leaf_parent_idx = parent_idx
         if not self.skip_object_category_footprint_split:
@@ -311,20 +327,20 @@ class ImpactRepartitionSankey:
                 category_label = f"{category_name} {phase_context.lower()}" if phase_context is not None else category_name
                 cat_idx = self._add_node(category_label, (category_name, phase_context), color_key=f"__cat_{category_name}__")
                 self._category_node_indices.add(cat_idx)
-                self._add_flow_to_node(parent_idx, cat_idx, value_kg)
+                self._add_flow_to_node(parent_idx, cat_idx, value)
                 leaf_parent_idx = cat_idx
 
         if self.skip_object_footprint_split:
             return
 
         if self._should_skip_object(source):
-            self._expand_impact_source_breakdown(source, leaf_parent_idx, phase, phase_context, value_kg)
+            self._expand_impact_source_breakdown(source, leaf_parent_idx, phase, phase_context, value)
             return
 
         source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
         self._leaf_node_indices.add(source_idx)
-        self._add_flow_to_node(leaf_parent_idx, source_idx, value_kg)
-        self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value_kg)
+        self._add_flow_to_node(leaf_parent_idx, source_idx, value)
+        self._expand_impact_source_breakdown(source, source_idx, phase, phase_context, value)
 
     @time_it
     def build(self) -> None:
@@ -337,16 +353,18 @@ class ImpactRepartitionSankey:
         root_footprint = root.attributed_footprint_per_source
 
         if self.excluded_object_types:
-            self._total_system_kg = sum(self._sum_leaf_values(root, phase, set()) for phase in phases)
+            self._total_system_value = sum((self._sum_leaf_values(root, phase, set()) for phase in phases), start=0 * u.kg)
         else:
-            self._total_system_kg = sum(
-                self._get_value_kg(v) for phase in phases for v in root_footprint[phase].values())
+            self._total_system_value = sum(
+                (self._get_total_value(v) for phase in phases for v in root_footprint[phase].values()),
+                start=0 * u.kg,
+            )
 
         current_column_index = 1
         root_idx = None
         if not self._should_skip_object(root):
             root_idx = self._add_node(root.name, ("root", "total"), color_key="__system__", obj=root)
-            self.node_total_kg[root_idx] = self._total_system_kg
+            self.node_total_values[root_idx] = self.total_system_value
             self._node_columns[root_idx] = current_column_index
             self._manual_column_information.append({
                 "column_index": current_column_index,
@@ -361,7 +379,7 @@ class ImpactRepartitionSankey:
                 color_key = "__fabrication__" if phase == LifeCyclePhases.MANUFACTURING else "__energy__"
                 phase_idx = self._add_node(phase.value, ("phase", phase.value), color_key=color_key)
                 self._node_columns[phase_idx] = current_column_index
-                self._add_flow_to_node(root_idx, phase_idx, self._get_phase_total_kg(root, root_footprint, phase))
+                self._add_flow_to_node(root_idx, phase_idx, self._get_phase_total_value(root, root_footprint, phase))
                 phase_parents[phase] = phase_idx
             self._manual_column_information.append({
                 "column_index": current_column_index,
@@ -381,7 +399,7 @@ class ImpactRepartitionSankey:
                 phase,
                 self._get_phase_context(phase),
                 phase_parents[phase],
-                self._get_phase_total_kg(root, root_footprint, phase),
+                self._get_phase_total_value(root, root_footprint, phase),
                 visited=set(),
             )
 
@@ -471,12 +489,12 @@ class ImpactRepartitionSankey:
             self._add_link(source, target, value)
 
     def _aggregate_small_nodes_by_column(self) -> None:
-        if self.aggregation_threshold_percent <= 0 or self._total_system_kg <= 0:
+        if self.aggregation_threshold_percent <= 0 or not self._is_positive(self.total_system_value):
             return
-        threshold_kg = self._total_system_kg * self.aggregation_threshold_percent / 100
+        threshold_value = self.total_system_value * self.aggregation_threshold_percent / 100
         aggregate_groups = {}
         for node_idx in range(len(self.node_labels)):
-            if self.node_total_kg[node_idx] >= threshold_kg:
+            if self._in_reference_unit(self.node_total_values[node_idx]).magnitude >= self._in_reference_unit(threshold_value).magnitude:
                 continue
             column = self._node_columns.get(node_idx)
             if column is None:
@@ -522,11 +540,15 @@ class ImpactRepartitionSankey:
                 self._breakdown_node_indices.add(new_idx)
 
         for column, group in aggregate_groups.items():
-            group_members = sorted(group, key=lambda idx: graph_snapshot.node_total_kg[idx], reverse=True)
+            group_members = sorted(
+                group,
+                key=lambda idx: self._in_reference_unit(graph_snapshot.node_total_values[idx]).magnitude,
+                reverse=True,
+            )
             aggregate_idx = self._add_node(
                 f"Other ({len(group_members)})", ("__aggregated__", column), color_key=f"__aggregated__{column}")
             self.aggregated_node_members[aggregate_idx] = [
-                (graph_snapshot.full_node_labels[idx], graph_snapshot.node_total_kg[idx]) for idx in group_members
+                (graph_snapshot.full_node_labels[idx], graph_snapshot.node_total_values[idx]) for idx in group_members
             ]
             self.aggregated_node_classes[aggregate_idx] = self._sort_class_names({
                 self._get_canonical_class_name(graph_snapshot.node_objects[idx])
@@ -537,23 +559,24 @@ class ImpactRepartitionSankey:
             for old_idx in group_members:
                 old_to_new_indices[old_idx] = aggregate_idx
 
-        combined_links = {}
+        combined_links: dict[tuple[int, int], Quantity] = {}
         for source, target, value in graph_snapshot.links:
             new_source = old_to_new_indices[source]
             new_target = old_to_new_indices[target]
             if new_source == new_target:
                 continue
-            combined_links[(new_source, new_target)] = combined_links.get((new_source, new_target), 0) + value
+            existing = combined_links.get((new_source, new_target))
+            combined_links[(new_source, new_target)] = value if existing is None else existing + value
 
         for (source, target), value in combined_links.items():
             self._add_link(source, target, value)
 
-        # Restore node_total_kg for root nodes (no incoming links, so _add_link didn't accumulate their totals).
+        # Restore node totals for root nodes (no incoming links, so _add_link didn't accumulate their totals).
         # Uses snapshot targets so aggregated root nodes also get their total added to the aggregate.
         snapshot_targets = {target for _, target, _ in graph_snapshot.links}
         for old_idx, new_idx in old_to_new_indices.items():
             if old_idx not in snapshot_targets:
-                self.node_total_kg[new_idx] += graph_snapshot.node_total_kg[old_idx]
+                self.node_total_values[new_idx] += graph_snapshot.node_total_values[old_idx]
 
     def _compute_node_colors(self) -> list[str]:
         return [self._compute_color_for_key(key) for key in self.node_color_keys]
@@ -571,19 +594,34 @@ class ImpactRepartitionSankey:
         red, green, blue = colorsys.hls_to_rgb(hue / 360, lightness, saturation)
         return f"rgba({round(red * 255)},{round(green * 255)},{round(blue * 255)},0.8)"
 
+    def get_root_display_unit(self):
+        return best_display_unit(self._total_system_value)
+
+    def format_value_in_root_unit(self, quantity: Quantity) -> str:
+        display_quantity = format_quantity_for_display(quantity.to(self.get_root_display_unit()))
+        magnitude = format_display_number(display_quantity.magnitude)
+        return f"{magnitude} {human_readable_unit(display_quantity.units)}"
+
+    def get_percentage_of_total(self, quantity: Quantity) -> float:
+        display_unit = self.get_root_display_unit()
+        total = self.total_system_value.to(display_unit).magnitude
+        if total <= 0:
+            return 0.0
+        return quantity.to(display_unit).magnitude / total * 100
+
     def _build_hover_labels(self) -> list[str]:
         node_hover = []
         for idx in range(len(self.node_labels)):
             if idx in self._spacer_nodes:
                 node_hover.append("")
                 continue
-            kg = self.node_total_kg[idx]
-            amount_str = display_co2_amount(format_co2_amount(kg))
-            pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
+            node_value = self.node_total_values[idx]
+            amount_str = self.format_value_in_root_unit(node_value)
+            pct = self.get_percentage_of_total(node_value)
             if idx in self.aggregated_node_members:
                 members_str = "<br>".join(
-                    f"{label}: {display_co2_amount(format_co2_amount(member_kg))} CO2eq"
-                    for label, member_kg in self.aggregated_node_members[idx]
+                    f"{label}: {self.format_value_in_root_unit(member_value)} CO2eq"
+                    for label, member_value in self.aggregated_node_members[idx]
                 )
                 node_hover.append(
                     f"{self.full_node_labels[idx]}<br>{amount_str} CO2eq ({pct:.1f}%)<br><br>Aggregated objects:<br>{members_str}")
@@ -609,9 +647,9 @@ class ImpactRepartitionSankey:
 
         link_labels = []
         for link_idx in range(len(self.link_values)):
-            kg = self.link_values[link_idx] * 1000
-            amount_str = display_co2_amount(format_co2_amount(kg))
-            pct = (kg / self._total_system_kg * 100) if self._total_system_kg > 0 else 0
+            link_value = self.link_values[link_idx]
+            amount_str = self.format_value_in_root_unit(link_value)
+            pct = self.get_percentage_of_total(link_value)
             source_idx = resolve_visible(self.link_sources[link_idx], incoming_by_target)
             target_idx = resolve_visible(self.link_targets[link_idx], outgoing_by_source)
             link_labels.append(
@@ -707,7 +745,7 @@ class ImpactRepartitionSankey:
                 )
             title = (
                 f"{self.system.name} {lifecycle_info}impact repartition{excluded_classes_info}: "
-                f"{display_co2_amount(format_co2_amount(self._total_system_kg))} CO2eq"
+                f"{self.format_value_in_root_unit(self._total_system_value)} CO2eq"
             )
 
         node_hover = self._build_hover_labels()
@@ -717,6 +755,7 @@ class ImpactRepartitionSankey:
             node_colors[self._spacer_original_source.get(source, source)].replace("0.8)", "0.3)")
             for source in self.link_sources
         ]
+        link_values_for_display = [value.to(self.get_root_display_unit()).magnitude for value in self.link_values]
         display_node_colors = [
             color.replace("0.8)", "0.3)") if idx in self._spacer_nodes else color
             for idx, color in enumerate(node_colors)
@@ -729,7 +768,7 @@ class ImpactRepartitionSankey:
                 customdata=node_hover, hovertemplate="%{customdata}<extra></extra>",
             ),
             link=dict(
-                source=self.link_sources, target=self.link_targets, value=self.link_values,
+                source=self.link_sources, target=self.link_targets, value=link_values_for_display,
                 color=link_colors, customdata=link_labels, hovertemplate="%{customdata}<extra></extra>",
             ),
         )])
@@ -779,7 +818,7 @@ if __name__ == '__main__':
     elif test == "json":
         from efootprint.api_utils.json_to_system import json_to_system
         import json
-        with open(json_files[-1], "r") as f:
+        with open(json_files[0], "r") as f:
             json_data = json.load(f)
         class_obj_dict, flat_obj_dict = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))

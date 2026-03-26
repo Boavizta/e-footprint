@@ -8,6 +8,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from efootprint.constants.units import u, get_unit
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.aggregation_utils import validate_timeseries_unit
+from efootprint.utils.display import format_display_number, format_quantity_for_display, human_readable_unit
 
 if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -102,6 +103,14 @@ class ExplainableRecurrentQuantities(ExplainableObject):
         return self.value.units
 
     @property
+    def display_quantity(self):
+        return format_quantity_for_display(self.value)
+
+    @property
+    def display_unit(self):
+        return self.display_quantity.units
+
+    @property
     def magnitude(self):
         return self.value.magnitude
 
@@ -186,17 +195,15 @@ class ExplainableRecurrentQuantities(ExplainableObject):
         return str(self)
 
     def __str__(self):
-        def _round_series_values(input_series: np.array):
-            return [str(round(hourly_value.magnitude, 2)) for hourly_value in input_series]
-
-        compact_unit = "{:~}".format(self.unit)
+        display_quantity = format_quantity_for_display(self.value)
+        compact_unit = human_readable_unit(display_quantity.units)
         nb_of_values = len(self.value)
         if nb_of_values < 30:
-            rounded_values = _round_series_values(self.value)
-            str_rounded_values = "[" + ", ".join(rounded_values) + "]"
+            formatted_values = [format_display_number(value) for value in display_quantity.magnitude]
+            str_rounded_values = "[" + ", ".join(formatted_values) + "]"
         else:
-            first_vals = _round_series_values(self.value[:10])
-            last_vals = _round_series_values(self.value[-10:])
+            first_vals = [format_display_number(value) for value in display_quantity.magnitude[:10]]
+            last_vals = [format_display_number(value) for value in display_quantity.magnitude[-10:]]
             str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
                                  + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
 

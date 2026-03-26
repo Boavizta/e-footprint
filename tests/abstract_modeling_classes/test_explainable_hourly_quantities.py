@@ -254,6 +254,15 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         summed = self.hourly_usage1.sum()
         self.assertEqual(summed, ExplainableQuantity(24 * u.W, "24 W"))
 
+    def test_display_quantity_scales_hourly_series(self):
+        hourly_usage = ExplainableHourlyQuantities(
+            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Usage")
+
+        display_quantity = hourly_usage.display_quantity
+
+        self.assertEqual(u.kW, display_quantity.units)
+        np.testing.assert_allclose(np.array([1.0, 2.0], dtype=np.float32), display_quantity.magnitude)
+
     def test_max(self):
         maximum = self.hourly_usage1.max()
         self.assertEqual(maximum, ExplainableQuantity(1 * u.W, "1 W"))
@@ -279,6 +288,15 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             {"label": "Usage 1", "compressed_values": "KLUv/SBgVQAAIAAAgD8BAPnkiA==", "unit": "watt",
              "start_date": "2025-01-01 00:00:00", "timezone": None},
             self.hourly_usage1.to_json())
+
+    def test_str_uses_best_display_unit(self):
+        hourly_usage = ExplainableHourlyQuantities(
+            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), self.start_date, "Usage")
+
+        str_repr = str(hourly_usage)
+
+        self.assertIn("2 values from 2025-01-01 00:00:00 to 2025-01-01 02:00:00 in kW", str_repr)
+        self.assertIn("[1, 2]", str_repr)
 
     def test_to_json_with_compressed_data_from_json(self):
         self.maxDiff = None

@@ -64,6 +64,15 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
         expected = original_value / 1000
         np.testing.assert_array_almost_equal(result.magnitude, expected)
 
+    def test_display_quantity_scales_recurrent_series(self):
+        recurring_quantity = ExplainableRecurrentQuantities(
+            Quantity(np.array([1000, 2000], dtype=np.float32), u.W), "Test")
+
+        display_quantity = recurring_quantity.display_quantity
+
+        self.assertEqual(u.kW, display_quantity.units)
+        np.testing.assert_allclose(np.array([1.0, 2.0], dtype=np.float32), display_quantity.magnitude)
+
     def test_copy(self):
         copied = self.recurring_quantity1.copy()
         
@@ -146,14 +155,14 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
         self.assertEqual(obj.source.name, "test_source")
 
     def test_str_short_array(self):
-        short_values = [1.567, 2.234]
+        short_values = [1000, 2000]
         recurring_quantity = ExplainableRecurrentQuantities(
             Quantity(np.array(short_values, dtype=np.float32), u.W), "Test")
         
         str_repr = str(recurring_quantity)
         
-        self.assertIn("2 values in W", str_repr)
-        self.assertIn("[1.57, 2.23]", str_repr)
+        self.assertIn("2 values in kW", str_repr)
+        self.assertIn("[1, 2]", str_repr)
 
     def test_str_long_array(self):
         long_values = list(range(50))

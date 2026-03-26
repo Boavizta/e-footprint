@@ -50,6 +50,12 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_magnitude(self):
         self.assertEqual(self.a.magnitude, 1)
 
+    def test_display_quantity_scales_units(self):
+        self.assertEqual(22.0 * u.tonne, ExplainableQuantity(22000 * u.kg, "impact").display_quantity)
+
+    def test_str_uses_display_quantity(self):
+        self.assertEqual("22 t", str(ExplainableQuantity(22000 * u.kg, "impact")))
+
     def test_add_with_0(self):
         self.assertEqual(self.a, self.a + 0)
 
