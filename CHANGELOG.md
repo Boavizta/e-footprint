@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [17.1.0] - 2026-03-27
+
+### Added
+- Unified quantity display management to represent numerical values with 3 digits (by default) significant figures.
+- Add validation_attributes and calculated_attributes_without_validations properties to ModelingObject, to be able to filter out validation attributes in the interface.
+
+### Fixed
+- Initialize dict-typed calculated attributes as ExplainableObjectDict during JSON reload. When loading a system from JSON without calculated attributes, from_json_dict was initializing all missing calculated attributes as EmptyExplainableObject. For attributes backed by ExplainableObjectDict (detected via update_dict_element_in_ method), this caused TypeError when downstream code checked membership with `in`. Now uses the update_dict_element_in_ convention to initialize those as ExplainableObjectDict instead.
+- Add back fabrication_impact_repartition_weights to Storage calculated attributes. It was wrongly omitted.
+
 ## [17.0.2] - 2026-03-23
 
 ### Changed

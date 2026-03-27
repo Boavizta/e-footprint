@@ -23,7 +23,10 @@ def plot_baseline_and_simulation_data(
     import matplotlib.dates as mdates
 
     fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
-    display_unit = best_display_unit(baseline_q)
+    if simulated_q is not None:
+        display_unit = max(best_display_unit(simulated_q), best_display_unit(baseline_q))
+    else:
+        display_unit = best_display_unit(baseline_q)
     baseline_q = baseline_q.to(display_unit)
 
     if simulated_q is not None:

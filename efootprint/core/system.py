@@ -24,7 +24,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.logger import logger
-from efootprint.utils.display import best_display_unit, human_readable_unit
+from efootprint.utils.display import best_display_unit, human_readable_unit, display_quantity_as_str
 
 
 class System(ModelingObject):
@@ -314,7 +314,8 @@ class System(ModelingObject):
         energy_footprints = self.energy_footprint_sum_over_period
 
         rows_as_dicts = []
-        chart_unit = best_display_unit(self.total_footprint.value)
+        total_footprint_sum_display = self.total_footprint.sum().display_quantity
+        chart_unit = total_footprint_sum_display.units
         chart_unit_str = human_readable_unit(chart_unit)
         value_colname = f"{chart_unit_str} CO2 emissions"
 
@@ -323,13 +324,13 @@ class System(ModelingObject):
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0].name)
 
             for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
-                for object, quantity in objs:
-                    converted_magnitude = quantity.value.to(chart_unit).magnitude
-                    amount_str = f"{round(converted_magnitude, 2)} {chart_unit_str}"
+                for object, expl_quantity in objs:
+                    display_quantity = expl_quantity.display_quantity
+                    amount_str = display_quantity_as_str(display_quantity)
 
                     rows_as_dicts.append({
-                        "Type": color, "Category": category, "Object": object.name, value_colname: converted_magnitude,
-                        "Amount": amount_str})
+                        "Type": color, "Category": category, "Object": object.name,
+                        value_colname: display_quantity.magnitude, "Amount": amount_str})
 
         import pandas as pd
         df = pd.DataFrame.from_records(rows_as_dicts)
@@ -339,15 +340,14 @@ class System(ModelingObject):
 
         start_date = total_footprint.start_date
         end_date = start_date + timedelta(hours=len(total_footprint.value) - 1)
-        total_amount = round(total_co2, 2)
+        total_amount_str = display_quantity_as_str(total_footprint_sum_display)
 
         fig = px.bar(
             df, x="Category", y=value_colname, color='Type', barmode='group',
             height=height, width=width,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
-            title=f"Total CO2 emissions from {start_date.date()} to {end_date.date()}: "
-                  f"{total_amount} {chart_unit_str}"
+            title=f"Total CO2 emissions from {start_date.date()} to {end_date.date()}: {total_amount_str}"
         )
 
         # Legend placement logic
