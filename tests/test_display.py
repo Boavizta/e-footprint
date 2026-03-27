@@ -42,6 +42,13 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(u.tonne, formatted.units)
         np.testing.assert_allclose(np.array([1.0, 2.0, 3.0], dtype=np.float32), formatted.magnitude)
 
+    def test_format_quantity_for_display_for_arrays_with_zero_and_negative_values(self):
+        """Test array display formatting preserves zero values and rounds negatives correctly."""
+        formatted = format_quantity_for_display(np.array([0.0, -0.012345, -12345.6], dtype=np.float32) * u.kg)
+
+        self.assertEqual(u.tonne, formatted.units)
+        np.testing.assert_allclose(np.array([0.0, -1.23e-5, -12.3], dtype=np.float32), formatted.magnitude)
+
     def test_format_quantity_for_display_does_not_mutate_input_quantity(self):
         """Test display formatting returns a new quantity without mutating the input."""
         quantity = 123456 * u.kg

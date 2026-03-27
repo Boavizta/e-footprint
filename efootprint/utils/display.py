@@ -56,13 +56,25 @@ def _round_to_sig_figs(value: float, sig_figs: int = 3) -> float:
     return round(value, digits)
 
 
+def _round_array_to_sig_figs(values: np.ndarray, sig_figs: int = 3) -> np.ndarray:
+    rounded = np.zeros_like(values)
+    nonzero_mask = values != 0
+    if not np.any(nonzero_mask):
+        return rounded
+
+    nonzero_values = values[nonzero_mask].astype(np.float64, copy=False)
+    digits = sig_figs - np.floor(np.log10(np.abs(nonzero_values))).astype(np.int64) - 1
+    scale = np.power(10.0, digits)
+    rounded[nonzero_mask] = np.round(nonzero_values * scale) / scale
+    return rounded
+
+
 def format_quantity_for_display(quantity: Quantity, sig_figs: int = 3) -> Quantity:
     display_unit = best_display_unit(quantity)
     converted = quantity.to(display_unit)
     magnitude = converted.magnitude
     if isinstance(magnitude, np.ndarray):
-        rounded = np.vectorize(lambda v: _round_to_sig_figs(float(v), sig_figs))(magnitude)
-        rounded = np.asarray(rounded, dtype=magnitude.dtype)
+        rounded = _round_array_to_sig_figs(magnitude, sig_figs)
     else:
         rounded = _round_to_sig_figs(float(magnitude), sig_figs)
     return rounded * display_unit

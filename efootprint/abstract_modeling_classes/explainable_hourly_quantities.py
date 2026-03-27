@@ -174,7 +174,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     @property
     def display_unit(self):
-        return self.display_quantity.units
+        return best_display_unit(self.value)
 
     @property
     def magnitude(self):
@@ -451,18 +451,15 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return str(self)
 
     def __str__(self):
-        display_unit = best_display_unit(self.value)
-        compact_unit = human_readable_unit(display_unit)
+        display_quantity = format_quantity_for_display(self.value)
+        compact_unit = human_readable_unit(display_quantity.units)
         nb_of_values = len(self.value)
         if nb_of_values < 30:
-            display_values = self.value.to(display_unit).magnitude
-            formatted_values = [format_display_number(value) for value in display_values]
+            formatted_values = [format_display_number(value) for value in display_quantity.magnitude]
             str_rounded_values = "[" + ", ".join(formatted_values) + "]"
         else:
-            first_display_values = self.value[:10].to(display_unit).magnitude
-            last_display_values = self.value[-10:].to(display_unit).magnitude
-            first_vals = [format_display_number(value) for value in first_display_values]
-            last_vals = [format_display_number(value) for value in last_display_values]
+            first_vals = [format_display_number(value) for value in display_quantity.magnitude[:10]]
+            last_vals = [format_display_number(value) for value in display_quantity.magnitude[-10:]]
             str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
                                  + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
 
