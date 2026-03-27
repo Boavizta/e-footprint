@@ -72,3 +72,7 @@ def human_readable_unit(unit: Unit) -> str:
 
 def format_display_number(value: float) -> str:
     return np.format_float_positional(value, trim="-")
+
+def display_quantity_as_str(quantity: Quantity, sig_figs: int = 3) -> str:
+    formatted_quantity = format_quantity_for_display(quantity, sig_figs)
+    return f"{format_display_number(formatted_quantity.magnitude)} {human_readable_unit(formatted_quantity.units)}"
