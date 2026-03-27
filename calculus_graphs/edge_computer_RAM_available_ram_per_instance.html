@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b58f06 {
+             #mynetwork_7f1f93 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_b58f06" class="card-body"></div>
+            <div id="mynetwork_7f1f93" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b58f06');
+                  var container = document.getElementById('mynetwork_7f1f93');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge computer RAM instance", "label": "Available RAM per\nedge computer RAM\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge computer RAM instance\n=\nRAM of edge computer RAM - Base RAM consumption of edge computer RAM\n=\n16.0 gigabyte_ram - 1.0 gigabyte_ram\n=\n15.0 gigabyte_ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of edge computer RAM", "label": "RAM of edge computer\nRAM", "shape": "dot", "size": 15, "title": "RAM of edge computer RAM\n=\nduplicate (RAM of edge computer)\n=\nduplicate (16.0 gigabyte_ram)\n=\n16.0 gigabyte_ram", "x": -75.0, "y": 300}, {"color": null, "id": "RAM of edge computer", "label": "RAM of edge computer", "shape": "dot", "size": 15, "title": "RAM of edge computer = 16.0 gigabyte_ram", "x": -75.0, "y": 150}, {"color": null, "id": "Base RAM consumption of edge computer RAM", "label": "Base RAM consumption\nof edge computer RAM", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge computer RAM\n=\nduplicate (Base RAM consumption of edge computer)\n=\nduplicate (1.0 gigabyte_ram)\n=\n1.0 gigabyte_ram", "x": 75.0, "y": 300}, {"color": null, "id": "Base RAM consumption of edge computer", "label": "Base RAM consumption\nof edge computer", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge computer = 1.0 gigabyte_ram", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge computer RAM instance", "label": "Available RAM per\nedge computer RAM\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge computer RAM instance\n=\nRAM of edge computer RAM - Base RAM consumption of edge computer RAM\n=\n128 B - 8 B\n=\n120 B", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of edge computer RAM", "label": "RAM of edge computer\nRAM", "shape": "dot", "size": 15, "title": "RAM of edge computer RAM\n=\nduplicate (RAM of edge computer)\n=\nduplicate (128 B)\n=\n128 B", "x": -75.0, "y": 300}, {"color": null, "id": "RAM of edge computer", "label": "RAM of edge computer", "shape": "dot", "size": 15, "title": "RAM of edge computer = 128 B", "x": -75.0, "y": 150}, {"color": null, "id": "Base RAM consumption of edge computer RAM", "label": "Base RAM consumption\nof edge computer RAM", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge computer RAM\n=\nduplicate (Base RAM consumption of edge computer)\n=\nduplicate (8 B)\n=\n8 B", "x": 75.0, "y": 300}, {"color": null, "id": "Base RAM consumption of edge computer", "label": "Base RAM consumption\nof edge computer", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge computer = 8 B", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM of edge computer RAM", "to": "Available RAM per edge computer RAM instance"}, {"arrows": "to", "from": "RAM of edge computer", "to": "RAM of edge computer RAM"}, {"arrows": "to", "from": "Base RAM consumption of edge computer RAM", "to": "Available RAM per edge computer RAM instance"}, {"arrows": "to", "from": "Base RAM consumption of edge computer", "to": "Base RAM consumption of edge computer RAM"}]);
 
                   nodeColors = {};

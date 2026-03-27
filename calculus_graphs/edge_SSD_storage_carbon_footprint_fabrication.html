@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5bc985 {
+             #mynetwork_86c6da {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_5bc985" class="card-body"></div>
+            <div id="mynetwork_86c6da" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5bc985');
+                  var container = document.getElementById('mynetwork_86c6da');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n160.0 kilogram / terabyte * 256.0 gigabyte\n=\n40960.0 gigabyte * kilogram / terabyte", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of edge SSD storage per storage capacity", "label": "Fabrication carbon\nfootprint of edge\nSSD storage per\nstorage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of edge SSD storage per storage capacity = 160.0\nkilogram / terabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n0.00002 mg * 2050 B\n=\n41 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of edge SSD storage per storage capacity", "label": "Fabrication carbon\nfootprint of edge\nSSD storage per\nstorage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of edge SSD storage per storage capacity = 0.00002\nmg", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 2050 B", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication carbon footprint of edge SSD storage per storage capacity", "to": "Carbon footprint of edge SSD storage"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "Carbon footprint of edge SSD storage"}]);
 
                   nodeColors = {};

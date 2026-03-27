@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_efdbe2 {
+             #mynetwork_2c1891 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_efdbe2" class="card-body"></div>
+            <div id="mynetwork_2c1891" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_efdbe2');
+                  var container = document.getElementById('mynetwork_2c1891');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Datacenter PUE for anthropic from Ecologits llm_impacts function", "label": "Datacenter PUE for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Datacenter PUE for anthropic from Ecologits llm_impacts function\n=\nquery EcoLogits provider config (Generative AI model provider from e-footprint\nhypothesis)\n=\nquery EcoLogits provider config (anthropic)\n=\n1.11 dimensionless", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model provider from e-footprint hypothesis", "label": "Generative AI model\nprovider from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model provider from e-footprint hypothesis = anthropic", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Datacenter PUE for anthropic from Ecologits llm_impacts function", "label": "Datacenter PUE for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Datacenter PUE for anthropic from Ecologits llm_impacts function\n=\nquery EcoLogits provider config (Generative AI model provider from e-footprint\nhypothesis)\n=\nquery EcoLogits provider config (anthropic)\n=\n1.11", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model provider from e-footprint hypothesis", "label": "Generative AI model\nprovider from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model provider from e-footprint hypothesis = anthropic", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model provider from e-footprint hypothesis", "to": "Datacenter PUE for anthropic from Ecologits llm_impacts function"}]);
 
                   nodeColors = {};

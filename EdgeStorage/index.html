@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1727,6 +1727,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#total_unitary_hourly_need_per_usage_pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_unitary_hourly_need_per_usage_pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3379,6 +3390,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#total_unitary_hourly_need_per_usage_pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_unitary_hourly_need_per_usage_pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3425,7 +3447,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="carbon_footprint_fabrication">carbon_footprint_fabrication</h3>
 <p>ExplainableQuantity in gigabyte * kilogram / terabyte, representing the Carbon footprint of edge ssd storage.  </p>
-<p>Example value: 40960.0 gigabyte * kilogram / terabyte  </p>
+<p>Example value: 41 kg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#carbon_footprint_fabrication_per_storage_capacity">Fabrication carbon footprint of edge SSD storage per storage capacity</a></li>
@@ -3465,7 +3487,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ec278a {
+             #mynetwork_684df4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3487,7 +3509,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ec278a" class="card-body"></div>
+            <div id="mynetwork_684df4" class="card-body"></div>
         </div>
 
 
@@ -3517,12 +3539,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ec278a');
+                  var container = document.getElementById('mynetwork_684df4');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n160.0 kilogram / terabyte * 256.0 gigabyte\n=\n40960.0 gigabyte * kilogram / terabyte", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of edge SSD storage per storage capacity", "label": "Fabrication carbon\nfootprint of edge\nSSD storage per\nstorage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of edge SSD storage per storage capacity = 160.0\nkilogram / terabyte", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n0.00002 mg * 2050 B\n=\n41 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Fabrication carbon footprint of edge SSD storage per storage capacity", "label": "Fabrication carbon\nfootprint of edge\nSSD storage per\nstorage capacity", "shape": "dot", "size": 15, "title": "Fabrication carbon footprint of edge SSD storage per storage capacity = 0.00002\nmg", "x": -75.0, "y": 150}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 2050 B", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Fabrication carbon footprint of edge SSD storage per storage capacity", "to": "Carbon footprint of edge SSD storage"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "Carbon footprint of edge SSD storage"}]);
 
                   nodeColors = {};
@@ -3593,9 +3615,9 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge ssd storage cumulative storage need for default edge usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:<br />
-    first 10 vals [1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07],<br />
-    last 10 vals [3.10124e+07, 3.10126e+07, 3.10128e+07, 3.1013e+07, 3.10132e+07, 3.10134e+07, 3.1013602e+07, 3.10138e+07, 3.1014e+07, 3.10142e+07], <br />
+EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:<br />
+    first 10 vals [80, 80, 80, 80, 80, 80, 80, 80, 80, 80],<br />
+    last 10 vals [248, 248, 248, 248, 248, 248, 248, 248, 248, 248], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3637,7 +3659,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_4be52b {
+             #mynetwork_801a27 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3659,7 +3681,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4be52b" class="card-body"></div>
+            <div id="mynetwork_801a27" class="card-body"></div>
         </div>
 
 
@@ -3689,12 +3711,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4be52b');
+                  var container = document.getElementById('mynetwork_801a27');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage cumulative storage need for Default edge usage pattern", "label": "edge SSD storage\ncumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge SSD storage cumulative storage need for Default edge usage pattern\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern + no value + edge SSD storage initial storage need logically dependent\non Storage capacity of edge SSD storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [2.10124e+07, 2.10126e+07, 2.10128e+07, 2.1013e+07, 2.10132e+07,\n2.10134e+07, 2.10136e+07, 2.10138e+07, 2.1014e+07, 2.10142e+07] + no value +\n10.0 gigabyte logically dependent on 256.0 gigabyte\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:\nfirst 10 vals [1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07, 1e+07,\n1e+07],\nlast 10 vals [3.10124e+07, 3.10126e+07, 3.10128e+07, 3.1013e+07, 3.10132e+07,\n3.10134e+07, 3.1013602e+07, 3.10138e+07, 3.1014e+07, 3.10142e+07]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in kB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0,\n200.0])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [2.10124e+07, 2.10126e+07, 2.10128e+07, 2.1013e+07, 2.10132e+07,\n2.10134e+07, 2.10136e+07, 2.10138e+07, 2.1014e+07, 2.10142e+07]", "x": -150.0, "y": 750}, {"color": null, "id": "edge SSD storage initial storage need", "label": "edge SSD storage\ninitial storage need", "shape": "dot", "size": 15, "title": "edge SSD storage initial storage need = 10.0 gigabyte", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 256.0 gigabyte", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage cumulative storage need for Default edge usage pattern", "label": "edge SSD storage\ncumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge SSD storage cumulative storage need for Default edge usage pattern\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern + no value + edge SSD storage initial storage need logically dependent\non Storage capacity of edge SSD storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168] + no value + 80\nB logically dependent on 2050 B\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [80, 80, 80, 80, 80, 80, 80, 80, 80, 80],\nlast 10 vals [248, 248, 248, 248, 248, 248, 248, 248, 248, 248]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168]", "x": -150.0, "y": 750}, {"color": null, "id": "edge SSD storage initial storage need", "label": "edge SSD storage\ninitial storage need", "shape": "dot", "size": 15, "title": "edge SSD storage initial storage need = 80 B", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 2050 B", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "edge SSD storage initial storage need", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -3765,7 +3787,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
 <p>Dictionary with EdgeUsagePattern as keys and 
                         No value as values, in dimensionless.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
+EdgeUsagePattern Default edge usage pattern (eef937): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3805,7 +3827,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_9f767e {
+             #mynetwork_1c0ba6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3827,7 +3849,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9f767e" class="card-body"></div>
+            <div id="mynetwork_1c0ba6" class="card-body"></div>
         </div>
 
 
@@ -3857,7 +3879,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9f767e');
+                  var container = document.getElementById('mynetwork_1c0ba6');
 
 
 
@@ -3933,9 +3955,9 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly edge ssd storage instances fabrication footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],<br />
-    last 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78], <br />
+EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],<br />
+    last 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311, 0.00233, 0.00156, 0.000776], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3977,7 +3999,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_1e6333 {
+             #mynetwork_f5a668 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3999,7 +4021,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1e6333" class="card-body"></div>
+            <div id="mynetwork_f5a668" class="card-body"></div>
         </div>
 
 
@@ -4029,12 +4051,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1e6333');
+                  var container = document.getElementById('mynetwork_f5a668');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge SSD\nstorage instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge SSD storage / Lifespan of edge SSD storage) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (40960.0 gigabyte * kilogram / terabyte / 6.0 year) *\n1.0 hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],\nlast 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n160.0 kilogram / terabyte * 256.0 gigabyte\n=\n40960.0 gigabyte * kilogram / terabyte", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan of edge SSD storage", "label": "Lifespan of edge SSD\nstorage", "shape": "dot", "size": 15, "title": "Lifespan of edge SSD storage = 6.0 year", "x": 200.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge SSD\nstorage instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge SSD storage / Lifespan of edge SSD storage) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (41 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],\nlast 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311,\n0.00233, 0.00156, 0.000776]", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000] hourly occurrences\naverage 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint of edge SSD storage", "label": "Carbon footprint of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Carbon footprint of edge SSD storage\n=\nFabrication carbon footprint of edge SSD storage per storage capacity * Storage\ncapacity of edge SSD storage\n=\n0.00002 mg * 2050 B\n=\n41 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan of edge SSD storage", "label": "Lifespan of edge SSD\nstorage", "shape": "dot", "size": 15, "title": "Lifespan of edge SSD storage = 6 yr", "x": 200.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint of edge SSD storage", "to": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of edge SSD storage", "to": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4105,7 +4127,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): 105192 values from 2024-12
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly energy consumed by edge ssd storage instances for default edge usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
+EdgeUsagePattern Default edge usage pattern (eef937): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4146,7 +4168,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_a89154 {
+             #mynetwork_3bdf86 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4168,7 +4190,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a89154" class="card-body"></div>
+            <div id="mynetwork_3bdf86" class="card-body"></div>
         </div>
 
 
@@ -4198,12 +4220,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a89154');
+                  var container = document.getElementById('mynetwork_3bdf86');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 1.0 hour * no value\n=\nno value", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in\noccurrence:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 1000.0, 1000.0, 1000.0, 1000.0, 1000.0]\nhourly occurrences average 6.0 year\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0]", "x": -75.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 1 h * no value\n=\nno value", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000] hourly occurrences\naverage 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": -75.0, "y": 450}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern"}, {"arrows": "to", "from": "no value", "to": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4274,7 +4296,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge ssd storage energy footprint for default edge usage pattern as values, in dimensionless.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
+EdgeUsagePattern Default edge usage pattern (eef937): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4315,7 +4337,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_d8346c {
+             #mynetwork_4e8d59 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4337,7 +4359,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d8346c" class="card-body"></div>
+            <div id="mynetwork_4e8d59" class="card-body"></div>
         </div>
 
 
@@ -4367,12 +4389,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d8346c');
+                  var container = document.getElementById('mynetwork_4e8d59');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage energy footprint for Default edge usage pattern", "label": "edge SSD storage\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge SSD storage energy footprint for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge SSD\nstorage instances for Default edge usage pattern\n=\n85.0 gram / kilowatt_hour * no value\n=\nno value", "x": 0.0, "y": 750}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": -75.0, "y": 600}, {"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 1.0 hour * no value\n=\nno value", "x": 75.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage energy footprint for Default edge usage pattern", "label": "edge SSD storage\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge SSD storage energy footprint for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge SSD\nstorage instances for Default edge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 0.0, "y": 750}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85 g/kWh", "x": -75.0, "y": 600}, {"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 1 h * no value\n=\nno value", "x": 75.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average carbon intensity of devices country", "to": "edge SSD storage energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "to": "edge SSD storage energy footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4441,9 +4463,9 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 <p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_energy_footprint_per_usage_pattern.html' target='_blank'>link to edge SSD storage energy footprint for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>Edge ssd storage total fabrication footprint across usage patterns in kilogram.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],<br />
-    last 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]  </p>
+<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],<br />
+    last 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311, 0.00233, 0.00156, 0.000776]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#instances_fabrication_footprint_per_usage_pattern">Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern</a>  </li>
@@ -4482,7 +4504,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_ef109b {
+             #mynetwork_9de3f5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4504,7 +4526,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ef109b" class="card-body"></div>
+            <div id="mynetwork_9de3f5" class="card-body"></div>
         </div>
 
 
@@ -4534,12 +4556,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ef109b');
+                  var container = document.getElementById('mynetwork_9de3f5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total fabrication footprint across usage patterns", "label": "edge SSD storage\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total fabrication footprint across usage patterns\n=\nHourly edge SSD storage instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],\nlast 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],\nlast 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge SSD\nstorage instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge SSD storage / Lifespan of edge SSD storage) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (40960.0 gigabyte * kilogram / terabyte / 6.0 year) *\n1.0 hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.78, 1.56],\nlast 10 vals [3.89, 3.89, 3.89, 3.89, 3.89, 3.89, 3.11, 2.33, 1.56, 0.78]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total fabrication footprint across usage patterns", "label": "edge SSD storage\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total fabrication footprint across usage patterns\n=\nHourly edge SSD storage instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],\nlast 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311,\n0.00233, 0.00156, 0.000776] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],\nlast 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311,\n0.00233, 0.00156, 0.000776]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge SSD\nstorage instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge SSD storage instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge SSD storage / Lifespan of edge SSD storage) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (41 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000778, 0.00156],\nlast 10 vals [0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00389, 0.00311,\n0.00233, 0.00156, 0.000776]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly edge SSD storage instances fabrication footprint for Default edge usage pattern", "to": "edge SSD storage total fabrication footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -4646,7 +4668,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_ffd2e8 {
+             #mynetwork_4163a4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4668,7 +4690,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ffd2e8" class="card-body"></div>
+            <div id="mynetwork_4163a4" class="card-body"></div>
         </div>
 
 
@@ -4698,12 +4720,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ffd2e8');
+                  var container = document.getElementById('mynetwork_4163a4');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total energy consumed across usage patterns", "label": "edge SSD storage\ntotal energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total energy consumed across usage patterns\n=\nno value + Hourly energy consumed by edge SSD storage instances for Default edge\nusage pattern\n=\nno value + no value\n=\nno value", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * 1.0 hour * no value\n=\nno value", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total energy consumed across usage patterns", "label": "edge SSD storage\ntotal energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total energy consumed across usage patterns\n=\nno value + Hourly energy consumed by edge SSD storage instances for Default edge\nusage pattern\n=\nno value + no value\n=\nno value", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge SSD\nstorage instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge SSD storage instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 1 h * no value\n=\nno value", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge SSD storage instances for Default edge usage pattern", "to": "edge SSD storage total energy consumed across usage patterns"}]);
 
                   nodeColors = {};
@@ -4810,7 +4832,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_c54815 {
+             #mynetwork_13d1d7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4832,7 +4854,7 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c54815" class="card-body"></div>
+            <div id="mynetwork_13d1d7" class="card-body"></div>
         </div>
 
 
@@ -4862,12 +4884,12 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c54815');
+                  var container = document.getElementById('mynetwork_13d1d7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total energy footprint across usage patterns", "label": "edge SSD storage\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total energy footprint across usage patterns\n=\nno value + edge SSD storage energy footprint for Default edge usage pattern\n=\nno value + no value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "edge SSD storage energy footprint for Default edge usage pattern", "label": "edge SSD storage\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge SSD storage energy footprint for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge SSD\nstorage instances for Default edge usage pattern\n=\n85.0 gram / kilowatt_hour * no value\n=\nno value", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total energy footprint across usage patterns", "label": "edge SSD storage\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge SSD storage total energy footprint across usage patterns\n=\nno value + edge SSD storage energy footprint for Default edge usage pattern\n=\nno value + no value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "edge SSD storage energy footprint for Default edge usage pattern", "label": "edge SSD storage\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge SSD storage energy footprint for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge SSD\nstorage instances for Default edge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge SSD storage energy footprint for Default edge usage pattern", "to": "edge SSD storage total energy footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -4934,6 +4956,176 @@ EdgeUsagePattern Default edge usage pattern (7b26f4): no value, <br />
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_energy_footprint.html' target='_blank'>link to edge SSD storage total energy footprint across usage patterns’s full calculation graph</a>.</p>
+<h3 id="total_unitary_hourly_need_per_usage_pattern">total_unitary_hourly_need_per_usage_pattern</h3>
+<p>Dictionary with EdgeUsagePattern as keys and 
+                        Total hourly need on edge ssd storage for default edge usage pattern as values, in kilobyte.  </p>
+<p>Example value: {<br />
+EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
+    last 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../RecurrentEdgeProcessStorageNeed/#unitary_hourly_need_per_usage_pattern">edge process storage need unitary hourly need for Default edge usage pattern</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_6ba076 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_6ba076" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_6ba076');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need on edge SSD storage for Default edge usage pattern", "label": "Total hourly need on\nedge SSD storage for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge SSD storage for Default edge usage pattern\n=\nedge process storage need unitary hourly need for Default edge usage pattern +\nno value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 750}, {"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need unitary hourly need for Default edge usage pattern", "to": "Total hourly need on edge SSD storage for Default edge usage pattern"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/edge_SSD_storage_total_unitary_hourly_need_per_usage_pattern.html' target='_blank'>link to Total hourly need on edge SSD storage for Default edge usage pattern’s full calculation graph</a>.</p>
 
 
 

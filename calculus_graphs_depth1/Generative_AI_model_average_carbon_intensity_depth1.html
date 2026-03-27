@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_967b22 {
+             #mynetwork_7bb44c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_967b22" class="card-body"></div>
+            <div id="mynetwork_7bb44c" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_967b22');
+                  var container = document.getElementById('mynetwork_7bb44c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic from Ecologits\nllm_impacts function\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic from Ecologits llm_impacts function)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.38 kilogram / kilowatt_hour", "x": 0.0, "y": 450}, {"color": null, "id": "Datacenter location for anthropic from Ecologits llm_impacts function", "label": "Datacenter location\nfor anthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Datacenter location for anthropic from Ecologits llm_impacts function\n=\nquery EcoLogits provider config (Generative AI model provider from e-footprint\nhypothesis)\n=\nquery EcoLogits provider config (anthropic)\n=\nUSA", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic from Ecologits\nllm_impacts function\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic from Ecologits llm_impacts function)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 0.0, "y": 450}, {"color": null, "id": "Datacenter location for anthropic from Ecologits llm_impacts function", "label": "Datacenter location\nfor anthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Datacenter location for anthropic from Ecologits llm_impacts function\n=\nquery EcoLogits provider config (Generative AI model provider from e-footprint\nhypothesis)\n=\nquery EcoLogits provider config (anthropic)\n=\nUSA", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Datacenter location for anthropic from Ecologits llm_impacts function", "to": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function"}]);
 
                   nodeColors = {};

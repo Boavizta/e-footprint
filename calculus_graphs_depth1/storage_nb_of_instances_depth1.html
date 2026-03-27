@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d9bfdf {
+             #mynetwork_8e7368 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d9bfdf" class="card-body"></div>
+            <div id="mynetwork_8e7368" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d9bfdf');
+                  var container = document.getElementById('mynetwork_8e7368');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil (Hourly raw number of instances for storage) logically dependent on User\ndefined number of storage instances\n=\nceil (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00\nin concurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [18127.96, 18125.89, 18123.82, 18121.76, 18119.69, 18117.62,\n18115.56, 18113.49, 18111.43, 18109.36]) logically dependent on no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [18128.0, 18126.0, 18124.0, 18122.0, 18120.0, 18118.0, 18116.0,\n18114.0, 18112.0, 18110.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [18127.96, 18125.89, 18123.82, 18121.76, 18119.69, 18117.62,\n18115.56, 18113.49, 18111.43, 18109.36] / 1.0 terabyte\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [18127.96, 18125.89, 18123.82, 18121.76, 18119.69, 18117.62,\n18115.56, 18113.49, 18111.43, 18109.36]", "x": -262.5, "y": 1650}, {"color": null, "id": "User defined number of storage instances", "label": "User defined number\nof storage instances", "shape": "dot", "size": 15, "title": "User defined number of storage instances = no value", "x": 262.5, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil (Hourly raw number of instances for storage) logically dependent on User\ndefined number of storage instances\n=\nceil (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00\nin k:\nfirst 10 vals [0.0000000012, 0.000000006, 0.0000000114, 0.0000000162,\n0.000000018, 0.0000000186, 0.0000000228, 0.0000000264, 0.000000332,\n0.000000932],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1])\nlogically dependent on no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0.0096, 0.048, 0.0912, 0.13, 0.144, 0.149, 0.182, 0.211, 2.65,\n7.46],\nlast 10 vals [145000000, 145000000, 145000000, 145000000, 145000000, 145000000,\n145000000, 145000000, 145000000, 145000000] / 8000 B\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in k:\nfirst 10 vals [0.0000000012, 0.000000006, 0.0000000114, 0.0000000162,\n0.000000018, 0.0000000186, 0.0000000228, 0.0000000264, 0.000000332,\n0.000000932],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": -262.5, "y": 1650}, {"color": null, "id": "User defined number of storage instances", "label": "User defined number\nof storage instances", "shape": "dot", "size": 15, "title": "User defined number of storage instances = no value", "x": 262.5, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances for storage", "to": "Hourly number of instances for storage"}, {"arrows": "to", "from": "User defined number of storage instances", "to": "Hourly number of instances for storage"}]);
 
                   nodeColors = {};

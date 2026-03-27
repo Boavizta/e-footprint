@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_506557 {
+             #mynetwork_e6db5c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_506557" class="card-body"></div>
+            <div id="mynetwork_e6db5c" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_506557');
+                  var container = document.getElementById('mynetwork_e6db5c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge computer CPU total energy footprint across usage patterns", "label": "edge computer CPU\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge computer CPU total energy footprint across usage patterns\n=\nedge computer CPU energy footprint for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.72, 1.43],\nlast 10 vals [3.59, 3.58, 3.58, 3.58, 3.59, 3.58, 2.87, 2.15, 1.43, 0.72] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.72, 1.43],\nlast 10 vals [3.59, 3.58, 3.58, 3.58, 3.59, 3.58, 2.87, 2.15, 1.43, 0.72]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge computer CPU energy footprint for Default edge usage pattern", "label": "edge computer CPU\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge computer CPU energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge computer CPU instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8432.0, 16853.76],\nlast 10 vals [42178.56, 42163.2, 42152.96, 42158.08, 42178.56, 42168.32,\n33715.2, 25282.56, 16855.04, 8412.16] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.72, 1.43],\nlast 10 vals [3.59, 3.58, 3.58, 3.58, 3.59, 3.58, 2.87, 2.15, 1.43, 0.72]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge computer CPU total energy footprint across usage patterns", "label": "edge computer CPU\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge computer CPU total energy footprint across usage patterns\n=\nedge computer CPU energy footprint for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000717, 0.00143],\nlast 10 vals [0.00359, 0.00358, 0.00358, 0.00358, 0.00359, 0.00358, 0.00287,\n0.00215, 0.00143, 0.000715] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000717, 0.00143],\nlast 10 vals [0.00359, 0.00358, 0.00358, 0.00358, 0.00359, 0.00358, 0.00287,\n0.00215, 0.00143, 0.000715]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge computer CPU energy footprint for Default edge usage pattern", "label": "edge computer CPU\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge computer CPU energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge computer CPU instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00843, 0.0169],\nlast 10 vals [0.0422, 0.0422, 0.0422, 0.0422, 0.0422, 0.0422, 0.0337, 0.0253,\n0.0169, 0.00841] * 85 g/kWh\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000717, 0.00143],\nlast 10 vals [0.00359, 0.00358, 0.00358, 0.00358, 0.00359, 0.00358, 0.00287,\n0.00215, 0.00143, 0.000715]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge computer CPU energy footprint for Default edge usage pattern", "to": "edge computer CPU total energy footprint across usage patterns"}]);
 
                   nodeColors = {};

@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b13ce7 {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_b13ce7" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b13ce7');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "on premise GPU server usage impact attribution to Manually defined GPU job", "label": "on premise GPU\nserver usage impact\nattribution to\nManually defined GPU\njob", "shape": "dot", "size": 15, "title": "on premise GPU server usage impact attribution to Manually defined GPU job\n=\nManually defined GPU job weight in on premise GPU server impact repartition /\nSum of on premise GPU server usage impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000139, 0.000556, 0.000625, 0.000556, 0.000208, 0.0000695,\n0.000486, 0.000417, 0.000625, 0.000139],\nlast 10 vals [0.000208, 0.000556, 0.000625, 0.000139, 0.000556, 0.000417,\n0.000347, 0.000139, 0.000417, 0.000208] / 26298 values from 2024-12-31\n23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000139, 0.000556, 0.000625, 0.000556, 0.000208, 0.0000695,\n0.000486, 0.000417, 0.000625, 0.000139],\nlast 10 vals [0.000208, 0.000556, 0.000625, 0.000139, 0.000556, 0.000417,\n0.000347, 0.000139, 0.000417, 0.000208]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "Manually defined GPU job weight in on premise GPU server impact repartition", "label": "Manually defined GPU\njob weight in on\npremise GPU server\nimpact repartition", "shape": "dot", "size": 15, "title": "Manually defined GPU job weight in on premise GPU server impact repartition\n=\nHourly Manually defined GPU job average occurrences across usage patterns *\n(gpus needed on server on premise GPU server to process Manually defined GPU job\nfrom e-footprint hypothesis / Nb gpus of on premise GPU server from e-footprint\nhypothesis + RAM needed on server on premise GPU server to process Manually\ndefined GPU job from e-footprint hypothesis / on premise GPU server RAM)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000556, 0.00222, 0.0025, 0.00222, 0.000833, 0.000278, 0.00194,\n0.00167, 0.0025, 0.000556],\nlast 10 vals [0.000833, 0.00222, 0.0025, 0.000556, 0.00222, 0.00167, 0.00139,\n0.000556, 0.00167, 0.000833] * (1 gpu / 4 gpu + 400 M / 2560 B)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000139, 0.000556, 0.000625, 0.000556, 0.000208, 0.0000695,\n0.000486, 0.000417, 0.000625, 0.000139],\nlast 10 vals [0.000208, 0.000556, 0.000625, 0.000139, 0.000556, 0.000417,\n0.000347, 0.000139, 0.000417, 0.000208]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly Manually defined GPU job average occurrences across usage patterns", "label": "Hourly Manually\ndefined GPU job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job average occurrences across usage patterns\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000556, 0.00222, 0.0025, 0.00222, 0.000833, 0.000278, 0.00194,\n0.00167, 0.0025, 0.000556],\nlast 10 vals [0.000833, 0.00222, 0.0025, 0.000556, 0.00222, 0.00167, 0.00139,\n0.000556, 0.00167, 0.000833] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000556, 0.00222, 0.0025, 0.00222, 0.000833, 0.000278, 0.00194,\n0.00167, 0.0025, 0.000556],\nlast 10 vals [0.000833, 0.00222, 0.0025, 0.000556, 0.00222, 0.00167, 0.00139,\n0.000556, 0.00167, 0.000833]", "x": -225.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined GPU job from\ne-footprint hypothesis\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 1 s\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000556, 0.00222, 0.0025, 0.00222, 0.000833, 0.000278, 0.00194,\n0.00167, 0.0025, 0.000556],\nlast 10 vals [0.000833, 0.00222, 0.0025, 0.000556, 0.00222, 0.00167, 0.00139,\n0.000556, 0.00167, 0.000833]", "x": -200.0, "y": 600}, {"color": null, "id": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern", "label": "Hourly Manually\ndefined GPU job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": -150.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": -150.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 150.0, "y": 150}, {"color": "darkred", "id": "Request duration of Manually defined GPU job from e-footprint hypothesis", "label": "Request duration of\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined GPU job from e-footprint hypothesis = 1 s", "x": 150.0, "y": 450}, {"color": "darkred", "id": "gpus needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "label": "gpus needed on\nserver on premise\nGPU server to\nprocess Manually\ndefined GPU job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "gpus needed on server on premise GPU server to process Manually defined GPU job\nfrom e-footprint hypothesis = 1 gpu", "x": -75.0, "y": 750}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4 gpu", "x": 200.0, "y": 600}, {"color": "darkred", "id": "RAM needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "label": "RAM needed on server\non premise GPU\nserver to process\nManually defined GPU\njob from e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "RAM needed on server on premise GPU server to process Manually defined GPU job\nfrom e-footprint hypothesis = 400 M", "x": 75.0, "y": 750}, {"color": null, "id": "on premise GPU server RAM", "label": "on premise GPU\nserver RAM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM\n=\non premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n* Nb gpus of on premise GPU server from e-footprint hypothesis\n=\n80 GB_ram/gpu * 4 gpu\n=\n2560 B", "x": 225.0, "y": 750}, {"color": "darkred", "id": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver RAM per GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n= 80 GB_ram/gpu", "x": 0.0, "y": 600}, {"color": null, "id": "Sum of on premise GPU server usage impact repartition weights", "label": "Sum of on premise\nGPU server usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of on premise GPU server usage impact repartition weights\n=\nManually defined GPU job weight in on premise GPU server impact repartition + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000139, 0.000556, 0.000625, 0.000556, 0.000208, 0.0000695,\n0.000486, 0.000417, 0.000625, 0.000139],\nlast 10 vals [0.000208, 0.000556, 0.000625, 0.000139, 0.000556, 0.000417,\n0.000347, 0.000139, 0.000417, 0.000208] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.000139, 0.000556, 0.000625, 0.000556, 0.000208, 0.0000695,\n0.000486, 0.000417, 0.000625, 0.000139],\nlast 10 vals [0.000208, 0.000556, 0.000625, 0.000139, 0.000556, 0.000417,\n0.000347, 0.000139, 0.000417, 0.000208]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined GPU job weight in on premise GPU server impact repartition", "to": "on premise GPU server usage impact attribution to Manually defined GPU job"}, {"arrows": "to", "from": "Hourly Manually defined GPU job average occurrences across usage patterns", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly Manually defined GPU job average occurrences across usage patterns"}, {"arrows": "to", "from": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}, {"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern"}, {"arrows": "to", "from": "usage pattern hourly nb of visits", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}, {"arrows": "to", "from": "Request duration of Manually defined GPU job from e-footprint hypothesis", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}, {"arrows": "to", "from": "gpus needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "RAM needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "on premise GPU server RAM", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server RAM"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "on premise GPU server RAM"}, {"arrows": "to", "from": "Sum of on premise GPU server usage impact repartition weights", "to": "on premise GPU server usage impact attribution to Manually defined GPU job"}, {"arrows": "to", "from": "Manually defined GPU job weight in on premise GPU server impact repartition", "to": "Sum of on premise GPU server usage impact repartition weights"}, {"arrows": "to", "from": "Hourly Manually defined GPU job average occurrences across usage patterns", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly Manually defined GPU job average occurrences across usage patterns"}, {"arrows": "to", "from": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}, {"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Manually defined GPU job occurrences in UsagePattern usage pattern"}, {"arrows": "to", "from": "usage pattern hourly nb of visits", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}, {"arrows": "to", "from": "Request duration of Manually defined GPU job from e-footprint hypothesis", "to": "Average hourly Manually defined GPU job occurrences in usage pattern"}, {"arrows": "to", "from": "gpus needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "RAM needed on server on premise GPU server to process Manually defined GPU job from e-footprint hypothesis", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "on premise GPU server RAM", "to": "Manually defined GPU job weight in on premise GPU server impact repartition"}, {"arrows": "to", "from": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server RAM"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "on premise GPU server RAM"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

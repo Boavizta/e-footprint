@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_474a13 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_474a13" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_474a13');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "device on which the user journey is made usage impact attribution to 20 min streaming", "label": "device on which the\nuser journey is made\nusage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "device on which the user journey is made usage impact attribution to 20 min\nstreaming\n=\n20 min streaming usage weight in device on which the user journey is made impact\nrepartition / Sum of device on which the user journey is made usage impact\nrepartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.0567, 0.227, 0.255, 0.227, 0.085, 0.0283, 0.198, 0.17, 0.255,\n0.0567],\nlast 10 vals [0.085, 0.227, 0.255, 0.0567, 0.227, 0.17, 0.142, 0.0567, 0.17,\n0.085] / 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01\n17:00:00+00:00 in kg\u00b7min:\nfirst 10 vals [0.0567, 0.227, 0.255, 0.227, 0.085, 0.0283, 0.198, 0.17, 0.255,\n0.0567],\nlast 10 vals [0.085, 0.227, 0.255, 0.0567, 0.227, 0.17, 0.142, 0.0567, 0.17,\n0.085]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming usage weight in device on which the user journey is made impact repartition", "label": "20 min streaming\nusage weight in\ndevice on which the\nuser journey is made\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming usage weight in device on which the user journey is made impact\nrepartition\n=\ndevice on which the user journey is made usage footprint for usage pattern *\nNumber of occurrences of device on which the user journey is made in usage\npattern * Number of occurrences of 20 min streaming in user journey * Time spent\non step 20 min streaming + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in g:\nfirst 10 vals [2.83, 11.3, 12.8, 11.3, 4.25, 1.42, 9.92, 8.5, 12.8, 2.83],\nlast 10 vals [4.25, 11.3, 12.8, 2.83, 11.3, 8.5, 7.08, 2.83, 8.5, 4.25] * 1 * 1\n* 20 min + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.0567, 0.227, 0.255, 0.227, 0.085, 0.0283, 0.198, 0.17, 0.255,\n0.0567],\nlast 10 vals [0.085, 0.227, 0.255, 0.0567, 0.227, 0.17, 0.142, 0.0567, 0.17,\n0.085]", "x": 0.0, "y": 750}, {"color": null, "id": "Sum of device on which the user journey is made usage impact repartition weights", "label": "Sum of device on\nwhich the user\njourney is made\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of device on which the user journey is made usage impact repartition weights\n=\n20 min streaming usage weight in device on which the user journey is made impact\nrepartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.0567, 0.227, 0.255, 0.227, 0.085, 0.0283, 0.198, 0.17, 0.255,\n0.0567],\nlast 10 vals [0.085, 0.227, 0.255, 0.0567, 0.227, 0.17, 0.142, 0.0567, 0.17,\n0.085] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.0567, 0.227, 0.255, 0.227, 0.085, 0.0283, 0.198, 0.17, 0.255,\n0.0567],\nlast 10 vals [0.085, 0.227, 0.255, 0.0567, 0.227, 0.17, 0.142, 0.0567, 0.17,\n0.085]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming usage weight in device on which the user journey is made impact repartition", "to": "device on which the user journey is made usage impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of device on which the user journey is made usage impact repartition weights", "to": "device on which the user journey is made usage impact attribution to 20 min streaming"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

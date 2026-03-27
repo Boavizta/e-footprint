@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_126bf0 {
+             #mynetwork_0ac880 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_126bf0" class="card-body"></div>
+            <div id="mynetwork_0ac880" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_126bf0');
+                  var container = document.getElementById('mynetwork_0ac880');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge workload workload need recurrent need", "label": "edge workload\nworkload need\nrecurrent need", "shape": "dot", "size": 15, "title": "edge workload workload need recurrent need\n=\nduplicate (Recurrent workload for edge workload)\n=\nduplicate (168 values in concurrent:\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n168 values in concurrent:\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent workload for edge workload", "label": "Recurrent workload\nfor edge workload", "shape": "dot", "size": 15, "title": "Recurrent workload for edge workload = 168 values in concurrent:\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge workload workload need recurrent need", "label": "edge workload\nworkload need\nrecurrent need", "shape": "dot", "size": 15, "title": "edge workload workload need recurrent need\n=\nduplicate (Recurrent workload for edge workload)\n=\nduplicate (168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent workload for edge workload", "label": "Recurrent workload\nfor edge workload", "shape": "dot", "size": 15, "title": "Recurrent workload for edge workload = 168 values in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent workload for edge workload", "to": "edge workload workload need recurrent need"}]);
 
                   nodeColors = {};

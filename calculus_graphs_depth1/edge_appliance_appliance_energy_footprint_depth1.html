@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ab16af {
+             #mynetwork_eeb00e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ab16af" class="card-body"></div>
+            <div id="mynetwork_eeb00e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ab16af');
+                  var container = document.getElementById('mynetwork_eeb00e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance appliance total energy footprint across usage patterns", "label": "edge appliance\nappliance total\nenergy footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "edge appliance appliance total energy footprint across usage patterns\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge appliance appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nappliance energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent ** 2 * h * W:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 17488.59, 34955.94],\nlast 10 vals [87481.46, 87449.6, 87428.36, 87438.98, 87481.46, 87460.22,\n69927.82, 52437.9, 34958.6, 17447.44] * 85.0 gram / kilowatt_hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.49, 2.97],\nlast 10 vals [7.44, 7.43, 7.43, 7.43, 7.44, 7.43, 5.94, 4.46, 2.97, 1.48]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance appliance total energy footprint across usage patterns", "label": "edge appliance\nappliance total\nenergy footprint\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "edge appliance appliance total energy footprint across usage patterns\n=\nedge appliance appliance energy footprint for Default edge usage pattern + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297],\nlast 10 vals [0.00744, 0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594,\n0.00446, 0.00297, 0.00148] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297],\nlast 10 vals [0.00744, 0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594,\n0.00446, 0.00297, 0.00148]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge appliance appliance energy footprint for Default edge usage pattern", "label": "edge appliance\nappliance energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge appliance appliance energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge appliance appliance instances for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0175, 0.035],\nlast 10 vals [0.0875, 0.0874, 0.0874, 0.0874, 0.0875, 0.0875, 0.0699, 0.0524,\n0.035, 0.0174] * 85 g/kWh\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297],\nlast 10 vals [0.00744, 0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594,\n0.00446, 0.00297, 0.00148]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge appliance appliance energy footprint for Default edge usage pattern", "to": "edge appliance appliance total energy footprint across usage patterns"}]);
 
                   nodeColors = {};

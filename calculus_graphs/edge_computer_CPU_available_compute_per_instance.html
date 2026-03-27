@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f8f8c4 {
+             #mynetwork_b69175 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f8f8c4" class="card-body"></div>
+            <div id="mynetwork_b69175" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f8f8c4');
+                  var container = document.getElementById('mynetwork_b69175');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available compute per edge computer CPU instance", "label": "Available compute\nper edge computer\nCPU instance", "shape": "dot", "size": 15, "title": "Available compute per edge computer CPU instance\n=\nCompute of edge computer CPU - Base compute consumption of edge computer CPU\n=\n8.0 cpu_core - 0.1 cpu_core\n=\n7.9 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Compute of edge computer CPU", "label": "Compute of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Compute of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8.0 cpu_core)\n=\n8.0 cpu_core", "x": -75.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8.0 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "Base compute consumption of edge computer CPU", "label": "Base compute\nconsumption of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer CPU\n=\nduplicate (Base compute consumption of edge computer)\n=\nduplicate (0.1 cpu_core)\n=\n0.1 cpu_core", "x": 75.0, "y": 300}, {"color": null, "id": "Base compute consumption of edge computer", "label": "Base compute\nconsumption of edge\ncomputer", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer = 0.1 cpu_core", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available compute per edge computer CPU instance", "label": "Available compute\nper edge computer\nCPU instance", "shape": "dot", "size": 15, "title": "Available compute per edge computer CPU instance\n=\nCompute of edge computer CPU - Base compute consumption of edge computer CPU\n=\n8 cpu_core - 0.1 cpu_core\n=\n7.9 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Compute of edge computer CPU", "label": "Compute of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Compute of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8 cpu_core)\n=\n8 cpu_core", "x": -75.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "Base compute consumption of edge computer CPU", "label": "Base compute\nconsumption of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer CPU\n=\nduplicate (Base compute consumption of edge computer)\n=\nduplicate (0.1 cpu_core)\n=\n0.1 cpu_core", "x": 75.0, "y": 300}, {"color": null, "id": "Base compute consumption of edge computer", "label": "Base compute\nconsumption of edge\ncomputer", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer = 0.1 cpu_core", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Compute of edge computer CPU", "to": "Available compute per edge computer CPU instance"}, {"arrows": "to", "from": "Compute of edge computer", "to": "Compute of edge computer CPU"}, {"arrows": "to", "from": "Base compute consumption of edge computer CPU", "to": "Available compute per edge computer CPU instance"}, {"arrows": "to", "from": "Base compute consumption of edge computer", "to": "Base compute consumption of edge computer CPU"}]);
 
                   nodeColors = {};

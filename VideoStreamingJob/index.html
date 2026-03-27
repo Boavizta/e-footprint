@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -1944,10 +1944,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weights" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weights" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weights
+        fabrication_impact_repartition_weights
       
     </span>
   </a>
@@ -1955,10 +1955,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weight_sum" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weight_sum
+        fabrication_impact_repartition_weight_sum
       
     </span>
   </a>
@@ -1966,10 +1966,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition" class="md-nav__link">
+  <a href="#fabrication_impact_repartition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition
+        fabrication_impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition
       
     </span>
   </a>
@@ -3499,10 +3532,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weights" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weights" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weights
+        fabrication_impact_repartition_weights
       
     </span>
   </a>
@@ -3510,10 +3543,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weight_sum" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weight_sum
+        fabrication_impact_repartition_weight_sum
       
     </span>
   </a>
@@ -3521,10 +3554,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition" class="md-nav__link">
+  <a href="#fabrication_impact_repartition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition
+        fabrication_impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition
       
     </span>
   </a>
@@ -3575,7 +3641,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="request_duration">request_duration</h3>
 <p>ExplainableQuantity in minute, representing the Video streaming job request duration.  </p>
-<p>Example value: 20.0 minute  </p>
+<p>Example value: 20 min  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#video_duration">Video streaming job video duration from e-footprint hypothesis</a>  </li>
@@ -3614,7 +3680,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e1e6fc {
+             #mynetwork_7ca2e2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3636,7 +3702,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e1e6fc" class="card-body"></div>
+            <div id="mynetwork_7ca2e2" class="card-body"></div>
         </div>
 
 
@@ -3666,12 +3732,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e1e6fc');
+                  var container = document.getElementById('mynetwork_7ca2e2');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming job video duration from e-footprint hypothesis", "label": "Video streaming job\nvideo duration from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job video duration from e-footprint hypothesis = 20.0 minute", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming job video duration from e-footprint hypothesis", "label": "Video streaming job\nvideo duration from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job video duration from e-footprint hypothesis = 20 min", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming job video duration from e-footprint hypothesis", "to": "Video streaming job request duration"}]);
 
                   nodeColors = {};
@@ -3740,7 +3806,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_request_duration.html' target='_blank'>link to Video streaming job request duration’s full calculation graph</a>.</p>
 <h3 id="dynamic_bitrate">dynamic_bitrate</h3>
 <p>ExplainableQuantity in megabyte / second, representing the Video streaming job dynamic bitrate.  </p>
-<p>Example value: 0.78 megabyte / second  </p>
+<p>Example value: 0.778 MB/s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#resolution">Video streaming job resolution from e-footprint hypothesis</a></li>
@@ -3781,7 +3847,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_48a997 {
+             #mynetwork_e0b927 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3803,7 +3869,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_48a997" class="card-body"></div>
+            <div id="mynetwork_e0b927" class="card-body"></div>
         </div>
 
 
@@ -3833,12 +3899,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_48a997');
+                  var container = document.getElementById('mynetwork_e0b927');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 dimensionless * 30.0 /\nsecond\n=\n0.78 megabyte / second", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming job resolution from e-footprint hypothesis", "label": "Video streaming job\nresolution from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job resolution from e-footprint hypothesis = 1080p (1920 x 1080)", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Video streaming service bits per pixel from e-footprint hypothesis", "label": "Video streaming\nservice bits per\npixel from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service bits per pixel from e-footprint hypothesis = 0.1\ndimensionless", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Video streaming job frames per second from e-footprint hypothesis", "label": "Video streaming job\nframes per second\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job frames per second from e-footprint hypothesis = 30.0 /\nsecond", "x": 150.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 * 30 1/s\n=\n0.778 MB/s", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming job resolution from e-footprint hypothesis", "label": "Video streaming job\nresolution from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job resolution from e-footprint hypothesis = 1080p (1920 x 1080)", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Video streaming service bits per pixel from e-footprint hypothesis", "label": "Video streaming\nservice bits per\npixel from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service bits per pixel from e-footprint hypothesis = 0.1", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Video streaming job frames per second from e-footprint hypothesis", "label": "Video streaming job\nframes per second\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job frames per second from e-footprint hypothesis = 30 1/s", "x": 150.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming job resolution from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}, {"arrows": "to", "from": "Video streaming service bits per pixel from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}, {"arrows": "to", "from": "Video streaming job frames per second from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}]);
 
                   nodeColors = {};
@@ -3907,7 +3973,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_dynamic_bitrate.html' target='_blank'>link to Video streaming job dynamic bitrate’s full calculation graph</a>.</p>
 <h3 id="data_transferred">data_transferred</h3>
 <p>ExplainableQuantity in gigabyte, representing the Video streaming job data transferred.  </p>
-<p>Example value: 0.93 gigabyte  </p>
+<p>Example value: 7.46 B  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#request_duration">Video streaming job request duration</a></li>
@@ -3947,7 +4013,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c638fe {
+             #mynetwork_ae3a25 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3969,7 +4035,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c638fe" class="card-body"></div>
+            <div id="mynetwork_ae3a25" class="card-body"></div>
         </div>
 
 
@@ -3999,12 +4065,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c638fe');
+                  var container = document.getElementById('mynetwork_ae3a25');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job data transferred", "label": "Video streaming job\ndata transferred", "shape": "dot", "size": 15, "title": "Video streaming job data transferred\n=\nVideo streaming job request duration * Video streaming job dynamic bitrate\n=\n20.0 minute * 0.78 megabyte / second\n=\n0.93 gigabyte", "x": 0.0, "y": 450}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": -150.0, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 dimensionless * 30.0 /\nsecond\n=\n0.78 megabyte / second", "x": 150.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job data transferred", "label": "Video streaming job\ndata transferred", "shape": "dot", "size": 15, "title": "Video streaming job data transferred\n=\nVideo streaming job request duration * Video streaming job dynamic bitrate\n=\n20 min * 0.778 MB/s\n=\n7.46 B", "x": 0.0, "y": 450}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": -150.0, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 * 30 1/s\n=\n0.778 MB/s", "x": 150.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming job request duration", "to": "Video streaming job data transferred"}, {"arrows": "to", "from": "Video streaming job dynamic bitrate", "to": "Video streaming job data transferred"}]);
 
                   nodeColors = {};
@@ -4073,7 +4139,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_data_transferred.html' target='_blank'>link to Video streaming job data transferred’s full calculation graph</a>.</p>
 <h3 id="compute_needed">compute_needed</h3>
 <p>ExplainableQuantity in cpu_core, representing the Video streaming job cpu needed.  </p>
-<p>Example value: 0.0 cpu_core  </p>
+<p>Example value: 0.00311 cpu_core  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../VideoStreaming/#static_delivery_cpu_cost">Video streaming service CPU cost per static stream from e-footprint hypothesis</a></li>
@@ -4113,7 +4179,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_06d5e1 {
+             #mynetwork_4eb9c7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4135,7 +4201,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_06d5e1" class="card-body"></div>
+            <div id="mynetwork_4eb9c7" class="card-body"></div>
         </div>
 
 
@@ -4165,12 +4231,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_06d5e1');
+                  var container = document.getElementById('mynetwork_4eb9c7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job CPU needed", "label": "Video streaming job\nCPU needed", "shape": "dot", "size": 15, "title": "Video streaming job CPU needed\n=\nVideo streaming service CPU cost per static stream from e-footprint hypothesis *\nVideo streaming job dynamic bitrate\n=\n4.0 cpu_core * second / gigabyte * 0.78 megabyte / second\n=\n0.0 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "label": "Video streaming\nservice CPU cost per\nstatic stream from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service CPU cost per static stream from e-footprint hypothesis =\n4.0 cpu_core * second / gigabyte", "x": -112.5, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 dimensionless * 30.0 /\nsecond\n=\n0.78 megabyte / second", "x": 112.5, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job CPU needed", "label": "Video streaming job\nCPU needed", "shape": "dot", "size": 15, "title": "Video streaming job CPU needed\n=\nVideo streaming service CPU cost per static stream from e-footprint hypothesis *\nVideo streaming job dynamic bitrate\n=\n4 cpu_core\u00b7s/GB * 0.778 MB/s\n=\n0.00311 cpu_core", "x": 0.0, "y": 450}, {"color": "darkred", "id": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "label": "Video streaming\nservice CPU cost per\nstatic stream from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service CPU cost per static stream from e-footprint hypothesis =\n4 cpu_core\u00b7s/GB", "x": -112.5, "y": 300}, {"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.1 * 30 1/s\n=\n0.778 MB/s", "x": 112.5, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming service CPU cost per static stream from e-footprint hypothesis", "to": "Video streaming job CPU needed"}, {"arrows": "to", "from": "Video streaming job dynamic bitrate", "to": "Video streaming job CPU needed"}]);
 
                   nodeColors = {};
@@ -4239,7 +4305,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_compute_needed.html' target='_blank'>link to Video streaming job CPU needed’s full calculation graph</a>.</p>
 <h3 id="ram_needed">ram_needed</h3>
 <p>ExplainableQuantity in megabyte_ram, representing the Video streaming job ram needed.  </p>
-<p>Example value: 50.0 megabyte_ram  </p>
+<p>Example value: 400 M  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../VideoStreaming/#ram_buffer_per_user">Video streaming service RAM buffer size per user from e-footprint hypothesis</a>  </li>
@@ -4278,7 +4344,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_389866 {
+             #mynetwork_c427fb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4300,7 +4366,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_389866" class="card-body"></div>
+            <div id="mynetwork_c427fb" class="card-body"></div>
         </div>
 
 
@@ -4330,12 +4396,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_389866');
+                  var container = document.getElementById('mynetwork_c427fb');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job RAM needed", "label": "Video streaming job\nRAM needed", "shape": "dot", "size": 15, "title": "Video streaming job RAM needed\n=\nduplicate (Video streaming service RAM buffer size per user from e-footprint\nhypothesis)\n=\nduplicate (50.0 megabyte_ram)\n=\n50.0 megabyte_ram", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming service RAM buffer size per user from e-footprint hypothesis", "label": "Video streaming\nservice RAM buffer\nsize per user from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service RAM buffer size per user from e-footprint hypothesis =\n50.0 megabyte_ram", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job RAM needed", "label": "Video streaming job\nRAM needed", "shape": "dot", "size": 15, "title": "Video streaming job RAM needed\n=\nduplicate (Video streaming service RAM buffer size per user from e-footprint\nhypothesis)\n=\nduplicate (400 M)\n=\n400 M", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming service RAM buffer size per user from e-footprint hypothesis", "label": "Video streaming\nservice RAM buffer\nsize per user from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service RAM buffer size per user from e-footprint hypothesis =\n400 M", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming service RAM buffer size per user from e-footprint hypothesis", "to": "Video streaming job RAM needed"}]);
 
                   nodeColors = {};
@@ -4406,9 +4472,9 @@
 <p>Dictionary with UsagePattern as keys and 
                         Hourly video streaming job occurrences in usagepattern usage pattern as values, in occurrence.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in occurrence:<br />
-    first 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],<br />
-    last 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],<br />
+    last 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4448,7 +4514,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_945bcb {
+             #mynetwork_0fbb94 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4470,7 +4536,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_945bcb" class="card-body"></div>
+            <div id="mynetwork_0fbb94" class="card-body"></div>
         </div>
 
 
@@ -4500,12 +4566,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_945bcb');
+                  var container = document.getElementById('mynetwork_0fbb94');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Video streaming job occurrences in UsagePattern usage pattern"}]);
 
                   nodeColors = {};
@@ -4576,9 +4642,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Average hourly video streaming job occurrences in usage pattern as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4619,7 +4685,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_ae1c36 {
+             #mynetwork_c7f913 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4641,7 +4707,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ae1c36" class="card-body"></div>
+            <div id="mynetwork_c7f913" class="card-body"></div>
         </div>
 
 
@@ -4671,12 +4737,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ae1c36');
+                  var container = document.getElementById('mynetwork_c7f913');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": -75.0, "y": 450}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": 75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 20 min\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": -75.0, "y": 450}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "to": "Average hourly Video streaming job occurrences in usage pattern"}, {"arrows": "to", "from": "Video streaming job request duration", "to": "Average hourly Video streaming job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -4747,9 +4813,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Hourly data transferred for video streaming job in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48, 5598.72, 8398.08, 3732.48],<br />
-    last 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72, 8398.08, 2799.36, 1866.24], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:<br />
+    first 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],<br />
+    last 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4791,7 +4857,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_8a318d {
+             #mynetwork_e9adde {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4813,7 +4879,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8a318d" class="card-body"></div>
+            <div id="mynetwork_e9adde" class="card-body"></div>
         </div>
 
 
@@ -4843,12 +4909,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8a318d');
+                  var container = document.getElementById('mynetwork_e9adde');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * (0.93\ngigabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": -250.0, "y": 600}, {"color": null, "id": "Video streaming job data transferred", "label": "Video streaming job\ndata transferred", "shape": "dot", "size": 15, "title": "Video streaming job data transferred\n=\nVideo streaming job request duration * Video streaming job dynamic bitrate\n=\n20.0 minute * 0.78 megabyte / second\n=\n0.93 gigabyte", "x": 0.0, "y": 600}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": -93.75, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] * (7.46 B * 1 h /\n20 min)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:\nfirst 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],\nlast 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 20 min\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": -250.0, "y": 600}, {"color": null, "id": "Video streaming job data transferred", "label": "Video streaming job\ndata transferred", "shape": "dot", "size": 15, "title": "Video streaming job data transferred\n=\nVideo streaming job request duration * Video streaming job dynamic bitrate\n=\n20 min * 0.778 MB/s\n=\n7.46 B", "x": 0.0, "y": 600}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": -93.75, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Video streaming job occurrences in usage pattern", "to": "Hourly data transferred for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Video streaming job data transferred", "to": "Hourly data transferred for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Video streaming job request duration", "to": "Hourly data transferred for Video streaming job in usage pattern"}]);
 
                   nodeColors = {};
@@ -4919,9 +4985,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Hourly data stored for video streaming job in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
+    last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4963,7 +5029,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_a19a70 {
+             #mynetwork_c7ffbf {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4985,7 +5051,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a19a70" class="card-body"></div>
+            <div id="mynetwork_c7ffbf" class="card-body"></div>
         </div>
 
 
@@ -5015,12 +5081,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a19a70');
+                  var container = document.getElementById('mynetwork_c7ffbf');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Data stored\nby request Video streaming job from e-footprint hypothesis * one hour / Video\nstreaming job request duration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * (0.0\nmegabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Video streaming job from e-footprint hypothesis", "label": "Data stored by\nrequest Video\nstreaming job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Video streaming job from e-footprint hypothesis = 0.0\nmegabyte", "x": 0.0, "y": 600}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20.0 minute)\n=\n20.0 minute", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Data stored\nby request Video streaming job from e-footprint hypothesis * one hour / Video\nstreaming job request duration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] * (0 MB * 1 h / 20\nmin)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 20 min\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Video streaming job from e-footprint hypothesis", "label": "Data stored by\nrequest Video\nstreaming job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Video streaming job from e-footprint hypothesis = 0 MB", "x": 0.0, "y": 600}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Video streaming job occurrences in usage pattern", "to": "Hourly data stored for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Video streaming job from e-footprint hypothesis", "to": "Hourly data stored for Video streaming job in usage pattern"}, {"arrows": "to", "from": "Video streaming job request duration", "to": "Hourly data stored for Video streaming job in usage pattern"}]);
 
                   nodeColors = {};
@@ -5089,9 +5155,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_hourly_data_stored_per_usage_pattern.html' target='_blank'>link to Hourly data stored for Video streaming job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>Hourly video streaming job average occurrences across usage patterns in concurrent.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly Video streaming job occurrences in usage pattern</a>  </li>
@@ -5130,7 +5196,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_a2e9ed {
+             #mynetwork_4d7490 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5152,7 +5218,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a2e9ed" class="card-body"></div>
+            <div id="mynetwork_4d7490" class="card-body"></div>
         </div>
 
 
@@ -5182,12 +5248,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a2e9ed');
+                  var container = document.getElementById('mynetwork_4d7490');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job average occurrences across usage patterns", "label": "Hourly Video\nstreaming job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job average occurrences across usage patterns\n=\nAverage hourly Video streaming job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 20.0 minute\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job average occurrences across usage patterns", "label": "Hourly Video\nstreaming job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job average occurrences across usage patterns\n=\nAverage hourly Video streaming job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 20 min\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Video streaming job occurrences in usage pattern", "to": "Hourly Video streaming job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -5256,9 +5322,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly Video streaming job average occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>Hourly video streaming job data transferred across usage patterns in megabyte.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48, 5598.72, 8398.08, 3732.48],<br />
-    last 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72, 8398.08, 2799.36, 1866.24]  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:<br />
+    first 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],<br />
+    last 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Video streaming job in usage pattern</a>  </li>
@@ -5297,7 +5363,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_4ab195 {
+             #mynetwork_dbba4e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5319,7 +5385,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4ab195" class="card-body"></div>
+            <div id="mynetwork_dbba4e" class="card-body"></div>
         </div>
 
 
@@ -5349,12 +5415,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4ab195');
+                  var container = document.getElementById('mynetwork_dbba4e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data transferred across usage patterns", "label": "Hourly Video\nstreaming job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data transferred across usage patterns\n=\nHourly data transferred for Video streaming job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * (0.93\ngigabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [2799.36, 933.12, 933.12, 5598.72, 6531.84, 4665.6, 3732.48,\n5598.72, 8398.08, 3732.48],\nlast 10 vals [4665.6, 5598.72, 6531.84, 1866.24, 7464.96, 933.12, 5598.72,\n8398.08, 2799.36, 1866.24]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data transferred across usage patterns", "label": "Hourly Video\nstreaming job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data transferred across usage patterns\n=\nHourly data transferred for Video streaming job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:\nfirst 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],\nlast 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:\nfirst 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],\nlast 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data transferred for Video streaming job in usage pattern", "label": "Hourly data\ntransferred for\nVideo streaming job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Video\nstreaming job data transferred * one hour / Video streaming job request\nduration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] * (7.46 B * 1 h /\n20 min)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in B:\nfirst 10 vals [14.9, 59.7, 67.2, 59.7, 22.4, 7.46, 52.3, 44.8, 67.2, 14.9],\nlast 10 vals [22.4, 59.7, 67.2, 14.9, 59.7, 44.8, 37.3, 14.9, 44.8, 22.4]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Video streaming job in usage pattern", "to": "Hourly Video streaming job data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -5424,8 +5490,8 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <h3 id="hourly_data_stored_across_usage_patterns">hourly_data_stored_across_usage_patterns</h3>
 <p>Hourly video streaming job data stored across usage patterns in megabyte.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
+    last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_stored_per_usage_pattern">Hourly data stored for Video streaming job in usage pattern</a>  </li>
@@ -5464,7 +5530,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_03eb62 {
+             #mynetwork_86363a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5486,7 +5552,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_03eb62" class="card-body"></div>
+            <div id="mynetwork_86363a" class="card-body"></div>
         </div>
 
 
@@ -5516,12 +5582,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_03eb62');
+                  var container = document.getElementById('mynetwork_86363a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Data stored\nby request Video streaming job from e-footprint hypothesis * one hour / Video\nstreaming job request duration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] * (0.0\nmegabyte * 1.0 hour / 20.0 minute)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job data stored across usage patterns", "label": "Hourly Video\nstreaming job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job data stored across usage patterns\n=\nHourly data stored for Video streaming job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored for Video streaming job in usage pattern", "label": "Hourly data stored\nfor Video streaming\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Video streaming job in usage pattern\n=\nAverage hourly Video streaming job occurrences in usage pattern * (Data stored\nby request Video streaming job from e-footprint hypothesis * one hour / Video\nstreaming job request duration)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] * (0 MB * 1 h / 20\nmin)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Video streaming job in usage pattern", "to": "Hourly Video streaming job data stored across usage patterns"}]);
 
                   nodeColors = {};
@@ -5588,17 +5654,17 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_hourly_data_stored_across_usage_patterns.html' target='_blank'>link to Hourly Video streaming job data stored across usage patterns’s full calculation graph</a>.</p>
-<h3 id="impact_repartition_weights">impact_repartition_weights</h3>
+<h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>Dictionary with UsageJourneyStep as keys and 
                         20 min streaming weight in video streaming job impact repartition as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67], <br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../UsageJourneyStep/#impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
+<li><a href="../UsageJourneyStep/#fabrication_impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -5634,7 +5700,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_dbf4d0 {
+             #mynetwork_65f2ef {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5656,7 +5722,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dbf4d0" class="card-body"></div>
+            <div id="mynetwork_65f2ef" class="card-body"></div>
         </div>
 
 
@@ -5686,12 +5752,12 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dbf4d0');
+                  var container = document.getElementById('mynetwork_65f2ef');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern weight in user journey impact repartition + no value) * Number of\noccurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern fabrication weight in user journey impact repartition + no value)\n* Number of occurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Video streaming job impact repartition"}]);
 
                   nodeColors = {};
@@ -5757,15 +5823,15 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Video streaming job impact repartition’s full calculation graph</a>.</p>
-<h3 id="impact_repartition_weight_sum">impact_repartition_weight_sum</h3>
-<p>Sum of video streaming job impact repartition weights in concurrent.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]  </p>
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_fabrication_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Video streaming job impact repartition’s full calculation graph</a>.</p>
+<h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
+<p>Sum of video streaming job fabrication impact repartition weights in concurrent.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a>  </li>
+<li><a href="./#fabrication_impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -5801,7 +5867,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_61345d {
+             #mynetwork_497398 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5823,7 +5889,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_61345d" class="card-body"></div>
+            <div id="mynetwork_497398" class="card-body"></div>
         </div>
 
 
@@ -5853,13 +5919,13 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_61345d');
+                  var container = document.getElementById('mynetwork_497398');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Video streaming job impact repartition weights", "label": "Sum of Video\nstreaming job impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Sum of Video streaming job impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Video streaming job fabrication impact repartition weights", "label": "Sum of Video\nstreaming job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job fabrication impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Sum of Video streaming job fabrication impact repartition weights"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -5924,19 +5990,19 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Video streaming job impact repartition weights’s full calculation graph</a>.</p>
-<h3 id="impact_repartition">impact_repartition</h3>
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_fabrication_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Video streaming job fabrication impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Dictionary with UsageJourneyStep as keys and 
-                        Video streaming job impact attribution to 20 min streaming as values, in concurrent.  </p>
+                        Video streaming job fabrication impact attribution to 20 min streaming as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
-    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
+    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a></li>
-<li><a href="./#impact_repartition_weight_sum">Sum of Video streaming job impact repartition weights</a>  </li>
+<li><a href="./#fabrication_impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a></li>
+<li><a href="./#fabrication_impact_repartition_weight_sum">Sum of Video streaming job fabrication impact repartition weights</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -5972,7 +6038,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_db10ac {
+             #mynetwork_bc7afc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5994,7 +6060,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_db10ac" class="card-body"></div>
+            <div id="mynetwork_bc7afc" class="card-body"></div>
         </div>
 
 
@@ -6024,13 +6090,13 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_db10ac');
+                  var container = document.getElementById('mynetwork_bc7afc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job impact attribution to 20 min streaming", "label": "Video streaming job\nimpact attribution\nto 20 min streaming", "shape": "dot", "size": 15, "title": "Video streaming job impact attribution to 20 min streaming\n=\n20 min streaming weight in Video streaming job impact repartition / Sum of Video\nstreaming job impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] / 26298\nvalues from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Video streaming job impact repartition weights", "label": "Sum of Video\nstreaming job impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 1050}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Video streaming job impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Video streaming job impact repartition weights", "to": "Video streaming job impact attribution to 20 min streaming"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job fabrication impact attribution to 20 min streaming", "label": "Video streaming job\nfabrication impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Video streaming job fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in Video streaming job impact repartition / Sum of Video\nstreaming job fabrication impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] / 26298 values from\n2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Video streaming job fabrication impact repartition weights", "label": "Sum of Video\nstreaming job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job fabrication impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Video streaming job fabrication impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Video streaming job fabrication impact repartition weights", "to": "Video streaming job fabrication impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -6095,7 +6161,515 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_impact_repartition.html' target='_blank'>link to Video streaming job impact attribution to 20 min streaming’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_fabrication_impact_repartition.html' target='_blank'>link to Video streaming job fabrication impact attribution to 20 min streaming’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition_weights">usage_impact_repartition_weights</h3>
+<p>Dictionary with UsageJourneyStep as keys and 
+                        20 min streaming weight in video streaming job impact repartition as values, in concurrent * gram / kilowatt_hour.  </p>
+<p>Example value: {<br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],<br />
+    last 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../UsageJourneyStep/#usage_impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_239e8c {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_239e8c" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_239e8c');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern usage weight in user journey impact repartition + no value) *\nNumber of occurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Video streaming job impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_usage_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Video streaming job impact repartition’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
+<p>Sum of video streaming job usage impact repartition weights in concurrent * gram / kilowatt_hour.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],<br />
+    last 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#usage_impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_953df6 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_953df6" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_953df6');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Video streaming job usage impact repartition weights", "label": "Sum of Video\nstreaming job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job usage impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Sum of Video streaming job usage impact repartition weights"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_usage_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Video streaming job usage impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition">usage_impact_repartition</h3>
+<p>Dictionary with UsageJourneyStep as keys and 
+                        Video streaming job usage impact attribution to 20 min streaming as values, in concurrent.  </p>
+<p>Example value: {<br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
+    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#usage_impact_repartition_weights">20 min streaming weight in Video streaming job impact repartition</a></li>
+<li><a href="./#usage_impact_repartition_weight_sum">Sum of Video streaming job usage impact repartition weights</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_389781 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_389781" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_389781');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job usage impact attribution to 20 min streaming", "label": "Video streaming job\nusage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Video streaming job usage impact attribution to 20 min streaming\n=\n20 min streaming weight in Video streaming job impact repartition / Sum of Video\nstreaming job usage impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] / 26298 values\nfrom 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Video streaming job impact repartition", "label": "20 min streaming\nweight in Video\nstreaming job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Video streaming job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Video streaming job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Video streaming job usage impact repartition weights", "label": "Sum of Video\nstreaming job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Video streaming job usage impact repartition weights\n=\n20 min streaming weight in Video streaming job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Video streaming job impact repartition", "to": "Video streaming job usage impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Video streaming job usage impact repartition weights", "to": "Video streaming job usage impact attribution to 20 min streaming"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Video_streaming_job_usage_impact_repartition.html' target='_blank'>link to Video streaming job usage impact attribution to 20 min streaming’s full calculation graph</a>.</p>
 
 
 

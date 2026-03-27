@@ -19,7 +19,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.5">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -2105,10 +2105,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weights" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weights" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weights
+        fabrication_impact_repartition_weights
       
     </span>
   </a>
@@ -2116,10 +2116,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weight_sum" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weight_sum
+        fabrication_impact_repartition_weight_sum
       
     </span>
   </a>
@@ -2127,10 +2127,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition" class="md-nav__link">
+  <a href="#fabrication_impact_repartition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition
+        fabrication_impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition
       
     </span>
   </a>
@@ -3596,10 +3629,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weights" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weights" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weights
+        fabrication_impact_repartition_weights
       
     </span>
   </a>
@@ -3607,10 +3640,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition_weight_sum" class="md-nav__link">
+  <a href="#fabrication_impact_repartition_weight_sum" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition_weight_sum
+        fabrication_impact_repartition_weight_sum
       
     </span>
   </a>
@@ -3618,10 +3651,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#impact_repartition" class="md-nav__link">
+  <a href="#fabrication_impact_repartition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        impact_repartition
+        fabrication_impact_repartition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weights
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition_weight_sum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition_weight_sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage_impact_repartition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        usage_impact_repartition
       
     </span>
   </a>
@@ -3676,7 +3742,7 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="data_transferred">data_transferred</h3>
 <p>ExplainableQuantity in kilobyte, representing the Data transferred for claude-opus-4-5.  </p>
-<p>Example value: 5.0 kilobyte  </p>
+<p>Example value: 40 k  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#output_token_count">Output token count for claude-opus-4-5 from e-footprint hypothesis</a>  </li>
@@ -3715,7 +3781,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ba6774 {
+             #mynetwork_bddd22 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3737,7 +3803,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ba6774" class="card-body"></div>
+            <div id="mynetwork_bddd22" class="card-body"></div>
         </div>
 
 
@@ -3767,12 +3833,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ba6774');
+                  var container = document.getElementById('mynetwork_bddd22');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5 from e-footprint\nhypothesis\n=\n5.0 byte * 1000.0 dimensionless\n=\n5.0 kilobyte", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "label": "Output token count\nfor claude-opus-4-5\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 from e-footprint hypothesis = 1000.0\ndimensionless", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5 from e-footprint\nhypothesis\n=\n40 * 1000\n=\n40 k", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "label": "Output token count\nfor claude-opus-4-5\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 from e-footprint hypothesis = 1000", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "to": "Data transferred for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -3846,7 +3912,9 @@
 <li><a href="../EcoLogitsGenAIExternalAPI/#model_active_params">claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function</a></li>
 <li><a href="../EcoLogitsGenAIExternalAPI/#model_total_params">claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function</a></li>
 <li><a href="./#output_token_count">Output token count for claude-opus-4-5 from e-footprint hypothesis</a></li>
-<li><a href="../EcoLogitsGenAIExternalAPI/#average_carbon_intensity">Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function</a>  </li>
+<li><a href="../EcoLogitsGenAIExternalAPI/#average_carbon_intensity">Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function</a></li>
+<li><a href="../EcoLogitsGenAIExternalAPI/#tokens_per_second">claude-opus-4-5 token per second from Ecologits llm_impacts function</a></li>
+<li><a href="../EcoLogitsGenAIExternalAPI/#time_to_first_token">claude-opus-4-5 time to first token from Ecologits llm_impacts function</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -3882,7 +3950,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2a9a92 {
+             #mynetwork_fc6f1d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3904,7 +3972,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2a9a92" class="card-body"></div>
+            <div id="mynetwork_fc6f1d" class="card-body"></div>
         </div>
 
 
@@ -3934,13 +4002,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2a9a92');
+                  var container = document.getElementById('mynetwork_fc6f1d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n133.5 billion", "x": -225.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670.0 billion", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "label": "Output token count\nfor claude-opus-4-5\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 from e-footprint hypothesis = 1000.0\ndimensionless", "x": 75.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic from Ecologits\nllm_impacts function\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic from Ecologits llm_impacts function)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.38 kilogram / kilowatt_hour", "x": 225.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n134", "x": -375.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670", "x": -225.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "label": "Output token count\nfor claude-opus-4-5\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 from e-footprint hypothesis = 1000", "x": -75.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic from Ecologits\nllm_impacts function\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic from Ecologits llm_impacts function)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 75.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 token per second from Ecologits llm_impacts function", "label": "claude-opus-4-5\ntoken per second\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second from Ecologits llm_impacts function\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n34.1", "x": 225.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 time to first token from Ecologits llm_impacts function", "label": "claude-opus-4-5 time\nto first token from\nEcologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token from Ecologits llm_impacts function\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.59 s", "x": 375.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "claude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Output token count for claude-opus-4-5 from e-footprint hypothesis", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for anthropic from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "claude-opus-4-5 token per second from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}, {"arrows": "to", "from": "claude-opus-4-5 time to first token from Ecologits llm_impacts function", "to": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4008,7 +4076,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_impacts.html' target='_blank'>link to Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="gpu_energy">gpu_energy</h3>
 <p>ExplainableQuantity in watt_hour, representing the Ecologits gpu_energy for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 0.12 watt_hour  </p>
+<p>Example value: 117 mWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4047,7 +4115,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_20120b {
+             #mynetwork_0562c4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4069,7 +4137,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_20120b" class="card-body"></div>
+            <div id="mynetwork_0562c4" class="card-body"></div>
         </div>
 
 
@@ -4099,12 +4167,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_20120b');
+                  var container = document.getElementById('mynetwork_0562c4');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits gpu_energy\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag\nfunction\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n0.12 watt_hour", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits gpu_energy\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag\nfunction\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n117 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4173,7 +4241,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_gpu_energy.html' target='_blank'>link to Ecologits gpu_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="generation_latency">generation_latency</h3>
 <p>ExplainableQuantity in second, representing the Ecologits generation_latency for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 130.02 second  </p>
+<p>Example value: 30.9 s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4212,7 +4280,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_59e98b {
+             #mynetwork_864a1e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4234,7 +4302,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_59e98b" class="card-body"></div>
+            <div id="mynetwork_864a1e" class="card-body"></div>
         </div>
 
 
@@ -4264,12 +4332,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_59e98b');
+                  var container = document.getElementById('mynetwork_864a1e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n130.02 second", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n30.9 s", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4338,7 +4406,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_generation_latency.html' target='_blank'>link to Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="model_required_memory">model_required_memory</h3>
 <p>ExplainableQuantity in gigabyte, representing the Ecologits model_required_memory for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 1608.0 gigabyte  </p>
+<p>Example value: 12900 B  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4377,7 +4445,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b1e352 {
+             #mynetwork_8c1808 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4399,7 +4467,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b1e352" class="card-body"></div>
+            <div id="mynetwork_8c1808" class="card-body"></div>
         </div>
 
 
@@ -4429,12 +4497,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b1e352');
+                  var container = document.getElementById('mynetwork_8c1808');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits model_required_memory for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nmodel_required_memory\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits model_required_memory for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1608.0 gigabyte", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits model_required_memory for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nmodel_required_memory\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits model_required_memory for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n12900 B", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits model_required_memory for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4503,7 +4571,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_model_required_memory.html' target='_blank'>link to Ecologits model_required_memory for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="gpu_required_count">gpu_required_count</h3>
 <p>ExplainableQuantity in dimensionless, representing the Ecologits gpu_required_count for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 32.0 dimensionless  </p>
+<p>Example value: 32   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4542,7 +4610,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_31227b {
+             #mynetwork_874379 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4564,7 +4632,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_31227b" class="card-body"></div>
+            <div id="mynetwork_874379" class="card-body"></div>
         </div>
 
 
@@ -4594,12 +4662,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_31227b');
+                  var container = document.getElementById('mynetwork_874379');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngpu_required_count\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n32.0 dimensionless", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngpu_required_count\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n32", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits gpu_required_count for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4668,7 +4736,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_gpu_required_count.html' target='_blank'>link to Ecologits gpu_required_count for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="server_energy">server_energy</h3>
 <p>ExplainableQuantity in watt_hour, representing the Ecologits server_energy for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 2.71 watt_hour  </p>
+<p>Example value: 644 mWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4707,7 +4775,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_319a77 {
+             #mynetwork_c38deb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4729,7 +4797,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_319a77" class="card-body"></div>
+            <div id="mynetwork_c38deb" class="card-body"></div>
         </div>
 
 
@@ -4759,12 +4827,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_319a77');
+                  var container = document.getElementById('mynetwork_c38deb');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nserver_energy for\nclaude-opus-4-5 from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits server_energy for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n2.71 watt_hour", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nserver_energy for\nclaude-opus-4-5 from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits server_energy for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n644 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits server_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4833,7 +4901,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_server_energy.html' target='_blank'>link to Ecologits server_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="request_energy">request_energy</h3>
 <p>ExplainableQuantity in watt_hour, representing the Ecologits request_energy for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 7.18 watt_hour  </p>
+<p>Example value: 4.88 Wh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -4872,7 +4940,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_db916b {
+             #mynetwork_e08ba6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4894,7 +4962,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_db916b" class="card-body"></div>
+            <div id="mynetwork_e08ba6" class="card-body"></div>
         </div>
 
 
@@ -4924,12 +4992,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_db916b');
+                  var container = document.getElementById('mynetwork_e08ba6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5 from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n7.18 watt_hour", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5 from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.88 Wh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits request_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -4998,7 +5066,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_energy.html' target='_blank'>link to Ecologits request_energy for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="request_usage_gwp">request_usage_gwp</h3>
 <p>ExplainableQuantity in gram, representing the Ecologits request_usage_gwp for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 2.75 gram  </p>
+<p>Example value: 1.87 g  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -5037,7 +5105,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e27d0b {
+             #mynetwork_f17c7d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5059,7 +5127,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e27d0b" class="card-body"></div>
+            <div id="mynetwork_f17c7d" class="card-body"></div>
         </div>
 
 
@@ -5089,12 +5157,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e27d0b');
+                  var container = document.getElementById('mynetwork_f17c7d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_usage_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n2.75 gram", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_usage_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1.87 g", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -5163,7 +5231,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_usage_gwp.html' target='_blank'>link to Ecologits request_usage_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="server_gpu_embodied_gwp">server_gpu_embodied_gwp</h3>
 <p>ExplainableQuantity in kilogram, representing the Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 28048.0 kilogram  </p>
+<p>Example value: 31.5 t  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -5202,7 +5270,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_716ee0 {
+             #mynetwork_21cff7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5224,7 +5292,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_716ee0" class="card-body"></div>
+            <div id="mynetwork_21cff7" class="card-body"></div>
         </div>
 
 
@@ -5254,12 +5322,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_716ee0');
+                  var container = document.getElementById('mynetwork_21cff7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nserver_gpu_embodied_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n28048.0 kilogram", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nserver_gpu_embodied_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n31.5 t", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -5328,7 +5396,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_server_gpu_embodied_gwp.html' target='_blank'>link to Ecologits server_gpu_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="request_embodied_gwp">request_embodied_gwp</h3>
 <p>ExplainableQuantity in gram, representing the Ecologits request_embodied_gwp for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 0.6 gram  </p>
+<p>Example value: 161 mg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -5367,7 +5435,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f155c8 {
+             #mynetwork_bc298f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5389,7 +5457,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f155c8" class="card-body"></div>
+            <div id="mynetwork_bc298f" class="card-body"></div>
         </div>
 
 
@@ -5419,12 +5487,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f155c8');
+                  var container = document.getElementById('mynetwork_bc298f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n0.6 gram", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function\n=\n133.5 billion compute impacts with EcoLogits compute_llm_impacts_dag function\n670.0 billion logically dependent on 1000.0 dimensionless logically dependent on\n0.38 kilogram / kilowatt_hour\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n161 mg", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 compute impacts with EcoLogits compute_llm_impacts_dag function 670\nlogically dependent on 1000 logically dependent on 0.384 kg/kWh logically\ndependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -5493,7 +5561,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_embodied_gwp.html' target='_blank'>link to Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function’s full calculation graph</a>.</p>
 <h3 id="request_duration">request_duration</h3>
 <p>ExplainableQuantity in second, representing the Ecologits generation_latency for claude-opus-4-5 from ecologits compute_llm_impacts_dag function.  </p>
-<p>Example value: 130.02 second  </p>
+<p>Example value: 30.9 s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#generation_latency">Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function</a>  </li>
@@ -5532,7 +5600,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0db38d {
+             #mynetwork_7720ef {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5554,7 +5622,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0db38d" class="card-body"></div>
+            <div id="mynetwork_7720ef" class="card-body"></div>
         </div>
 
 
@@ -5584,12 +5652,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0db38d');
+                  var container = document.getElementById('mynetwork_7720ef');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (130.02 second)\n=\n130.02 second", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "to": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
 
                   nodeColors = {};
@@ -5660,9 +5728,9 @@
 <p>Dictionary with UsagePattern as keys and 
                         Hourly generative ai model job occurrences in usagepattern usage pattern as values, in occurrence.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in occurrence:<br />
-    first 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],<br />
-    last 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],<br />
+    last 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5702,7 +5770,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_e68f23 {
+             #mynetwork_c0c676 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5724,7 +5792,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e68f23" class="card-body"></div>
+            <div id="mynetwork_c0c676" class="card-body"></div>
         </div>
 
 
@@ -5754,12 +5822,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e68f23');
+                  var container = document.getElementById('mynetwork_c0c676');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in occurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] converted to UTC\nfrom Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Generative AI model job occurrences in UsagePattern usage pattern"}]);
 
                   nodeColors = {};
@@ -5830,9 +5898,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Average hourly generative ai model job occurrences in usage pattern as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],<br />
-    last 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515, 0.0773, 0.0172],<br />
+    last 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172, 0.0515, 0.0258], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5873,7 +5941,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_9db86d {
+             #mynetwork_6726ea {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5895,7 +5963,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9db86d" class="card-body"></div>
+            <div id="mynetwork_6726ea" class="card-body"></div>
         </div>
 
 
@@ -5925,12 +5993,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9db86d');
+                  var container = document.getElementById('mynetwork_6726ea');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 130.02 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (130.02 second)\n=\n130.02 second", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 30.9 s\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 225.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "to": "Average hourly Generative AI model job occurrences in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "to": "Average hourly Generative AI model job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -6001,9 +6069,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Hourly data transferred for generative ai model job in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],<br />
-    last 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:<br />
+    first 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],<br />
+    last 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6045,7 +6113,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_671e5c {
+             #mynetwork_c714ef {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6067,7 +6135,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_671e5c" class="card-body"></div>
+            <div id="mynetwork_c714ef" class="card-body"></div>
         </div>
 
 
@@ -6097,12 +6165,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_671e5c');
+                  var container = document.getElementById('mynetwork_c714ef');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits compute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * (5.0\nkilobyte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 130.02 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": -262.5, "y": 1050}, {"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5 from e-footprint\nhypothesis\n=\n5.0 byte * 1000.0 dimensionless\n=\n5.0 kilobyte", "x": 262.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (130.02 second)\n=\n130.02 second", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits compute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258] * (40 k * 1 h / 30.9 s)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:\nfirst 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],\nlast 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 30.9 s\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258]", "x": -337.5, "y": 1050}, {"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5 from e-footprint\nhypothesis\n=\n40 * 1000\n=\n40 k", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly data transferred for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Data transferred for claude-opus-4-5", "to": "Hourly data transferred for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "to": "Hourly data transferred for Generative AI model job in usage pattern"}]);
 
                   nodeColors = {};
@@ -6173,9 +6241,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>Dictionary with UsagePattern as keys and 
                         Hourly data stored for generative ai model job in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], <br />
+UsagePattern usage pattern (d71fc8): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
+    last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6217,7 +6285,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_44ee63 {
+             #mynetwork_f9ea96 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6239,7 +6307,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_44ee63" class="card-body"></div>
+            <div id="mynetwork_f9ea96" class="card-body"></div>
         </div>
 
 
@@ -6269,12 +6337,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_44ee63');
+                  var container = document.getElementById('mynetwork_f9ea96');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\nstored by request Generative AI model job from e-footprint hypothesis * one hour\n/ Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * (0.0\nmegabyte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 130.02 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": -262.5, "y": 1050}, {"color": "darkred", "id": "Data stored by request Generative AI model job from e-footprint hypothesis", "label": "Data stored by\nrequest Generative\nAI model job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Generative AI model job from e-footprint hypothesis = 0.0\nmegabyte", "x": 262.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (130.02 second)\n=\n130.02 second", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\nstored by request Generative AI model job from e-footprint hypothesis * one hour\n/ Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258] * (0 MB * 1 h / 30.9 s)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 30.9 s\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258]", "x": -337.5, "y": 1050}, {"color": "darkred", "id": "Data stored by request Generative AI model job from e-footprint hypothesis", "label": "Data stored by\nrequest Generative\nAI model job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Generative AI model job from e-footprint hypothesis = 0\nMB", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly data stored for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Generative AI model job from e-footprint hypothesis", "to": "Hourly data stored for Generative AI model job in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "to": "Hourly data stored for Generative AI model job in usage pattern"}]);
 
                   nodeColors = {};
@@ -6343,9 +6411,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_data_stored_per_usage_pattern.html' target='_blank'>link to Hourly data stored for Generative AI model job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>Hourly generative ai model job average occurrences across usage patterns in concurrent.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],<br />
-    last 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515, 0.0773, 0.0172],<br />
+    last 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172, 0.0515, 0.0258]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly Generative AI model job occurrences in usage pattern</a>  </li>
@@ -6384,7 +6452,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_0b6e9e {
+             #mynetwork_e72928 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6406,7 +6474,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0b6e9e" class="card-body"></div>
+            <div id="mynetwork_e72928" class="card-body"></div>
         </div>
 
 
@@ -6436,12 +6504,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0b6e9e');
+                  var container = document.getElementById('mynetwork_e72928');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] hourly\noccurrences average 130.02 second\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job average occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job average occurrences across usage patterns\n=\nAverage hourly Generative AI model job occurrences in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly Generative AI model job occurrences in usage pattern", "label": "Average hourly\nGenerative AI model\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Generative AI model job occurrences in usage pattern\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern hourly\noccurrences average Ecologits generation_latency for claude-opus-4-5 from\nEcologits compute_llm_impacts_dag function\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] hourly occurrences average 30.9 s\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Generative AI model job occurrences in usage pattern", "to": "Hourly Generative AI model job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -6510,9 +6578,9 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_avg_occurrences_across_usage_patterns.html' target='_blank'>link to Hourly Generative AI model job average occurrences across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>Hourly generative ai model job data transferred across usage patterns in megabyte.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],<br />
-    last 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01]  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:<br />
+    first 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],<br />
+    last 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred for Generative AI model job in usage pattern</a>  </li>
@@ -6551,7 +6619,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_9b1f03 {
+             #mynetwork_de19b5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6573,7 +6641,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9b1f03" class="card-body"></div>
+            <div id="mynetwork_de19b5" class="card-body"></div>
         </div>
 
 
@@ -6603,12 +6671,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9b1f03');
+                  var container = document.getElementById('mynetwork_de19b5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data transferred across usage patterns", "label": "Hourly Generative AI\nmodel job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data transferred across usage patterns\n=\nHourly data transferred for Generative AI model job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01] + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits compute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * (5.0\nkilobyte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.02, 0.0, 0.0, 0.03, 0.03, 0.02, 0.02, 0.03, 0.04, 0.02],\nlast 10 vals [0.02, 0.03, 0.03, 0.01, 0.04, 0.0, 0.03, 0.04, 0.02, 0.01]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data transferred across usage patterns", "label": "Hourly Generative AI\nmodel job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data transferred across usage patterns\n=\nHourly data transferred for Generative AI model job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:\nfirst 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],\nlast 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:\nfirst 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],\nlast 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred for Generative AI model job in usage pattern", "label": "Hourly data\ntransferred for\nGenerative AI model\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\ntransferred for claude-opus-4-5 * one hour / Ecologits generation_latency for\nclaude-opus-4-5 from Ecologits compute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258] * (40 k * 1 h / 30.9 s)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in k:\nfirst 10 vals [80, 320, 360, 320, 120, 40, 280, 240, 360, 80],\nlast 10 vals [120, 320, 360, 80, 320, 240, 200, 80, 240, 120]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Generative AI model job in usage pattern", "to": "Hourly Generative AI model job data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -6678,8 +6746,8 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 <h3 id="hourly_data_stored_across_usage_patterns">hourly_data_stored_across_usage_patterns</h3>
 <p>Hourly generative ai model job data stored across usage patterns in megabyte.  </p>
 <p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:<br />
-    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],<br />
-    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  </p>
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
+    last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_stored_per_usage_pattern">Hourly data stored for Generative AI model job in usage pattern</a>  </li>
@@ -6718,7 +6786,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_c55e96 {
+             #mynetwork_ae6899 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6740,7 +6808,7 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c55e96" class="card-body"></div>
+            <div id="mynetwork_ae6899" class="card-body"></div>
         </div>
 
 
@@ -6770,12 +6838,12 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c55e96');
+                  var container = document.getElementById('mynetwork_ae6899');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data stored across usage patterns", "label": "Hourly Generative AI\nmodel job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data stored across usage patterns\n=\nHourly data stored for Generative AI model job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\nstored by request Generative AI model job from e-footprint hypothesis * one hour\n/ Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.11, 0.04, 0.04, 0.22, 0.25, 0.18, 0.14, 0.22, 0.33, 0.14],\nlast 10 vals [0.18, 0.22, 0.25, 0.07, 0.29, 0.04, 0.22, 0.33, 0.11, 0.07] * (0.0\nmegabyte * 1.0 hour / 130.02 second)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job data stored across usage patterns", "label": "Hourly Generative AI\nmodel job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job data stored across usage patterns\n=\nHourly data stored for Generative AI model job in usage pattern + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored for Generative AI model job in usage pattern", "label": "Hourly data stored\nfor Generative AI\nmodel job in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Generative AI model job in usage pattern\n=\nAverage hourly Generative AI model job occurrences in usage pattern * (Data\nstored by request Generative AI model job from e-footprint hypothesis * one hour\n/ Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0687, 0.0773, 0.0687, 0.0258, 0.00859, 0.0601, 0.0515,\n0.0773, 0.0172],\nlast 10 vals [0.0258, 0.0687, 0.0773, 0.0172, 0.0687, 0.0515, 0.0429, 0.0172,\n0.0515, 0.0258] * (0 MB * 1 h / 30.9 s)\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Generative AI model job in usage pattern", "to": "Hourly Generative AI model job data stored across usage patterns"}]);
 
                   nodeColors = {};
@@ -6842,17 +6910,17 @@ UsagePattern usage pattern (382afb): 26298 values from 2024-12-31 23:00:00+00:00
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_hourly_data_stored_across_usage_patterns.html' target='_blank'>link to Hourly Generative AI model job data stored across usage patterns’s full calculation graph</a>.</p>
-<h3 id="impact_repartition_weights">impact_repartition_weights</h3>
+<h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>Dictionary with UsageJourneyStep as keys and 
                         20 min streaming weight in generative ai model job impact repartition as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67], <br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../UsageJourneyStep/#impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
+<li><a href="../UsageJourneyStep/#fabrication_impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -6888,7 +6956,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_b552ca {
+             #mynetwork_ddcc8a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6910,7 +6978,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b552ca" class="card-body"></div>
+            <div id="mynetwork_ddcc8a" class="card-body"></div>
         </div>
 
 
@@ -6940,12 +7008,12 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b552ca');
+                  var container = document.getElementById('mynetwork_ddcc8a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern weight in user journey impact repartition + no value) * Number of\noccurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern fabrication weight in user journey impact repartition + no value)\n* Number of occurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Generative AI model job impact repartition"}]);
 
                   nodeColors = {};
@@ -7011,15 +7079,15 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Generative AI model job impact repartition’s full calculation graph</a>.</p>
-<h3 id="impact_repartition_weight_sum">impact_repartition_weight_sum</h3>
-<p>Sum of generative ai model job impact repartition weights in concurrent.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],<br />
-    last 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]  </p>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_fabrication_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Generative AI model job impact repartition’s full calculation graph</a>.</p>
+<h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
+<p>Sum of generative ai model job fabrication impact repartition weights in concurrent.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],<br />
+    last 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a>  </li>
+<li><a href="./#fabrication_impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -7055,7 +7123,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_022943 {
+             #mynetwork_0ed0ef {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7077,7 +7145,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_022943" class="card-body"></div>
+            <div id="mynetwork_0ed0ef" class="card-body"></div>
         </div>
 
 
@@ -7107,13 +7175,13 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_022943');
+                  var container = document.getElementById('mynetwork_0ed0ef');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Generative AI model job impact repartition weights", "label": "Sum of Generative AI\nmodel job impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Sum of Generative AI model job impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Generative AI model job fabrication impact repartition weights", "label": "Sum of Generative AI\nmodel job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job fabrication impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Sum of Generative AI model job fabrication impact repartition weights"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -7178,19 +7246,19 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Generative AI model job impact repartition weights’s full calculation graph</a>.</p>
-<h3 id="impact_repartition">impact_repartition</h3>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_fabrication_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Generative AI model job fabrication impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Dictionary with UsageJourneyStep as keys and 
-                        Generative ai model job impact attribution to 20 min streaming as values, in concurrent.  </p>
+                        Generative ai model job fabrication impact attribution to 20 min streaming as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in concurrent:<br />
-    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],<br />
-    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0], <br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
+    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="./#impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a></li>
-<li><a href="./#impact_repartition_weight_sum">Sum of Generative AI model job impact repartition weights</a>  </li>
+<li><a href="./#fabrication_impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a></li>
+<li><a href="./#fabrication_impact_repartition_weight_sum">Sum of Generative AI model job fabrication impact repartition weights</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -7226,7 +7294,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_0c8bfe {
+             #mynetwork_7b62da {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7248,7 +7316,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0c8bfe" class="card-body"></div>
+            <div id="mynetwork_7b62da" class="card-body"></div>
         </div>
 
 
@@ -7278,13 +7346,13 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0c8bfe');
+                  var container = document.getElementById('mynetwork_7b62da');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job impact attribution to 20 min streaming", "label": "Generative AI model\njob impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Generative AI model job impact attribution to 20 min streaming\n=\n20 min streaming weight in Generative AI model job impact repartition / Sum of\nGenerative AI model job impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] / 26298\nvalues from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no\nvalue) * 1.0 dimensionless\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Generative AI model job impact repartition weights", "label": "Sum of Generative AI\nmodel job impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\nconcurrent:\nfirst 10 vals [1.0, 0.33, 0.33, 2.0, 2.33, 1.67, 1.33, 2.0, 3.0, 1.33],\nlast 10 vals [1.67, 2.0, 2.33, 0.67, 2.67, 0.33, 2.0, 3.0, 1.0, 0.67]", "x": 0.0, "y": 1050}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Generative AI model job impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Generative AI model job impact repartition weights", "to": "Generative AI model job impact attribution to 20 min streaming"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job fabrication impact attribution to 20 min streaming", "label": "Generative AI model\njob fabrication\nimpact attribution\nto 20 min streaming", "shape": "dot", "size": 15, "title": "Generative AI model job fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in Generative AI model job impact repartition / Sum of\nGenerative AI model job fabrication impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] / 26298 values from\n2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Generative AI model job fabrication impact repartition weights", "label": "Sum of Generative AI\nmodel job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job fabrication impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Generative AI model job fabrication impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Generative AI model job fabrication impact repartition weights", "to": "Generative AI model job fabrication impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -7349,12 +7417,520 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_impact_repartition.html' target='_blank'>link to Generative AI model job impact attribution to 20 min streaming’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_fabrication_impact_repartition.html' target='_blank'>link to Generative AI model job fabrication impact attribution to 20 min streaming’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition_weights">usage_impact_repartition_weights</h3>
+<p>Dictionary with UsageJourneyStep as keys and 
+                        20 min streaming weight in generative ai model job impact repartition as values, in concurrent * gram / kilowatt_hour.  </p>
+<p>Example value: {<br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],<br />
+    last 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../UsageJourneyStep/#usage_impact_repartition_weights">user journey weight in 20 min streaming impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_8c0778 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_8c0778" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_8c0778');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\n(usage pattern usage weight in user journey impact repartition + no value) *\nNumber of occurrences of 20 min streaming in user journey\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Generative AI model job impact repartition"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_usage_impact_repartition_weights.html' target='_blank'>link to 20 min streaming weight in Generative AI model job impact repartition’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
+<p>Sum of generative ai model job usage impact repartition weights in concurrent * gram / kilowatt_hour.  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],<br />
+    last 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#usage_impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_3d9f8f {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_3d9f8f" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_3d9f8f');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Generative AI model job usage impact repartition weights", "label": "Sum of Generative AI\nmodel job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job usage impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Sum of Generative AI model job usage impact repartition weights"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_usage_impact_repartition_weight_sum.html' target='_blank'>link to Sum of Generative AI model job usage impact repartition weights’s full calculation graph</a>.</p>
+<h3 id="usage_impact_repartition">usage_impact_repartition</h3>
+<p>Dictionary with UsageJourneyStep as keys and 
+                        Generative ai model job usage impact attribution to 20 min streaming as values, in concurrent.  </p>
+<p>Example value: {<br />
+UsageJourneyStep 20 min streaming (1417a0): 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
+    last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
+}  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#usage_impact_repartition_weights">20 min streaming weight in Generative AI model job impact repartition</a></li>
+<li><a href="./#usage_impact_repartition_weight_sum">Sum of Generative AI model job usage impact repartition weights</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_9aff32 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_9aff32" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_9aff32');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Generative AI model job usage impact attribution to 20 min streaming", "label": "Generative AI model\njob usage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Generative AI model job usage impact attribution to 20 min streaming\n=\n20 min streaming weight in Generative AI model job impact repartition / Sum of\nGenerative AI model job usage impact repartition weights\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] / 26298 values\nfrom 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}, {"color": null, "id": "Sum of Generative AI model job usage impact repartition weights", "label": "Sum of Generative AI\nmodel job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job usage impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Generative AI model job usage impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Generative AI model job usage impact repartition weights", "to": "Generative AI model job usage impact attribution to 20 min streaming"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_usage_impact_repartition.html' target='_blank'>link to Generative AI model job usage impact attribution to 20 min streaming’s full calculation graph</a>.</p>
 <h3 id="hourly_occurrences_across_usage_patterns">hourly_occurrences_across_usage_patterns</h3>
 <p>Hourly generative ai model job occurrences across usage patterns in occurrence.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in occurrence:<br />
-    first 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],<br />
-    last 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]  </p>
+<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
+    first 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],<br />
+    last 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences_per_usage_pattern">Hourly Generative AI model job occurrences in UsagePattern usage pattern</a>  </li>
@@ -7393,7 +7969,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_408f4a {
+             #mynetwork_2c0a15 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7415,7 +7991,7 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_408f4a" class="card-body"></div>
+            <div id="mynetwork_2c0a15" class="card-body"></div>
         </div>
 
 
@@ -7445,12 +8021,12 @@ UsageJourneyStep 20 min streaming (176e4a): 26298 values from 2024-12-31 23:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_408f4a');
+                  var container = document.getElementById('mynetwork_2c0a15');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences across usage patterns\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0] shifted by no\nvalue + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\noccurrence:\nfirst 10 vals [3.0, 1.0, 1.0, 6.0, 7.0, 5.0, 4.0, 6.0, 9.0, 4.0],\nlast 10 vals [5.0, 6.0, 7.0, 2.0, 8.0, 1.0, 6.0, 9.0, 3.0, 2.0]", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Generative AI model job occurrences across usage patterns", "label": "Hourly Generative AI\nmodel job\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences across usage patterns\n=\nHourly Generative AI model job occurrences in UsagePattern usage pattern + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "label": "Hourly Generative AI\nmodel job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Generative AI model job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] shifted by no value + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Generative AI model job occurrences in UsagePattern usage pattern", "to": "Hourly Generative AI model job occurrences across usage patterns"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_aa8372 {
+             #mynetwork_460f97 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_aa8372" class="card-body"></div>
+            <div id="mynetwork_460f97" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_aa8372');
+                  var container = document.getElementById('mynetwork_460f97');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total fabrication footprint across usage patterns", "label": "edge appliance total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge appliance total fabrication footprint across usage patterns\n=\nHourly edge appliance instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85] + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of edge appliance / Lifespan of edge appliance) *\none hour + Hourly edge appliance appliance instances fabrication footprint for\nDefault edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nconcurrent:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 999.35, 1997.48],\nlast 10 vals [4998.94, 4997.12, 4995.91, 4996.51, 4998.94, 4997.73, 3995.88,\n2996.45, 1997.63, 997.0] * (60.0 kilogram / 8.0 year) * 1.0 hour + 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.86, 1.71],\nlast 10 vals [4.28, 4.28, 4.27, 4.27, 4.28, 4.28, 3.42, 2.56, 1.71, 0.85]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge appliance total fabrication footprint across usage patterns", "label": "edge appliance total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge appliance total fabrication footprint across usage patterns\n=\nHourly edge appliance instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000855, 0.00171],\nlast 10 vals [0.00428, 0.00428, 0.00427, 0.00427, 0.00428, 0.00428, 0.00342,\n0.00256, 0.00171, 0.000853] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000855, 0.00171],\nlast 10 vals [0.00428, 0.00428, 0.00427, 0.00427, 0.00428, 0.00428, 0.00342,\n0.00256, 0.00171, 0.000853]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge\nappliance instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge appliance instances fabrication footprint for Default edge usage\npattern\n=\nHourly edge appliance structure fabrication footprint for Default edge usage\npattern + Hourly edge appliance appliance instances fabrication footprint for\nDefault edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000855, 0.00171],\nlast 10 vals [0.00428, 0.00428, 0.00427, 0.00427, 0.00428, 0.00428, 0.00342,\n0.00256, 0.00171, 0.000853] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in kg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000855, 0.00171],\nlast 10 vals [0.00428, 0.00428, 0.00427, 0.00427, 0.00428, 0.00428, 0.00342,\n0.00256, 0.00171, 0.000853]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly edge appliance instances fabrication footprint for Default edge usage pattern", "to": "edge appliance total fabrication footprint across usage patterns"}]);
 
                   nodeColors = {};
