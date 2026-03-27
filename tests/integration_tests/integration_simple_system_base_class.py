@@ -206,6 +206,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
+    def run_test_make_sure_that_storage_fabrication_footprint_is_linked_to_jobs(self):
+        self.assertIn(self.storage, self.job_1.attributed_fabrication_footprint_per_source)
+        self.assertIn(self.storage, self.job_1.attributed_fabrication_footprint_per_source)
+
     # OBJECT LINKS UPDATES TESTING
 
     def run_test_generate_new_system_with_json_saving_halfway_keeps_calculation_graph_intact(self):
@@ -275,6 +279,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             expected_unchanged=[self.usage_pattern.devices[0]],
         )
         self._run_object_link_scenario(scenario)
+        new_job.self_delete()
 
     def run_test_update_uj_steps(self):
         new_step = UsageJourneyStep.from_defaults(
@@ -283,7 +288,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         scenario = ObjectLinkScenario(
             name="update_uj_steps",
             updates_builder=[[self.uj.uj_steps, [new_step]]],
-            expected_changed=[self.storage, self.server, self.network],
+            expected_changed=[self.server, self.network],
         )
         self._run_object_link_scenario(scenario)
 

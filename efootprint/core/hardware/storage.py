@@ -6,6 +6,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
@@ -93,15 +94,11 @@ class Storage(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return [
-            "carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need",
-            "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint",
-            "instances_energy", "energy_footprint",
-        ] + [
-            attr
-            for attr in super().calculated_attributes
-            if attr not in {"fabrication_impact_repartition_weights", "usage_impact_repartition_weights"}
-        ]
+        return ([
+            "carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
+        + InfraHardware.calculated_attributes.fget(self)
+        + [attr for attr in ModelingObject.calculated_attributes.fget(self)
+           if attr not in {"usage_impact_repartition_weights"}])
 
     @property
     def jobs(self) -> List["JobBase"]:
