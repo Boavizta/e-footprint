@@ -10,6 +10,8 @@ UNIT_FAMILIES: list[Sequence[Unit]] = [
     [u.mg, u.g, u.kg, u.tonne],
     [u.mWh, u.Wh, u.kWh, u.MWh],
     [u.mW, u.W, u.kW, u.MW],
+    [u.occurrence, u.koccurrence, u.Moccurrence, u.Goccurrence],
+    [u.concurrent, u.kconcurrent, u.Mconcurrent, u.Gconcurrent],
     [u.byte, u.kB, u.MB, u.GB, u.TB],
     [u.byte_ram, u.kB_ram, u.MB_ram, u.GB_ram, u.TB_ram],
 ]
@@ -67,7 +69,14 @@ def format_quantity_for_display(quantity: Quantity, sig_figs: int = 3) -> Quanti
 
 
 def human_readable_unit(unit: Unit) -> str:
-    return f"{unit:~P}"
+    output = f"{unit:~P}"
+    for special_dimensionless_unit in ["occurrence", "concurrent"]:
+        if special_dimensionless_unit in output:
+            output = output.replace(special_dimensionless_unit, "")
+            if output == "G":
+                output = "B"
+            break
+    return output
 
 
 def format_display_number(value: float) -> str:

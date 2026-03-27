@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 
 from efootprint.constants.units import u
-from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display
+from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
 
 
 class TestDisplayUtils(unittest.TestCase):
@@ -51,6 +51,23 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(123456 * u.kg, quantity)
         self.assertEqual(123.0 * u.tonne, formatted)
         self.assertIsNot(quantity, formatted)
+
+    def test_human_readable_unit_strips_occurrence_and_concurrent(self):
+        """Test occurrence and concurrent units display as SI prefix only."""
+        self.assertEqual("", human_readable_unit(u.occurrence))
+        self.assertEqual("k", human_readable_unit(u.koccurrence))
+        self.assertEqual("M", human_readable_unit(u.Moccurrence))
+        self.assertEqual("B", human_readable_unit(u.Goccurrence))
+        self.assertEqual("", human_readable_unit(u.concurrent))
+        self.assertEqual("k", human_readable_unit(u.kconcurrent))
+        self.assertEqual("M", human_readable_unit(u.Mconcurrent))
+        self.assertEqual("B", human_readable_unit(u.Gconcurrent))
+
+    def test_human_readable_unit_leaves_other_units_unchanged(self):
+        """Test non-occurrence/concurrent units are not affected."""
+        self.assertEqual("kg", human_readable_unit(u.kg))
+        self.assertEqual("kWh", human_readable_unit(u.kWh))
+        self.assertEqual("B", human_readable_unit(u.byte))
 
     def test_format_display_number_preserves_numpy_scalar_formatting(self):
         """Test NumPy scalars do not expand into float precision artifacts when rendered."""
