@@ -258,7 +258,7 @@ class System(ModelingObject):
         for category_key, category_dict in self.fabrication_footprints.items():
             fab_footprints_sum[category_key] = {
                 obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
-                    f"{obj_key} fabrication footprints summed over modeling period")
+                    f"{obj_key.name} fabrication footprints summed over modeling period")
                 for obj_key, obj_value in category_dict.items()
             }
 
@@ -270,7 +270,7 @@ class System(ModelingObject):
         for key, dict_value in self.energy_footprints.items():
             energy_footprints_sum[key] = {
                 obj_key: self.sum_and_remove_empty_explainable_object(obj_value).to(u.kg).set_label(
-                    f"{obj_key} energy footprints summed over modeling period")
+                    f"{obj_key.name} energy footprints summed over modeling period")
                 for obj_key, obj_value in dict_value.items()
             }
 
@@ -324,7 +324,7 @@ class System(ModelingObject):
 
             for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
                 for object, quantity in objs:
-                    converted_magnitude = quantity.to(chart_unit).magnitude
+                    converted_magnitude = quantity.value.to(chart_unit).magnitude
                     amount_str = f"{round(converted_magnitude, 2)} {chart_unit_str}"
 
                     rows_as_dicts.append({
@@ -339,7 +339,7 @@ class System(ModelingObject):
 
         start_date = total_footprint.start_date
         end_date = start_date + timedelta(hours=len(total_footprint.value) - 1)
-        total_amount = round(total_footprint.sum().value.to(chart_unit).magnitude, 2)
+        total_amount = round(total_co2, 2)
 
         fig = px.bar(
             df, x="Category", y=value_colname, color='Type', barmode='group',

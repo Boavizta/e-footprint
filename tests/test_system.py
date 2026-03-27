@@ -314,13 +314,13 @@ class TestSystem(TestCase):
                 self._hourly_kg()},
             "Devices": {self.device:
                 self._hourly_kg()},
-            "Network": {"networks_id": EmptyExplainableObject()}
+            "Network": {self.network: EmptyExplainableObject()}
         }
         expected_dict = {
             "Servers": {self.server: ExplainableQuantity(6 * u.kg, label="server")},
             "Storage": {self.storage: ExplainableQuantity(6 * u.kg, label="storage")},
             "Devices": {self.device: ExplainableQuantity(6 * u.kg, label="devices")},
-            "Network": {"networks_id": EmptyExplainableObject()},
+            "Network": {self.network: EmptyExplainableObject()},
         }
 
         with patch.object(System, "fabrication_footprints", new_callable=PropertyMock) as fab_mock:
@@ -332,20 +332,16 @@ class TestSystem(TestCase):
 
     def test_energy_footprint_sum_over_period(self):
         test_footprints = {
-            "Servers": {"server": 
-                self._hourly_kg()},
-            "Storage": {"storage": 
-                self._hourly_kg()},
-            "Devices": {"usage_pattern": 
-                self._hourly_kg()},
-            "Network": {"networks": 
-                self._hourly_kg()}
+            "Servers": {self.server: self._hourly_kg()},
+            "Storage": {self.storage: self._hourly_kg()},
+            "Devices": {self.usage_pattern: self._hourly_kg()},
+            "Network": {self.network: self._hourly_kg()}
         }
         expected_dict = {
-            "Servers": {"server": ExplainableQuantity(6 * u.kg, label="server")},
-            "Storage": {"storage": ExplainableQuantity(6 * u.kg, label="storage")},
-            "Devices": {"usage_pattern": ExplainableQuantity(6 * u.kg, label="devices")},
-            "Network": {"networks": ExplainableQuantity(6 * u.kg, label="devices")},
+            "Servers": {self.server: ExplainableQuantity(6 * u.kg, label="server")},
+            "Storage": {self.storage: ExplainableQuantity(6 * u.kg, label="storage")},
+            "Devices": {self.usage_pattern: ExplainableQuantity(6 * u.kg, label="devices")},
+            "Network": {self.network: ExplainableQuantity(6 * u.kg, label="devices")},
         }
 
         with patch.object(System, "energy_footprints", new_callable=PropertyMock) as eng_mock:

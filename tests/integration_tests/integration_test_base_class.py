@@ -418,7 +418,9 @@ class IntegrationTestBaseClass(TestCase):
                 # Handle ExplainableObjectDict
                 if isinstance(calc_attr, ExplainableObjectDict):
                     for key, value in calc_attr.items():
-                        check_unit(value, mod_obj, calc_attr_name, value.key_in_dict)
+                        key_in_dict = value.key_in_dict
+                        key_label = getattr(key_in_dict, "name", key_in_dict)
+                        check_unit(value, mod_obj, calc_attr_name, f"[{key_label}]")
                 else:
                     check_unit(calc_attr, mod_obj, calc_attr_name)
 
