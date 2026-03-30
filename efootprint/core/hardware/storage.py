@@ -173,6 +173,12 @@ class Storage(InfraHardware):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
             return
+        from efootprint.core.hardware.server_base import ServerTypes
+        if self.server is not None and self.server.server_type == ServerTypes.serverless():
+            self.nb_of_instances = (self.raw_nb_of_instances.copy()
+                .generate_explainable_object_with_logical_dependency(self.server.server_type)
+                .set_label(f"Hourly number of {self.name} instances"))
+            return
         ceiled_nb_of_instances = self.raw_nb_of_instances.ceil()
         if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
             max_nb_of_instances = ceiled_nb_of_instances.max()

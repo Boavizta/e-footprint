@@ -13,6 +13,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.hardware.server import Server
+from efootprint.core.hardware.server_base import ServerTypes
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job
 from tests.utils import create_mod_obj_mock
@@ -138,6 +139,31 @@ class TestStorage(TestCase):
             self.assertIn(
                 "storage_base has available number of instances capacity of 2.0 concurrent but is asked for "
                 "4.0 concurrent", str(context.exception))
+
+    def test_nb_of_instances_serverless_uses_raw_nb_of_instances(self):
+        """Test nb_of_instances equals raw_nb_of_instances (no ceiling) when server is serverless."""
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.concurrent)
+        server_mock = create_mod_obj_mock(Server, "Serverless server", server_type=ServerTypes.serverless())
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+                patch.object(Storage, "server", new_callable=PropertyMock) as mock_server:
+            mock_server.return_value = server_mock
+            self.storage_base.update_nb_of_instances()
+            self.assertEqual([1.5, 2.5, 3.5], self.storage_base.nb_of_instances.value_as_float_list)
+            self.assertEqual(u.concurrent, self.storage_base.nb_of_instances.unit)
+
+    def test_nb_of_instances_serverless_ignores_fixed_nb_of_instances(self):
+        """Test nb_of_instances ignores fixed_nb_of_instances when server is serverless."""
+        raw_nb_of_instances = create_source_hourly_values_from_list([1.5, 2.5, 3.5], pint_unit=u.concurrent)
+        server_mock = create_mod_obj_mock(Server, "Serverless server", server_type=ServerTypes.serverless())
+        fixed_nb_of_instances = SourceValue(5 * u.dimensionless)
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances), \
+                patch.object(self.storage_base, "fixed_nb_of_instances", fixed_nb_of_instances), \
+                patch.object(Storage, "server", new_callable=PropertyMock) as mock_server:
+            mock_server.return_value = server_mock
+            self.storage_base.update_nb_of_instances()
+            self.assertEqual([1.5, 2.5, 3.5], self.storage_base.nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances_returns_empty_explainable_object_if_raw_nb_of_instances_is_empty(self):
         """Test nb_of_instances is EmptyExplainableObject when raw_nb_of_instances is empty."""

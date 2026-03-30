@@ -350,7 +350,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 
         analytics_server = BoaviztaCloudServer.from_defaults(
-            "analytics provider server", server_type=ServerTypes.serverless(),
+            "analytics provider server", server_type=ServerTypes.on_premise(),
             storage=Storage.from_defaults("analytics provider storage"))
         data_job_2 = Job.from_defaults("analytics provider data upload", server=analytics_server)
         daily_analytics_uj = UsageJourney(
