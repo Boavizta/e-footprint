@@ -2,6 +2,8 @@
 
 from pint import Unit, Quantity
 
+from efootprint.constants.units import u
+
 
 def get_plot_aggregation_strategy(unit: Unit) -> str:
     """
@@ -11,17 +13,20 @@ def get_plot_aggregation_strategy(unit: Unit) -> str:
         unit: The Pint unit of the timeseries
 
     Returns:
-        'sum' for cumulative metrics (events, energy, data transfer)
-        'mean' for concurrent/resource allocation metrics (instances, RAM, CPU)
+        "sum" for cumulative metrics (events, energy, data transfer)
+        "mean" for concurrent/resource allocation metrics (instances, RAM, CPU)
     """
     unit_str = str(unit)
+    
+    is_special_dimensionless_unit = unit.is_compatible_with(u.dimensionless) and (
+            "concurrent" in unit_str or "_ram" in unit_str or "_stored" in unit_str)
 
     # Rate and resource allocation units → mean
-    if 'concurrent' in unit_str or '_ram' in unit_str or '_stored' in unit_str or 'cpu_core' in unit_str or 'gpu' in unit_str:
-        return 'mean'
+    if is_special_dimensionless_unit or "cpu_core" in unit_str or "gpu" in unit_str:
+        return "mean"
 
     # Default: sum for events, energy, mass, data transfer
-    return 'sum'
+    return "sum"
 
 
 def validate_timeseries_unit(value: Quantity, label: str = None):

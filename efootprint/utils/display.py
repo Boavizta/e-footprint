@@ -8,8 +8,8 @@ from efootprint.constants.units import u
 
 UNIT_FAMILIES: list[Sequence[Unit]] = [
     [u.mg, u.g, u.kg, u.tonne],
-    [u.mWh, u.Wh, u.kWh, u.MWh],
-    [u.mW, u.W, u.kW, u.MW],
+    [u.mWh, u.Wh, u.kWh, u.MWh, u.GWh],
+    [u.mW, u.W, u.kW, u.MW, u.GW],
     [u.occurrence, u.koccurrence, u.Moccurrence, u.Goccurrence],
     [u.concurrent, u.kconcurrent, u.Mconcurrent, u.Gconcurrent],
     [u.byte, u.kB, u.MB, u.GB, u.TB],

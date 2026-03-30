@@ -7,7 +7,7 @@ from efootprint.abstract_modeling_classes.explainable_hourly_quantities import E
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 
 
-class TestPlotAggregationStconcurrentgy:
+class TestPlotAggregationStrategy:
     """Test that the plot_aggregation_strategy property returns correct values based on unit type."""
 
     def test_occurrence_unit_aggregates_by_sum(self):
@@ -49,6 +49,11 @@ class TestPlotAggregationStconcurrentgy:
     def test_energy_aggregates_by_sum(self):
         """Energy units (kWh) should aggregate by sum."""
         values = np.array([0.5, 1.0, 1.5], dtype=np.float32) * u.kWh
+        ehq = ExplainableHourlyQuantities(values, start_date=datetime(2024, 1, 1), label="test energy")
+        assert ehq.plot_aggregation_strategy == 'sum'
+
+    def test_energy_concurrent_aggregates_by_sum(self):
+        values = np.array([0.5, 1.0, 1.5], dtype=np.float32) * u.concurrent * u.kWh
         ehq = ExplainableHourlyQuantities(values, start_date=datetime(2024, 1, 1), label="test energy")
         assert ehq.plot_aggregation_strategy == 'sum'
 
