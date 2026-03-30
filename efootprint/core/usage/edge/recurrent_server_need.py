@@ -39,7 +39,7 @@ class RecurrentServerNeed(ModelingObject):
         self.recurrent_volume_per_edge_device = recurrent_volume_per_edge_device
         self.jobs = jobs
         
-        self.validated_recurrent_need = EmptyExplainableObject()
+        self.recurrent_need_validation = EmptyExplainableObject()
         self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
 
     @property
@@ -60,16 +60,16 @@ class RecurrentServerNeed(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["validated_recurrent_need", "unitary_hourly_volume_per_usage_pattern"] + super().calculated_attributes
+        return ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"] + super().calculated_attributes
 
-    def update_validated_recurrent_need(self):
+    def update_recurrent_need_validation(self):
         assert self.recurrent_volume_per_edge_device.unit == u.occurrence, \
             (f"RecurrentServerNeed '{self.name}' has invalid unit '{self.recurrent_volume_per_edge_device.unit}', "
              f"expected 'occurrence'.")
         min_value = np.min(self.recurrent_volume_per_edge_device.magnitude)
         if min_value < 0:
             raise NegativeServerNeedError(self.name, min_value)
-        self.validated_recurrent_need = self.recurrent_volume_per_edge_device.copy().set_label(
+        self.recurrent_need_validation = self.recurrent_volume_per_edge_device.copy().set_label(
             f"{self.name} validated recurrent need")
         
     def update_dict_element_in_unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):

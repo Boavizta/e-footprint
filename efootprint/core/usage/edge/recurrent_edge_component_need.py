@@ -37,7 +37,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         super().__init__(name)
         self.edge_component = edge_component
         self.recurrent_need = recurrent_need.set_label(f"{self.name} recurrent need")
-        self.validated_recurrent_need = EmptyExplainableObject()
+        self.recurrent_need_validation = EmptyExplainableObject()
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         self.total_hourly_need_across_usage_patterns = EmptyExplainableObject()
 
@@ -48,7 +48,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     @property
     def calculated_attributes(self):
         return [
-            "validated_recurrent_need", "unitary_hourly_need_per_usage_pattern",
+            "recurrent_need_validation", "unitary_hourly_need_per_usage_pattern",
             "total_hourly_need_across_usage_patterns"] + super().calculated_attributes
 
     @property
@@ -84,7 +84,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
         if min_value < 0 or max_value > 1:
             raise WorkloadOutOfBoundsError(workload_name, min_value, max_value)
 
-    def update_validated_recurrent_need(self):
+    def update_recurrent_need_validation(self):
         """Validate that the recurrent_need unit is compatible with the edge_component."""
         root_need_unit = self.recurrent_need.value.to_root_units().units
         expected_units = self.edge_component.compatible_root_units
@@ -96,7 +96,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             # For dimensionless needs (like workload), ensure values are between 0 and 1
             self.assert_recurrent_workload_is_between_0_and_1(self.recurrent_need, self.name)
 
-        self.validated_recurrent_need = self.recurrent_need.copy().set_label(
+        self.recurrent_need_validation = self.recurrent_need.copy().set_label(
             f"Validated recurrent need of {self.name}")
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):

@@ -187,14 +187,14 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         self.assertIn("test workload", str(context.exception))
         self.assertIn("values outside the valid range [0, 1]", str(context.exception))
 
-    def test_update_validated_recurrent_need_valid_unit(self):
-        """Test update_validated_recurrent_need with valid unit."""
+    def test_update_recurrent_need_validation_valid_unit(self):
+        """Test update_recurrent_need_validation with valid unit."""
         self.mock_edge_component.compatible_root_units = [u.cpu_core]
 
-        self.component_need.update_validated_recurrent_need()
+        self.component_need.update_recurrent_need_validation()
 
         self.assertEqual("Validated recurrent need of test component need",
-                        self.component_need.validated_recurrent_need.label)
+                        self.component_need.recurrent_need_validation.label)
 
     def test_unit_validation_works_with_different_power_of_ten(self):
         self.mock_edge_component = MagicMock(spec=EdgeComponent)
@@ -210,7 +210,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
             recurrent_need=self.recurrent_need
         )
 
-        self.component_need.update_validated_recurrent_need()
+        self.component_need.update_recurrent_need_validation()
 
     def test_unit_validation_raises_error_if_different_semantics_but_same_dimension(self):
         self.mock_edge_component = MagicMock(spec=EdgeComponent)
@@ -227,20 +227,20 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         )
 
         with self.assertRaises(InvalidComponentNeedUnitError) as context:
-            self.component_need.update_validated_recurrent_need()
+            self.component_need.update_recurrent_need_validation()
 
-    def test_update_validated_recurrent_need_invalid_unit(self):
-        """Test update_validated_recurrent_need raises error for invalid unit."""
+    def test_update_recurrent_need_validation_invalid_unit(self):
+        """Test update_recurrent_need_validation raises error for invalid unit."""
         self.mock_edge_component.compatible_root_units = [u.GB]
 
         with self.assertRaises(InvalidComponentNeedUnitError) as context:
-            self.component_need.update_validated_recurrent_need()
+            self.component_need.update_recurrent_need_validation()
 
         self.assertIn("Mock Component", str(context.exception))
         self.assertIn("incompatible unit", str(context.exception))
 
-    def test_update_validated_recurrent_need_workload_validation(self):
-        """Test update_validated_recurrent_need validates workload range for concurrent units."""
+    def test_update_recurrent_need_validation_workload_validation(self):
+        """Test update_recurrent_need_validation validates workload range for concurrent units."""
         self.mock_edge_component.compatible_root_units = [u.concurrent]
 
         valid_workload = ExplainableRecurrentQuantities(
@@ -249,13 +249,13 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         workload_component_need = RecurrentEdgeComponentNeed(
             "workload need", self.mock_edge_component, valid_workload)
 
-        workload_component_need.update_validated_recurrent_need()
+        workload_component_need.update_recurrent_need_validation()
 
         self.assertEqual("Validated recurrent need of workload need",
-                        workload_component_need.validated_recurrent_need.label)
+                        workload_component_need.recurrent_need_validation.label)
 
-    def test_update_validated_recurrent_need_workload_out_of_bounds(self):
-        """Test update_validated_recurrent_need raises error for out-of-bounds workload."""
+    def test_update_recurrent_need_validation_workload_out_of_bounds(self):
+        """Test update_recurrent_need_validation raises error for out-of-bounds workload."""
         self.mock_edge_component.compatible_root_units = [u.concurrent]
 
         invalid_workload = ExplainableRecurrentQuantities(
@@ -265,7 +265,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
             "workload need", self.mock_edge_component, invalid_workload)
 
         with self.assertRaises(WorkloadOutOfBoundsError):
-            workload_component_need.update_validated_recurrent_need()
+            workload_component_need.update_recurrent_need_validation()
 
     def test_update_unitary_hourly_need_per_usage_pattern(self):
         """Test updating unitary hourly need for all usage patterns."""

@@ -95,15 +95,15 @@ class TestRecurrentServerNeed(TestCase):
         self.assertIn(mock_pattern_1, patterns)
         self.assertIn(mock_pattern_2, patterns)
 
-    def test_update_validated_recurrent_need_valid_unit(self):
-        """Test update_validated_recurrent_need with valid occurrence unit."""
-        self.server_need.update_validated_recurrent_need()
+    def test_update_recurrent_need_validation_valid_unit(self):
+        """Test update_recurrent_need_validation with valid occurrence unit."""
+        self.server_need.update_recurrent_need_validation()
 
         self.assertEqual("test server need validated recurrent need",
-                        self.server_need.validated_recurrent_need.label)
+                        self.server_need.recurrent_need_validation.label)
 
-    def test_update_validated_recurrent_need_invalid_unit_raises_assertion(self):
-        """Test update_validated_recurrent_need raises assertion for invalid unit."""
+    def test_update_recurrent_need_validation_invalid_unit_raises_assertion(self):
+        """Test update_recurrent_need_validation raises assertion for invalid unit."""
         invalid_volume = ExplainableRecurrentQuantities(
             np.array([2.0] * 168, dtype=np.float32) * u.GB, "invalid unit volume")
 
@@ -111,13 +111,13 @@ class TestRecurrentServerNeed(TestCase):
             "invalid unit need", self.mock_edge_device, invalid_volume, [self.mock_job])
 
         with self.assertRaises(AssertionError) as context:
-            server_need.update_validated_recurrent_need()
+            server_need.update_recurrent_need_validation()
 
         self.assertIn("invalid unit", str(context.exception))
         self.assertIn("occurrence", str(context.exception))
 
-    def test_update_validated_recurrent_need_negative_values_raises_error(self):
-        """Test update_validated_recurrent_need raises NegativeServerNeedError for negative values."""
+    def test_update_recurrent_need_validation_negative_values_raises_error(self):
+        """Test update_recurrent_need_validation raises NegativeServerNeedError for negative values."""
         negative_volume = ExplainableRecurrentQuantities(
             np.array([-1.0] * 168, dtype=np.float32) * u.occurrence, "negative volume")
 
@@ -125,7 +125,7 @@ class TestRecurrentServerNeed(TestCase):
             "negative need", self.mock_edge_device, negative_volume, [self.mock_job])
 
         with self.assertRaises(NegativeServerNeedError) as context:
-            server_need.update_validated_recurrent_need()
+            server_need.update_recurrent_need_validation()
 
         self.assertIn("negative need", str(context.exception))
         self.assertIn("negative values", str(context.exception))
