@@ -148,10 +148,10 @@ def generate_big_system(
     for edge_usage_pattern_index in range(1, nb_of_edge_usage_patterns + 1):
         edge_storage = EdgeStorage(
             unique(f"Edge SSD storage {edge_usage_pattern_index}"),
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
             lifespan=SourceValue(6 * u.years),
-            storage_capacity=SourceValue(1 * u.TB),
-            base_storage_need=SourceValue(10 * u.GB),
+            storage_capacity=SourceValue(1 * u.TB_stored),
+            base_storage_need=SourceValue(10 * u.GB_stored),
         )
 
         edge_computer = EdgeComputer(

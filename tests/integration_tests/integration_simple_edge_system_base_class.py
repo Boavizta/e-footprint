@@ -52,7 +52,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
     def generate_simple_edge_system():
         # Create edge objects
         edge_storage = EdgeStorage.from_defaults(
-            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB))
+            "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB_stored))
         edge_computer = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
 
         edge_process = RecurrentEdgeProcess.from_defaults(
@@ -237,7 +237,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Testing EdgeStorage cumulative storage capacity error")
         original_storage_capacity = self.edge_storage.storage_capacity
         with self.assertRaises(InsufficientCapacityError):
-            self.edge_storage.storage_capacity = SourceValue(50 * u.GB)
+            self.edge_storage.storage_capacity = SourceValue(50 * u.GB_stored)
         self.edge_storage.storage_capacity = original_storage_capacity
 
         # Test EdgeUsageJourney - usage_span vs lifespan

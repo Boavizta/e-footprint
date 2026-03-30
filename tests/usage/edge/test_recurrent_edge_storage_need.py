@@ -135,8 +135,8 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         self.storage_need.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(pattern)
 
         np.testing.assert_array_equal(
-            self.storage_need.cumulative_unitary_storage_need_per_usage_pattern[pattern].magnitude,
-            np.array([1.0, 1.0, 3.0]),
+            self.storage_need.cumulative_unitary_storage_need_per_usage_pattern[pattern].to(u.GB_stored).magnitude,
+            np.array([1.0, 1.0, 3.0], dtype=np.float32)
         )
 
     def test_update_total_hourly_need_across_usage_patterns_uses_cumulative_per_pattern(self):

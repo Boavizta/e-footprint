@@ -14,6 +14,7 @@ UNIT_FAMILIES: list[Sequence[Unit]] = [
     [u.concurrent, u.kconcurrent, u.Mconcurrent, u.Gconcurrent],
     [u.byte, u.kB, u.MB, u.GB, u.TB],
     [u.byte_ram, u.kB_ram, u.MB_ram, u.GB_ram, u.TB_ram],
+    [u.byte_stored, u.kB_stored, u.MB_stored, u.GB_stored, u.TB_stored],
 ]
 
 

@@ -23,11 +23,11 @@ if TYPE_CHECKING:
 
 class Storage(InfraHardware):
     default_values = {
-        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
+        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
-        "storage_capacity": SourceValue(1 * u.TB),
+        "storage_capacity": SourceValue(1 * u.TB_stored),
         "data_replication_factor": SourceValue(3 * u.dimensionless),
-        "base_storage_need": SourceValue(0 * u.TB),
+        "base_storage_need": SourceValue(0 * u.TB_stored),
         "data_storage_duration": SourceValue(5 * u.year)
     }
 
@@ -35,11 +35,11 @@ class Storage(InfraHardware):
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                160 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "data_replication_factor": SourceValue(3 * u.dimensionless),
-            "base_storage_need": SourceValue(0 * u.TB),
+            "base_storage_need": SourceValue(0 * u.TB_stored),
             "data_storage_duration": SourceValue(5 * u.year)
         }
         output_args.update(kwargs)
@@ -49,11 +49,11 @@ class Storage(InfraHardware):
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                20 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                20 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "data_replication_factor": SourceValue(3 * u.dimensionless),
-            "base_storage_need": SourceValue(0 * u.TB),
+            "base_storage_need": SourceValue(0 * u.TB_stored),
             "data_storage_duration": SourceValue(5 * u.year)
         }
         output_args.update(kwargs)
@@ -133,13 +133,12 @@ class Storage(InfraHardware):
                 left_parent=job_storage_rate, label=f"Cumulative storage for {job.name} in {self.name}")
             return
         rate_array = np.copy(job_storage_rate.value.magnitude)
-        rate_units = job_storage_rate.value.units
         storage_duration_in_hours = math.ceil(copy(self.data_storage_duration.to(u.hour)).magnitude)
         auto_dumps_array = -np.pad(
             job_storage_rate.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
         )[:len(rate_array)]
         delta_array = rate_array + auto_dumps_array.magnitude
-        cumulative_quantity = Quantity(np.cumsum(delta_array, dtype=np.float32), rate_units)
+        cumulative_quantity = Quantity(np.cumsum(delta_array, dtype=np.float32), u.TB_stored)
         self.full_cumulative_storage_need_per_job[job] = ExplainableHourlyQuantities(
             cumulative_quantity, start_date=job_storage_rate.start_date,
             label=f"Cumulative storage for {job.name} in {self.name}",
@@ -204,11 +203,11 @@ class Storage(InfraHardware):
         self.instances_energy = EmptyExplainableObject()
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
-        unused_storage = (self.nb_of_instances * self.storage_capacity - self.full_cumulative_storage_need).to(u.GB)
+        unused_storage = (self.nb_of_instances * self.storage_capacity - self.full_cumulative_storage_need).to(u.GB_stored)
         shared_storage_per_job = (
             (unused_storage + self.base_storage_need)
             / ExplainableQuantity(len(self.jobs) * u.dimensionless, "Number of jobs")
-        ).to(u.GB)
+        ).to(u.GB_stored)
         self.fabrication_impact_repartition_weights[job] = (
             self.full_cumulative_storage_need_per_job[job] + shared_storage_per_job
         ).set_label(f"{job.name} fabrication weight in {self.name} impact repartition")

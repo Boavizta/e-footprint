@@ -47,12 +47,12 @@ logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)}
 
 storage = Storage(
     "storage",
-    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    storage_capacity=SourceValue(1 * u.TB, source=None),
+    storage_capacity=SourceValue(1 * u.TB_stored, source=None),
     data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
     data_storage_duration=SourceValue(2 * u.year, source=None),
-    base_storage_need=SourceValue(0 * u.TB, source=None)
+    base_storage_need=SourceValue(0 * u.TB_stored, source=None)
 )
 
 autoscaling_server = Server(
@@ -130,10 +130,10 @@ usage_pattern = UsagePattern(
 
 edge_storage = EdgeStorage(
     "edge SSD storage",
-    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    storage_capacity=SourceValue(256 * u.GB, source=None),
-    base_storage_need=SourceValue(10 * u.GB, source=None),
+    storage_capacity=SourceValue(256 * u.GB_stored, source=None),
+    base_storage_need=SourceValue(10 * u.GB_stored, source=None),
 )
 
 edge_computer = EdgeComputer(
@@ -197,10 +197,10 @@ cpu_component = EdgeCPUComponent(
 
 storage_component = EdgeStorage(
     "edge storage component",
-    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB, source=None),
+    carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    storage_capacity=SourceValue(512 * u.GB, source=None),
-    base_storage_need=SourceValue(20 * u.GB, source=None),
+    storage_capacity=SourceValue(512 * u.GB_stored, source=None),
+    base_storage_need=SourceValue(20 * u.GB_stored, source=None),
 )
 
 edge_device = EdgeDevice(

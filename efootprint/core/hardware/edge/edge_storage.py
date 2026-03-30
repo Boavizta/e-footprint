@@ -30,20 +30,20 @@ class NegativeCumulativeStorageNeedError(Exception):
 class EdgeStorage(EdgeComponent):
     compatible_root_units = [u.bit]
     default_values = {
-        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB),
+        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
-        "storage_capacity": SourceValue(1 * u.TB),
-        "base_storage_need": SourceValue(30 * u.GB),
+        "storage_capacity": SourceValue(1 * u.TB_stored),
+        "base_storage_need": SourceValue(30 * u.GB_stored),
     }
 
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                160 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                160 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "base_storage_need": SourceValue(0 * u.TB),
+            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "base_storage_need": SourceValue(0 * u.TB_stored),
         }
         output_args.update(kwargs)
         return cls(name, **output_args)
@@ -52,10 +52,10 @@ class EdgeStorage(EdgeComponent):
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
             "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
-                20 * u.kg / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+                20 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            "base_storage_need": SourceValue(0 * u.TB),
+            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "base_storage_need": SourceValue(0 * u.TB_stored),
         }
         output_args.update(kwargs)
         return cls(name, **output_args)

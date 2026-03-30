@@ -59,7 +59,9 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
                 left_parent=storage_rate, label=f"{self.name} cumulative unitary storage need for {usage_pattern.name}")
             return
 
-        cumulative_quantity = Quantity(np.cumsum(storage_rate.magnitude, dtype=np.float32), storage_rate.unit)
+        from efootprint.constants.units import u
+        rate_in_tb = storage_rate.value.to(u.TB)
+        cumulative_quantity = Quantity(np.cumsum(rate_in_tb.magnitude, dtype=np.float32), u.TB_stored)
         self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = ExplainableHourlyQuantities(
             cumulative_quantity,
             start_date=storage_rate.start_date,

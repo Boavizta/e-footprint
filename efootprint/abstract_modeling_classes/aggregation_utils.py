@@ -17,7 +17,7 @@ def get_plot_aggregation_strategy(unit: Unit) -> str:
     unit_str = str(unit)
 
     # Rate and resource allocation units → mean
-    if 'concurrent' in unit_str or '_ram' in unit_str or 'cpu_core' in unit_str or 'gpu' in unit_str:
+    if 'concurrent' in unit_str or '_ram' in unit_str or '_stored' in unit_str or 'cpu_core' in unit_str or 'gpu' in unit_str:
         return 'mean'
 
     # Default: sum for events, energy, mass, data transfer

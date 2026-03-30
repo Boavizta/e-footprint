@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "17.1.0",
+    "efootprint_version": "18.0.0",
     "System": {
         "uuid-system-1": {
             "name": "system 1",
@@ -318,7 +318,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 160.0,
-                "unit": "kilogram / terabyte",
+                "unit": "kilogram / terabyte_stored",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -345,7 +345,7 @@
             "storage_capacity": {
                 "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
                 "value": 1,
-                "unit": "terabyte",
+                "unit": "terabyte_stored",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -372,7 +372,7 @@
             "base_storage_need": {
                 "label": "Default SSD storage initial storage need from hypothesis",
                 "value": 1,
-                "unit": "terabyte",
+                "unit": "terabyte_stored",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -389,7 +389,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from Dirty secret of SSDs: embodied carbon",
                 "value": 160.0,
-                "unit": "kilogram / terabyte",
+                "unit": "kilogram / terabyte_stored",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -434,7 +434,7 @@
             "storage_capacity": {
                 "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
                 "value": 1,
-                "unit": "terabyte",
+                "unit": "terabyte_stored",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
                     "link": "https://arxiv.org/pdf/2207.10793.pdf"
@@ -461,7 +461,7 @@
             "base_storage_need": {
                 "label": "Default SSD storage initial storage need from hypothesis",
                 "value": 1,
-                "unit": "terabyte",
+                "unit": "terabyte_stored",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

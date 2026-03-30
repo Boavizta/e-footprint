@@ -160,7 +160,7 @@ class BoaviztaStorageFromConfig(Storage):
             "idle_power": SourceValue(0 * u.W),
             "data_replication_factor": SourceValue(1 * u.dimensionless),
             "data_storage_duration": SourceValue(1 * u.year),
-            "base_storage_need": SourceValue(0 * u.GB)
+            "base_storage_need": SourceValue(0 * u.GB_stored)
         }
     # TODO: create StorageBase class and introduce compatible_storages in servers
 

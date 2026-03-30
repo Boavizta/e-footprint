@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "17.1.0",
+    "efootprint_version": "18.0.0",
     "System": {
         "Edge-system": {
             "name": "Edge system",
@@ -263,7 +263,7 @@
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
-                "unit": "kilogram / terabyte",
+                "unit": "kilogram / terabyte_stored",
                 "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -272,7 +272,7 @@
             },
             "storage_capacity": {
                 "value": 1.0,
-                "unit": "terabyte",
+                "unit": "terabyte_stored",
                 "label": "Storage capacity of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -281,7 +281,7 @@
             },
             "base_storage_need": {
                 "value": 100.0,
-                "unit": "gigabyte",
+                "unit": "gigabyte_stored",
                 "label": "Edge SSD storage initial storage need from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

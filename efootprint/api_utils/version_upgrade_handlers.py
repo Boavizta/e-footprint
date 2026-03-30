@@ -353,7 +353,42 @@ def upgrade_version_16_to_17(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def _append_stored_to_byte_unit(unit_str):
+    """Convert a byte-based unit string to its _stored equivalent."""
+    if '_stored' in unit_str or '_ram' in unit_str:
+        return unit_str
+    if '/' in unit_str:
+        parts = unit_str.split('/')
+        parts[-1] = _append_stored_to_byte_unit(parts[-1].strip())
+        return ' / '.join(parts)
+    if unit_str.endswith('byte'):
+        return unit_str + '_stored'
+    if unit_str.endswith('B'):
+        return unit_str + '_stored'
+    return unit_str
+
+
 def upgrade_version_17_to_18(system_dict, efootprint_classes_dict=None):
+    """Upgrade from version 17 to 18: migrate storage units from byte to byte_stored."""
+    log_upgrade = False
+    storage_scalar_attrs = ["base_storage_need", "storage_capacity", "carbon_footprint_fabrication_per_storage_capacity"]
+    for storage_class in ["Storage", "EdgeStorage", "BoaviztaStorageFromConfig"]:
+        if storage_class in system_dict:
+            for obj_id, obj_dict in system_dict[storage_class].items():
+                for attr in storage_scalar_attrs:
+                    if attr in obj_dict and isinstance(obj_dict[attr], dict) and 'unit' in obj_dict[attr]:
+                        old_unit = obj_dict[attr]['unit']
+                        new_unit = _append_stored_to_byte_unit(old_unit)
+                        if new_unit != old_unit:
+                            obj_dict[attr]['unit'] = new_unit
+                            log_upgrade = True
+
+    if log_upgrade:
+        logger.info("Upgraded system dict from version 17 to 18: migrated storage units from byte to byte_stored")
+    return system_dict
+
+
+def upgrade_version_18_to_19(system_dict, efootprint_classes_dict=None):
     # TODO: for next version upgrade logic, add in json to system tests a check that ensures that when saving again
     # the same system dict is obtained (upgraded dict == saved dict after upgrade)
     return system_dict
@@ -368,4 +403,5 @@ VERSION_UPGRADE_HANDLERS = {
     14: upgrade_version_14_to_15,
     15: upgrade_version_15_to_16,
     16: upgrade_version_16_to_17,
+    17: upgrade_version_17_to_18,
 }

@@ -4,6 +4,7 @@ These mappings define which attributes should use which semantic units:
 - occurrence: discrete events that are aggregated by sum
 - concurrent: concurrent counts that are aggregated by mean
 - byte_ram: RAM allocation that is aggregated by mean (vs byte for data transfer)
+- byte_stored: storage stock that is aggregated by mean (vs byte for data transfer)
 """
 
 # Define timeseries attribute mappings: (class_name, attribute_name) -> new_unit_str

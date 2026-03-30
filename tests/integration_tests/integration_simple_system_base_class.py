@@ -134,7 +134,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         old_initial_footprint = self.initial_footprint
         self.initial_footprint = system.total_footprint
         self._test_input_change(
-            storage.base_storage_need, SourceValue(5000 * u.TB), storage, "base_storage_need")
+            storage.base_storage_need, SourceValue(5000 * u.TB_stored), storage, "base_storage_need")
         storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless)
         self.assertEqual(old_initial_footprint, system.total_footprint)
         self.initial_footprint = old_initial_footprint
@@ -198,7 +198,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         original_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
         # Decrease storage capacity to force required instances to be > 1
         initial_storage_capacity = self.storage.storage_capacity
-        self.storage.storage_capacity = SourceValue(10 * u.GB)
+        self.storage.storage_capacity = SourceValue(10 * u.GB_stored)
         with self.assertRaises(InsufficientCapacityError):
             self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
         self.storage.fixed_nb_of_instances = original_storage_fixed_nb_of_instances
