@@ -42,17 +42,23 @@ class TestUsagePattern(unittest.TestCase):
         self.assertEqual([self.job1, self.job2], self.usage_pattern.jobs)
 
     def test_update_utc_hourly_usage_journey_starts_converts_start_date(self):
-        """Test UTC conversion uses country timezone for naive start dates."""
+        """Test UTC conversion keeps UTC midnight anchor and shifts data instead.
+
+        Paris is UTC+1 in January (no DST). Local midnight = UTC 23:00 previous day,
+        so UTC midnight = local 01:00. The first local element (00:00-01:00) precedes
+        UTC midnight and is rotated to the end of the shifted series; start_date remains
+        2025-01-01 00:00 UTC.
+        """
         self.usage_pattern.hourly_usage_journey_starts = create_source_hourly_values_from_list(
             [1, 2, 3], start_date=datetime(2025, 1, 1, 0, 0, 0),
         )
 
         self.usage_pattern.update_utc_hourly_usage_journey_starts()
 
-        self.assertEqual([1.0, 2.0, 3.0], self.usage_pattern.utc_hourly_usage_journey_starts.value_as_float_list)
+        self.assertEqual([2.0, 3.0, 1.0], self.usage_pattern.utc_hourly_usage_journey_starts.value_as_float_list)
         self.assertEqual(pytz.utc, self.usage_pattern.utc_hourly_usage_journey_starts.start_date.tzinfo)
         self.assertEqual(
-            pytz.utc.localize(datetime(2024, 12, 31, 23, 0, 0)),
+            pytz.utc.localize(datetime(2025, 1, 1, 0, 0, 0)),
             self.usage_pattern.utc_hourly_usage_journey_starts.start_date,
         )
 

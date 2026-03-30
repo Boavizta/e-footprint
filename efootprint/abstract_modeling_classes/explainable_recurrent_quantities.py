@@ -1,5 +1,7 @@
+from datetime import timezone
 from typing import TYPE_CHECKING
 
+import pytz
 from pint import Unit, Quantity
 import numpy as np
 
@@ -133,15 +135,17 @@ class ExplainableRecurrentQuantities(ExplainableObject):
             local_timezone: "ExplainableTimezone"):
         """
         Generate an ExplainableHourlyQuantities over the timespan of the input ExplainableHourlyQuantities.
-        
-        The recurring values represent a canonical local timezone week (7 * 24 = 168 values).
-        The timespan_hourly_quantities start_date is expressed in the local timezone but its start_date is not timezone aware.
-        The method aligns the canonical week pattern with the local timespan and outputs in UTC.
-        
+
+        The recurring values represent a canonical local-timezone week (7 * 24 = 168 values, index 0 = local Monday 00:00).
+        timespan_hourly_quantities.start_date is always UTC-midnight-calibrated (produced by convert_to_utc).
+        We strip its timezone to get a naive UTC midnight, use the UTC weekday as the index into the canonical
+        week, then call convert_to_utc which shifts the data array by the UTC offset so the result is correctly
+        aligned with UTC midnight despite the initial UTC-weekday proxy.
+
         Args:
-            timespan_hourly_quantities: ExplainableHourlyQuantities that defines the timespan and start date (local timezone)
+            timespan_hourly_quantities: ExplainableHourlyQuantities with UTC-midnight start_date
             local_timezone: ExplainableTimezone that defines the local timezone
-            
+
         Returns:
             ExplainableHourlyQuantities with values generated from the recurring pattern (UTC)
         """
@@ -153,15 +157,15 @@ class ExplainableRecurrentQuantities(ExplainableObject):
                 f"ExplainableRecurrentQuantities must have exactly 168 values (7*24 hours), got {len(self.value)}"
             )
 
-        if timespan_hourly_quantities.start_date.tzinfo is None:
-            start_date_local = local_timezone.value.localize(timespan_hourly_quantities.start_date)
-        else:
-            start_date_local = timespan_hourly_quantities.start_date.astimezone(local_timezone.value)
+        # Strip any UTC tzinfo — start_date is always UTC midnight because it has been through convent_to_utc
+        # Treat it as naive for convert_to_utc.
+        assert timespan_hourly_quantities.start_date.tzinfo in [pytz.utc, timezone.utc]
+        naive_utc_start = timespan_hourly_quantities.start_date.replace(tzinfo=None)
         timespan_length = len(timespan_hourly_quantities.value)
-        start_offset_in_local_week = start_date_local.weekday() * 24 + start_date_local.hour
+        start_offset_in_week = naive_utc_start.weekday() * 24 + naive_utc_start.hour
 
-        # Vectorized index mapping into canonical local week (168 hours)
-        indices = (start_offset_in_local_week + np.arange(timespan_length)) % 168
+        # Vectorized index mapping into canonical week (168 hours), aligned with UTC weekday
+        indices = (start_offset_in_week + np.arange(timespan_length)) % 168
 
         # Vectorized extraction of values
         week_values = self.value.magnitude  # is numpy array
@@ -171,7 +175,7 @@ class ExplainableRecurrentQuantities(ExplainableObject):
 
         local_timezone_expanded = ExplainableHourlyQuantities(
             result_quantity,
-            start_date=start_date_local,
+            start_date=naive_utc_start,
             left_parent=self,
             right_parent=timespan_hourly_quantities,
             operator="expanded over timespan",

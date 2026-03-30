@@ -282,8 +282,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.paris_timezone = ExplainableTimezone(pytz.timezone('Europe/Paris'), "Paris")
 
     def test_generate_over_one_week_monday_start_and_calculation_dependencies_are_tracked(self):
-        # Start on Monday 2025-01-06 00:00:00 local time (which is a Monday)
-        start_date_local = datetime(2025, 1, 6, 0, 0, 0)  # naive datetime in local timezone
+        # Start on Monday 2025-01-06 00:00:00 UTC (as produced by convert_to_utc)
+        start_date_local = datetime(2025, 1, 6, 0, 0, 0, tzinfo=pytz.utc)
         timespan_values = Quantity(np.ones(168, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -302,8 +302,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.assertEqual(result.label, "Weekly Pattern expanded over test timespan timespan (UTC)")
 
     def test_generate_over_one_week_wednesday_start(self):
-        # Start on Wednesday 2025-01-08 00:00:00 local time (which is a Wednesday)
-        start_date_local = datetime(2025, 1, 8, 0, 0, 0)  # Wednesday = weekday 2
+        # Start on Wednesday 2025-01-08 00:00:00 UTC (as produced by convert_to_utc)
+        start_date_local = datetime(2025, 1, 8, 0, 0, 0, tzinfo=pytz.utc)  # Wednesday = weekday 2
         timespan_values = Quantity(np.ones(168, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -320,8 +320,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.assertEqual(result.start_date, datetime(2025, 1, 8, 0, 0, 0, tzinfo=timezone.utc))
 
     def test_generate_over_partial_week_with_hour_offset(self):
-        # Start on Tuesday 2025-01-07 15:00:00 local time (Tuesday at 3 PM)
-        start_date_local = datetime(2025, 1, 7, 15, 0, 0)  # Tuesday=1, hour=15
+        # Start on Tuesday 2025-01-07 15:00:00 UTC (non-midnight, UTC timezone so no shift)
+        start_date_local = datetime(2025, 1, 7, 15, 0, 0, tzinfo=pytz.utc)  # Tuesday=1, hour=15
         timespan_values = Quantity(np.ones(25, dtype=np.float32), u.occurrence)  # 25 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -339,8 +339,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.assertEqual(len(result.value), 25)
 
     def test_generate_over_multiple_weeks(self):
-        # Start on Monday and span 2.5 weeks (420 hours)
-        start_date_local = datetime(2025, 1, 6, 0, 0, 0)
+        # Start on Monday 2025-01-06 UTC and span 2.5 weeks (420 hours)
+        start_date_local = datetime(2025, 1, 6, 0, 0, 0, tzinfo=pytz.utc)
         timespan_values = Quantity(np.ones(420, dtype=np.float32), u.occurrence)  # 2.5 weeks
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -357,8 +357,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         # Create pattern with wrong length (not 168)
         short_pattern = ExplainableRecurrentQuantities(
             Quantity(np.array([1, 2, 3], dtype=np.float32), u.W), "Short")
-        
-        start_date_local = datetime(2025, 1, 6, 0, 0, 0)
+
+        start_date_local = datetime(2025, 1, 6, 0, 0, 0, tzinfo=pytz.utc)
         timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -368,8 +368,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.assertIn("must have exactly 168 values", str(cm.exception))
 
     def test_edge_case_single_hour_timespan(self):
-        # Test with single hour timespan
-        start_date_local = datetime(2025, 1, 7, 10, 0, 0)  # Tuesday 10 AM
+        # Test with single hour timespan; UTC timezone so no shift
+        start_date_local = datetime(2025, 1, 7, 10, 0, 0, tzinfo=pytz.utc)  # Tuesday 10 AM UTC
         timespan_values = Quantity(np.ones(1, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -384,8 +384,8 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         self.assertEqual(result.magnitude[0], expected_value)
 
     def test_cross_week_boundary_alignment(self):
-        # Start near end of week and cross into next week
-        start_date_local = datetime(2025, 1, 12, 22, 0, 0)  # Sunday 10 PM
+        # Start near end of week and cross into next week; UTC timezone so no shift
+        start_date_local = datetime(2025, 1, 12, 22, 0, 0, tzinfo=pytz.utc)  # Sunday 10 PM UTC
         timespan_values = Quantity(np.ones(10, dtype=np.float32), u.occurrence)  # 10 hours
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
         
@@ -401,45 +401,41 @@ class TestGenerateExplainableHourlyQuantityOverTimespan(unittest.TestCase):
         np.testing.assert_array_equal(result.magnitude, expected_values)
 
     def test_with_different_timezone_alignment(self):
-        # Test with Paris timezone (UTC+1 in winter)
-        # Start on Monday 2025-01-06 02:00:00 Paris time (which is 01:00:00 UTC)
-        start_date_local = datetime(2025, 1, 6, 2, 0, 0)  # 2 AM Paris time
+        # Test with Paris timezone (UTC+1 in winter).
+        # timespan starts at UTC midnight Monday 2025-01-06 (as produced by convert_to_utc).
+        # The canonical week is indexed by UTC weekday. For Monday UTC midnight: offset=0.
+        # convert_to_utc(Paris, +1h) shifts left by 1 hour and rotates the dropped first value to the end.
+        start_date_utc_midnight = datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc)  # Monday UTC midnight
         timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
-        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_local, "test timespan")
-        
+        timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_utc_midnight, "test timespan")
+
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
             timespan_hourly, self.paris_timezone)
-        
-        # Should start from Monday hour 2 in the local week pattern (index = 0*24 + 2 = 2)
-        expected_start_index = 0 * 24 + 2  # Monday at 2 AM
-        expected_values = []
-        for i in range(24):
-            week_index = (expected_start_index + i) % 168
-            expected_values.append(self.weekly_recurring_pattern.magnitude[week_index])
-        
-        np.testing.assert_array_equal(result.magnitude, expected_values)
-        # Output should be in UTC (1 AM UTC = 2 AM Paris time)
-        self.assertEqual(result.start_date, datetime(2025, 1, 6, 1, 0, 0, tzinfo=timezone.utc))
 
-    def test_with_timezone_aware_start_date(self):
-        # Start on Monday 2025-01-06 01:00:00 UTC time (which is 02:00:00 Paris time)
-        start_date_utc_aware = datetime(2025, 1, 6, 1, 0, 0, tzinfo=timezone.utc)
+        # naive_utc_start = Monday 00:00, offset=0 → indices [0,1,...,23], raw = pattern[0:24]
+        # convert_to_utc(Paris +1h): pattern[1:24], then pattern[0] at the end
+        expected_values = [self.weekly_recurring_pattern.magnitude[i] for i in range(1, 24)] + [
+            self.weekly_recurring_pattern.magnitude[0]
+        ]
+        np.testing.assert_array_equal(result.magnitude, expected_values)
+        self.assertEqual(result.start_date, datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc))
+
+    def test_with_timezone_aware_utc_midnight_start_date(self):
+        # UTC-midnight-aware start_date (as produced by convert_to_utc) behaves identically to naive midnight.
+        # Paris is UTC+1 in January → shift left by 1 hour and rotate the first value to the end.
+        start_date_utc_aware = datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc)  # Monday UTC midnight, tz-aware
         timespan_values = Quantity(np.ones(24, dtype=np.float32), u.occurrence)
         timespan_hourly = ExplainableHourlyQuantities(timespan_values, start_date_utc_aware, "test timespan")
 
         result = self.weekly_recurring_pattern.generate_hourly_quantities_over_timespan(
             timespan_hourly, self.paris_timezone)
 
-        # Should start from Monday hour 2 in the local week pattern (index = 0*24 + 2 = 2)
-        expected_start_index = 0 * 24 + 2  # Monday at 2 AM
-        expected_values = []
-        for i in range(24):
-            week_index = (expected_start_index + i) % 168
-            expected_values.append(self.weekly_recurring_pattern.magnitude[week_index])
-
+        # Same expectation as test_with_different_timezone_alignment
+        expected_values = [self.weekly_recurring_pattern.magnitude[i] for i in range(1, 24)] + [
+            self.weekly_recurring_pattern.magnitude[0]
+        ]
         np.testing.assert_array_equal(result.magnitude, expected_values)
-        # Output should be in UTC (1 AM UTC = 2 AM Paris time)
-        self.assertEqual(result.start_date, datetime(2025, 1, 6, 1, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(result.start_date, datetime(2025, 1, 6, 0, 0, 0, tzinfo=timezone.utc))
 
 
 if __name__ == "__main__":

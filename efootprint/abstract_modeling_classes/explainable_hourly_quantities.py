@@ -192,12 +192,29 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def convert_to_utc(self, local_timezone: ExplainableTimezone):
         if self.start_date.tzinfo is None:
-            localized_dt = local_timezone.value.localize(self.start_date)
+            # Treat naive start_date as UTC midnight. Local usage dynamics are expressed in local clock time,
+            # so shift the data array instead of shifting the anchor, preserving the UTC-midnight invariant.
+            utc_offset_seconds = local_timezone.value.localize(self.start_date).utcoffset().total_seconds()
+            offset_hours = round(utc_offset_seconds / 3600)
+            if offset_hours > 0:
+                shifted_value = Quantity(np.roll(self.value.magnitude, -offset_hours), self.value.units)
+            elif offset_hours < 0:
+                zeros = np.zeros(abs(offset_hours), dtype=np.float32)
+                shifted_value = Quantity(np.concatenate([zeros, self.value.magnitude]), self.value.units)
+            else:
+                shifted_value = self.value
+            utc_start = self.start_date.replace(tzinfo=pytz.utc)
         else:
-            localized_dt = self.start_date
+            assert self.start_date.tzinfo == pytz.utc, (
+                f"start_date tzinfo is expected to be UTC when already timezone-aware, "
+                f"got {self.start_date.tzinfo}. Timezone handling is managed by e-footprint; "
+                f"do not set a non-UTC timezone on ExplainableHourlyQuantities.start_date directly."
+            )
+            shifted_value = self.value
+            utc_start = self.start_date
 
         return ExplainableHourlyQuantities(
-            self.value, start_date=localized_dt.astimezone(pytz.utc),
+            shifted_value, start_date=utc_start,
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
     def sum(self):

@@ -225,11 +225,11 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual("-", subtraction_result.operator)
 
     def test_convert_to_utc(self):
-        start_date = datetime(2023, 10, 1)
-        # Artificially fix datetime to avoid test crashing because of annual time changes.
-        mock_data = [1] * 12
+        # Use a January date to avoid DST ambiguity: Berlin=UTC+1, New York=UTC-5.
+        start_date = datetime(2023, 1, 15)
+        data = list(range(30))  # 30 distinct values to make shift direction unambiguous
         usage = ExplainableHourlyQuantities(
-            Quantity(np.array(mock_data), u.occurrence), start_date, "usage")
+            Quantity(np.array(data, dtype=np.float32), u.occurrence), start_date, "usage")
 
         local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'), "local timezone ahead UTC")
         local_tz_behind_utc = ExplainableObject(pytz.timezone('America/New_York'), "local timezone behind UTC")
@@ -237,18 +237,36 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         converted_ahead_utc = usage.convert_to_utc(local_tz_ahead_utc)
         converted_behind_utc = usage.convert_to_utc(local_tz_behind_utc)
 
-        # Berlin is 2 hours ahead, converting to UTC results in the array shifted by 2 positions to the left
-        self.assertEqual(mock_data, converted_ahead_utc.value_as_float_list)
-        self.assertEqual(mock_data, converted_behind_utc.value_as_float_list)
+        # start_date must remain at UTC midnight regardless of timezone
+        self.assertEqual(start_date.replace(tzinfo=pytz.utc), converted_ahead_utc.start_date)
+        self.assertEqual(start_date.replace(tzinfo=pytz.utc), converted_behind_utc.start_date)
 
-        self.assertEqual(str(start_date - timedelta(hours=2)), str(converted_ahead_utc.start_date)[:19])
-        self.assertEqual(str(start_date + timedelta(hours=4)), str(converted_behind_utc.start_date)[:19])
+        # Berlin is UTC+1: local midnight = UTC 23:00 previous day → UTC midnight = local 01:00.
+        # Shift left by 1 hour and rotate the dropped initial value to the end to conserve total volume.
+        self.assertEqual([float(v) for v in data[1:]] + [0.0], converted_ahead_utc.value_as_float_list)
 
-        # Check other attributes of converted ExplainableHourlyUsage
+        # New York is UTC-5: local midnight = UTC 05:00 → UTC midnight precedes local midnight by 5 hours.
+        # Prepend 5 zeros to cover the UTC 00:00-05:00 gap.
+        self.assertEqual([0.0] * 5 + [float(v) for v in data], converted_behind_utc.value_as_float_list)
+
+        # Check lineage attributes
         self.assertEqual(None, converted_ahead_utc.label)
         self.assertEqual(usage, converted_ahead_utc.left_parent)
         self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_parent)
         self.assertEqual("converted to UTC from", converted_ahead_utc.operator)
+
+    def test_convert_to_utc_non_integer_offset(self):
+        # Afghanistan is UTC+4:30 (4.5 h). round(4.5) = 4 (banker's rounding).
+        start_date = datetime(2023, 1, 15)
+        data = list(range(30))
+        usage = ExplainableHourlyQuantities(
+            Quantity(np.array(data, dtype=np.float32), u.occurrence), start_date, "usage")
+
+        local_tz_afghanistan = ExplainableObject(pytz.timezone('Asia/Kabul'), "Afghanistan (UTC+4:30)")
+        converted = usage.convert_to_utc(local_tz_afghanistan)
+
+        self.assertEqual(start_date.replace(tzinfo=pytz.utc), converted.start_date)
+        self.assertEqual([float(v) for v in data[4:]] + [0.0, 1.0, 2.0, 3.0], converted.value_as_float_list)
 
     def test_sum(self):
         summed = self.hourly_usage1.sum()

@@ -270,7 +270,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
     def test_update_unitary_hourly_need_per_usage_pattern(self):
         """Test updating unitary hourly need for all usage patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
-        start_date_1 = datetime(2023, 1, 1, 0, 0, 0)
+        start_date_1 = datetime(2023, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         hourly_data_1 = np.array([5.0] * 10000) * u.concurrent
         mock_nb_parallel_1 = ExplainableHourlyQuantities(hourly_data_1, start_date_1, "test parallel journeys 1")
 
@@ -280,7 +280,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
 
-        start_date_2 = datetime(2023, 1, 8, 0, 0, 0)
+        start_date_2 = datetime(2023, 1, 8, 0, 0, 0, tzinfo=pytz.utc)
         hourly_data_2 = np.array([10.0] * 1000) * u.concurrent
         mock_nb_parallel_2 = ExplainableHourlyQuantities(hourly_data_2, start_date_2, "test parallel journeys 2")
         mock_pattern_2.id = "pattern_2"
@@ -315,6 +315,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         self.assertIn(mock_pattern_2, self.component_need.unitary_hourly_need_per_usage_pattern)
         result_1 = self.component_need.unitary_hourly_need_per_usage_pattern[mock_pattern_1]
         self.assertIsInstance(result_1, ExplainableHourlyQuantities)
+        # Paris is UTC+1 in January → convert_to_utc keeps the same length and rotates the first value to the end
         self.assertEqual(len(hourly_data_1), len(result_1.value))
         result_2 = self.component_need.unitary_hourly_need_per_usage_pattern[mock_pattern_2]
         self.assertIsInstance(result_2, ExplainableHourlyQuantities)
@@ -326,8 +327,10 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         mock_pattern.country = MagicMock(timezone=SourceTimezone(pytz.timezone("Europe/Paris")))
         mock_journey = create_mod_obj_mock(EdgeUsageJourney, name="Journey", edge_usage_patterns=[mock_pattern])
         mock_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
-            mock_pattern: ExplainableHourlyQuantities(np.array([1.0, 1.0], dtype=np.float32) * u.concurrent,
-                                                      datetime(2023, 1, 2, 0, 0, 0), "parallel journeys")}
+            mock_pattern: ExplainableHourlyQuantities(
+                np.array([1.0, 1.0], dtype=np.float32) * u.concurrent,
+                datetime(2023, 1, 2, 0, 0, 0, tzinfo=pytz.utc),
+                "parallel journeys")}
         mock_pattern.edge_usage_journey = mock_journey
 
         mock_function = create_mod_obj_mock(EdgeFunction, name="Function", edge_usage_journeys=[mock_journey])

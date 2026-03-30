@@ -133,7 +133,7 @@ class TestRecurrentServerNeed(TestCase):
     def test_update_unitary_hourly_volume_per_usage_pattern(self):
         """Test updating unitary hourly volume for all usage patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
-        start_date_1 = datetime(2023, 1, 1, 0, 0, 0)
+        start_date_1 = datetime(2023, 1, 1, 0, 0, 0, tzinfo=pytz.utc)
         hourly_data_1 = np.array([5.0] * 1000) * u.concurrent
         mock_nb_parallel = ExplainableHourlyQuantities(hourly_data_1, start_date_1, "test parallel journeys 1")
         mock_country_1 = MagicMock()
@@ -157,6 +157,7 @@ class TestRecurrentServerNeed(TestCase):
         self.assertIn(mock_pattern_1, self.server_need.unitary_hourly_volume_per_usage_pattern)
         result = self.server_need.unitary_hourly_volume_per_usage_pattern[mock_pattern_1]
         self.assertIsInstance(result, ExplainableHourlyQuantities)
+        # Paris is UTC+1 in January → convert_to_utc keeps the same length and rotates the first value to the end
         self.assertEqual(len(hourly_data_1), len(result.value))
 
 
