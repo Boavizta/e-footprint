@@ -21,7 +21,7 @@ def _get_unit_family(quantity: Quantity) -> Sequence[Unit] | None:
     if quantity.units == u.dimensionless:
         return None
     for family in UNIT_FAMILIES:
-        if quantity.is_compatible_with(family[0]):
+        if any(quantity.units == unit for unit in family):
             return family
     return None
 

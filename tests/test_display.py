@@ -35,6 +35,13 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(4.5 * u.MWh, format_quantity_for_display(4500 * u.kWh))
         self.assertEqual(1.23 * u.kg, format_quantity_for_display(1.2345 * u.kg))
 
+    def test_format_quantity_for_display_keeps_special_unit_types(self):
+        """Test display formatting keeps occurrence, concurrent, byte, and byte_ram unit families."""
+        self.assertEqual(2.0 * u.koccurrence, format_quantity_for_display(2000 * u.occurrence))
+        self.assertEqual(2.0 * u.kconcurrent, format_quantity_for_display(2000 * u.concurrent))
+        self.assertEqual(2.0 * u.kB, format_quantity_for_display(2000 * u.byte))
+        self.assertEqual(2.0 * u.kB_ram, format_quantity_for_display(2000 * u.byte_ram))
+
     def test_format_quantity_for_display_for_arrays(self):
         """Test display formatting converts and rounds array quantities."""
         formatted = format_quantity_for_display(np.array([1000, 2000, 3000], dtype=np.float32) * u.kg)
