@@ -467,7 +467,40 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return left_explanation, self.operator, right_explanation
 
+    def simplify_formula_tuple_for_display(self, tuple_element: object) -> object:
+        from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+
+        if isinstance(tuple_element, (ExplainableObject, str)) or tuple_element is None:
+            return tuple_element
+
+        if not isinstance(tuple_element, tuple):
+            return tuple_element
+
+        left, op, right = tuple_element
+        simplified_left = self.simplify_formula_tuple_for_display(left)
+        simplified_right = self.simplify_formula_tuple_for_display(right)
+
+        if op is None:
+            return simplified_left if simplified_left is not None else simplified_right
+
+        if op == "+":
+            if isinstance(simplified_left, EmptyExplainableObject):
+                return simplified_right if simplified_right is not None else simplified_left
+            if isinstance(simplified_right, EmptyExplainableObject):
+                return simplified_left if simplified_left is not None else simplified_right
+
+        if op == "-":
+            if isinstance(simplified_right, EmptyExplainableObject):
+                return simplified_left if simplified_left is not None else simplified_right
+            if isinstance(simplified_left, EmptyExplainableObject) and isinstance(simplified_right, EmptyExplainableObject):
+                return simplified_left
+
+        return simplified_left, op, simplified_right
+
     def compute_formula_as_flat_tuple(self, tuple_element: object) -> tuple:
+        return self._compute_formula_as_flat_tuple(self.simplify_formula_tuple_for_display(tuple_element))
+
+    def _compute_formula_as_flat_tuple(self, tuple_element: object) -> tuple:
         if isinstance(tuple_element, ExplainableObject):
             return (tuple_element,)
         elif isinstance(tuple_element, str):
@@ -476,13 +509,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             a, op, b = tuple_element
 
             if op is None:
-                return self.compute_formula_as_flat_tuple(a)
+                return self._compute_formula_as_flat_tuple(a)
 
             # Handle unary ops like "X of (Y)"
             if b is None:
                 if op is None or len(op) == 0:
-                    return self.compute_formula_as_flat_tuple(a)
-                return op, '(', *self.compute_formula_as_flat_tuple(a), ')'
+                    return self._compute_formula_as_flat_tuple(a)
+                return op, '(', *self._compute_formula_as_flat_tuple(a), ')'
 
             # Determine if we need parentheses
             left_parens = False
@@ -502,8 +535,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 if isinstance(b, tuple) and b[1] in ["+", "-"]:
                     right_parens = True
 
-            left = self.compute_formula_as_flat_tuple(a)
-            right = self.compute_formula_as_flat_tuple(b)
+            left = self._compute_formula_as_flat_tuple(a)
+            right = self._compute_formula_as_flat_tuple(b)
 
             result = []
             if left_parens:

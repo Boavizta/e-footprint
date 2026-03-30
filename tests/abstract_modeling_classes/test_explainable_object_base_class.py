@@ -5,8 +5,11 @@ import pytz
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
     optimize_attr_updates_chain
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import Source
+from efootprint.constants.units import u
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -384,6 +387,22 @@ class TestExplainableObjectBaseClass(TestCase):
         
         self.assertEqual(eo.print_flat_tuple_formula((left_parent, "+", right_parent), False), "Label L + Label R")
         self.assertEqual(eo.print_flat_tuple_formula((left_parent, "+", right_parent), True), "3 + 4")
+
+    def test_explain_should_skip_empty_added_as_sum_start_value(self):
+        value = ExplainableQuantity(1 * u.kg, label="a")
+        value.set_modeling_obj_container(MagicMock(), "value")
+        result = sum([value], start=EmptyExplainableObject()).set_label("result")
+        result.set_modeling_obj_container(MagicMock(), "result")
+
+        self.assertEqual("result = a = 1 kg = 1 kg", result.explain(pretty_print=False))
+
+    def test_explain_should_skip_empty_subtracted_operand(self):
+        value = ExplainableQuantity(1 * u.kg, label="a")
+        value.set_modeling_obj_container(MagicMock(), "value")
+        result = (value - EmptyExplainableObject()).set_label("result")
+        result.set_modeling_obj_container(MagicMock(), "result")
+
+        self.assertEqual("result = a = 1 kg = 1 kg", result.explain(pretty_print=False))
 
     def test_pretty_print_calculation(self):
         calc_str = "Label A = Label L + Label R = 3 + 4 = 7"
