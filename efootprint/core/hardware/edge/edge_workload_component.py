@@ -6,6 +6,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 
 if TYPE_CHECKING:
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
@@ -34,6 +35,10 @@ class EdgeWorkloadComponent(EdgeComponent):
             [need.unitary_hourly_need_per_usage_pattern[usage_pattern]
              for need in self.recurrent_edge_component_needs if usage_pattern in need.edge_usage_patterns],
             start=EmptyExplainableObject())
+
+        if not isinstance(unitary_hourly_workload, EmptyExplainableObject):
+            RecurrentEdgeComponentNeed.assert_recurrent_workload_is_between_0_and_1(
+                unitary_hourly_workload, f"{self.name} aggregated workload for {usage_pattern.name}")
 
         self.unitary_hourly_workload_per_usage_pattern[usage_pattern] = unitary_hourly_workload.set_label(
             f"{self.name} hourly workload for {usage_pattern.name}")

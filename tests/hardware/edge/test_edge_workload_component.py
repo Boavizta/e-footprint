@@ -9,7 +9,10 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
-from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_component_need import (
+    RecurrentEdgeComponentNeed,
+    WorkloadOutOfBoundsError,
+)
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
@@ -57,6 +60,28 @@ class TestEdgeWorkloadComponent(TestCase):
         self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
         self.assertEqual(u.concurrent, result.unit)
         self.assertIn("Test Appliance hourly workload for Test Pattern", result.label)
+
+    def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern_raises_when_sum_exceeds_one(self):
+        """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern raises when aggregated workload exceeds 1."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
+
+        mock_need_1 = MagicMock(spec=RecurrentEdgeComponentNeed)
+        mock_need_2 = MagicMock(spec=RecurrentEdgeComponentNeed)
+
+        workload_1 = create_source_hourly_values_from_list([0.7, 0.4], pint_unit=u.concurrent)
+        workload_2 = create_source_hourly_values_from_list([0.2, 0.7], pint_unit=u.concurrent)
+
+        mock_need_1.unitary_hourly_need_per_usage_pattern = {mock_pattern: workload_1}
+        mock_need_2.unitary_hourly_need_per_usage_pattern = {mock_pattern: workload_2}
+        mock_need_1.edge_usage_patterns = [mock_pattern]
+        mock_need_2.edge_usage_patterns = [mock_pattern]
+
+        set_modeling_obj_containers(self.appliance_component, [mock_need_1, mock_need_2])
+
+        with self.assertRaises(WorkloadOutOfBoundsError) as context:
+            self.appliance_component.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
+
+        self.assertIn("Test Appliance aggregated workload for Test Pattern", str(context.exception))
 
     def test_update_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
