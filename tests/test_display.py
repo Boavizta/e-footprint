@@ -3,7 +3,50 @@ import unittest
 import numpy as np
 
 from efootprint.constants.units import u
-from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
+from efootprint.utils.display import (
+    UNIT_FAMILIES,
+    _get_unit_family,
+    best_display_unit,
+    format_display_number,
+    format_quantity_for_display,
+    human_readable_unit,
+)
+
+
+class TestGetUnitFamily(unittest.TestCase):
+    def test_returns_none_for_dimensionless(self):
+        """Test _get_unit_family returns None for dimensionless quantities."""
+        self.assertIsNone(_get_unit_family(1 * u.dimensionless))
+
+    def test_returns_none_for_unknown_unit(self):
+        """Test _get_unit_family returns None for units not in any family."""
+        self.assertIsNone(_get_unit_family(1 * u.cpu_core))
+
+    def test_matches_non_dimensionless_compatible_families_by_compatibility(self):
+        """Test energy, mass, and power families are matched via is_compatible_with."""
+        self.assertEqual(UNIT_FAMILIES[0], _get_unit_family(1 * u.kg))
+        self.assertEqual(UNIT_FAMILIES[1], _get_unit_family(1 * u.kWh))
+        self.assertEqual(UNIT_FAMILIES[2], _get_unit_family(1 * u.W))
+
+    def test_compatible_but_non_identical_units_match_energy_mass_power_families(self):
+        """Test base SI units compatible with energy/mass/power families are correctly matched."""
+        self.assertEqual(UNIT_FAMILIES[0], _get_unit_family(1 * u.parse_expression("gram")))
+        self.assertEqual(UNIT_FAMILIES[1], _get_unit_family(1 * u.parse_expression("joule")))
+        self.assertEqual(UNIT_FAMILIES[2], _get_unit_family(1 * u.parse_expression("joule/second")))
+
+    def test_matches_dimensionless_compatible_families_by_exact_unit(self):
+        """Test occurrence, concurrent, byte, byte_ram, byte_stored families require exact unit match."""
+        self.assertEqual(UNIT_FAMILIES[3], _get_unit_family(1 * u.occurrence))
+        self.assertEqual(UNIT_FAMILIES[4], _get_unit_family(1 * u.concurrent))
+        self.assertEqual(UNIT_FAMILIES[5], _get_unit_family(1 * u.byte))
+        self.assertEqual(UNIT_FAMILIES[6], _get_unit_family(1 * u.byte_ram))
+        self.assertEqual(UNIT_FAMILIES[7], _get_unit_family(1 * u.byte_stored))
+
+    def test_dimensionless_compatible_units_do_not_cross_match(self):
+        """Test that occurrence quantities do not match byte or concurrent families."""
+        result = _get_unit_family(1 * u.occurrence)
+        self.assertNotEqual(UNIT_FAMILIES[4], result)
+        self.assertNotEqual(UNIT_FAMILIES[5], result)
 
 
 class TestDisplayUtils(unittest.TestCase):
@@ -15,7 +58,7 @@ class TestDisplayUtils(unittest.TestCase):
 
     def test_best_display_unit_for_zero_and_unknown_units(self):
         """Test zero values and unknown unit families keep their current unit."""
-        self.assertEqual(u.kg, best_display_unit(0 * u.kg))
+        self.assertEqual(u.mg, best_display_unit(0 * u.kg))
         self.assertEqual(u.cpu_core, best_display_unit(42 * u.cpu_core))
 
     def test_best_display_unit_for_boundaries_and_arrays(self):
@@ -25,7 +68,7 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual(u.kg, best_display_unit(999 * u.kg))
         self.assertEqual(u.tonne, best_display_unit(np.array([100, 200, 50000], dtype=np.float32) * u.kg))
         self.assertEqual(u.kg, best_display_unit(np.array([1, 2, 3], dtype=np.float32) * u.kg))
-        self.assertEqual(u.kg, best_display_unit(np.zeros(10, dtype=np.float32) * u.kg))
+        self.assertEqual(u.mg, best_display_unit(np.zeros(10, dtype=np.float32) * u.kg))
 
     def test_format_quantity_for_display_for_scalars(self):
         """Test display formatting converts and rounds scalar quantities."""

@@ -22,7 +22,10 @@ def _get_unit_family(quantity: Quantity) -> Sequence[Unit] | None:
     if quantity.units == u.dimensionless:
         return None
     for family in UNIT_FAMILIES:
-        if any(quantity.units == unit for unit in family):
+        if (1 * family[0]).is_compatible_with(u.dimensionless):
+            if any(quantity.units == unit for unit in family):
+                return family
+        elif quantity.is_compatible_with(family[0]):
             return family
     return None
 
@@ -36,12 +39,12 @@ def _get_representative_magnitude(quantity: Quantity) -> float:
 
 def best_display_unit(quantity: Quantity) -> Unit:
     representative = _get_representative_magnitude(quantity)
-    if representative == 0:
-        return quantity.units
 
     family = _get_unit_family(quantity)
     if family is None:
         return quantity.units
+    if representative == 0:
+        return family[0]
 
     representative_quantity = representative * quantity.units
     for unit in reversed(family):
