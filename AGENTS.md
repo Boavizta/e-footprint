@@ -93,7 +93,8 @@ All quantities use Pint for unit handling. Custom units are defined in `efootpri
 - Black formatter with 120 character line length. Try to keep the number of lines low. In particular, avoid creating a new line to close a parenthesis.
 - Poetry for dependency management
 - Type hints encouraged but not strictly enforced. Don’t use forward references in ModelingObject __init__ signatures.
-- Only use comments in code if there is a non-intuitive logic at play. If code is easy to understand, don’t comment. 
+- Never use mutable objects (e.g. `SourceValue(...)`) as default parameter values in function/method signatures. Use `None` as default and create the mutable inside the method body.
+- Only use comments in code if there is a non-intuitive logic at play. If code is easy to understand, don’t comment.
 - Test code preferences are defined in efootprint/tests/CLAUDE.md.
 
 ### Testing Requirements  
