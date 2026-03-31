@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [18.0.0] - 2026-04-01
+
+### Changed
+- Remove useless "+ no value" and "- no value" from formulas.
+
+### Fixed
+- Validate aggregated EdgeWorkloadComponent workload does not exceed 100%.
+- Rename validated_recurrent_need to recurrent_need_validation so it is rightly excluded from calculated attributes in the interface.
+- Fixed _get_unit_family in display.py module so the correct unit family is kept for occurrence, concurrent, byte, and byte_ram, which are all dimensionless compatible units.
+- Storage nb_of_instances uses raw value (no ceiling) when server is serverless.
+- Introduce byte_stored unit so cumulative storage needs use mean aggregation instead of sum. Cumulative storage is a stock (data at rest), not a flow. Summing hourly snapshots produced meaningless totals. The new byte_stored unit (parallel to byte_ram) gives storage stock quantities the correct mean aggregation strategy. This change required a json upgrade handler, hence bumping to version 18.0.0.
+- Fixed get_plot_aggregation_strategy by checking dimensionless units separately from the rest. The former implementation would incorrectly return mean for energy multiplied by a special dimensionless unit that should be aggregated as mean (for example, occurrence).
+- convert_to_utc shifts data array instead of start_date anchor. Timeseries from form inputs express local timezone dynamics, but all modeling timeseries must be anchored at UTC midnight. Previously, convert_to_utc shifted start_date to a non-midnight UTC time, breaking the UTC-midnight invariant assumed by determine_global_time_bounds. Now the data is rotated instead, preserving the original start_date as the local timezone anchor while ensuring all timeseries are correctly aligned at UTC midnight. This will introduce a value shift at both ends of the timeseries, but this tradeoff is acceptable since it maintains overall volume and timeseries length.
+
 ## [17.1.0] - 2026-03-27
 
 ### Added

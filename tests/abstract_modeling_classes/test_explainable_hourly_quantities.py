@@ -225,9 +225,10 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual("-", subtraction_result.operator)
 
     def test_convert_to_utc(self):
+        """Test convert_to_utc preserves UTC-midnight anchoring and circularly shifts hourly values."""
         # Use a January date to avoid DST ambiguity: Berlin=UTC+1, New York=UTC-5.
         start_date = datetime(2023, 1, 15)
-        data = list(range(30))  # 30 distinct values to make shift direction unambiguous
+        data = list(range(10, 40))  # Distinct non-zero edge values make wrap behavior explicit.
         usage = ExplainableHourlyQuantities(
             Quantity(np.array(data, dtype=np.float32), u.occurrence), start_date, "usage")
 
@@ -243,11 +244,17 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
         # Berlin is UTC+1: local midnight = UTC 23:00 previous day → UTC midnight = local 01:00.
         # Shift left by 1 hour and rotate the dropped initial value to the end to conserve total volume.
-        self.assertEqual([float(v) for v in data[1:]] + [0.0], converted_ahead_utc.value_as_float_list)
+        self.assertEqual([float(v) for v in data[1:]] + [float(data[0])], converted_ahead_utc.value_as_float_list)
 
         # New York is UTC-5: local midnight = UTC 05:00 → UTC midnight precedes local midnight by 5 hours.
-        # Prepend 5 zeros to cover the UTC 00:00-05:00 gap.
-        self.assertEqual([0.0] * 5 + [float(v) for v in data], converted_behind_utc.value_as_float_list)
+        # Shift right by 5 hours and rotate the trailing local values to the front to conserve total volume.
+        self.assertEqual(
+            [float(v) for v in data[-5:]] + [float(v) for v in data[:-5]],
+            converted_behind_utc.value_as_float_list,
+        )
+
+        self.assertEqual(sum(data), sum(converted_ahead_utc.value_as_float_list))
+        self.assertEqual(sum(data), sum(converted_behind_utc.value_as_float_list))
 
         # Check lineage attributes
         self.assertEqual(None, converted_ahead_utc.label)
@@ -256,9 +263,10 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual("converted to UTC from", converted_ahead_utc.operator)
 
     def test_convert_to_utc_non_integer_offset(self):
+        """Test convert_to_utc rounds non-integer offsets and preserves length and total volume."""
         # Afghanistan is UTC+4:30 (4.5 h). round(4.5) = 4 (banker's rounding).
         start_date = datetime(2023, 1, 15)
-        data = list(range(30))
+        data = list(range(10, 40))
         usage = ExplainableHourlyQuantities(
             Quantity(np.array(data, dtype=np.float32), u.occurrence), start_date, "usage")
 
@@ -266,7 +274,8 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         converted = usage.convert_to_utc(local_tz_afghanistan)
 
         self.assertEqual(start_date.replace(tzinfo=pytz.utc), converted.start_date)
-        self.assertEqual([float(v) for v in data[4:]] + [0.0, 1.0, 2.0, 3.0], converted.value_as_float_list)
+        self.assertEqual([float(v) for v in data[4:]] + [float(v) for v in data[:4]], converted.value_as_float_list)
+        self.assertEqual(sum(data), sum(converted.value_as_float_list))
 
     def test_sum(self):
         summed = self.hourly_usage1.sum()

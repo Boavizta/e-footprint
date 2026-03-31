@@ -194,13 +194,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if self.start_date.tzinfo is None:
             # Treat naive start_date as UTC midnight. Local usage dynamics are expressed in local clock time,
             # so shift the data array instead of shifting the anchor, preserving the UTC-midnight invariant.
+            # The shift is circular in both directions to conserve both series length and total modeled volume.
             utc_offset_seconds = local_timezone.value.localize(self.start_date).utcoffset().total_seconds()
             offset_hours = round(utc_offset_seconds / 3600)
-            if offset_hours > 0:
+            if offset_hours != 0:
                 shifted_value = Quantity(np.roll(self.value.magnitude, -offset_hours), self.value.units)
-            elif offset_hours < 0:
-                zeros = np.zeros(abs(offset_hours), dtype=np.float32)
-                shifted_value = Quantity(np.concatenate([zeros, self.value.magnitude]), self.value.units)
             else:
                 shifted_value = self.value
             utc_start = self.start_date.replace(tzinfo=pytz.utc)
