@@ -110,18 +110,22 @@ No calculation changes — just reference renames.
 
 ---
 
-## Phase 2: Add EdgeComponent.nb_of_units + EdgeDevice counting aggregation
+## Phase 2: Add EdgeComponent.nb_of_units
 
 **Goal**: Each component type can specify how many units exist within its EdgeDevice.
-EdgeDevice multiplies per-edge-device component values by `component.nb_of_units`.
+The `nb_of_units` multiplication happens entirely within EdgeComponent — it effectively
+makes the component behave as if it had multiplied power, capacity, and fabrication.
+EdgeDevice doesn't need to know about `component.nb_of_units`.
 
 ### 2.1 EdgeComponent (edge_component.py)
 
 **Add to `__init__`:**
 ```python
 def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_power,
-             nb_of_units=SourceValue(1 * u.dimensionless)):
+             nb_of_units=None):
     ...
+    if nb_of_units is None:
+        nb_of_units = SourceValue(1 * u.dimensionless)
     self.nb_of_units = nb_of_units.set_label(f"Number of units of {self.name}")
 ```
 
@@ -129,6 +133,23 @@ def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_pow
 ```python
 "nb_of_units": SourceValue(1 * u.dimensionless)
 ```
+
+**Update EdgeComponent calculations** to multiply by `nb_of_units`:
+
+- `update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern`:
+  ```python
+  component_fabrication_intensity = (self.carbon_footprint_fabrication / self.lifespan)
+      * self.nb_of_units
+  nb_instances = ...  # as today
+  # rest unchanged
+  ```
+
+- `update_dict_element_in_energy_per_edge_device_per_usage_pattern`:
+  ```python
+  # unitary_power already per single unit, multiply by nb_of_units
+  instances_energy = nb_instances * (self.unitary_power_per_usage_pattern[usage_pattern]
+      * self.nb_of_units * ExplainableQuantity(1 * u.hour, "one hour"))
+  ```
 
 **Capacity validation**: Update each subclass's validation to multiply capacity by nb_of_units.
 
@@ -153,27 +174,12 @@ For EdgeWorkloadComponent:
 
 ### 2.2 EdgeDevice (edge_device.py)
 
-**Update aggregation to multiply by `component.nb_of_units`.**
+**No changes needed.** EdgeDevice already sums component per-edge-device values.
+With `nb_of_units` handled inside EdgeComponent, the component's per-edge-device values
+already reflect the multiplied power/fabrication. EdgeDevice's aggregation works as-is.
 
-In `update_dict_element_in_instances_energy_per_usage_pattern`:
-```python
-for component in self.components:
-    if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
-        total_energy += (component.energy_per_edge_device_per_usage_pattern[usage_pattern]
-                        * component.nb_of_units)
-```
-
-Same pattern for fabrication. For `energy_footprint_breakdown_by_source`:
-```python
-@property
-def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
-    return ExplainableObjectDict({
-        component: component.energy_footprint_per_edge_device * component.nb_of_units
-        for component in self.components
-    })
-```
-
-And similarly for `fabrication_footprint_breakdown_by_source`.
+`energy_footprint_breakdown_by_source` and `fabrication_footprint_breakdown_by_source`
+also work unchanged — they read component-level totals which now include nb_of_units.
 
 ### 2.3 Tests
 
@@ -305,17 +311,15 @@ def _find_parent_groups(self):
 
 **Update aggregation methods to multiply by `total_nb_of_units_per_ensemble`:**
 
-The per-edge-device component values (already × nb_ensembles) now get multiplied by
-both `component.nb_of_units` (from Phase 2) and `self.total_nb_of_units_per_ensemble`
-(from groups).
+The per-edge-device component values (already × nb_ensembles and × nb_of_units from
+Phase 2) now get multiplied by `self.total_nb_of_units_per_ensemble` (from groups).
 
 ```python
 def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_pattern):
     total_energy = EmptyExplainableObject()
     for component in self.components:
         if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
-            total_energy += (component.energy_per_edge_device_per_usage_pattern[usage_pattern]
-                            * component.nb_of_units)
+            total_energy += component.energy_per_edge_device_per_usage_pattern[usage_pattern]
     self.instances_energy_per_usage_pattern[usage_pattern] = (
         self.total_nb_of_units_per_ensemble * total_energy
     ).set_label(...)
