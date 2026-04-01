@@ -48,127 +48,72 @@ in CANONICAL_COMPUTATION_ORDER.
 
 ---
 
-## Phase 1: Refactor EdgeComponent to Unitary
+## Phase 1: Rename EdgeComponent semantics to per-edge-device
 
-**Goal**: EdgeComponent computes only per-unit values. Remove instance-level aggregation.
+**Goal**: Rename EdgeComponent calculated attributes from `instances_*` to
+`*_per_edge_device_*` to clarify their semantics. Calculations stay the same —
+they multiply by `nb_edge_usage_journeys_in_parallel` (from usage pattern, no
+circular dependency). The values represent "footprint across all ensembles,
+for ONE edge device's worth of this component".
 
 ### 1.1 EdgeComponent (edge_component.py)
 
-**Remove these calculated attributes and their update methods:**
+**Rename these calculated attributes** (calculations unchanged):
 - `instances_fabrication_footprint_per_usage_pattern`
+  → `fabrication_footprint_per_edge_device_per_usage_pattern`
 - `instances_energy_per_usage_pattern`
+  → `energy_per_edge_device_per_usage_pattern`
 - `energy_footprint_per_usage_pattern`
-- `instances_fabrication_footprint`
-- `instances_energy`
-- `energy_footprint`
+  → `energy_footprint_per_edge_device_per_usage_pattern`
+- `instances_fabrication_footprint` → `fabrication_footprint_per_edge_device`
+- `instances_energy` → `energy_per_edge_device`
+- `energy_footprint` → `energy_footprint_per_edge_device`
 
-**Keep (already unitary):**
+**Keep unchanged:**
 - `unitary_power_per_usage_pattern` (abstract, implemented by subclasses)
 - `total_unitary_hourly_need_per_usage_pattern` (for capacity validation)
 
-**Add:**
-- `unitary_energy_per_usage_pattern: ExplainableObjectDict`
-  - `update_dict_element_in_unitary_energy_per_usage_pattern(usage_pattern)`:
-    `unitary_power_per_usage_pattern[usage_pattern] * ExplainableQuantity(1 * u.hour, "one hour")`
-- `unitary_fabrication_intensity: ExplainableQuantity`
-  - `update_unitary_fabrication_intensity()`:
-    `carbon_footprint_fabrication / lifespan`
-  - This is a single value, not per usage pattern.
-
 **Updated `calculated_attributes`:**
 ```python
-["unitary_power_per_usage_pattern", "unitary_energy_per_usage_pattern",
- "unitary_fabrication_intensity", "total_unitary_hourly_need_per_usage_pattern"]
+["unitary_power_per_usage_pattern",
+ "fabrication_footprint_per_edge_device_per_usage_pattern",
+ "energy_per_edge_device_per_usage_pattern",
+ "energy_footprint_per_edge_device_per_usage_pattern",
+ "fabrication_footprint_per_edge_device",
+ "energy_per_edge_device", "energy_footprint_per_edge_device",
+ "total_unitary_hourly_need_per_usage_pattern"]
 ```
-
-**Remove `__init__` attributes** that no longer exist:
-- `instances_fabrication_footprint_per_usage_pattern`, `instances_energy_per_usage_pattern`,
-  `energy_footprint_per_usage_pattern`, `instances_fabrication_footprint`,
-  `instances_energy`, `energy_footprint`
 
 ### 1.2 EdgeComponent subclasses
 
-**EdgeCPUComponent, EdgeRAMComponent, EdgeWorkloadComponent:**
-- No changes to `update_unitary_power_per_usage_pattern` (already unitary).
-- Capacity validation stays on the component (checks per-unit capacity vs per-unit demand).
-  No changes needed yet — `nb_of_units` comes in Phase 3.
-
-**EdgeStorage:**
-- `update_unitary_power_per_usage_pattern` already returns EmptyExplainableObject. No change.
-- Capacity validation stays. No change yet.
-- `carbon_footprint_fabrication_per_storage_capacity` and `storage_capacity` remain.
-  The unitary_fabrication_intensity for storage = `carbon_footprint_fabrication_per_storage_capacity
-  * storage_capacity`. Check that the existing logic in EdgeStorage overrides this correctly.
-  If EdgeStorage overrides `carbon_footprint_fabrication` as a property
-  (= per_capacity * capacity), then the base class formula `carbon_footprint_fabrication / lifespan`
-  works unchanged. Verify this.
+No changes to subclasses — only the base class attribute names change.
 
 ### 1.3 EdgeDevice (edge_device.py)
 
-**Absorb the aggregation that was previously in EdgeComponent.**
+**Update references** to read from renamed component attributes.
 
-Update these methods to read component unitary values and multiply by `nb_instances`:
+Current methods like `update_dict_element_in_instances_energy_per_usage_pattern` already
+read from `component.instances_energy_per_usage_pattern` — update these references to
+`component.energy_per_edge_device_per_usage_pattern`.
 
-- `update_dict_element_in_instances_energy_per_usage_pattern(usage_pattern)`:
-  ```python
-  nb_instances = usage_pattern.edge_usage_journey \
-      .nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
-  total_energy = EmptyExplainableObject()
-  for component in self.components:
-      if usage_pattern in component.unitary_energy_per_usage_pattern:
-          total_energy += component.unitary_energy_per_usage_pattern[usage_pattern]
-  self.instances_energy_per_usage_pattern[usage_pattern] = (
-      nb_instances * total_energy
-  ).set_label(...)
-  ```
+Same for `energy_footprint_breakdown_by_source` (reads `component.energy_footprint`
+→ `component.energy_footprint_per_edge_device`) and `fabrication_footprint_breakdown_by_source`
+(reads `component.instances_fabrication_footprint`
+→ `component.fabrication_footprint_per_edge_device`).
 
-- `update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)`:
-  ```python
-  nb_instances = ...  # same as above
-  structure_fabrication_intensity = self.structure_carbon_footprint_fabrication / self.lifespan
-  total_fabrication_intensity = structure_fabrication_intensity
-  for component in self.components:
-      total_fabrication_intensity += component.unitary_fabrication_intensity
-  self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = (
-      nb_instances * total_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour")
-  ).to(u.kg).set_label(...)
-  ```
-
-- `update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)`:
-  ```python
-  energy_footprint = (
-      self.instances_energy_per_usage_pattern[usage_pattern]
-      * usage_pattern.country.average_carbon_intensity)
-  self.energy_footprint_per_usage_pattern[usage_pattern] = energy_footprint.to(u.kg).set_label(...)
-  ```
-
-- Remove `structure_fabrication_footprint_per_usage_pattern` as a separate calculated attribute
-  (structure fabrication is now folded into `instances_fabrication_footprint_per_usage_pattern`).
-
-- Update `fabrication_footprint_breakdown_by_source` and `energy_footprint_breakdown_by_source`
-  to work with the new unitary component attributes.
-
-**Updated `calculated_attributes`:**
-```python
-["lifespan_validation", "component_needs_edge_device_validation",
- "instances_fabrication_footprint_per_usage_pattern",
- "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
- "instances_fabrication_footprint", "fabrication_footprint_breakdown_by_source",
- "instances_energy", "energy_footprint"]
-```
-(Remove `structure_fabrication_footprint_per_usage_pattern`)
+No calculation changes — just reference renames.
 
 ### 1.4 Tests
 
-- Update EdgeComponent unit tests: expect unitary values, not instance-level.
-- Update EdgeDevice unit tests: verify aggregation logic (components × nb_instances).
-- Integration tests should pass with identical numerical results (no behavioral change yet).
+- Update test assertions to use renamed attributes.
+- Integration tests should pass with identical numerical results (pure rename, no behavior change).
 
 ---
 
-## Phase 2: Add EdgeComponent.nb_of_units
+## Phase 2: Add EdgeComponent.nb_of_units + EdgeDevice counting aggregation
 
 **Goal**: Each component type can specify how many units exist within its EdgeDevice.
+EdgeDevice multiplies per-edge-device component values by `component.nb_of_units`.
 
 ### 2.1 EdgeComponent (edge_component.py)
 
@@ -189,9 +134,8 @@ def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_pow
 
 For EdgeCPUComponent:
 ```python
-available_compute = self.compute * self.nb_of_units - self.base_compute_consumption * self.nb_of_units
+available_compute = (self.compute - self.base_compute_consumption) * self.nb_of_units
 ```
-(or equivalently: `(self.compute - self.base_compute_consumption) * self.nb_of_units`)
 
 For EdgeRAMComponent: same pattern with `ram` and `base_ram_consumption`.
 
@@ -209,21 +153,27 @@ For EdgeWorkloadComponent:
 
 ### 2.2 EdgeDevice (edge_device.py)
 
-**Update aggregation to multiply by component.nb_of_units:**
+**Update aggregation to multiply by `component.nb_of_units`.**
 
-- `update_dict_element_in_instances_energy_per_usage_pattern(usage_pattern)`:
-  ```python
-  for component in self.components:
-      if usage_pattern in component.unitary_energy_per_usage_pattern:
-          total_energy += (component.unitary_energy_per_usage_pattern[usage_pattern]
-                          * component.nb_of_units)
-  ```
+In `update_dict_element_in_instances_energy_per_usage_pattern`:
+```python
+for component in self.components:
+    if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
+        total_energy += (component.energy_per_edge_device_per_usage_pattern[usage_pattern]
+                        * component.nb_of_units)
+```
 
-- `update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)`:
-  ```python
-  for component in self.components:
-      total_fabrication_intensity += component.unitary_fabrication_intensity * component.nb_of_units
-  ```
+Same pattern for fabrication. For `energy_footprint_breakdown_by_source`:
+```python
+@property
+def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
+    return ExplainableObjectDict({
+        component: component.energy_footprint_per_edge_device * component.nb_of_units
+        for component in self.components
+    })
+```
+
+And similarly for `fabrication_footprint_breakdown_by_source`.
 
 ### 2.3 Tests
 
@@ -353,23 +303,29 @@ def _find_parent_groups(self):
     return parent_groups
 ```
 
-**Update aggregation methods to use `total_nb_of_units_per_ensemble`:**
+**Update aggregation methods to multiply by `total_nb_of_units_per_ensemble`:**
+
+The per-edge-device component values (already × nb_ensembles) now get multiplied by
+both `component.nb_of_units` (from Phase 2) and `self.total_nb_of_units_per_ensemble`
+(from groups).
 
 ```python
 def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_pattern):
-    nb_ensembles = usage_pattern.edge_usage_journey \
-        .nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
-    total_unitary_energy = EmptyExplainableObject()
+    total_energy = EmptyExplainableObject()
     for component in self.components:
-        if usage_pattern in component.unitary_energy_per_usage_pattern:
-            total_unitary_energy += (component.unitary_energy_per_usage_pattern[usage_pattern]
-                                    * component.nb_of_units)
+        if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
+            total_energy += (component.energy_per_edge_device_per_usage_pattern[usage_pattern]
+                            * component.nb_of_units)
     self.instances_energy_per_usage_pattern[usage_pattern] = (
-        nb_ensembles * self.total_nb_of_units_per_ensemble * total_unitary_energy
+        self.total_nb_of_units_per_ensemble * total_energy
     ).set_label(...)
 ```
 
-Same pattern for fabrication and energy footprint calculations.
+Same pattern for fabrication (including structure × total_nb_of_units_per_ensemble)
+and energy footprint calculations.
+
+`energy_footprint_breakdown_by_source` and `fabrication_footprint_breakdown_by_source`
+also multiply by `total_nb_of_units_per_ensemble`.
 
 ### 3.3 Registration
 
@@ -384,7 +340,7 @@ Same pattern for fabrication and energy footprint calculations.
 - Test EdgeDevice in one group: total_nb = group_count × group_effective_nb.
 - Test EdgeDevice in multiple groups: total_nb = sum of contributions.
 - Test EdgeDevice with no group: total_nb = 1 (backward compat).
-- Test full chain: component unitary × nb_of_units × group_multiplier × nb_ensembles.
+- Test full chain: component per_edge_device × nb_of_units × group_multiplier.
 - Test recomputation: change a group count and verify cascade.
 - Test the building/floor/cabinet example end-to-end.
 
