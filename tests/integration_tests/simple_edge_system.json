@@ -297,7 +297,7 @@
                     "link": null
                 }
             },
-            "carbon_footprint_fabrication_per_storage_capacity_per_unit": {
+            "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
                 "label": "Fabrication carbon footprint per unit of Edge SSD storage per storage capacity from e-footprint hypothesis",

@@ -200,7 +200,7 @@ storage_capacity = storage_capacity_per_unit * nb_of_units
 # validate: max_cumulative_need ≤ storage_capacity
 ```
 `carbon_footprint_fabrication` is also recomputed from
-`carbon_footprint_fabrication_per_storage_capacity_per_unit × storage_capacity_per_unit × nb_of_units`.
+`carbon_footprint_fabrication_per_storage_capacity × storage_capacity_per_unit × nb_of_units`.
 
 For EdgeWorkloadComponent:
 ```python
