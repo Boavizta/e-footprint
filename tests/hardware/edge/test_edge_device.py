@@ -642,5 +642,133 @@ class TestEdgeDevice(TestCase):
             euj.usage_span = SourceValue(3 * u.year)
 
 
+class TestEdgeDeviceFindGroupMethods(TestCase):
+
+    def setUp(self):
+        self.device = EdgeDevice(
+            name="Test Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year),
+        )
+        self.device.trigger_modeling_updates = False
+
+    def _make_group(self, name):
+        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+        g = EdgeDeviceGroup(name)
+        g.trigger_modeling_updates = False
+        return g
+
+    def test_find_parent_groups_returns_empty_when_no_groups(self):
+        self.assertEqual([], self.device._find_parent_groups())
+
+    def test_find_parent_groups_returns_group_when_device_is_in_it(self):
+        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+        group = self._make_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_parent_groups()
+        self.assertEqual([group], result)
+
+    def test_find_parent_groups_returns_multiple_groups(self):
+        group_a = self._make_group("Group A")
+        group_b = self._make_group("Group B")
+        group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
+        group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        result = self.device._find_parent_groups()
+        self.assertIn(group_a, result)
+        self.assertIn(group_b, result)
+        self.assertEqual(2, len(result))
+
+    def test_find_root_groups_returns_empty_when_no_groups(self):
+        self.assertEqual([], self.device._find_root_groups())
+
+    def test_find_root_groups_returns_root_for_flat_hierarchy(self):
+        group = self._make_group("Root Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([group], result)
+
+    def test_find_root_groups_traverses_nested_hierarchy(self):
+        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+        root = self._make_group("Root")
+        sub = self._make_group("Sub")
+        root.sub_group_counts[sub] = SourceValue(2 * u.dimensionless)
+        sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([root], result)
+
+    def test_find_root_groups_deduplicates_root_in_diamond_hierarchy(self):
+        root = self._make_group("Root")
+        left = self._make_group("Left")
+        right = self._make_group("Right")
+        root.sub_group_counts[left] = SourceValue(1 * u.dimensionless)
+        root.sub_group_counts[right] = SourceValue(1 * u.dimensionless)
+        left.edge_device_counts[self.device] = SourceValue(1 * u.dimensionless)
+        right.edge_device_counts[self.device] = SourceValue(1 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([root], result)
+
+
+class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
+
+    def setUp(self):
+        self.device = EdgeDevice(
+            name="Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year),
+        )
+        self.device.trigger_modeling_updates = False
+
+    def _make_group(self, name):
+        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+        g = EdgeDeviceGroup(name)
+        g.trigger_modeling_updates = False
+        return g
+
+    def test_no_groups_gives_total_of_one(self):
+        self.device.update_total_nb_of_units_per_ensemble()
+        self.assertAlmostEqual(1.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
+
+    def test_no_groups_label_mentions_no_group(self):
+        self.device.update_total_nb_of_units_per_ensemble()
+        label = self.device.total_nb_of_units_per_ensemble.label
+        self.assertIn("no group", label.lower())
+
+    def test_with_one_group_of_four(self):
+        group = self._make_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        group.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units_per_ensemble()
+        self.assertAlmostEqual(4.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
+
+    def test_with_nested_groups_multiplies_counts(self):
+        root = self._make_group("Root")
+        sub = self._make_group("Sub")
+        root.sub_group_counts[sub] = SourceValue(3 * u.dimensionless)
+        sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        root.update_effective_nb_of_units_within_root()
+        sub.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units_per_ensemble()
+        self.assertAlmostEqual(12.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
+
+    def test_with_two_independent_root_groups_sums_contributions(self):
+        group_a = self._make_group("Group A")
+        group_b = self._make_group("Group B")
+        group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
+        group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        group_a.update_effective_nb_of_units_within_root()
+        group_b.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units_per_ensemble()
+        self.assertAlmostEqual(5.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
+
+    def test_total_nb_is_dimensionless(self):
+        group = self._make_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        group.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units_per_ensemble()
+        self.assertTrue(self.device.total_nb_of_units_per_ensemble.value.check("[]"))
+
+
 if __name__ == "__main__":
     unittest.main()
