@@ -261,11 +261,24 @@ def _find_parent_groups(self):
     return parent_groups
 ```
 
+**Root group discovery** (used by EdgeComponent to route the computation chain):
+
+```python
+def _find_root_groups(self):
+    parent_groups = self._find_parent_groups()
+    if not parent_groups:
+        return [self]  # I am a root group
+    root_groups = []
+    for parent in parent_groups:
+        root_groups += parent._find_root_groups()
+    return list(dict.fromkeys(root_groups))
+```
+
 **No `after_init` override needed.** The generic `ModelingObject.after_init` sets
 `trigger_modeling_updates = True` on the object and its input ExplainableObjectDicts (see
 [explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)
-section 4). System's computation chain computes `effective_nb_of_units_within_root` in
-canonical order. Construction order of groups is irrelevant.
+section 4). System's computation chain reaches groups via EdgeComponent → root groups
+(see section 8 of same doc). Construction order of groups is irrelevant.
 
 ### 3.2 EdgeDevice: total_nb_of_units_per_ensemble (edge_device.py)
 
@@ -305,6 +318,13 @@ def _find_parent_groups(self):
             if container not in parent_groups:
                 parent_groups.append(container)
     return parent_groups
+
+def _find_root_groups(self):
+    parent_groups = self._find_parent_groups()
+    root_groups = []
+    for group in parent_groups:
+        root_groups += group._find_root_groups()
+    return list(dict.fromkeys(root_groups))
 ```
 
 **Update aggregation methods to multiply by `total_nb_of_units_per_ensemble`:**
@@ -329,13 +349,35 @@ and energy footprint calculations.
 `energy_footprint_breakdown_by_source` and `fabrication_footprint_breakdown_by_source`
 also multiply by `total_nb_of_units_per_ensemble`.
 
-### 3.3 Registration
+### 3.3 EdgeComponent: Route Computation Chain Through Groups
+
+**Update `modeling_objects_whose_attributes_depend_directly_on_me`** (edge_component.py)
+to redirect to root groups when they exist, so that the BFS computation chain goes
+EdgeComponent → root groups → child groups → EdgeDevices:
+
+```python
+@property
+def modeling_objects_whose_attributes_depend_directly_on_me(self):
+    if self.edge_device:
+        root_groups = self.edge_device._find_root_groups()
+        if root_groups:
+            return root_groups
+        return [self.edge_device]
+    return []
+```
+
+When no groups exist, behavior is unchanged (EdgeComponent → EdgeDevice directly).
+
+See [explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)
+section 8 for the full rationale.
+
+### 3.4 Registration
 
 **all_classes_in_order.py:**
 - Add `EdgeDeviceGroup` to `ALL_EFOOTPRINT_CLASSES`
 - Add `EdgeDeviceGroup` to `CANONICAL_COMPUTATION_ORDER` between `EdgeComponent` and `EdgeDevice`
 
-### 3.4 Tests
+### 3.5 Tests
 
 - Test root group: effective_nb = 1.
 - Test nested groups: effective_nb = product of ancestor counts.

@@ -395,7 +395,81 @@ dict). The replacement dict needs its flag set explicitly:
 
 ---
 
-## 8. EdgeDeviceGroup: No `after_init` Override Needed
+## 8. Computation Chain: Discovery and Ordering
+
+### Problem
+
+System's `after_init` builds the computation chain via BFS from
+`self.mod_objs_computation_chain`, which traverses
+`modeling_objects_whose_attributes_depend_directly_on_me`. The current BFS path is:
+
+```
+System → EdgeUsagePattern → ... → RecurrentEdgeComponentNeed → EdgeComponent → EdgeDevice → []
+```
+
+EdgeDeviceGroup is unreachable — never computed during System init.
+
+### Solution: Correct Dependency Chain
+
+The semantically correct dependency direction is:
+
+- **EdgeDeviceGroup → EdgeDevice**: EdgeDevice's `total_nb_of_units_per_ensemble` genuinely
+  depends on group attributes (`effective_nb_of_units_within_root`, `edge_device_counts`).
+- **Parent EdgeDeviceGroup → child EdgeDeviceGroup**: child's `effective_nb` depends on parent's.
+- **EdgeComponent → root EdgeDeviceGroups**: EdgeComponent is the natural handoff point — it's
+  the last object before EdgeDevice in the chain. When groups exist, it redirects to root groups
+  instead of EdgeDevice (since groups will chain to EdgeDevice themselves).
+
+```python
+# EdgeComponent (edge_component.py)
+@property
+def modeling_objects_whose_attributes_depend_directly_on_me(self):
+    if self.edge_device:
+        root_groups = self.edge_device._find_root_groups()
+        if root_groups:
+            return root_groups
+        return [self.edge_device]
+    return []
+
+# EdgeDeviceGroup (edge_device_group.py)
+@property
+def modeling_objects_whose_attributes_depend_directly_on_me(self):
+    return list(self.sub_group_counts.keys()) + list(self.edge_device_counts.keys())
+```
+
+This gives the BFS chain:
+```
+... → EdgeComponent → root_groups → [child_groups, edge_devices] → ...
+```
+
+After `optimize_mod_objs_computation_chain` reorders by `CANONICAL_COMPUTATION_ORDER`:
+root groups → child groups → edge devices. Correct.
+
+When no groups exist, EdgeComponent → EdgeDevice directly (current behavior preserved).
+
+### Helper Methods for Root Group Discovery
+
+```python
+# EdgeDevice (edge_device.py)
+def _find_root_groups(self):
+    parent_groups = self._find_parent_groups()
+    root_groups = []
+    for group in parent_groups:
+        root_groups += group._find_root_groups()
+    return list(dict.fromkeys(root_groups))
+
+# EdgeDeviceGroup (edge_device_group.py)
+def _find_root_groups(self):
+    parent_groups = self._find_parent_groups()
+    if not parent_groups:
+        return [self]  # I am a root group
+    root_groups = []
+    for parent in parent_groups:
+        root_groups += parent._find_root_groups()
+    return list(dict.fromkeys(root_groups))
+```
+
+### No `after_init` Override Needed on EdgeDeviceGroup
 
 The original plan proposed overriding `after_init` on EdgeDeviceGroup to call
 `compute_calculated_attributes()` before System init, with top-down construction order.
@@ -405,8 +479,8 @@ With the infrastructure described above, this is unnecessary:
 - During normal construction: `ABCAfterInitMeta` calls `after_init` which sets
   `trigger_modeling_updates = True` on the object and its input dicts. Calculated attributes
   start as `EmptyExplainableObject`. When System's `after_init` runs, it launches the full
-  computation chain in `CANONICAL_COMPUTATION_ORDER`, which computes
-  `effective_nb_of_units_within_root` at the right time.
+  computation chain which reaches groups via EdgeComponent → root groups, computing
+  `effective_nb_of_units_within_root` in the right order.
 
 - Construction order (top-down vs bottom-up) becomes irrelevant because the computation
   chain handles ordering.
@@ -422,16 +496,21 @@ With the infrastructure described above, this is unnecessary:
 1. Create EdgeDeviceGroups with populated ExplainableObjectDicts
 2. `ABCAfterInitMeta` calls `after_init` → `trigger_modeling_updates = True` on object + dicts
 3. Create remaining objects (needs, journeys, patterns)
-4. Create System → `after_init` → full computation chain → `effective_nb_of_units_within_root` computed
+4. Create System → `after_init` → BFS chain via EdgeComponent → root groups → child groups →
+   edge devices → `effective_nb_of_units_within_root` and `total_nb_of_units_per_ensemble`
+   computed in correct order
 
 ### Live mutation flow (after System exists)
-1. User does `group.sub_group_counts[new_sub_group] = count`
-2. `ExplainableObjectDict.__setitem__` fires `ModelingUpdate`
-3. `compute_mod_objs_computation_chain_from_old_and_new_dicts` diffs keys
-4. Dependent objects (sub_group, edge_devices, system) recomputed in canonical order
+- **Value change** (e.g. `group.sub_group_counts[child] = new_count`):
+  `ModelingUpdate([[old_count, new_count]])` — the SourceValue's `attr_updates_chain` traces
+  through the ExplainableObject computation graph (old_count → child.effective_nb →
+  edge_device.total_nb → ...). No BFS needed.
+- **Structural change** (key add/remove):
+  `ModelingUpdate([[old_dict, new_dict]])` — `compute_mod_objs_computation_chain_from_old_and_new_dicts`
+  diffs keys, builds chain from added/removed objects + container's chain in both states.
 
 ### Deserialization flow
 1. All objects created via `from_json_dict` + `after_init` per object
-2. Deferred dicts populated with `trigger_modeling_updates` temporarily disabled
+2. Deferred dicts populated via `replace_in_mod_obj_container_without_recomputation`
 3. Dict `trigger_modeling_updates` set to True for input dicts
 4. System's `after_init` triggers full computation chain (or values loaded from JSON)
