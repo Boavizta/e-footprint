@@ -163,6 +163,10 @@ class EdgeDevice(ModelingObject):
                 1 * u.dimensionless, f"{self.name} has no group (default count = 1)")
             return
 
+        # Sum contributions from all parent groups. When a device belongs to multiple
+        # groups, its total count is the sum of its count in each group multiplied by
+        # that group's effective number within the root, allowing a device to be shared
+        # across independent group hierarchies with additive counts.
         total = sum(
             [group.edge_device_counts[self] * group.effective_nb_of_units_within_root
              for group in parent_groups],
