@@ -155,8 +155,9 @@ def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_pow
 
 For EdgeCPUComponent:
 ```python
-available_compute = (self.compute - self.base_compute_consumption) * self.nb_of_units
+available_compute = self.compute * self.nb_of_units - self.base_compute_consumption
 ```
+Base consumption is a fixed overhead for the component, not per-unit.
 
 For EdgeRAMComponent: same pattern with `ram` and `base_ram_consumption`.
 
