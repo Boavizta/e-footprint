@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "18.0.0",
+    "efootprint_version": "19.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -1369,10 +1369,19 @@
         "Edge-device-CPU": {
             "name": "Edge device CPU",
             "id": "Edge-device-CPU",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Edge device CPU from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of Edge device CPU from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge device CPU from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1384,28 +1393,37 @@
         "Edge-device-RAM": {
             "name": "Edge device RAM",
             "id": "Edge-device-RAM",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Edge device RAM from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of Edge device RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "power": {
+            "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power of Edge device RAM from e-footprint hypothesis",
+                "label": "Power per unit of Edge device RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power of Edge device RAM from e-footprint hypothesis",
+                "label": "Idle power per unit of Edge device RAM from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge device RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1417,10 +1435,19 @@
         "Edge-SSD-storage": {
             "name": "Edge SSD storage",
             "id": "Edge-SSD-storage",
-            "power": {
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power of Edge SSD storage from e-footprint hypothesis",
+                "label": "Power per unit of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1435,10 +1462,19 @@
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
+                "label": "Idle power per unit of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -1447,16 +1483,16 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from e-footprint hypothesis",
+                "label": "Fabrication carbon footprint per unit of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "storage_capacity": {
+            "storage_capacity_per_unit": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
-                "label": "Storage capacity of Edge SSD storage from e-footprint hypothesis",
+                "label": "Storage capacity per unit of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
