@@ -100,8 +100,9 @@ class EdgeStorage(EdgeComponent):
 
     @property
     def calculated_attributes(self):
-        return ["storage_capacity", "carbon_footprint_fabrication", "cumulative_unitary_storage_need_per_usage_pattern"] + [
-            attr for attr in super().calculated_attributes if attr != "carbon_footprint_fabrication"
+        return ["storage_capacity", "cumulative_unitary_storage_need_per_usage_pattern"] + [
+            attr for attr in super().calculated_attributes
+            if attr not in ["power", "idle_power"]
         ]
 
     def update_storage_capacity(self):

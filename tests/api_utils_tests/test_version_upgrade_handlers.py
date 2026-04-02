@@ -38,8 +38,6 @@ class TestVersionUpgradeHandlers(TestCase):
             },
             "EdgeStorage": {
                 "storage_1": {
-                    "power": {"value": 0.0},
-                    "idle_power": {"value": 0.0},
                     "carbon_footprint_fabrication_per_storage_capacity": {"value": 160.0},
                     "storage_capacity": {"value": 1.0},
                     "base_storage_need": {"value": 100.0},
@@ -77,8 +75,6 @@ class TestVersionUpgradeHandlers(TestCase):
             },
             "EdgeStorage": {
                 "storage_1": {
-                    "power_per_unit": {"value": 0.0},
-                    "idle_power_per_unit": {"value": 0.0},
                     "carbon_footprint_fabrication_per_storage_capacity": {"value": 160.0},
                     "storage_capacity_per_unit": {"value": 1.0},
                     "base_storage_need": {"value": 100.0},
