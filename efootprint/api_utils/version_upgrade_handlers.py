@@ -389,8 +389,55 @@ def upgrade_version_17_to_18(system_dict, efootprint_classes_dict=None):
 
 
 def upgrade_version_18_to_19(system_dict, efootprint_classes_dict=None):
-    # TODO: for next version upgrade logic, add in json to system tests a check that ensures that when saving again
-    # the same system dict is obtained (upgraded dict == saved dict after upgrade)
+    log_upgrade = False
+    base_edge_component_renames = {
+        "carbon_footprint_fabrication": "carbon_footprint_fabrication_per_unit",
+        "power": "power_per_unit",
+        "idle_power": "idle_power_per_unit",
+    }
+    class_specific_renames = {
+        "EdgeCPUComponent": {"compute": "compute_per_unit"},
+        "EdgeComputerCPUComponent": {"compute": "compute_per_unit"},
+        "EdgeRAMComponent": {"ram": "ram_per_unit"},
+        "EdgeComputerRAMComponent": {"ram": "ram_per_unit"},
+        "EdgeStorage": {"storage_capacity": "storage_capacity_per_unit"},
+    }
+    edge_component_classes = {
+        "EdgeCPUComponent",
+        "EdgeComputerCPUComponent",
+        "EdgeRAMComponent",
+        "EdgeComputerRAMComponent",
+        "EdgeWorkloadComponent",
+        "EdgeApplianceComponent",
+        "EdgeStorage",
+    }
+
+    for class_name, objects_dict in system_dict.items():
+        if class_name == "efootprint_version" or not isinstance(objects_dict, dict):
+            continue
+
+        renames = {}
+        if class_name in edge_component_classes:
+            renames.update(base_edge_component_renames)
+        elif class_name == "EdgeStorage":
+            renames.update({"power": "power_per_unit", "idle_power": "idle_power_per_unit"})
+        renames.update(class_specific_renames.get(class_name, {}))
+
+        for obj_dict in objects_dict.values():
+            for old_attr, new_attr in renames.items():
+                if old_attr in obj_dict and new_attr not in obj_dict:
+                    rename_dict_key(obj_dict, old_attr, new_attr)
+                    log_upgrade = True
+            if class_name in edge_component_classes and "nb_of_units" not in obj_dict:
+                obj_dict["nb_of_units"] = SourceValue(1 * u.dimensionless).to_json()
+                log_upgrade = True
+
+    if log_upgrade:
+        logger.info(
+            "Upgraded system dict from version 18 to 19: renamed edge component aggregate inputs to "
+            "their per-unit counterparts, migrated EdgeStorage storage_capacity to "
+            "storage_capacity_per_unit, and backfilled nb_of_units=1 on edge components."
+        )
     return system_dict
 
 
@@ -404,4 +451,5 @@ VERSION_UPGRADE_HANDLERS = {
     15: upgrade_version_15_to_16,
     16: upgrade_version_16_to_17,
     17: upgrade_version_17_to_18,
+    18: upgrade_version_18_to_19,
 }

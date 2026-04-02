@@ -179,8 +179,8 @@ class TestEdgeDevice(TestCase):
             mock_pattern: create_source_hourly_values_from_list([10, 10], pint_unit=u.concurrent)
         }
 
-        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
         self.edge_device.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(mock_pattern)
         self.edge_device.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
@@ -206,10 +206,10 @@ class TestEdgeDevice(TestCase):
         component_1_footprint = create_source_hourly_values_from_list([5, 5], pint_unit=u.kg)
         component_2_footprint = create_source_hourly_values_from_list([8, 8], pint_unit=u.kg)
 
-        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_1_footprint
         })
-        self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_2_footprint
         })
 
@@ -228,8 +228,8 @@ class TestEdgeDevice(TestCase):
         """Test energy calculation with no component contributions."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
-        self.mock_component_1.instances_energy_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.instances_energy_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_1.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_2.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
         self.edge_device.update_dict_element_in_instances_energy_per_usage_pattern(mock_pattern)
 
@@ -243,10 +243,10 @@ class TestEdgeDevice(TestCase):
         component_1_energy = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
         component_2_energy = create_source_hourly_values_from_list([50, 100], pint_unit=u.Wh)
 
-        self.mock_component_1.instances_energy_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_1_energy
         })
-        self.mock_component_2.instances_energy_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_2.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_2_energy
         })
 
@@ -261,8 +261,8 @@ class TestEdgeDevice(TestCase):
 
     def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
         """Test per-component fabrication breakdown splits structure equally across components."""
-        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
-        self.mock_component_2.instances_fabrication_footprint = SourceValue(10 * u.kg)
+        self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
+        self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
         self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
 
         self.edge_device.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
@@ -275,8 +275,8 @@ class TestEdgeDevice(TestCase):
 
     def test_update_fabrication_footprint_breakdown_by_source(self):
         """Test fabrication breakdown updates every component contribution."""
-        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
-        self.mock_component_2.instances_fabrication_footprint = SourceValue(10 * u.kg)
+        self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
+        self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
         self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
 
         self.edge_device.update_fabrication_footprint_breakdown_by_source()
@@ -305,8 +305,8 @@ class TestEdgeDevice(TestCase):
         """Test energy footprint calculation with no component contributions."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
 
-        self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        self.mock_component_2.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_1.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
+        self.mock_component_2.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
 
         self.edge_device.update_dict_element_in_energy_footprint_per_usage_pattern(mock_pattern)
 
@@ -320,10 +320,10 @@ class TestEdgeDevice(TestCase):
         component_1_footprint = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
         component_2_footprint = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
 
-        self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_1_footprint
         })
-        self.mock_component_2.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_2.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern: component_2_footprint
         })
 
@@ -404,7 +404,7 @@ class TestEdgeDevice(TestCase):
         """Test edge device distributes component fabrication impact across its own recurrent needs."""
         pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
-        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             pattern_1: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
             pattern_2: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
         })
@@ -444,10 +444,10 @@ class TestEdgeDevice(TestCase):
             self, mock_component_needs):
         """Test edge device fabrication repartition gives each component an equal structure share before need splits."""
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
-        self.mock_component_1.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([4, 4], pint_unit=u.kg),
         })
-        self.mock_component_2.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_2.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             pattern: create_source_hourly_values_from_list([8, 8], pint_unit=u.kg),
         })
         self.mock_component_1.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
@@ -499,10 +499,10 @@ class TestEdgeDevice(TestCase):
         """Test edge device usage repartition reflects per-pattern energy impact and intra-component need shares."""
         pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2")
-        self.mock_component_1.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_1.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             pattern_1: create_source_hourly_values_from_list([2, 2], pint_unit=u.kg),
         })
-        self.mock_component_2.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.mock_component_2.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             pattern_2: create_source_hourly_values_from_list([6, 6], pint_unit=u.kg),
         })
         self.mock_component_1.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict({
@@ -542,10 +542,10 @@ class TestEdgeDevice(TestCase):
         """Test footprint_breakdown_by_source conserves computed device fabrication and keeps energy unchanged."""
         self.edge_device.instances_fabrication_footprint = SourceValue(110 * u.kg)
         self.edge_device.energy_footprint = SourceValue(6 * u.kg)
-        self.mock_component_1.instances_fabrication_footprint = SourceValue(4 * u.kg)
-        self.mock_component_2.instances_fabrication_footprint = SourceValue(6 * u.kg)
-        self.mock_component_1.energy_footprint = SourceValue(1 * u.kg)
-        self.mock_component_2.energy_footprint = SourceValue(5 * u.kg)
+        self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
+        self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(6 * u.kg)
+        self.mock_component_1.energy_footprint_per_edge_device = SourceValue(1 * u.kg)
+        self.mock_component_2.energy_footprint_per_edge_device = SourceValue(5 * u.kg)
         self.edge_device.update_fabrication_footprint_breakdown_by_source()
 
         breakdown = self.edge_device.footprint_breakdown_by_source

@@ -21,53 +21,76 @@ class TestEdgeStorage(TestCase):
     def setUp(self):
         self.edge_storage = EdgeStorage(
             name="Test EdgeStorage",
-            storage_capacity=SourceValue(1 * u.TB),
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB),
-            base_storage_need=SourceValue(0 * u.TB),
+            storage_capacity_per_unit=SourceValue(1 * u.TB_stored),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
+            base_storage_need=SourceValue(0 * u.TB_stored),
             lifespan=SourceValue(6 * u.years)
         )
         self.edge_storage.trigger_modeling_updates = False
+        self.edge_storage.update_storage_capacity()
+        self.edge_storage.update_carbon_footprint_fabrication()
 
     def test_init(self):
         """Test EdgeStorage initialization."""
         self.assertEqual("Test EdgeStorage", self.edge_storage.name)
-        self.assertEqual(1 * u.TB, self.edge_storage.storage_capacity.value)
-        self.assertEqual(160 * u.kg / u.TB, self.edge_storage.carbon_footprint_fabrication_per_storage_capacity.value)
-        self.assertEqual(0 * u.TB, self.edge_storage.base_storage_need.value)
+        self.assertEqual(1 * u.TB_stored, self.edge_storage.storage_capacity_per_unit.value)
+        self.assertEqual(1 * u.TB_stored, self.edge_storage.storage_capacity.value)
+        self.assertEqual(
+            160 * u.kg / u.TB_stored,
+            self.edge_storage.carbon_footprint_fabrication_per_storage_capacity.value,
+        )
+        self.assertEqual(0 * u.TB_stored, self.edge_storage.base_storage_need.value)
         self.assertEqual(6 * u.years, self.edge_storage.lifespan.value)
+        self.assertEqual(1 * u.dimensionless, self.edge_storage.nb_of_units.value)
         self.assertIsInstance(self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern, dict)
 
     def test_ssd_classmethod(self):
         """Test SSD factory method."""
         ssd = EdgeStorage.ssd(name="Custom SSD")
+        ssd.update_storage_capacity()
         self.assertEqual("Custom SSD", ssd.name)
-        self.assertEqual(160 * u.kg / u.TB, ssd.carbon_footprint_fabrication_per_storage_capacity.value)
+        self.assertEqual(
+            160 * u.kg / u.TB_stored,
+            ssd.carbon_footprint_fabrication_per_storage_capacity.value,
+        )
         self.assertEqual(6 * u.years, ssd.lifespan.value)
-        self.assertEqual(1 * u.TB, ssd.storage_capacity.value)
-        self.assertEqual(0 * u.TB, ssd.base_storage_need.value)
+        self.assertEqual(1 * u.TB_stored, ssd.storage_capacity.value)
+        self.assertEqual(0 * u.TB_stored, ssd.base_storage_need.value)
 
     def test_ssd_classmethod_with_kwargs(self):
         """Test SSD factory method with custom parameters."""
-        ssd = EdgeStorage.ssd(name="Custom SSD with kwargs", storage_capacity=SourceValue(2 * u.TB),
+        ssd = EdgeStorage.ssd(name="Custom SSD with kwargs", storage_capacity_per_unit=SourceValue(2 * u.TB_stored),
                               lifespan=SourceValue(8 * u.years))
-        self.assertEqual(2 * u.TB, ssd.storage_capacity.value)
+        ssd.update_storage_capacity()
+        self.assertEqual(2 * u.TB_stored, ssd.storage_capacity.value)
         self.assertEqual(8 * u.years, ssd.lifespan.value)
-        self.assertEqual(160 * u.kg / u.TB, ssd.carbon_footprint_fabrication_per_storage_capacity.value)
+        self.assertEqual(
+            160 * u.kg / u.TB_stored,
+            ssd.carbon_footprint_fabrication_per_storage_capacity.value,
+        )
 
     def test_hdd_classmethod(self):
         """Test HDD factory method."""
         hdd = EdgeStorage.hdd(name="Custom HDD")
+        hdd.update_storage_capacity()
         self.assertEqual("Custom HDD", hdd.name)
-        self.assertEqual(20 * u.kg / u.TB, hdd.carbon_footprint_fabrication_per_storage_capacity.value)
+        self.assertEqual(
+            20 * u.kg / u.TB_stored,
+            hdd.carbon_footprint_fabrication_per_storage_capacity.value,
+        )
         self.assertEqual(4 * u.years, hdd.lifespan.value)
-        self.assertEqual(1 * u.TB, hdd.storage_capacity.value)
-        self.assertEqual(0 * u.TB, hdd.base_storage_need.value)
+        self.assertEqual(1 * u.TB_stored, hdd.storage_capacity.value)
+        self.assertEqual(0 * u.TB_stored, hdd.base_storage_need.value)
 
     def test_hdd_classmethod_with_kwargs(self):
         """Test HDD factory method with custom parameters."""
-        hdd = EdgeStorage.hdd(name="Custom HDD with kwargs", storage_capacity=SourceValue(4 * u.TB))
-        self.assertEqual(4 * u.TB, hdd.storage_capacity.value)
-        self.assertEqual(20 * u.kg / u.TB, hdd.carbon_footprint_fabrication_per_storage_capacity.value)
+        hdd = EdgeStorage.hdd(name="Custom HDD with kwargs", storage_capacity_per_unit=SourceValue(4 * u.TB_stored))
+        hdd.update_storage_capacity()
+        self.assertEqual(4 * u.TB_stored, hdd.storage_capacity.value)
+        self.assertEqual(
+            20 * u.kg / u.TB_stored,
+            hdd.carbon_footprint_fabrication_per_storage_capacity.value,
+        )
 
     def test_archetypes(self):
         """Test archetypes method returns both factory methods."""
@@ -78,9 +101,11 @@ class TestEdgeStorage(TestCase):
 
     def test_update_carbon_footprint_fabrication(self):
         """Test update_carbon_footprint_fabrication calculation."""
-        with patch.object(self.edge_storage, "carbon_footprint_fabrication_per_storage_capacity",
-                          SourceValue(100 * u.kg / u.TB)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(2 * u.TB)):
+        with patch.object(
+            self.edge_storage,
+            "carbon_footprint_fabrication_per_storage_capacity",
+            SourceValue(100 * u.kg / u.TB_stored),
+        ), patch.object(self.edge_storage, "storage_capacity", SourceValue(2 * u.TB_stored)):
             self.edge_storage.update_carbon_footprint_fabrication()
 
             # Formula: 100 kg/TB * 2 TB = 200 kg
@@ -88,6 +113,17 @@ class TestEdgeStorage(TestCase):
             self.assertEqual(u.kg, self.edge_storage.carbon_footprint_fabrication.value.units)
             self.assertEqual("Carbon footprint of Test EdgeStorage",
                              self.edge_storage.carbon_footprint_fabrication.label)
+
+    def test_update_carbon_footprint_fabrication_with_nb_of_units(self):
+        """Test update_carbon_footprint_fabrication multiplies by nb_of_units."""
+        self.edge_storage.carbon_footprint_fabrication_per_storage_capacity = SourceValue(100 * u.kg / u.TB_stored)
+        self.edge_storage.storage_capacity_per_unit = SourceValue(2 * u.TB_stored)
+        self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.edge_storage.update_storage_capacity()
+
+        self.edge_storage.update_carbon_footprint_fabrication()
+
+        self.assertAlmostEqual(600, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
 
     def test_recurrent_edge_storage_needs_raises_for_non_storage_component_need(self):
         """Test recurrent_edge_storage_needs raises when a non-storage component need is linked."""
@@ -162,6 +198,27 @@ class TestEdgeStorage(TestCase):
         self.assertEqual("storage capacity", ctx.exception.capacity_type)
         self.assertEqual(self.edge_storage, ctx.exception.overloaded_object)
         self.assertEqual(90 * u.GB, ctx.exception.requested_capacity.value)
+        set_modeling_obj_containers(self.edge_storage, [])
+
+    def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_nb_of_units(self):
+        """Test storage capacity validation multiplies storage capacity by nb_of_units."""
+        usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern capacity units", id="pattern_capacity_units")
+        mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need capacity units", id="need_capacity_units")
+        mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
+            usage_pattern: create_source_hourly_values_from_list([80, 120], pint_unit=u.GB)
+        }
+        set_modeling_obj_containers(self.edge_storage, [mock_need])
+        self.edge_storage.base_storage_need = SourceValue(0 * u.GB)
+        self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
+        self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.edge_storage.update_storage_capacity()
+
+        self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
+
+        self.assertTrue(np.allclose(
+            [80, 120],
+            self.edge_storage.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern].value_as_float_list,
+        ))
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_cumulative_unitary_storage_need_per_usage_pattern_with_two_deployments(self):

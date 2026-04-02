@@ -1,12 +1,92 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
-    upgrade_version_15_to_16, upgrade_version_16_to_17
+    upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.constants.units import u
 
 from unittest import TestCase
 
 
 class TestVersionUpgradeHandlers(TestCase):
+    def test_upgrade_18_to_19(self):
+        input_dict = {
+            "EdgeCPUComponent": {
+                "cpu_1": {
+                    "carbon_footprint_fabrication": {"value": 20.0},
+                    "power": {"value": 50.0},
+                    "idle_power": {"value": 10.0},
+                    "compute": {"value": 8.0},
+                    "base_compute_consumption": {"value": 1.0},
+                }
+            },
+            "EdgeRAMComponent": {
+                "ram_1": {
+                    "carbon_footprint_fabrication": {"value": 10.0},
+                    "power": {"value": 0.0},
+                    "idle_power": {"value": 0.0},
+                    "ram": {"value": 16.0},
+                    "base_ram_consumption": {"value": 2.0},
+                }
+            },
+            "EdgeWorkloadComponent": {
+                "workload_1": {
+                    "carbon_footprint_fabrication": {"value": 100.0},
+                    "power": {"value": 50.0},
+                    "idle_power": {"value": 5.0},
+                }
+            },
+            "EdgeStorage": {
+                "storage_1": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {"value": 160.0},
+                    "storage_capacity": {"value": 1.0},
+                    "base_storage_need": {"value": 100.0},
+                }
+            },
+        }
+        expected_output = {
+            "EdgeCPUComponent": {
+                "cpu_1": {
+                    "carbon_footprint_fabrication_per_unit": {"value": 20.0},
+                    "power_per_unit": {"value": 50.0},
+                    "idle_power_per_unit": {"value": 10.0},
+                    "compute_per_unit": {"value": 8.0},
+                    "base_compute_consumption": {"value": 1.0},
+                    "nb_of_units": SourceValue(1 * u.dimensionless).to_json(),
+                }
+            },
+            "EdgeRAMComponent": {
+                "ram_1": {
+                    "carbon_footprint_fabrication_per_unit": {"value": 10.0},
+                    "power_per_unit": {"value": 0.0},
+                    "idle_power_per_unit": {"value": 0.0},
+                    "ram_per_unit": {"value": 16.0},
+                    "base_ram_consumption": {"value": 2.0},
+                    "nb_of_units": SourceValue(1 * u.dimensionless).to_json(),
+                }
+            },
+            "EdgeWorkloadComponent": {
+                "workload_1": {
+                    "carbon_footprint_fabrication_per_unit": {"value": 100.0},
+                    "power_per_unit": {"value": 50.0},
+                    "idle_power_per_unit": {"value": 5.0},
+                    "nb_of_units": SourceValue(1 * u.dimensionless).to_json(),
+                }
+            },
+            "EdgeStorage": {
+                "storage_1": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {"value": 160.0},
+                    "storage_capacity_per_unit": {"value": 1.0},
+                    "base_storage_need": {"value": 100.0},
+                    "nb_of_units": SourceValue(1 * u.dimensionless).to_json(),
+                }
+            },
+        }
+
+        output_dict = upgrade_version_18_to_19(input_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
     def test_upgrade_9_to_10(self):
         input_dict = {"a": {"key": {"key": 1}}, "Hardware": {"key": {"key": 2}}}
         expected_output = {"a": {"key": {"key": 1}}, "Device": {"key": {"key": 2}}}

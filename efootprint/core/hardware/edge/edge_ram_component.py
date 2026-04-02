@@ -15,19 +15,25 @@ if TYPE_CHECKING:
 class EdgeRAMComponent(EdgeComponent):
     compatible_root_units = [u.bit_ram]
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(20 * u.kg),
-        "power": SourceValue(10 * u.W),
+        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "power_per_unit": SourceValue(10 * u.W),
         "lifespan": SourceValue(6 * u.year),
-        "idle_power": SourceValue(2 * u.W),
-        "ram": SourceValue(8 * u.GB_ram),
+        "idle_power_per_unit": SourceValue(2 * u.W),
+        "nb_of_units": SourceValue(1 * u.dimensionless),
+        "ram_per_unit": SourceValue(8 * u.GB_ram),
         "base_ram_consumption": SourceValue(1 * u.GB_ram),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
-                 ram: ExplainableQuantity, base_ram_consumption: ExplainableQuantity):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, idle_power)
-        self.ram = ram.set_label(f"RAM of {self.name}").to(u.GB_ram)
+    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
+                 power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 idle_power_per_unit: ExplainableQuantity, ram_per_unit: ExplainableQuantity,
+                 base_ram_consumption: ExplainableQuantity,
+                 nb_of_units: ExplainableQuantity | None = None):
+        super().__init__(
+            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            nb_of_units=nb_of_units)
+        self.ram_per_unit = ram_per_unit.set_label(f"RAM per unit of {self.name}").to(u.GB_ram)
+        self.ram = EmptyExplainableObject()
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
 
         self.available_ram_per_instance = EmptyExplainableObject()
@@ -35,13 +41,16 @@ class EdgeRAMComponent(EdgeComponent):
 
     @property
     def calculated_attributes(self):
-        return ["available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"] + super().calculated_attributes
+        return ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"] + super().calculated_attributes
+
+    def update_ram(self):
+        self.ram = (self.ram_per_unit * self.nb_of_units).set_label(f"RAM of {self.name}")
 
     def update_available_ram_per_instance(self):
-        available_ram_per_instance = (self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram))
+        available_ram_per_instance = self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram)
 
         if available_ram_per_instance < SourceValue(0 * u.B_ram):
-            raise InsufficientCapacityError(self, "RAM", self.ram, self.base_ram_consumption)
+            raise InsufficientCapacityError(self, "RAM", self.ram.to(u.GB_ram), self.base_ram_consumption)
 
         self.available_ram_per_instance = available_ram_per_instance.set_label(
             f"Available RAM per {self.name} instance")

@@ -14,23 +14,24 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=SourceValue(0 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            power_per_unit=SourceValue(0 * u.W),
             lifespan=SourceValue(1 * u.year),
-            idle_power=SourceValue(0 * u.W),
-            ram=SourceValue(1 * u.GB_ram),
+            idle_power_per_unit=SourceValue(0 * u.W),
+            nb_of_units=SourceValue(1 * u.dimensionless),
+            ram_per_unit=SourceValue(1 * u.GB_ram),
             base_ram_consumption=SourceValue(0 * u.GB_ram))
 
     @property
     def calculated_attributes(self):
-        return ["ram", "base_ram_consumption", "lifespan"] + super().calculated_attributes
+        return ["ram_per_unit", "base_ram_consumption", "lifespan"] + super().calculated_attributes
 
-    def update_ram(self):
+    def update_ram_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.ram = self.edge_device.ram.copy().set_label(f"RAM of {self.name}")
+            self.ram_per_unit = self.edge_device.ram.copy().set_label(f"RAM per unit of {self.name}")
         else:
-            self.ram = EmptyExplainableObject()
+            self.ram_per_unit = EmptyExplainableObject()
 
     def update_base_ram_consumption(self):
         edge_device = self.edge_device
@@ -52,23 +53,24 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=SourceValue(1 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            power_per_unit=SourceValue(1 * u.W),
             lifespan=SourceValue(1 * u.year),
-            idle_power=SourceValue(0 * u.W),
-            compute=SourceValue(1 * u.cpu_core),
+            idle_power_per_unit=SourceValue(0 * u.W),
+            nb_of_units=SourceValue(1 * u.dimensionless),
+            compute_per_unit=SourceValue(1 * u.cpu_core),
             base_compute_consumption=SourceValue(0 * u.cpu_core))
 
     @property
     def calculated_attributes(self):
-        return ["compute", "base_compute_consumption", "lifespan", "power", "idle_power"] + super().calculated_attributes
+        return ["compute_per_unit", "base_compute_consumption", "lifespan", "power_per_unit", "idle_power_per_unit"] + super().calculated_attributes
 
-    def update_compute(self):
+    def update_compute_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.compute = edge_device.compute.copy().set_label(f"Compute of {self.name}")
+            self.compute_per_unit = edge_device.compute.copy().set_label(f"Compute per unit of {self.name}")
         else:
-            self.compute = EmptyExplainableObject()
+            self.compute_per_unit = EmptyExplainableObject()
 
     def update_base_compute_consumption(self):
         edge_device = self.edge_device
@@ -85,20 +87,20 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         else:
             self.lifespan = EmptyExplainableObject()
 
-    def update_power(self):
+    def update_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.power = self.edge_device.power.copy().set_label(f"Power of {self.name}")
+            self.power_per_unit = self.edge_device.power.copy().set_label(f"Power per unit of {self.name}")
         else:
-            self.power = EmptyExplainableObject()
+            self.power_per_unit = EmptyExplainableObject()
 
 
-    def update_idle_power(self):
+    def update_idle_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power = self.edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+            self.idle_power_per_unit = self.edge_device.idle_power.copy().set_label(f"Idle power per unit of {self.name}")
         else:
-            self.idle_power = EmptyExplainableObject()
+            self.idle_power_per_unit = EmptyExplainableObject()
 
 
 class EdgeComputer(EdgeDevice):

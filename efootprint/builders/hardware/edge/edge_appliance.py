@@ -10,28 +10,29 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
     def __init__(self, name: str):
         super().__init__(
             name=name,
-            carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=SourceValue(1 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            power_per_unit=SourceValue(1 * u.W),
             lifespan=SourceValue(1 * u.year),
-            idle_power=SourceValue(0 * u.W))
+            idle_power_per_unit=SourceValue(0 * u.W),
+            nb_of_units=SourceValue(1 * u.dimensionless))
 
     @property
     def calculated_attributes(self):
-        return ["power", "idle_power", "lifespan"] + super().calculated_attributes
+        return ["power_per_unit", "idle_power_per_unit", "lifespan"] + super().calculated_attributes
 
-    def update_power(self):
+    def update_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.power = edge_device.power.copy().set_label(f"Power of {self.name}")
+            self.power_per_unit = edge_device.power.copy().set_label(f"Power per unit of {self.name}")
         else:
-            self.power = EmptyExplainableObject()
+            self.power_per_unit = EmptyExplainableObject()
 
-    def update_idle_power(self):
+    def update_idle_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power = edge_device.idle_power.copy().set_label(f"Idle power of {self.name}")
+            self.idle_power_per_unit = edge_device.idle_power.copy().set_label(f"Idle power per unit of {self.name}")
         else:
-            self.idle_power = EmptyExplainableObject()
+            self.idle_power_per_unit = EmptyExplainableObject()
 
     def update_lifespan(self):
         edge_device = self.edge_device
