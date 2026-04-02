@@ -11,6 +11,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
 
     def __init__(self, input_dict=None):
         super().__init__()
+        self.trigger_modeling_updates = False
         if input_dict is not None:
             for key, value in input_dict.items():
                 self[key] = value
@@ -61,8 +62,26 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             raise ValueError(
                 f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
                 f"received {type(value)}")
+
+        if self.trigger_modeling_updates:
+            if key in self:
+                # Value update on existing key: old value's attr_updates_chain already traces downstream
+                from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+                ModelingUpdate([[self[key], value]])
+            else:
+                # Structural change: new key — full dict replacement so compute chain can diff keys
+                from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+                new_dict = ExplainableObjectDict()
+                for k, v in self.items():
+                    dict.__setitem__(new_dict, k, v)
+                dict.__setitem__(new_dict, key, value)
+                new_dict.trigger_modeling_updates = self.trigger_modeling_updates
+                ModelingUpdate([[self, new_dict]])
+            return
+
+        # Original passive logic (unchanged)
         if key in self and self.modeling_obj_container is not None:
-            self[key].set_modeling_obj_container(None, None)  # Remove the old modeling object container
+            self[key].set_modeling_obj_container(None, None)
         super().__setitem__(key, value)
         if self.modeling_obj_container is not None:
             value.set_modeling_obj_container(
@@ -70,12 +89,27 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         self._add_self_to_key_containers(key)
 
     def __delitem__(self, key):
+        if self.trigger_modeling_updates:
+            from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
+            new_dict = ExplainableObjectDict()
+            for k, v in self.items():
+                if k != key:
+                    dict.__setitem__(new_dict, k, v)
+            new_dict.trigger_modeling_updates = self.trigger_modeling_updates
+            ModelingUpdate([[self, new_dict]])
+            return
+
+        # Original passive logic (unchanged)
         if self.modeling_obj_container is not None:
             self[key].set_modeling_obj_container(None, None)
         super().__delitem__(key)
         self._remove_self_from_key_containers(key)
 
     def pop(self, key, *args):
+        if self.trigger_modeling_updates and key in self:
+            value = self[key]
+            self.__delitem__(key)
+            return value
         if key in self:
             value = self[key]
             self.__delitem__(key)

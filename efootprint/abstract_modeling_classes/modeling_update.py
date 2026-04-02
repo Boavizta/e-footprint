@@ -125,6 +125,10 @@ class ModelingUpdate:
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
                 self.changes_list[index][1] = ListLinkedToModelingObj(new_value)
+            if isinstance(new_value, dict):
+                from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict as EOD
+                if not isinstance(new_value, EOD):
+                    self.changes_list[index][1] = EOD(new_value)
             if isinstance(new_value, ModelingObject):
                 self.changes_list[index][1] = ContextualModelingObjectAttribute(new_value)
                 if old_value.attr_name_in_mod_obj_container in mod_obj_container.attribute_update_entanglements:
@@ -152,6 +156,7 @@ class ModelingUpdate:
 
     def compute_mod_objs_computation_chain(self):
         from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         mod_objs_computation_chain = []
         for old_value, new_value in self.changes_list:
             if isinstance(old_value, ContextualModelingObjectAttribute):
@@ -161,6 +166,10 @@ class ModelingUpdate:
             elif isinstance(old_value, ListLinkedToModelingObj):
                 mod_objs_computation_chain += (
                     old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_lists(
+                        old_value, new_value, optimize_chain=False))
+            elif isinstance(old_value, ExplainableObjectDict):
+                mod_objs_computation_chain += (
+                    old_value.modeling_obj_container.compute_mod_objs_computation_chain_from_old_and_new_dicts(
                         old_value, new_value, optimize_chain=False))
 
         optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)

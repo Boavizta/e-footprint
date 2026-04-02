@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes):
+    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
     mod_obj_class = mod_obj.class_as_simple_str
     if mod_obj_class not in output_dict:
         output_dict[mod_obj_class] = {}
@@ -16,6 +17,15 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
             elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], ModelingObject):
                 for mod_obj_elt in value:
                     recursively_write_json_dict(output_dict, mod_obj_elt, save_calculated_attributes)
+            elif isinstance(value, ExplainableObjectDict):
+                for dict_key in value:
+                    if isinstance(dict_key, ModelingObject):
+                        recursively_write_json_dict(output_dict, dict_key, save_calculated_attributes)
+        # Also discover parent groups via explainable_object_dicts_containers
+        for dict_container in mod_obj.explainable_object_dicts_containers:
+            container = dict_container.modeling_obj_container
+            if container is not None and isinstance(container, ModelingObject):
+                recursively_write_json_dict(output_dict, container, save_calculated_attributes)
 
     return output_dict
 

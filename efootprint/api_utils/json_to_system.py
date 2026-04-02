@@ -126,10 +126,20 @@ def json_to_system(
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         explainable_object_dict = ExplainableObjectDict(
             {flat_obj_dict[key]: ExplainableObject.from_json_dict(value) for key, value in attr_value.items()})
-        modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+
+        current_dict = getattr(modeling_obj, attr_key, None)
+        if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
+            current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
+        else:
+            modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
-                explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
+            explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
+
+        # Enable live updates on input dicts (those not in calculated_attributes)
+        if attr_key not in modeling_obj.calculated_attributes:
+            explainable_object_dict.trigger_modeling_updates = True
 
     for system in class_obj_dict["System"].values():
         system.set_initial_and_previous_footprints()
