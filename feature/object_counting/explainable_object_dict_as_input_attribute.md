@@ -61,10 +61,10 @@ def __setitem__(self, key, value: ExplainableObject):
         else:
             # Structural change: new key
             new_dict = ExplainableObjectDict()
-            new_dict.trigger_modeling_updates = False
             for k, v in self.items():
                 new_dict[k] = v
             new_dict[key] = value
+            new_dict.trigger_modeling_updates = self.trigger_modeling_updates
             ModelingUpdate([[self, new_dict]])
         return
 
@@ -87,10 +87,10 @@ Structural change: full dict replacement.
 def __delitem__(self, key):
     if self.trigger_modeling_updates:
         new_dict = ExplainableObjectDict()
-        new_dict.trigger_modeling_updates = False
         for k, v in self.items():
             if k != key:
                 new_dict[k] = v
+        new_dict.trigger_modeling_updates = self.trigger_modeling_updates
         ModelingUpdate([[self, new_dict]])
         return
 
@@ -105,6 +105,31 @@ def __delitem__(self, key):
 
 Follow the same pattern: delegate to `__delitem__`/`__setitem__` when
 `trigger_modeling_updates=True`, which now handle triggering.
+
+### `replace_in_mod_obj_container_without_recomputation`: Guard Against Re-entry
+
+**File:** `efootprint/abstract_modeling_classes/object_linked_to_modeling_obj.py`
+
+When `ModelingUpdate.apply_changes()` replaces a value inside an ExplainableObjectDict via
+`replace_in_mod_obj_container_without_recomputation`, it calls
+`dict_container[self.key_in_dict] = new_value` (line 183). If `trigger_modeling_updates=True`
+on the dict, this re-enters `__setitem__` and triggers another `ModelingUpdate` → infinite loop.
+
+The fix mirrors the existing list guard (lines 188-192): temporarily disable
+`trigger_modeling_updates` on the dict container:
+
+```python
+if dict_container is not None:
+    if self.key_in_dict not in dict_container:
+        raise KeyError(...)
+    initial_trigger = dict_container.trigger_modeling_updates
+    dict_container.trigger_modeling_updates = False
+    dict_container[self.key_in_dict] = new_value
+    dict_container.trigger_modeling_updates = initial_trigger
+```
+
+This is needed regardless of whether the dict is an input or calculated attribute — it's
+a general safety guard for any ExplainableObjectDict with `trigger_modeling_updates=True`.
 
 ---
 
@@ -154,29 +179,30 @@ def compute_mod_objs_computation_chain(self):
 
 ---
 
-## 3. ModelingObject: New Method for Dict Computation Chains
+## 3. ModelingObject: Factor List/Dict Computation Chain Logic
 
 **File:** `efootprint/abstract_modeling_classes/modeling_object.py`
 
-Structurally mirrors `compute_mod_objs_computation_chain_from_old_and_new_lists`
-(line 566-592):
+`compute_mod_objs_computation_chain_from_old_and_new_lists` (line 566-592) and the new dict
+variant share identical structure. Extract the common logic into a private method, then have
+both delegate to it:
 
 ```python
-def compute_mod_objs_computation_chain_from_old_and_new_dicts(
-        self, old_value: "ExplainableObjectDict", input_value: "ExplainableObjectDict",
+def _compute_mod_objs_computation_chain_from_old_and_new_collection(
+        self, old_value, input_value, old_mod_objs, new_mod_objs,
         optimize_chain=True) -> List[Type["ModelingObject"]]:
-    old_mod_obj_keys = {k for k in old_value if isinstance(k, ModelingObject)}
-    new_mod_obj_keys = {k for k in input_value if isinstance(k, ModelingObject)}
-    removed_objs = old_mod_obj_keys - new_mod_obj_keys
-    added_objs = new_mod_obj_keys - old_mod_obj_keys
+    removed_objs = [obj for obj in old_mod_objs if obj not in new_mod_objs]
+    added_objs = [obj for obj in new_mod_objs if obj not in old_mod_objs]
 
     mod_objs_computation_chain = []
-    for obj in removed_objs | added_objs:
+    for obj in removed_objs + added_objs:
         if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
             mod_objs_computation_chain += obj.mod_objs_computation_chain
 
-    # Container's chain in both old and new states — dynamic properties may discover
-    # different objects depending on dict contents.
+    # Compute self.mod_objs_computation_chain for both old and new states, because
+    # dynamic properties on self may discover different objects depending on the
+    # collection contents. Old state catches objects being removed, new state
+    # catches objects being added.
     mod_objs_computation_chain += self.mod_objs_computation_chain
     attr_name = old_value.attr_name_in_mod_obj_container
     self.__dict__[attr_name] = input_value
@@ -186,7 +212,25 @@ def compute_mod_objs_computation_chain_from_old_and_new_dicts(
     if optimize_chain:
         return optimize_mod_objs_computation_chain(mod_objs_computation_chain)
     return mod_objs_computation_chain
+
+def compute_mod_objs_computation_chain_from_old_and_new_lists(
+        self, old_value, input_value, optimize_chain=True):
+    return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
+        old_value, input_value,
+        old_mod_objs=list(old_value), new_mod_objs=list(input_value),
+        optimize_chain=optimize_chain)
+
+def compute_mod_objs_computation_chain_from_old_and_new_dicts(
+        self, old_value, input_value, optimize_chain=True):
+    old_mod_obj_keys = [k for k in old_value if isinstance(k, ModelingObject)]
+    new_mod_obj_keys = [k for k in input_value if isinstance(k, ModelingObject)]
+    return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
+        old_value, input_value,
+        old_mod_objs=old_mod_obj_keys, new_mod_objs=new_mod_obj_keys,
+        optimize_chain=optimize_chain)
 ```
+
+The only difference: lists use elements directly, dicts extract ModelingObject keys.
 
 ---
 
