@@ -522,8 +522,9 @@ for ed in edge_devices:
                     edge_device_groups.append(ancestor)
 ```
 
-Include the discovered groups in the returned list. Also add `EdgeDeviceGroup` to `OBJECT_CATEGORIES`
-in `all_classes_in_order.py` if needed for `_objects_by_category`.
+Include the discovered groups in the returned list. Do NOT add `EdgeDeviceGroup` to
+`OBJECT_CATEGORIES` — groups are pure organizational helpers with no own impact, not an
+analysis axis.
 
 ### 5.2 Sankey graphs
 
