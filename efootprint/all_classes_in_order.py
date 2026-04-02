@@ -3,6 +3,7 @@ from copy import copy
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.service_base_class import Service
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
@@ -60,7 +61,7 @@ EDGE_DEVICE_BUILDER_CLASSES = [EdgeAppliance, EdgeComputer]
 ALL_EFOOTPRINT_CLASSES = (
         [UsageJourneyStep, UsageJourney, Device, Country, UsagePattern]
         + [EdgeUsageJourney, EdgeFunction, EdgeUsagePattern, RecurrentEdgeStorageNeed]
-        + EDGE_COMPONENT_CLASSES + EDGE_COMPUTER_COMPONENT_CLASSES + [EdgeDevice] + EDGE_DEVICE_BUILDER_CLASSES
+        + EDGE_COMPONENT_CLASSES + EDGE_COMPUTER_COMPONENT_CLASSES + [EdgeDevice, EdgeDeviceGroup] + EDGE_DEVICE_BUILDER_CLASSES
         + SERVICE_CLASSES + SERVER_BUILDER_CLASSES + EXTERNAL_API_CLASSES
         + [Job, GPUJob] + [RecurrentEdgeDeviceNeed, RecurrentServerNeed] + RECURRENT_EDGE_COMPONENT_NEED_CLASSES
         + RECURRENT_EDGE_DEVICE_NEED_BUILDER_CLASSES + SERVICE_JOB_CLASSES + EXTERNAL_API_JOB_CLASSES
@@ -72,7 +73,7 @@ CANONICAL_COMPUTATION_ORDER = [
     EdgeUsagePattern, EdgeUsageJourney, EdgeFunction,
     RecurrentEdgeDeviceNeed, RecurrentServerNeed,
     RecurrentEdgeComponentNeed, EdgeComponent,
-    EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage, System]
+    EdgeDeviceGroup, EdgeDevice, Service, JobBase, Network, ExternalAPI, ServerBase, ExternalAPIServer, Storage, System]
 
 ALL_CANONICAL_CLASSES_DICT = {cls.__name__: cls for cls in CANONICAL_COMPUTATION_ORDER}
 ALL_CONCRETE_EFOOTPRINT_CLASSES_DICT = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}

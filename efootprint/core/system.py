@@ -123,10 +123,18 @@ class System(ModelingObject):
             set(sum([redn.recurrent_edge_component_needs for redn in recurrent_edge_device_needs], start=[])))
         edge_devices = self.edge_devices
         edge_devices_components = list(dict.fromkeys(sum([ed.components for ed in edge_devices], start=[])))
+        edge_device_groups = []
+        for ed in edge_devices:
+            for group in ed._find_parent_groups():
+                if group not in edge_device_groups:
+                    edge_device_groups.append(group)
+                    for ancestor in group._find_all_ancestor_groups():
+                        if ancestor not in edge_device_groups:
+                            edge_device_groups.append(ancestor)
         all_modeling_objects = (
                 output_list + edge_usage_journeys + edge_functions + recurrent_edge_device_needs
                 + recurrent_server_needs + recurrent_edge_component_needs
-                + edge_devices + edge_devices_components)
+                + edge_devices + edge_devices_components + edge_device_groups)
 
         return all_modeling_objects
 
