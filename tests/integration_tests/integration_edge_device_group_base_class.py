@@ -184,15 +184,6 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
 
     def run_test_no_groups_backward_compat_total_nb_is_one(self):
         """An EdgeDevice not linked to any group must report total_nb = 1."""
-        from pint import Quantity
-        import numpy as np
-        from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
-        from efootprint.core.usage.edge.edge_function import EdgeFunction
-        from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
-        from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
-        from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
-        from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
-
         cpu = EdgeCPUComponent.from_defaults("ungrouped CPU")
         device = EdgeDevice.from_defaults("ungrouped device", components=[cpu])
         cpu_need = RecurrentEdgeComponentNeed(
