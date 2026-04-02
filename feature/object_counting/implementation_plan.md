@@ -197,20 +197,27 @@ also work unchanged — they read component-level totals which now include nb_of
 
 ### 3.1 New class: EdgeDeviceGroup (efootprint/core/hardware/edge/edge_device_group.py)
 
+**Important:** The init signature uses `ExplainableObjectDict` directly (not
+`List[Tuple[..., ExplainableQuantity]]`) to avoid a self-referential type annotation that would
+deadlock `compute_classes_generation_order`. See
+[explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)
+section 5.
+
 ```python
 class EdgeDeviceGroup(ModelingObject):
     default_values = {}  # No numerical defaults — counts are on the dicts
+    classes_outside_init_params_needed_for_generating_from_json = [EdgeDevice]
 
     def __init__(self, name: str,
-                 sub_groups_with_counts: List[Tuple[EdgeDeviceGroup, ExplainableQuantity]],
-                 edge_devices_with_counts: List[Tuple[EdgeDevice, ExplainableQuantity]]):
+                 sub_group_counts: ExplainableObjectDict = None,
+                 edge_device_counts: ExplainableObjectDict = None):
         super().__init__(name)
-        self.sub_group_counts = ExplainableObjectDict(
-            {group: count.set_label(f"Nb of {group.name} in {self.name}")
-             for group, count in sub_groups_with_counts})
-        self.edge_device_counts = ExplainableObjectDict(
-            {device: count.set_label(f"Nb of {device.name} in {self.name}")
-             for device, count in edge_devices_with_counts})
+        if sub_group_counts is None:
+            sub_group_counts = ExplainableObjectDict()
+        if edge_device_counts is None:
+            edge_device_counts = ExplainableObjectDict()
+        self.sub_group_counts = sub_group_counts
+        self.edge_device_counts = edge_device_counts
         self.effective_nb_of_units_within_root = EmptyExplainableObject()
 
     @property
@@ -254,21 +261,11 @@ def _find_parent_groups(self):
     return parent_groups
 ```
 
-**Override `after_init` to self-compute:**
-
-```python
-def after_init(self):
-    self.compute_calculated_attributes()
-    super().after_init()  # sets trigger_modeling_updates = True
-```
-
-This ensures group effective counts are computed before System initializes.
-**Important**: groups must be constructed in bottom-up order (leaf groups first, then parents),
-so that parent groups can read child groups' effective_nb during their own after_init.
-Actually, since root groups don't depend on children for their own effective_nb (root = 1),
-and children depend on parents (child = parent_count × parent_effective_nb), the construction
-order should be **top-down**: root first, then children. This way, when a child computes
-effective_nb in after_init, the parent's effective_nb is already available.
+**No `after_init` override needed.** The generic `ModelingObject.after_init` sets
+`trigger_modeling_updates = True` on the object and its input ExplainableObjectDicts (see
+[explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)
+section 4). System's computation chain computes `effective_nb_of_units_within_root` in
+canonical order. Construction order of groups is irrelevant.
 
 ### 3.2 EdgeDevice: total_nb_of_units_per_ensemble (edge_device.py)
 
@@ -353,64 +350,21 @@ also multiply by `total_nb_of_units_per_ensemble`.
 
 ## Phase 4: Serialization
 
+The full serialization/deserialization design is in
+**[explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)**
+sections 6 and 7. Summary of changes:
+
 ### 4.1 system_to_json.py
 
-**Extend `recursively_write_json_dict` to walk ExplainableObjectDict keys:**
-
-In the recursive walk, after handling ModelingObject attributes and lists, add:
-```python
-elif isinstance(value, ExplainableObjectDict):
-    for key in value:
-        if isinstance(key, ModelingObject):
-            recursively_write_json_dict(output_dict, key, save_calculated_attributes)
-```
-
-Also walk `explainable_object_dicts_containers` on each object to discover parent groups:
-```python
-for dict_container in mod_obj.explainable_object_dicts_containers:
-    container = dict_container.modeling_obj_container
-    if container is not None and isinstance(container, ModelingObject):
-        recursively_write_json_dict(output_dict, container, save_calculated_attributes)
-```
-
-This is fully generic — any future dict-keyed relationship will be serialized automatically.
-
-**ExplainableObjectDict serialization in `to_json`:**
-
-The EdgeDeviceGroup's `sub_group_counts` and `edge_device_counts` are ExplainableObjectDicts
-with ModelingObject keys. The `to_json` method on ModelingObject needs to handle this:
-- Keys: serialize as object IDs
-- Values: serialize as ExplainableQuantity (standard serialization)
-
-Check how ExplainableObjectDict is currently serialized in `to_json`. If it's not serialized
-at all (because it's typically a calculated attribute), we may need to add support for
-ExplainableObjectDicts with ModelingObject keys as **input attributes**.
-
-This is new: currently ExplainableObjectDicts are only used for calculated attributes
-(initialized as empty in __init__, populated by update methods). For EdgeDeviceGroup,
-they're input attributes populated at construction. The `to_json` / `from_json` methods
-need to handle this case.
+Extend `recursively_write_json_dict` to walk ExplainableObjectDict keys and
+`explainable_object_dicts_containers` to discover parent groups. This is fully generic.
 
 ### 4.2 json_to_system.py
 
-**Deserialization of EdgeDeviceGroup:**
-
-`EdgeDeviceGroup.__init__` takes `sub_groups_with_counts` and `edge_devices_with_counts`
-as List[Tuple[ModelingObject, ExplainableQuantity]]. The `from_json_dict` class method
-needs to reconstruct these from the serialized form.
-
-Option: store them in JSON as:
-```json
-{
-  "sub_group_counts": {"group_id_1": <serialized_quantity>, "group_id_2": <serialized_quantity>},
-  "edge_device_counts": {"device_id_1": <serialized_quantity>, "device_id_2": <serialized_quantity>}
-}
-```
-
-And reconstruct via `flat_obj_dict` during deserialization.
-
-Alternatively, adapt the __init__ signature to accept the dicts directly and provide a
-`classes_outside_init_params_needed_for_generating_from_json` override if needed.
+The existing deferred-dict mechanism (lines 126-132) already handles ExplainableObjectDicts
+with ModelingObject keys. Key change: temporarily disable `trigger_modeling_updates` during
+the deferred loop so that populating input dicts doesn't fire ModelingUpdate during
+deserialization. Then enable `trigger_modeling_updates` on input dicts afterwards.
 
 ### 4.3 Version upgrade handler
 
@@ -459,8 +413,7 @@ Objects must be created in this order:
 
 1. EdgeComponents (with nb_of_units)
 2. EdgeDevices (with components list)
-3. EdgeDeviceGroups — **top-down**: root groups first, then child groups
-   (so children can read parent effective_nb during their after_init)
+3. EdgeDeviceGroups (any order — System's computation chain handles dependencies)
 4. RecurrentEdgeComponentNeeds, RecurrentEdgeDeviceNeeds, EdgeFunctions
 5. EdgeUsageJourneys, EdgeUsagePatterns
 6. System (triggers full computation chain)
@@ -494,14 +447,12 @@ and Monday-zeroing logic. Verify that the unitary refactor doesn't break these.
 **Mitigation**: Dedicated EdgeStorage tests with nb_of_units > 1.
 
 **Risk: ExplainableObjectDict as input attribute.** Currently only used for calculated attributes.
-Using it as an __init__ attribute (for group counts) may hit edge cases in serialization/setattr.
-**Mitigation**: Test serialization round-trip early. May need to adapt `to_json`/`from_json`.
-
-**Risk: Group construction order matters.** Groups must be built top-down for after_init to work.
-**Mitigation**: Document this requirement. In json_to_system, ensure groups are deserialized
-in the correct order (parent before child). The topological sort in `compute_classes_generation_order`
-handles inter-class ordering but not intra-class ordering. May need special handling for
-EdgeDeviceGroup self-references.
+Using it as an __init__ attribute (for group counts) requires infrastructure changes to
+recomputation, serialization, and deserialization. **This is the most sensitive part of the
+development.** See **[explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)**
+for the detailed design covering: `trigger_modeling_updates` on dicts, new ModelingUpdate dict
+handling, `compute_mod_objs_computation_chain_from_old_and_new_dicts`, init signature (avoiding
+self-referential types), serialization object discovery, and deserialization timing pitfalls.
 
 **Risk: `explainable_object_dicts_containers` navigation is fragile.** It's a tracking mechanism,
 not a clean API. If containers aren't properly maintained, group discovery fails silently.
