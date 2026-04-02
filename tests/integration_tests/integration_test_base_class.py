@@ -368,6 +368,42 @@ class IntegrationTestBaseClass(TestCase):
                 self.footprint_has_not_changed(list(scenario.expected_changed) + list(scenario.expected_unchanged))
                 self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
+    def verify_dict_container_integrity(self, system):
+        """Verify bidirectional consistency of explainable_object_dicts_containers tracking.
+
+        For every ExplainableObjectDict with ModelingObject keys, the dict must appear in each key's
+        explainable_object_dicts_containers. Conversely, every container reference on an object must
+        still hold that object as a key.
+        """
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        all_objects = system.all_linked_objects + [system]
+        errors = []
+
+        for obj in all_objects:
+            # Forward check: dict has ModelingObject key → dict must be in key's containers
+            for attr_name in obj.calculated_attributes:
+                attr = getattr(obj, attr_name)
+                if isinstance(attr, ExplainableObjectDict):
+                    for key in attr:
+                        if isinstance(key, ModelingObject):
+                            if id(attr) not in [id(c) for c in key.explainable_object_dicts_containers]:
+                                errors.append(
+                                    f"Forward: {obj.name}.{attr_name} has key {key.name} "
+                                    f"but dict is not in {key.name}.explainable_object_dicts_containers")
+            # Reverse check: container listed on object → object must still be a key in that dict
+            for container in obj.explainable_object_dicts_containers:
+                if obj not in container:
+                    container_owner = getattr(container, 'modeling_obj_container', None)
+                    owner_name = container_owner.name if container_owner else '<unknown>'
+                    attr_name = getattr(container, 'attr_name_in_mod_obj_container', '<unknown>')
+                    errors.append(
+                        f"Reverse: {obj.name} lists a container from {owner_name}.{attr_name} "
+                        f"but is not a key in it (stale reference)")
+
+        if errors:
+            self.fail("Dict container integrity errors:\n" + "\n".join(errors))
+
     def check_semantic_units_in_calculated_attributes(self, system):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram).
 
