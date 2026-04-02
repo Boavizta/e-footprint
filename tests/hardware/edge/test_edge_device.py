@@ -739,7 +739,7 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
 
     def test_with_nested_groups_multiplies_counts(self):
         root = _make_edge_device_group("Root")
-        sub = self._make_group("Sub")
+        sub = _make_edge_device_group("Sub")
         root.sub_group_counts[sub] = SourceValue(3 * u.dimensionless)
         sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
         root.update_effective_nb_of_units_within_root()
@@ -748,8 +748,8 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         self.assertAlmostEqual(12.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
 
     def test_with_two_independent_root_groups_sums_contributions(self):
-        group_a = self._make_group("Group A")
-        group_b = self._make_group("Group B")
+        group_a = _make_edge_device_group("Group A")
+        group_b = _make_edge_device_group("Group B")
         group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
         group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
         group_a.update_effective_nb_of_units_within_root()
@@ -758,7 +758,7 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         self.assertAlmostEqual(5.0, self.device.total_nb_of_units_per_ensemble.value.magnitude)
 
     def test_total_nb_is_dimensionless(self):
-        group = self._make_group("Group")
+        group = _make_edge_device_group("Group")
         group.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
         group.update_effective_nb_of_units_within_root()
         self.device.update_total_nb_of_units_per_ensemble()
