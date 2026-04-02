@@ -157,5 +157,51 @@ class TestExplainableObjectDict(unittest.TestCase):
         self.assertTrue("mock_modeling_obj" in str_output)
         self.assertTrue("ModelingObject" in str_output)
 
+class TestExplainableObjectDictTriggerFlag(unittest.TestCase):
+
+    def test_trigger_defaults_false(self):
+        d = ExplainableObjectDict()
+        self.assertFalse(d.trigger_modeling_updates)
+
+    def test_trigger_can_be_set_to_true(self):
+        d = ExplainableObjectDict()
+        d.trigger_modeling_updates = True
+        self.assertTrue(d.trigger_modeling_updates)
+
+    def test_no_trigger_setitem_stores_value(self):
+        d = ExplainableObjectDict()
+        val = SourceValue(1 * u.dimensionless)
+        d["key"] = val
+        self.assertIs(d["key"], val)
+
+    def test_no_trigger_setitem_replaces_existing_key(self):
+        d = ExplainableObjectDict()
+        val1 = SourceValue(1 * u.dimensionless)
+        val2 = SourceValue(2 * u.dimensionless)
+        d["key"] = val1
+        d["key"] = val2
+        self.assertIs(d["key"], val2)
+
+    def test_no_trigger_delitem_removes_key(self):
+        d = ExplainableObjectDict()
+        val = SourceValue(1 * u.dimensionless)
+        d["key"] = val
+        del d["key"]
+        self.assertNotIn("key", d)
+
+    def test_init_with_input_dict_respects_no_trigger(self):
+        val = SourceValue(5 * u.dimensionless)
+        d = ExplainableObjectDict({"k": val})
+        self.assertIs(d["k"], val)
+        self.assertFalse(d.trigger_modeling_updates)
+
+    def test_trigger_flag_on_dict_with_modeling_obj_container(self):
+        """Even when linked to a modeling object, trigger defaults to False."""
+        real_obj = ModelingObjectForContainerTest("test_obj")
+        d = ExplainableObjectDict()
+        d.set_modeling_obj_container(real_obj, "attr_name")
+        self.assertFalse(d.trigger_modeling_updates)
+
+
 if __name__ == "__main__":
     unittest.main()

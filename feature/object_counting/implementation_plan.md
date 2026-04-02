@@ -211,25 +211,25 @@ def _find_root_groups(self):
 section 4). System's computation chain reaches groups via EdgeComponent → root groups
 (see section 8 of same doc). Construction order of groups is irrelevant.
 
-### 3.2 EdgeDevice: total_nb_of_units_per_ensemble (edge_device.py)
+### 3.2 EdgeDevice: total_nb_of_units (edge_device.py)
 
 **Add calculated attribute:**
 ```python
 # In __init__:
-self.total_nb_of_units_per_ensemble = EmptyExplainableObject()
+self.total_nb_of_units = EmptyExplainableObject()
 
 # In calculated_attributes (insert before aggregation attributes):
 ["lifespan_validation", "component_needs_edge_device_validation",
- "total_nb_of_units_per_ensemble",  # ← NEW
+ "total_nb_of_units",  # ← NEW
  "instances_fabrication_footprint_per_usage_pattern", ...]
 ```
 
 **Update method:**
 ```python
-def update_total_nb_of_units_per_ensemble(self):
+def update_total_nb_of_units(self):
     parent_groups = self._find_parent_groups()
     if not parent_groups:
-        self.total_nb_of_units_per_ensemble = ExplainableQuantity(
+        self.total_nb_of_units = ExplainableQuantity(
             1 * u.dimensionless, f"{self.name} has no group (default count = 1)")
         return
 
@@ -237,7 +237,7 @@ def update_total_nb_of_units_per_ensemble(self):
         [group.edge_device_counts[self] * group.effective_nb_of_units_within_root
          for group in parent_groups],
         start=EmptyExplainableObject())
-    self.total_nb_of_units_per_ensemble = total.set_label(
+    self.total_nb_of_units = total.set_label(
         f"Total nb of {self.name} per ensemble")
 
 def _find_parent_groups(self):
@@ -263,10 +263,10 @@ def _find_root_groups(self):
     return list(dict.fromkeys(root_groups))
 ```
 
-**Update aggregation methods to multiply by `total_nb_of_units_per_ensemble`:**
+**Update aggregation methods to multiply by `total_nb_of_units`:**
 
 The per-edge-device component values (already × nb_ensembles and × nb_of_units from
-Phase 2) now get multiplied by `self.total_nb_of_units_per_ensemble` (from groups).
+Phase 2) now get multiplied by `self.total_nb_of_units` (from groups).
 
 ```python
 def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_pattern):
@@ -275,15 +275,15 @@ def update_dict_element_in_instances_energy_per_usage_pattern(self, usage_patter
         if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
             total_energy += component.energy_per_edge_device_per_usage_pattern[usage_pattern]
     self.instances_energy_per_usage_pattern[usage_pattern] = (
-        self.total_nb_of_units_per_ensemble * total_energy
+        self.total_nb_of_units * total_energy
     ).set_label(...)
 ```
 
-Same pattern for fabrication (including structure × total_nb_of_units_per_ensemble)
+Same pattern for fabrication (including structure × total_nb_of_units)
 and energy footprint calculations.
 
 `energy_footprint_breakdown_by_source` and `fabrication_footprint_breakdown_by_source`
-also multiply by `total_nb_of_units_per_ensemble`.
+also multiply by `total_nb_of_units`.
 
 ### 3.3 EdgeComponent: Route Computation Chain Through Groups
 
@@ -324,7 +324,7 @@ section 8 for the full rationale.
 - `_find_parent_groups` and `_find_root_groups`: no parents, one parent, chain of parents
 
 `test_edge_device.py` (additions):
-- `update_total_nb_of_units_per_ensemble`: no groups = 1, one group, multiple groups
+- `update_total_nb_of_units`: no groups = 1, one group, multiple groups
 - `_find_parent_groups` and `_find_root_groups`
 
 `test_edge_component.py` (additions):
@@ -342,7 +342,7 @@ Create a new integration test fixture following the pattern in tests/integration
 
 Tests to include in the base class:
 - `run_test_effective_nb_of_units_within_root` for each group level
-- `run_test_total_nb_of_units_per_ensemble` for edge devices
+- `run_test_total_nb_of_units` for edge devices
 - `run_test_numerical_footprints` verifying component × nb_of_units × group_count × ensembles
 - `run_test_all_objects_linked_to_system` includes groups
 - `run_test_recomputation_on_count_change`: change a group count, verify cascade
@@ -437,7 +437,7 @@ Objects must be created in this order:
 | `edge_ram_component.py` | 2 | Add `nb_of_units` to defaults, update capacity validation |
 | `edge_storage.py` | 2 | Add `nb_of_units` to defaults, update capacity validation |
 | `edge_workload_component.py` | 2 | Add `nb_of_units` to defaults |
-| `edge_device.py` | 1,3b | Rename refs, add `total_nb_of_units_per_ensemble`, `_find_parent/root_groups` |
+| `edge_device.py` | 1,3b | Rename refs, add `total_nb_of_units`, `_find_parent/root_groups` |
 | `edge_device_group.py` | 3b | **NEW** — EdgeDeviceGroup class |
 | `all_classes_in_order.py` | 3b | Add EdgeDeviceGroup to `ALL_EFOOTPRINT_CLASSES` + `CANONICAL_COMPUTATION_ORDER` |
 | `system.py` | 5 | Discover groups in `all_linked_objects` |

@@ -9,8 +9,31 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
 from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
+
+
+def validate_system_dict_structure(system_dict, valid_class_keys):
+    for class_key, class_dict in system_dict.items():
+        if class_key not in valid_class_keys:
+            continue
+        if not isinstance(class_dict, dict):
+            raise TypeError(
+                f"Detected invalid data at `{class_key}` level: {class_dict}. "
+                f"Only object dictionaries are valid at this level. "
+                f"This usually means the JSON file was edited manually or corrupted.")
+        for object_key, object_dict in class_dict.items():
+            if not isinstance(object_dict, dict) or len(object_dict) == 0:
+                raise ValueError(
+                    f"Detected invalid data at `{class_key}` level: {object_dict}. "
+                    f"Only object dictionaries are valid at this level. "
+                    f"This usually means the JSON file was edited manually or corrupted.")
+            object_id = object_dict.get("id")
+            if object_id is not None and object_id != object_key:
+                raise ValueError(
+                    f"Invalid JSON structure for `{class_key}.{object_key}`: embedded id is `{object_id}`. "
+                    f"Object keys must match their `id`.")
 
 
 def compute_classes_generation_order(efootprint_classes_dict):
@@ -65,6 +88,10 @@ def json_to_system(
     if efootprint_classes_dict is None:
         efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
                                    for modeling_object_class in ALL_EFOOTPRINT_CLASSES}
+    classes_generation_order = compute_classes_generation_order(efootprint_classes_dict)
+    valid_class_keys = set(classes_generation_order) | set(ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT)
+
+    validate_system_dict_structure(system_dict, valid_class_keys)
 
     efootprint_version_key = "efootprint_version"
     json_efootprint_version = system_dict.get(efootprint_version_key, None)
@@ -88,8 +115,6 @@ def json_to_system(
     class_obj_dict = {}
     flat_obj_dict = {}
     explainable_object_dicts_to_create_after_objects_creation = {}
-
-    classes_generation_order = compute_classes_generation_order(efootprint_classes_dict)
     is_loaded_from_system_with_calculated_attributes = False
 
     for class_key in classes_generation_order:
@@ -126,10 +151,20 @@ def json_to_system(
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
         explainable_object_dict = ExplainableObjectDict(
             {flat_obj_dict[key]: ExplainableObject.from_json_dict(value) for key, value in attr_value.items()})
-        modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+
+        current_dict = getattr(modeling_obj, attr_key, None)
+        if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
+            current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
+        else:
+            modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
+
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
-                explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
+            explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
+
+        # Enable live updates on input dicts (those not in calculated_attributes)
+        if attr_key not in modeling_obj.calculated_attributes:
+            explainable_object_dict.trigger_modeling_updates = True
 
     for system in class_obj_dict["System"].values():
         system.set_initial_and_previous_footprints()

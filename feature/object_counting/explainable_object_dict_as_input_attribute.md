@@ -413,7 +413,7 @@ EdgeDeviceGroup is unreachable — never computed during System init.
 
 The semantically correct dependency direction is:
 
-- **EdgeDeviceGroup → EdgeDevice**: EdgeDevice's `total_nb_of_units_per_ensemble` genuinely
+- **EdgeDeviceGroup → EdgeDevice**: EdgeDevice's `total_nb_of_units` genuinely
   depends on group attributes (`effective_nb_of_units_within_root`, `edge_device_counts`).
 - **Parent EdgeDeviceGroup → child EdgeDeviceGroup**: child's `effective_nb` depends on parent's.
 - **EdgeComponent → root EdgeDeviceGroups**: EdgeComponent is the natural handoff point — it's
@@ -536,7 +536,7 @@ With the infrastructure described above, this is unnecessary:
 2. `ABCAfterInitMeta` calls `after_init` → `trigger_modeling_updates = True` on object + dicts
 3. Create remaining objects (needs, journeys, patterns)
 4. Create System → `after_init` → BFS chain via EdgeComponent → root groups → child groups →
-   edge devices → `effective_nb_of_units_within_root` and `total_nb_of_units_per_ensemble`
+   edge devices → `effective_nb_of_units_within_root` and `total_nb_of_units`
    computed in correct order
 
 ### Live mutation flow (after System exists)

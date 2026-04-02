@@ -52,8 +52,11 @@ class EdgeComponent(ModelingObject):
         self.energy_footprint_per_edge_device = EmptyExplainableObject()
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List["EdgeDevice"]:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         if self.edge_device:
+            root_groups = self.edge_device._find_root_groups()
+            if root_groups:
+                return root_groups
             return [self.edge_device]
         return []
 

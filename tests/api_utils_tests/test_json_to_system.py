@@ -2,7 +2,6 @@ import json
 import os.path
 from copy import deepcopy
 
-from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system, compute_classes_generation_order
 from efootprint.api_utils.system_to_json import system_to_json
@@ -97,6 +96,60 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         self.assertDictEqual(input_dict, self.base_system_dict)
 
+    def test_json_to_system_raises_clear_error_when_class_entry_is_not_an_object_dict(self):
+        input_dict = deepcopy(self.base_system_dict)
+        input_dict["Job"]["data_stored"] = {}
+
+        with self.assertRaisesRegex(
+                ValueError, r"Detected invalid data at `Job` level: \{\}. Only object dictionaries are valid at "
+                            r"this level."):
+            json_to_system(input_dict)
+
+    def test_json_to_system_raises_clear_error_when_object_key_does_not_match_embedded_id(self):
+        input_dict = deepcopy(self.base_system_dict)
+        job_dict = next(iter(input_dict["Job"].values()))
+        input_dict["Job"] = {"wrong_key": job_dict}
+
+        with self.assertRaisesRegex(
+                ValueError, r"Invalid JSON structure for `Job\.wrong_key`: embedded id is"):
+            json_to_system(input_dict)
+
+    def test_json_to_system_ignores_unrelated_top_level_keys(self):
+        input_dict = deepcopy(self.base_system_dict)
+        input_dict["custom_metadata"] = []
+
+        class_obj_dict, flat_obj_dict = json_to_system(input_dict)
+
+        self.assertEqual(1, len(class_obj_dict["System"]))
+
+    def test_json_to_system_raises_clear_error_for_legacy_class_corruption_before_upgrade(self):
+        input_dict = {
+            "efootprint_version": "15.0.0",
+            "GenAIModel": {
+                "model_1": {
+                    "name": "Claude API server",
+                    "id": "model_1",
+                    "provider": {"value": "anthropic", "label": "provider"},
+                    "model_name": {"value": "claude-sonnet-4-5", "label": "model"},
+                    "server": "server_1",
+                }
+            },
+            "GenAIJob": {
+                "data_stored": {},
+                "job_1": {
+                    "name": "Code Review",
+                    "id": "job_1",
+                    "service": "model_1",
+                    "output_token_count": SourceValue(2000 * u.dimensionless, label="tokens").to_json(),
+                }
+            },
+        }
+
+        with self.assertRaisesRegex(
+                ValueError,
+                r"Detected invalid data at `GenAIJob` level: \{\}. Only object dictionaries are valid at this level."):
+            json_to_system(input_dict)
+
     def test_compute_object_generation_order(self):
         efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
                                    for modeling_object_class in ALL_EFOOTPRINT_CLASSES}
@@ -106,7 +159,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             ["Device", "Country", 
              "EdgeRAMComponent", "EdgeCPUComponent", "EdgeWorkloadComponent", "EdgeStorage",
              "EdgeComputerRAMComponent", "EdgeComputerCPUComponent", "EdgeApplianceComponent",
-             "EdgeAppliance",
+             "EdgeDeviceGroup", "EdgeAppliance",
              "Network", "EcoLogitsGenAIExternalAPIServer", "Storage",
              "RecurrentEdgeStorageNeed", "EdgeDevice", "EdgeComputer",
              "BoaviztaCloudServer", "EcoLogitsGenAIExternalAPI", "RecurrentEdgeComponentNeed",

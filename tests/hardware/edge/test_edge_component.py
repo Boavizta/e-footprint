@@ -268,3 +268,125 @@ class TestEdgeComponentJsonRoundTrip(TestCase):
         # That tests that the RAM dict calculated attributes have been duly initialized as dicts.
         system_json = system_to_json(system, save_calculated_attributes=False)
         _, flat_obj_dict = json_to_system(system_json)
+
+
+class TestEdgeComponentModelingObjectsDependency(TestCase):
+    """Tests for EdgeComponent.modeling_objects_whose_attributes_depend_directly_on_me
+    which routes through root EdgeDeviceGroup objects when present."""
+
+    def _make_group(self, name):
+        from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+        g = EdgeDeviceGroup(name)
+        g.trigger_modeling_updates = False
+        return g
+
+    def test_no_device_returns_empty_list(self):
+        component = ConcreteEdgeComponent(
+            name="Standalone",
+            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            power_per_unit=SourceValue(20 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W),
+        )
+        component.trigger_modeling_updates = False
+        result = component.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertEqual([], result)
+
+    def test_device_without_groups_returns_device(self):
+        component = ConcreteEdgeComponent(
+            name="CPU",
+            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            power_per_unit=SourceValue(20 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W),
+        )
+        device = EdgeDevice(
+            name="My Device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[component],
+            lifespan=SourceValue(5 * u.year),
+        )
+        component.trigger_modeling_updates = False
+        device.trigger_modeling_updates = False
+        result = component.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertEqual([device], result)
+
+    def test_device_with_one_root_group_returns_root_group(self):
+        component = ConcreteEdgeComponent(
+            name="CPU",
+            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            power_per_unit=SourceValue(20 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W),
+        )
+        device = EdgeDevice(
+            name="My Device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[component],
+            lifespan=SourceValue(5 * u.year),
+        )
+        component.trigger_modeling_updates = False
+        device.trigger_modeling_updates = False
+
+        root_group = self._make_group("Root Group")
+        root_group.edge_device_counts[device] = SourceValue(3 * u.dimensionless)
+
+        result = component.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertEqual([root_group], result)
+
+    def test_device_with_nested_groups_returns_root_group(self):
+        component = ConcreteEdgeComponent(
+            name="CPU",
+            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            power_per_unit=SourceValue(20 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W),
+        )
+        device = EdgeDevice(
+            name="My Device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[component],
+            lifespan=SourceValue(5 * u.year),
+        )
+        component.trigger_modeling_updates = False
+        device.trigger_modeling_updates = False
+
+        root_group = self._make_group("Root")
+        sub_group = self._make_group("Sub")
+        root_group.sub_group_counts[sub_group] = SourceValue(2 * u.dimensionless)
+        sub_group.edge_device_counts[device] = SourceValue(4 * u.dimensionless)
+
+        result = component.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertEqual([root_group], result)
+
+    def test_device_with_two_root_groups_returns_both(self):
+        component = ConcreteEdgeComponent(
+            name="CPU",
+            carbon_footprint_fabrication_per_unit=SourceValue(10 * u.kg),
+            power_per_unit=SourceValue(20 * u.W),
+            lifespan=SourceValue(4 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W),
+        )
+        device = EdgeDevice(
+            name="My Device",
+            structure_carbon_footprint_fabrication=SourceValue(50 * u.kg),
+            components=[component],
+            lifespan=SourceValue(5 * u.year),
+        )
+        component.trigger_modeling_updates = False
+        device.trigger_modeling_updates = False
+
+        root_a = self._make_group("Root A")
+        root_b = self._make_group("Root B")
+        root_a.edge_device_counts[device] = SourceValue(2 * u.dimensionless)
+        root_b.edge_device_counts[device] = SourceValue(3 * u.dimensionless)
+
+        result = component.modeling_objects_whose_attributes_depend_directly_on_me
+        self.assertIn(root_a, result)
+        self.assertIn(root_b, result)
+        self.assertEqual(2, len(result))
+
+
+if __name__ == "__main__":
+    unittest.main()
+

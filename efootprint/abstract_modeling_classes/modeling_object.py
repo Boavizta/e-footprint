@@ -162,6 +162,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
                        is_loaded_from_system_with_calculated_attributes=False):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         new_obj = cls.__new__(cls)
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
         new_obj.__dict__["explainable_object_dicts_containers"] = []
@@ -187,12 +188,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if not is_loaded_from_system_with_calculated_attributes:
             for calculated_attribute_name in new_obj.calculated_attributes:
                 if getattr(new_obj, calculated_attribute_name, None) is None:
-                    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
                     if hasattr(new_obj, f"update_dict_element_in_{calculated_attribute_name}"):
                         default_value = ExplainableObjectDict()
                     else:
                         default_value = EmptyExplainableObject()
                     new_obj.__setattr__(calculated_attribute_name, default_value, check_input_validity=False)
+
+        # Initialize input ExplainableObjectDicts that were deferred to empty, so they exist before after_init
+        for (obj, attr_key) in list(explainable_object_dicts_to_create_after_objects_creation.keys()):
+            if obj is new_obj and attr_key not in new_obj.calculated_attributes:
+                if getattr(new_obj, attr_key, None) is None:
+                    new_obj.__setattr__(attr_key, ExplainableObjectDict(), check_input_validity=False)
 
         if set_trigger_modeling_updates_to_true:
             new_obj.trigger_modeling_updates = True
@@ -287,8 +293,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def _value_requires_manual_override(value):
         from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import \
             ContextualModelingObjectAttribute
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
         if isinstance(value, list):
+            return True
+
+        if isinstance(value, ExplainableObjectDict):
             return True
 
         if isinstance(value, ContextualModelingObjectAttribute):
@@ -484,7 +494,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             mod_obj.compute_calculated_attributes()
 
     def after_init(self):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.trigger_modeling_updates = True
+        for attr_name, attr_value in self.__dict__.items():
+            if (isinstance(attr_value, ExplainableObjectDict)
+                    and attr_name not in self.calculated_attributes):
+                attr_value.trigger_modeling_updates = True
 
     def __hash__(self):
         return hash(self.id)
@@ -566,19 +581,22 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def compute_mod_objs_computation_chain_from_old_and_new_lists(
             self, old_value: List[Type["ModelingObject"]], input_value: List[Type["ModelingObject"]],
             optimize_chain=True) -> List[Type["ModelingObject"]]:
-        removed_objs = [obj for obj in old_value if obj not in input_value]
-        added_objs = [obj for obj in input_value if obj not in old_value]
+        return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
+            old_value, input_value,
+            old_mod_objs=old_value, new_mod_objs=input_value,
+            optimize_chain=optimize_chain)
+
+    def _compute_mod_objs_computation_chain_from_old_and_new_collection(
+            self, old_value, input_value, old_mod_objs, new_mod_objs,
+            optimize_chain=True) -> List[Type["ModelingObject"]]:
+        removed_objs = [obj for obj in old_mod_objs if obj not in new_mod_objs]
+        added_objs = [obj for obj in new_mod_objs if obj not in old_mod_objs]
 
         mod_objs_computation_chain = []
-
         for obj in removed_objs + added_objs:
             if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
                 mod_objs_computation_chain += obj.mod_objs_computation_chain
 
-        # Compute self.mod_objs_computation_chain for both old and new states, because dynamic properties
-        # on self (e.g. System.countries derived from self.edge_usage_patterns) may discover different
-        # objects depending on the list contents. Old state catches objects being removed, new state
-        # catches objects being added.
         mod_objs_computation_chain += self.mod_objs_computation_chain
         attr_name = old_value.attr_name_in_mod_obj_container
         self.__dict__[attr_name] = input_value
@@ -586,10 +604,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.__dict__[attr_name] = old_value
 
         if optimize_chain:
-            optimized_chain = optimize_mod_objs_computation_chain(mod_objs_computation_chain)
-            return optimized_chain
-        else:
-            return mod_objs_computation_chain
+            return optimize_mod_objs_computation_chain(mod_objs_computation_chain)
+        return mod_objs_computation_chain
+
+    def compute_mod_objs_computation_chain_from_old_and_new_dicts(
+            self, old_value, input_value, optimize_chain=True) -> List[Type["ModelingObject"]]:
+        old_mod_obj_keys = [k for k in old_value if isinstance(k, ModelingObject)]
+        new_mod_obj_keys = [k for k in input_value if isinstance(k, ModelingObject)]
+        return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
+            old_value, input_value,
+            old_mod_objs=old_mod_obj_keys, new_mod_objs=new_mod_obj_keys,
+            optimize_chain=optimize_chain)
 
     @property
     def mod_obj_attributes(self) -> List[Type["ContextualModelingObjectAttribute"]]:

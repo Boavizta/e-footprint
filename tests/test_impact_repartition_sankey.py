@@ -182,7 +182,7 @@ class TestImpactRepartitionSankey(TestCase):
         from efootprint.all_classes_in_order import (
             ALL_CANONICAL_CLASSES_DICT, SANKEY_COLUMNS, SANKEY_BREAKDOWN_ONLY_CLASSES)
 
-        excluded_classes = ["System", "Service"]
+        excluded_classes = ["System", "Service", "EdgeDeviceGroup"]
         canonical_classes_dict_without_excluded = {
             name: cls for name, cls in ALL_CANONICAL_CLASSES_DICT.items() if name not in excluded_classes}
 

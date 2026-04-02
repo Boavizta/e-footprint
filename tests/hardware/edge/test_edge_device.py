@@ -6,6 +6,7 @@ import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -34,6 +35,7 @@ class TestEdgeDevice(TestCase):
             lifespan=SourceValue(5 * u.year)
         )
         self.edge_device.trigger_modeling_updates = False
+        self.edge_device.total_nb_of_units = ExplainableQuantity(1 * u.dimensionless, "one device")
 
     def test_init(self):
         """Test EdgeDevice initialization."""
@@ -640,6 +642,129 @@ class TestEdgeDevice(TestCase):
 
         with self.assertRaises(InsufficientCapacityError):
             euj.usage_span = SourceValue(3 * u.year)
+
+
+
+def _make_edge_device_group(name):
+    """Module-level helper: create an EdgeDeviceGroup with trigger disabled."""
+    from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+    g = EdgeDeviceGroup(name)
+    g.trigger_modeling_updates = False
+    return g
+
+
+class TestEdgeDeviceFindGroupMethods(TestCase):
+
+    def setUp(self):
+        self.device = EdgeDevice(
+            name="Test Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year),
+        )
+        self.device.trigger_modeling_updates = False
+
+    def test_find_parent_groups_returns_empty_when_no_groups(self):
+        self.assertEqual([], self.device._find_parent_groups())
+
+    def test_find_parent_groups_returns_group_when_device_is_in_it(self):
+        group = _make_edge_device_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_parent_groups()
+        self.assertEqual([group], result)
+
+    def test_find_parent_groups_returns_multiple_groups(self):
+        group_a = _make_edge_device_group("Group A")
+        group_b = _make_edge_device_group("Group B")
+        group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
+        group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        result = self.device._find_parent_groups()
+        self.assertIn(group_a, result)
+        self.assertIn(group_b, result)
+        self.assertEqual(2, len(result))
+
+    def test_find_root_groups_returns_empty_when_no_groups(self):
+        self.assertEqual([], self.device._find_root_groups())
+
+    def test_find_root_groups_returns_root_for_flat_hierarchy(self):
+        group = _make_edge_device_group("Root Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([group], result)
+
+    def test_find_root_groups_traverses_nested_hierarchy(self):
+        root = _make_edge_device_group("Root")
+        sub = _make_edge_device_group("Sub")
+        root.sub_group_counts[sub] = SourceValue(2 * u.dimensionless)
+        sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([root], result)
+
+    def test_find_root_groups_deduplicates_root_in_diamond_hierarchy(self):
+        root = _make_edge_device_group("Root")
+        left = _make_edge_device_group("Left")
+        right = _make_edge_device_group("Right")
+        root.sub_group_counts[left] = SourceValue(1 * u.dimensionless)
+        root.sub_group_counts[right] = SourceValue(1 * u.dimensionless)
+        left.edge_device_counts[self.device] = SourceValue(1 * u.dimensionless)
+        right.edge_device_counts[self.device] = SourceValue(1 * u.dimensionless)
+        result = self.device._find_root_groups()
+        self.assertEqual([root], result)
+
+
+class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
+
+    def setUp(self):
+        self.device = EdgeDevice(
+            name="Device",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year),
+        )
+        self.device.trigger_modeling_updates = False
+
+    def test_no_groups_gives_total_of_one(self):
+        self.device.update_total_nb_of_units()
+        self.assertAlmostEqual(1.0, self.device.total_nb_of_units.value.magnitude)
+
+    def test_no_groups_label_mentions_no_group(self):
+        self.device.update_total_nb_of_units()
+        label = self.device.total_nb_of_units.label
+        self.assertIn("no group", label.lower())
+
+    def test_with_one_group_of_four(self):
+        group = _make_edge_device_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        group.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units()
+        self.assertAlmostEqual(4.0, self.device.total_nb_of_units.value.magnitude)
+
+    def test_with_nested_groups_multiplies_counts(self):
+        root = _make_edge_device_group("Root")
+        sub = _make_edge_device_group("Sub")
+        root.sub_group_counts[sub] = SourceValue(3 * u.dimensionless)
+        sub.edge_device_counts[self.device] = SourceValue(4 * u.dimensionless)
+        root.update_effective_nb_of_units_within_root()
+        sub.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units()
+        self.assertAlmostEqual(12.0, self.device.total_nb_of_units.value.magnitude)
+
+    def test_with_two_independent_root_groups_sums_contributions(self):
+        group_a = _make_edge_device_group("Group A")
+        group_b = _make_edge_device_group("Group B")
+        group_a.edge_device_counts[self.device] = SourceValue(2 * u.dimensionless)
+        group_b.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        group_a.update_effective_nb_of_units_within_root()
+        group_b.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units()
+        self.assertAlmostEqual(5.0, self.device.total_nb_of_units.value.magnitude)
+
+    def test_total_nb_is_dimensionless(self):
+        group = _make_edge_device_group("Group")
+        group.edge_device_counts[self.device] = SourceValue(3 * u.dimensionless)
+        group.update_effective_nb_of_units_within_root()
+        self.device.update_total_nb_of_units()
+        self.assertTrue(self.device.total_nb_of_units.value.check("[]"))
 
 
 if __name__ == "__main__":

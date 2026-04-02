@@ -180,7 +180,13 @@ class ObjectLinkedToModelingObjBase:
                 raise KeyError(f"object of id {self.key_in_dict.id} not found as key in {attr_name} attribute of "
                                f"{mod_obj_container.id} when trying to replace {self} by {new_value}. "
                                f"This should not happen.")
-            dict_container[self.key_in_dict] = new_value
+            initial_trigger = getattr(dict_container, 'trigger_modeling_updates', False)
+            if hasattr(dict_container, 'trigger_modeling_updates'):
+                dict_container.trigger_modeling_updates = False
+                dict_container[self.key_in_dict] = new_value
+                dict_container.trigger_modeling_updates = initial_trigger
+            else:
+                dict_container[self.key_in_dict] = new_value
         elif self.list_container is not None:
             if not self.indexes_in_list:
                 raise ValueError(f"object of id {self.id} not found in {attr_name} attribute of {mod_obj_container.id} "
