@@ -72,6 +72,8 @@ class EdgeStorage(EdgeComponent):
         super().__init__(
             name, carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg), power_per_unit=SourceValue(0 * u.W),
             lifespan=lifespan, idle_power_per_unit=SourceValue(0 * u.W), nb_of_units=nb_of_units)
+        del self.power
+        del self.idle_power
         self.carbon_footprint_fabrication_per_storage_capacity = (
             carbon_footprint_fabrication_per_storage_capacity.set_label(
                 f"Fabrication carbon footprint per unit of {self.name} per storage capacity"))
