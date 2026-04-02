@@ -226,7 +226,24 @@ class EdgeDeviceGroup(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["effective_nb_of_units_within_root"]
+        return ["counts_validation", "effective_nb_of_units_within_root"]
+```
+
+**Validation: `counts_validation`**
+
+Ensures all counts in both dicts are dimensionless and positive:
+
+```python
+def update_counts_validation(self):
+    for key, count in list(self.sub_group_counts.items()) + list(self.edge_device_counts.items()):
+        if not count.value.check("[]"):
+            raise ValueError(
+                f"Count for {key.name} in {self.name} should be dimensionless "
+                f"but has units {count.value.units}")
+        if count.value.magnitude < 0:
+            raise ValueError(
+                f"Count for {key.name} in {self.name} should be positive "
+                f"but is {count.value.magnitude}")
 ```
 
 **Computed attribute: `effective_nb_of_units_within_root`**
