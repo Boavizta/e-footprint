@@ -30,19 +30,20 @@ class NegativeCumulativeStorageNeedError(Exception):
 class EdgeStorage(EdgeComponent):
     compatible_root_units = [u.bit]
     default_values = {
-        "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
+        "carbon_footprint_fabrication_per_storage_capacity_per_unit": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
-        "storage_capacity": SourceValue(1 * u.TB_stored),
+        "nb_of_units": SourceValue(1 * u.dimensionless),
+        "storage_capacity_per_unit": SourceValue(1 * u.TB_stored),
         "base_storage_need": SourceValue(30 * u.GB_stored),
     }
 
     @classmethod
     def ssd(cls, name="Default SSD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_fabrication_per_storage_capacity_per_unit": SourceValue(
                 160 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(6 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "storage_capacity_per_unit": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "base_storage_need": SourceValue(0 * u.TB_stored),
         }
         output_args.update(kwargs)
@@ -51,10 +52,10 @@ class EdgeStorage(EdgeComponent):
     @classmethod
     def hdd(cls, name="Default HDD storage", **kwargs):
         output_args = {
-            "carbon_footprint_fabrication_per_storage_capacity": SourceValue(
+            "carbon_footprint_fabrication_per_storage_capacity_per_unit": SourceValue(
                 20 * u.kg / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "lifespan": SourceValue(4 * u.years),
-            "storage_capacity": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            "storage_capacity_per_unit": SourceValue(1 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             "base_storage_need": SourceValue(0 * u.TB_stored),
         }
         output_args.update(kwargs)
@@ -64,15 +65,19 @@ class EdgeStorage(EdgeComponent):
     def archetypes(cls):
         return [cls.ssd, cls.hdd]
 
-    def __init__(self, name: str, storage_capacity: ExplainableQuantity,
-                 carbon_footprint_fabrication_per_storage_capacity: ExplainableQuantity,
-                 base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity):
+    def __init__(self, name: str, storage_capacity_per_unit: ExplainableQuantity,
+                 carbon_footprint_fabrication_per_storage_capacity_per_unit: ExplainableQuantity,
+                 base_storage_need: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 nb_of_units: ExplainableQuantity | None = None):
         super().__init__(
-            name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
-            lifespan=lifespan, idle_power=SourceValue(0 * u.W))
-        self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
-            .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
-        self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
+            name, carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg), power_per_unit=SourceValue(0 * u.W),
+            lifespan=lifespan, idle_power_per_unit=SourceValue(0 * u.W), nb_of_units=nb_of_units)
+        self.carbon_footprint_fabrication_per_storage_capacity_per_unit = (
+            carbon_footprint_fabrication_per_storage_capacity_per_unit.set_label(
+                f"Fabrication carbon footprint per unit of {self.name} per storage capacity"))
+        self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
+            f"Storage capacity per unit of {self.name}")
+        self.storage_capacity = EmptyExplainableObject()
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
@@ -95,13 +100,20 @@ class EdgeStorage(EdgeComponent):
 
     @property
     def calculated_attributes(self):
-        return (["carbon_footprint_fabrication", "cumulative_unitary_storage_need_per_usage_pattern"]
-                + super().calculated_attributes)
+        return ["storage_capacity", "carbon_footprint_fabrication", "cumulative_unitary_storage_need_per_usage_pattern"] + [
+            attr for attr in super().calculated_attributes if attr != "carbon_footprint_fabrication"
+        ]
+
+    def update_storage_capacity(self):
+        self.storage_capacity = (self.storage_capacity_per_unit * self.nb_of_units).set_label(
+            f"Storage capacity of {self.name}")
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
-            self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
-            f"Carbon footprint of {self.name}")
+            self.carbon_footprint_fabrication_per_storage_capacity_per_unit
+            * self.storage_capacity_per_unit
+            * self.nb_of_units
+        ).set_label(f"Carbon footprint of {self.name}")
 
     def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
         total = sum(

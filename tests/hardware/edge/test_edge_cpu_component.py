@@ -18,22 +18,31 @@ class TestEdgeCPUComponent(TestCase):
     def setUp(self):
         self.cpu_component = EdgeCPUComponent(
             name="Test CPU",
-            carbon_footprint_fabrication=SourceValue(20 * u.kg),
-            power=SourceValue(50 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
-            idle_power=SourceValue(10 * u.W),
-            compute=SourceValue(8 * u.cpu_core),
+            idle_power_per_unit=SourceValue(10 * u.W),
+            compute_per_unit=SourceValue(8 * u.cpu_core),
             base_compute_consumption=SourceValue(1 * u.cpu_core)
         )
         self.cpu_component.trigger_modeling_updates = False
+        self.cpu_component.update_carbon_footprint_fabrication()
+        self.cpu_component.update_power()
+        self.cpu_component.update_idle_power()
+        self.cpu_component.update_compute()
 
     def test_init(self):
         """Test EdgeCPUComponent initialization."""
         self.assertEqual("Test CPU", self.cpu_component.name)
+        self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_fabrication_per_unit.value)
         self.assertEqual(20 * u.kg, self.cpu_component.carbon_footprint_fabrication.value)
+        self.assertEqual(50 * u.W, self.cpu_component.power_per_unit.value)
         self.assertEqual(50 * u.W, self.cpu_component.power.value)
         self.assertEqual(5 * u.year, self.cpu_component.lifespan.value)
+        self.assertEqual(10 * u.W, self.cpu_component.idle_power_per_unit.value)
         self.assertEqual(10 * u.W, self.cpu_component.idle_power.value)
+        self.assertEqual(1 * u.dimensionless, self.cpu_component.nb_of_units.value)
+        self.assertEqual(8 * u.cpu_core, self.cpu_component.compute_per_unit.value)
         self.assertEqual(8 * u.cpu_core, self.cpu_component.compute.value)
         self.assertEqual(1 * u.cpu_core, self.cpu_component.base_compute_consumption.value)
 
@@ -49,6 +58,15 @@ class TestEdgeCPUComponent(TestCase):
         self.assertIn("Available compute per Test CPU instance",
                      self.cpu_component.available_compute_per_instance.label)
 
+    def test_update_available_compute_per_instance_with_nb_of_units(self):
+        """Test update_available_compute_per_instance multiplies compute by nb_of_units."""
+        self.cpu_component.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.cpu_component.update_compute()
+
+        self.cpu_component.update_available_compute_per_instance()
+
+        self.assertAlmostEqual(23, self.cpu_component.available_compute_per_instance.value.magnitude, places=5)
+
     def test_update_available_compute_per_instance_insufficient_capacity(self):
         """Test update_available_compute_per_instance raises error when capacity is insufficient."""
         self.cpu_component.base_compute_consumption = SourceValue(10 * u.cpu_core)
@@ -58,6 +76,25 @@ class TestEdgeCPUComponent(TestCase):
 
         self.assertEqual("compute", context.exception.capacity_type)
         self.assertEqual(self.cpu_component, context.exception.overloaded_object)
+
+    def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_with_nb_of_units(self):
+        """Test compute need stays expressed at component-pack level with multiple CPU units."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern distributed")
+
+        mock_need = MagicMock(spec=RecurrentEdgeComponentNeed)
+        mock_need.unitary_hourly_need_per_usage_pattern = {
+            mock_pattern: create_source_hourly_values_from_list([3, 6, 9], pint_unit=u.cpu_core)
+        }
+        mock_need.edge_usage_patterns = [mock_pattern]
+        set_modeling_obj_containers(self.cpu_component, [mock_need])
+        self.cpu_component.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.cpu_component.update_compute()
+
+        self.cpu_component.update_available_compute_per_instance()
+        self.cpu_component.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(mock_pattern)
+
+        result = self.cpu_component.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
+        self.assertEqual([3, 6, 9], result.value_as_float_list)
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern calculation."""

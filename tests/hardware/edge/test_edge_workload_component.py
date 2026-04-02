@@ -21,20 +21,27 @@ class TestEdgeWorkloadComponent(TestCase):
     def setUp(self):
         self.appliance_component = EdgeWorkloadComponent(
             name="Test Appliance",
-            carbon_footprint_fabrication=SourceValue(100 * u.kg),
-            power=SourceValue(50 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(100 * u.kg),
+            power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
-            idle_power=SourceValue(5 * u.W)
+            idle_power_per_unit=SourceValue(5 * u.W)
         )
         self.appliance_component.trigger_modeling_updates = False
+        self.appliance_component.update_carbon_footprint_fabrication()
+        self.appliance_component.update_power()
+        self.appliance_component.update_idle_power()
 
     def test_init(self):
         """Test EdgeWorkloadComponent initialization."""
         self.assertEqual("Test Appliance", self.appliance_component.name)
+        self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_fabrication_per_unit.value)
         self.assertEqual(100 * u.kg, self.appliance_component.carbon_footprint_fabrication.value)
+        self.assertEqual(50 * u.W, self.appliance_component.power_per_unit.value)
         self.assertEqual(50 * u.W, self.appliance_component.power.value)
         self.assertEqual(5 * u.year, self.appliance_component.lifespan.value)
+        self.assertEqual(5 * u.W, self.appliance_component.idle_power_per_unit.value)
         self.assertEqual(5 * u.W, self.appliance_component.idle_power.value)
+        self.assertEqual(1 * u.dimensionless, self.appliance_component.nb_of_units.value)
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern aggregates workloads."""

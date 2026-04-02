@@ -163,7 +163,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             special_mult={"base_compute_consumption": 10}
         )
         self._test_variations_on_obj_inputs(
-            edge_storage, attrs_to_skip=["fraction_of_usage_time", "base_storage_need", "power", "idle_power"])
+            edge_storage,
+            attrs_to_skip=[
+                "fraction_of_usage_time",
+                "base_storage_need",
+                "power_per_unit",
+                "idle_power_per_unit",
+                "carbon_footprint_fabrication_per_unit",
+            ],
+        )
         self._test_variations_on_obj_inputs(
             # recurrent_ram_needed only matters to raise InsufficientCapacityError
             # and this behavior is already unit tested.
@@ -203,10 +211,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Test EdgeRAMComponent - available_ram_per_instance
         # Change ram to trigger error in update_available_ram_per_instance
         logger.warning("Testing EdgeRAMComponent available_ram_per_instance error")
-        original_ram = self.ram_component.ram
+        original_ram = self.edge_computer.ram
         with self.assertRaises(InsufficientCapacityError):
-            self.ram_component.ram = SourceValue(0.5 * u.GB_ram)
-        self.ram_component.ram = original_ram
+            self.edge_computer.ram = SourceValue(0.5 * u.GB_ram)
+        self.edge_computer.ram = original_ram
 
         # Test EdgeRAMComponent - max_ram_need comparison
         # Reduce available_ram_per_instance to trigger error in update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern
@@ -219,10 +227,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Test EdgeCPUComponent - available_compute_per_instance
         # Change compute to trigger error in update_available_compute_per_instance
         logger.warning("Testing EdgeCPUComponent available_compute_per_instance error")
-        original_compute = self.cpu_component.compute
+        original_compute = self.edge_computer.compute
         with self.assertRaises(InsufficientCapacityError):
-            self.cpu_component.compute = SourceValue(0.05 * u.cpu_core)
-        self.cpu_component.compute = original_compute
+            self.edge_computer.compute = SourceValue(0.05 * u.cpu_core)
+        self.edge_computer.compute = original_compute
 
         # Test EdgeCPUComponent - max_compute_need comparison
         # Reduce available_compute_per_instance to trigger error in update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern
@@ -235,10 +243,10 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Test EdgeStorage - cumulative storage capacity
         # Reduce storage_capacity to trigger error in update_full_cumulative_storage_need
         logger.warning("Testing EdgeStorage cumulative storage capacity error")
-        original_storage_capacity = self.edge_storage.storage_capacity
+        original_storage_capacity = self.edge_storage.storage_capacity_per_unit
         with self.assertRaises(InsufficientCapacityError):
-            self.edge_storage.storage_capacity = SourceValue(50 * u.GB_stored)
-        self.edge_storage.storage_capacity = original_storage_capacity
+            self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
+        self.edge_storage.storage_capacity_per_unit = original_storage_capacity
 
         # Test EdgeUsageJourney - usage_span vs lifespan
         # Increase usage_span to trigger error in update_usage_span_validation

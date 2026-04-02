@@ -30,10 +30,11 @@ class ConcreteEdgeComponent(EdgeComponent):
     """Concrete implementation of EdgeComponent for testing."""
     compatible_root_units = [u.cpu_core]
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(20 * u.kg),
-        "power": SourceValue(50 * u.W),
+        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "power_per_unit": SourceValue(50 * u.W),
         "lifespan": SourceValue(5 * u.year),
-        "idle_power": SourceValue(10 * u.W),
+        "idle_power_per_unit": SourceValue(10 * u.W),
+        "nb_of_units": SourceValue(1 * u.dimensionless),
     }
 
     def update_unitary_power_per_usage_pattern(self):
@@ -44,35 +45,38 @@ class TestEdgeComponent(TestCase):
     def setUp(self):
         self.component = ConcreteEdgeComponent(
             name="Test Component",
-            carbon_footprint_fabrication=SourceValue(20 * u.kg),
-            power=SourceValue(50 * u.W),
+            carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(50 * u.W),
             lifespan=SourceValue(5 * u.year),
-            idle_power=SourceValue(10 * u.W)
+            idle_power_per_unit=SourceValue(10 * u.W)
         )
         self.component.trigger_modeling_updates = False
+        self.component.update_carbon_footprint_fabrication()
+        self.component.update_power()
+        self.component.update_idle_power()
 
-    def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self):
-        """Test fabrication footprint calculation for a single pattern."""
+    def test_update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(self):
+        """Test fabrication footprint per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
             mock_pattern: SourceValue(10 * u.concurrent)}
         mock_pattern.edge_usage_journey = mock_edge_usage_journey
 
-        self.component.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(mock_pattern)
+        self.component.update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(mock_pattern)
 
         # Component intensity: 20 kg / 5 year = 4 kg/year
         # Per hour: 4 kg/year / (365.25 * 24) kg/hour
         # For 10 instances: 10 * (4 / 8766) kg
         expected_footprint = 10 * (20 / 5) / (365.25 * 24)
 
-        result = self.component.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
+        result = self.component.fabrication_footprint_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
         self.assertIn("Test Component", result.label)
         self.assertIn("Test Pattern", result.label)
 
-    def test_update_dict_element_in_instances_energy_per_usage_pattern(self):
-        """Test energy calculation for a single pattern."""
+    def test_update_dict_element_in_energy_per_edge_device_per_usage_pattern(self):
+        """Test energy per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Test Journey")
         mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
@@ -82,31 +86,32 @@ class TestEdgeComponent(TestCase):
         unitary_power = create_source_hourly_values_from_list([30, 40], pint_unit=u.W)
         self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({mock_pattern: unitary_power})
 
-        self.component.update_dict_element_in_instances_energy_per_usage_pattern(mock_pattern)
+        self.component.update_dict_element_in_energy_per_edge_device_per_usage_pattern(mock_pattern)
 
         # Energy = nb_instances * unitary_power * 1 hour = [10, 20] * [30, 40] W * 1 hour = [300, 800] Wh
         expected_energy = [300, 800]
 
-        result = self.component.instances_energy_per_usage_pattern[mock_pattern]
+        result = self.component.energy_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
         self.assertIn("Test Component", result.label)
 
-    def test_update_dict_element_in_energy_footprint_per_usage_pattern(self):
-        """Test energy footprint calculation for a single pattern."""
+    def test_update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(self):
+        """Test energy footprint per edge device calculation for a single pattern."""
         mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
         mock_country = MagicMock()
         mock_country.average_carbon_intensity = SourceValue(0.5 * u.kg / u.kWh)
         mock_pattern.country = mock_country
 
-        instances_energy = create_source_hourly_values_from_list([1000, 2000], pint_unit=u.Wh)
-        self.component.instances_energy_per_usage_pattern = ExplainableObjectDict({mock_pattern: instances_energy})
+        energy_per_edge_device = create_source_hourly_values_from_list([1000, 2000], pint_unit=u.Wh)
+        self.component.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict(
+            {mock_pattern: energy_per_edge_device})
 
-        self.component.update_dict_element_in_energy_footprint_per_usage_pattern(mock_pattern)
+        self.component.update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(mock_pattern)
 
         # Energy footprint = [1000, 2000] Wh * 0.5 kg/kWh = [0.5, 1.0] kg
         expected_footprint = [0.5, 1.0]
 
-        result = self.component.energy_footprint_per_usage_pattern[mock_pattern]
+        result = self.component.energy_footprint_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
 
     def test_update_total_unitary_hourly_need_per_usage_pattern(self):
@@ -135,59 +140,94 @@ class TestEdgeComponent(TestCase):
             [4, 4], self.component.total_unitary_hourly_need_per_usage_pattern[mock_pattern_2].magnitude
         ))
 
-    def test_update_instances_fabrication_footprint(self):
-        """Test summing fabrication footprint across patterns."""
+    def test_update_fabrication_footprint_per_edge_device(self):
+        """Test summing fabrication footprint per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
 
         footprint_1 = create_source_hourly_values_from_list([10, 20], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([5, 10], pint_unit=u.kg)
-        self.component.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.component.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
         })
 
-        self.component.update_instances_fabrication_footprint()
+        self.component.update_fabrication_footprint_per_edge_device()
 
         # Sum: [10, 20] + [5, 10] = [15, 30]
-        result = self.component.instances_fabrication_footprint
+        result = self.component.fabrication_footprint_per_edge_device
         self.assertTrue(np.allclose([15, 30], result.value.to(u.kg).magnitude))
 
-    def test_update_instances_energy(self):
-        """Test summing energy across patterns."""
+    def test_update_energy_per_edge_device(self):
+        """Test summing energy per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
 
         energy_1 = create_source_hourly_values_from_list([100, 200], pint_unit=u.Wh)
         energy_2 = create_source_hourly_values_from_list([50, 100], pint_unit=u.Wh)
-        self.component.instances_energy_per_usage_pattern = ExplainableObjectDict({
+        self.component.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern_1: energy_1,
             mock_pattern_2: energy_2
         })
 
-        self.component.update_instances_energy()
+        self.component.update_energy_per_edge_device()
 
         # Sum: [100, 200] + [50, 100] = [150, 300]
-        result = self.component.instances_energy
+        result = self.component.energy_per_edge_device
         self.assertTrue(np.allclose([150, 300], result.value.to(u.Wh).magnitude))
 
-    def test_update_energy_footprint(self):
-        """Test summing energy footprint across patterns."""
+    def test_update_energy_footprint_per_edge_device(self):
+        """Test summing energy footprint per edge device across patterns."""
         mock_pattern_1 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1", id="pattern_1")
         mock_pattern_2 = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 2", id="pattern_2")
 
         footprint_1 = create_source_hourly_values_from_list([1, 2], pint_unit=u.kg)
         footprint_2 = create_source_hourly_values_from_list([0.5, 1], pint_unit=u.kg)
-        self.component.energy_footprint_per_usage_pattern = ExplainableObjectDict({
+        self.component.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict({
             mock_pattern_1: footprint_1,
             mock_pattern_2: footprint_2
         })
 
-        self.component.update_energy_footprint()
+        self.component.update_energy_footprint_per_edge_device()
 
         # Sum: [1, 2] + [0.5, 1] = [1.5, 3]
-        result = self.component.energy_footprint
+        result = self.component.energy_footprint_per_edge_device
         self.assertTrue(np.allclose([1.5, 3], result.value.to(u.kg).magnitude))
+
+    def test_update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern_with_nb_of_units(self):
+        """Test nb_of_units multiplies fabrication footprint per edge device."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern with units")
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey with units")
+        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: SourceValue(2 * u.concurrent)}
+        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        self.component.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.component.update_carbon_footprint_fabrication()
+
+        self.component.update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(mock_pattern)
+
+        expected_footprint = 2 * ((20 / 5) * 3) / (365.25 * 24)
+        result = self.component.fabrication_footprint_per_edge_device_per_usage_pattern[mock_pattern]
+        self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
+
+    def test_update_dict_element_in_energy_per_edge_device_per_usage_pattern_with_nb_of_units(self):
+        """Test nb_of_units multiplies energy per edge device."""
+        mock_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern energy units")
+        mock_edge_usage_journey = create_mod_obj_mock(EdgeUsageJourney, "Journey energy units")
+        mock_edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = {
+            mock_pattern: create_source_hourly_values_from_list([2, 1], pint_unit=u.concurrent)}
+        mock_pattern.edge_usage_journey = mock_edge_usage_journey
+        self.component.nb_of_units = SourceValue(3 * u.dimensionless)
+        self.component.update_power()
+        self.component.update_idle_power()
+        self.component.unitary_power_per_usage_pattern = ExplainableObjectDict({
+            mock_pattern: create_source_hourly_values_from_list([30, 60], pint_unit=u.W)
+        })
+
+        self.component.update_dict_element_in_energy_per_edge_device_per_usage_pattern(mock_pattern)
+
+        result = self.component.energy_per_edge_device_per_usage_pattern[mock_pattern]
+        self.assertTrue(np.allclose([60, 60], result.value.to(u.Wh).magnitude))
 
 
 class TestEdgeComponentJsonRoundTrip(TestCase):

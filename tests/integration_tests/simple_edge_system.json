@@ -186,10 +186,19 @@
         "Edge-computer-CPU": {
             "name": "Edge computer CPU",
             "id": "Edge-computer-CPU",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Edge computer CPU from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of Edge computer CPU from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge computer CPU from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -201,28 +210,37 @@
         "Edge-computer-RAM": {
             "name": "Edge computer RAM",
             "id": "Edge-computer-RAM",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Edge computer RAM from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of Edge computer RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "power": {
+            "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power of Edge computer RAM from e-footprint hypothesis",
+                "label": "Power per unit of Edge computer RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power of Edge computer RAM from e-footprint hypothesis",
+                "label": "Idle power per unit of Edge computer RAM from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge computer RAM from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -234,10 +252,19 @@
         "Edge-SSD-storage": {
             "name": "Edge SSD storage",
             "id": "Edge-SSD-storage",
-            "power": {
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 0.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power of Edge SSD storage from e-footprint hypothesis",
+                "label": "Power per unit of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -252,28 +279,37 @@
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power of Edge SSD storage from e-footprint hypothesis",
+                "label": "Idle power per unit of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "carbon_footprint_fabrication_per_storage_capacity": {
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of Edge SSD storage from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "carbon_footprint_fabrication_per_storage_capacity_per_unit": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint of Edge SSD storage per storage capacity from e-footprint hypothesis",
+                "label": "Fabrication carbon footprint per unit of Edge SSD storage per storage capacity from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "storage_capacity": {
+            "storage_capacity_per_unit": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
-                "label": "Storage capacity of Edge SSD storage from e-footprint hypothesis",
+                "label": "Storage capacity per unit of Edge SSD storage from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -356,19 +392,19 @@
         "edge-RAM-component": {
             "name": "edge RAM component",
             "id": "edge-RAM-component",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of edge RAM component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of edge RAM component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "power": {
+            "power_per_unit": {
                 "value": 10.0,
                 "unit": "watt",
-                "label": "Power of edge RAM component from e-footprint hypothesis",
+                "label": "Power per unit of edge RAM component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -383,19 +419,28 @@
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 2.0,
                 "unit": "watt",
-                "label": "Idle power of edge RAM component from e-footprint hypothesis",
+                "label": "Idle power per unit of edge RAM component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "ram": {
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of edge RAM component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_per_unit": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
-                "label": "RAM of edge RAM component from e-footprint hypothesis",
+                "label": "RAM per unit of edge RAM component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -416,19 +461,19 @@
         "edge-CPU-component": {
             "name": "edge CPU component",
             "id": "edge-CPU-component",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of edge CPU component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of edge CPU component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "power": {
+            "power_per_unit": {
                 "value": 15.0,
                 "unit": "watt",
-                "label": "Power of edge CPU component from e-footprint hypothesis",
+                "label": "Power per unit of edge CPU component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -443,19 +488,28 @@
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 3.0,
                 "unit": "watt",
-                "label": "Idle power of edge CPU component from e-footprint hypothesis",
+                "label": "Idle power per unit of edge CPU component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "compute": {
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of edge CPU component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_per_unit": {
                 "value": 4.0,
                 "unit": "cpu_core",
-                "label": "Compute of edge CPU component from e-footprint hypothesis",
+                "label": "Compute per unit of edge CPU component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -476,19 +530,19 @@
         "edge-workload-component": {
             "name": "edge workload component",
             "id": "edge-workload-component",
-            "carbon_footprint_fabrication": {
+            "carbon_footprint_fabrication_per_unit": {
                 "value": 100.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of edge workload component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit of edge workload component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
                 }
             },
-            "power": {
+            "power_per_unit": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Power of edge workload component from e-footprint hypothesis",
+                "label": "Power per unit of edge workload component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -503,10 +557,19 @@
                     "link": null
                 }
             },
-            "idle_power": {
+            "idle_power_per_unit": {
                 "value": 5.0,
                 "unit": "watt",
-                "label": "Idle power of edge workload component from e-footprint hypothesis",
+                "label": "Idle power per unit of edge workload component from e-footprint hypothesis",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units of edge workload component from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

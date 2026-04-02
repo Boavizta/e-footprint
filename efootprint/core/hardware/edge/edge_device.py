@@ -150,8 +150,8 @@ class EdgeDevice(ModelingObject):
         total_footprint = self.structure_fabrication_footprint_per_usage_pattern.get(
             usage_pattern, EmptyExplainableObject())
         for component in self.components:
-            if usage_pattern in component.instances_fabrication_footprint_per_usage_pattern:
-                total_footprint += component.instances_fabrication_footprint_per_usage_pattern[usage_pattern]
+            if usage_pattern in component.fabrication_footprint_per_edge_device_per_usage_pattern:
+                total_footprint += component.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern]
 
         self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = total_footprint.to(
             u.kg).set_label(f"Hourly {self.name} instances fabrication footprint for {usage_pattern.name}")
@@ -165,8 +165,8 @@ class EdgeDevice(ModelingObject):
         # Sum energy from all components
         total_energy = EmptyExplainableObject()
         for component in self.components:
-            if usage_pattern in component.instances_energy_per_usage_pattern:
-                total_energy += component.instances_energy_per_usage_pattern[usage_pattern]
+            if usage_pattern in component.energy_per_edge_device_per_usage_pattern:
+                total_energy += component.energy_per_edge_device_per_usage_pattern[usage_pattern]
 
         self.instances_energy_per_usage_pattern[usage_pattern] = total_energy.set_label(
             f"Hourly energy consumed by {self.name} instances for {usage_pattern.name}")
@@ -180,8 +180,8 @@ class EdgeDevice(ModelingObject):
         # Sum energy footprint from all components
         total_energy_footprint = EmptyExplainableObject()
         for component in self.components:
-            if usage_pattern in component.energy_footprint_per_usage_pattern:
-                total_energy_footprint += component.energy_footprint_per_usage_pattern[usage_pattern]
+            if usage_pattern in component.energy_footprint_per_edge_device_per_usage_pattern:
+                total_energy_footprint += component.energy_footprint_per_edge_device_per_usage_pattern[usage_pattern]
 
         self.energy_footprint_per_usage_pattern[usage_pattern] = total_energy_footprint.set_label(
             f"{self.name} energy footprint for {usage_pattern.name}").to(u.kg)
@@ -211,14 +211,14 @@ class EdgeDevice(ModelingObject):
 
     def update_dict_element_in_fabrication_footprint_breakdown_by_source(self, component: EdgeComponent):
         component_fabrication_total = sum(
-            (elt.instances_fabrication_footprint for elt in self.components),
+            (elt.fabrication_footprint_per_edge_device for elt in self.components),
             start=EmptyExplainableObject(),
         )
         structure_fabrication_total = self.instances_fabrication_footprint - component_fabrication_total
         equal_structure_share = structure_fabrication_total / ExplainableQuantity(
             len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
         self.fabrication_footprint_breakdown_by_source[component] = (
-            component.instances_fabrication_footprint + equal_structure_share
+            component.fabrication_footprint_per_edge_device + equal_structure_share
         ).set_label(f"{self.name} fabrication footprint attributed to {component.name}")
 
     def update_fabrication_footprint_breakdown_by_source(self):
@@ -232,7 +232,7 @@ class EdgeDevice(ModelingObject):
     @property
     def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
         return ExplainableObjectDict({
-            component: component.energy_footprint
+            component: component.energy_footprint_per_edge_device
             for component in self.components
         })
 
@@ -275,7 +275,8 @@ class EdgeDevice(ModelingObject):
             len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
         return ExplainableObjectDict({
             usage_pattern: (
-                component.instances_fabrication_footprint_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
+                component.fabrication_footprint_per_edge_device_per_usage_pattern.get(
+                    usage_pattern, EmptyExplainableObject())
                 + structure_fabrication / structure_component_share
             )
             for usage_pattern, structure_fabrication in self.structure_fabrication_footprint_per_usage_pattern.items()
@@ -295,7 +296,7 @@ class EdgeDevice(ModelingObject):
 
     def update_dict_element_in_usage_impact_repartition_weights(self, component_need: "RecurrentEdgeComponentNeed"):
         self.usage_impact_repartition_weights[component_need] = self._compute_component_need_weight(
-            component_need, component_need.edge_component.energy_footprint_per_usage_pattern
+            component_need, component_need.edge_component.energy_footprint_per_edge_device_per_usage_pattern
         ).set_label(f"{component_need.name} usage weight in {self.name} impact repartition")
 
     def update_usage_impact_repartition_weights(self):

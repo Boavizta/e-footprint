@@ -15,15 +15,20 @@ if TYPE_CHECKING:
 class EdgeWorkloadComponent(EdgeComponent):
     compatible_root_units = [u.concurrent]
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(100 * u.kg),
-        "power": SourceValue(50 * u.W),
+        "carbon_footprint_fabrication_per_unit": SourceValue(100 * u.kg),
+        "power_per_unit": SourceValue(50 * u.W),
         "lifespan": SourceValue(6 * u.year),
-        "idle_power": SourceValue(5 * u.W),
+        "idle_power_per_unit": SourceValue(5 * u.W),
+        "nb_of_units": SourceValue(1 * u.dimensionless),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, idle_power)
+    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
+                 power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 idle_power_per_unit: ExplainableQuantity,
+                 nb_of_units: ExplainableQuantity | None = None):
+        super().__init__(
+            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            nb_of_units=nb_of_units)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
 
     @property

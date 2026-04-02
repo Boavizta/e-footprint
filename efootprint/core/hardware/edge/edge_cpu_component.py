@@ -15,19 +15,25 @@ if TYPE_CHECKING:
 class EdgeCPUComponent(EdgeComponent):
     compatible_root_units = [u.cpu_core]
     default_values = {
-        "carbon_footprint_fabrication": SourceValue(20 * u.kg),
-        "power": SourceValue(15 * u.W),
+        "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
+        "power_per_unit": SourceValue(15 * u.W),
         "lifespan": SourceValue(6 * u.year),
-        "idle_power": SourceValue(3 * u.W),
-        "compute": SourceValue(4 * u.cpu_core),
+        "idle_power_per_unit": SourceValue(3 * u.W),
+        "nb_of_units": SourceValue(1 * u.dimensionless),
+        "compute_per_unit": SourceValue(4 * u.cpu_core),
         "base_compute_consumption": SourceValue(0.1 * u.cpu_core),
     }
 
-    def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,
-                 power: ExplainableQuantity, lifespan: ExplainableQuantity, idle_power: ExplainableQuantity,
-                 compute: ExplainableQuantity, base_compute_consumption: ExplainableQuantity):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, idle_power)
-        self.compute = compute.set_label(f"Compute of {self.name}")
+    def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
+                 power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
+                 idle_power_per_unit: ExplainableQuantity, compute_per_unit: ExplainableQuantity,
+                 base_compute_consumption: ExplainableQuantity,
+                 nb_of_units: ExplainableQuantity | None = None):
+        super().__init__(
+            name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
+            nb_of_units=nb_of_units)
+        self.compute_per_unit = compute_per_unit.set_label(f"Compute per unit of {self.name}")
+        self.compute = EmptyExplainableObject()
         self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
 
         self.available_compute_per_instance = EmptyExplainableObject()
@@ -35,8 +41,11 @@ class EdgeCPUComponent(EdgeComponent):
 
     @property
     def calculated_attributes(self):
-        return (["available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
+        return (["compute", "available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
                 + super().calculated_attributes)
+
+    def update_compute(self):
+        self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute of {self.name}")
 
     def update_available_compute_per_instance(self):
         available_compute_per_instance = (self.compute - self.base_compute_consumption)

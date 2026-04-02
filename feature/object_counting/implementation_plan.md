@@ -110,23 +110,27 @@ No calculation changes — just reference renames.
 
 ---
 
-## Phase 2: Add EdgeComponent.nb_of_units
+## Phase 2: Add EdgeComponent.nb_of_units with per-unit inputs
 
 **Goal**: Each component type can specify how many units exist within its EdgeDevice.
-The `nb_of_units` multiplication happens entirely within EdgeComponent — it effectively
-makes the component behave as if it had multiplied power, capacity, and fabrication.
-EdgeDevice doesn't need to know about `component.nb_of_units`.
+All physical component inputs become **per-unit** inputs. Aggregate component attributes
+(`carbon_footprint_fabrication`, `power`, `idle_power`, `compute`, `ram`, `storage_capacity`)
+are recalculated at the beginning of the component calculation chain from
+`*_per_unit × nb_of_units`. EdgeDevice still does not need to know about `component.nb_of_units`.
 
 ### 2.1 EdgeComponent (edge_component.py)
 
 **Add to `__init__`:**
 ```python
-def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_power,
+def __init__(self, name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
              nb_of_units=None):
     ...
     if nb_of_units is None:
         nb_of_units = SourceValue(1 * u.dimensionless)
     self.nb_of_units = nb_of_units.set_label(f"Number of units of {self.name}")
+    self.carbon_footprint_fabrication_per_unit = ...
+    self.power_per_unit = ...
+    self.idle_power_per_unit = ...
 ```
 
 **Add to `default_values` in each subclass:**
@@ -134,43 +138,74 @@ def __init__(self, name, carbon_footprint_fabrication, power, lifespan, idle_pow
 "nb_of_units": SourceValue(1 * u.dimensionless)
 ```
 
-**Update EdgeComponent calculations** to multiply by `nb_of_units`:
+**Add aggregate calculated attributes at the start of `calculated_attributes`:**
+```python
+["carbon_footprint_fabrication", "power", "idle_power",
+ "unitary_power_per_usage_pattern",
+ "fabrication_footprint_per_edge_device_per_usage_pattern",
+ "energy_per_edge_device_per_usage_pattern",
+ "energy_footprint_per_edge_device_per_usage_pattern",
+ "fabrication_footprint_per_edge_device",
+ "energy_per_edge_device", "energy_footprint_per_edge_device",
+ "total_unitary_hourly_need_per_usage_pattern"]
+```
+
+**Aggregate attribute formulas:**
+- `carbon_footprint_fabrication = carbon_footprint_fabrication_per_unit * nb_of_units`
+- `power = power_per_unit * nb_of_units`
+- `idle_power = idle_power_per_unit * nb_of_units`
+
+**Update EdgeComponent calculations** to use aggregate attributes only:
 
 - `update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern`:
   ```python
-  component_fabrication_intensity = (self.carbon_footprint_fabrication / self.lifespan)
-      * self.nb_of_units
+  component_fabrication_intensity = self.carbon_footprint_fabrication / self.lifespan
   nb_instances = ...  # as today
   # rest unchanged
   ```
 
 - `update_dict_element_in_energy_per_edge_device_per_usage_pattern`:
   ```python
-  # unitary_power already per single unit, multiply by nb_of_units
-  instances_energy = nb_instances * (self.unitary_power_per_usage_pattern[usage_pattern]
-      * self.nb_of_units * ExplainableQuantity(1 * u.hour, "one hour"))
+  instances_energy = nb_instances * (
+      self.unitary_power_per_usage_pattern[usage_pattern] * ExplainableQuantity(1 * u.hour, "one hour"))
   ```
 
-**Capacity validation**: Update each subclass's validation to multiply capacity by nb_of_units.
+### 2.1.1 EdgeComponent subclasses
+
+Each subclass stores **per-unit** physical inputs and exposes the aggregate attribute as a
+calculated attribute.
 
 For EdgeCPUComponent:
 ```python
-available_compute = self.compute * self.nb_of_units - self.base_compute_consumption
+compute_per_unit = ...
+compute = compute_per_unit * nb_of_units
+available_compute = compute - base_compute_consumption
 ```
-Base consumption is a fixed overhead for the component, not per-unit.
+`unitary_hourly_compute_need_per_usage_pattern` stays **per component** (not divided by `nb_of_units`).
+`unitary_power_per_usage_pattern` uses aggregate `power`, `idle_power`, and `compute`.
 
-For EdgeRAMComponent: same pattern with `ram` and `base_ram_consumption`.
+For EdgeRAMComponent:
+```python
+ram_per_unit = ...
+ram = ram_per_unit * nb_of_units
+available_ram = ram - base_ram_consumption
+```
+`unitary_hourly_ram_need_per_usage_pattern` stays **per component**.
+`unitary_power_per_usage_pattern` uses aggregate `power`, `idle_power`, and `ram`.
 
 For EdgeStorage:
 ```python
-total_capacity = self.storage_capacity * self.nb_of_units
-# validate: max_cumulative_need ≤ total_capacity
+storage_capacity_per_unit = ...
+storage_capacity = storage_capacity_per_unit * nb_of_units
+# validate: max_cumulative_need ≤ storage_capacity
 ```
+`carbon_footprint_fabrication` is also recomputed from
+`carbon_footprint_fabrication_per_storage_capacity_per_unit × storage_capacity_per_unit × nb_of_units`.
 
 For EdgeWorkloadComponent:
 ```python
-# No capacity validation currently, so nothing to change.
-# If added later, multiply by nb_of_units.
+# No capacity validation currently.
+power and idle_power become aggregate attributes computed from per-unit inputs.
 ```
 
 ### 2.2 EdgeDevice (edge_device.py)
@@ -187,9 +222,12 @@ also work unchanged — they read component-level totals which now include nb_of
 - Test that nb_of_units=1 produces identical results to before (backward compat).
 - Test that nb_of_units=3 triples energy and fabrication for a component.
 - Test capacity validation with nb_of_units > 1.
-- Test that needs are distributed across units (3 cpu_core need on nb_of_units=3 = 1 per unit).
+- Test that CPU/RAM needs remain per component (no division by `nb_of_units`).
+- Test aggregate attributes are recomputed from per-unit inputs.
 
 ---
+
+PAUSE HERE FOR USER TO REVIEW AND COMMIT BEFORE MOVING ON.
 
 ## Phase 3a: Infrastructure — ExplainableObjectDict as Input Attribute
 
