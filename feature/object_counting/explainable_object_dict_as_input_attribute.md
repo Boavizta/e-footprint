@@ -357,23 +357,19 @@ for (obj, attr_key) in explainable_object_dicts_to_create_after_objects_creation
         new_obj.__setattr__(attr_key, ExplainableObjectDict(), check_input_validity=False)
 ```
 
-Then in the deferred loop (json_to_system.py:126-132), the attribute exists as an empty
-ExplainableObjectDict. Since `trigger_modeling_updates = True` (after `after_init`), assigning
-the populated dict triggers `ModelingUpdate` which properly recomputes dependents.
-
-**But wait** — this means the full `ModelingUpdate` machinery fires during deserialization,
-which is wasteful. Better approach: in the deferred loop, temporarily disable triggering:
+Then in the deferred loop (json_to_system.py:126-132), the empty dict exists as the
+attribute. Use `replace_in_mod_obj_container_without_recomputation` to swap it for the
+populated dict — no `ModelingUpdate` fires, no wasted computation. This is safe because
+either the calculated values are loaded from JSON, or System's `after_init` triggers the
+full computation chain anyway.
 
 ```python
 for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
     explainable_object_dict = ExplainableObjectDict(
         {flat_obj_dict[key]: ExplainableObject.from_json_dict(value) for key, value in attr_value.items()})
 
-    # Bypass update logic during deserialization
-    old_trigger = modeling_obj.trigger_modeling_updates
-    modeling_obj.trigger_modeling_updates = False
-    modeling_obj.__setattr__(attr_key, explainable_object_dict, check_input_validity=False)
-    modeling_obj.trigger_modeling_updates = old_trigger
+    current_dict = getattr(modeling_obj, attr_key)
+    current_dict.replace_in_mod_obj_container_without_recomputation(explainable_object_dict)
 
     for explainable_object_item, explainable_object_json \
             in zip(explainable_object_dict.values(), attr_value.values()):
@@ -381,26 +377,20 @@ for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_a
             explainable_object_json, flat_obj_dict)
 ```
 
-This is safe because System's `after_init` (called last) triggers the full computation chain,
-which recomputes everything in canonical order anyway.
+**Note:** `replace_in_mod_obj_container_without_recomputation` on an ExplainableObjectDict
+falls into the else branch (line 193-196 of object_linked_to_modeling_obj.py): unsets old
+container, sets `explainable_object_dict` directly on the ModelingObject, sets new container.
+The re-entry guard from section 1 is not needed here because the replacement happens at the
+attribute level, not inside a dict.
 
-**Note:** The `trigger_modeling_updates` on the dict itself also needs to be set after
-deserialization. The `after_init` generic logic from section 4 handles this — but `after_init`
-was already called before the dicts were populated. Options:
-- Re-call the dict trigger setup after the deferred loop.
-- Or: set `dict.trigger_modeling_updates = True` explicitly in the deferred loop, after
-  setting the dict on the object.
-
-Recommended approach in the deferred loop:
+**Enabling `trigger_modeling_updates` on the new dict:** `after_init` was already called
+before the deferred loop, so the generic logic from section 4 already ran (on the empty
+dict). The replacement dict needs its flag set explicitly:
 
 ```python
-    ...
-    modeling_obj.trigger_modeling_updates = old_trigger
-
     # Enable live updates on input dicts
     if attr_key not in modeling_obj.calculated_attributes:
         explainable_object_dict.trigger_modeling_updates = True
-    ...
 ```
 
 ---
