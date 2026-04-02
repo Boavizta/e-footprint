@@ -162,6 +162,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
                        is_loaded_from_system_with_calculated_attributes=False):
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         new_obj = cls.__new__(cls)
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
         new_obj.__dict__["explainable_object_dicts_containers"] = []
@@ -187,7 +188,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if not is_loaded_from_system_with_calculated_attributes:
             for calculated_attribute_name in new_obj.calculated_attributes:
                 if getattr(new_obj, calculated_attribute_name, None) is None:
-                    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
                     if hasattr(new_obj, f"update_dict_element_in_{calculated_attribute_name}"):
                         default_value = ExplainableObjectDict()
                     else:
@@ -198,7 +198,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for (obj, attr_key) in list(explainable_object_dicts_to_create_after_objects_creation.keys()):
             if obj is new_obj and attr_key not in new_obj.calculated_attributes:
                 if getattr(new_obj, attr_key, None) is None:
-                    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
                     new_obj.__setattr__(attr_key, ExplainableObjectDict(), check_input_validity=False)
 
         if set_trigger_modeling_updates_to_true:
@@ -584,7 +583,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             optimize_chain=True) -> List[Type["ModelingObject"]]:
         return self._compute_mod_objs_computation_chain_from_old_and_new_collection(
             old_value, input_value,
-            old_mod_objs=list(old_value), new_mod_objs=list(input_value),
+            old_mod_objs=old_value, new_mod_objs=input_value,
             optimize_chain=optimize_chain)
 
     def _compute_mod_objs_computation_chain_from_old_and_new_collection(

@@ -64,13 +64,12 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
                 f"received {type(value)}")
 
         if self.trigger_modeling_updates:
+            from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
             if key in self:
                 # Value update on existing key: old value's attr_updates_chain already traces downstream
-                from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
                 ModelingUpdate([[self[key], value]])
             else:
                 # Structural change: new key — full dict replacement so compute chain can diff keys
-                from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
                 new_dict = ExplainableObjectDict()
                 for k, v in self.items():
                     dict.__setitem__(new_dict, k, v)
@@ -106,10 +105,6 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
         self._remove_self_from_key_containers(key)
 
     def pop(self, key, *args):
-        if self.trigger_modeling_updates and key in self:
-            value = self[key]
-            self.__delitem__(key)
-            return value
         if key in self:
             value = self[key]
             self.__delitem__(key)
