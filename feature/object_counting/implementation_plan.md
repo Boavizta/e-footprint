@@ -315,7 +315,12 @@ def _find_parent_groups(self):
     parent_groups = []
     for dict_container in self.explainable_object_dicts_containers:
         container = dict_container.modeling_obj_container
-        if isinstance(container, EdgeDeviceGroup) and self in dict_container:
+        if isinstance(container, EdgeDeviceGroup):
+            if self not in dict_container:
+                raise ValueError(
+                    f"Stale explainable_object_dicts_container: "
+                    f"{container.name}.{dict_container.attr_name_in_mod_obj_container} "
+                    f"references {self.name} but doesn't contain it as a key")
             if container not in parent_groups:
                 parent_groups.append(container)
     return parent_groups
@@ -374,7 +379,12 @@ def _find_parent_groups(self):
     parent_groups = []
     for dict_container in self.explainable_object_dicts_containers:
         container = dict_container.modeling_obj_container
-        if isinstance(container, EdgeDeviceGroup) and self in dict_container:
+        if isinstance(container, EdgeDeviceGroup):
+            if self not in dict_container:
+                raise ValueError(
+                    f"Stale explainable_object_dicts_container: "
+                    f"{container.name}.{dict_container.attr_name_in_mod_obj_container} "
+                    f"references {self.name} but doesn't contain it as a key")
             if container not in parent_groups:
                 parent_groups.append(container)
     return parent_groups
@@ -586,7 +596,9 @@ self-referential types), serialization object discovery, and deserialization tim
 
 **Risk: `explainable_object_dicts_containers` navigation is fragile.** It's a tracking mechanism,
 not a clean API. If containers aren't properly maintained, group discovery fails silently.
-**Mitigation**: Add assertions/validation that verify container tracking integrity.
+**Mitigation**: `_find_parent_groups` (on both EdgeDeviceGroup and EdgeDevice) raises `ValueError`
+when it detects a stale container reference (dict listed in `explainable_object_dicts_containers`
+but no longer containing the object as a key). This turns silent wrong results into loud failures.
 
 **Risk: `copy_with` on EdgeDeviceGroup.** `_prepare_value_for_copy` does `copy(value)` on
 ExplainableObjectDicts, but the copied dict's values are still linked to the original
