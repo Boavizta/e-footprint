@@ -191,7 +191,50 @@ also work unchanged — they read component-level totals which now include nb_of
 
 ---
 
-## Phase 3: Create EdgeDeviceGroup
+## Phase 3a: Infrastructure — ExplainableObjectDict as Input Attribute
+
+**Goal**: Enable ExplainableObjectDict to work as an `__init__` parameter with full
+recomputation and serialization support. **Must be completed before Phase 3b.**
+
+All changes are detailed in
+**[explainable_object_dict_as_input_attribute.md](explainable_object_dict_as_input_attribute.md)**.
+Summary of what to implement:
+
+1. **ExplainableObjectDict** (explainable_object_dict.py): Add `trigger_modeling_updates` flag.
+   Update `__setitem__`, `__delitem__`, `pop`, `clear` to trigger ModelingUpdate when True.
+   (Sections 1)
+2. **object_linked_to_modeling_obj.py**: Re-entry guard in
+   `replace_in_mod_obj_container_without_recomputation` for dict containers — mirror the
+   existing list guard. (Section 1, subsection "Guard Against Re-entry")
+3. **ModelingUpdate** (modeling_update.py): dict→ExplainableObjectDict in `parse_changes_list`,
+   ExplainableObjectDict branch in `compute_mod_objs_computation_chain`. (Section 2)
+4. **ModelingObject** (modeling_object.py): Factor list/dict computation chain into shared
+   `_compute_mod_objs_computation_chain_from_old_and_new_collection`, add dict variant.
+   Update `after_init` to enable triggers on input dicts. (Sections 3 & 4)
+5. **json_to_system.py**: Initialize input ExplainableObjectDicts to empty in `from_json_dict`,
+   use `replace_in_mod_obj_container_without_recomputation` in deferred loop, set
+   `trigger_modeling_updates` on input dicts after. (Section 7)
+6. **system_to_json.py**: Walk ExplainableObjectDict keys and
+   `explainable_object_dicts_containers` in `recursively_write_json_dict`. (Section 6)
+
+### 3a.1 Tests
+
+**Unit tests** (tests/abstract_modeling_classes/):
+- `test_explainable_object_dict.py`:
+  - Test `__setitem__` on existing key triggers ModelingUpdate when `trigger_modeling_updates=True`
+  - Test `__setitem__` on new key triggers structural ModelingUpdate
+  - Test `__delitem__` triggers structural ModelingUpdate
+  - Test no ModelingUpdate when `trigger_modeling_updates=False` (current behavior preserved)
+  - Test re-entry guard: `replace_in_mod_obj_container_without_recomputation` inside a
+    trigger-enabled dict doesn't loop
+
+**Integration tests** (tests/integration_tests/):
+- Serialization round-trip test with a ModelingObject that has an input ExplainableObjectDict
+  (will be covered by EdgeDeviceGroup round-trip in Phase 4)
+
+---
+
+## Phase 3b: Create EdgeDeviceGroup
 
 **Goal**: New ModelingObject for hierarchical counting.
 
@@ -394,16 +437,40 @@ section 8 for the full rationale.
 - Add `EdgeDeviceGroup` to `ALL_EFOOTPRINT_CLASSES`
 - Add `EdgeDeviceGroup` to `CANONICAL_COMPUTATION_ORDER` between `EdgeComponent` and `EdgeDevice`
 
-### 3.5 Tests
+### 3b.5 Tests
 
-- Test root group: effective_nb = 1.
-- Test nested groups: effective_nb = product of ancestor counts.
-- Test EdgeDevice in one group: total_nb = group_count × group_effective_nb.
-- Test EdgeDevice in multiple groups: total_nb = sum of contributions.
-- Test EdgeDevice with no group: total_nb = 1 (backward compat).
-- Test full chain: component per_edge_device × nb_of_units × group_multiplier.
-- Test recomputation: change a group count and verify cascade.
-- Test the building/floor/cabinet example end-to-end.
+**Unit tests** (tests/hardware/edge/):
+
+`test_edge_device_group.py`:
+- `update_counts_validation`: dimensionless OK, non-dimensionless raises, negative raises, zero OK
+- `update_effective_nb_of_units_within_root`: root group = 1, child with one parent,
+  child with multiple parents (sum of contributions)
+- `_find_parent_groups` and `_find_root_groups`: no parents, one parent, chain of parents
+
+`test_edge_device.py` (additions):
+- `update_total_nb_of_units_per_ensemble`: no groups = 1, one group, multiple groups
+- `_find_parent_groups` and `_find_root_groups`
+
+`test_edge_component.py` (additions):
+- `modeling_objects_whose_attributes_depend_directly_on_me`: returns root groups when they
+  exist, returns edge_device when no groups (special logic → needs unit test per tests/AGENTS.md)
+
+**Integration tests** (tests/integration_tests/):
+
+Create a new integration test fixture following the pattern in tests/integration_tests/AGENTS.md:
+- `integration_edge_device_group_base_class.py` with `generate_edge_device_group_system()`
+  building a system with a building/floor/cabinet group hierarchy + `nb_of_units > 1` on
+  some components
+- `test_integration_edge_device_group.py` (code variant)
+- `test_integration_edge_device_group_from_json.py` (JSON round-trip variant)
+
+Tests to include in the base class:
+- `run_test_effective_nb_of_units_within_root` for each group level
+- `run_test_total_nb_of_units_per_ensemble` for edge devices
+- `run_test_numerical_footprints` verifying component × nb_of_units × group_count × ensembles
+- `run_test_all_objects_linked_to_system` includes groups
+- `run_test_recomputation_on_count_change`: change a group count, verify cascade
+- Backward compat: existing integration tests (without groups) must still pass unchanged
 
 ---
 
@@ -437,27 +504,26 @@ Add a handler in `version_upgrade_handlers.py` for the new version that:
 
 ### 5.1 System object discovery (system.py)
 
-`get_objects_linked_to_edge_usage_patterns` currently manually walks the object graph.
-With the serialization changes in Phase 4 (walking ExplainableObjectDict containers),
-the serialization will automatically discover groups. But for computation chain purposes,
-groups compute themselves in `after_init` before System, so no change needed in System.
+Groups are discovered for the **computation chain** via EdgeComponent →
+`modeling_objects_whose_attributes_depend_directly_on_me` → root groups (Phase 3b.3).
+No change needed in System for computation.
 
-However, `all_linked_objects` (used for various System-level operations) should also discover
-groups. Add a property:
+However, `all_linked_objects` (used for `_objects_by_category`, footprint summaries, and
+validation) must also discover groups. Add to `get_objects_linked_to_edge_usage_patterns`:
 
 ```python
-@property
-def edge_device_groups(self) -> List[EdgeDeviceGroup]:
-    groups = set()
-    for device in self.edge_devices:
-        for group in device._find_parent_groups():
-            groups.add(group)
-            # Also walk up to find ancestor groups
-            ...
-    return list(groups)
+edge_device_groups = []
+for ed in edge_devices:
+    for group in ed._find_parent_groups():
+        if group not in edge_device_groups:
+            edge_device_groups.append(group)
+            for ancestor in group._find_all_ancestor_groups():
+                if ancestor not in edge_device_groups:
+                    edge_device_groups.append(ancestor)
 ```
 
-Include in `all_linked_objects`.
+Include the discovered groups in the returned list. Also add `EdgeDeviceGroup` to `OBJECT_CATEGORIES`
+in `all_classes_in_order.py` if needed for `_objects_by_category`.
 
 ### 5.2 Sankey graphs
 
@@ -481,21 +547,25 @@ Objects must be created in this order:
 
 ## File Changes Summary
 
-| File | Change |
-|------|--------|
-| `edge_component.py` | Remove instance-level attrs, add unitary_energy + unitary_fabrication_intensity |
-| `edge_cpu_component.py` | Add nb_of_units to defaults, update capacity validation |
-| `edge_ram_component.py` | Add nb_of_units to defaults, update capacity validation |
-| `edge_storage.py` | Add nb_of_units to defaults, update capacity validation |
-| `edge_workload_component.py` | Add nb_of_units to defaults |
-| `edge_device.py` | Absorb aggregation, add total_nb_of_units_per_ensemble, add _find_parent_groups |
-| `edge_device_group.py` | **NEW** — EdgeDeviceGroup class |
-| `all_classes_in_order.py` | Add EdgeDeviceGroup |
-| `system_to_json.py` | Walk ExplainableObjectDict keys + containers |
-| `json_to_system.py` | Handle EdgeDeviceGroup deserialization |
-| `version_upgrade_handlers.py` | Add nb_of_units migration |
-| `system.py` | Add edge_device_groups property, update all_linked_objects |
-| Tests | Update existing, add new for groups and nb_of_units |
+| File | Phase | Change |
+|------|-------|--------|
+| `explainable_object_dict.py` | 3a | Add `trigger_modeling_updates`, update mutation methods |
+| `object_linked_to_modeling_obj.py` | 3a | Re-entry guard for dict containers |
+| `modeling_update.py` | 3a | Dict handling in `parse_changes_list` + `compute_mod_objs_computation_chain` |
+| `modeling_object.py` | 3a | Factor list/dict chain logic, `after_init` dict trigger, new dict chain method |
+| `json_to_system.py` | 3a | Input dict init in `from_json_dict`, deferred loop via replace |
+| `system_to_json.py` | 3a | Walk ExplainableObjectDict keys + containers |
+| `edge_component.py` | 1,2,3b | Rename attrs, add `nb_of_units`, route computation chain through groups |
+| `edge_cpu_component.py` | 2 | Add `nb_of_units` to defaults, update capacity validation |
+| `edge_ram_component.py` | 2 | Add `nb_of_units` to defaults, update capacity validation |
+| `edge_storage.py` | 2 | Add `nb_of_units` to defaults, update capacity validation |
+| `edge_workload_component.py` | 2 | Add `nb_of_units` to defaults |
+| `edge_device.py` | 1,3b | Rename refs, add `total_nb_of_units_per_ensemble`, `_find_parent/root_groups` |
+| `edge_device_group.py` | 3b | **NEW** — EdgeDeviceGroup class |
+| `all_classes_in_order.py` | 3b | Add EdgeDeviceGroup to `ALL_EFOOTPRINT_CLASSES` + `CANONICAL_COMPUTATION_ORDER` |
+| `system.py` | 5 | Discover groups in `all_linked_objects` |
+| `version_upgrade_handlers.py` | 4 | Add `nb_of_units` migration |
+| Tests | all | Update existing, add infrastructure + group + serialization tests |
 
 ---
 
@@ -516,3 +586,9 @@ self-referential types), serialization object discovery, and deserialization tim
 **Risk: `explainable_object_dicts_containers` navigation is fragile.** It's a tracking mechanism,
 not a clean API. If containers aren't properly maintained, group discovery fails silently.
 **Mitigation**: Add assertions/validation that verify container tracking integrity.
+
+**Risk: `copy_with` on EdgeDeviceGroup.** `_prepare_value_for_copy` does `copy(value)` on
+ExplainableObjectDicts, but the copied dict's values are still linked to the original
+container → `set_modeling_obj_container` raises `PermissionError`.
+**Mitigation**: Add `ExplainableObjectDict` to `_value_requires_manual_override` so that
+`copy_with` requires explicit dict overrides. This is consistent with how lists are handled.
