@@ -447,6 +447,45 @@ root groups → child groups → edge devices. Correct.
 
 When no groups exist, EdgeComponent → EdgeDevice directly (current behavior preserved).
 
+### Within-Class Ordering: Why It Works
+
+When multiple root groups share sub-groups, the within-class ordering of EdgeDeviceGroup
+instances must be topologically correct (parents before children). This is guaranteed by
+the existing BFS + dedup-keep-last mechanism in `mod_objs_computation_chain` and
+`optimize_mod_objs_computation_chain`:
+
+1. **BFS re-insertion**: The BFS queue check (`if mod_obj not in
+   mod_objs_with_attributes_to_compute`) only checks the **remaining** queue, not
+   already-processed objects. So if a child group was processed prematurely (before all
+   parents), a later parent re-adds it to the queue, causing a second occurrence in the chain.
+
+2. **Dedup-keep-last**: `optimize_mod_objs_computation_chain` deduplicates by keeping the
+   **last** occurrence. The premature (early) occurrence is discarded; the late one — which
+   is after all parents — is kept.
+
+3. **Canonical reorder preserves within-class order**: The reorder by
+   `CANONICAL_COMPUTATION_ORDER` iterates the dedup'd chain per class, preserving the
+   relative order within each class.
+
+This produces correct topological ordering for any DAG. It would only fail with cycles,
+which are structurally impossible in a group hierarchy (a group cannot be its own ancestor).
+
+**Defensive comment to add in the implementation** (in EdgeDeviceGroup's
+`modeling_objects_whose_attributes_depend_directly_on_me`):
+
+```python
+@property
+def modeling_objects_whose_attributes_depend_directly_on_me(self):
+    # Child groups and edge devices depend on this group's effective_nb_of_units_within_root.
+    # When sub-groups are shared across multiple roots, the BFS + dedup-keep-last mechanism
+    # in mod_objs_computation_chain / optimize_mod_objs_computation_chain guarantees
+    # topological ordering (parents computed before children). This relies on:
+    # - BFS re-adding already-processed objects when discovered from a later parent
+    # - Dedup keeping the last occurrence, which is after all parents
+    # Cycles are structurally impossible (a group cannot be its own ancestor).
+    return list(self.sub_group_counts.keys()) + list(self.edge_device_counts.keys())
+```
+
 ### Helper Methods for Root Group Discovery
 
 ```python
