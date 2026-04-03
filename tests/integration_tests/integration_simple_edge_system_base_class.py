@@ -335,11 +335,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             recurrent_storage_needed=SourceRecurrentValues(
                 Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)))
 
+        def post_reset(test):
+            new_edge_process.self_delete()
+
         scenario = ObjectLinkScenario(
             name="add_edge_process",
             updates_builder=[[self.edge_function.recurrent_edge_device_needs,
                               self.edge_function.recurrent_edge_device_needs + [new_edge_process]]],
             expected_changed=[self.edge_computer],
+            post_reset_assertions=post_reset,
         )
         self._run_object_link_scenario(scenario)
 
@@ -348,11 +352,15 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "Replacement edge process", edge_device=self.edge_computer)
         current_edge_process = self.edge_function.recurrent_edge_device_needs[0]
 
+        def post_reset(test):
+            new_edge_process.self_delete()
+
         scenario = ObjectLinkScenario(
             name="update_edge_processes",
             updates_builder=[[self.edge_function.recurrent_edge_device_needs,
                               [current_edge_process, new_edge_process]]],
             expected_changed=[self.edge_computer],
+            post_reset_assertions=post_reset,
         )
         self._run_object_link_scenario(scenario)
 
@@ -404,6 +412,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         def post_reset(test):
             new_edge_usage_pattern.self_delete()
+            new_edge_usage_journey.self_delete()
+            new_edge_function.self_delete()
             for direct_child in test.edge_usage_pattern.country.average_carbon_intensity.direct_children_with_id:
                 test.assertNotEqual(direct_child.modeling_obj_container.id, new_edge_usage_pattern.id)
             test.assertEqual(1, len(test.edge_process.unitary_hourly_storage_need_per_usage_pattern))
@@ -482,6 +492,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
         self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_device_needs)
         simulation.reset_values()
+        new_edge_process.self_delete()
 
     def run_test_simulation_add_existing_edge_process(self):
         simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,

@@ -1,5 +1,4 @@
 """Integration tests base class for EdgeDeviceGroup hierarchical grouping."""
-import json
 import os
 from datetime import datetime
 from unittest import TestCase
