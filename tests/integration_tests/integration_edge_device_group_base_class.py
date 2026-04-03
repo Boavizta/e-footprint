@@ -84,14 +84,16 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
                 [1000, 1000, 2000, 2000, 3000, 3000, 1000, 1000, 2000], start_date),
         )
 
-        floor_group = EdgeDeviceGroup("floor group")
+        floor_group = EdgeDeviceGroup(
+            "floor group",
+            sub_group_counts={},
+            edge_device_counts={edge_device: SourceValue(NB_DEVICES_PER_FLOOR * u.dimensionless)},
+        )
         building_group = EdgeDeviceGroup(
             "building group",
             sub_group_counts={floor_group: SourceValue(NB_FLOORS * u.dimensionless)},
             edge_device_counts={},
         )
-        floor_group.trigger_modeling_updates = True
-        floor_group.edge_device_counts[edge_device] = SourceValue(NB_DEVICES_PER_FLOOR * u.dimensionless)
 
         system = System("Edge Device Group System", [], edge_usage_patterns=[edge_usage_pattern])
 
