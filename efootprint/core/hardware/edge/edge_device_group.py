@@ -22,8 +22,8 @@ class EdgeDeviceGroup(ModelingObject):
             sub_group_counts = ExplainableObjectDict()
         if edge_device_counts is None:
             edge_device_counts = ExplainableObjectDict()
-        self.sub_group_counts = sub_group_counts
-        self.edge_device_counts = edge_device_counts
+        self.sub_group_counts = ExplainableObjectDict(sub_group_counts)
+        self.edge_device_counts = ExplainableObjectDict(edge_device_counts)
         self.counts_validation = EmptyExplainableObject()
         self.effective_nb_of_units_within_root = EmptyExplainableObject()
 

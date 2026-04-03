@@ -6,6 +6,7 @@ import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
@@ -34,6 +35,7 @@ class TestEdgeDevice(TestCase):
             lifespan=SourceValue(5 * u.year)
         )
         self.edge_device.trigger_modeling_updates = False
+        self.edge_device.total_nb_of_units_per_ensemble = ExplainableQuantity(1 * u.dimensionless, "one device")
 
     def test_init(self):
         """Test EdgeDevice initialization."""

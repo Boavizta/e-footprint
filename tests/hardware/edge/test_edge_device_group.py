@@ -14,6 +14,8 @@ def make_group(name):
     """Create an EdgeDeviceGroup with trigger disabled."""
     g = EdgeDeviceGroup(name)
     g.trigger_modeling_updates = False
+    g.sub_group_counts.trigger_modeling_updates = False
+    g.edge_device_counts.trigger_modeling_updates = False
     return g
 
 
@@ -32,8 +34,10 @@ class TestEdgeDeviceGroupInit(TestCase):
         devices = ExplainableObjectDict()
         group = EdgeDeviceGroup("G", sub_group_counts=sub_groups, edge_device_counts=devices)
         group.trigger_modeling_updates = False
-        self.assertIs(group.sub_group_counts, sub_groups)
-        self.assertIs(group.edge_device_counts, devices)
+        self.assertIsInstance(group.sub_group_counts, ExplainableObjectDict)
+        self.assertIsInstance(group.edge_device_counts, ExplainableObjectDict)
+        self.assertEqual({}, group.sub_group_counts)
+        self.assertEqual({}, group.edge_device_counts)
 
     def test_calculated_attributes_includes_counts_validation(self):
         group = make_group("G")

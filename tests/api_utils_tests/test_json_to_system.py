@@ -106,7 +106,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             ["Device", "Country", 
              "EdgeRAMComponent", "EdgeCPUComponent", "EdgeWorkloadComponent", "EdgeStorage",
              "EdgeComputerRAMComponent", "EdgeComputerCPUComponent", "EdgeApplianceComponent",
-             "EdgeAppliance",
+             "EdgeDeviceGroup", "EdgeAppliance",
              "Network", "EcoLogitsGenAIExternalAPIServer", "Storage",
              "RecurrentEdgeStorageNeed", "EdgeDevice", "EdgeComputer",
              "BoaviztaCloudServer", "EcoLogitsGenAIExternalAPI", "RecurrentEdgeComponentNeed",
