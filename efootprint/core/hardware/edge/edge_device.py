@@ -173,6 +173,14 @@ class EdgeDevice(ModelingObject):
             start=EmptyExplainableObject())
         self.total_nb_of_units = total.set_label(f"Total nb of {self.name} per ensemble")
 
+    def self_delete(self):
+        parent_groups = self._find_parent_groups()
+        if parent_groups:
+            raise PermissionError(
+                f"You can’t delete {self.name} because it is referenced in edge_device_counts of "
+                f"{','.join(parent.name for parent in parent_groups)}.")
+        super().self_delete()
+
     def update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         structure_fabrication_intensity = self.structure_carbon_footprint_fabrication / self.lifespan
         nb_instances = usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[

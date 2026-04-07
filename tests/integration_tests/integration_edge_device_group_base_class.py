@@ -107,6 +107,20 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         cls.floor_group = floor_group
         cls.edge_device = edge_device
 
+    def _generate_delete_test_fixture(self):
+        system, start_date, building_group, floor_group, edge_device = self.generate_edge_device_group_system()
+        if type(self).__name__.endswith("FromJson"):
+            system_dict = system_to_json(system, save_calculated_attributes=True)
+            _, flat_obj_dict = json_to_system(system_dict)
+            return (
+                flat_obj_dict[system.id],
+                start_date,
+                flat_obj_dict[building_group.id],
+                flat_obj_dict[floor_group.id],
+                flat_obj_dict[edge_device.id],
+            )
+        return system, start_date, building_group, floor_group, edge_device
+
     # ------------------------------------------------------------------
     # run_test_* methods (auto-converted to test_* by AutoTestMethodsMeta)
     # ------------------------------------------------------------------
@@ -206,3 +220,27 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         System("ungrouped system", [], edge_usage_patterns=[pattern])
 
         self.assertAlmostEqual(1.0, device.total_nb_of_units.value.magnitude)
+
+    def run_test_floor_group_delete_raises_while_referenced_by_building_group(self):
+        """Deleting a subgroup must fail while a parent group still references it."""
+        _, _, _, floor_group, _ = self._generate_delete_test_fixture()
+
+        with self.assertRaises(PermissionError):
+            floor_group.self_delete()
+
+    def run_test_edge_device_delete_raises_while_referenced_by_floor_group(self):
+        """Deleting an edge device must fail while a group still references it."""
+        _, _, _, _, edge_device = self._generate_delete_test_fixture()
+
+        with self.assertRaises(PermissionError):
+            edge_device.self_delete()
+
+    def run_test_building_group_delete_recomputes_remaining_hierarchy(self):
+        """Deleting the root group must detach it and recompute child group and device counts."""
+        _, _, building_group, floor_group, edge_device = self._generate_delete_test_fixture()
+
+        building_group.self_delete()
+
+        self.assertEqual([], floor_group._find_parent_groups())
+        self.assertAlmostEqual(1.0, floor_group.effective_nb_of_units_within_root.value.magnitude)
+        self.assertAlmostEqual(NB_DEVICES_PER_FLOOR, edge_device.total_nb_of_units.value.magnitude)

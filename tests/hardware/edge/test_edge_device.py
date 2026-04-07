@@ -12,6 +12,7 @@ from efootprint.builders.time_builders import create_source_hourly_values_from_l
 from efootprint.constants.units import u
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.usage.edge.edge_function import EdgeFunction
@@ -765,6 +766,25 @@ class TestEdgeDeviceUpdateTotalNbOfUnits(TestCase):
         group.update_effective_nb_of_units_within_root()
         self.device.update_total_nb_of_units()
         self.assertTrue(self.device.total_nb_of_units.value.check("[]"))
+
+
+class TestEdgeDeviceSelfDelete(TestCase):
+
+    def test_self_delete_raises_when_device_is_referenced_by_group(self):
+        """Test self_delete raises when an edge device group references the device."""
+        device = EdgeDevice(
+            name="Device blocked by group deletion",
+            structure_carbon_footprint_fabrication=SourceValue(100 * u.kg),
+            components=[],
+            lifespan=SourceValue(5 * u.year),
+        )
+        group = EdgeDeviceGroup("Group blocking device deletion")
+        group.edge_device_counts[device] = SourceValue(3 * u.dimensionless)
+
+        with self.assertRaises(PermissionError) as context:
+            device.self_delete()
+
+        self.assertIn("Group blocking device deletion", str(context.exception))
 
 
 if __name__ == "__main__":
