@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
 
 if TYPE_CHECKING:
@@ -105,3 +106,27 @@ class EdgeDeviceGroup(ModelingObject):
                 start=EmptyExplainableObject())
             self.effective_nb_of_units_within_root = effective_nb.set_label(
                 f"Effective nb of {self.name} within root group")
+
+    def self_delete(self):
+        parent_groups = self._find_parent_groups()
+        if parent_groups:
+            raise PermissionError(
+                f"You can’t delete {self.name} because it is referenced in sub_group_counts of "
+                f"{','.join(parent.name for parent in parent_groups)}.")
+
+        if self.sub_group_counts or self.edge_device_counts:
+            new_sub_group_counts = ExplainableObjectDict()
+            new_sub_group_counts.trigger_modeling_updates = self.sub_group_counts.trigger_modeling_updates
+            new_edge_device_counts = ExplainableObjectDict()
+            new_edge_device_counts.trigger_modeling_updates = self.edge_device_counts.trigger_modeling_updates
+
+            if self.trigger_modeling_updates:
+                ModelingUpdate([
+                    [self.sub_group_counts, new_sub_group_counts],
+                    [self.edge_device_counts, new_edge_device_counts],
+                ])
+            else:
+                self.sub_group_counts = new_sub_group_counts
+                self.edge_device_counts = new_edge_device_counts
+
+        super().self_delete()

@@ -220,5 +220,46 @@ class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
         self.assertTrue(root.effective_nb_of_units_within_root.value.check("[]"))
 
 
+class TestEdgeDeviceGroupSelfDelete(TestCase):
+
+    def test_self_delete_raises_when_group_is_referenced_by_parent_group(self):
+        """Test self_delete raises when another group references this group."""
+        parent = EdgeDeviceGroup("Parent group")
+        child = EdgeDeviceGroup("Child group")
+        parent.sub_group_counts[child] = SourceValue(2 * u.dimensionless)
+
+        with self.assertRaises(PermissionError) as context:
+            child.self_delete()
+
+        self.assertIn("Parent group", str(context.exception))
+
+    def test_self_delete_recomputes_child_group_when_clearing_sub_groups(self):
+        """Test self_delete clears sub_group_counts before deleting the root group."""
+        root = EdgeDeviceGroup("Root group")
+        child = EdgeDeviceGroup("Child group for deletion")
+        root.sub_group_counts[child] = SourceValue(2 * u.dimensionless)
+
+        self.assertAlmostEqual(2.0, child.effective_nb_of_units_within_root.value.magnitude)
+
+        root.self_delete()
+
+        self.assertEqual({}, root.sub_group_counts)
+        self.assertEqual([], child._find_parent_groups())
+        self.assertAlmostEqual(1.0, child.effective_nb_of_units_within_root.value.magnitude)
+
+    def test_self_delete_recomputes_edge_devices_when_clearing_edge_device_counts(self):
+        """Test self_delete clears edge_device_counts before deleting the root group."""
+        group = EdgeDeviceGroup("Device group for deletion")
+        edge_device = EdgeDevice.from_defaults("Device referenced by deleted group", components=[])
+        group.edge_device_counts[edge_device] = SourceValue(3 * u.dimensionless)
+        self.assertAlmostEqual(3.0, edge_device.total_nb_of_units.value.magnitude)
+
+        group.self_delete()
+
+        self.assertEqual({}, group.edge_device_counts)
+        self.assertEqual([], edge_device._find_parent_groups())
+        self.assertAlmostEqual(1.0, edge_device.total_nb_of_units.value.magnitude)
+
+
 if __name__ == "__main__":
     unittest.main()
