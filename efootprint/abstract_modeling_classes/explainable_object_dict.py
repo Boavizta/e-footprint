@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, retrieve_update_function_from_mod_obj_and_attr_name)
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 
@@ -17,15 +18,20 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
                 self[key] = value
 
     def set_modeling_obj_container(self, new_parent_modeling_object: ModelingObject, attr_name: str):
+        previous_modeling_obj_container = self.modeling_obj_container
+        previous_attr_name = self.attr_name_in_mod_obj_container
         super().set_modeling_obj_container(new_parent_modeling_object, attr_name)
         for value in self.values():
             value.set_modeling_obj_container(new_parent_modeling_object, attr_name)
         if new_parent_modeling_object is None:
             for key in self:
                 self._remove_self_from_key_containers(key)
+                self._remove_self_from_key_contextual_containers(
+                    key, modeling_obj_container=previous_modeling_obj_container, attr_name=previous_attr_name)
         else:
             for key in self:
                 self._add_self_to_key_containers(key)
+                self._add_self_to_key_contextual_containers(key)
 
     @property
     def all_ancestors_with_id(self):
@@ -86,6 +92,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             value.set_modeling_obj_container(
                 new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
         self._add_self_to_key_containers(key)
+        self._add_self_to_key_contextual_containers(key)
 
     def __delitem__(self, key):
         if self.trigger_modeling_updates:
@@ -103,6 +110,7 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             self[key].set_modeling_obj_container(None, None)
         super().__delitem__(key)
         self._remove_self_from_key_containers(key)
+        self._remove_self_from_key_contextual_containers(key)
 
     def pop(self, key, *args):
         if key in self:
@@ -142,6 +150,41 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             return
         key.explainable_object_dicts_containers = [elt for elt in key.explainable_object_dicts_containers
                                                    if id(elt) != id(self)]
+
+    @property
+    def is_structural_input_dict(self):
+        return (
+            self.modeling_obj_container is not None
+            and self.modeling_obj_container.is_structural_input_dict_attribute(
+                self.attr_name_in_mod_obj_container, self)
+        )
+
+    def _add_self_to_key_contextual_containers(self, key):
+        if not self.is_structural_input_dict or not isinstance(key, ModelingObject):
+            return
+        if any(
+                isinstance(container, ContextualModelingObjectDictKey)
+                and container.modeling_obj_container is self.modeling_obj_container
+                and container.attr_name_in_mod_obj_container == self.attr_name_in_mod_obj_container
+                and container.dict_container is self
+                for container in key.contextual_modeling_obj_containers
+        ):
+            return
+        ContextualModelingObjectDictKey(key, self.modeling_obj_container, self.attr_name_in_mod_obj_container, self)
+
+    def _remove_self_from_key_contextual_containers(self, key, modeling_obj_container=None, attr_name=None):
+        if not isinstance(key, ModelingObject):
+            return
+        modeling_obj_container = modeling_obj_container or self.modeling_obj_container
+        attr_name = attr_name or self.attr_name_in_mod_obj_container
+        for container in list(key.contextual_modeling_obj_containers):
+            if (
+                    isinstance(container, ContextualModelingObjectDictKey)
+                    and container.modeling_obj_container is modeling_obj_container
+                    and container.attr_name_in_mod_obj_container == attr_name
+                    and container.dict_container is self
+            ):
+                container.set_modeling_obj_container(None, None)
 
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}

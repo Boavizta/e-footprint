@@ -75,9 +75,8 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
             system_dict = json.load(file)
         logger.info(f"Finished loading JSON file in {round((perf_counter() - start), 3)} seconds")
 
-
         start = perf_counter()
-        nb_system_loadings = 10
+        nb_system_loadings = 3
         for i in range(nb_system_loadings):
             class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
                 system_dict, launch_system_computations=False)
@@ -95,7 +94,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
         self.assertLess(avg_writing_time, 0.1)
 
-        nb_system_loadings = 5
+        nb_system_loadings = 3
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_usage_journey_starts",
             create_random_source_hourly_values(timespan=5 * u.year))

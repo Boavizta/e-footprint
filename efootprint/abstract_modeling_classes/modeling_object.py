@@ -430,6 +430,21 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def add_to_contextual_modeling_obj_containers(self, contextual_mod_obj_container):
         self.contextual_modeling_obj_containers.append(contextual_mod_obj_container)
 
+    def is_structural_input_dict_attribute(self, attr_name: str, attr_value=None) -> bool:
+        from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+
+        if attr_name in self.calculated_attributes:
+            return False
+
+        init_sig_params = get_init_signature_params(type(self))
+        if attr_name not in init_sig_params:
+            return False
+
+        if attr_value is None:
+            attr_value = getattr(self, attr_name, None)
+
+        return isinstance(attr_value, ExplainableObjectDict)
+
     @property
     @abstractmethod
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:

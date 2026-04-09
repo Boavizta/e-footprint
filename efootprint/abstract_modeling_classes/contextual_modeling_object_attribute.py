@@ -35,6 +35,7 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
                     "former_modeling_obj_container_id", "former_attr_name_in_mod_obj_container",
                     "_cached_id", "_cached_full_str_tuple_id", "_cached_attribute_id",
                     "_cached_dict_container", "_cached_key_in_dict", "_cached_list_container",
+                    "_dict_key_container",
                     "_cached_indexes_in_list"]:
             # If setting a class attribute, use the superclass's __setattr__
             super().__setattr__(name, input_value)
@@ -58,3 +59,33 @@ class ContextualModelingObjectAttribute(ObjectLinkedToModelingObj):
 
     def __hash__(self):
         return hash(self._value)  # Use built-in hash directly
+
+
+class ContextualModelingObjectDictKey(ContextualModelingObjectAttribute):
+    __slots__ = ("_dict_key_container",)
+
+    def __init__(
+            self, value: ModelingObject, modeling_obj_container=None, attr_name_in_mod_obj_container=None,
+            dict_key_container=None):
+        self._dict_key_container = dict_key_container
+        super().__init__(value, modeling_obj_container, attr_name_in_mod_obj_container)
+
+    @property
+    def dict_container(self):
+        if (
+                self.modeling_obj_container is not None
+                and self._dict_key_container is not None
+                and getattr(self.modeling_obj_container, self.attr_name_in_mod_obj_container, None)
+                is self._dict_key_container
+        ):
+            return self._dict_key_container
+        return None
+
+    @property
+    def key_in_dict(self):
+        dict_container = self.dict_container
+        if dict_container is None:
+            raise ValueError(f"{self} is not linked to a ModelingObject through a dictionary key attribute.")
+        if self._value not in dict_container:
+            raise KeyError(f"{self._value} is no longer present in its dictionary container.")
+        return self._value

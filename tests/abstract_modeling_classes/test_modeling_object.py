@@ -7,6 +7,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
@@ -26,6 +27,7 @@ class ModelingObjectForTesting(ModelingObject):
 
     def __init__(self, name, custom_input: ObjectLinkedToModelingObjBase=None,
                  custom_input2: ObjectLinkedToModelingObjBase=None, custom_list_input: list=None,
+                 custom_dict_input: ExplainableObjectDict = None,
                  mod_obj_input1: ModelingObject=None, mod_obj_input2: ModelingObject=None):
         super().__init__(name)
         if custom_input:
@@ -34,6 +36,8 @@ class ModelingObjectForTesting(ModelingObject):
             self.custom_input2 = custom_input2
         if custom_list_input:
             self.custom_list_input = custom_list_input
+        if custom_dict_input:
+            self.custom_dict_input = ExplainableObjectDict(custom_dict_input)
         if mod_obj_input1:
             self.mod_obj_input1 = mod_obj_input1
         if mod_obj_input2:
@@ -534,6 +538,25 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertNotIn("attributed_energy_footprint", json_output)
         self.assertNotIn("attributed_energy_footprint_per_source", json_output)
+
+    def test_modeling_update_replacement_preserves_structural_dict_parent_recovery(self):
+        old_child = ModelingObjectForTesting("old_dict_child")
+        new_child = ModelingObjectForTesting("new_dict_child")
+        parent = ModelingObjectForTesting(
+            "dict_parent",
+            custom_dict_input=ExplainableObjectDict({
+                old_child: SourceValue(1 * u.dimensionless, label="old dict child count"),
+            }),
+        )
+
+        with patch("efootprint.all_classes_in_order.CANONICAL_COMPUTATION_ORDER", [ModelingObjectForTesting]):
+            ModelingUpdate([[
+                parent.custom_dict_input,
+                ExplainableObjectDict({new_child: SourceValue(2 * u.dimensionless, label="new dict child count")}),
+            ]])
+
+        self.assertEqual([], old_child.modeling_obj_containers)
+        self.assertEqual([parent], new_child.modeling_obj_containers)
 
 class TestValidationAttributes(unittest.TestCase):
     def test_validation_attributes_returns_attributes_ending_with_validation(self):

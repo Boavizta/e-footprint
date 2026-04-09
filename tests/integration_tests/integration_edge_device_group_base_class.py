@@ -6,6 +6,7 @@ from unittest import TestCase
 import numpy as np
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -148,6 +149,18 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         self.assertIn(self.floor_group, all_objects)
         self.assertIn(self.building_group, all_objects)
 
+    def run_test_structural_group_dict_keys_populate_contextual_parents(self):
+        self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
+        self.assertIn(self.floor_group, self.edge_device.modeling_obj_containers)
+
+    def run_test_contextual_parentage_survives_structural_dict_update(self):
+        _, _, building_group, floor_group, _ = self._generate_delete_test_fixture()
+        building_group.sub_group_counts = ExplainableObjectDict({
+            floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)})
+
+        self.assertIn(building_group, floor_group.modeling_obj_containers)
+        self.assertAlmostEqual(NB_FLOORS + 1, floor_group.effective_nb_of_units_within_root.value.magnitude)
+
     def run_test_footprint_is_nonzero(self):
         total = self.system.total_footprint
         self.assertGreater(float(str(total).split()[0]), 0)
@@ -160,6 +173,9 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         reloaded_building = flat_obj_dict[self.building_group.id]
         reloaded_floor = flat_obj_dict[self.floor_group.id]
         reloaded_device = flat_obj_dict[self.edge_device.id]
+
+        self.assertIn(reloaded_building, reloaded_floor.modeling_obj_containers)
+        self.assertIn(reloaded_floor, reloaded_device.modeling_obj_containers)
 
         self.assertEqual(1, len(reloaded_building.sub_group_counts))
         self.assertIn(reloaded_floor, reloaded_building.sub_group_counts)

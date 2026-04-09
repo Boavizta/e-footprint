@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock
 
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectDictKey
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -18,6 +19,22 @@ class ModelingObjectForContainerTest(ModelingObject):
         super().__init__(name)
         self.attr_name = None
         self.other_attr = None
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+    @property
+    def systems(self):
+        return []
+
+
+class ModelingObjectWithInputDictForContainerTest(ModelingObject):
+    default_values = {}
+
+    def __init__(self, name, input_dict: ExplainableObjectDict = None):
+        super().__init__(name)
+        self.input_dict = ExplainableObjectDict(input_dict or {})
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -201,6 +218,71 @@ class TestExplainableObjectDictTriggerFlag(unittest.TestCase):
         d = ExplainableObjectDict()
         d.set_modeling_obj_container(real_obj, "attr_name")
         self.assertFalse(d.trigger_modeling_updates)
+
+
+class TestExplainableObjectDictStructuralContext(unittest.TestCase):
+
+    def test_structural_input_dict_populates_contextual_containers(self):
+        child_a = ModelingObjectForContainerTest("child_a")
+        child_b = ModelingObjectForContainerTest("child_b")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_with_input_dict",
+            input_dict={
+                child_a: SourceValue(1 * u.dimensionless, label="child a count"),
+                child_b: SourceValue(2 * u.dimensionless, label="child b count"),
+            },
+        )
+
+        self.assertEqual([owner], child_a.modeling_obj_containers)
+        self.assertEqual([owner], child_b.modeling_obj_containers)
+        contextual_link = next(
+            container for container in child_a.contextual_modeling_obj_containers
+            if isinstance(container, ContextualModelingObjectDictKey))
+        self.assertIs(owner, contextual_link.modeling_obj_container)
+        self.assertEqual("input_dict", contextual_link.attr_name_in_mod_obj_container)
+        self.assertIs(owner.input_dict, contextual_link.dict_container)
+        self.assertIs(child_a, contextual_link.key_in_dict)
+
+    def test_calculated_dict_does_not_populate_contextual_containers(self):
+        impacted_object = ModelingObjectForContainerTest("impacted_object")
+        owner = ModelingObjectForContainerTest("owner_with_calculated_dict")
+
+        owner.usage_impact_repartition = ExplainableObjectDict({
+            impacted_object: SourceValue(1 * u.concurrent, label="impact repartition")})
+
+        self.assertEqual([], impacted_object.modeling_obj_containers)
+        self.assertEqual([owner.usage_impact_repartition], impacted_object.explainable_object_dicts_containers)
+
+    def test_replacing_structural_dict_updates_contextual_containers(self):
+        old_child = ModelingObjectForContainerTest("old_child")
+        new_child = ModelingObjectForContainerTest("new_child")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_for_replacement",
+            input_dict={old_child: SourceValue(1 * u.dimensionless, label="old child count")},
+        )
+
+        owner.trigger_modeling_updates = False
+        owner.input_dict = ExplainableObjectDict({
+            new_child: SourceValue(2 * u.dimensionless, label="new child count")})
+        owner.trigger_modeling_updates = True
+
+        self.assertEqual([], old_child.modeling_obj_containers)
+        self.assertEqual([owner], new_child.modeling_obj_containers)
+
+    def test_structural_dict_entry_insertion_and_removal_keep_contextual_containers_in_sync(self):
+        existing_child = ModelingObjectForContainerTest("existing_child")
+        inserted_child = ModelingObjectForContainerTest("inserted_child")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_for_mutation",
+            input_dict={existing_child: SourceValue(1 * u.dimensionless, label="existing child count")},
+        )
+
+        owner.input_dict.trigger_modeling_updates = False
+        owner.input_dict[inserted_child] = SourceValue(3 * u.dimensionless, label="inserted child count")
+        self.assertEqual([owner], inserted_child.modeling_obj_containers)
+
+        del owner.input_dict[inserted_child]
+        self.assertEqual([], inserted_child.modeling_obj_containers)
 
 
 if __name__ == "__main__":

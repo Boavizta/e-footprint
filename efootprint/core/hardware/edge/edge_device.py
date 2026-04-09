@@ -76,7 +76,7 @@ class EdgeDevice(ModelingObject):
 
     @property
     def recurrent_needs(self) -> List["RecurrentEdgeDeviceNeed | RecurrentServerNeed"]:
-        return self.modeling_obj_containers
+        return self.recurrent_edge_device_needs + self.recurrent_server_needs
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:
@@ -136,18 +136,17 @@ class EdgeDevice(ModelingObject):
 
     def _find_parent_groups(self):
         from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
-        parent_groups = []
-        for dict_container in self.explainable_object_dicts_containers:
-            container = dict_container.modeling_obj_container
-            if isinstance(container, EdgeDeviceGroup):
-                if self not in dict_container:
-                    raise ValueError(
-                        f"Stale explainable_object_dicts_container: "
-                        f"{container.name}.{dict_container.attr_name_in_mod_obj_container} "
-                        f"references {self.name} but doesn't contain it as a key")
-                if container not in parent_groups:
-                    parent_groups.append(container)
-        return parent_groups
+        from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
+            ContextualModelingObjectDictKey)
+
+        return list(dict.fromkeys([
+            contextual_container.modeling_obj_container
+            for contextual_container in self.contextual_modeling_obj_containers
+            if (
+                isinstance(contextual_container, ContextualModelingObjectDictKey)
+                and isinstance(contextual_container.modeling_obj_container, EdgeDeviceGroup)
+            )
+        ]))
 
     def _find_root_groups(self):
         parent_groups = self._find_parent_groups()
