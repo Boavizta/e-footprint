@@ -205,26 +205,24 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         up = self.usage_pattern2
         hour_occs_per_up = server1_job1.hourly_occurrences_per_usage_pattern[up]
         logger.warning("Adding new usage pattern")
-        self.system.usage_patterns += [new_up]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        # server1_job1 has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
-        self.assertIsNone(hour_occs_per_up.modeling_obj_container)
-        # server1_job1 has 4 usage patterns (2 web + 1 edge initially, + the new one)
-        # so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
-        self.assertEqual(len(server1_job1.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 4)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(new_up.self_delete)
+            cleanup.callback(setattr, self.system, "usage_patterns", copy(self.system.usage_patterns))
+            self.system.usage_patterns += [new_up]
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+            # server1_job1 has been recomputed, hour_occs_per_up should not be linked to a modeling object anymore
+            self.assertIsNone(hour_occs_per_up.modeling_obj_container)
+            # server1_job1 has 4 usage patterns (2 web + 1 edge initially, + the new one)
+            # so its hourly_avg_occurrences_across_usage_patterns should have 3 ancestors
+            self.assertEqual(len(server1_job1.hourly_avg_occurrences_across_usage_patterns.direct_ancestors_with_id), 4)
 
-        logger.warning("Editing the usage pattern network")
-        new_up.hourly_usage_journey_starts = create_source_hourly_values_from_list(
-            [elt * 1000 for elt in [2, 4, 1, 5, 3, 1, 5, 23, 2]])
-        # self.network1.energy_footprint should not have been recomputed, nor its ancestors
-        for elt in self.network1.energy_footprint.direct_ancestors_with_id:
-            self.assertIsNotNone(elt.modeling_obj_container)
-
-        logger.warning("Removing the new usage pattern")
-        self.system.usage_patterns = [self.usage_pattern1, self.usage_pattern2]
-        new_up.self_delete()
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+            logger.warning("Editing the usage pattern network")
+            cleanup.callback(setattr, new_up, "hourly_usage_journey_starts", new_up.hourly_usage_journey_starts)
+            new_up.hourly_usage_journey_starts = create_source_hourly_values_from_list(
+                [elt * 1000 for elt in [2, 4, 1, 5, 3, 1, 5, 23, 2]])
+            # self.network1.energy_footprint should not have been recomputed, nor its ancestors
+            for elt in self.network1.energy_footprint.direct_ancestors_with_id:
+                self.assertIsNotNone(elt.modeling_obj_container)
 
     def run_test_add_edge_usage_pattern(self):
         new_edge_storage = EdgeStorage.from_defaults("New edge SSD storage")
@@ -265,10 +263,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         with self.assertRaises(ValueError):
             self.system.plot_emission_diffs(filepath=file)
 
-        old_data_transferred = self.uj_step_1.jobs[0].data_transferred
-        self.uj_step_1.jobs[0].data_transferred = SourceValue(500 * u.kB)
-        self.system.plot_emission_diffs(filepath=file)
-        self.uj_step_1.jobs[0].data_transferred = old_data_transferred
+        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+            cleanup.callback(setattr, self.uj_step_1.jobs[0], "data_transferred", self.uj_step_1.jobs[0].data_transferred)
+            self.uj_step_1.jobs[0].data_transferred = SourceValue(500 * u.kB)
+            self.system.plot_emission_diffs(filepath=file)
 
         self.assertTrue(os.path.isfile(file))
 
@@ -320,9 +318,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [new_job], self.uj_step_2.jobs)
-        simulation.reset_values()
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(simulation.reset_values)
+            simulation.set_updated_values()
+            self.assertEqual(initial_uj_step_2_jobs + [new_job], self.uj_step_2.jobs)
 
     def run_test_simulation_add_existing_object(self):
         logger.info(f"Launching simulation")
@@ -339,9 +338,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.server1_job2.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [self.server1_job2], self.uj_step_2.jobs)
-        simulation.reset_values()
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(simulation.reset_values)
+            simulation.set_updated_values()
+            self.assertEqual(initial_uj_step_2_jobs + [self.server1_job2], self.uj_step_2.jobs)
 
     def run_test_simulation_add_multiple_objects(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),
@@ -369,9 +369,10 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         for job in [new_job, new_job2, self.server1_job1]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        simulation.set_updated_values()
-        self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.server1_job1], self.uj_step_2.jobs)
-        simulation.reset_values()
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(simulation.reset_values)
+            simulation.set_updated_values()
+            self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.server1_job1], self.uj_step_2.jobs)
 
     def run_test_simulation_add_objects_and_make_input_changes(self):
         new_server = Server.from_defaults("new server", server_type=ServerTypes.on_premise(),

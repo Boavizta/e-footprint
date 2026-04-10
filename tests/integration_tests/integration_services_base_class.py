@@ -151,42 +151,38 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         original_jobs = list(self.streaming_step.jobs)
         video_streaming_job_index = original_jobs.index(self.video_streaming_job)
         updated_jobs = [elt for elt in original_jobs if elt != self.video_streaming_job]
-        self.streaming_step.jobs = updated_jobs
+        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+            cleanup.callback(type(self).setUpClass)
+            self.streaming_step.jobs = updated_jobs
 
-        self.assertNotIn(self.video_streaming_job, self.streaming_step.jobs)
-        self.assertIn(self.video_streaming_job, self.video_streaming_service.jobs)
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+            self.assertNotIn(self.video_streaming_job, self.streaming_step.jobs)
+            self.assertIn(self.video_streaming_job, self.video_streaming_service.jobs)
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
-        self.video_streaming_job.self_delete()
-        self.assertEqual(self.video_streaming_service.jobs, [])
-        self.assertNotIn(self.video_streaming_job, self.server.jobs)
+            self.video_streaming_job.self_delete()
+            self.assertEqual(self.video_streaming_service.jobs, [])
+            self.assertNotIn(self.video_streaming_job, self.server.jobs)
 
-        recreated_video_streaming_job = VideoStreamingJob.from_defaults(
-            "Streaming job", service=self.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
-            video_duration=SourceValue(20 * u.min))
-        restored_jobs = list(self.streaming_step.jobs)
-        restored_jobs.insert(video_streaming_job_index, recreated_video_streaming_job)
-        self.streaming_step.jobs = restored_jobs
-        type(self).video_streaming_job = recreated_video_streaming_job
+            recreated_video_streaming_job = VideoStreamingJob.from_defaults(
+                "Streaming job", service=self.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
+                video_duration=SourceValue(20 * u.min))
+            restored_jobs = list(self.streaming_step.jobs)
+            restored_jobs.insert(video_streaming_job_index, recreated_video_streaming_job)
+            self.streaming_step.jobs = restored_jobs
+            type(self).video_streaming_job = recreated_video_streaming_job
 
-        self.assertIn(recreated_video_streaming_job, self.streaming_step.jobs)
-        self.assertEqual(self.video_streaming_service.jobs, [recreated_video_streaming_job])
-        self.assertIn(recreated_video_streaming_job, self.server.jobs)
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+            self.assertIn(recreated_video_streaming_job, self.streaming_step.jobs)
+            self.assertEqual(self.video_streaming_service.jobs, [recreated_video_streaming_job])
+            self.assertIn(recreated_video_streaming_job, self.server.jobs)
 
     def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
         logger.info("Installing new service on server")
         new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
-
-        self.assertEqual(set(self.server.installed_services),
-                         {new_service, self.video_streaming_service})
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server])
-
-        logger.info("Uninstalling new service from server")
-        new_service.self_delete()
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server, self.server])
+        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+            cleanup.callback(type(self).setUpClass)
+            self.assertEqual(set(self.server.installed_services), {new_service, self.video_streaming_service})
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+            self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server])
 
     def run_test_try_to_update_model_provider_and_get_error(self):
         previous_provider = self.genai_service.provider
@@ -203,10 +199,10 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_model_name = SourceObject("claude-opus-4-5")
         logger.info(f"Change provider {previous_provider} -> {new_provider} "
                     f"and model name {previous_model_name} -> {new_model_name}")
-        ModelingUpdate([[self.genai_service.provider, new_provider], [self.genai_service.model_name, new_model_name]])
-        self.assertNotEqual(previous_footprint, self.system.total_footprint)
-
-        # revert changes
-        logger.info("Revert changes to provider and model name")
-        ModelingUpdate([[self.genai_service.provider, previous_provider], [self.genai_service.model_name, previous_model_name]])
-        self.assertEqual(previous_footprint, self.system.total_footprint)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(lambda: ModelingUpdate([
+                [self.genai_service.provider, previous_provider],
+                [self.genai_service.model_name, previous_model_name],
+            ]))
+            ModelingUpdate([[self.genai_service.provider, new_provider], [self.genai_service.model_name, new_model_name]])
+            self.assertNotEqual(previous_footprint, self.system.total_footprint)

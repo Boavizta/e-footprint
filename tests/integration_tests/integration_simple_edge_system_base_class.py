@@ -195,13 +195,17 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_usage_pattern_hourly_starts(self):
         logger.warning("Updating edge usage pattern hourly starts")
-        initial_hourly_starts = self.edge_usage_pattern.hourly_edge_usage_journey_starts
-        self.edge_usage_pattern.hourly_edge_usage_journey_starts = create_source_hourly_values_from_list(
-            [elt for elt in [2, 3, 4, 5, 6, 7, 2, 3, 4]], self.start_date)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(
+                setattr,
+                self.edge_usage_pattern,
+                "hourly_edge_usage_journey_starts",
+                self.edge_usage_pattern.hourly_edge_usage_journey_starts,
+            )
+            self.edge_usage_pattern.hourly_edge_usage_journey_starts = create_source_hourly_values_from_list(
+                [elt for elt in [2, 3, 4, 5, 6, 7, 2, 3, 4]], self.start_date)
 
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        self.edge_usage_pattern.hourly_edge_usage_journey_starts = initial_hourly_starts
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
         """Test that InsufficientCapacityError is raised when updating capacities that trigger the error."""
@@ -211,62 +215,65 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Test EdgeRAMComponent - available_ram_per_instance
         # Change ram to trigger error in update_available_ram_per_instance
         logger.warning("Testing EdgeRAMComponent available_ram_per_instance error")
-        original_ram = self.edge_computer.ram
-        with self.assertRaises(InsufficientCapacityError):
-            self.edge_computer.ram = SourceValue(0.5 * u.GB_ram)
-        self.edge_computer.ram = original_ram
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.edge_computer, "ram", self.edge_computer.ram)
+            with self.assertRaises(InsufficientCapacityError):
+                self.edge_computer.ram = SourceValue(0.5 * u.GB_ram)
 
         # Test EdgeRAMComponent - max_ram_need comparison
         # Reduce available_ram_per_instance to trigger error in update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern
         logger.warning("Testing EdgeRAMComponent max ram need error")
-        original_base_ram = self.ram_component.base_ram_consumption
-        with self.assertRaises(InsufficientCapacityError):
-            self.ram_component.base_ram_consumption = SourceValue(7.5 * u.GB_ram)
-        self.ram_component.base_ram_consumption = original_base_ram
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.ram_component, "base_ram_consumption", self.ram_component.base_ram_consumption)
+            with self.assertRaises(InsufficientCapacityError):
+                self.ram_component.base_ram_consumption = SourceValue(7.5 * u.GB_ram)
 
         # Test EdgeCPUComponent - available_compute_per_instance
         # Change compute to trigger error in update_available_compute_per_instance
         logger.warning("Testing EdgeCPUComponent available_compute_per_instance error")
-        original_compute = self.edge_computer.compute
-        with self.assertRaises(InsufficientCapacityError):
-            self.edge_computer.compute = SourceValue(0.05 * u.cpu_core)
-        self.edge_computer.compute = original_compute
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.edge_computer, "compute", self.edge_computer.compute)
+            with self.assertRaises(InsufficientCapacityError):
+                self.edge_computer.compute = SourceValue(0.05 * u.cpu_core)
 
         # Test EdgeCPUComponent - max_compute_need comparison
         # Reduce available_compute_per_instance to trigger error in update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern
         logger.warning("Testing EdgeCPUComponent max compute need error")
-        original_base_compute = self.cpu_component.base_compute_consumption
-        with self.assertRaises(InsufficientCapacityError):
-            self.cpu_component.base_compute_consumption = SourceValue(3.5 * u.cpu_core)
-        self.cpu_component.base_compute_consumption = original_base_compute
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.cpu_component, "base_compute_consumption", self.cpu_component.base_compute_consumption)
+            with self.assertRaises(InsufficientCapacityError):
+                self.cpu_component.base_compute_consumption = SourceValue(3.5 * u.cpu_core)
 
         # Test EdgeStorage - cumulative storage capacity
         # Reduce storage_capacity to trigger error in update_full_cumulative_storage_need
         logger.warning("Testing EdgeStorage cumulative storage capacity error")
-        original_storage_capacity = self.edge_storage.storage_capacity_per_unit
-        with self.assertRaises(InsufficientCapacityError):
-            self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
-        self.edge_storage.storage_capacity_per_unit = original_storage_capacity
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(
+                setattr, self.edge_storage, "storage_capacity_per_unit", self.edge_storage.storage_capacity_per_unit)
+            with self.assertRaises(InsufficientCapacityError):
+                self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
 
         # Test EdgeUsageJourney - usage_span vs lifespan
         # Increase usage_span to trigger error in update_usage_span_validation
         logger.warning("Testing EdgeUsageJourney usage_span vs lifespan error")
-        original_usage_span = self.edge_usage_journey.usage_span
-        with self.assertRaises(InsufficientCapacityError):
-            self.edge_usage_journey.usage_span = SourceValue(10 * u.year)
-        self.edge_usage_journey.usage_span = original_usage_span
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.edge_usage_journey, "usage_span", self.edge_usage_journey.usage_span)
+            with self.assertRaises(InsufficientCapacityError):
+                self.edge_usage_journey.usage_span = SourceValue(10 * u.year)
 
         # Test EdgeWorkloadComponent - max workload exceeds 100%
         # Increase workload to trigger error in update_dict_element_in_unitary_hourly_workload_per_usage_pattern
         logger.warning("Testing EdgeWorkloadComponent max workload error")
-        original_workload_need = self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need
-        with self.assertRaises(WorkloadOutOfBoundsError):
-            self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need = SourceRecurrentValues(
-                Quantity(np.array([1.5] * 168, dtype=np.float32), u.concurrent))
-        self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need = original_workload_need
-
-        # Ensure system is back to normal state
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(
+                setattr,
+                self.edge_device_need.recurrent_edge_component_needs[2],
+                "recurrent_need",
+                self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need,
+            )
+            with self.assertRaises(WorkloadOutOfBoundsError):
+                self.edge_device_need.recurrent_edge_component_needs[2].recurrent_need = SourceRecurrentValues(
+                    Quantity(np.array([1.5] * 168, dtype=np.float32), u.concurrent))
 
     # OBJECT LINKS UPDATES TESTING
 
@@ -488,11 +495,12 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        simulation.set_updated_values()
-        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_device_needs)
-        simulation.reset_values()
-        new_edge_process.self_delete()
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(new_edge_process.self_delete)
+            cleanup.callback(simulation.reset_values)
+            simulation.set_updated_values()
+            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+            self.assertEqual(initial_edge_needs + [new_edge_process], self.edge_function.recurrent_edge_device_needs)
 
     def run_test_simulation_add_existing_edge_process(self):
         simulation = ModelingUpdate([[self.edge_function.recurrent_edge_device_needs,
@@ -504,10 +512,11 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        simulation.set_updated_values()
-        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.assertEqual(initial_edge_needs + [self.edge_process], self.edge_function.recurrent_edge_device_needs)
-        simulation.reset_values()
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(simulation.reset_values)
+            simulation.set_updated_values()
+            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+            self.assertEqual(initial_edge_needs + [self.edge_process], self.edge_function.recurrent_edge_device_needs)
 
     def run_test_add_edge_usage_journey_to_edge_computer(self):
         logger.warning("Adding new edge usage journey to edge computer")
@@ -533,36 +542,29 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         # Add the new pattern to the system
         logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
-        self.system.edge_usage_patterns += [new_edge_usage_pattern]
+        with self.cleanup_stack(verify_unchanged=[self.edge_computer, self.edge_storage]) as cleanup:
+            initial_edge_usage_patterns = copy(self.system.edge_usage_patterns)
+            cleanup.callback(new_edge_process.self_delete)
+            cleanup.callback(new_edge_function.self_delete)
+            cleanup.callback(new_edge_usage_journey.self_delete)
+            cleanup.callback(new_edge_usage_pattern.self_delete)
+            cleanup.callback(setattr, self.system, "edge_usage_patterns", initial_edge_usage_patterns)
+            self.system.edge_usage_patterns += [new_edge_usage_pattern]
 
-        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-        self.footprint_has_changed([self.edge_computer, self.edge_storage])
+            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+            self.footprint_has_changed([self.edge_computer, self.edge_storage])
 
-        # Verify edge computer aggregates patterns from both journeys
-        self.assertEqual(2, len(self.edge_computer.edge_usage_patterns))
-        self.assertIn(self.edge_usage_pattern, self.edge_computer.edge_usage_patterns)
-        self.assertIn(new_edge_usage_pattern, self.edge_computer.edge_usage_patterns)
+            self.assertEqual(2, len(self.edge_computer.edge_usage_patterns))
+            self.assertIn(self.edge_usage_pattern, self.edge_computer.edge_usage_patterns)
+            self.assertIn(new_edge_usage_pattern, self.edge_computer.edge_usage_patterns)
 
-        # Verify edge computer aggregates functions from both journeys
-        self.assertEqual(2, len(self.edge_computer.edge_functions))
-        self.assertIn(self.edge_function, self.edge_computer.edge_functions)
-        self.assertIn(new_edge_function, self.edge_computer.edge_functions)
+            self.assertEqual(2, len(self.edge_computer.edge_functions))
+            self.assertIn(self.edge_function, self.edge_computer.edge_functions)
+            self.assertIn(new_edge_function, self.edge_computer.edge_functions)
 
-        logger.warning("Removing the new edge usage pattern from the system")
-        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
-        logger.warning("Deleting the edge usage pattern and journey")
-        new_edge_usage_pattern.self_delete()
-        new_edge_usage_journey.self_delete()
-        new_edge_function.self_delete()
-        new_edge_process.self_delete()
-
-        # Verify edge computer is back to single journey
         self.assertEqual(1, len(self.edge_computer.edge_usage_journeys))
         self.assertEqual(1, len(self.edge_computer.edge_usage_patterns))
         self.assertEqual(1, len(self.edge_computer.edge_functions))
-
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-        self.footprint_has_not_changed([self.edge_computer, self.edge_storage])
 
     def run_test_dict_container_integrity(self):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""
@@ -585,33 +587,32 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
                 [elt * 1000 for elt in [1, 1, 2, 2, 3, 3, 1, 1, 2]], self.start_date))
 
-        self.system.edge_usage_patterns.append(edge_usage_pattern)
+        with self.cleanup_stack() as cleanup:
+            initial_edge_usage_patterns = copy(self.system.edge_usage_patterns)
+            cleanup.callback(edge_usage_pattern.self_delete)
+            cleanup.callback(setattr, self.system, "edge_usage_patterns", initial_edge_usage_patterns)
+            self.system.edge_usage_patterns.append(edge_usage_pattern)
 
-        self.assertIn(new_country, self.system.countries)
-        self.assertGreater(len(new_country.fabrication_impact_repartition_weights), 0,
-                           "New country's fabrication_impact_repartition_weights should be computed after append")
-        self.assertGreater(len(new_country.usage_impact_repartition_weights), 0,
-                           "New country's usage_impact_repartition_weights should be computed after append")
-
-        self.system.edge_usage_patterns = self.system.edge_usage_patterns[:-1]
-        edge_usage_pattern.self_delete()
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+            self.assertIn(new_country, self.system.countries)
+            self.assertGreater(len(new_country.fabrication_impact_repartition_weights), 0,
+                               "New country's fabrication_impact_repartition_weights should be computed after append")
+            self.assertGreater(len(new_country.usage_impact_repartition_weights), 0,
+                               "New country's usage_impact_repartition_weights should be computed after append")
 
     def run_test_remove_edge_usage_pattern_clears_old_country(self):
         """Test that removing an EdgeUsagePattern recomputes the old Country's attributes."""
         old_country = self.edge_usage_pattern.country
         self.assertGreater(len(old_country.fabrication_impact_repartition_weights), 0)
 
-        self.system.edge_usage_patterns = []
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.system, "edge_usage_patterns", self.system.edge_usage_patterns)
+            self.system.edge_usage_patterns = []
 
-        self.assertNotIn(old_country, self.system.countries)
-        self.assertEqual(len(old_country.fabrication_impact_repartition_weights), 0,
-                         "Old country's fabrication_impact_repartition_weights should be cleared after removal")
-        self.assertEqual(len(old_country.usage_impact_repartition_weights), 0,
-                         "Old country's usage_impact_repartition_weights should be cleared after removal")
-
-        self.system.edge_usage_patterns = [self.edge_usage_pattern]
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+            self.assertNotIn(old_country, self.system.countries)
+            self.assertEqual(len(old_country.fabrication_impact_repartition_weights), 0,
+                             "Old country's fabrication_impact_repartition_weights should be cleared after removal")
+            self.assertEqual(len(old_country.usage_impact_repartition_weights), 0,
+                             "Old country's usage_impact_repartition_weights should be cleared after removal")
 
     def run_test_check_all_calculus_graph_dependencies_consistencies(self):
         check_all_calculus_graph_dependencies_consistencies(self.system)

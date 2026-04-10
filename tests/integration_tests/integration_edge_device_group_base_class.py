@@ -127,19 +127,16 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
             {self.floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
         )
 
-        self.building_group.sub_group_counts = updated_sub_group_counts
-
-        try:
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.building_group, "sub_group_counts", initial_sub_group_counts)
+            self.building_group.sub_group_counts = updated_sub_group_counts
             self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
             self.assertAlmostEqual(NB_FLOORS + 1, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
             self.assertAlmostEqual((NB_FLOORS + 1) * NB_DEVICES_PER_FLOOR, self.edge_device.total_nb_of_units.value.magnitude)
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-        finally:
-            self.building_group.sub_group_counts = initial_sub_group_counts
 
         self.assertAlmostEqual(NB_FLOORS, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
         self.assertAlmostEqual(EXPECTED_TOTAL_DEVICES, self.edge_device.total_nb_of_units.value.magnitude)
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_existing_edge_device_count_update_recomputes_hierarchy(self):
         self.floor_group.edge_device_counts[self.edge_device] = SourceValue((NB_DEVICES_PER_FLOOR + 1) * u.dimensionless)

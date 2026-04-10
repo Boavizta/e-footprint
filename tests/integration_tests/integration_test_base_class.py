@@ -1,3 +1,4 @@
+from contextlib import ExitStack, contextmanager
 from collections import defaultdict
 from copy import copy
 from dataclasses import dataclass
@@ -241,6 +242,18 @@ class IntegrationTestBaseClass(TestCase):
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
 
+    @contextmanager
+    def cleanup_stack(self, verify_total_footprint: bool = True, verify_unchanged: Sequence[ModelingObject] = ()):
+        stack = ExitStack()
+        try:
+            yield stack
+        finally:
+            stack.close()
+            if verify_unchanged:
+                self.footprint_has_not_changed(list(verify_unchanged))
+            if verify_total_footprint:
+                self.assertEqual(self.system.total_footprint, self.initial_footprint)
+
     def run_test_system_to_json(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
@@ -291,22 +304,21 @@ class IntegrationTestBaseClass(TestCase):
                      "initial_calc_attr": calc_attr}
                 )
         system = input_object.systems[0]
-        input_object.__setattr__(expl_attr_name, expl_attr_new_value)
-        new_footprint = system.total_footprint
-        logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
-        self.assertNotEqual(self.initial_footprint, new_footprint)
-        for calc_attr_metadata in calc_attrs_that_should_change_metadata:
-            new_calc_attr = getattr(calc_attr_metadata["mod_obj_container"], calc_attr_metadata["attr_name"])
-            self.assertNotEqual(
-                calc_attr_metadata["initial_calc_attr"], new_calc_attr,
-                f"Calculated attribute {calc_attr_metadata['attr_name']} of "
-                f"{calc_attr_metadata['mod_obj_container'].name} did not change")
-            logger.info(f"Calculated attribute {calc_attr_metadata['attr_name']} of "
-                        f"{calc_attr_metadata['mod_obj_container'].name} changed from "
-                        f"{calc_attr_metadata['initial_calc_attr']} to {new_calc_attr}")
-        logger.info(f"Setting back {expl_attr_new_value.label} to {expl_attr}")
-        input_object.__setattr__(expl_attr_name, expl_attr)
-        self.assertEqual(system.total_footprint, self.initial_footprint)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, input_object, expl_attr_name, expl_attr)
+            input_object.__setattr__(expl_attr_name, expl_attr_new_value)
+            new_footprint = system.total_footprint
+            logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
+            self.assertNotEqual(self.initial_footprint, new_footprint)
+            for calc_attr_metadata in calc_attrs_that_should_change_metadata:
+                new_calc_attr = getattr(calc_attr_metadata["mod_obj_container"], calc_attr_metadata["attr_name"])
+                self.assertNotEqual(
+                    calc_attr_metadata["initial_calc_attr"], new_calc_attr,
+                    f"Calculated attribute {calc_attr_metadata['attr_name']} of "
+                    f"{calc_attr_metadata['mod_obj_container'].name} did not change")
+                logger.info(f"Calculated attribute {calc_attr_metadata['attr_name']} of "
+                            f"{calc_attr_metadata['mod_obj_container'].name} changed from "
+                            f"{calc_attr_metadata['initial_calc_attr']} to {new_calc_attr}")
 
     def _test_variations_on_obj_inputs(self, input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
         if attrs_to_skip is None:

@@ -130,14 +130,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                                     "data_storage_duration"],)
         self._test_input_change(
             storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
-        storage.fixed_nb_of_instances = EmptyExplainableObject()
-        old_initial_footprint = self.initial_footprint
-        self.initial_footprint = system.total_footprint
-        self._test_input_change(
-            storage.base_storage_need, SourceValue(5000 * u.TB_stored), storage, "base_storage_need")
-        storage.fixed_nb_of_instances = SourceValue(10000 * u.dimensionless)
-        self.assertEqual(old_initial_footprint, system.total_footprint)
-        self.initial_footprint = old_initial_footprint
+        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+            cleanup.callback(setattr, self, "initial_footprint", self.initial_footprint)
+            cleanup.callback(setattr, storage, "fixed_nb_of_instances", storage.fixed_nb_of_instances)
+            storage.fixed_nb_of_instances = EmptyExplainableObject()
+            self.initial_footprint = system.total_footprint
+            self._test_input_change(
+                storage.base_storage_need, SourceValue(5000 * u.TB_stored), storage, "base_storage_need")
+        self.assertEqual(self.initial_footprint, system.total_footprint)
         self._test_variations_on_obj_inputs(uj)
         self._test_variations_on_obj_inputs(network)
         self._test_variations_on_obj_inputs(usage_pattern, attrs_to_skip=["hourly_usage_journey_starts"])
@@ -158,11 +158,10 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         for uj_step in self.uj.uj_steps:
             changes.append([uj_step.user_time_spent, SourceValue(0 * u.min)])
 
-        update = ModelingUpdate(changes)
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-
-        update.reset_values()
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        with self.cleanup_stack() as cleanup:
+            update = ModelingUpdate(changes)
+            cleanup.callback(update.reset_values)
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
     def run_test_make_sure_updating_available_capacity_raises_error_if_necessary(self):
         """Test that InsufficientCapacityError is raised for server and storage when capacities are exceeded."""
@@ -170,41 +169,35 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
 
         # Server RAM capacity check
         logger.warning("Testing Server available RAM per instance error")
-        original_base_ram_consumption = self.server.base_ram_consumption
-        with self.assertRaises(InsufficientCapacityError):
-            self.server.base_ram_consumption = SourceValue(200 * u.GB_ram)
-        self.server.base_ram_consumption = original_base_ram_consumption
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.server, "base_ram_consumption", self.server.base_ram_consumption)
+            with self.assertRaises(InsufficientCapacityError):
+                self.server.base_ram_consumption = SourceValue(200 * u.GB_ram)
 
         # Server compute capacity check
         logger.warning("Testing Server available compute per instance error")
-        original_base_compute_consumption = self.server.base_compute_consumption
-        with self.assertRaises(InsufficientCapacityError):
-            self.server.base_compute_consumption = SourceValue(30 * u.cpu_core)
-        self.server.base_compute_consumption = original_base_compute_consumption
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.server, "base_compute_consumption", self.server.base_compute_consumption)
+            with self.assertRaises(InsufficientCapacityError):
+                self.server.base_compute_consumption = SourceValue(30 * u.cpu_core)
 
         # Server fixed number of instances vs required instances check
         logger.warning("Testing Server fixed number of instances error")
-        original_server_fixed_nb_of_instances = self.server.fixed_nb_of_instances
-        initial_server_cpu = self.server.compute
-        # Decrease server cpu to force required instances to be > 1
-        self.server.compute = SourceValue(2.4 * u.cpu_core)
-        with self.assertRaises(InsufficientCapacityError):
-            self.server.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
-        self.server.fixed_nb_of_instances = original_server_fixed_nb_of_instances
-        self.server.compute = initial_server_cpu
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.server, "fixed_nb_of_instances", self.server.fixed_nb_of_instances)
+            cleanup.callback(setattr, self.server, "compute", self.server.compute)
+            self.server.compute = SourceValue(2.4 * u.cpu_core)
+            with self.assertRaises(InsufficientCapacityError):
+                self.server.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
 
         # Storage fixed number of instances vs required instances check
         logger.warning("Testing Storage fixed number of instances error")
-        original_storage_fixed_nb_of_instances = self.storage.fixed_nb_of_instances
-        # Decrease storage capacity to force required instances to be > 1
-        initial_storage_capacity = self.storage.storage_capacity
-        self.storage.storage_capacity = SourceValue(10 * u.GB_stored)
-        with self.assertRaises(InsufficientCapacityError):
-            self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
-        self.storage.fixed_nb_of_instances = original_storage_fixed_nb_of_instances
-        self.storage.storage_capacity = initial_storage_capacity
-
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, self.storage, "fixed_nb_of_instances", self.storage.fixed_nb_of_instances)
+            cleanup.callback(setattr, self.storage, "storage_capacity", self.storage.storage_capacity)
+            self.storage.storage_capacity = SourceValue(10 * u.GB_stored)
+            with self.assertRaises(InsufficientCapacityError):
+                self.storage.fixed_nb_of_instances = SourceValue(1 * u.dimensionless)
 
     def run_test_make_sure_that_storage_fabrication_footprint_is_linked_to_jobs(self):
         self.assertIn(self.storage, self.job_1.attributed_fabrication_footprint_per_source)
@@ -328,23 +321,20 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Add uj step without job")
 
         step_without_job = UsageJourneyStep.from_defaults("User checks her phone", jobs=[])
+        with self.cleanup_stack(verify_unchanged=[self.server, self.storage]) as cleanup:
+            initial_steps = copy(self.uj.uj_steps)
+            cleanup.callback(step_without_job.self_delete)
+            cleanup.callback(setattr, self.uj, "uj_steps", initial_steps)
+            self.uj.uj_steps.append(step_without_job)
 
-        self.uj.uj_steps.append(step_without_job)
+            self.footprint_has_not_changed([self.server, self.storage])
+            self.footprint_has_changed([self.usage_pattern.devices[0]])
+            self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
 
-        self.footprint_has_not_changed([self.server, self.storage])
-        self.footprint_has_changed([self.usage_pattern.devices[0]])
-        self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-
-        logger.warning("Setting user time spent of the new step to 0s")
-        step_without_job.user_time_spent = SourceValue(0 * u.min)
-        self.footprint_has_not_changed([self.server, self.storage])
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
-
-        logger.warning("Deleting the new uj step")
-        self.uj.uj_steps = self.uj.uj_steps[:-1]
-        step_without_job.self_delete()
-        self.footprint_has_not_changed([self.server, self.storage])
-        self.assertEqual(self.system.total_footprint, self.initial_footprint)
+            logger.warning("Setting user time spent of the new step to 0s")
+            step_without_job.user_time_spent = SourceValue(0 * u.min)
+            self.footprint_has_not_changed([self.server, self.storage])
+            self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_add_usage_pattern(self):
         from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
@@ -403,12 +393,12 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._run_object_link_scenario(scenario)
 
     def run_test_delete_job(self):
-        logger.info("Removing upload job from upload step")
-        self.uj_step_2.jobs = []
-        logger.info("Deleting upload job")
-        self.job_2.self_delete()
-        logger.info("Reinitialize system")
-        self.setUpClass()
+        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+            cleanup.callback(type(self).setUpClass)
+            logger.info("Removing upload job from upload step")
+            self.uj_step_2.jobs = []
+            logger.info("Deleting upload job")
+            self.job_2.self_delete()
 
     # SIMULATION TESTING
 
