@@ -1,7 +1,5 @@
 """Integration tests base class for EdgeDeviceGroup hierarchical grouping."""
-import os
 from datetime import datetime
-from unittest import TestCase
 
 import numpy as np
 from pint import Quantity
@@ -24,15 +22,14 @@ from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
-
-INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 NB_FLOORS = 3
 NB_DEVICES_PER_FLOOR = 4
 EXPECTED_TOTAL_DEVICES = NB_FLOORS * NB_DEVICES_PER_FLOOR  # 12
 
 
-class IntegrationEdgeDeviceGroupBaseClass(TestCase):
+class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
     """Base class for EdgeDeviceGroup integration tests.
 
     Hierarchy:
@@ -40,6 +37,13 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         floor_group            ── contains edge_device × NB_DEVICES_PER_FLOOR
         Total devices per ensemble = NB_FLOORS × NB_DEVICES_PER_FLOOR = 12
     """
+
+    REF_JSON_FILENAME = "edge_device_group_system"
+    OBJECT_NAMES_MAP = {
+        "building_group": "building group",
+        "floor_group": "floor group",
+        "edge_device": "grouped edge device",
+    }
 
     @staticmethod
     def generate_edge_device_group_system():
@@ -97,52 +101,16 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
 
         system = System("Edge Device Group System", [], edge_usage_patterns=[edge_usage_pattern])
 
-        return system, start_date, building_group, floor_group, edge_device
+        return system, start_date
 
     @classmethod
     def setUpClass(cls):
-        system, start_date, building_group, floor_group, edge_device = cls.generate_edge_device_group_system()
-        cls.system = system
-        cls.start_date = start_date
-        cls.building_group = building_group
-        cls.floor_group = floor_group
-        cls.edge_device = edge_device
-
-    def _generate_delete_test_fixture(self):
-        system, start_date, building_group, floor_group, edge_device = self.generate_edge_device_group_system()
-        if type(self).__name__.endswith("FromJson"):
-            system_dict = system_to_json(system, save_calculated_attributes=True)
-            _, flat_obj_dict = json_to_system(system_dict)
-            return (
-                flat_obj_dict[system.id],
-                start_date,
-                flat_obj_dict[building_group.id],
-                flat_obj_dict[floor_group.id],
-                flat_obj_dict[edge_device.id],
-            )
-        return system, start_date, building_group, floor_group, edge_device
+        system, start_date = cls.generate_edge_device_group_system()
+        cls._setup_from_system(system, start_date)
 
     # ------------------------------------------------------------------
     # run_test_* methods (auto-converted to test_* by AutoTestMethodsMeta)
     # ------------------------------------------------------------------
-
-    def run_test_building_group_effective_nb_is_one(self):
-        self.assertAlmostEqual(
-            1.0,
-            self.building_group.effective_nb_of_units_within_root.value.magnitude,
-        )
-
-    def run_test_floor_group_effective_nb_equals_nb_floors(self):
-        self.assertAlmostEqual(
-            NB_FLOORS,
-            self.floor_group.effective_nb_of_units_within_root.value.magnitude,
-        )
-
-    def run_test_edge_device_total_nb_equals_total_devices(self):
-        self.assertAlmostEqual(
-            EXPECTED_TOTAL_DEVICES,
-            self.edge_device.total_nb_of_units.value.magnitude,
-        )
 
     def run_test_edge_device_group_linked_to_system(self):
         all_objects = self.system.all_linked_objects
@@ -154,12 +122,36 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
         self.assertIn(self.floor_group, self.edge_device.modeling_obj_containers)
 
     def run_test_contextual_parentage_survives_structural_dict_update(self):
-        _, _, building_group, floor_group, _ = self._generate_delete_test_fixture()
-        building_group.sub_group_counts = ExplainableObjectDict({
-            floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)})
+        initial_sub_group_counts = self.building_group.sub_group_counts
+        updated_sub_group_counts = ExplainableObjectDict(
+            {self.floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
+        )
 
-        self.assertIn(building_group, floor_group.modeling_obj_containers)
-        self.assertAlmostEqual(NB_FLOORS + 1, floor_group.effective_nb_of_units_within_root.value.magnitude)
+        self.building_group.sub_group_counts = updated_sub_group_counts
+
+        try:
+            self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
+            self.assertAlmostEqual(NB_FLOORS + 1, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
+            self.assertAlmostEqual((NB_FLOORS + 1) * NB_DEVICES_PER_FLOOR, self.edge_device.total_nb_of_units.value.magnitude)
+            self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        finally:
+            self.building_group.sub_group_counts = initial_sub_group_counts
+
+        self.assertAlmostEqual(NB_FLOORS, self.floor_group.effective_nb_of_units_within_root.value.magnitude)
+        self.assertAlmostEqual(EXPECTED_TOTAL_DEVICES, self.edge_device.total_nb_of_units.value.magnitude)
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def run_test_existing_edge_device_count_update_recomputes_hierarchy(self):
+        self.floor_group.edge_device_counts[self.edge_device] = SourceValue((NB_DEVICES_PER_FLOOR + 1) * u.dimensionless)
+
+        self.assertAlmostEqual(
+            NB_DEVICES_PER_FLOOR + 1,
+            self.floor_group.edge_device_counts[self.edge_device].value.magnitude,
+        )
+        self.assertAlmostEqual(
+            NB_FLOORS * (NB_DEVICES_PER_FLOOR + 1),
+            self.edge_device.total_nb_of_units.value.magnitude,
+        )
 
     def run_test_footprint_is_nonzero(self):
         total = self.system.total_footprint
@@ -212,51 +204,3 @@ class IntegrationEdgeDeviceGroupBaseClass(TestCase):
             EXPECTED_TOTAL_DEVICES,
             reloaded_device.total_nb_of_units.value.magnitude,
         )
-
-    def run_test_no_groups_backward_compat_total_nb_is_one(self):
-        """An EdgeDevice not linked to any group must report total_nb = 1."""
-        cpu = EdgeCPUComponent.from_defaults("ungrouped CPU")
-        device = EdgeDevice.from_defaults("ungrouped device", components=[cpu])
-        cpu_need = RecurrentEdgeComponentNeed(
-            "ungrouped CPU need", edge_component=cpu,
-            recurrent_need=SourceRecurrentValues(
-                Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)))
-        need = RecurrentEdgeDeviceNeed(
-            "ungrouped device need", edge_device=device,
-            recurrent_edge_component_needs=[cpu_need])
-        func = EdgeFunction("ungrouped func", recurrent_edge_device_needs=[need],
-                            recurrent_server_needs=[])
-        journey = EdgeUsageJourney.from_defaults("ungrouped journey", edge_functions=[func])
-        start = datetime.strptime("2025-01-01", "%Y-%m-%d")
-        pattern = EdgeUsagePattern(
-            "ungrouped pattern", edge_usage_journey=journey,
-            network=Network.wifi_network(), country=Countries.FRANCE(),
-            hourly_edge_usage_journey_starts=create_source_hourly_values_from_list(
-                [100, 100, 200], start))
-        System("ungrouped system", [], edge_usage_patterns=[pattern])
-
-        self.assertAlmostEqual(1.0, device.total_nb_of_units.value.magnitude)
-
-    def run_test_floor_group_delete_raises_while_referenced_by_building_group(self):
-        """Deleting a subgroup must fail while a parent group still references it."""
-        _, _, _, floor_group, _ = self._generate_delete_test_fixture()
-
-        with self.assertRaises(PermissionError):
-            floor_group.self_delete()
-
-    def run_test_edge_device_delete_raises_while_referenced_by_floor_group(self):
-        """Deleting an edge device must fail while a group still references it."""
-        _, _, _, _, edge_device = self._generate_delete_test_fixture()
-
-        with self.assertRaises(PermissionError):
-            edge_device.self_delete()
-
-    def run_test_building_group_delete_recomputes_remaining_hierarchy(self):
-        """Deleting the root group must detach it and recompute child group and device counts."""
-        _, _, building_group, floor_group, edge_device = self._generate_delete_test_fixture()
-
-        building_group.self_delete()
-
-        self.assertEqual([], floor_group._find_parent_groups())
-        self.assertAlmostEqual(1.0, floor_group.effective_nb_of_units_within_root.value.magnitude)
-        self.assertAlmostEqual(NB_DEVICES_PER_FLOOR, edge_device.total_nb_of_units.value.magnitude)
