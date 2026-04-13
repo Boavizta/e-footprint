@@ -57,6 +57,7 @@ class ModelingUpdate:
         if self.mod_objs_computation_chain:
             logger.info(f"{len(self.mod_objs_computation_chain)} recomputed objects: "
                         f"{[mod_obj.name for mod_obj in self.mod_objs_computation_chain]}")
+        self.apply_within_class_sort_logics()
         self.attr_updates_chain_from_mod_objs_computation_chains = (
             compute_attr_updates_chain_from_mod_objs_computation_chain(self.mod_objs_computation_chain))
         self.values_to_recompute = self.generate_optimized_attr_updates_chain()
@@ -181,6 +182,26 @@ class ModelingUpdate:
         for old_value, new_value in self.changes_list:
             old_value.replace_in_mod_obj_container_without_recomputation(new_value)
         self.updated_values_set = True
+
+    def revert_changes(self):
+        for old_value, new_value in self.changes_list:
+            new_value.replace_in_mod_obj_container_without_recomputation(old_value)
+        self.updated_values_set = False
+
+    def apply_within_class_sort_logics(self):
+        self.apply_changes()
+        result = []
+        i = 0
+        chain = self.mod_objs_computation_chain
+        while i < len(chain):
+            canonical_cls = chain[i].efootprint_class
+            j = i + 1
+            while j < len(chain) and chain[j].efootprint_class == canonical_cls:
+                j += 1
+            result.extend(canonical_cls.sort_within_computation_chain(chain[i:j]))
+            i = j
+        self.mod_objs_computation_chain = result
+        self.revert_changes()
 
     def make_simulation_specific_operations(self):
         assert self.simulation_date is not None

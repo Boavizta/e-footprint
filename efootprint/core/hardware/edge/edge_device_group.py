@@ -103,6 +103,20 @@ class EdgeDeviceGroup(ModelingObject):
             self.effective_nb_of_units_within_root = effective_nb.set_label(
                 f"Effective nb of {self.name} within root group")
 
+    @classmethod
+    def sort_within_computation_chain(cls, instances):
+        remaining = list(instances)
+        sorted_instances = []
+        while remaining:
+            ready = [g for g in remaining if not any(p in remaining for p in g._find_parent_groups())]
+            if not ready:
+                sorted_instances.extend(remaining)
+                break
+            sorted_instances.extend(ready)
+            for g in ready:
+                remaining.remove(g)
+        return sorted_instances
+
     def self_delete(self):
         parent_groups = self._find_parent_groups()
         if parent_groups:

@@ -342,6 +342,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def efootprint_class(self):
         return type(self)
 
+    @classmethod
+    def sort_within_computation_chain(cls, instances):
+        return instances
+
     def check_input_value_type_positivity_and_unit(self, name, input_value):
         init_sig_params = get_init_signature_params(type(self))
         if name in init_sig_params:

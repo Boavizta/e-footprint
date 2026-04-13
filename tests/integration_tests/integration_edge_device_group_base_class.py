@@ -5,6 +5,7 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -153,6 +154,44 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
             self.assertAlmostEqual(
                 NB_FLOORS * (NB_DEVICES_PER_FLOOR + 1),
                 self.edge_device.total_nb_of_units.value.magnitude,
+            )
+
+    def run_test_whole_structural_dict_replacement_of_new_group_serializes_with_calculated_attributes(self):
+        # When a ModelingUpdate replaces both sub_group_counts and edge_device_counts simultaneously, the child group
+        # (child_group) and the system device (self.edge_device) are computed in the same recomputation pass. Without
+        # topological ordering of EdgeDeviceGroup instances within that pass, child_group.effective_nb_of_units_within_root
+        # can be computed before parent_group's, embedding a stale EmptyExplainableObject as a graph ancestor. That
+        # orphaned object then causes system_to_json(save_calculated_attributes=True) to raise a ValueError when
+        # traversing the calculation graph. This test guards against that regression.
+        parent_group = EdgeDeviceGroup("transient parent group")
+        child_group = EdgeDeviceGroup("transient child group")
+        initial_sub_group_counts = parent_group.sub_group_counts
+        initial_edge_device_counts = parent_group.edge_device_counts
+        updated_sub_group_counts = ExplainableObjectDict(
+            {child_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
+        )
+        updated_edge_device_counts = ExplainableObjectDict(
+            {self.edge_device: SourceValue(2 * u.dimensionless)}
+        )
+
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(setattr, parent_group, "sub_group_counts", initial_sub_group_counts)
+            cleanup.callback(setattr, parent_group, "edge_device_counts", initial_edge_device_counts)
+            ModelingUpdate([
+                [parent_group.sub_group_counts, updated_sub_group_counts],
+                [parent_group.edge_device_counts, updated_edge_device_counts],
+            ])
+
+            system_json = system_to_json(self.system, save_calculated_attributes=True)
+            parent_group_json = system_json["EdgeDeviceGroup"][parent_group.id]
+
+            self.assertEqual(
+                (NB_FLOORS + 1),
+                parent_group_json["sub_group_counts"][child_group.id]["value"],
+            )
+            self.assertEqual(
+                2,
+                parent_group_json["edge_device_counts"][self.edge_device.id]["value"],
             )
 
     def run_test_footprint_is_nonzero(self):
