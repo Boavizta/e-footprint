@@ -244,23 +244,29 @@ class IntegrationTestBaseClass(TestCase):
 
     @contextmanager
     def cleanup_stack(
-            self, verify_total_footprint: bool = True, verify_changed_before_cleanup: Sequence[ModelingObject] = (),
-            verify_unchanged_before_cleanup: Sequence[ModelingObject] = ()):
+            self, verify_changed_before_cleanup: Sequence[ModelingObject] = (),
+            verify_unchanged_before_cleanup: Sequence[ModelingObject] = (),
+            verify_total_footprint_changed_before_cleanup: bool = False):
         stack = ExitStack()
+        exception_raised = False
         try:
             yield stack
+        except BaseException:
+            exception_raised = True
+            raise
         finally:
-            if verify_changed_before_cleanup:
+            if not exception_raised and verify_total_footprint_changed_before_cleanup:
+                self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+            if not exception_raised and verify_changed_before_cleanup:
                 self.footprint_has_changed(list(verify_changed_before_cleanup))
-            if verify_unchanged_before_cleanup:
+            if not exception_raised and verify_unchanged_before_cleanup:
                 self.footprint_has_not_changed(list(verify_unchanged_before_cleanup))
             stack.close()
             verify_restored_after_cleanup = list(dict.fromkeys(
                 list(verify_changed_before_cleanup) + list(verify_unchanged_before_cleanup)))
             if verify_restored_after_cleanup:
                 self.footprint_has_not_changed(verify_restored_after_cleanup)
-            if verify_total_footprint:
-                self.assertEqual(self.system.total_footprint, self.initial_footprint)
+            self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_system_to_json(self, input_system):
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
@@ -312,7 +318,7 @@ class IntegrationTestBaseClass(TestCase):
                      "initial_calc_attr": calc_attr}
                 )
         system = input_object.systems[0]
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(setattr, input_object, expl_attr_name, expl_attr)
             input_object.__setattr__(expl_attr_name, expl_attr_new_value)
             new_footprint = system.total_footprint

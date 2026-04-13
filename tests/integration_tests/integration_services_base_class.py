@@ -190,7 +190,8 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         logger.info("Installing new service on server")
         new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
         with self.cleanup_stack(
-                verify_unchanged_before_cleanup=[self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server]) as cleanup:
+                verify_unchanged_before_cleanup=[self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server],
+                verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(new_service.self_delete)
             self.assertEqual(set(self.server.installed_services), {new_service, self.video_streaming_service})
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
@@ -210,7 +211,7 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         new_model_name = SourceObject("claude-opus-4-5")
         logger.info(f"Change provider {previous_provider} -> {new_provider} "
                     f"and model name {previous_model_name} -> {new_model_name}")
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(lambda: ModelingUpdate([
                 [self.genai_service.provider, previous_provider],
                 [self.genai_service.model_name, previous_model_name],

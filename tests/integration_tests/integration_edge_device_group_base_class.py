@@ -127,7 +127,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
             {self.floor_group: SourceValue((NB_FLOORS + 1) * u.dimensionless)}
         )
 
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(setattr, self.building_group, "sub_group_counts", initial_sub_group_counts)
             self.building_group.sub_group_counts = updated_sub_group_counts
             self.assertIn(self.building_group, self.floor_group.modeling_obj_containers)
@@ -141,7 +141,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
     def run_test_existing_edge_device_count_update_recomputes_hierarchy(self):
         initial_count = self.floor_group.edge_device_counts[self.edge_device]
 
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(self.floor_group.edge_device_counts.__setitem__, self.edge_device, initial_count)
             self.floor_group.edge_device_counts[self.edge_device] = SourceValue(
                 (NB_DEVICES_PER_FLOOR + 1) * u.dimensionless)

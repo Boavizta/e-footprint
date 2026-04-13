@@ -220,7 +220,14 @@ with self.cleanup_stack(
 Use the test body for scenario-specific assertions that cannot be expressed generically. Use `cleanup_stack()` for the
 repeated "these objects changed / these others stayed unchanged / everything returns to baseline" checks. Objects listed
 in `verify_changed_before_cleanup` or `verify_unchanged_before_cleanup` are automatically checked again after cleanup to
-ensure they are back to baseline.
+ensure they are back to baseline. `cleanup_stack()` always checks after rollback that `system.total_footprint` matches
+the initial baseline. If a test also wants to assert that the final mutated state differs from baseline before
+rollback, opt in with `verify_total_footprint_changed_before_cleanup=True`.
+
+In practice this opt-in should be the default choice for most mutation tests: the common pattern is "make a change,
+assert that the system changed, then roll it back". Leave it as `False` only for scopes that intentionally end back at
+baseline before cleanup, such as validation/error-path tests or multi-step tests that restore the original total
+footprint within the body.
 
 ## Matplotlib Backend
 

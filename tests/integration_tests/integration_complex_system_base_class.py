@@ -205,7 +205,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         up = self.usage_pattern2
         hour_occs_per_up = server1_job1.hourly_occurrences_per_usage_pattern[up]
         logger.warning("Adding new usage pattern")
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(new_up.self_delete)
             cleanup.callback(setattr, self.system, "usage_patterns", copy(self.system.usage_patterns))
             self.system.usage_patterns += [new_up]
@@ -263,7 +263,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         with self.assertRaises(ValueError):
             self.system.plot_emission_diffs(filepath=file)
 
-        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(setattr, self.uj_step_1.jobs[0], "data_transferred", self.uj_step_1.jobs[0].data_transferred)
             self.uj_step_1.jobs[0].data_transferred = SourceValue(500 * u.kB)
             self.system.plot_emission_diffs(filepath=file)
@@ -318,7 +318,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.uj_step_2.jobs[0].hourly_occurrences_per_usage_pattern.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(simulation.reset_values)
             simulation.set_updated_values()
             self.assertEqual(initial_uj_step_2_jobs + [new_job], self.uj_step_2.jobs)
@@ -338,7 +338,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         recomputed_elements_ids = [elt.id for elt in simulation.values_to_recompute]
         self.assertIn(self.server1_job2.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(simulation.reset_values)
             simulation.set_updated_values()
             self.assertEqual(initial_uj_step_2_jobs + [self.server1_job2], self.uj_step_2.jobs)
@@ -369,7 +369,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
         for job in [new_job, new_job2, self.server1_job1]:
             self.assertIn(job.server.hour_by_hour_compute_need.id, recomputed_elements_ids)
         self.assertEqual(initial_uj_step_2_jobs, self.uj_step_2.jobs)
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(simulation.reset_values)
             simulation.set_updated_values()
             self.assertEqual(initial_uj_step_2_jobs + [new_job, new_job2, self.server1_job1], self.uj_step_2.jobs)

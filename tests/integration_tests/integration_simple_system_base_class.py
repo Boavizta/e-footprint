@@ -130,7 +130,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
                                     "data_storage_duration"],)
         self._test_input_change(
             storage.fixed_nb_of_instances, EmptyExplainableObject(), storage, "fixed_nb_of_instances")
-        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
+        with self.cleanup_stack() as cleanup:
             cleanup.callback(setattr, self, "initial_footprint", self.initial_footprint)
             cleanup.callback(setattr, storage, "fixed_nb_of_instances", storage.fixed_nb_of_instances)
             storage.fixed_nb_of_instances = EmptyExplainableObject()
@@ -158,7 +158,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         for uj_step in self.uj.uj_steps:
             changes.append([uj_step.user_time_spent, SourceValue(0 * u.min)])
 
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             update = ModelingUpdate(changes)
             cleanup.callback(update.reset_values)
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
@@ -398,7 +398,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             self.uj_step_2.jobs = [restored_job]
             type(self).job_2 = restored_job
 
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(restore_job_2)
             logger.info("Removing upload job from upload step")
             self.uj_step_2.jobs = []

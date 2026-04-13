@@ -195,7 +195,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
     def run_test_update_edge_usage_pattern_hourly_starts(self):
         logger.warning("Updating edge usage pattern hourly starts")
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(
                 setattr,
                 self.edge_usage_pattern,
@@ -495,7 +495,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(new_edge_process.self_delete)
             cleanup.callback(simulation.reset_values)
             simulation.set_updated_values()
@@ -512,7 +512,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         self.assertEqual(self.system.simulation, simulation)
         self.assertEqual(len(simulation.values_to_recompute), len(simulation.recomputed_values))
         self.assertEqual(initial_edge_needs, self.edge_function.recurrent_edge_device_needs)
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(simulation.reset_values)
             simulation.set_updated_values()
             self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
@@ -543,7 +543,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Add the new pattern to the system
         logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
         with self.cleanup_stack(
-                verify_changed_before_cleanup=[self.edge_computer, self.edge_storage]) as cleanup:
+                verify_changed_before_cleanup=[self.edge_computer, self.edge_storage],
+                verify_total_footprint_changed_before_cleanup=True) as cleanup:
             initial_edge_usage_patterns = copy(self.system.edge_usage_patterns)
             cleanup.callback(new_edge_process.self_delete)
             cleanup.callback(new_edge_function.self_delete)
@@ -604,7 +605,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         old_country = self.edge_usage_pattern.country
         self.assertGreater(len(old_country.fabrication_impact_repartition_weights), 0)
 
-        with self.cleanup_stack() as cleanup:
+        with self.cleanup_stack(verify_total_footprint_changed_before_cleanup=True) as cleanup:
             cleanup.callback(setattr, self.system, "edge_usage_patterns", self.system.edge_usage_patterns)
             self.system.edge_usage_patterns = []
 
