@@ -132,7 +132,7 @@ edge_storage = EdgeStorage(
     "edge SSD storage",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    storage_capacity=SourceValue(256 * u.GB_stored, source=None),
+    storage_capacity_per_unit=SourceValue(256 * u.GB_stored, source=None),
     base_storage_need=SourceValue(10 * u.GB_stored, source=None),
 )
 
@@ -177,21 +177,21 @@ edge_workload = RecurrentEdgeWorkload(
 
 ram_component = EdgeRAMComponent(
     "edge RAM component",
-    carbon_footprint_fabrication=SourceValue(20 * u.kg, source=None),
-    power=SourceValue(10 * u.W, source=None),
+    carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg, source=None),
+    power_per_unit=SourceValue(10 * u.W, source=None),
     lifespan=SourceValue(6 * u.year, source=None),
-    idle_power=SourceValue(2 * u.W, source=None),
-    ram=SourceValue(8 * u.GB_ram, source=None),
+    idle_power_per_unit=SourceValue(2 * u.W, source=None),
+    ram_per_unit=SourceValue(8 * u.GB_ram, source=None),
     base_ram_consumption=SourceValue(1 * u.GB_ram, source=None)
 )
 
 cpu_component = EdgeCPUComponent(
     "edge CPU component",
-    carbon_footprint_fabrication=SourceValue(20 * u.kg, source=None),
-    power=SourceValue(15 * u.W, source=None),
+    carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg, source=None),
+    power_per_unit=SourceValue(15 * u.W, source=None),
     lifespan=SourceValue(6 * u.year, source=None),
-    idle_power=SourceValue(3 * u.W, source=None),
-    compute=SourceValue(4 * u.cpu_core, source=None),
+    idle_power_per_unit=SourceValue(3 * u.W, source=None),
+    compute_per_unit=SourceValue(4 * u.cpu_core, source=None),
     base_compute_consumption=SourceValue(0.1 * u.cpu_core, source=None)
 )
 
@@ -199,7 +199,7 @@ storage_component = EdgeStorage(
     "edge storage component",
     carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored, source=None),
     lifespan=SourceValue(6 * u.years, source=None),
-    storage_capacity=SourceValue(512 * u.GB_stored, source=None),
+    storage_capacity_per_unit=SourceValue(512 * u.GB_stored, source=None),
     base_storage_need=SourceValue(20 * u.GB_stored, source=None),
 )
 

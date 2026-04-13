@@ -1,7 +1,9 @@
+import json
 import os
 import re
 import subprocess
 import shutil
+import sys
 
 from efootprint.logger import logger
 
@@ -27,12 +29,10 @@ def format_tutorial_and_save_to_mkdocs_sourcefiles(tutorial_doc_path):
         'print("placeholder")\n```\n\n    placeholder',
         '```\n--8<-- "docs_sources/generated_mkdocs_sourcefiles/System footprints.html"')
 
-    for html_file in ["object_relationships_graph.html", "object_relationships_graph_with_jobs.html",
-                      "device_population_fab_footprint_calculus_graph.html"]:
-        tutorial_reformated = tutorial_reformated.replace(
-            f'    {html_file}',
-            f'--8<-- "docs_sources/generated_mkdocs_sourcefiles/{html_file}"'
-        )
+    tutorial_reformated = re.sub(
+        r"^ {4}(\S+\.html)\s*$",
+        lambda m: f'--8<-- "docs_sources/generated_mkdocs_sourcefiles/{m.group(1)}"',
+        tutorial_reformated, flags=re.MULTILINE)
 
     tutorial_reformated = tutorial_reformated.replace("\n\n    202", "    202").replace("```    202", "```\n\n    202")
 
@@ -58,16 +58,25 @@ def efootprint_tutorial_to_md():
     with open(efootprint_tutorial_path, "r") as file:
         tutorial_content = file.read()
 
-    tutorial_content = tutorial_content.replace("notebook=True", "notebook=False").replace(
+    tutorial_content = re.sub(
+        r"(object_relationship_graph_to_file|calculus_graph_to_file)(\([^)]*?)notebook=True",
+        r"\1\2notebook=False", tutorial_content)
+    tutorial_content = tutorial_content.replace(
         '"system.plot_footprints_by_category_and_object(\\"System footprints.html\\")"',
         '"system.plot_footprints_by_category_and_object(\\"System footprints.html\\")\\n",\n"print(\\"placeholder\\")"')
 
     docs_tutorial_path = os.path.join(doc_utils_path, "docs_tutorial.ipynb")
+    notebook_json = json.loads(tutorial_content)
+    for cell in notebook_json.get("cells", []):
+        if cell.get("cell_type") == "code":
+            cell["outputs"] = []
+            cell["execution_count"] = None
     with open(docs_tutorial_path, "w") as file:
-        file.write(tutorial_content)
+        json.dump(notebook_json, file)
 
     try:
-        subprocess.run(["jupyter", "nbconvert", "--to", "markdown", docs_tutorial_path], check=True)
+        subprocess.run(
+            [sys.executable, "-m", "nbconvert", "--to", "markdown", "--execute", docs_tutorial_path], check=True)
     except subprocess.CalledProcessError:
         raise ProcessLookupError(
             "Couldn’t run the tutorial notebook, possibly because the kernel name saved in the ipynb file doesn’t match"

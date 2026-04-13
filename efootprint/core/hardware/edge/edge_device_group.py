@@ -6,11 +6,12 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.constants.units import u
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
 
 
 class EdgeDeviceGroup(ModelingObject):
     default_values = {}
-    classes_outside_init_params_needed_for_generating_from_json = []
+    classes_outside_init_params_needed_for_generating_from_json = [EdgeDevice]
 
     def __init__(self, name: str,
                  sub_group_counts: ExplainableObjectDict = None,

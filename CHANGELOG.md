@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [19.0.0] - 2026-04-13
+
+### Added
+- Introduce nb_of_units in EdgeComponents, and EdgeDeviceGroups to be able to represent complex structures like buildings with floors and different equipement groups and sub-groups within each floor. This change required a json upgrade handler, hence bumping to version 19.0.0.
+
+### Fixed
+- _compute_mod_objs_computation_chain_from_old_and_new_collection logic: Build added-object computation chains in the previewed new collection state so contextual dependents are discovered before recomputation. This fixes local rollback for tests that delete and recreate jobs through UsageJourneyStep.jobs, where Job.networks must include the network during chain construction.
+
+### Changed
+- Introduce proper closures in integration tests, so that an integration test failing doesn’t create a cascade of failing tests because the system is left in a broken state after the first failure.
+
 ## [18.0.0] - 2026-04-01
 
 ### Changed

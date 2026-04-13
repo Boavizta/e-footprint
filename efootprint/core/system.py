@@ -396,7 +396,7 @@ class System(ModelingObject):
             filename = f"{self.name} footprints.html"
 
         if filename is not None:
-            plotly.offline.plot(fig, filename=filename, auto_open=False)
+            plotly.offline.plot(fig, filename=filename, auto_open=False, include_plotlyjs="cdn")
 
         if notebook:
             from IPython.display import HTML

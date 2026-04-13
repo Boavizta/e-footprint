@@ -789,7 +789,7 @@ class ImpactRepartitionSankey:
         if notebook and filename is None:
             filename = f"{self.system.name} impact repartition.html"
         if filename is not None:
-            plotly.offline.plot(fig, filename=filename, auto_open=False)
+            plotly.offline.plot(fig, filename=filename, auto_open=False, include_plotlyjs="cdn")
         if notebook:
             from IPython.display import HTML
             return HTML(filename=filename)
