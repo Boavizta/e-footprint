@@ -139,16 +139,21 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
         self.assertAlmostEqual(EXPECTED_TOTAL_DEVICES, self.edge_device.total_nb_of_units.value.magnitude)
 
     def run_test_existing_edge_device_count_update_recomputes_hierarchy(self):
-        self.floor_group.edge_device_counts[self.edge_device] = SourceValue((NB_DEVICES_PER_FLOOR + 1) * u.dimensionless)
+        initial_count = self.floor_group.edge_device_counts[self.edge_device]
 
-        self.assertAlmostEqual(
-            NB_DEVICES_PER_FLOOR + 1,
-            self.floor_group.edge_device_counts[self.edge_device].value.magnitude,
-        )
-        self.assertAlmostEqual(
-            NB_FLOORS * (NB_DEVICES_PER_FLOOR + 1),
-            self.edge_device.total_nb_of_units.value.magnitude,
-        )
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(self.floor_group.edge_device_counts.__setitem__, self.edge_device, initial_count)
+            self.floor_group.edge_device_counts[self.edge_device] = SourceValue(
+                (NB_DEVICES_PER_FLOOR + 1) * u.dimensionless)
+
+            self.assertAlmostEqual(
+                NB_DEVICES_PER_FLOOR + 1,
+                self.floor_group.edge_device_counts[self.edge_device].value.magnitude,
+            )
+            self.assertAlmostEqual(
+                NB_FLOORS * (NB_DEVICES_PER_FLOOR + 1),
+                self.edge_device.total_nb_of_units.value.magnitude,
+            )
 
     def run_test_footprint_is_nonzero(self):
         total = self.system.total_footprint

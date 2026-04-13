@@ -220,6 +220,24 @@ class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
         self.assertTrue(root.effective_nb_of_units_within_root.value.check("[]"))
 
 
+class TestEdgeDeviceGroupTriggeredCountUpdates(TestCase):
+
+    def test_existing_edge_device_count_update_recomputes_child_device_total(self):
+        root = EdgeDeviceGroup("Root group for existing count update")
+        floor = EdgeDeviceGroup("Floor group for existing count update")
+        device = EdgeDevice.from_defaults("Edge device for existing count update", components=[])
+
+        root.sub_group_counts[floor] = SourceValue(3 * u.dimensionless)
+        floor.edge_device_counts[device] = SourceValue(4 * u.dimensionless)
+
+        self.assertAlmostEqual(12.0, device.total_nb_of_units.value.magnitude)
+
+        floor.edge_device_counts[device] = SourceValue(5 * u.dimensionless)
+
+        self.assertAlmostEqual(5.0, floor.edge_device_counts[device].value.magnitude)
+        self.assertAlmostEqual(15.0, device.total_nb_of_units.value.magnitude)
+
+
 class TestEdgeDeviceGroupSelfDelete(TestCase):
 
     def test_self_delete_raises_when_group_is_referenced_by_parent_group(self):

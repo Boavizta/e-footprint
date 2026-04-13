@@ -284,6 +284,20 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         del owner.input_dict[inserted_child]
         self.assertEqual([], inserted_child.modeling_obj_containers)
 
+    def test_triggered_existing_entry_update_on_structural_dict_replaces_value(self):
+        existing_child = ModelingObjectForContainerTest("existing_child_for_update")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_for_existing_entry_update",
+            input_dict={existing_child: SourceValue(1 * u.dimensionless, label="initial child count")},
+        )
+
+        owner.input_dict.trigger_modeling_updates = True
+        owner.input_dict[existing_child] = SourceValue(3 * u.dimensionless, label="updated child count")
+
+        self.assertEqual(3, owner.input_dict[existing_child].value.magnitude)
+        self.assertEqual(owner, owner.input_dict[existing_child].modeling_obj_container)
+        self.assertEqual("input_dict", owner.input_dict[existing_child].attr_name_in_mod_obj_container)
+
 
 if __name__ == "__main__":
     unittest.main()

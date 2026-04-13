@@ -119,8 +119,9 @@ class ModelingUpdate:
                 self.changes_list[index][1] = EmptyExplainableObject()
             else:
                 mod_obj_container = old_value.modeling_obj_container
-                mod_obj_container.check_input_value_type_positivity_and_unit(
-                    old_value.attr_name_in_mod_obj_container, new_value)
+                if old_value.dict_container is None:
+                    mod_obj_container.check_input_value_type_positivity_and_unit(
+                        old_value.attr_name_in_mod_obj_container, new_value)
 
             if isinstance(new_value, list):
                 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
