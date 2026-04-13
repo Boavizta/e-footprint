@@ -542,7 +542,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         # Add the new pattern to the system
         logger.warning(f"Adding edge usage pattern {new_edge_usage_pattern.name} to system")
-        with self.cleanup_stack(verify_unchanged=[self.edge_computer, self.edge_storage]) as cleanup:
+        with self.cleanup_stack(
+                verify_changed_before_cleanup=[self.edge_computer, self.edge_storage]) as cleanup:
             initial_edge_usage_patterns = copy(self.system.edge_usage_patterns)
             cleanup.callback(new_edge_process.self_delete)
             cleanup.callback(new_edge_function.self_delete)
@@ -552,7 +553,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             self.system.edge_usage_patterns += [new_edge_usage_pattern]
 
             self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
-            self.footprint_has_changed([self.edge_computer, self.edge_storage])
 
             self.assertEqual(2, len(self.edge_computer.edge_usage_patterns))
             self.assertIn(self.edge_usage_pattern, self.edge_computer.edge_usage_patterns)

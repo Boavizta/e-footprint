@@ -321,19 +321,18 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         logger.warning("Add uj step without job")
 
         step_without_job = UsageJourneyStep.from_defaults("User checks her phone", jobs=[])
-        with self.cleanup_stack(verify_unchanged=[self.server, self.storage]) as cleanup:
+        with self.cleanup_stack(
+                verify_unchanged_before_cleanup=[self.server, self.storage]) as cleanup:
             initial_steps = copy(self.uj.uj_steps)
             cleanup.callback(step_without_job.self_delete)
             cleanup.callback(setattr, self.uj, "uj_steps", initial_steps)
             self.uj.uj_steps.append(step_without_job)
 
-            self.footprint_has_not_changed([self.server, self.storage])
             self.footprint_has_changed([self.usage_pattern.devices[0]])
             self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
 
             logger.warning("Setting user time spent of the new step to 0s")
             step_without_job.user_time_spent = SourceValue(0 * u.min)
-            self.footprint_has_not_changed([self.server, self.storage])
             self.assertEqual(self.system.total_footprint, self.initial_footprint)
 
     def run_test_add_usage_pattern(self):

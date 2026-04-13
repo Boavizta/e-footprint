@@ -243,14 +243,22 @@ class IntegrationTestBaseClass(TestCase):
                 raise AssertionError(f"Footprint has changed for {obj.name}")
 
     @contextmanager
-    def cleanup_stack(self, verify_total_footprint: bool = True, verify_unchanged: Sequence[ModelingObject] = ()):
+    def cleanup_stack(
+            self, verify_total_footprint: bool = True, verify_changed_before_cleanup: Sequence[ModelingObject] = (),
+            verify_unchanged_before_cleanup: Sequence[ModelingObject] = ()):
         stack = ExitStack()
         try:
             yield stack
         finally:
+            if verify_changed_before_cleanup:
+                self.footprint_has_changed(list(verify_changed_before_cleanup))
+            if verify_unchanged_before_cleanup:
+                self.footprint_has_not_changed(list(verify_unchanged_before_cleanup))
             stack.close()
-            if verify_unchanged:
-                self.footprint_has_not_changed(list(verify_unchanged))
+            verify_restored_after_cleanup = list(dict.fromkeys(
+                list(verify_changed_before_cleanup) + list(verify_unchanged_before_cleanup)))
+            if verify_restored_after_cleanup:
+                self.footprint_has_not_changed(verify_restored_after_cleanup)
             if verify_total_footprint:
                 self.assertEqual(self.system.total_footprint, self.initial_footprint)
 

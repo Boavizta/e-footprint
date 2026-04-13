@@ -180,6 +180,48 @@ When fixing, adding or editing tests, make all changes at once for a given test 
 
 If a test modifies shared state, either reset it at test end or use a patch. Shouldn’t be common since unit tests use setUp for fresh state.
 
+When a test does mutate shared fixture state, prefer registering a local rollback closure before the mutation and run it
+unconditionally in `finally` or through the integration `cleanup_stack()` helper. This keeps the original failure signal
+while preventing unrelated cascade failures in later tests.
+
+Pattern:
+
+```python
+def restore_job():
+    current_jobs = [job for job in self.step.jobs if job.name == "job 2"]
+    restored_job = current_jobs[0] if current_jobs else Job.from_defaults("job 2", server=self.server)
+    self.step.jobs = [restored_job]
+
+with self.cleanup_stack() as cleanup:
+    cleanup.callback(restore_job)
+    self.step.jobs = []
+    self.job_2.self_delete()
+```
+
+Use this pattern especially when a shared integration fixture is mutated in place and must be restored locally rather
+than rebuilt globally. Register the cleanup before the first mutation so it still runs if the test fails halfway
+through.
+
+For the common integration pattern "make a change, assert the intended impact, roll back, assert baseline is restored",
+prefer pushing the generic footprint assertions into `cleanup_stack()` instead of open-coding them in the test body.
+
+`cleanup_stack()` can assert footprint expectations in the mutated state right before rollback:
+
+```python
+with self.cleanup_stack(
+    verify_changed_before_cleanup=[self.device],
+    verify_unchanged_before_cleanup=[self.server, self.storage],
+) as cleanup:
+    cleanup.callback(...)
+    ...
+    self.assertNotEqual(self.system.total_footprint, self.initial_footprint)
+```
+
+Use the test body for scenario-specific assertions that cannot be expressed generically. Use `cleanup_stack()` for the
+repeated "these objects changed / these others stayed unchanged / everything returns to baseline" checks. Objects listed
+in `verify_changed_before_cleanup` or `verify_unchanged_before_cleanup` are automatically checked again after cleanup to
+ensure they are back to baseline.
+
 ## Matplotlib Backend
 
 When running test modules that exercise plotting code, prefer `MPLBACKEND=Agg poetry run pytest ...` in this environment.

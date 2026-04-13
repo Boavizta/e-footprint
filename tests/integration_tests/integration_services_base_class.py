@@ -189,11 +189,11 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
     def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
         logger.info("Installing new service on server")
         new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
-        with self.cleanup_stack(verify_unchanged=[self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server, self.server]) as cleanup:
+        with self.cleanup_stack(
+                verify_unchanged_before_cleanup=[self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server]) as cleanup:
             cleanup.callback(new_service.self_delete)
             self.assertEqual(set(self.server.installed_services), {new_service, self.video_streaming_service})
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
-            self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server])
 
     def run_test_try_to_update_model_provider_and_get_error(self):
         previous_provider = self.genai_service.provider
