@@ -151,8 +151,19 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
         original_jobs = list(self.streaming_step.jobs)
         video_streaming_job_index = original_jobs.index(self.video_streaming_job)
         updated_jobs = [elt for elt in original_jobs if elt != self.video_streaming_job]
-        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
-            cleanup.callback(type(self).setUpClass)
+
+        def restore_video_streaming_job():
+            current_jobs = [job for job in self.streaming_step.jobs if job.name == "Streaming job"]
+            restored_job = current_jobs[0] if current_jobs else VideoStreamingJob.from_defaults(
+                "Streaming job", service=self.video_streaming_service, resolution=SourceObject("720p (1280 x 720)"),
+                video_duration=SourceValue(20 * u.min))
+            other_jobs = [job for job in self.streaming_step.jobs if job is not restored_job]
+            other_jobs.insert(video_streaming_job_index, restored_job)
+            self.streaming_step.jobs = other_jobs
+            type(self).video_streaming_job = restored_job
+
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(restore_video_streaming_job)
             self.streaming_step.jobs = updated_jobs
 
             self.assertNotIn(self.video_streaming_job, self.streaming_step.jobs)
@@ -178,8 +189,8 @@ class IntegrationTestServicesBaseClass(IntegrationTestBaseClass):
     def run_test_install_new_service_on_server_and_make_sure_system_is_recomputed(self):
         logger.info("Installing new service on server")
         new_service = VideoStreaming.from_defaults("New streaming service", server=self.server)
-        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
-            cleanup.callback(type(self).setUpClass)
+        with self.cleanup_stack(verify_unchanged=[self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server, self.server]) as cleanup:
+            cleanup.callback(new_service.self_delete)
             self.assertEqual(set(self.server.installed_services), {new_service, self.video_streaming_service})
             self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
             self.footprint_has_not_changed([self.storage, self.network, self.usage_pattern.devices[0], self.gpu_server])

@@ -608,15 +608,26 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         added_objs = [obj for obj in new_mod_objs if obj not in old_mod_objs]
 
         mod_objs_computation_chain = []
-        for obj in removed_objs + added_objs:
+        attr_name = old_value.attr_name_in_mod_obj_container
+        for obj in removed_objs:
             if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
                 mod_objs_computation_chain += obj.mod_objs_computation_chain
 
         mod_objs_computation_chain += self.mod_objs_computation_chain
-        attr_name = old_value.attr_name_in_mod_obj_container
+        # Evaluate added objects in the context of the new collection state, not as standalone objects.
+        # Example: when updating UsageJourneyStep.jobs, a freshly re-created Job only sees its Network once the
+        # temporary jobs list is attached to the step. Without this attachment, Job.networks is still empty while the
+        # recomputation chain is built, so the network would be skipped and remain stale after the update.
+        input_value.set_modeling_obj_container(self, attr_name)
         self.__dict__[attr_name] = input_value
+        for obj in added_objs:
+            if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
+                mod_objs_computation_chain += obj.mod_objs_computation_chain
+        # self.mod_objs_computation_chain is also evaluated in the previewed new state so container-side contextual
+        # links are discovered consistently with child-side ones.
         mod_objs_computation_chain += self.mod_objs_computation_chain
         self.__dict__[attr_name] = old_value
+        input_value.set_modeling_obj_container(None, None)
 
         if optimize_chain:
             return optimize_mod_objs_computation_chain(mod_objs_computation_chain)

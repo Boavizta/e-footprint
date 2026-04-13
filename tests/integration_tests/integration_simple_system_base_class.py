@@ -393,8 +393,14 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
         self._run_object_link_scenario(scenario)
 
     def run_test_delete_job(self):
-        with self.cleanup_stack(verify_total_footprint=False) as cleanup:
-            cleanup.callback(type(self).setUpClass)
+        def restore_job_2():
+            current_jobs = [job for job in self.uj_step_2.jobs if job.name == "job 2"]
+            restored_job = current_jobs[0] if current_jobs else Job.from_defaults("job 2", server=self.server)
+            self.uj_step_2.jobs = [restored_job]
+            type(self).job_2 = restored_job
+
+        with self.cleanup_stack() as cleanup:
+            cleanup.callback(restore_job_2)
             logger.info("Removing upload job from upload step")
             self.uj_step_2.jobs = []
             logger.info("Deleting upload job")
