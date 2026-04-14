@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_584c31 {
+             #mynetwork_fd0c50 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_584c31" class="card-body"></div>
+            <div id="mynetwork_fd0c50" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_584c31');
+                  var container = document.getElementById('mynetwork_fd0c50');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Compute of edge computer CPU", "label": "Compute of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Compute of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8 cpu_core)\n=\n8 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8 cpu_core", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Compute of edge computer", "to": "Compute of edge computer CPU"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Compute of edge computer CPU", "label": "Compute of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Compute of edge computer CPU\n=\nCompute per unit of edge computer CPU * Number of units of edge computer CPU\nfrom e-footprint hypothesis\n=\n8 cpu_core * 1\n=\n8 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Compute per unit of edge computer CPU", "label": "Compute per unit of\nedge computer CPU", "shape": "dot", "size": 15, "title": "Compute per unit of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8 cpu_core)\n=\n8 cpu_core", "x": -75.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8 cpu_core", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge computer CPU from e-footprint hypothesis", "label": "Number of units of\nedge computer CPU\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge computer CPU from e-footprint hypothesis = 1", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Compute per unit of edge computer CPU", "to": "Compute of edge computer CPU"}, {"arrows": "to", "from": "Compute of edge computer", "to": "Compute per unit of edge computer CPU"}, {"arrows": "to", "from": "Number of units of edge computer CPU from e-footprint hypothesis", "to": "Compute of edge computer CPU"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

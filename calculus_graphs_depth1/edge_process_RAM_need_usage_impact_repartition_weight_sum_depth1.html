@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_eeb82e {
+             #mynetwork_0cdf9e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_eeb82e" class="card-body"></div>
+            <div id="mynetwork_0cdf9e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_eeb82e');
+                  var container = document.getElementById('mynetwork_0cdf9e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process RAM need usage impact repartition weights", "label": "Sum of edge process\nRAM need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process RAM need usage impact repartition weights\n=\nedge process weight in edge process RAM need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process RAM need impact repartition", "label": "edge process weight\nin edge process RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process RAM need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process RAM need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process RAM need usage impact repartition weights", "label": "Sum of edge process\nRAM need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process RAM need usage impact repartition weights\n=\nedge process weight in edge process RAM need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process RAM need impact repartition", "label": "edge process weight\nin edge process RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process RAM need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process RAM need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process RAM need impact repartition", "to": "Sum of edge process RAM need usage impact repartition weights"}]);
 
                   nodeColors = {};

@@ -3396,9 +3396,9 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="utc_hourly_usage_journey_starts">utc_hourly_usage_journey_starts</h3>
 <p>Usage pattern utc in occurrence.  </p>
-<p>Example value: 26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :<br />
-    first 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],<br />
-    last 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]  </p>
+<p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],<br />
+    last 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_usage_journey_starts">usage pattern hourly nb of visits</a></li>
@@ -3438,7 +3438,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7bf7ff {
+             #mynetwork_2d18a6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3460,7 +3460,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7bf7ff" class="card-body"></div>
+            <div id="mynetwork_2d18a6" class="card-body"></div>
         </div>
 
 
@@ -3490,12 +3490,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7bf7ff');
+                  var container = document.getElementById('mynetwork_2d18a6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [2, 8, 9, 8, 3, 1, 7, 6, 9, 2],\nlast 10 vals [3, 8, 9, 2, 8, 6, 5, 2, 6, 3]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [4, 6, 6, 1, 1, 7, 7, 1, 7, 9],\nlast 10 vals [6, 7, 1, 3, 1, 7, 5, 6, 3, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [4, 6, 6, 1, 1, 7, 7, 1, 7, 9],\nlast 10 vals [6, 7, 1, 3, 1, 7, 5, 6, 3, 3]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of visits", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}]);
 
                   nodeColors = {};
@@ -3566,7 +3566,7 @@
 <p>Dictionary with Country as keys and 
                         Impact repartition weight as values, in dimensionless.  </p>
 <p>Example value: {<br />
-Country devices country (75fd8b): 1 , <br />
+Country devices country (577263): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3606,7 +3606,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_e854c7 {
+             #mynetwork_3d9c8a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3628,7 +3628,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e854c7" class="card-body"></div>
+            <div id="mynetwork_3d9c8a" class="card-body"></div>
         </div>
 
 
@@ -3658,7 +3658,7 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e854c7');
+                  var container = document.getElementById('mynetwork_3d9c8a');
 
 
 
@@ -3771,7 +3771,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_0f0ac4 {
+             #mynetwork_3c8f81 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3793,7 +3793,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0f0ac4" class="card-body"></div>
+            <div id="mynetwork_3c8f81" class="card-body"></div>
         </div>
 
 
@@ -3823,12 +3823,12 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0f0ac4');
+                  var container = document.getElementById('mynetwork_3c8f81');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of usage pattern fabrication impact repartition weights", "label": "Sum of usage pattern\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern fabrication impact repartition weights\n=\nImpact repartition weight + no value\n=\n1 + no value\n=\n1", "x": 0.0, "y": 300}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of usage pattern fabrication impact repartition weights", "label": "Sum of usage pattern\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern fabrication impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "Sum of usage pattern fabrication impact repartition weights"}]);
 
                   nodeColors = {};
@@ -3899,7 +3899,7 @@ Country devices country (75fd8b): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Usage pattern fabrication impact attribution to devices country as values, in concurrent.  </p>
 <p>Example value: {<br />
-Country devices country (75fd8b): 1 , <br />
+Country devices country (577263): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3940,7 +3940,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_7c314e {
+             #mynetwork_a2ed80 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3962,7 +3962,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7c314e" class="card-body"></div>
+            <div id="mynetwork_a2ed80" class="card-body"></div>
         </div>
 
 
@@ -3992,12 +3992,12 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7c314e');
+                  var container = document.getElementById('mynetwork_a2ed80');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication impact attribution to devices country", "label": "usage pattern\nfabrication impact\nattribution to\ndevices country", "shape": "dot", "size": 15, "title": "usage pattern fabrication impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern fabrication impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern fabrication impact repartition weights", "label": "Sum of usage pattern\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern fabrication impact repartition weights\n=\nImpact repartition weight + no value\n=\n1 + no value\n=\n1", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication impact attribution to devices country", "label": "usage pattern\nfabrication impact\nattribution to\ndevices country", "shape": "dot", "size": 15, "title": "usage pattern fabrication impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern fabrication impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern fabrication impact repartition weights", "label": "Sum of usage pattern\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern fabrication impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "usage pattern fabrication impact attribution to devices country"}, {"arrows": "to", "from": "Sum of usage pattern fabrication impact repartition weights", "to": "usage pattern fabrication impact attribution to devices country"}]);
 
                   nodeColors = {};
@@ -4068,7 +4068,7 @@ Country devices country (75fd8b): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Impact repartition weight as values, in dimensionless.  </p>
 <p>Example value: {<br />
-Country devices country (75fd8b): 1 , <br />
+Country devices country (577263): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4108,7 +4108,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_a8e382 {
+             #mynetwork_6f1402 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4130,7 +4130,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a8e382" class="card-body"></div>
+            <div id="mynetwork_6f1402" class="card-body"></div>
         </div>
 
 
@@ -4160,7 +4160,7 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a8e382');
+                  var container = document.getElementById('mynetwork_6f1402');
 
 
 
@@ -4273,7 +4273,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_b8ee90 {
+             #mynetwork_b9fde7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4295,7 +4295,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b8ee90" class="card-body"></div>
+            <div id="mynetwork_b9fde7" class="card-body"></div>
         </div>
 
 
@@ -4325,12 +4325,12 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b8ee90');
+                  var container = document.getElementById('mynetwork_b9fde7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight + no value\n=\n1 + no value\n=\n1", "x": 0.0, "y": 300}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "Sum of usage pattern usage impact repartition weights"}]);
 
                   nodeColors = {};
@@ -4401,7 +4401,7 @@ Country devices country (75fd8b): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Usage pattern usage impact attribution to devices country as values, in concurrent.  </p>
 <p>Example value: {<br />
-Country devices country (75fd8b): 1 , <br />
+Country devices country (577263): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4442,7 +4442,7 @@ Country devices country (75fd8b): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_ae56c0 {
+             #mynetwork_40df60 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4464,7 +4464,7 @@ Country devices country (75fd8b): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ae56c0" class="card-body"></div>
+            <div id="mynetwork_40df60" class="card-body"></div>
         </div>
 
 
@@ -4494,12 +4494,12 @@ Country devices country (75fd8b): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ae56c0');
+                  var container = document.getElementById('mynetwork_40df60');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern usage impact attribution to devices country", "label": "usage pattern usage\nimpact attribution\nto devices country", "shape": "dot", "size": 15, "title": "usage pattern usage impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern usage impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight + no value\n=\n1 + no value\n=\n1", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern usage impact attribution to devices country", "label": "usage pattern usage\nimpact attribution\nto devices country", "shape": "dot", "size": 15, "title": "usage pattern usage impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern usage impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "usage pattern usage impact attribution to devices country"}, {"arrows": "to", "from": "Sum of usage pattern usage impact repartition weights", "to": "usage pattern usage impact attribution to devices country"}]);
 
                   nodeColors = {};

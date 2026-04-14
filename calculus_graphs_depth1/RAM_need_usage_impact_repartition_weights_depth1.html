@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_136edf {
+             #mynetwork_828b2f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_136edf" class="card-body"></div>
+            <div id="mynetwork_828b2f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_136edf');
+                  var container = document.getElementById('mynetwork_828b2f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device need weight in RAM need impact repartition", "label": "custom edge device\nneed weight in RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "custom edge device need weight in RAM need impact repartition\n=\n(edge function weight in custom edge device need impact repartition + no value)\n* Number of occurrences of RAM need in custom edge device need\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in custom edge device need impact repartition", "label": "edge function weight\nin custom edge\ndevice need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge function weight in custom edge device need impact repartition\n=\n(edge usage journey weight in edge function impact repartition + no value) *\nNumber of occurrences of custom edge device need in edge function\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device need weight in RAM need impact repartition", "label": "custom edge device\nneed weight in RAM\nneed impact\nrepartition", "shape": "dot", "size": 15, "title": "custom edge device need weight in RAM need impact repartition\n=\nedge function weight in custom edge device need impact repartition * Number of\noccurrences of RAM need in custom edge device need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in custom edge device need impact repartition", "label": "edge function weight\nin custom edge\ndevice need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge function weight in custom edge device need impact repartition\n=\nedge usage journey weight in edge function impact repartition * Number of\noccurrences of custom edge device need in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in custom edge device need impact repartition", "to": "custom edge device need weight in RAM need impact repartition"}]);
 
                   nodeColors = {};

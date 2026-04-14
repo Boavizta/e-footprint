@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3d9f8f {
+             #mynetwork_4f893f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3d9f8f" class="card-body"></div>
+            <div id="mynetwork_4f893f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d9f8f');
+                  var container = document.getElementById('mynetwork_4f893f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Generative AI model job usage impact repartition weights", "label": "Sum of Generative AI\nmodel job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job usage impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Generative AI model job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [56.7, 227, 255, 227, 85, 28.3, 198, 170, 255, 56.7],\nlast 10 vals [85, 227, 255, 56.7, 227, 170, 142, 56.7, 170, 85]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Generative AI model job usage impact repartition weights", "label": "Sum of Generative AI\nmodel job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Generative AI model job usage impact repartition weights\n=\n20 min streaming weight in Generative AI model job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Generative AI model job impact repartition", "label": "20 min streaming\nweight in Generative\nAI model job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Generative AI model job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Generative AI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Generative AI model job impact repartition", "to": "Sum of Generative AI model job usage impact repartition weights"}]);
 
                   nodeColors = {};

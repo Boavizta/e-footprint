@@ -2573,10 +2573,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#validated_recurrent_need" class="md-nav__link">
+  <a href="#recurrent_need_validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validated_recurrent_need
+        recurrent_need_validation
       
     </span>
   </a>
@@ -3250,10 +3250,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#validated_recurrent_need" class="md-nav__link">
+  <a href="#recurrent_need_validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        validated_recurrent_need
+        recurrent_need_validation
       
     </span>
   </a>
@@ -3393,9 +3393,9 @@
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="recurrent_need">recurrent_need</h3>
-<p>Example value: 168 values in M:<br />
-    first 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],<br />
-    last 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]  </p>
+<p>Example value: 168 values in kB:<br />
+    first 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],<br />
+    last 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../RecurrentEdgeProcess/#recurrent_storage_needed">Recurrent storage needed for edge process</a>  </li>
@@ -3434,7 +3434,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_44b646 {
+             #mynetwork_13829a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3456,7 +3456,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_44b646" class="card-body"></div>
+            <div id="mynetwork_13829a" class="card-body"></div>
         </div>
 
 
@@ -3486,12 +3486,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_44b646');
+                  var container = document.getElementById('mynetwork_13829a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent storage needed for edge process", "label": "Recurrent storage\nneeded for edge\nprocess", "shape": "dot", "size": 15, "title": "Recurrent storage needed for edge process = 168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent storage needed for edge process", "label": "Recurrent storage\nneeded for edge\nprocess", "shape": "dot", "size": 15, "title": "Recurrent storage needed for edge process = 168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent storage needed for edge process", "to": "edge process storage need recurrent need"}]);
 
                   nodeColors = {};
@@ -3558,10 +3558,10 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_recurrent_need.html' target='_blank'>link to edge process storage need recurrent need’s full calculation graph</a>.</p>
-<h3 id="validated_recurrent_need">validated_recurrent_need</h3>
-<p>Example value: 168 values in M:<br />
-    first 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],<br />
-    last 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]  </p>
+<h3 id="recurrent_need_validation">recurrent_need_validation</h3>
+<p>Example value: 168 values in kB:<br />
+    first 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],<br />
+    last 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#recurrent_need">edge process storage need recurrent need</a>  </li>
@@ -3600,7 +3600,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7b3c62 {
+             #mynetwork_a7242b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3622,7 +3622,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7b3c62" class="card-body"></div>
+            <div id="mynetwork_a7242b" class="card-body"></div>
         </div>
 
 
@@ -3652,12 +3652,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7b3c62');
+                  var container = document.getElementById('mynetwork_a7242b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of edge process storage need", "label": "Validated recurrent\nneed of edge process\nstorage need", "shape": "dot", "size": 15, "title": "Validated recurrent need of edge process storage need\n=\nduplicate (edge process storage need recurrent need)\n=\nduplicate (168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of edge process storage need", "label": "Validated recurrent\nneed of edge process\nstorage need", "shape": "dot", "size": 15, "title": "Validated recurrent need of edge process storage need\n=\nduplicate (edge process storage need recurrent need)\n=\nduplicate (168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need recurrent need", "to": "Validated recurrent need of edge process storage need"}]);
 
                   nodeColors = {};
@@ -3723,14 +3723,14 @@
     </body>
 </html>
 
-<p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_validated_recurrent_need.html' target='_blank'>link to Validated recurrent need of edge process storage need’s full calculation graph</a>.</p>
+<p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_recurrent_need_validation.html' target='_blank'>link to Validated recurrent need of edge process storage need’s full calculation graph</a>.</p>
 <h3 id="unitary_hourly_need_per_usage_pattern">unitary_hourly_need_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge process storage need unitary hourly need for default edge usage pattern as values, in kilobyte.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:<br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
-    last 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6], <br />
+    last 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3772,7 +3772,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_5dac1e {
+             #mynetwork_d1230f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3794,7 +3794,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5dac1e" class="card-body"></div>
+            <div id="mynetwork_d1230f" class="card-body"></div>
         </div>
 
 
@@ -3824,12 +3824,12 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5dac1e');
+                  var container = document.getElementById('mynetwork_d1230f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": -150.0, "y": 450}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000] hourly occurrences\naverage 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 600}, {"color": null, "id": "edge process storage need recurrent need", "label": "edge process storage\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process storage need recurrent need\n=\nduplicate (Recurrent storage needed for edge process)\n=\nduplicate (168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": -150.0, "y": 450}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need recurrent need", "to": "edge process storage need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "edge process storage need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "edge process storage need unitary hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -3898,11 +3898,11 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_unitary_hourly_need_per_usage_pattern.html' target='_blank'>link to edge process storage need unitary hourly need for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="cumulative_unitary_storage_need_per_usage_pattern">cumulative_unitary_storage_need_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
-                        Edge process storage need cumulative unitary storage need for default edge usage pattern as values, in kilobyte.  </p>
+                        Edge process storage need cumulative unitary storage need for default edge usage pattern as values, in terabyte_stored.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:<br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
-    last 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168], <br />
+    last 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3942,7 +3942,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_aed6f7 {
+             #mynetwork_6d60d8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3964,7 +3964,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_aed6f7" class="card-body"></div>
+            <div id="mynetwork_6d60d8" class="card-body"></div>
         </div>
 
 
@@ -3994,12 +3994,12 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_aed6f7');
+                  var container = document.getElementById('mynetwork_6d60d8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168]", "x": 0.0, "y": 750}, {"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in M:\nfirst 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6] expanded over\ntimespan 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in kB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21]", "x": 0.0, "y": 750}, {"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in kB:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need unitary hourly need for Default edge usage pattern", "to": "edge process storage need cumulative unitary storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4067,10 +4067,10 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
 <p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_cumulative_unitary_storage_need_per_usage_pattern.html' target='_blank'>link to edge process storage need cumulative unitary storage need for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="total_hourly_need_across_usage_patterns">total_hourly_need_across_usage_patterns</h3>
-<p>Edge process storage need total hourly need across usage patterns in concurrent * kilobyte.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:<br />
+<p>Edge process storage need total hourly need across usage patterns in concurrent * terabyte_stored.  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·TB_stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
-    last 10 vals [840000, 840000, 840000, 840000, 840000, 840000, 672000, 504000, 336000, 168000]  </p>
+    last 10 vals [105, 105, 105, 105, 105, 83.9, 62.9, 41.9, 20.9, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#cumulative_unitary_storage_need_per_usage_pattern">edge process storage need cumulative unitary storage need for Default edge usage pattern</a></li>
@@ -4110,7 +4110,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_72629a {
+             #mynetwork_57bd2d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4132,7 +4132,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_72629a" class="card-body"></div>
+            <div id="mynetwork_57bd2d" class="card-body"></div>
         </div>
 
 
@@ -4162,12 +4162,12 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_72629a');
+                  var container = document.getElementById('mynetwork_57bd2d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need total hourly need across usage patterns", "label": "edge process storage\nneed total hourly\nneed across usage\npatterns", "shape": "dot", "size": 15, "title": "edge process storage need total hourly need across usage patterns\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern * edge usage journey hourly nb of edge usage journeys in parallel + no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168] * 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [840000, 840000, 840000, 840000, 840000, 840000, 672000, 504000,\n336000, 168000]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168]", "x": -150.0, "y": 750}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000] hourly occurrences\naverage 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need total hourly need across usage patterns", "label": "edge process storage\nneed total hourly\nneed across usage\npatterns", "shape": "dot", "size": 15, "title": "edge process storage need total hourly need across usage patterns\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern * edge usage journey hourly nb of edge usage journeys in parallel\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21] * 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7TB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [105, 105, 105, 105, 105, 83.9, 62.9, 41.9, 20.9, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in kB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21]", "x": -150.0, "y": 750}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "to": "edge process storage need total hourly need across usage patterns"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "edge process storage need total hourly need across usage patterns"}]);
 
                   nodeColors = {};
@@ -4238,9 +4238,9 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>Dictionary with RecurrentEdgeProcess as keys and 
                         Edge process weight in edge process storage need impact repartition as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],<br />
-    last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997], <br />
+RecurrentEdgeProcess edge process (75032e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],<br />
+    last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4280,7 +4280,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_5190bf {
+             #mynetwork_939efa {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4302,7 +4302,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5190bf" class="card-body"></div>
+            <div id="mynetwork_939efa" class="card-body"></div>
         </div>
 
 
@@ -4332,12 +4332,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5190bf');
+                  var container = document.getElementById('mynetwork_939efa');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\n(edge usage journey weight in edge function impact repartition + no value) *\nNumber of occurrences of edge process in edge function\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\nedge usage journey weight in edge function impact repartition * Number of\noccurrences of edge process in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in edge process impact repartition", "to": "edge process weight in edge process storage need impact repartition"}]);
 
                   nodeColors = {};
@@ -4406,9 +4406,9 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 <p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_fabrication_impact_repartition_weights.html' target='_blank'>link to edge process weight in edge process storage need impact repartition’s full calculation graph</a>.</p>
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of edge process storage need fabrication impact repartition weights in concurrent.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],<br />
-    last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],<br />
+    last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#fabrication_impact_repartition_weights">edge process weight in edge process storage need impact repartition</a>  </li>
@@ -4447,7 +4447,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_9e9aa6 {
+             #mynetwork_7c8d51 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4469,7 +4469,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9e9aa6" class="card-body"></div>
+            <div id="mynetwork_7c8d51" class="card-body"></div>
         </div>
 
 
@@ -4499,12 +4499,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9e9aa6');
+                  var container = document.getElementById('mynetwork_7c8d51');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process storage need fabrication impact repartition weights", "label": "Sum of edge process\nstorage need\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need fabrication impact repartition weights\n=\nedge process weight in edge process storage need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process storage need fabrication impact repartition weights", "label": "Sum of edge process\nstorage need\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need fabrication impact repartition weights\n=\nedge process weight in edge process storage need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process storage need impact repartition", "to": "Sum of edge process storage need fabrication impact repartition weights"}]);
 
                   nodeColors = {};
@@ -4575,7 +4575,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 <p>Dictionary with RecurrentEdgeProcess as keys and 
                         Edge process storage need fabrication impact attribution to edge process as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
+RecurrentEdgeProcess edge process (75032e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -4618,7 +4618,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_7ce168 {
+             #mynetwork_814f0f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4640,7 +4640,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7ce168" class="card-body"></div>
+            <div id="mynetwork_814f0f" class="card-body"></div>
         </div>
 
 
@@ -4670,12 +4670,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7ce168');
+                  var container = document.getElementById('mynetwork_814f0f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need fabrication impact attribution to edge process", "label": "edge process storage\nneed fabrication\nimpact attribution\nto edge process", "shape": "dot", "size": 15, "title": "edge process storage need fabrication impact attribution to edge process\n=\nedge process weight in edge process storage need impact repartition / Sum of\nedge process storage need fabrication impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] / 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 1050}, {"color": null, "id": "Sum of edge process storage need fabrication impact repartition weights", "label": "Sum of edge process\nstorage need\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need fabrication impact repartition weights\n=\nedge process weight in edge process storage need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need fabrication impact attribution to edge process", "label": "edge process storage\nneed fabrication\nimpact attribution\nto edge process", "shape": "dot", "size": 15, "title": "edge process storage need fabrication impact attribution to edge process\n=\nedge process weight in edge process storage need impact repartition / Sum of\nedge process storage need fabrication impact repartition weights\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] / 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Sum of edge process storage need fabrication impact repartition weights", "label": "Sum of edge process\nstorage need\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need fabrication impact repartition weights\n=\nedge process weight in edge process storage need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process storage need impact repartition", "to": "edge process storage need fabrication impact attribution to edge process"}, {"arrows": "to", "from": "Sum of edge process storage need fabrication impact repartition weights", "to": "edge process storage need fabrication impact attribution to edge process"}]);
 
                   nodeColors = {};
@@ -4746,9 +4746,9 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 <p>Dictionary with RecurrentEdgeProcess as keys and 
                         Edge process weight in edge process storage need impact repartition as values, in concurrent * gram / kilowatt_hour.  </p>
 <p>Example value: {<br />
-RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in ·g/kWh:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],<br />
-    last 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700], <br />
+RecurrentEdgeProcess edge process (75032e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],<br />
+    last 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4788,7 +4788,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_74c58c {
+             #mynetwork_caa423 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4810,7 +4810,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_74c58c" class="card-body"></div>
+            <div id="mynetwork_caa423" class="card-body"></div>
         </div>
 
 
@@ -4840,12 +4840,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_74c58c');
+                  var container = document.getElementById('mynetwork_caa423');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\n(edge usage journey weight in edge function impact repartition + no value) *\nNumber of occurrences of edge process in edge function\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\nedge usage journey weight in edge function impact repartition * Number of\noccurrences of edge process in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in edge process impact repartition", "to": "edge process weight in edge process storage need impact repartition"}]);
 
                   nodeColors = {};
@@ -4914,9 +4914,9 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 <p>You can also visit the <a href='../calculus_graphs/edge_process_storage_need_usage_impact_repartition_weights.html' target='_blank'>link to edge process weight in edge process storage need impact repartition’s full calculation graph</a>.</p>
 <h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
 <p>Sum of edge process storage need usage impact repartition weights in concurrent * gram / kilowatt_hour.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in ·g/kWh:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],<br />
-    last 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],<br />
+    last 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#usage_impact_repartition_weights">edge process weight in edge process storage need impact repartition</a>  </li>
@@ -4955,7 +4955,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_f20f43 {
+             #mynetwork_176bb1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4977,7 +4977,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f20f43" class="card-body"></div>
+            <div id="mynetwork_176bb1" class="card-body"></div>
         </div>
 
 
@@ -5007,12 +5007,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f20f43');
+                  var container = document.getElementById('mynetwork_176bb1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process storage need usage impact repartition weights", "label": "Sum of edge process\nstorage need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need usage impact repartition weights\n=\nedge process weight in edge process storage need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge process storage need usage impact repartition weights", "label": "Sum of edge process\nstorage need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need usage impact repartition weights\n=\nedge process weight in edge process storage need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process storage need impact repartition", "to": "Sum of edge process storage need usage impact repartition weights"}]);
 
                   nodeColors = {};
@@ -5083,7 +5083,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 <p>Dictionary with RecurrentEdgeProcess as keys and 
                         Edge process storage need usage impact attribution to edge process as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
+RecurrentEdgeProcess edge process (75032e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -5126,7 +5126,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         </center>
         <style type="text/css">
 
-             #mynetwork_50120c {
+             #mynetwork_e5aef8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5148,7 +5148,7 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_50120c" class="card-body"></div>
+            <div id="mynetwork_e5aef8" class="card-body"></div>
         </div>
 
 
@@ -5178,12 +5178,12 @@ RecurrentEdgeProcess edge process (875613): 105192 values from 2024-12-31 23:00:
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_50120c');
+                  var container = document.getElementById('mynetwork_e5aef8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need usage impact attribution to edge process", "label": "edge process storage\nneed usage impact\nattribution to edge\nprocess", "shape": "dot", "size": 15, "title": "edge process storage need usage impact attribution to edge process\n=\nedge process weight in edge process storage need impact repartition / Sum of\nedge process storage need usage impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] / 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\n(edge function weight in edge process impact repartition + no value) * Number of\noccurrences of edge process storage need in edge process\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1050}, {"color": null, "id": "Sum of edge process storage need usage impact repartition weights", "label": "Sum of edge process\nstorage need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need usage impact repartition weights\n=\nedge process weight in edge process storage need impact repartition + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 84900, 170000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 425000, 340000, 255000,\n170000, 84700]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process storage need usage impact attribution to edge process", "label": "edge process storage\nneed usage impact\nattribution to edge\nprocess", "shape": "dot", "size": 15, "title": "edge process storage need usage impact attribution to edge process\n=\nedge process weight in edge process storage need impact repartition / Sum of\nedge process storage need usage impact repartition weights\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Sum of edge process storage need usage impact repartition weights", "label": "Sum of edge process\nstorage need usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge process storage need usage impact repartition weights\n=\nedge process weight in edge process storage need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process weight in edge process storage need impact repartition", "to": "edge process storage need usage impact attribution to edge process"}, {"arrows": "to", "from": "Sum of edge process storage need usage impact repartition weights", "to": "edge process storage need usage impact attribution to edge process"}]);
 
                   nodeColors = {};

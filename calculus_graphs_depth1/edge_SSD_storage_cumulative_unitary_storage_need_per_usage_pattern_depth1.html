@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_801a27 {
+             #mynetwork_7f65ce {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_801a27" class="card-body"></div>
+            <div id="mynetwork_7f65ce" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_801a27');
+                  var container = document.getElementById('mynetwork_7f65ce');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage cumulative storage need for Default edge usage pattern", "label": "edge SSD storage\ncumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge SSD storage cumulative storage need for Default edge usage pattern\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern + no value + edge SSD storage initial storage need logically dependent\non Storage capacity of edge SSD storage\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168] + no value + 80\nB logically dependent on 2050 B\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [80, 80, 80, 80, 80, 80, 80, 80, 80, 80],\nlast 10 vals [248, 248, 248, 248, 248, 248, 248, 248, 248, 248]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6, 1.6])\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [168, 168, 168, 168, 168, 168, 168, 168, 168, 168]", "x": -150.0, "y": 750}, {"color": null, "id": "edge SSD storage initial storage need", "label": "edge SSD storage\ninitial storage need", "shape": "dot", "size": 15, "title": "edge SSD storage initial storage need = 80 B", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage = 2050 B", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage cumulative storage need for Default edge usage pattern", "label": "edge SSD storage\ncumulative storage\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge SSD storage cumulative storage need for Default edge usage pattern\n=\nedge process storage need cumulative unitary storage need for Default edge usage\npattern + edge SSD storage initial storage need logically dependent on Storage\ncapacity of edge SSD storage\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21] + 10 GB_stored logically\ndependent on 256 GB_stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [10, 10, 10, 10, 10, 10, 10, 10, 10, 10],\nlast 10 vals [31, 31, 31, 31, 31, 31, 31, 31, 31, 31]", "x": 0.0, "y": 900}, {"color": null, "id": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "label": "edge process storage\nneed cumulative\nunitary storage need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "edge process storage need cumulative unitary storage need for Default edge usage\npattern\n=\ncumulative sum (edge process storage need unitary hourly need for Default edge\nusage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in kB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [21, 21, 21, 21, 21, 21, 21, 21, 21, 21]", "x": -150.0, "y": 750}, {"color": null, "id": "edge SSD storage initial storage need", "label": "edge SSD storage\ninitial storage need", "shape": "dot", "size": 15, "title": "edge SSD storage initial storage need = 10 GB_stored", "x": 0.0, "y": 750}, {"color": null, "id": "Storage capacity of edge SSD storage", "label": "Storage capacity of\nedge SSD storage", "shape": "dot", "size": 15, "title": "Storage capacity of edge SSD storage\n=\nStorage capacity per unit of edge SSD storage * Number of units of edge SSD\nstorage from e-footprint hypothesis\n=\n256 GB_stored * 1\n=\n256 GB_stored", "x": 150.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need cumulative unitary storage need for Default edge usage pattern", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "edge SSD storage initial storage need", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}, {"arrows": "to", "from": "Storage capacity of edge SSD storage", "to": "edge SSD storage cumulative storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};

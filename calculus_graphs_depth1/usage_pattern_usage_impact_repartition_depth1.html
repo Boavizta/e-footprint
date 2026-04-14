@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ae56c0 {
+             #mynetwork_40df60 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ae56c0" class="card-body"></div>
+            <div id="mynetwork_40df60" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ae56c0');
+                  var container = document.getElementById('mynetwork_40df60');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern usage impact attribution to devices country", "label": "usage pattern usage\nimpact attribution\nto devices country", "shape": "dot", "size": 15, "title": "usage pattern usage impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern usage impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight + no value\n=\n1 + no value\n=\n1", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern usage impact attribution to devices country", "label": "usage pattern usage\nimpact attribution\nto devices country", "shape": "dot", "size": 15, "title": "usage pattern usage impact attribution to devices country\n=\nImpact repartition weight / Sum of usage pattern usage impact repartition\nweights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of usage pattern usage impact repartition weights", "label": "Sum of usage pattern\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of usage pattern usage impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "usage pattern usage impact attribution to devices country"}, {"arrows": "to", "from": "Sum of usage pattern usage impact repartition weights", "to": "usage pattern usage impact attribution to devices country"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7b1355 {
+             #mynetwork_191eb4 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7b1355" class="card-body"></div>
+            <div id="mynetwork_191eb4" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7b1355');
+                  var container = document.getElementById('mynetwork_191eb4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Power of edge appliance appliance", "label": "Power of edge\nappliance appliance", "shape": "dot", "size": 15, "title": "Power of edge appliance appliance\n=\nduplicate (Power of edge appliance)\n=\nduplicate (30 W)\n=\n30 W", "x": 0.0, "y": 300}, {"color": null, "id": "Power of edge appliance", "label": "Power of edge\nappliance", "shape": "dot", "size": 15, "title": "Power of edge appliance = 30 W", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of edge appliance", "to": "Power of edge appliance appliance"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Power of edge appliance appliance", "label": "Power of edge\nappliance appliance", "shape": "dot", "size": 15, "title": "Power of edge appliance appliance\n=\nPower per unit of edge appliance appliance * Number of units of edge appliance\nappliance from e-footprint hypothesis\n=\n30 W * 1\n=\n30 W", "x": 0.0, "y": 450}, {"color": null, "id": "Power per unit of edge appliance appliance", "label": "Power per unit of\nedge appliance\nappliance", "shape": "dot", "size": 15, "title": "Power per unit of edge appliance appliance\n=\nduplicate (Power of edge appliance)\n=\nduplicate (30 W)\n=\n30 W", "x": -75.0, "y": 300}, {"color": null, "id": "Power of edge appliance", "label": "Power of edge\nappliance", "shape": "dot", "size": 15, "title": "Power of edge appliance = 30 W", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge appliance appliance from e-footprint hypothesis", "label": "Number of units of\nedge appliance\nappliance from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge appliance appliance from e-footprint hypothesis = 1", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Power per unit of edge appliance appliance", "to": "Power of edge appliance appliance"}, {"arrows": "to", "from": "Power of edge appliance", "to": "Power per unit of edge appliance appliance"}, {"arrows": "to", "from": "Number of units of edge appliance appliance from e-footprint hypothesis", "to": "Power of edge appliance appliance"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

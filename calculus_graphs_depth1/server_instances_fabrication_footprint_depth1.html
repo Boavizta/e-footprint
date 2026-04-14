@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_949121 {
+             #mynetwork_185281 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_949121" class="card-body"></div>
+            <div id="mynetwork_185281" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_949121');
+                  var container = document.getElementById('mynetwork_185281');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly server instances fabrication footprint", "label": "Hourly server\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly server instances fabrication footprint\n=\nHourly number of server instances * Carbon footprint fabrication of server * one\nhour / Lifespan of server\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] * 600 kg * 1 h / 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in g:\nfirst 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4],\nlast 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil (Hourly raw number of server instances) logically dependent on Server type\nof server from e-footprint hypothesis\n=\nceil (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00\nin :\nfirst 10 vals [0.000296, 0.00118, 0.00133, 0.00118, 0.000444, 0.000148, 0.00104,\n0.000887, 0.00192, 0.00294],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566,\n0.00425, 0.00283, 0.00141]) logically dependent on autoscaling\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -550.0, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of server", "label": "Carbon footprint\nfabrication of\nserver", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of server = 600 kg", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan of server", "label": "Lifespan of server", "shape": "dot", "size": 15, "title": "Lifespan of server = 6 yr", "x": 550.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly server instances fabrication footprint", "label": "Hourly server\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly server instances fabrication footprint\n=\nHourly number of server instances * Carbon footprint fabrication of server * one\nhour / Lifespan of server\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 600 kg * 1 h / 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4],\nlast 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil (Hourly raw number of server instances) logically dependent on Server type\nof server from e-footprint hypothesis\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000887, 0.000887, 0.000148, 0.000148, 0.00104, 0.00104,\n0.000148, 0.00181, 0.00333, 0.0043],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -550.0, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of server", "label": "Carbon footprint\nfabrication of\nserver", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of server = 600 kg", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan of server", "label": "Lifespan of server", "shape": "dot", "size": 15, "title": "Lifespan of server = 6 yr", "x": 550.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of server instances", "to": "Hourly server instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of server", "to": "Hourly server instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of server", "to": "Hourly server instances fabrication footprint"}]);
 
                   nodeColors = {};

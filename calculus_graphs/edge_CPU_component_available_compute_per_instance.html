@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c6846c {
+             #mynetwork_0ad3b6 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c6846c" class="card-body"></div>
+            <div id="mynetwork_0ad3b6" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c6846c');
+                  var container = document.getElementById('mynetwork_0ad3b6');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available compute per edge CPU component instance", "label": "Available compute\nper edge CPU\ncomponent instance", "shape": "dot", "size": 15, "title": "Available compute per edge CPU component instance\n=\nCompute of edge CPU component - Base compute consumption of edge CPU component\n=\n4 cpu_core - 0.1 cpu_core\n=\n3.9 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "Compute of edge CPU component", "label": "Compute of edge CPU\ncomponent", "shape": "dot", "size": 15, "title": "Compute of edge CPU component = 4 cpu_core", "x": -75.0, "y": 150}, {"color": null, "id": "Base compute consumption of edge CPU component", "label": "Base compute\nconsumption of edge\nCPU component", "shape": "dot", "size": 15, "title": "Base compute consumption of edge CPU component = 0.1 cpu_core", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Compute of edge CPU component", "to": "Available compute per edge CPU component instance"}, {"arrows": "to", "from": "Base compute consumption of edge CPU component", "to": "Available compute per edge CPU component instance"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available compute per edge CPU component instance", "label": "Available compute\nper edge CPU\ncomponent instance", "shape": "dot", "size": 15, "title": "Available compute per edge CPU component instance\n=\nCompute of edge CPU component - Base compute consumption of edge CPU component\n=\n4 cpu_core - 0.1 cpu_core\n=\n3.9 cpu_core", "x": 0.0, "y": 450}, {"color": null, "id": "Compute of edge CPU component", "label": "Compute of edge CPU\ncomponent", "shape": "dot", "size": 15, "title": "Compute of edge CPU component\n=\nCompute per unit of edge CPU component * Number of units of edge CPU component\nfrom e-footprint hypothesis\n=\n4 cpu_core * 1\n=\n4 cpu_core", "x": -75.0, "y": 300}, {"color": null, "id": "Compute per unit of edge CPU component", "label": "Compute per unit of\nedge CPU component", "shape": "dot", "size": 15, "title": "Compute per unit of edge CPU component = 4 cpu_core", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge CPU component from e-footprint hypothesis", "label": "Number of units of\nedge CPU component\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge CPU component from e-footprint hypothesis = 1", "x": 75.0, "y": 150}, {"color": null, "id": "Base compute consumption of edge CPU component", "label": "Base compute\nconsumption of edge\nCPU component", "shape": "dot", "size": 15, "title": "Base compute consumption of edge CPU component = 0.1 cpu_core", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Compute of edge CPU component", "to": "Available compute per edge CPU component instance"}, {"arrows": "to", "from": "Compute per unit of edge CPU component", "to": "Compute of edge CPU component"}, {"arrows": "to", "from": "Number of units of edge CPU component from e-footprint hypothesis", "to": "Compute of edge CPU component"}, {"arrows": "to", "from": "Base compute consumption of edge CPU component", "to": "Available compute per edge CPU component instance"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

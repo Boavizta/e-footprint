@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_66c51a {
+             #mynetwork_4a6481 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_66c51a" class="card-body"></div>
+            <div id="mynetwork_4a6481" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_66c51a');
+                  var container = document.getElementById('mynetwork_4a6481');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined GPU job fabrication impact repartition weights", "label": "Sum of Manually\ndefined GPU job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined GPU job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined GPU job impact repartition + no\nvalue\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Manually defined GPU job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined GPU job\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined GPU job impact repartition\n=\n(user journey weight in 20 min streaming impact repartition + no value) * Number\nof occurrences of Manually defined GPU job in 20 min streaming\n=\n(26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1] + no value) * 1\n=\n26298 values from 2024-12-31 23:00:00+00:00 to 2028-01-01 17:00:00+00:00 in :\nfirst 10 vals [0.667, 2.67, 3, 2.67, 1, 0.333, 2.33, 2, 3, 0.667],\nlast 10 vals [1, 2.67, 3, 0.667, 2.67, 2, 1.67, 0.667, 2, 1]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined GPU job fabrication impact repartition weights", "label": "Sum of Manually\ndefined GPU job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined GPU job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined GPU job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Manually defined GPU job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined GPU job\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined GPU job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined GPU job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined GPU job impact repartition", "to": "Sum of Manually defined GPU job fabrication impact repartition weights"}]);
 
                   nodeColors = {};

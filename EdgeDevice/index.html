@@ -1251,6 +1251,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#total_nb_of_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_nb_of_units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#structure_fabrication_footprint_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3358,6 +3369,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#total_nb_of_units" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        total_nb_of_units
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#structure_fabrication_footprint_per_usage_pattern" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3589,7 +3611,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8abd55 {
+             #mynetwork_987bf7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3611,7 +3633,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8abd55" class="card-body"></div>
+            <div id="mynetwork_987bf7" class="card-body"></div>
         </div>
 
 
@@ -3641,7 +3663,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8abd55');
+                  var container = document.getElementById('mynetwork_987bf7');
 
 
 
@@ -3753,7 +3775,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9f1db5 {
+             #mynetwork_20b98a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3775,7 +3797,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9f1db5" class="card-body"></div>
+            <div id="mynetwork_20b98a" class="card-body"></div>
         </div>
 
 
@@ -3805,7 +3827,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9f1db5');
+                  var container = document.getElementById('mynetwork_20b98a');
 
 
 
@@ -3877,17 +3899,183 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_component_needs_edge_device_validation.html' target='_blank'>link to no value’s full calculation graph</a>.</p>
+<h3 id="total_nb_of_units">total_nb_of_units</h3>
+<p>ExplainableQuantity in dimensionless, representing the Custom edge device has no group (default count = 1).  </p>
+<p>Example value: 1   </p>
+<p>Depends directly on:  </p>
+<ul>
+<li></li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_3f6739 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_3f6739" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_3f6739');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/custom_edge_device_total_nb_of_units.html' target='_blank'>link to custom edge device has no group (default count = 1)’s full calculation graph</a>.</p>
 <h3 id="structure_fabrication_footprint_per_usage_pattern">structure_fabrication_footprint_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly custom edge device structure fabrication footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],<br />
-    last 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285, 0.0019, 0.000948], <br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],<br />
+    last 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285, 0.0019, 0.000948, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../EdgeUsageJourney/#nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern">edge usage journey hourly nb of edge usage journeys in parallel</a></li>
+<li><a href="./#total_nb_of_units">custom edge device has no group (default count = 1)</a></li>
 <li><a href="./#structure_carbon_footprint_fabrication">Structure fabrication carbon footprint of custom edge device</a></li>
 <li><a href="./#lifespan">Lifespan of custom edge device</a>  </li>
 </ul>
@@ -3925,7 +4113,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_e4c864 {
+             #mynetwork_3c5fc5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3947,7 +4135,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e4c864" class="card-body"></div>
+            <div id="mynetwork_3c5fc5" class="card-body"></div>
         </div>
 
 
@@ -3977,13 +4165,13 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e4c864');
+                  var container = document.getElementById('mynetwork_3c5fc5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of custom edge device / Lifespan of custom edge\ndevice) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948]", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2024-12-31 23:00:00+00:00 to 2031-01-01 12:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000] hourly occurrences\naverage 6 yr\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997]", "x": -150.0, "y": 450}, {"color": null, "id": "Structure fabrication carbon footprint of custom edge device", "label": "Structure\nfabrication carbon\nfootprint of custom\nedge device", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint of custom edge device = 50 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan of custom edge device", "label": "Lifespan of custom\nedge device", "shape": "dot", "size": 15, "title": "Lifespan of custom edge device = 6 yr", "x": 150.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Structure fabrication carbon footprint of custom edge device", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of custom edge device", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * custom edge\ndevice has no group (default count\n=\n1) * (Structure fabrication carbon footprint of custom edge device / Lifespan of\ncustom edge device) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1 * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -225.0, "y": 450}, {"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": -75.0, "y": 450}, {"color": null, "id": "Structure fabrication carbon footprint of custom edge device", "label": "Structure\nfabrication carbon\nfootprint of custom\nedge device", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint of custom edge device = 50 kg", "x": 75.0, "y": 450}, {"color": null, "id": "Lifespan of custom edge device", "label": "Lifespan of custom\nedge device", "shape": "dot", "size": 15, "title": "Lifespan of custom edge device = 6 yr", "x": 225.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "custom edge device has no group (default count = 1)", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Structure fabrication carbon footprint of custom edge device", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of custom edge device", "to": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4053,16 +4241,17 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly custom edge device instances fabrication footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],<br />
-    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326], <br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],<br />
+    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#structure_fabrication_footprint_per_usage_pattern">Hourly custom edge device structure fabrication footprint for Default edge usage pattern</a></li>
-<li><a href="../EdgeRAMComponent/#instances_fabrication_footprint_per_usage_pattern">Hourly edge RAM component instances fabrication footprint for Default edge usage pattern</a></li>
-<li><a href="../EdgeCPUComponent/#instances_fabrication_footprint_per_usage_pattern">Hourly edge CPU component instances fabrication footprint for Default edge usage pattern</a></li>
-<li><a href="../EdgeStorage/#instances_fabrication_footprint_per_usage_pattern">Hourly edge storage component instances fabrication footprint for Default edge usage pattern</a>  </li>
+<li><a href="../EdgeRAMComponent/#fabrication_footprint_per_edge_device_per_usage_pattern">Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern</a></li>
+<li><a href="./#total_nb_of_units">custom edge device has no group (default count = 1)</a></li>
+<li><a href="../EdgeCPUComponent/#fabrication_footprint_per_edge_device_per_usage_pattern">Hourly edge CPU component fabrication footprint per edge device for Default edge usage pattern</a></li>
+<li><a href="../EdgeStorage/#fabrication_footprint_per_edge_device_per_usage_pattern">Hourly edge storage component fabrication footprint per edge device for Default edge usage pattern</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -4098,7 +4287,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_1adbef {
+             #mynetwork_db0720 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4120,7 +4309,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1adbef" class="card-body"></div>
+            <div id="mynetwork_db0720" class="card-body"></div>
         </div>
 
 
@@ -4150,13 +4339,13 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1adbef');
+                  var container = document.getElementById('mynetwork_db0720');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\nHourly custom edge device structure fabrication footprint for Default edge usage\npattern + Hourly edge RAM component instances fabrication footprint for Default\nedge usage pattern + Hourly edge CPU component instances fabrication footprint\nfor Default edge usage pattern + Hourly edge storage component instances\nfabrication footprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of custom edge device / Lifespan of custom edge\ndevice) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948]", "x": -506.25, "y": 600}, {"color": null, "id": "Hourly edge RAM component instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge RAM\ncomponent instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge RAM component instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge RAM component / Lifespan of edge RAM component) *\none hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379]", "x": -168.75, "y": 600}, {"color": null, "id": "Hourly edge CPU component instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge CPU\ncomponent instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge CPU component instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge CPU component / Lifespan of edge CPU component) *\none hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379]", "x": 168.75, "y": 600}, {"color": null, "id": "Hourly edge storage component instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge storage\ncomponent instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge storage component instances fabrication footprint for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge storage component / Lifespan of edge storage component) * one\nhour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (81.9 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155]", "x": 506.25, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge RAM component instances fabrication footprint for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge CPU component instances fabrication footprint for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge storage component instances fabrication footprint for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\nHourly custom edge device structure fabrication footprint for Default edge usage\npattern + Hourly edge RAM component fabrication footprint per edge device for\nDefault edge usage pattern * custom edge device has no group (default count\n=\n1) + Hourly edge CPU component fabrication footprint per edge device for Default\nedge usage pattern * custom edge device has no group (default count\n=\n1) + Hourly edge storage component fabrication footprint per edge device for\nDefault edge usage pattern * custom edge device has no group (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] * 1 + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] * 1 + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * custom edge\ndevice has no group (default count\n=\n1) * (Structure fabrication carbon footprint of custom edge device / Lifespan of\ncustom edge device) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1 * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0]", "x": -600.0, "y": 600}, {"color": null, "id": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly edge RAM\ncomponent\nfabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly edge RAM component fabrication footprint per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge RAM component / Lifespan of edge RAM component) *\none hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": -300.0, "y": 600}, {"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": -525.0, "y": 450}, {"color": null, "id": "Hourly edge CPU component fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly edge CPU\ncomponent\nfabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly edge CPU component fabrication footprint per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge CPU component / Lifespan of edge CPU component) *\none hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": 300.0, "y": 600}, {"color": null, "id": "Hourly edge storage component fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly edge storage\ncomponent\nfabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly edge storage component fabrication footprint per edge device for Default\nedge usage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint of edge storage component / Lifespan of edge storage component) * one\nhour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (81.9 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0]", "x": 600.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "custom edge device has no group (default count = 1)", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge CPU component fabrication footprint per edge device for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly edge storage component fabrication footprint per edge device for Default edge usage pattern", "to": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4226,15 +4415,16 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly energy consumed by custom edge device instances for default edge usage pattern as values, in concurrent * hour * watt.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MWh:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],<br />
-    last 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206, 0.0103], <br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],<br />
+    last 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206, 0.0103, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeRAMComponent/#instances_energy_per_usage_pattern">Hourly energy consumed by edge RAM component instances for Default edge usage pattern</a></li>
-<li><a href="../EdgeCPUComponent/#instances_energy_per_usage_pattern">Hourly energy consumed by edge CPU component instances for Default edge usage pattern</a></li>
-<li><a href="../EdgeStorage/#instances_energy_per_usage_pattern">Hourly energy consumed by edge storage component instances for Default edge usage pattern</a>  </li>
+<li><a href="../EdgeRAMComponent/#energy_per_edge_device_per_usage_pattern">Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern</a></li>
+<li><a href="../EdgeCPUComponent/#energy_per_edge_device_per_usage_pattern">Hourly energy consumed by edge CPU component per edge device for Default edge usage pattern</a></li>
+<li><a href="../EdgeStorage/#energy_per_edge_device_per_usage_pattern">Hourly energy consumed by edge storage component per edge device for Default edge usage pattern</a></li>
+<li><a href="./#total_nb_of_units">custom edge device has no group (default count = 1)</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -4270,7 +4460,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_4833af {
+             #mynetwork_7d39df {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4292,7 +4482,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4833af" class="card-body"></div>
+            <div id="mynetwork_7d39df" class="card-body"></div>
         </div>
 
 
@@ -4322,13 +4512,13 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4833af');
+                  var container = document.getElementById('mynetwork_7d39df');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by custom edge device instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by custom\nedge device\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by custom edge device instances for Default edge usage\npattern\n=\nHourly energy consumed by edge RAM component instances for Default edge usage\npattern + no value + Hourly energy consumed by edge CPU component instances for\nDefault edge usage pattern + Hourly energy consumed by edge storage component\ninstances for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.004, 0.00799],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799,\n0.00399] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in MWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0063, 0.0126],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189,\n0.0126, 0.00628] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309,\n0.0206, 0.0103]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by edge RAM component instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge RAM\ncomponent instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge RAM component instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge RAM\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.004, 0.00799],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799,\n0.00399]", "x": -600.0, "y": 1050}, {"color": null, "id": "Hourly energy consumed by edge CPU component instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge CPU\ncomponent instances\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge CPU component instances for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge CPU\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in W:\nfirst 10 vals [6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3],\nlast 10 vals [6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3] * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0063, 0.0126],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189,\n0.0126, 0.00628]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly energy consumed by edge storage component instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nstorage component\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge storage component instances for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * 1 h * no value\n=\nno value", "x": 600.0, "y": 1050}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge RAM component instances for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly energy consumed by edge CPU component instances for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly energy consumed by edge storage component instances for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by custom edge device instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by custom\nedge device\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by custom edge device instances for Default edge usage\npattern\n=\n(Hourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern + Hourly energy consumed by edge CPU component per edge device for\nDefault edge usage pattern) * custom edge device has no group (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0] +\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00629, 0.0126, 0.0189],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189, 0.0126,\n0.00628, 0]) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206,\n0.0103, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge RAM\ncomponent per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge RAM\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0]", "x": -787.5, "y": 1050}, {"color": null, "id": "Hourly energy consumed by edge CPU component per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge CPU\ncomponent per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge CPU component per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge CPU\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin W:\nfirst 10 vals [6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3],\nlast 10 vals [6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3, 6.3] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00629, 0.0126, 0.0189],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189, 0.0126,\n0.00628, 0]", "x": -262.5, "y": 1050}, {"color": null, "id": "Hourly energy consumed by edge storage component per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge\nstorage component\nper edge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge storage component per edge device for Default\nedge usage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * one hour * no\nvalue\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1 h * no value\n=\nno value", "x": 262.5, "y": 1050}, {"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": 787.5, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly energy consumed by edge CPU component per edge device for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}, {"arrows": "to", "from": "Hourly energy consumed by edge storage component per edge device for Default edge usage pattern", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}, {"arrows": "to", "from": "custom edge device has no group (default count = 1)", "to": "Hourly energy consumed by custom edge device instances for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4398,15 +4588,16 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Custom edge device energy footprint for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],<br />
-    last 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873], <br />
+EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],<br />
+    last 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeRAMComponent/#energy_footprint_per_usage_pattern">edge RAM component energy footprint for Default edge usage pattern</a></li>
-<li><a href="../EdgeCPUComponent/#energy_footprint_per_usage_pattern">edge CPU component energy footprint for Default edge usage pattern</a></li>
-<li><a href="../EdgeStorage/#energy_footprint_per_usage_pattern">edge storage component energy footprint for Default edge usage pattern</a>  </li>
+<li><a href="../EdgeRAMComponent/#energy_footprint_per_edge_device_per_usage_pattern">edge RAM component energy footprint per edge device for Default edge usage pattern</a></li>
+<li><a href="../EdgeCPUComponent/#energy_footprint_per_edge_device_per_usage_pattern">edge CPU component energy footprint per edge device for Default edge usage pattern</a></li>
+<li><a href="../EdgeStorage/#energy_footprint_per_edge_device_per_usage_pattern">edge storage component energy footprint per edge device for Default edge usage pattern</a></li>
+<li><a href="./#total_nb_of_units">custom edge device has no group (default count = 1)</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -4442,7 +4633,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_36386b {
+             #mynetwork_c29116 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4464,7 +4655,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_36386b" class="card-body"></div>
+            <div id="mynetwork_c29116" class="card-body"></div>
         </div>
 
 
@@ -4494,13 +4685,13 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_36386b');
+                  var container = document.getElementById('mynetwork_c29116');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device energy footprint for Default edge usage pattern", "label": "custom edge device\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "custom edge device energy footprint for Default edge usage pattern\n=\nedge RAM component energy footprint for Default edge usage pattern + no value +\nedge CPU component energy footprint for Default edge usage pattern + edge\nstorage component energy footprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge RAM component energy footprint for Default edge usage pattern", "label": "edge RAM component\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge RAM component instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.004, 0.00799],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799,\n0.00399] * 85 g/kWh\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339]", "x": -600.0, "y": 1200}, {"color": null, "id": "edge CPU component energy footprint for Default edge usage pattern", "label": "edge CPU component\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge CPU component energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge CPU component instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0063, 0.0126],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189,\n0.0126, 0.00628] * 85 g/kWh\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534]", "x": 0.0, "y": 1200}, {"color": null, "id": "edge storage component energy footprint for Default edge usage pattern", "label": "edge storage\ncomponent energy\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge storage component energy footprint for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge\nstorage component instances for Default edge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 600.0, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component energy footprint for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "edge CPU component energy footprint for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "edge storage component energy footprint for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device energy footprint for Default edge usage pattern", "label": "custom edge device\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "custom edge device energy footprint for Default edge usage pattern\n=\n(edge RAM component energy footprint per edge device for Default edge usage\npattern + edge CPU component energy footprint per edge device for Default edge\nusage pattern) * custom edge device has no group (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge RAM component energy footprint per edge device for Default edge usage pattern", "label": "edge RAM component\nenergy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component energy footprint per edge device for Default edge usage\npattern\n=\nHourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0] *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0]", "x": -787.5, "y": 1200}, {"color": null, "id": "edge CPU component energy footprint per edge device for Default edge usage pattern", "label": "edge CPU component\nenergy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge CPU component energy footprint per edge device for Default edge usage\npattern\n=\nHourly energy consumed by edge CPU component per edge device for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00629, 0.0126, 0.0189],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189, 0.0126,\n0.00628, 0] * 85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]", "x": -262.5, "y": 1200}, {"color": null, "id": "edge storage component energy footprint per edge device for Default edge usage pattern", "label": "edge storage\ncomponent energy\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge storage component energy footprint per edge device for Default edge usage\npattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge\nstorage component per edge device for Default edge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 262.5, "y": 1200}, {"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": 787.5, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component energy footprint per edge device for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "edge CPU component energy footprint per edge device for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "edge storage component energy footprint per edge device for Default edge usage pattern", "to": "custom edge device energy footprint for Default edge usage pattern"}, {"arrows": "to", "from": "custom edge device has no group (default count = 1)", "to": "custom edge device energy footprint for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4568,9 +4759,9 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_energy_footprint_per_usage_pattern.html' target='_blank'>link to custom edge device energy footprint for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>Custom edge device total fabrication footprint across usage patterns in kilogram.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],<br />
-    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],<br />
+    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#instances_fabrication_footprint_per_usage_pattern">Hourly custom edge device instances fabrication footprint for Default edge usage pattern</a>  </li>
@@ -4609,7 +4800,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         </center>
         <style type="text/css">
 
-             #mynetwork_2f757d {
+             #mynetwork_a5c696 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4631,7 +4822,7 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2f757d" class="card-body"></div>
+            <div id="mynetwork_a5c696" class="card-body"></div>
         </div>
 
 
@@ -4661,12 +4852,12 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2f757d');
+                  var container = document.getElementById('mynetwork_a5c696');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total fabrication footprint across usage patterns", "label": "custom edge device\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total fabrication footprint across usage patterns\n=\nHourly custom edge device instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\nHourly custom edge device structure fabrication footprint for Default edge usage\npattern + Hourly edge RAM component instances fabrication footprint for Default\nedge usage pattern + Hourly edge CPU component instances fabrication footprint\nfor Default edge usage pattern + Hourly edge storage component instances\nfabrication footprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total fabrication footprint across usage patterns", "label": "custom edge device\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total fabrication footprint across usage patterns\n=\nHourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\nHourly custom edge device structure fabrication footprint for Default edge usage\npattern + Hourly edge RAM component fabrication footprint per edge device for\nDefault edge usage pattern * custom edge device has no group (default count\n=\n1) + Hourly edge CPU component fabrication footprint per edge device for Default\nedge usage pattern * custom edge device has no group (default count\n=\n1) + Hourly edge storage component fabrication footprint per edge device for\nDefault edge usage pattern * custom edge device has no group (default count\n=\n1)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] * 1 + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] * 1 + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly custom edge device instances fabrication footprint for Default edge usage pattern", "to": "custom edge device total fabrication footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -4737,22 +4928,22 @@ EdgeUsagePattern Default edge usage pattern (eef937): 105192 values from 2024-12
 <p>Dictionary with EdgeRAMComponent as keys and 
                         Custom edge device fabrication footprint attributed to edge ram component as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeRAMComponent edge RAM component (7b93f9): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],<br />
-    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695], <br />
-EdgeCPUComponent edge CPU component (390d54): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],<br />
-    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695], <br />
-EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00187, 0.00374],<br />
-    last 10 vals [0.00937, 0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562, 0.00374, 0.00187], <br />
+EdgeRAMComponent edge RAM component (c874d7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],<br />
+    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695, 0], <br />
+EdgeCPUComponent edge CPU component (532860): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],<br />
+    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695, 0], <br />
+EdgeStorage edge storage component (9cdbd8): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00187, 0.00374, 0.00562],<br />
+    last 10 vals [0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562, 0.00374, 0.00187, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeRAMComponent/#instances_fabrication_footprint">edge RAM component total fabrication footprint across usage patterns</a></li>
+<li><a href="../EdgeRAMComponent/#fabrication_footprint_per_edge_device">edge RAM component total fabrication footprint per edge device across usage patterns</a></li>
 <li><a href="./#instances_fabrication_footprint">custom edge device total fabrication footprint across usage patterns</a></li>
-<li><a href="../EdgeCPUComponent/#instances_fabrication_footprint">edge CPU component total fabrication footprint across usage patterns</a></li>
-<li><a href="../EdgeStorage/#instances_fabrication_footprint">edge storage component total fabrication footprint across usage patterns</a>  </li>
+<li><a href="../EdgeCPUComponent/#fabrication_footprint_per_edge_device">edge CPU component total fabrication footprint per edge device across usage patterns</a></li>
+<li><a href="../EdgeStorage/#fabrication_footprint_per_edge_device">edge storage component total fabrication footprint per edge device across usage patterns</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -4788,7 +4979,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         </center>
         <style type="text/css">
 
-             #mynetwork_b9795a {
+             #mynetwork_6e7596 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4810,7 +5001,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b9795a" class="card-body"></div>
+            <div id="mynetwork_6e7596" class="card-body"></div>
         </div>
 
 
@@ -4840,13 +5031,13 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b9795a');
+                  var container = document.getElementById('mynetwork_6e7596');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device fabrication footprint attributed to edge RAM component", "label": "custom edge device\nfabrication\nfootprint attributed\nto edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "custom edge device fabrication footprint attributed to edge RAM component\n=\nedge RAM component total fabrication footprint across usage patterns + (custom\nedge device total fabrication footprint across usage patterns - (edge RAM\ncomponent total fabrication footprint across usage patterns + no value + edge\nCPU component total fabrication footprint across usage patterns + edge storage\ncomponent total fabrication footprint across usage patterns)) / Number of\ncomponents in custom edge device\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326] - (105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155])) / 3\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge RAM component total fabrication footprint across usage patterns", "label": "edge RAM component\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge RAM component total fabrication footprint across usage patterns\n=\nHourly edge RAM component instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379]", "x": -731.25, "y": 900}, {"color": null, "id": "custom edge device total fabrication footprint across usage patterns", "label": "custom edge device\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total fabrication footprint across usage patterns\n=\nHourly custom edge device instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00327, 0.00653],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": -243.75, "y": 900}, {"color": null, "id": "edge CPU component total fabrication footprint across usage patterns", "label": "edge CPU component\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge CPU component total fabrication footprint across usage patterns\n=\nHourly edge CPU component instances fabrication footprint for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379]", "x": 243.75, "y": 900}, {"color": null, "id": "edge storage component total fabrication footprint across usage patterns", "label": "edge storage\ncomponent total\nfabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "edge storage component total fabrication footprint across usage patterns\n=\nHourly edge storage component instances fabrication footprint for Default edge\nusage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155]", "x": 731.25, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component total fabrication footprint across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "custom edge device total fabrication footprint across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "edge CPU component total fabrication footprint across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "edge storage component total fabrication footprint across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device fabrication footprint attributed to edge RAM component", "label": "custom edge device\nfabrication\nfootprint attributed\nto edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "custom edge device fabrication footprint attributed to edge RAM component\n=\nedge RAM component total fabrication footprint per edge device across usage\npatterns + (custom edge device total fabrication footprint across usage patterns\n- (edge RAM component total fabrication footprint per edge device across usage\npatterns + edge CPU component total fabrication footprint per edge device across\nusage patterns + edge storage component total fabrication footprint per edge\ndevice across usage patterns)) / Number of components in custom edge device\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0] - (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0])) / 3\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge RAM component total fabrication footprint per edge device across usage patterns", "label": "edge RAM component\ntotal fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "edge RAM component total fabrication footprint per edge device across usage\npatterns\n=\nHourly edge RAM component fabrication footprint per edge device for Default edge\nusage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": -900.0, "y": 900}, {"color": null, "id": "custom edge device total fabrication footprint across usage patterns", "label": "custom edge device\ntotal fabrication\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total fabrication footprint across usage patterns\n=\nHourly custom edge device instances fabrication footprint for Default edge usage\npattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00326, 0.00653, 0.0098],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": -300.0, "y": 900}, {"color": null, "id": "edge CPU component total fabrication footprint per edge device across usage patterns", "label": "edge CPU component\ntotal fabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "edge CPU component total fabrication footprint per edge device across usage\npatterns\n=\nHourly edge CPU component fabrication footprint per edge device for Default edge\nusage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": 300.0, "y": 900}, {"color": null, "id": "edge storage component total fabrication footprint per edge device across usage patterns", "label": "edge storage\ncomponent total\nfabrication\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "edge storage component total fabrication footprint per edge device across usage\npatterns\n=\nHourly edge storage component fabrication footprint per edge device for Default\nedge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0]", "x": 900.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component total fabrication footprint per edge device across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "custom edge device total fabrication footprint across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "edge CPU component total fabrication footprint per edge device across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}, {"arrows": "to", "from": "edge storage component total fabrication footprint per edge device across usage patterns", "to": "custom edge device fabrication footprint attributed to edge RAM component"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -4914,9 +5105,9 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_fabrication_footprint_breakdown_by_source.html' target='_blank'>link to custom edge device fabrication footprint attributed to edge RAM component’s full calculation graph</a>.</p>
 <h3 id="instances_energy">instances_energy</h3>
 <p>Custom edge device total energy consumed across usage patterns in concurrent * hour * watt.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in MWh:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],<br />
-    last 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206, 0.0103]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],<br />
+    last 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206, 0.0103, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#instances_energy_per_usage_pattern">Hourly energy consumed by custom edge device instances for Default edge usage pattern</a>  </li>
@@ -4955,7 +5146,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         </center>
         <style type="text/css">
 
-             #mynetwork_acb849 {
+             #mynetwork_66b073 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4977,7 +5168,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_acb849" class="card-body"></div>
+            <div id="mynetwork_66b073" class="card-body"></div>
         </div>
 
 
@@ -5007,12 +5198,12 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_acb849');
+                  var container = document.getElementById('mynetwork_66b073');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total energy consumed across usage patterns", "label": "custom edge device\ntotal energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total energy consumed across usage patterns\n=\nHourly energy consumed by custom edge device instances for Default edge usage\npattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309,\n0.0206, 0.0103] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309,\n0.0206, 0.0103]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by custom edge device instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by custom\nedge device\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by custom edge device instances for Default edge usage\npattern\n=\nHourly energy consumed by edge RAM component instances for Default edge usage\npattern + no value + Hourly energy consumed by edge CPU component instances for\nDefault edge usage pattern + Hourly energy consumed by edge storage component\ninstances for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.004, 0.00799],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799,\n0.00399] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in MWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0063, 0.0126],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189,\n0.0126, 0.00628] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309,\n0.0206, 0.0103]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total energy consumed across usage patterns", "label": "custom edge device\ntotal energy\nconsumed across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total energy consumed across usage patterns\n=\nHourly energy consumed by custom edge device instances for Default edge usage\npattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206,\n0.0103, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206,\n0.0103, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly energy consumed by custom edge device instances for Default edge usage pattern", "label": "Hourly energy\nconsumed by custom\nedge device\ninstances for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by custom edge device instances for Default edge usage\npattern\n=\n(Hourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern + Hourly energy consumed by edge CPU component per edge device for\nDefault edge usage pattern) * custom edge device has no group (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0] +\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00629, 0.0126, 0.0189],\nlast 10 vals [0.0315, 0.0315, 0.0315, 0.0315, 0.0315, 0.0252, 0.0189, 0.0126,\n0.00628, 0]) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0103, 0.0206, 0.0309],\nlast 10 vals [0.0515, 0.0515, 0.0515, 0.0515, 0.0515, 0.0412, 0.0309, 0.0206,\n0.0103, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by custom edge device instances for Default edge usage pattern", "to": "custom edge device total energy consumed across usage patterns"}]);
 
                   nodeColors = {};
@@ -5081,9 +5272,9 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_instances_energy.html' target='_blank'>link to custom edge device total energy consumed across usage patterns’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>Custom edge device total energy footprint across usage patterns in kilogram.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],<br />
-    last 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],<br />
+    last 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#energy_footprint_per_usage_pattern">custom edge device energy footprint for Default edge usage pattern</a>  </li>
@@ -5122,7 +5313,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         </center>
         <style type="text/css">
 
-             #mynetwork_f2f9a5 {
+             #mynetwork_c3ad1a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5144,7 +5335,7 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f2f9a5" class="card-body"></div>
+            <div id="mynetwork_c3ad1a" class="card-body"></div>
         </div>
 
 
@@ -5174,12 +5365,12 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f2f9a5');
+                  var container = document.getElementById('mynetwork_c3ad1a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total energy footprint across usage patterns", "label": "custom edge device\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total energy footprint across usage patterns\n=\ncustom edge device energy footprint for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]", "x": 0.0, "y": 1500}, {"color": null, "id": "custom edge device energy footprint for Default edge usage pattern", "label": "custom edge device\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "custom edge device energy footprint for Default edge usage pattern\n=\nedge RAM component energy footprint for Default edge usage pattern + no value +\nedge CPU component energy footprint for Default edge usage pattern + edge\nstorage component energy footprint for Default edge usage pattern\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]", "x": 0.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total energy footprint across usage patterns", "label": "custom edge device\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total energy footprint across usage patterns\n=\ncustom edge device energy footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "custom edge device energy footprint for Default edge usage pattern", "label": "custom edge device\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "custom edge device energy footprint for Default edge usage pattern\n=\n(edge RAM component energy footprint per edge device for Default edge usage\npattern + edge CPU component energy footprint per edge device for Default edge\nusage pattern) * custom edge device has no group (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "custom edge device energy footprint for Default edge usage pattern", "to": "custom edge device total energy footprint across usage patterns"}]);
 
                   nodeColors = {};
@@ -5250,19 +5441,19 @@ EdgeStorage edge storage component (03ca1d): 105192 values from 2024-12-31 23:00
 <p>Dictionary with RecurrentEdgeComponentNeed as keys and 
                         Ram need fabrication weight in custom edge device impact repartition as values, in kilogram.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (9a91f7): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],<br />
-    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695], <br />
-RecurrentEdgeComponentNeed CPU need (556730): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],<br />
-    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695], <br />
-RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
+RecurrentEdgeComponentNeed RAM need (32c53a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],<br />
+    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695, 0], <br />
+RecurrentEdgeComponentNeed CPU need (dfb229): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],<br />
+    last 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209, 0.00139, 0.000695, 0], <br />
+RecurrentEdgeStorageNeed Storage need (bd9a16): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
-    last 10 vals [0.00937, 0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562, 0.00374, 0.00187], <br />
+    last 10 vals [0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562, 0.00374, 0.00187, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeRAMComponent/#instances_fabrication_footprint_per_usage_pattern">Hourly edge RAM component instances fabrication footprint for Default edge usage pattern</a></li>
+<li><a href="../EdgeRAMComponent/#fabrication_footprint_per_edge_device_per_usage_pattern">Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern</a></li>
 <li><a href="./#structure_fabrication_footprint_per_usage_pattern">Hourly custom edge device structure fabrication footprint for Default edge usage pattern</a></li>
 <li><a href="../RecurrentEdgeComponentNeed/#unitary_hourly_need_per_usage_pattern">RAM need unitary hourly need for Default edge usage pattern</a></li>
 <li><a href="../EdgeRAMComponent/#total_unitary_hourly_need_per_usage_pattern">Total hourly need on edge RAM component for Default edge usage pattern</a>  </li>
@@ -5301,7 +5492,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         </center>
         <style type="text/css">
 
-             #mynetwork_df9b62 {
+             #mynetwork_1c089b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5323,7 +5514,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_df9b62" class="card-body"></div>
+            <div id="mynetwork_1c089b" class="card-body"></div>
         </div>
 
 
@@ -5353,13 +5544,13 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_df9b62');
+                  var container = document.getElementById('mynetwork_1c089b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component instances fabrication footprint for Default edge\nusage pattern + Hourly custom edge device structure fabrication footprint for\nDefault edge usage pattern / Number of components in custom edge device) * (RAM\nneed unitary hourly need for Default edge usage pattern / Total hourly need on\nedge RAM component for Default edge usage pattern) + no value\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] / 3 ) * (105192 values from 2024-12-31 23:00:00+00:00\nto 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge RAM component instances fabrication footprint for Default edge usage pattern", "label": "Hourly edge RAM\ncomponent instances\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly edge RAM component instances fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge RAM component / Lifespan of edge RAM component) *\none hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379]", "x": -250.0, "y": 750}, {"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Structure\nfabrication carbon footprint of custom edge device / Lifespan of custom edge\ndevice) * one hour\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] expanded over timespan 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", "x": 300.0, "y": 600}, {"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", "x": 250.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly edge RAM component instances fabrication footprint for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Total hourly need on edge RAM component for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component fabrication footprint per edge device for Default\nedge usage pattern + Hourly custom edge device structure fabrication footprint\nfor Default edge usage pattern / Number of components in custom edge device) *\n(RAM need unitary hourly need for Default edge usage pattern / Total hourly need\non edge RAM component for Default edge usage pattern)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] / 3 ) * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly edge RAM\ncomponent\nfabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly edge RAM component fabrication footprint per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge RAM component / Lifespan of edge RAM component) *\none hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": -300.0, "y": 750}, {"color": null, "id": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "label": "Hourly custom edge\ndevice structure\nfabrication\nfootprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Hourly custom edge device structure fabrication footprint for Default edge usage\npattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * custom edge\ndevice has no group (default count\n=\n1) * (Structure fabrication carbon footprint of custom edge device / Lifespan of\ncustom edge device) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1 * (50 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 375.0, "y": 600}, {"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 300.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Hourly custom edge device structure fabrication footprint for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Total hourly need on edge RAM component for Default edge usage pattern", "to": "RAM need fabrication weight in custom edge device impact repartition"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -5427,9 +5618,9 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_fabrication_impact_repartition_weights.html' target='_blank'>link to RAM need fabrication weight in custom edge device impact repartition’s full calculation graph</a>.</p>
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of custom edge device fabrication impact repartition weights in kilogram.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279],<br />
-    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],<br />
+    last 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653, 0.00326, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#fabrication_impact_repartition_weights">RAM need fabrication weight in custom edge device impact repartition</a></li>
@@ -5470,7 +5661,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         </center>
         <style type="text/css">
 
-             #mynetwork_72552f {
+             #mynetwork_bfad2d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5492,7 +5683,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_72552f" class="card-body"></div>
+            <div id="mynetwork_bfad2d" class="card-body"></div>
         </div>
 
 
@@ -5522,12 +5713,12 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_72552f');
+                  var container = document.getElementById('mynetwork_bfad2d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of custom edge device fabrication impact repartition weights", "label": "Sum of custom edge\ndevice fabrication\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of custom edge device fabrication impact repartition weights\n=\nRAM need fabrication weight in custom edge device impact repartition + no value\n+ CPU need fabrication weight in custom edge device impact repartition + Storage\nneed fabrication weight in custom edge device impact repartition\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695] + no value + 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749,\n0.00562, 0.00374, 0.00187]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component instances fabrication footprint for Default edge\nusage pattern + Hourly custom edge device structure fabrication footprint for\nDefault edge usage pattern / Number of components in custom edge device) * (RAM\nneed unitary hourly need for Default edge usage pattern / Total hourly need on\nedge RAM component for Default edge usage pattern) + no value\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] / 3 ) * (105192 values from 2024-12-31 23:00:00+00:00\nto 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695]", "x": -550.0, "y": 900}, {"color": null, "id": "CPU need fabrication weight in custom edge device impact repartition", "label": "CPU need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "CPU need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge CPU component instances fabrication footprint for Default edge\nusage pattern + Hourly custom edge device structure fabrication footprint for\nDefault edge usage pattern / Number of components in custom edge device) * (CPU\nneed unitary hourly need for Default edge usage pattern / Total hourly need on\nedge CPU component for Default edge usage pattern) + no value\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] / 3 ) * (105192 values from 2024-12-31 23:00:00+00:00\nto 2036-12-31 23:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695]", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need fabrication weight in custom edge device impact repartition", "label": "Storage need\nfabrication weight\nin custom edge\ndevice impact\nrepartition", "shape": "dot", "size": 15, "title": "Storage need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge storage component instances fabrication footprint for Default edge\nusage pattern + Hourly custom edge device structure fabrication footprint for\nDefault edge usage pattern / Number of components in custom edge device) *\n(Storage need unitary hourly need for Default edge usage pattern / Total hourly\nneed on edge storage component for Default edge usage pattern) + no value\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311],\nlast 10 vals [0.00779, 0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622,\n0.00467, 0.00311, 0.00155] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] / 3 ) * (105192 values from 2024-12-31 23:00:00+00:00\nto 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [400, 400, 400, 400, 400, 400, 400, 400, 400, 400] / 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [400, 400, 400, 400, 400, 400, 400, 400, 400, 400]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749,\n0.00562, 0.00374, 0.00187]", "x": 550.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of custom edge device fabrication impact repartition weights", "label": "Sum of custom edge\ndevice fabrication\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of custom edge device fabrication impact repartition weights\n=\nRAM need fabrication weight in custom edge device impact repartition + CPU need\nfabrication weight in custom edge device impact repartition + Storage need\nfabrication weight in custom edge device impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562,\n0.00374, 0.00187, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component fabrication footprint per edge device for Default\nedge usage pattern + Hourly custom edge device structure fabrication footprint\nfor Default edge usage pattern / Number of components in custom edge device) *\n(RAM need unitary hourly need for Default edge usage pattern / Total hourly need\non edge RAM component for Default edge usage pattern)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] / 3 ) * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0]", "x": -600.0, "y": 900}, {"color": null, "id": "CPU need fabrication weight in custom edge device impact repartition", "label": "CPU need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "CPU need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge CPU component fabrication footprint per edge device for Default\nedge usage pattern + Hourly custom edge device structure fabrication footprint\nfor Default edge usage pattern / Number of components in custom edge device) *\n(CPU need unitary hourly need for Default edge usage pattern / Total hourly need\non edge CPU component for Default edge usage pattern)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] / 3 ) * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need fabrication weight in custom edge device impact repartition", "label": "Storage need\nfabrication weight\nin custom edge\ndevice impact\nrepartition", "shape": "dot", "size": 15, "title": "Storage need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge storage component fabrication footprint per edge device for Default\nedge usage pattern + Hourly custom edge device structure fabrication footprint\nfor Default edge usage pattern / Number of components in custom edge device) *\n(Storage need unitary hourly need for Default edge usage pattern / Total hourly\nneed on edge storage component for Default edge usage pattern)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00156, 0.00311, 0.00467],\nlast 10 vals [0.00778, 0.00778, 0.00778, 0.00779, 0.00778, 0.00622, 0.00467,\n0.00311, 0.00155, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] / 3 ) * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50] / 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562,\n0.00374, 0.00187, 0]", "x": 600.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need fabrication weight in custom edge device impact repartition", "to": "Sum of custom edge device fabrication impact repartition weights"}, {"arrows": "to", "from": "CPU need fabrication weight in custom edge device impact repartition", "to": "Sum of custom edge device fabrication impact repartition weights"}, {"arrows": "to", "from": "Storage need fabrication weight in custom edge device impact repartition", "to": "Sum of custom edge device fabrication impact repartition weights"}]);
 
                   nodeColors = {};
@@ -5598,15 +5789,15 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 <p>Dictionary with RecurrentEdgeComponentNeed as keys and 
                         Custom edge device fabrication impact attribution to ram need as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (9a91f7): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5],<br />
-    last 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213], <br />
-RecurrentEdgeComponentNeed CPU need (556730): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5],<br />
-    last 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213], <br />
-RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0, 0],<br />
-    last 10 vals [0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573], <br />
+RecurrentEdgeComponentNeed RAM need (32c53a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5],<br />
+    last 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 1], <br />
+RecurrentEdgeComponentNeed CPU need (dfb229): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5],<br />
+    last 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 1], <br />
+RecurrentEdgeStorageNeed Storage need (bd9a16): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],<br />
+    last 10 vals [0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 0.573, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5647,7 +5838,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         </center>
         <style type="text/css">
 
-             #mynetwork_d6581a {
+             #mynetwork_e91563 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5669,7 +5860,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d6581a" class="card-body"></div>
+            <div id="mynetwork_e91563" class="card-body"></div>
         </div>
 
 
@@ -5699,12 +5890,12 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d6581a');
+                  var container = document.getElementById('mynetwork_e91563');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device fabrication impact attribution to RAM need", "label": "custom edge device\nfabrication impact\nattribution to RAM\nneed", "shape": "dot", "size": 15, "title": "custom edge device fabrication impact attribution to RAM need\n=\nRAM need fabrication weight in custom edge device impact repartition / Sum of\ncustom edge device fabrication impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695] / 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0.5],\nlast 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213,\n0.213]", "x": 0.0, "y": 1200}, {"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component instances fabrication footprint for Default edge\nusage pattern + Hourly custom edge device structure fabrication footprint for\nDefault edge usage pattern / Number of components in custom edge device) * (RAM\nneed unitary hourly need for Default edge usage pattern / Total hourly need on\nedge RAM component for Default edge usage pattern) + no value\n=\n(105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.00076, 0.000379] + 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00095, 0.0019],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038,\n0.00285, 0.0019, 0.000948] / 3 ) * (105192 values from 2024-12-31 23:00:00+00:00\nto 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695]", "x": -550.0, "y": 900}, {"color": null, "id": "Sum of custom edge device fabrication impact repartition weights", "label": "Sum of custom edge\ndevice fabrication\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of custom edge device fabrication impact repartition weights\n=\nRAM need fabrication weight in custom edge device impact repartition + no value\n+ CPU need fabrication weight in custom edge device impact repartition + Storage\nneed fabrication weight in custom edge device impact repartition\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695] + no value + 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000697, 0.00139],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279,\n0.00209, 0.00139, 0.000695] + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749,\n0.00562, 0.00374, 0.00187]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979,\n0.00653, 0.00326]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device fabrication impact attribution to RAM need", "label": "custom edge device\nfabrication impact\nattribution to RAM\nneed", "shape": "dot", "size": 15, "title": "custom edge device fabrication impact attribution to RAM need\n=\nRAM need fabrication weight in custom edge device impact repartition / Sum of\ncustom edge device fabrication impact repartition weights\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5],\nlast 10 vals [0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 0.213, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "RAM need fabrication weight in custom edge device impact repartition", "label": "RAM need fabrication\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need fabrication weight in custom edge device impact repartition\n=\n(Hourly edge RAM component fabrication footprint per edge device for Default\nedge usage pattern + Hourly custom edge device structure fabrication footprint\nfor Default edge usage pattern / Number of components in custom edge device) *\n(RAM need unitary hourly need for Default edge usage pattern / Total hourly need\non edge RAM component for Default edge usage pattern)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000949, 0.0019, 0.00285],\nlast 10 vals [0.00475, 0.00475, 0.00475, 0.00475, 0.00475, 0.0038, 0.00285,\n0.0019, 0.000948, 0] / 3 ) * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0]", "x": -600.0, "y": 900}, {"color": null, "id": "Sum of custom edge device fabrication impact repartition weights", "label": "Sum of custom edge\ndevice fabrication\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of custom edge device fabrication impact repartition weights\n=\nRAM need fabrication weight in custom edge device impact repartition + CPU need\nfabrication weight in custom edge device impact repartition + Storage need\nfabrication weight in custom edge device impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000696, 0.00139, 0.00209],\nlast 10 vals [0.00348, 0.00348, 0.00348, 0.00348, 0.00348, 0.00279, 0.00209,\n0.00139, 0.000695, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0.00937, 0.00936, 0.00937, 0.00937, 0.00937, 0.00749, 0.00562,\n0.00374, 0.00187, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],\nlast 10 vals [0.0163, 0.0163, 0.0163, 0.0163, 0.0163, 0.0131, 0.00979, 0.00653,\n0.00326, 0]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need fabrication weight in custom edge device impact repartition", "to": "custom edge device fabrication impact attribution to RAM need"}, {"arrows": "to", "from": "Sum of custom edge device fabrication impact repartition weights", "to": "custom edge device fabrication impact attribution to RAM need"}]);
 
                   nodeColors = {};
@@ -5775,17 +5966,17 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): 105192 values from 2024-12-31 23
 <p>Dictionary with RecurrentEdgeComponentNeed as keys and 
                         Ram need usage weight in custom edge device impact repartition as values, in kilogram.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (9a91f7): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],<br />
-    last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.000679, 0.000339], <br />
-RecurrentEdgeComponentNeed CPU need (556730): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],<br />
-    last 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016, 0.00107, 0.000534], <br />
-RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
+RecurrentEdgeComponentNeed RAM need (32c53a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],<br />
+    last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.000679, 0.000339, 0], <br />
+RecurrentEdgeComponentNeed CPU need (dfb229): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],<br />
+    last 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016, 0.00107, 0.000534, 0], <br />
+RecurrentEdgeStorageNeed Storage need (bd9a16): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../EdgeRAMComponent/#energy_footprint_per_usage_pattern">edge RAM component energy footprint for Default edge usage pattern</a></li>
+<li><a href="../EdgeRAMComponent/#energy_footprint_per_edge_device_per_usage_pattern">edge RAM component energy footprint per edge device for Default edge usage pattern</a></li>
 <li><a href="../RecurrentEdgeComponentNeed/#unitary_hourly_need_per_usage_pattern">RAM need unitary hourly need for Default edge usage pattern</a></li>
 <li><a href="../EdgeRAMComponent/#total_unitary_hourly_need_per_usage_pattern">Total hourly need on edge RAM component for Default edge usage pattern</a>  </li>
 </ul>
@@ -5823,7 +6014,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_9355ae {
+             #mynetwork_ee624c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5845,7 +6036,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9355ae" class="card-body"></div>
+            <div id="mynetwork_ee624c" class="card-body"></div>
         </div>
 
 
@@ -5875,13 +6066,13 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9355ae');
+                  var container = document.getElementById('mynetwork_ee624c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint for Default edge usage pattern * (RAM need\nunitary hourly need for Default edge usage pattern / Total hourly need on edge\nRAM component for Default edge usage pattern) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] * (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge RAM component energy footprint for Default edge usage pattern", "label": "edge RAM component\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component energy footprint for Default edge usage pattern\n=\nHourly energy consumed by edge RAM component instances for Default edge usage\npattern * Average carbon intensity of devices country\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.004, 0.00799],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799,\n0.00399] * 85 g/kWh\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339]", "x": -262.5, "y": 1200}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] expanded over timespan 105192 values\nfrom 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002,\n0.000997] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", "x": -393.75, "y": 600}, {"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]", "x": 262.5, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component energy footprint for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}, {"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Total hourly need on edge RAM component for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint per edge device for Default edge usage\npattern * (RAM need unitary hourly need for Default edge usage pattern / Total\nhourly need on edge RAM component for Default edge usage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge RAM component energy footprint per edge device for Default edge usage pattern", "label": "edge RAM component\nenergy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component energy footprint per edge device for Default edge usage\npattern\n=\nHourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0] *\n85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0]", "x": -300.0, "y": 1200}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -525.0, "y": 600}, {"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 300.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component energy footprint per edge device for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}, {"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}, {"arrows": "to", "from": "Total hourly need on edge RAM component for Default edge usage pattern", "to": "RAM need usage weight in custom edge device impact repartition"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
@@ -5949,9 +6140,9 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
 <p>You can also visit the <a href='../calculus_graphs/custom_edge_device_usage_impact_repartition_weights.html' target='_blank'>link to RAM need usage weight in custom edge device impact repartition’s full calculation graph</a>.</p>
 <h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
 <p>Sum of custom edge device usage impact repartition weights in kilogram.  </p>
-<p>Example value: 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],<br />
-    last 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873]  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],<br />
+    last 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262, 0.00175, 0.000873, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#usage_impact_repartition_weights">RAM need usage weight in custom edge device impact repartition</a></li>
@@ -5992,7 +6183,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_71e4b4 {
+             #mynetwork_2d915e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6014,7 +6205,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_71e4b4" class="card-body"></div>
+            <div id="mynetwork_2d915e" class="card-body"></div>
         </div>
 
 
@@ -6044,12 +6235,12 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_71e4b4');
+                  var container = document.getElementById('mynetwork_2d915e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of custom edge device usage impact repartition weights", "label": "Sum of custom edge\ndevice usage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of custom edge device usage impact repartition weights\n=\nRAM need usage weight in custom edge device impact repartition + no value + CPU\nneed usage weight in custom edge device impact repartition + Storage need usage\nweight in custom edge device impact repartition\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]", "x": 0.0, "y": 1500}, {"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint for Default edge usage pattern * (RAM need\nunitary hourly need for Default edge usage pattern / Total hourly need on edge\nRAM component for Default edge usage pattern) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] * (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339]", "x": -600.0, "y": 1350}, {"color": null, "id": "CPU need usage weight in custom edge device impact repartition", "label": "CPU need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "CPU need usage weight in custom edge device impact repartition\n=\nedge CPU component energy footprint for Default edge usage pattern * (CPU need\nunitary hourly need for Default edge usage pattern / Total hourly need on edge\nCPU component for Default edge usage pattern) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534] * (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534]", "x": 0.0, "y": 1350}, {"color": null, "id": "Storage need usage weight in custom edge device impact repartition", "label": "Storage need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "Storage need usage weight in custom edge device impact repartition = no value", "x": 600.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of custom edge device usage impact repartition weights", "label": "Sum of custom edge\ndevice usage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of custom edge device usage impact repartition weights\n=\nRAM need usage weight in custom edge device impact repartition + CPU need usage\nweight in custom edge device impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint per edge device for Default edge usage\npattern * (RAM need unitary hourly need for Default edge usage pattern / Total\nhourly need on edge RAM component for Default edge usage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0]", "x": -700.0, "y": 1350}, {"color": null, "id": "CPU need usage weight in custom edge device impact repartition", "label": "CPU need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "CPU need usage weight in custom edge device impact repartition\n=\nedge CPU component energy footprint per edge device for Default edge usage\npattern * (CPU need unitary hourly need for Default edge usage pattern / Total\nhourly need on edge CPU component for Default edge usage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu_core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Storage need usage weight in custom edge device impact repartition", "label": "Storage need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "Storage need usage weight in custom edge device impact repartition = no value", "x": 700.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need usage weight in custom edge device impact repartition", "to": "Sum of custom edge device usage impact repartition weights"}, {"arrows": "to", "from": "CPU need usage weight in custom edge device impact repartition", "to": "Sum of custom edge device usage impact repartition weights"}, {"arrows": "to", "from": "Storage need usage weight in custom edge device impact repartition", "to": "Sum of custom edge device usage impact repartition weights"}]);
 
                   nodeColors = {};
@@ -6120,13 +6311,13 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
 <p>Dictionary with RecurrentEdgeComponentNeed as keys and 
                         Custom edge device usage impact attribution to ram need as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (9a91f7): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.388, 0.388],<br />
-    last 10 vals [0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388], <br />
-RecurrentEdgeComponentNeed CPU need (556730): 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.612, 0.612],<br />
-    last 10 vals [0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612], <br />
-RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
+RecurrentEdgeComponentNeed RAM need (32c53a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.388, 0.388, 0.388],<br />
+    last 10 vals [0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 1], <br />
+RecurrentEdgeComponentNeed CPU need (dfb229): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.612, 0.612, 0.612],<br />
+    last 10 vals [0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 1], <br />
+RecurrentEdgeStorageNeed Storage need (bd9a16): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6167,7 +6358,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_35e4e2 {
+             #mynetwork_69ed1a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6189,7 +6380,7 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_35e4e2" class="card-body"></div>
+            <div id="mynetwork_69ed1a" class="card-body"></div>
         </div>
 
 
@@ -6219,12 +6410,12 @@ RecurrentEdgeStorageNeed Storage need (d13c7d): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_35e4e2');
+                  var container = document.getElementById('mynetwork_69ed1a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device usage impact attribution to RAM need", "label": "custom edge device\nusage impact\nattribution to RAM\nneed", "shape": "dot", "size": 15, "title": "custom edge device usage impact attribution to RAM need\n=\nRAM need usage weight in custom edge device impact repartition / Sum of custom\nedge device usage impact repartition weights\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] / 105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31\n23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 0.388, 0.388],\nlast 10 vals [0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388,\n0.388]", "x": 0.0, "y": 1650}, {"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint for Default edge usage pattern * (RAM need\nunitary hourly need for Default edge usage pattern / Total hourly need on edge\nRAM component for Default edge usage pattern) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] * (105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8] / 105192 values from 2024-12-31\n23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in B:\nfirst 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8],\nlast 10 vals [8, 8, 8, 8, 8, 8, 8, 8, 8, 8]) + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339]", "x": -600.0, "y": 1350}, {"color": null, "id": "Sum of custom edge device usage impact repartition weights", "label": "Sum of custom edge\ndevice usage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of custom edge device usage impact repartition weights\n=\nRAM need usage weight in custom edge device impact repartition + no value + CPU\nneed usage weight in custom edge device impact repartition + Storage need usage\nweight in custom edge device impact repartition\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339] + no value + 105192 values from 2024-12-31 23:00:00+00:00 to\n2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107],\nlast 10 vals [0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00268, 0.00214,\n0.0016, 0.00107, 0.000534] + no value\n=\n105192 values from 2024-12-31 23:00:00+00:00 to 2036-12-31 23:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0.000875, 0.00175],\nlast 10 vals [0.00438, 0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035,\n0.00262, 0.00175, 0.000873]", "x": 0.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device usage impact attribution to RAM need", "label": "custom edge device\nusage impact\nattribution to RAM\nneed", "shape": "dot", "size": 15, "title": "custom edge device usage impact attribution to RAM need\n=\nRAM need usage weight in custom edge device impact repartition / Sum of custom\nedge device usage impact repartition weights\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.388, 0.388, 0.388],\nlast 10 vals [0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 1]", "x": 0.0, "y": 1650}, {"color": null, "id": "RAM need usage weight in custom edge device impact repartition", "label": "RAM need usage\nweight in custom\nedge device impact\nrepartition", "shape": "dot", "size": 15, "title": "RAM need usage weight in custom edge device impact repartition\n=\nedge RAM component energy footprint per edge device for Default edge usage\npattern * (RAM need unitary hourly need for Default edge usage pattern / Total\nhourly need on edge RAM component for Default edge usage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] / 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0]", "x": -700.0, "y": 1350}, {"color": null, "id": "Sum of custom edge device usage impact repartition weights", "label": "Sum of custom edge\ndevice usage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of custom edge device usage impact repartition weights\n=\nRAM need usage weight in custom edge device impact repartition + CPU need usage\nweight in custom edge device impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need usage weight in custom edge device impact repartition", "to": "custom edge device usage impact attribution to RAM need"}, {"arrows": "to", "from": "Sum of custom edge device usage impact repartition weights", "to": "custom edge device usage impact attribution to RAM need"}]);
 
                   nodeColors = {};
