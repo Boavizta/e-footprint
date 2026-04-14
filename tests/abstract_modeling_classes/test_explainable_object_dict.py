@@ -284,6 +284,48 @@ class TestExplainableObjectDictStructuralContext(unittest.TestCase):
         del owner.input_dict[inserted_child]
         self.assertEqual([], inserted_child.modeling_obj_containers)
 
+    def test_detaching_structural_dict_removes_key_contextual_containers(self):
+        """Regression: set_modeling_obj_container(None, None) used to only zero the stale
+        container's fields instead of removing it from the key's list, leaving zombie
+        ContextualModelingObjectDictKey entries behind on every apply/revert cycle inside
+        ModelingUpdate."""
+        child = ModelingObjectForContainerTest("child_for_detach_check")
+        owner = ModelingObjectWithInputDictForContainerTest(
+            "owner_for_detach_check",
+            input_dict={child: SourceValue(1 * u.dimensionless, label="child count")},
+        )
+
+        self.assertEqual(
+            1,
+            sum(
+                isinstance(c, ContextualModelingObjectDictKey)
+                for c in child.contextual_modeling_obj_containers
+            ),
+        )
+
+        # Simulate the apply/revert/apply cycle that ModelingUpdate performs when swapping
+        # the dict in and out of its container during sort logic.
+        owner.input_dict.set_modeling_obj_container(None, None)
+        owner.input_dict.set_modeling_obj_container(owner, "input_dict")
+        owner.input_dict.set_modeling_obj_container(None, None)
+
+        self.assertEqual(
+            [],
+            [c for c in child.contextual_modeling_obj_containers
+             if isinstance(c, ContextualModelingObjectDictKey)],
+        )
+
+        owner.input_dict.set_modeling_obj_container(owner, "input_dict")
+        dict_key_containers = [
+            c for c in child.contextual_modeling_obj_containers
+            if isinstance(c, ContextualModelingObjectDictKey)
+        ]
+        self.assertEqual(1, len(dict_key_containers))
+        live = dict_key_containers[0]
+        self.assertIs(owner, live.modeling_obj_container)
+        self.assertEqual("input_dict", live.attr_name_in_mod_obj_container)
+        self.assertIs(owner.input_dict, live.dict_container)
+
     def test_triggered_existing_entry_update_on_structural_dict_replaces_value(self):
         existing_child = ModelingObjectForContainerTest("existing_child_for_update")
         owner = ModelingObjectWithInputDictForContainerTest(

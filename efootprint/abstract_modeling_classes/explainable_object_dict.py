@@ -177,14 +177,15 @@ class ExplainableObjectDict(ObjectLinkedToModelingObjBase, dict):
             return
         modeling_obj_container = modeling_obj_container or self.modeling_obj_container
         attr_name = attr_name or self.attr_name_in_mod_obj_container
-        for container in list(key.contextual_modeling_obj_containers):
-            if (
-                    isinstance(container, ContextualModelingObjectDictKey)
-                    and container.modeling_obj_container is modeling_obj_container
-                    and container.attr_name_in_mod_obj_container == attr_name
-                    and container.dict_container is self
-            ):
-                container.set_modeling_obj_container(None, None)
+        key.contextual_modeling_obj_containers = [
+            container for container in key.contextual_modeling_obj_containers
+            if not (
+                isinstance(container, ContextualModelingObjectDictKey)
+                and container.modeling_obj_container is modeling_obj_container
+                and container.attr_name_in_mod_obj_container == attr_name
+                and container.dict_container is self
+            )
+        ]
 
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}

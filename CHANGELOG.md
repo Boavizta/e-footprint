@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [19.0.1] - 2026-04-14
+
+### Fixed
+- In ExplainableObjectDict’s _remove_self_from_key_contextual_containers, remove containers in key.contextual_modeling_obj_containers that have dict_container equal to self instead of setting their modeling_obj_container to None. The old logic created stale references. Now the removed objects will be garbage collected. 
+
 ## [19.0.0] - 2026-04-13
 
 ### Added
