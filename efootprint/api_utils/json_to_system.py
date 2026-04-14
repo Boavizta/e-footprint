@@ -63,10 +63,27 @@ def compute_classes_generation_order(efootprint_classes_dict):
                 annotation = init_sig_params[init_sig_param_key].annotation
                 if annotation is empty_annotation or isinstance(annotation, UnionType):
                     continue
-                if get_origin(annotation) and get_origin(annotation) in (list, List):
+                annotation_origin = get_origin(annotation)
+                if annotation_origin and annotation_origin in (list, List):
                     param_type = get_args(annotation)[0]
+                elif (annotation_origin is not None
+                      and isinstance(annotation_origin, type)
+                      and issubclass(annotation_origin, ExplainableObjectDict)):
+                    type_arg = get_args(annotation)[0]
+                    if isinstance(type_arg, str):
+                        param_type = efootprint_classes_dict.get(type_arg)
+                    else:
+                        param_type = type_arg
+                    if param_type is None:
+                        continue
                 else:
                     param_type = annotation
+                if not isinstance(param_type, type):
+                    continue
+                if param_type is efootprint_class:
+                    # Self-reference (e.g. EdgeDeviceGroup.sub_group_counts): instances of the
+                    # same class are linked in a second pass, so there's no self-dependency.
+                    continue
                 if issubclass(param_type, ModelingObject):
                     classes_needed_to_generate_current_class += (
                         get_all_subclasses_names(param_type, efootprint_classes_dict))

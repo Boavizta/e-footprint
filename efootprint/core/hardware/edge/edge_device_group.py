@@ -11,11 +11,10 @@ from efootprint.core.hardware.edge.edge_device import EdgeDevice
 
 class EdgeDeviceGroup(ModelingObject):
     default_values = {}
-    classes_outside_init_params_needed_for_generating_from_json = [EdgeDevice]
 
     def __init__(self, name: str,
-                 sub_group_counts: ExplainableObjectDict = None,
-                 edge_device_counts: ExplainableObjectDict = None):
+                 sub_group_counts: ExplainableObjectDict["EdgeDeviceGroup"] = None,
+                 edge_device_counts: ExplainableObjectDict["EdgeDevice"] = None):
         super().__init__(name)
         if sub_group_counts is None:
             sub_group_counts = ExplainableObjectDict()
