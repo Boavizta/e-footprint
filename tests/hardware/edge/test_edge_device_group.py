@@ -170,6 +170,53 @@ class TestEdgeDeviceGroupCountsValidation(TestCase):
         self.group.update_counts_validation()
 
 
+class TestEdgeDeviceGroupNoCycleValidation(TestCase):
+
+    def test_no_cycle_passes_for_simple_hierarchy(self):
+        root = make_group("Root")
+        child = make_group("Child")
+        root.sub_group_counts[child] = SourceValue(1 * u.dimensionless)
+        root.update_no_cycle_validation()
+        child.update_no_cycle_validation()
+
+    def test_direct_self_reference_raises(self):
+        group = make_group("Group")
+        group.sub_group_counts[group] = SourceValue(1 * u.dimensionless)
+        with self.assertRaises(ValueError) as ctx:
+            group.update_no_cycle_validation()
+        self.assertIn("Cycle detected", str(ctx.exception))
+
+    def test_two_node_cycle_raises(self):
+        a = make_group("A")
+        b = make_group("B")
+        a.sub_group_counts[b] = SourceValue(1 * u.dimensionless)
+        b.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
+        with self.assertRaises(ValueError):
+            a.update_no_cycle_validation()
+
+    def test_three_node_cycle_raises(self):
+        a = make_group("A")
+        b = make_group("B")
+        c = make_group("C")
+        a.sub_group_counts[b] = SourceValue(1 * u.dimensionless)
+        b.sub_group_counts[c] = SourceValue(1 * u.dimensionless)
+        c.sub_group_counts[a] = SourceValue(1 * u.dimensionless)
+        with self.assertRaises(ValueError):
+            a.update_no_cycle_validation()
+
+    def test_diamond_without_cycle_passes(self):
+        root = make_group("Root")
+        left = make_group("Left")
+        right = make_group("Right")
+        shared = make_group("Shared")
+        root.sub_group_counts[left] = SourceValue(1 * u.dimensionless)
+        root.sub_group_counts[right] = SourceValue(1 * u.dimensionless)
+        left.sub_group_counts[shared] = SourceValue(1 * u.dimensionless)
+        right.sub_group_counts[shared] = SourceValue(1 * u.dimensionless)
+        for g in [root, left, right, shared]:
+            g.update_no_cycle_validation()
+
+
 class TestEdgeDeviceGroupUpdateEffectiveNbOfUnits(TestCase):
 
     def test_root_group_effective_nb_is_one(self):

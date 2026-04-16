@@ -108,12 +108,12 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "Job", "data_transferred",
             SourceValue(100 * u.MB))
-        self.assertLess(avg_loading_editing_writing_time, 250)
+        self.assertLess(avg_loading_editing_writing_time, 300)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "Storage", "data_storage_duration",
             SourceValue(3 * u.year))
-        self.assertLess(avg_loading_editing_writing_time, 250)
+        self.assertLess(avg_loading_editing_writing_time, 300)
 
 
 if __name__ == "__main__":

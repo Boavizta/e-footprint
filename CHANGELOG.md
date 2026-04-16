@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Fixed
 - In ExplainableObjectDict’s _remove_self_from_key_contextual_containers, remove containers in key.contextual_modeling_obj_containers that have dict_container equal to self instead of setting their modeling_obj_container to None. The old logic created stale references. Now the removed objects will be garbage collected. 
+- Add no_cycle_validation in EdgeDeviceGroup.
+
+### Changed
+- Add key type in EdgeDeviceGroup’s parameters’ ExplainableObjectDict typing and extend compute_classes_generation_order to take it into account. Removed deprecated classes_outside_init_params_needed_for_generating_from_json from EdgeDeviceGroup since this relationship is now carried with ExplainableObjectDict key typing.
 
 ## [19.0.0] - 2026-04-13
 

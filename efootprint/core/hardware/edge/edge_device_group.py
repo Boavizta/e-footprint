@@ -23,6 +23,7 @@ class EdgeDeviceGroup(ModelingObject):
         self.sub_group_counts = ExplainableObjectDict(sub_group_counts)
         self.edge_device_counts = ExplainableObjectDict(edge_device_counts)
         self.counts_validation = EmptyExplainableObject()
+        self.no_cycle_validation = EmptyExplainableObject()
         self.effective_nb_of_units_within_root = EmptyExplainableObject()
 
     @property
@@ -38,7 +39,7 @@ class EdgeDeviceGroup(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["counts_validation", "effective_nb_of_units_within_root"]
+        return ["counts_validation", "no_cycle_validation", "effective_nb_of_units_within_root"]
 
     def _find_parent_groups(self) -> List["EdgeDeviceGroup"]:
         from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (
@@ -62,16 +63,33 @@ class EdgeDeviceGroup(ModelingObject):
             root_groups += parent._find_root_groups()
         return list(dict.fromkeys(root_groups))
 
-    def _find_all_ancestor_groups(self) -> List["EdgeDeviceGroup"]:
-        """Collect all ancestor groups (parents, grandparents, etc.) of this group."""
+    def _find_all_ancestor_groups(self, _visited=None) -> List["EdgeDeviceGroup"]:
+        """Collect all ancestor groups (parents, grandparents, etc.) of this group.
+
+        Uses a visited set to handle cycles gracefully instead of infinite recursion.
+        """
+        if _visited is None:
+            _visited = set()
         ancestors = []
         for parent in self._find_parent_groups():
+            if parent in _visited:
+                continue
+            _visited.add(parent)
             if parent not in ancestors:
                 ancestors.append(parent)
-            for ancestor in parent._find_all_ancestor_groups():
+            for ancestor in parent._find_all_ancestor_groups(_visited):
                 if ancestor not in ancestors:
                     ancestors.append(ancestor)
         return ancestors
+
+    def update_no_cycle_validation(self):
+        ancestors = self._find_all_ancestor_groups()
+        if self in ancestors:
+            raise ValueError(f"Cycle detected: {self.name} is its own ancestor.")
+        for sub_group in self.sub_group_counts:
+            if sub_group in sub_group._find_all_ancestor_groups():
+                raise ValueError(f"Cycle detected: {sub_group.name} is its own ancestor via {self.name}.")
+        self.no_cycle_validation = EmptyExplainableObject()
 
     def update_counts_validation(self):
         for key, count in list(self.sub_group_counts.items()) + list(self.edge_device_counts.items()):
