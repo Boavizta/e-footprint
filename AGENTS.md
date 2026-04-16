@@ -53,6 +53,20 @@ New modeling objects (be it builder or core) need to be added to the ALL_EFOOTPR
 Objects automatically track dependencies and trigger recalculation when inputs change. Object dependencies are managed through the modeling_objects_whose_attributes_depend_directly_on_me property in the ModelingObject class. When changing a numerical input, the calculation graph managed by ExplainableObject ensures only affected calculations are recomputed.
 The ModelingUpdate object in efootprint/abstract_modeling_classes/modeling_update.py module handles all recomputation logic.
 
+There are three relationship types between modeling objects:
+- **Direct**: `self.child = some_modeling_object` (single reference)
+- **List**: `self.children = ListLinkedToModelingObj([...])` (ordered collection)
+- **Dict (input)**: `self.children_by_key = ExplainableObjectDict({...})` passed as `__init__` param, where keys are `ModelingObject`s representing structural children
+
+All three populate `contextual_modeling_obj_containers` on the child objects so they can discover their parents. Dict-based relationships can also be discovered via `explainable_object_dicts_containers`.
+
+### ExplainableObjectDict as Input Attribute
+`ExplainableObjectDict` can be used both as a calculated attribute and as an `__init__` parameter (input attribute). The behaviors differ:
+- **Calculated dicts**: `trigger_modeling_updates=False` (default). Mutations don't trigger recomputation — the owning `update_*` method manages them.
+- **Input dicts**: `trigger_modeling_updates=True` (set automatically by `after_init()` for dicts that are `__init__` params). Mutations (`__setitem__`, `__delitem__`) trigger `ModelingUpdate` to recompute dependents.
+- **Re-entry guard**: When `ModelingUpdate.apply_changes()` replaces a value inside a trigger-enabled dict, triggers are temporarily disabled to prevent infinite loops.
+- **Deserialization order** (critical): Input dicts must be initialized empty before `after_init()` runs. Then a deferred loop populates them via `replace_in_mod_obj_container_without_recomputation`. Then triggers are enabled on the populated dicts. This prevents crashes from computing on incomplete state.
+
 ### Modeling Refactor Preferences
 - When a modeling object needs different attribution rules for fabrication and usage, prefer explicit phase-specific calculated attributes and update methods over compatibility bridges or legacy fallback machinery.
 - In `ModelingObject` subclasses that override `calculated_attributes`, prefer `super().calculated_attributes` and append local attributes rather than duplicating base-class-managed names.
@@ -72,6 +86,9 @@ The ModelingUpdate object in efootprint/abstract_modeling_classes/modeling_updat
 ### Units and Calculations
 All quantities use Pint for unit handling. Custom units are defined in `efootprint/constants/custom_units.txt`. Calculations are explainable with dependency graphs.
 
+### Display Layer
+`efootprint/utils/display.py` provides `best_display_unit()` and `format_quantity_for_display()` for magnitude-aware unit scaling. Pint quantities should flow through calculations unchanged — unit scaling to human-readable form happens only at render time. Explainable classes expose `display_quantity` and `display_unit` properties that use this layer.
+
 ### Testing Strategy
 - Unit tests for individual components in `tests/`
 - Integration tests for complete system workflows in `tests/integration_tests/`
@@ -85,8 +102,9 @@ All quantities use Pint for unit handling. Custom units are defined in `efootpri
 - When in doubt about how to implement a new feature, ask for guidance before starting implementation.
 - You don’t necessarily need to understand all upstream and downstream dependencies of a given object to work on it. Focus on the immediate context of the object you are working on unless a broader focus is asked from you, and ask questions if needed.
 
-### CLAUDE.md improvements
+### Documentation upkeep
 - If you notice that CLAUDE.md is missing important information that would allow for less context gathering in developments, please propose improvements so that less tokens can be used in the future but with same or better performance.
+- Whenever you implement or change a non-trivial pattern (new relationship type, new infrastructure convention, new calculated-attribute pattern, serialization change, etc.), proactively check whether AGENTS.md, tests/AGENTS.md, or tests/integration_tests/AGENTS.md should be updated and propose the changes. The goal is to keep documentation accurate so that future agents don't have to rediscover patterns from code.
 
 ### Code Style
 - Python 3.12+ required

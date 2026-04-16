@@ -2,7 +2,7 @@
 
 A toolkit for exhaustively modeling the environmental impact of digital services.
 
-The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end-user devices necessary for the existence of a web digital service. It is also now possible to model the production of edge devices (like video game consoles, smartphones, servers, etc.) and describe the unitary usage by device over its usage phase, to get the environmental footprint of the deployed fleet.
+The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end-user devices necessary for the existence of a web digital service. It is also now possible to model the production of edge devices (like video game consoles, smartphones, servers, etc.) and describe the unitary usage by device over its usage phase, to get the environmental footprint of the deployed fleet. Edge devices support hierarchical grouping via `EdgeDeviceGroup` with per-component unit multiplicity (`nb_of_units`), enabling complex fleet structures with nested device and sub-group counts.
 
 Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
 
