@@ -21,7 +21,7 @@ class EdgeCPUComponent(EdgeComponent):
         "idle_power_per_unit": SourceValue(3 * u.W),
         "nb_of_units": SourceValue(1 * u.dimensionless),
         "compute_per_unit": SourceValue(4 * u.cpu_core),
-        "base_compute_consumption": SourceValue(0.1 * u.cpu_core),
+        "base_compute_consumption": SourceValue(0 * u.cpu_core),
     }
 
     def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,

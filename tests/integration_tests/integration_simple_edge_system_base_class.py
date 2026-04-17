@@ -53,7 +53,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         # Create edge objects
         edge_storage = EdgeStorage.from_defaults(
             "Edge SSD storage", base_storage_need=SourceValue(100 * u.GB_stored))
-        edge_computer = EdgeComputer.from_defaults("Edge computer", storage=edge_storage)
+        edge_computer = EdgeComputer.from_defaults(
+            "Edge computer", storage=edge_storage, base_compute_consumption=SourceValue(0.1 * u.cpu_core))
 
         edge_process = RecurrentEdgeProcess.from_defaults(
             "Default edge process",
@@ -64,7 +65,8 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
 
         # Create custom edge device with components
         ram_component = EdgeRAMComponent.from_defaults("edge RAM component")
-        cpu_component = EdgeCPUComponent.from_defaults("edge CPU component")
+        cpu_component = EdgeCPUComponent.from_defaults(
+            "edge CPU component", base_compute_consumption=SourceValue(0.1 * u.cpu_core))
         workload_component = EdgeWorkloadComponent.from_defaults("edge workload component")
 
         edge_device = EdgeDevice.from_defaults(

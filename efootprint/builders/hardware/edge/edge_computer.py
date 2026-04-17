@@ -112,7 +112,7 @@ class EdgeComputer(EdgeDevice):
         "ram": SourceValue(8 * u.GB_ram),
         "compute": SourceValue(4 * u.cpu_core),
         "base_ram_consumption": SourceValue(1 * u.GB_ram),
-        "base_compute_consumption": SourceValue(0.1 * u.cpu_core),
+        "base_compute_consumption": SourceValue(0 * u.cpu_core),
     }
 
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity,

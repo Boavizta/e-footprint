@@ -1355,7 +1355,7 @@
                 }
             },
             "base_compute_consumption": {
-                "value": 0.1,
+                "value": 0.0,
                 "unit": "cpu_core",
                 "label": "Base compute consumption of Edge device from e-footprint hypothesis",
                 "source": {
