@@ -62,7 +62,7 @@ You can generate `requirements.txt` and `requirements-dev.txt` from `pyproject.t
 
 ```shell
 poetry export -f requirements.txt --without-hashes -o requirements.txt 
-poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 
+poetry export -f requirements.txt --without-hashes --only dev -o requirements-dev.txt 
 ```
 
 ### With Conda

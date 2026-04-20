@@ -263,15 +263,12 @@ class EdgeDevice(ModelingObject):
             f"{self.name} total fabrication footprint across usage patterns")
 
     def update_dict_element_in_fabrication_footprint_breakdown_by_source(self, component: EdgeComponent):
-        component_fabrication_total = sum(
-            (elt.fabrication_footprint_per_edge_device for elt in self.components),
-            start=EmptyExplainableObject(),
-        )
-        structure_fabrication_total = self.instances_fabrication_footprint - component_fabrication_total
+        structure_fabrication_total = sum(
+            self.structure_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         equal_structure_share = structure_fabrication_total / ExplainableQuantity(
             len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
         self.fabrication_footprint_breakdown_by_source[component] = (
-            component.fabrication_footprint_per_edge_device + equal_structure_share
+            self.total_nb_of_units * component.fabrication_footprint_per_edge_device + equal_structure_share
         ).set_label(f"{self.name} fabrication footprint attributed to {component.name}")
 
     def update_fabrication_footprint_breakdown_by_source(self):
@@ -285,7 +282,8 @@ class EdgeDevice(ModelingObject):
     @property
     def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
         return ExplainableObjectDict({
-            component: component.energy_footprint_per_edge_device
+            component: (self.total_nb_of_units * component.energy_footprint_per_edge_device).set_label(
+                f"{self.name} energy footprint attributed to {component.name}")
             for component in self.components
         })
 

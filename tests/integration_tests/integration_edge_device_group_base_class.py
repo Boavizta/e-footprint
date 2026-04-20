@@ -4,6 +4,7 @@ from datetime import datetime
 import numpy as np
 from pint import Quantity
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
@@ -197,6 +198,22 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
     def run_test_footprint_is_nonzero(self):
         total = self.system.total_footprint
         self.assertGreater(float(str(total).split()[0]), 0)
+
+    def run_test_breakdown_by_source_sums_to_edge_device_totals(self):
+        """Σ fabrication/energy breakdowns must equal instances_fabrication_footprint / energy_footprint."""
+        fabrication_breakdown_sum = sum(
+            self.edge_device.fabrication_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
+        self.assertTrue(np.allclose(
+            self.edge_device.instances_fabrication_footprint.value.to(u.kg).magnitude,
+            fabrication_breakdown_sum.value.to(u.kg).magnitude,
+        ))
+
+        energy_breakdown_sum = sum(
+            self.edge_device.energy_footprint_breakdown_by_source.values(), start=EmptyExplainableObject())
+        self.assertTrue(np.allclose(
+            self.edge_device.energy_footprint.value.to(u.kg).magnitude,
+            energy_breakdown_sum.value.to(u.kg).magnitude,
+        ))
 
     def run_test_system_to_json_and_back_preserves_group_counts(self):
         """JSON round-trip must preserve sub_group_counts and edge_device_counts."""

@@ -263,31 +263,38 @@ class TestEdgeDevice(TestCase):
         self.assertIn("Test Device", result.label)
 
     def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
-        """Test per-component fabrication breakdown splits structure equally across components."""
+        """Test per-component fabrication breakdown scales by total_nb_of_units and splits structure equally."""
+        self.edge_device.total_nb_of_units = ExplainableQuantity(2 * u.dimensionless, "two devices")
+        pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
+        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: SourceValue(10 * u.kg)})
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
-        self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
-        self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
 
         self.edge_device.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
         self.edge_device.update_dict_element_in_fabrication_footprint_breakdown_by_source(self.mock_component_1)
 
         breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
-        self.assertEqual(7, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
+        # Expected: total_nb_of_units * per_device + structure_total / nb_components = 2*4 + 10/2 = 13
+        self.assertEqual(13, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
         self.assertIn("Test Device", breakdown[self.mock_component_1].label)
         self.assertIn("Component 1", breakdown[self.mock_component_1].label)
 
     def test_update_fabrication_footprint_breakdown_by_source(self):
-        """Test fabrication breakdown updates every component contribution."""
+        """Test fabrication breakdown updates every component contribution and scales by total_nb_of_units."""
+        self.edge_device.total_nb_of_units = ExplainableQuantity(3 * u.dimensionless, "three devices")
+        pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
+        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: SourceValue(12 * u.kg)})
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(10 * u.kg)
-        self.edge_device.instances_fabrication_footprint = SourceValue(20 * u.kg)
 
         self.edge_device.update_fabrication_footprint_breakdown_by_source()
 
         breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
         self.assertEqual({self.mock_component_1, self.mock_component_2}, set(breakdown))
-        self.assertEqual(7, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
-        self.assertEqual(13, breakdown[self.mock_component_2].value.to(u.kg).magnitude)
+        # c_1: 3*4 + 12/2 = 18; c_2: 3*10 + 12/2 = 36
+        self.assertEqual(18, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
+        self.assertEqual(36, breakdown[self.mock_component_2].value.to(u.kg).magnitude)
 
     def test_update_fabrication_footprint_breakdown_by_source_without_components(self):
         """Test fabrication breakdown stays empty when the edge device has no components."""
@@ -542,9 +549,11 @@ class TestEdgeDevice(TestCase):
         self.assertTrue(np.allclose([6, 6], self.edge_device.usage_impact_repartition_weights[component_need_3].magnitude))
 
     def test_footprint_breakdown_by_source_distributes_computed_structure_across_components_and_keeps_energy(self):
-        """Test footprint_breakdown_by_source conserves computed device fabrication and keeps energy unchanged."""
-        self.edge_device.instances_fabrication_footprint = SourceValue(110 * u.kg)
-        self.edge_device.energy_footprint = SourceValue(6 * u.kg)
+        """Test footprint_breakdown_by_source scales by total_nb_of_units for both fabrication and energy."""
+        self.edge_device.total_nb_of_units = ExplainableQuantity(2 * u.dimensionless, "two devices")
+        pattern = create_mod_obj_mock(EdgeUsagePattern, name="Test Pattern")
+        self.edge_device.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict({
+            pattern: SourceValue(100 * u.kg)})
         self.mock_component_1.fabrication_footprint_per_edge_device = SourceValue(4 * u.kg)
         self.mock_component_2.fabrication_footprint_per_edge_device = SourceValue(6 * u.kg)
         self.mock_component_1.energy_footprint_per_edge_device = SourceValue(1 * u.kg)
@@ -553,15 +562,17 @@ class TestEdgeDevice(TestCase):
 
         breakdown = self.edge_device.footprint_breakdown_by_source
 
-        self.assertEqual(54, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_1].magnitude)
-        self.assertEqual(56, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_2].magnitude)
+        # c_1: 2*4 + 100/2 = 58; c_2: 2*6 + 100/2 = 62; total = 120 = 2*(100/2 + 10) scaled.
+        self.assertEqual(58, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_1].magnitude)
+        self.assertEqual(62, breakdown[LifeCyclePhases.MANUFACTURING][self.mock_component_2].magnitude)
         self.assertEqual(
-            110,
+            120,
             sum(breakdown[LifeCyclePhases.MANUFACTURING].values(), start=EmptyExplainableObject()).magnitude,
         )
         self.assertNotIn(self.edge_device, breakdown[LifeCyclePhases.MANUFACTURING])
-        self.assertEqual(1, breakdown[LifeCyclePhases.USAGE][self.mock_component_1].magnitude)
-        self.assertEqual(5, breakdown[LifeCyclePhases.USAGE][self.mock_component_2].magnitude)
+        # Energy: 2 * component.energy_footprint_per_edge_device
+        self.assertEqual(2, breakdown[LifeCyclePhases.USAGE][self.mock_component_1].magnitude)
+        self.assertEqual(10, breakdown[LifeCyclePhases.USAGE][self.mock_component_2].magnitude)
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)

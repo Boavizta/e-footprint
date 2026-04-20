@@ -18,7 +18,7 @@ poetry self add poetry-plugin-export
 
 ```shell
 poetry export -f requirements.txt --without-hashes -o requirements.txt 
-poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 
+poetry export -f requirements.txt --without-hashes --only dev -o requirements-dev.txt 
 ```
 
 ## Make sure all tests pass

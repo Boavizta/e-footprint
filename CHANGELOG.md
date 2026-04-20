@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [19.0.2] - 2026-04-20
+
+### Fixed
+- Scale EdgeDevice fabrication and energy footprint breakdowns by total_nb_of_units. fabrication_footprint_breakdown_by_source and energy_footprint_breakdown_by_source previously returned per-single-device values while instances_fabrication_footprint and energy_footprint are totals across all device units. Now each component's share is multiplied by total_nb_of_units, and the structure fabrication share is derived from structure_fabrication_footprint_per_usage_pattern (already scaled). Sum of breakdowns now matches the edge device totals, as asserted by a new integration test in the edge_device_group suite.
+
+### Changed
+- Set base_compute_consumption default to 0 in EdgeComputer and EdgeCPUComponent.
+
 ## [19.0.1] - 2026-04-14
 
 ### Fixed
