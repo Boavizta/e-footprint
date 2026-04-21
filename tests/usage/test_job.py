@@ -27,7 +27,7 @@ class TestJob(TestCase):
 
         self.job = Job(
             "test job", server=self.server, data_transferred=SourceValue(300 * u.MB),
-             data_stored=SourceValue(300 * u.MB), ram_needed=SourceValue(400 * u.MB_ram),
+             data_stored=SourceValue(300 * u.MB_stored), ram_needed=SourceValue(400 * u.MB_ram),
               compute_needed=SourceValue(2 * u.cpu_core), request_duration=SourceValue(2 * u.min))
         self.job.trigger_modeling_updates = False
 
@@ -179,13 +179,13 @@ class TestJob(TestCase):
             {usage_pattern: create_source_hourly_values_from_list([1, 3, 5])})
 
         with patch.object(self.job, "hourly_avg_occurrences_per_usage_pattern", hourly_avg_occs_per_up), \
-                patch.object(self.job, "data_stored", SourceValue(1 * u.GB)), \
+                patch.object(self.job, "data_stored", SourceValue(1 * u.GB_stored)), \
                 patch.object(self.job, "request_duration", SourceValue(0.5 * u.hour)):
             job_hourly_data_exchange = self.job.compute_hourly_data_exchange_for_usage_pattern(
                 usage_pattern, data_exchange)
 
         self.assertEqual([2000, 6000, 10000], job_hourly_data_exchange.value_as_float_list)
-        self.assertEqual(u.MB, job_hourly_data_exchange.unit)
+        self.assertEqual(u.MB_stored, job_hourly_data_exchange.unit)
             
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
         usage_pattern1 = create_mod_obj_mock(UsagePattern, name="usage pattern 1")

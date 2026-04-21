@@ -127,7 +127,8 @@ class Storage(InfraHardware):
             f"Carbon footprint of {self.name}")
 
     def update_dict_element_in_full_cumulative_storage_need_per_job(self, job: "JobBase"):
-        job_storage_rate = (job.hourly_data_stored_across_usage_patterns * self.data_replication_factor).to(u.TB)
+        job_storage_rate = (
+            job.hourly_data_stored_across_usage_patterns * self.data_replication_factor).to(u.TB_stored)
         if isinstance(job_storage_rate, EmptyExplainableObject):
             self.full_cumulative_storage_need_per_job[job] = EmptyExplainableObject(
                 left_parent=job_storage_rate, label=f"Cumulative storage for {job.name} in {self.name}")

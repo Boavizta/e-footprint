@@ -28,7 +28,7 @@ class NegativeCumulativeStorageNeedError(Exception):
 
 
 class EdgeStorage(EdgeComponent):
-    compatible_root_units = [u.bit]
+    compatible_root_units = [u.bit_stored]
     default_values = {
         "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),

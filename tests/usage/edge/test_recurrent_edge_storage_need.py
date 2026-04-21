@@ -27,7 +27,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         self.mock_storage.edge_device = None
 
         self.recurrent_storage_needed = SourceRecurrentValues(
-            Quantity(np.array([2.0] * 168, dtype=np.float32), u.GB))
+            Quantity(np.array([2.0] * 168, dtype=np.float32), u.GB_stored))
 
         self.storage_need = RecurrentEdgeStorageNeed(name="Test Storage Need", edge_component=self.mock_storage,
                                                      recurrent_need=self.recurrent_storage_needed)
@@ -62,7 +62,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # Create mock result with magnitude array
         original_values = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
         base_storage_result = ExplainableHourlyQuantities(
-            original_values * u.GB,
+            original_values * u.GB_stored,
             mock_nb_euj_in_parallel.start_date,
             "base storage result"
         )
@@ -103,7 +103,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         # From Wednesday 00:00 to Monday 00:00 = 5 days = 120 hours
         original_values = np.array([1.0, 2.0, 3.0] * 50)  # 150 values
         base_storage_result = ExplainableHourlyQuantities(
-            original_values * u.GB,
+            original_values * u.GB_stored,
             mock_nb_euj_in_parallel.start_date,
             "base storage result"
         )
@@ -126,7 +126,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern 1")
         self.storage_need.unitary_hourly_need_per_usage_pattern = {
             pattern: ExplainableHourlyQuantities(
-                np.array([1.0, 0.0, 2.0], dtype=np.float32) * u.GB,
+                np.array([1.0, 0.0, 2.0], dtype=np.float32) * u.GB_stored,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern need",
             )
@@ -161,12 +161,12 @@ class TestRecurrentEdgeStorageNeed(TestCase):
         }
         self.storage_need.cumulative_unitary_storage_need_per_usage_pattern = {
             pattern_1: ExplainableHourlyQuantities(
-                np.array([1.0, 1.0, 3.0], dtype=np.float32) * u.GB,
+                np.array([1.0, 1.0, 3.0], dtype=np.float32) * u.GB_stored,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern 1 cumulative need",
             ),
             pattern_2: ExplainableHourlyQuantities(
-                np.array([0.0, 2.0, 2.0], dtype=np.float32) * u.GB,
+                np.array([0.0, 2.0, 2.0], dtype=np.float32) * u.GB_stored,
                 ciso8601.parse_datetime("2025-01-06T00:00:00"),
                 "pattern 2 cumulative need",
             ),

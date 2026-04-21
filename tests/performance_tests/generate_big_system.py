@@ -177,7 +177,7 @@ def generate_big_system(
                 recurrent_ram_needed=SourceRecurrentValues(
                     Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram)),
                 recurrent_storage_needed=SourceRecurrentValues(
-                    Quantity(np.array([200] * 168, dtype=np.float32), u.kB))
+                    Quantity(np.array([200] * 168, dtype=np.float32), u.kB_stored))
             )
             edge_processes.append(edge_process)
             jobs = []

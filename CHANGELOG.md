@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [20.0.0] - 2026-04-22
+
+### Fixed
+- Introduce distinct pint dimensions for bytes in RAM and storage contexts. Introduce [information_ram] and [information_stored] dimensions alongside [information] so that composite units like kWh/GB (network bandwidth energy intensity) no longer simplify away against RAM or storage bytes. Add v19 → v20 migration to append _stored / _ram suffixes on affected JSON attributes and upgrade VideoStreaming.bits_per_pixel from dimensionless to bit. Fix the aggregation strategy to prefer sum over mean when a flow-like factor (energy, mass, occurrence) is combined with a rate marker.
+
 ## [19.0.2] - 2026-04-20
 
 ### Fixed

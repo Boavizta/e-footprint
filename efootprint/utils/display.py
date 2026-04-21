@@ -92,7 +92,7 @@ def human_readable_unit(unit: Unit) -> str:
             if output == "G":
                 output = "B"
             break
-    return output
+    return output.replace("_", " ")
 
 
 def format_display_number(value: float) -> str:

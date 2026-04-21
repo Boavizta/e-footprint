@@ -155,9 +155,10 @@ class JobBase(ModelingObject):
         ).set_label(f"{data_exchange_type_no_underscore} per hour for job {self.name} in {usage_pattern.name}")
 
         hourly_data_exchange = self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] * data_exchange_per_hour
+        target_unit = u.MB_stored if data_exchange_type == "data_stored" else u.MB
 
         return hourly_data_exchange.set_label(
-                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}").to(u.MB)
+                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}").to(target_unit)
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
@@ -226,7 +227,7 @@ class DirectServerJob(JobBase):
 class Job(DirectServerJob):
     default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
-            "data_stored": SourceValue(100 * u.kB),
+            "data_stored": SourceValue(100 * u.kB_stored),
             "request_duration": SourceValue(1 * u.s),
             "compute_needed": SourceValue(0.1 * u.cpu_core),
             "ram_needed": SourceValue(50 * u.MB_ram)
@@ -242,7 +243,7 @@ class Job(DirectServerJob):
 class GPUJob(DirectServerJob):
     default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
-            "data_stored": SourceValue(100 * u.kB),
+            "data_stored": SourceValue(100 * u.kB_stored),
             "request_duration": SourceValue(1 * u.s),
             "compute_needed": SourceValue(1 * u.gpu),
             "ram_needed": SourceValue(50 * u.MB_ram)

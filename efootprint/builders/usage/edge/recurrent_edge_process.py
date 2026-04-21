@@ -55,7 +55,8 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
 class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
     def update_recurrent_need(self):
         if not self.recurrent_edge_device_needs:
-            self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB))
+            self.recurrent_need = SourceRecurrentValues(
+                Quantity(np.array([0] * 168, dtype=np.float32), u.GB_stored))
             return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
@@ -66,7 +67,8 @@ class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
     default_values = {
         "recurrent_compute_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
         "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),
-        "recurrent_storage_needed": SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB)),
+        "recurrent_storage_needed": SourceRecurrentValues(
+            Quantity(np.array([0] * 168, dtype=np.float32), u.GB_stored)),
     }
 
     def __init__(self, name: str, edge_device: EdgeComputer,

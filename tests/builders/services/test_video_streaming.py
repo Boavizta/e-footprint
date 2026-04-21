@@ -30,17 +30,17 @@ class TestVideoStreamingJob(unittest.TestCase):
 
     def test_update_dynamic_bitrate(self):
         with patch.object(self.job, "resolution", SourceObject("1080p (1920 x 1080)")), \
-            patch.object(self.service, "bits_per_pixel", SourceValue(24 * u.dimensionless)), \
+            patch.object(self.service, "bits_per_pixel", SourceValue(24 * u.bit)), \
                 patch.object(self.service, "refresh_rate", SourceValue(30 * u.dimensionless / u.s)):
             self.job.update_dynamic_bitrate()
         self.job.update_dynamic_bitrate()
         self.assertEqual(self.job.dynamic_bitrate.value, 0 * u.dimensionless)
 
     def test_update_data_transferred(self):
-        with patch.object(self.job, "dynamic_bitrate", SourceValue(30 * u.dimensionless / u.s)), \
+        with patch.object(self.job, "dynamic_bitrate", SourceValue(30 * u.MB / u.s)), \
             patch.object(self.job, "request_duration", SourceValue(1 * u.s)):
             self.job.update_data_transferred()
-        self.assertTrue(abs(self.job.data_transferred.value - 30 * u.dimensionless) < 1e-5 * u.dimensionless)
+        self.assertTrue(abs(self.job.data_transferred.value - 30 * u.MB) < 1e-5 * u.MB)
 
     def test_update_compute_needed(self):
         with patch.object(self.job, "dynamic_bitrate", SourceValue(3 * u.GB / u.s)), \

@@ -23,12 +23,12 @@ class TestStorage(TestCase):
     def setUp(self):
         self.storage_base = Storage(
             "storage_base",
-            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg/u.TB),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg/u.TB_stored),
             lifespan=SourceValue(0 * u.years),
-            storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            storage_capacity=SourceValue(0 * u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             data_replication_factor=SourceValue(0 * u.dimensionless),
             data_storage_duration=SourceValue(0 * u.years),
-            base_storage_need=SourceValue(0 * u.TB)
+            base_storage_need=SourceValue(0 * u.TB_stored)
         )
         self.storage_base.trigger_modeling_updates = False
 
@@ -49,7 +49,7 @@ class TestStorage(TestCase):
         # rate = [2, 4, 6] TB, auto_dumps = -shift([2, 4, 6], 1) = [0, -2, -4]
         # delta = [2, 2, 2], cumsum = [2, 4, 6]
         job = create_mod_obj_mock(
-            Job, name="job1", hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([2, 4, 6], pint_unit=u.TB)
+            Job, name="job1", hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([2, 4, 6], pint_unit=u.TB_stored)
         )
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(1 * u.dimensionless)), \
@@ -65,8 +65,8 @@ class TestStorage(TestCase):
         job = create_mod_obj_mock(
             Job,
             name="job_replication",
-            data_stored=SourceValue(1 * u.TB),
-            hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB),
+            data_stored=SourceValue(1 * u.TB_stored),
+            hourly_data_stored_across_usage_patterns=create_source_hourly_values_from_list([1, 2, 3], pint_unit=u.TB_stored),
         )
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)), \
@@ -81,14 +81,14 @@ class TestStorage(TestCase):
         # sum = [3, 2, 7, 5, 10], + base=5 → [8, 7, 12, 10, 15]
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-        job1 = create_mod_obj_mock(Job, name="positive_job", data_stored=SourceValue(1 * u.TB))
-        job2 = create_mod_obj_mock(Job, name="negative_job", data_stored=SourceValue(-1 * u.TB))
+        job1 = create_mod_obj_mock(Job, name="positive_job", data_stored=SourceValue(1 * u.TB_stored))
+        job2 = create_mod_obj_mock(Job, name="negative_job", data_stored=SourceValue(-1 * u.TB_stored))
         per_job = ExplainableObjectDict({
-            job1: create_source_hourly_values_from_list([2, 0, 4, 1, 5], start_date, pint_unit=u.TB),
-            job2: create_source_hourly_values_from_list([1, 2, 3, 4, 5], start_date, pint_unit=u.TB),
+            job1: create_source_hourly_values_from_list([2, 0, 4, 1, 5], start_date, pint_unit=u.TB_stored),
+            job2: create_source_hourly_values_from_list([1, 2, 3, 4, 5], start_date, pint_unit=u.TB_stored),
         })
         with patch.object(self.storage_base, "full_cumulative_storage_need_per_job", per_job), \
-                patch.object(self.storage_base, "base_storage_need", SourceValue(5 * u.TB)):
+                patch.object(self.storage_base, "base_storage_need", SourceValue(5 * u.TB_stored)):
             self.storage_base.update_full_cumulative_storage_need()
             self.assertEqual([8, 7, 12, 10, 15], self.storage_base.full_cumulative_storage_need.value_as_float_list)
 
@@ -99,8 +99,8 @@ class TestStorage(TestCase):
 
     def test_raw_nb_of_instances(self):
         """Test raw_nb_of_instances = full_cumulative_storage_need / storage_capacity."""
-        full_storage_data = create_source_hourly_values_from_list([10, 12, 14], pint_unit=u.TB)
-        storage_capacity = SourceValue(2 * u.TB)
+        full_storage_data = create_source_hourly_values_from_list([10, 12, 14], pint_unit=u.TB_stored)
+        storage_capacity = SourceValue(2 * u.TB_stored)
 
         with patch.object(self.storage_base, "full_cumulative_storage_need", full_storage_data), \
                 patch.object(self.storage_base, "storage_capacity", storage_capacity):
@@ -198,20 +198,20 @@ class TestStorage(TestCase):
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job_1, job_2]
             self.storage_base.full_cumulative_storage_need_per_job = ExplainableObjectDict({
-                job_1: create_source_hourly_values_from_list([2], pint_unit=u.TB),
-                job_2: create_source_hourly_values_from_list([4], pint_unit=u.TB),
+                job_1: create_source_hourly_values_from_list([2], pint_unit=u.TB_stored),
+                job_2: create_source_hourly_values_from_list([4], pint_unit=u.TB_stored),
             })
-            self.storage_base.full_cumulative_storage_need = create_source_hourly_values_from_list([8], pint_unit=u.TB)
+            self.storage_base.full_cumulative_storage_need = create_source_hourly_values_from_list([8], pint_unit=u.TB_stored)
             self.storage_base.nb_of_instances = create_source_hourly_values_from_list([5], pint_unit=u.concurrent)
-            self.storage_base.storage_capacity = SourceValue(2 * u.TB)
-            self.storage_base.base_storage_need = SourceValue(2 * u.TB)
+            self.storage_base.storage_capacity = SourceValue(2 * u.TB_stored)
+            self.storage_base.base_storage_need = SourceValue(2 * u.TB_stored)
 
             self.storage_base.update_fabrication_impact_repartition_weights()
 
         # full cumulative = 8 TB (including 2 TB base), total provisioned = 10 TB, unused = 2 TB, shared = 2 TB/job
         self.assertTrue(np.allclose([4], self.storage_base.fabrication_impact_repartition_weights[job_1].magnitude))
         self.assertTrue(np.allclose([6], self.storage_base.fabrication_impact_repartition_weights[job_2].magnitude))
-        self.assertEqual(u.TB, self.storage_base.fabrication_impact_repartition_weights[job_1].unit)
+        self.assertEqual(u.TB_stored, self.storage_base.fabrication_impact_repartition_weights[job_1].unit)
 
     def test_usage_impact_repartition_weights_returns_empty_dict_when_energy_is_empty(self):
         """Test storage usage repartition weights are empty while storage energy footprint is empty."""

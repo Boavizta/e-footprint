@@ -303,7 +303,7 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
             "new job 2", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
@@ -348,12 +348,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
             "new job 3", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job.from_defaults(
             "new job 4", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         initial_uj_step_2_jobs = copy(self.uj_step_2.jobs)
@@ -379,12 +379,12 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
                                           storage=Storage.from_defaults("new storage"))
         new_job = Job.from_defaults(
             "new job 5", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         new_job2 = Job.from_defaults(
             "new job 6", server=new_server, data_transferred=SourceValue((2.5 / 3) * u.GB),
-            data_stored=SourceValue(50 * u.kB), request_duration=SourceValue(4 * u.min),
+            data_stored=SourceValue(50 * u.kB_stored), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB_ram), compute_needed=SourceValue(1 * u.cpu_core))
 
         simulation = ModelingUpdate(

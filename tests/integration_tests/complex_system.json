@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "19.0.2",
+    "efootprint_version": "20.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -151,7 +151,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 1 job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -201,7 +201,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 1 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -251,7 +251,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 1 job 3 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -301,7 +301,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 2 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -351,7 +351,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 3 job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -401,7 +401,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request server 3 job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -1272,7 +1272,7 @@
             },
             "recurrent_storage_needed": {
                 "recurring_values": "[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
-                "unit": "gigabyte",
+                "unit": "gigabyte_stored",
                 "label": "Recurrent storage needed for Edge process from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

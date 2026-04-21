@@ -50,18 +50,18 @@ joule = newton * meter = J
 watt = joule / second = W
 watt_hour = watt * hour = Wh = watthour
 
-bit = []
+bit = [information]
 byte = 8 * bit = B = octet
 
 occurrence = []  # Discrete events that should be summed
 concurrent = []   # Active/simultaneous counts that should be averaged
 
 # RAM/memory allocation units (aggregated by mean, unlike data transfer bytes)
-bit_ram = []
+bit_ram = [information_ram]
 byte_ram = 8 * bit_ram = B_ram = octet_ram
 
 # Storage units (aggregated by mean, unlike data transfer bytes)
-bit_stored = []
+bit_stored = [information_stored]
 byte_stored = 8 * bit_stored = B_stored = octet_stored
 
 billion = []

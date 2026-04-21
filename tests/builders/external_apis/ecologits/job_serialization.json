@@ -65,7 +65,7 @@
     },
     "data_stored": {
       "value": 0.0,
-      "unit": "megabyte",
+      "unit": "megabyte_stored",
       "label": "Data stored by request Test Job from e-footprint hypothesis",
       "source": {
         "name": "e-footprint hypothesis",
@@ -288,7 +288,7 @@
     },
     "model_required_memory": {
       "value": 1056.0,
-      "unit": "gigabyte",
+      "unit": "gigabyte_ram",
       "label": "Ecologits model_required_memory for gpt-4o from Ecologits compute_llm_impacts_dag function",
       "source": {
         "name": "Ecologits compute_llm_impacts_dag function",

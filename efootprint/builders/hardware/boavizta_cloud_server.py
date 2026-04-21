@@ -66,7 +66,8 @@ class BoaviztaCloudServer(Server):
             fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
         super().__init__(
             name, server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W),
-            lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB), compute=SourceValue(0 * u.cpu_core),
+            lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB_ram),
+            compute=SourceValue(0 * u.cpu_core),
             power_usage_effectiveness=power_usage_effectiveness, average_carbon_intensity=average_carbon_intensity,
             utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, storage=storage,
@@ -147,7 +148,7 @@ if __name__ == "__main__":
                                     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
                                     average_carbon_intensity=SourceValue(0.233 * u.kg / u.kWh),
                                     utilization_rate=SourceValue(0.9 * u.dimensionless),
-                                    base_ram_consumption=SourceValue(0 * u.GB),
+                                    base_ram_consumption=SourceValue(0 * u.GB_ram),
                                     base_compute_consumption=SourceValue(0 * u.cpu_core),
                                     storage=Storage.ssd())
                 for attr_name in ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]:

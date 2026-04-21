@@ -14,7 +14,7 @@ from efootprint.core.hardware.server import Server
 class VideoStreaming(Service):
     default_values =  {
             "base_ram_consumption": SourceValue(2 * u.GB_ram, source=Sources.HYPOTHESIS),
-            "bits_per_pixel": SourceValue(0.1 * u.dimensionless, source=Sources.HYPOTHESIS),
+            "bits_per_pixel": SourceValue(0.1 * u.bit, source=Sources.HYPOTHESIS),
             "static_delivery_cpu_cost": SourceValue(4 * u.cpu_core / (u.GB / u.s), source=Sources.HYPOTHESIS),
             "ram_buffer_per_user": SourceValue(50 * u.MB_ram, source=Sources.HYPOTHESIS),
             }
@@ -35,7 +35,7 @@ class VideoStreamingJob(ServiceJob):
             "resolution": SourceObject("1080p (1920 x 1080)"),
             "video_duration": SourceValue(1 * u.hour),
             "refresh_rate": SourceValue(30 * u.dimensionless / u.s),
-            "data_stored": SourceValue(0 * u.MB),
+            "data_stored": SourceValue(0 * u.MB_stored),
         }
 
     list_values =  {"resolution": [
@@ -49,7 +49,7 @@ class VideoStreamingJob(ServiceJob):
                  data_stored: ExplainableQuantity):
         super().__init__(name or f"{resolution} streaming on {service.name}",
                          service, SourceValue(0 * u.kB), data_stored,
-                         SourceValue(0 * u.s), SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB))
+                         SourceValue(0 * u.s), SourceValue(0 * u.cpu_core), SourceValue(0 * u.GB_ram))
         self.video_duration = video_duration.set_label(f"{self.name} video duration")
         self.resolution = resolution.set_label(f"{self.name} resolution")
         self.refresh_rate = refresh_rate.set_label(f"{self.name} frames per second")

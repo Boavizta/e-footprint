@@ -76,7 +76,7 @@
             "ram": {
                 "label": "RAM of New server from user data",
                 "value": 128,
-                "unit": "gigabyte",
+                "unit": "gigabyte_ram",
                 "source": {
                     "name": "user data",
                     "link": null
@@ -103,7 +103,7 @@
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Youtube from hypothesis",
                 "value": 300,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

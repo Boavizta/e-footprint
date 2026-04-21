@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "19.0.2",
+    "efootprint_version": "20.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -92,7 +92,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request job 1 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -142,7 +142,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request job 2 from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -283,7 +283,7 @@
             },
             "base_ram_consumption": {
                 "value": 300.0,
-                "unit": "megabyte",
+                "unit": "megabyte_ram",
                 "label": "Base RAM consumption of Default server from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

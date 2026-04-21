@@ -19,7 +19,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "nb_of_cpu_units": SourceValue(1 * u.dimensionless),
             "nb_of_cores_per_cpu_unit": SourceValue(1 * u.dimensionless),
             "nb_of_ram_units": SourceValue(1 * u.dimensionless),
-            "ram_quantity_per_unit": SourceValue(1 * u.GB),
+            "ram_quantity_per_unit": SourceValue(1 * u.GB_ram),
             "average_carbon_intensity": SourceValue(400 * u.g / u.kWh),
             "lifespan": SourceValue(6 * u.year),
             "idle_power": SourceValue(0 * u.W),
@@ -27,7 +27,7 @@ class BoaviztaServerFromConfig(ServerBase):
             "utilization_rate": SourceValue(0.7 * u.dimensionless),
             "base_ram_consumption": SourceValue(0 * u.GB_ram),
             "base_compute_consumption": SourceValue(0 * u.cpu_core),
-            "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
+            "storage": Storage.ssd(storage_capacity=SourceValue(32 * u.GB_stored)),
             "fixed_nb_of_instances": EmptyExplainableObject()
         }
     
@@ -41,7 +41,7 @@ class BoaviztaServerFromConfig(ServerBase):
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject | None = None):
         super().__init__(
             name, server_type=server_type, carbon_footprint_fabrication=SourceValue(0 * u.kg),
-            power=SourceValue(0 * u.kg), lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB),
+            power=SourceValue(0 * u.kg), lifespan=lifespan, idle_power=idle_power, ram=SourceValue(0 * u.GB_ram),
             compute=SourceValue(0 * u.cpu_core), power_usage_effectiveness=power_usage_effectiveness,
             average_carbon_intensity=average_carbon_intensity,
             utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
@@ -88,7 +88,7 @@ class BoaviztaServerFromConfig(ServerBase):
 
     def update_ram_config(self):
         ram_config_dict = {"units": self.nb_of_ram_units.to(u.dimensionless).magnitude,
-                           "capacity": self.ram_quantity_per_unit.to(u.GB).magnitude}
+                           "capacity": self.ram_quantity_per_unit.to(u.GB_ram).magnitude}
 
         self.ram_config = ExplainableObject(
             ram_config_dict, label=f"{self.name} ram config", left_parent=self.nb_of_ram_units,
@@ -167,9 +167,9 @@ class BoaviztaStorageFromConfig(Storage):
     def __init__(self, name: str, idle_power: ExplainableQuantity, data_replication_factor: ExplainableQuantity,
                  data_storage_duration: ExplainableQuantity, base_storage_need: ExplainableQuantity):
         super().__init__(
-            name, carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB),
-            power_per_storage_capacity=SourceValue(0 * u.W / u.TB),
-            lifespan=SourceValue(0 * u.year), idle_power=idle_power, storage_capacity=SourceValue(0 * u.TB), 
+            name, carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
+            power_per_storage_capacity=SourceValue(0 * u.W / u.TB_stored),
+            lifespan=SourceValue(0 * u.year), idle_power=idle_power, storage_capacity=SourceValue(0 * u.TB_stored),
             data_replication_factor=data_replication_factor, data_storage_duration=data_storage_duration, 
             base_storage_need=base_storage_need)
         
@@ -226,9 +226,9 @@ class BoaviztaStorageFromConfig(Storage):
     def update_power_per_storage_capacity(self):
         power_per_storage_capacity = None
         if self.storage_type.value == "SSD":
-            power_per_storage_capacity = SourceValue(1.3 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+            power_per_storage_capacity = SourceValue(1.3 * u.W / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY)
         elif self.storage_type.value == "HDD":
-            power_per_storage_capacity = SourceValue(4.2 * u.W / u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+            power_per_storage_capacity = SourceValue(4.2 * u.W / u.TB_stored, Sources.STORAGE_EMBODIED_CARBON_STUDY)
 
         self.power_per_storage_capacity = (
             power_per_storage_capacity.generate_explainable_object_with_logical_dependency(

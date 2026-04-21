@@ -85,11 +85,11 @@ class TestServer(TestCase):
             self.assertEqual(expected_value, self.server_base.available_compute_per_instance)
 
     def test_available_ram_per_instance(self):
-        with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB)), \
+        with patch.object(self.server_base, "occupied_ram_per_instance", SourceValue(2 * u.GB_ram)), \
                 patch.object(self.server_base, "ram", SourceValue(24 * u.GB_ram)), \
                 patch.object(self.server_base, "utilization_rate", SourceValue(0.7 * u.dimensionless)):
             self.server_base.update_available_ram_per_instance()
-            expected_value = SourceValue((24 * 0.7 - 2) * u.GB)
+            expected_value = SourceValue((24 * 0.7 - 2) * u.GB_ram)
 
             self.assertEqual(expected_value, self.server_base.available_ram_per_instance)
 
@@ -121,10 +121,10 @@ class TestServer(TestCase):
         service_2 = MagicMock()
         service_1.base_ram_consumption = SourceValue(2 * u.GB_ram)
         service_2.base_ram_consumption = SourceValue(3 * u.GB_ram)
-        with patch.object(self.server_base, "base_ram_consumption", SourceValue(5 * u.GB)), \
+        with patch.object(self.server_base, "base_ram_consumption", SourceValue(5 * u.GB_ram)), \
                 patch.object(Server, "installed_services", [service_1, service_2]):
             self.server_base.update_occupied_ram_per_instance()
-            expected_value = SourceValue(10 * u.GB)
+            expected_value = SourceValue(10 * u.GB_ram)
 
             self.assertEqual(expected_value.value, self.server_base.occupied_ram_per_instance.value)
 
@@ -134,7 +134,7 @@ class TestServer(TestCase):
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=ram_need), \
                 patch.object(self.server_base, "hour_by_hour_compute_need", new=cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB)), \
+                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB_ram)), \
                 patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
             self.server_base.update_raw_nb_of_instances()
 
@@ -156,7 +156,7 @@ class TestServer(TestCase):
 
         with patch.object(self.server_base, "hour_by_hour_ram_need", new=all_ram_need), \
                 patch.object(self.server_base, "hour_by_hour_compute_need", new=all_cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB)), \
+                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(2 * u.GB_ram)), \
                 patch.object(self.server_base, "available_compute_per_instance", new=SourceValue(4 * u.cpu_core)):
             self.server_base.update_raw_nb_of_instances()
 

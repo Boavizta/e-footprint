@@ -60,7 +60,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
             "Default edge process",
             edge_device=edge_computer,
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)),
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB_stored)),
         )
 
         # Create custom edge device with components
@@ -342,7 +342,7 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         new_edge_process = RecurrentEdgeProcess.from_defaults(
             "Additional edge process", edge_device=self.edge_computer,
             recurrent_storage_needed=SourceRecurrentValues(
-                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB)))
+                Quantity(np.array([200] * 84 + [-200] * 84, dtype=np.float32), u.MB_stored)))
 
         def post_reset(test):
             new_edge_process.self_delete()

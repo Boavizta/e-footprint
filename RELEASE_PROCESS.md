@@ -35,7 +35,6 @@ python -m pytest --cov=tests
 ## Update [tutorial notebook](tutorial.ipynb) if needed and update doc
 
 ```shell
-# Remember to have run the jupyter notebook file tutorial.ipynb because its outputs are erased at each git commit.
 python docs_sources/doc_utils/main.py
 ```
 

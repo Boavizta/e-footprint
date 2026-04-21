@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "19.0.2",
+    "efootprint_version": "20.0.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -77,7 +77,7 @@
             },
             "data_stored": {
                 "value": 100.0,
-                "unit": "kilobyte",
+                "unit": "kilobyte_stored",
                 "label": "Data stored by request direct GPU server job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -418,7 +418,7 @@
             "id": "Streaming-job",
             "data_stored": {
                 "value": 0.0,
-                "unit": "megabyte",
+                "unit": "megabyte_stored",
                 "label": "Data stored by request Streaming job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -474,7 +474,7 @@
             },
             "bits_per_pixel": {
                 "value": 0.1,
-                "unit": "dimensionless",
+                "unit": "bit",
                 "label": "Youtube streaming service bits per pixel from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",
@@ -615,7 +615,7 @@
             "id": "GenAI-job",
             "data_stored": {
                 "value": 0.0,
-                "unit": "megabyte",
+                "unit": "megabyte_stored",
                 "label": "Data stored by request GenAI job from e-footprint hypothesis",
                 "source": {
                     "name": "e-footprint hypothesis",

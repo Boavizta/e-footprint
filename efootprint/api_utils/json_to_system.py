@@ -100,6 +100,32 @@ def compute_classes_generation_order(efootprint_classes_dict):
 
     return classes_generation_order
 
+def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=None):
+    efootprint_version_key = "efootprint_version"
+    json_efootprint_version = system_dict.get(efootprint_version_key, None)
+    if json_efootprint_version is None:
+        logger.warning(
+            f"Warning: the JSON file does not contain the key '{efootprint_version_key}'.")
+        return system_dict
+    json_major_version = int(json_efootprint_version.split(".")[0])
+    efootprint_major_version = int(efootprint.__version__.split(".")[0])
+    if (json_major_version < efootprint_major_version) and json_major_version >= 9:
+        from copy import deepcopy
+        from efootprint.api_utils.version_upgrade_handlers import VERSION_UPGRADE_HANDLERS
+        if efootprint_classes_dict is None:
+            efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+        system_dict = deepcopy(system_dict)
+        for version in range(json_major_version, efootprint_major_version):
+            system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict, efootprint_classes_dict)
+    elif json_major_version != efootprint_major_version:
+        logger.warning(
+            f"Warning: the version of the efootprint library used to generate the JSON file is "
+            f"{json_efootprint_version} while the current version of the efootprint library is "
+            f"{efootprint.__version__}. Please make sure that the JSON file is compatible with the current version"
+            f" of the efootprint library.")
+    return system_dict
+
+
 def json_to_system(
         system_dict, launch_system_computations=True, efootprint_classes_dict=None):
     if efootprint_classes_dict is None:
@@ -110,24 +136,7 @@ def json_to_system(
 
     validate_system_dict_structure(system_dict, valid_class_keys)
 
-    efootprint_version_key = "efootprint_version"
-    json_efootprint_version = system_dict.get(efootprint_version_key, None)
-    if json_efootprint_version is None:
-        logger.warning(
-            f"Warning: the JSON file does not contain the key '{efootprint_version_key}'.")
-    else:
-        json_major_version = int(json_efootprint_version.split(".")[0])
-        efootprint_major_version = int(efootprint.__version__.split(".")[0])
-        if (json_major_version < efootprint_major_version) and json_major_version >= 9:
-            from efootprint.api_utils.version_upgrade_handlers import VERSION_UPGRADE_HANDLERS
-            for version in range(json_major_version, efootprint_major_version):
-                system_dict = VERSION_UPGRADE_HANDLERS[version](system_dict, efootprint_classes_dict)
-        elif json_major_version != efootprint_major_version:
-            logger.warning(
-                f"Warning: the version of the efootprint library used to generate the JSON file is "
-                f"{json_efootprint_version} while the current version of the efootprint library is "
-                f"{efootprint.__version__}. Please make sure that the JSON file is compatible with the current version"
-                f" of the efootprint library.")
+    system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
 
     class_obj_dict = {}
     flat_obj_dict = {}

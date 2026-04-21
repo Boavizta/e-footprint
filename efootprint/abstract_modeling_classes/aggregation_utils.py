@@ -17,15 +17,18 @@ def get_plot_aggregation_strategy(unit: Unit) -> str:
         "mean" for concurrent/resource allocation metrics (instances, RAM, CPU)
     """
     unit_str = str(unit)
-    
-    is_special_dimensionless_unit = unit.is_compatible_with(u.dimensionless) and (
-            "concurrent" in unit_str or "_ram" in unit_str or "_stored" in unit_str)
+
+    # Flow-like factors take priority: a unit like `concurrent * kWh` is still energy → sum
+    sum_markers = ("watt_hour", "joule", "gram", "occurrence")
+    if any(marker in unit_str for marker in sum_markers):
+        return "sum"
 
     # Rate and resource allocation units → mean
-    if is_special_dimensionless_unit or "cpu_core" in unit_str or "gpu" in unit_str:
+    mean_markers = ("concurrent", "_ram", "_stored", "cpu_core", "gpu")
+    if any(marker in unit_str for marker in mean_markers):
         return "mean"
 
-    # Default: sum for events, energy, mass, data transfer
+    # Default: sum for events, data transfer (bytes/bits without _ram/_stored), etc.
     return "sum"
 
 

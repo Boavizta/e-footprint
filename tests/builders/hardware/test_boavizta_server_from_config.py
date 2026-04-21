@@ -31,7 +31,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             utilization_rate=SourceValue(0.7 * u.dimensionless),
             base_ram_consumption=SourceValue(0 * u.GB_ram),
             base_compute_consumption=SourceValue(0 * u.cpu_core),
-            storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB)),
+            storage=Storage.ssd(storage_capacity=SourceValue(32 * u.GB_stored)),
             fixed_nb_of_instances=EmptyExplainableObject()
         )
 

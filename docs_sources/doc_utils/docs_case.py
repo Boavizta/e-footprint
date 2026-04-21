@@ -14,7 +14,6 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEd
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
-from efootprint.utils.impact_repartition import ImpactRepartitionSankey
 
 start = perf_counter()
 
@@ -157,7 +156,7 @@ edge_process = RecurrentEdgeProcess(
     recurrent_ram_needed=SourceRecurrentValues(
         Quantity(np.array([2] * 168, dtype=np.float32), u.GB_ram), source=None),
     recurrent_storage_needed=SourceRecurrentValues(
-        Quantity(np.array([200] * 168, dtype=np.float32), u.kB), source=None)
+        Quantity(np.array([200] * 168, dtype=np.float32), u.kB_stored), source=None)
 )
 
 edge_appliance = EdgeAppliance(
@@ -225,7 +224,7 @@ storage_need = RecurrentEdgeStorageNeed(
     "Storage need",
     edge_component=storage_component,
     recurrent_need=SourceRecurrentValues(
-        Quantity(np.array([50] * 84 + [-50] * 84, dtype=np.float32), u.MB), source=None)
+        Quantity(np.array([50] * 84 + [-50] * 84, dtype=np.float32), u.MB_stored), source=None)
 )
 
 edge_device_need = RecurrentEdgeDeviceNeed(

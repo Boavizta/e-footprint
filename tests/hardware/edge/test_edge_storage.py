@@ -149,12 +149,12 @@ class TestEdgeStorage(TestCase):
         usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern full", id="pattern_full_id")
         mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need full", id="need_full_id")
         mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
-            usage_pattern: create_source_hourly_values_from_list([10, 30, 60], pint_unit=u.GB)
+            usage_pattern: create_source_hourly_values_from_list([10, 30, 60], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
             self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
         # Expected: [10+5, 30+5, 60+5] = [15, 35, 65]
@@ -168,12 +168,12 @@ class TestEdgeStorage(TestCase):
         usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern negative", id="pattern_negative_id")
         mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Negative need", id="negative_need_id")
         mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
-            usage_pattern: create_source_hourly_values_from_list([-10, -20, -5], pint_unit=u.GB)
+            usage_pattern: create_source_hourly_values_from_list([-10, -20, -5], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(100 * u.GB_stored)):
             with self.assertRaises(NegativeCumulativeStorageNeedError) as ctx:
                 self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
@@ -186,18 +186,18 @@ class TestEdgeStorage(TestCase):
         usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern large", id="pattern_large_id")
         mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Large need", id="large_need_id")
         mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
-            usage_pattern: create_source_hourly_values_from_list([40, 80], pint_unit=u.GB)
+            usage_pattern: create_source_hourly_values_from_list([40, 80], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB)), \
-             patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB)):
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(10 * u.GB_stored)), \
+             patch.object(self.edge_storage, "storage_capacity", SourceValue(50 * u.GB_stored)):
             with self.assertRaises(InsufficientCapacityError) as ctx:
                 self.edge_storage.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
         self.assertEqual("storage capacity", ctx.exception.capacity_type)
         self.assertEqual(self.edge_storage, ctx.exception.overloaded_object)
-        self.assertEqual(90 * u.GB, ctx.exception.requested_capacity.value)
+        self.assertEqual(90 * u.GB_stored, ctx.exception.requested_capacity.value)
         set_modeling_obj_containers(self.edge_storage, [])
 
     def test_update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern_with_nb_of_units(self):
@@ -205,10 +205,10 @@ class TestEdgeStorage(TestCase):
         usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Pattern capacity units", id="pattern_capacity_units")
         mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need capacity units", id="need_capacity_units")
         mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
-            usage_pattern: create_source_hourly_values_from_list([80, 120], pint_unit=u.GB)
+            usage_pattern: create_source_hourly_values_from_list([80, 120], pint_unit=u.GB_stored)
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
-        self.edge_storage.base_storage_need = SourceValue(0 * u.GB)
+        self.edge_storage.base_storage_need = SourceValue(0 * u.GB_stored)
         self.edge_storage.storage_capacity_per_unit = SourceValue(50 * u.GB_stored)
         self.edge_storage.nb_of_units = SourceValue(3 * u.dimensionless)
         self.edge_storage.update_storage_capacity()
@@ -228,12 +228,12 @@ class TestEdgeStorage(TestCase):
         mock_need = create_mod_obj_mock(RecurrentEdgeStorageNeed, name="Need multi", id="need_multi_id")
         mock_need.edge_usage_patterns = [pattern_1, pattern_2]
         mock_need.cumulative_unitary_storage_need_per_usage_pattern = {
-            pattern_1: create_source_hourly_values_from_list([10, 30], pint_unit=u.GB),
-            pattern_2: create_source_hourly_values_from_list([40, 50], pint_unit=u.GB),
+            pattern_1: create_source_hourly_values_from_list([10, 30], pint_unit=u.GB_stored),
+            pattern_2: create_source_hourly_values_from_list([40, 50], pint_unit=u.GB_stored),
         }
         set_modeling_obj_containers(self.edge_storage, [mock_need])
 
-        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB)), \
+        with patch.object(self.edge_storage, "base_storage_need", SourceValue(5 * u.GB_stored)), \
              patch.object(EdgeStorage, "edge_usage_patterns", new_callable=PropertyMock, return_value=[pattern_1, pattern_2]):
             self.edge_storage.update_cumulative_unitary_storage_need_per_usage_pattern()
 
@@ -263,7 +263,7 @@ class TestEdgeStorage(TestCase):
 
     def test_negative_cumulative_storage_need_error_message(self):
         """Test NegativeCumulativeStorageNeedError message formatting."""
-        cumulative_quantity = SourceHourlyValues(np.array([-5, -10, -2]) * u.GB,
+        cumulative_quantity = SourceHourlyValues(np.array([-5, -10, -2]) * u.GB_stored,
                                                           start_date=datetime(2020, 1, 1))
         error = NegativeCumulativeStorageNeedError(self.edge_storage, cumulative_quantity)
 

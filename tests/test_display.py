@@ -119,6 +119,7 @@ class TestDisplayUtils(unittest.TestCase):
         self.assertEqual("k", human_readable_unit(u.kconcurrent))
         self.assertEqual("M", human_readable_unit(u.Mconcurrent))
         self.assertEqual("B", human_readable_unit(u.Gconcurrent))
+        self.assertEqual("MB stored", human_readable_unit(u.MB_stored))
 
     def test_human_readable_unit_leaves_other_units_unchanged(self):
         """Test non-occurrence/concurrent units are not affected."""

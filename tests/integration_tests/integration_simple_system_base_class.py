@@ -46,7 +46,7 @@ class IntegrationTestSimpleSystemBaseClass(IntegrationTestBaseClass):
             "Default SSD storage", fixed_nb_of_instances=SourceValue(10000 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours))
         server = Server.from_defaults("Default server", server_type=ServerTypes.on_premise(), storage=storage,
-                                      base_ram_consumption=SourceValue(300 * u.MB),
+                                      base_ram_consumption=SourceValue(300 * u.MB_ram),
                                       base_compute_consumption=SourceValue(2 * u.cpu_core))
         job_1 = Job.from_defaults("job 1", server=server)
         uj_step_1 = UsageJourneyStep.from_defaults("UJ step 1", jobs=[job_1])

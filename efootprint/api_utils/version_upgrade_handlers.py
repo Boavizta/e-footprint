@@ -441,6 +441,122 @@ def upgrade_version_18_to_19(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def _append_suffix_to_byte_tokens(unit_str, suffix):
+    """Append `_stored` or `_ram` to every byte/bit token in a (possibly compound) unit string.
+
+    Skips tokens that already carry a `_stored`/`_ram` suffix so the operation is idempotent.
+    """
+    byte_token_suffixes = ("byte", "B", "bit")
+
+    def _transform_token(token):
+        stripped = token.strip()
+        if "_stored" in stripped or "_ram" in stripped:
+            return token
+        for byte_suffix in byte_token_suffixes:
+            if stripped.endswith(byte_suffix) and stripped != "gpu":
+                return token.replace(stripped, stripped + f"_{suffix}")
+        return token
+
+    parts = unit_str.split("/")
+    return "/".join(_transform_token(p) for p in parts)
+
+
+def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
+    """Append `_stored` / `_ram` to byte-unit attributes that weren't covered by earlier migrations.
+
+    Motivated by the v20 dimensional split: `[information]`, `[information_ram]`, `[information_stored]`
+    are now distinct dimensions, so `kWh/GB` for network bandwidth no longer simplifies away. Attributes
+    that represent stored data or RAM must carry the matching semantic unit.
+    """
+    efootprint_classes_with_suppressed = deepcopy(efootprint_classes_dict) if efootprint_classes_dict else {}
+    efootprint_classes_with_suppressed.update(ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT)
+
+    scalar_stored_attrs = {
+        ("JobBase", "data_stored"),
+        ("Storage", "power_per_storage_capacity"),
+        ("EdgeStorage", "power_per_storage_capacity"),
+        ("BoaviztaStorageFromConfig", "power_per_storage_capacity"),
+    }
+    timeseries_stored_attrs = {
+        ("RecurrentEdgeProcess", "recurrent_storage_needed"),
+    }
+    scalar_ram_attrs = {
+        ("ServerBase", "ram"),
+        ("ServerBase", "base_ram_consumption"),
+        ("GPUServer", "ram_per_gpu"),
+        ("EdgeComputer", "ram"),
+        ("EdgeComputer", "base_ram_consumption"),
+        ("JobBase", "ram_needed"),
+        ("Service", "base_ram_consumption"),
+        ("Service", "ram_buffer_per_user"),
+    }
+    # Scalar attributes that used to carry a dimensionless value but semantically represent bits.
+    # With bit now a distinct dimension, these must be upgraded so downstream `.to(MB/s)` conversions work.
+    dimensionless_to_bit_attrs = {
+        ("VideoStreaming", "bits_per_pixel"),
+    }
+
+    def _migrate_attr(obj_dict, attr_name, suffix):
+        if attr_name not in obj_dict:
+            return False
+        attr_value = obj_dict[attr_name]
+        if not (isinstance(attr_value, dict) and isinstance(attr_value.get("unit"), str)):
+            return False
+        old_unit = attr_value["unit"]
+        new_unit = _append_suffix_to_byte_tokens(old_unit, suffix)
+        if new_unit == old_unit:
+            return False
+        attr_value["unit"] = new_unit
+        return True
+
+    def _migrate_dimensionless_to_bit(obj_dict, attr_name):
+        if attr_name not in obj_dict:
+            return False
+        attr_value = obj_dict[attr_name]
+        if not (isinstance(attr_value, dict) and isinstance(attr_value.get("unit"), str)):
+            return False
+        if attr_value["unit"] != "dimensionless":
+            return False
+        attr_value["unit"] = "bit"
+        return True
+
+    log_upgrade = False
+    for class_name, objects_dict in system_dict.items():
+        if class_name == "efootprint_version" or not isinstance(objects_dict, dict):
+            continue
+        efootprint_class = efootprint_classes_with_suppressed.get(class_name)
+        if efootprint_class is None:
+            continue
+        matching_stored_scalars = {
+            attr for (migration_class, attr) in scalar_stored_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
+        matching_stored_ts = {
+            attr for (migration_class, attr) in timeseries_stored_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
+        matching_ram_scalars = {
+            attr for (migration_class, attr) in scalar_ram_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
+        matching_dimensionless_to_bit = {
+            attr for (migration_class, attr) in dimensionless_to_bit_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
+        for obj_dict in objects_dict.values():
+            for attr in matching_stored_scalars | matching_stored_ts:
+                log_upgrade |= _migrate_attr(obj_dict, attr, "stored")
+            for attr in matching_ram_scalars:
+                log_upgrade |= _migrate_attr(obj_dict, attr, "ram")
+            for attr in matching_dimensionless_to_bit:
+                log_upgrade |= _migrate_dimensionless_to_bit(obj_dict, attr)
+
+    if log_upgrade:
+        logger.info("Upgraded system dict from version 19 to 20: appended `_stored`/`_ram` to byte-unit "
+                    "attributes (data_stored, power_per_storage_capacity, recurrent_storage_needed, ram_per_gpu).")
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -452,4 +568,5 @@ VERSION_UPGRADE_HANDLERS = {
     16: upgrade_version_16_to_17,
     17: upgrade_version_17_to_18,
     18: upgrade_version_18_to_19,
+    19: upgrade_version_19_to_20,
 }
