@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ec95f3 {
+             #mynetwork_ab690c {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ec95f3" class="card-body"></div>
+            <div id="mynetwork_ab690c" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ec95f3');
+                  var container = document.getElementById('mynetwork_ab690c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of edge process RAM need", "label": "Validated recurrent\nneed of edge process\nRAM need", "shape": "dot", "size": 15, "title": "Validated recurrent need of edge process RAM need\n=\nduplicate (edge process RAM need recurrent need)\n=\nduplicate (168 values in GB_ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB_ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process RAM need recurrent need", "label": "edge process RAM\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process RAM need recurrent need\n=\nduplicate (Recurrent RAM needed for edge process)\n=\nduplicate (168 values in GB_ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB_ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent RAM needed for edge process", "label": "Recurrent RAM needed\nfor edge process", "shape": "dot", "size": 15, "title": "Recurrent RAM needed for edge process = 168 values in GB_ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of edge process RAM need", "label": "Validated recurrent\nneed of edge process\nRAM need", "shape": "dot", "size": 15, "title": "Validated recurrent need of edge process RAM need\n=\nduplicate (edge process RAM need recurrent need)\n=\nduplicate (168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 450}, {"color": null, "id": "edge process RAM need recurrent need", "label": "edge process RAM\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process RAM need recurrent need\n=\nduplicate (Recurrent RAM needed for edge process)\n=\nduplicate (168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2])\n=\n168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent RAM needed for edge process", "label": "Recurrent RAM needed\nfor edge process", "shape": "dot", "size": 15, "title": "Recurrent RAM needed for edge process = 168 values in GB ram:\nfirst 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],\nlast 10 vals [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge process RAM need recurrent need", "to": "Validated recurrent need of edge process RAM need"}, {"arrows": "to", "from": "Recurrent RAM needed for edge process", "to": "edge process RAM need recurrent need"}]);
 
                   nodeColors = {};

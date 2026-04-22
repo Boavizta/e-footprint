@@ -3387,7 +3387,7 @@
 <p>An instance of <a href="../EdgeStorage/">EdgeStorage</a>.</p>
 <h3 id="recurrent_need">recurrent_need</h3>
 <p>Storage need recurrent need, in typical week of hourly timeseries data, starting on Monday at midnight.</p>
-<p>For example, 168 values in MB:
+<p>For example, 168 values in MB stored:
     first 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
     last 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]</p>
 <h2 id="backwards-links">Backwards links</h2>
@@ -3396,7 +3396,7 @@
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="recurrent_need_validation">recurrent_need_validation</h3>
-<p>Example value: 168 values in MB:<br />
+<p>Example value: 168 values in MB stored:<br />
     first 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],<br />
     last 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]  </p>
 <p>Depends directly on:  </p>
@@ -3437,7 +3437,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1d8cf4 {
+             #mynetwork_0f080d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3459,7 +3459,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1d8cf4" class="card-body"></div>
+            <div id="mynetwork_0f080d" class="card-body"></div>
         </div>
 
 
@@ -3489,12 +3489,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1d8cf4');
+                  var container = document.getElementById('mynetwork_0f080d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of Storage need", "label": "Validated recurrent\nneed of Storage need", "shape": "dot", "size": 15, "title": "Validated recurrent need of Storage need\n=\nduplicate (Storage need recurrent need)\n=\nduplicate (168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50])\n=\n168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": 0.0, "y": 300}, {"color": null, "id": "Storage need recurrent need", "label": "Storage need\nrecurrent need", "shape": "dot", "size": 15, "title": "Storage need recurrent need = 168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need of Storage need", "label": "Validated recurrent\nneed of Storage need", "shape": "dot", "size": 15, "title": "Validated recurrent need of Storage need\n=\nduplicate (Storage need recurrent need)\n=\nduplicate (168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50])\n=\n168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": 0.0, "y": 300}, {"color": null, "id": "Storage need recurrent need", "label": "Storage need\nrecurrent need", "shape": "dot", "size": 15, "title": "Storage need recurrent need = 168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need recurrent need", "to": "Validated recurrent need of Storage need"}]);
 
                   nodeColors = {};
@@ -3563,9 +3563,9 @@
 <p>You can also visit the <a href='../calculus_graphs/Storage_need_recurrent_need_validation.html' target='_blank'>link to Validated recurrent need of Storage need’s full calculation graph</a>.</p>
 <h3 id="unitary_hourly_need_per_usage_pattern">unitary_hourly_need_per_usage_pattern</h3>
 <p>Dictionary with EdgeUsagePattern as keys and 
-                        Storage need unitary hourly need for default edge usage pattern as values, in megabyte.  </p>
+                        Storage need unitary hourly need for default edge usage pattern as values, in megabyte_stored.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
     last 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50], <br />
 }  </p>
@@ -3609,7 +3609,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_c5799f {
+             #mynetwork_4c32d3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3631,7 +3631,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c5799f" class="card-body"></div>
+            <div id="mynetwork_4c32d3" class="card-body"></div>
         </div>
 
 
@@ -3661,12 +3661,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c5799f');
+                  var container = document.getElementById('mynetwork_4c32d3');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage need unitary hourly need for Default edge usage pattern", "label": "Storage need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need unitary hourly need for Default edge usage pattern\n=\n(Storage need recurrent need expanded over timespan edge usage journey hourly nb\nof edge usage journeys in parallel converted to UTC from devices country\ntimezone from user data) * Occurrences of Storage need within Default edge usage\npattern\n=\n(168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50]", "x": 0.0, "y": 600}, {"color": null, "id": "Storage need recurrent need", "label": "Storage need\nrecurrent need", "shape": "dot", "size": 15, "title": "Storage need recurrent need = 168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": -150.0, "y": 450}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage need unitary hourly need for Default edge usage pattern", "label": "Storage need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need unitary hourly need for Default edge usage pattern\n=\n(Storage need recurrent need expanded over timespan edge usage journey hourly nb\nof edge usage journeys in parallel converted to UTC from devices country\ntimezone from user data) * Occurrences of Storage need within Default edge usage\npattern\n=\n(168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50]", "x": 0.0, "y": 600}, {"color": null, "id": "Storage need recurrent need", "label": "Storage need\nrecurrent need", "shape": "dot", "size": 15, "title": "Storage need recurrent need = 168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50]", "x": -150.0, "y": 450}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 450}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 112.5, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need recurrent need", "to": "Storage need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Storage need unitary hourly need for Default edge usage pattern"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "Storage need unitary hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -3737,7 +3737,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Storage need cumulative unitary storage need for default edge usage pattern as values, in terabyte_stored.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_stored:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
     last 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6], <br />
 }  </p>
@@ -3779,7 +3779,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_23a089 {
+             #mynetwork_025bd9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3801,7 +3801,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_23a089" class="card-body"></div>
+            <div id="mynetwork_025bd9" class="card-body"></div>
         </div>
 
 
@@ -3831,12 +3831,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_23a089');
+                  var container = document.getElementById('mynetwork_025bd9');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage need cumulative unitary storage need for Default edge usage pattern", "label": "Storage need\ncumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Storage need unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need unitary hourly need for Default edge usage pattern", "label": "Storage need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need unitary hourly need for Default edge usage pattern\n=\n(Storage need recurrent need expanded over timespan edge usage journey hourly nb\nof edge usage journeys in parallel converted to UTC from devices country\ntimezone from user data) * Occurrences of Storage need within Default edge usage\npattern\n=\n(168 values in MB:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage need cumulative unitary storage need for Default edge usage pattern", "label": "Storage need\ncumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Storage need unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in MB stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need unitary hourly need for Default edge usage pattern", "label": "Storage need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need unitary hourly need for Default edge usage pattern\n=\n(Storage need recurrent need expanded over timespan edge usage journey hourly nb\nof edge usage journeys in parallel converted to UTC from devices country\ntimezone from user data) * Occurrences of Storage need within Default edge usage\npattern\n=\n(168 values in MB stored:\nfirst 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],\nlast 10 vals [-50, -50, -50, -50, -50, -50, -50, -50, -50, -50] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need unitary hourly need for Default edge usage pattern", "to": "Storage need cumulative unitary storage need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -3905,7 +3905,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>You can also visit the <a href='../calculus_graphs/Storage_need_cumulative_unitary_storage_need_per_usage_pattern.html' target='_blank'>link to Storage need cumulative unitary storage need for Default edge usage pattern’s full calculation graph</a>.</p>
 <h3 id="total_hourly_need_across_usage_patterns">total_hourly_need_across_usage_patterns</h3>
 <p>Storage need total hourly need across usage patterns in concurrent * terabyte_stored.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·TB_stored:<br />
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
     last 10 vals [15.7, 16, 16.2, 16.5, 16.7, 13.6, 10.3, 6.99, 3.54, 0]  </p>
 <p>Depends directly on:  </p>
@@ -3947,7 +3947,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_2bc251 {
+             #mynetwork_0c6fe3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3969,7 +3969,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2bc251" class="card-body"></div>
+            <div id="mynetwork_0c6fe3" class="card-body"></div>
         </div>
 
 
@@ -3999,12 +3999,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2bc251');
+                  var container = document.getElementById('mynetwork_0c6fe3');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage need total hourly need across usage patterns", "label": "Storage need total\nhourly need across\nusage patterns", "shape": "dot", "size": 15, "title": "Storage need total hourly need across usage patterns\n=\nStorage need cumulative unitary storage need for Default edge usage pattern *\nedge usage journey hourly nb of edge usage journeys in parallel\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6] * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7TB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [15.7, 16, 16.2, 16.5, 16.7, 13.6, 10.3, 6.99, 3.54, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need cumulative unitary storage need for Default edge usage pattern", "label": "Storage need\ncumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Storage need unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in MB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6]", "x": -150.0, "y": 750}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage need total hourly need across usage patterns", "label": "Storage need total\nhourly need across\nusage patterns", "shape": "dot", "size": 15, "title": "Storage need total hourly need across usage patterns\n=\nStorage need cumulative unitary storage need for Default edge usage pattern *\nedge usage journey hourly nb of edge usage journeys in parallel\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6] * 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [15.7, 16, 16.2, 16.5, 16.7, 13.6, 10.3, 6.99, 3.54, 0]", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need cumulative unitary storage need for Default edge usage pattern", "label": "Storage need\ncumulative unitary\nstorage need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Storage need cumulative unitary storage need for Default edge usage pattern\n=\ncumulative sum (Storage need unitary hourly need for Default edge usage pattern)\n=\ncumulative sum (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in MB stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [50, 50, 50, 50, 50, 50, 50, 50, 50, 50])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [3.15, 3.2, 3.25, 3.3, 3.35, 3.4, 3.45, 3.5, 3.55, 3.6]", "x": -150.0, "y": 750}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need cumulative unitary storage need for Default edge usage pattern", "to": "Storage need total hourly need across usage patterns"}, {"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Storage need total hourly need across usage patterns"}]);
 
                   nodeColors = {};
@@ -4075,7 +4075,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with RecurrentEdgeDeviceNeed as keys and 
                         Custom edge device need weight in storage need impact repartition as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
+RecurrentEdgeDeviceNeed custom edge device need (a3d44e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],<br />
     last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0], <br />
 }  </p>
@@ -4117,7 +4117,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_1b3a57 {
+             #mynetwork_929a38 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4139,7 +4139,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1b3a57" class="card-body"></div>
+            <div id="mynetwork_929a38" class="card-body"></div>
         </div>
 
 
@@ -4169,7 +4169,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1b3a57');
+                  var container = document.getElementById('mynetwork_929a38');
 
 
 
@@ -4284,7 +4284,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_8ccd10 {
+             #mynetwork_c54660 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4306,7 +4306,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8ccd10" class="card-body"></div>
+            <div id="mynetwork_c54660" class="card-body"></div>
         </div>
 
 
@@ -4336,7 +4336,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8ccd10');
+                  var container = document.getElementById('mynetwork_c54660');
 
 
 
@@ -4412,7 +4412,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 <p>Dictionary with RecurrentEdgeDeviceNeed as keys and 
                         Storage need fabrication impact attribution to custom edge device need as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeDeviceNeed custom edge device need (a3d44e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -4455,7 +4455,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_f856ab {
+             #mynetwork_391ef8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4477,7 +4477,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f856ab" class="card-body"></div>
+            <div id="mynetwork_391ef8" class="card-body"></div>
         </div>
 
 
@@ -4507,7 +4507,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f856ab');
+                  var container = document.getElementById('mynetwork_391ef8');
 
 
 
@@ -4583,7 +4583,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 <p>Dictionary with RecurrentEdgeDeviceNeed as keys and 
                         Custom edge device need weight in storage need impact repartition as values, in concurrent * gram / kilowatt_hour.  </p>
 <p>Example value: {<br />
-RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
+RecurrentEdgeDeviceNeed custom edge device need (a3d44e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],<br />
     last 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700, 0], <br />
 }  </p>
@@ -4625,7 +4625,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_baa6d7 {
+             #mynetwork_39f6ec {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4647,7 +4647,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_baa6d7" class="card-body"></div>
+            <div id="mynetwork_39f6ec" class="card-body"></div>
         </div>
 
 
@@ -4677,7 +4677,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_baa6d7');
+                  var container = document.getElementById('mynetwork_39f6ec');
 
 
 
@@ -4792,7 +4792,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_3a1ef8 {
+             #mynetwork_7cc620 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4814,7 +4814,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3a1ef8" class="card-body"></div>
+            <div id="mynetwork_7cc620" class="card-body"></div>
         </div>
 
 
@@ -4844,7 +4844,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3a1ef8');
+                  var container = document.getElementById('mynetwork_7cc620');
 
 
 
@@ -4920,7 +4920,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 <p>Dictionary with RecurrentEdgeDeviceNeed as keys and 
                         Storage need usage impact attribution to custom edge device need as values, in concurrent.  </p>
 <p>Example value: {<br />
-RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeDeviceNeed custom edge device need (a3d44e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -4963,7 +4963,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         </center>
         <style type="text/css">
 
-             #mynetwork_3dc5c0 {
+             #mynetwork_cff408 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4985,7 +4985,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3dc5c0" class="card-body"></div>
+            <div id="mynetwork_cff408" class="card-body"></div>
         </div>
 
 
@@ -5015,7 +5015,7 @@ RecurrentEdgeDeviceNeed custom edge device need (46397b): 105192 values from 202
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3dc5c0');
+                  var container = document.getElementById('mynetwork_cff408');
 
 
 

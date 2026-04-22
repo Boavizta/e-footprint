@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_954185 {
+             #mynetwork_f480c3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_954185" class="card-body"></div>
+            <div id="mynetwork_f480c3" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_954185');
+                  var container = document.getElementById('mynetwork_f480c3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of on premise GPU server usage impact repartition weights", "label": "Sum of on premise\nGPU server usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of on premise GPU server usage impact repartition weights\n=\nManually defined GPU job weight in on premise GPU server impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000417, 0.0000695, 0.0000695, 0.000486, 0.000486,\n0.0000695, 0.000486, 0.000625, 0.0000695],\nlast 10 vals [0.000486, 0.0000695, 0.000208, 0.0000695, 0.000486, 0.000347,\n0.000417, 0.000208, 0.000208, 0.000278]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000417, 0.0000695, 0.0000695, 0.000486, 0.000486,\n0.0000695, 0.000486, 0.000625, 0.0000695],\nlast 10 vals [0.000486, 0.0000695, 0.000208, 0.0000695, 0.000486, 0.000347,\n0.000417, 0.000208, 0.000208, 0.000278]", "x": 0.0, "y": 1050}, {"color": null, "id": "Manually defined GPU job weight in on premise GPU server impact repartition", "label": "Manually defined GPU\njob weight in on\npremise GPU server\nimpact repartition", "shape": "dot", "size": 15, "title": "Manually defined GPU job weight in on premise GPU server impact repartition\n=\nHourly Manually defined GPU job average occurrences across usage patterns *\n(gpus needed on server on premise GPU server to process Manually defined GPU job\nfrom e-footprint hypothesis / Nb gpus of on premise GPU server from e-footprint\nhypothesis + RAM needed on server on premise GPU server to process Manually\ndefined GPU job from e-footprint hypothesis / on premise GPU server RAM)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00167, 0.000278, 0.000278, 0.00194, 0.00194, 0.000278,\n0.00194, 0.0025, 0.000278],\nlast 10 vals [0.00194, 0.000278, 0.000833, 0.000278, 0.00194, 0.00139, 0.00167,\n0.000833, 0.000833, 0.00111] * (1 gpu / 4 gpu + 50 MB_ram / 320 GB_ram)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000417, 0.0000695, 0.0000695, 0.000486, 0.000486,\n0.0000695, 0.000486, 0.000625, 0.0000695],\nlast 10 vals [0.000486, 0.0000695, 0.000208, 0.0000695, 0.000486, 0.000347,\n0.000417, 0.000208, 0.000208, 0.000278]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of on premise GPU server usage impact repartition weights", "label": "Sum of on premise\nGPU server usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of on premise GPU server usage impact repartition weights\n=\nManually defined GPU job weight in on premise GPU server impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000278, 0.000625, 0.0000695, 0.0000695, 0.000278,\n0.000208, 0.000486, 0.000278, 0.000417],\nlast 10 vals [0.000625, 0.000625, 0.000556, 0.000208, 0.000417, 0.000417,\n0.000208, 0.000278, 0.000486, 0.000139]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000278, 0.000625, 0.0000695, 0.0000695, 0.000278,\n0.000208, 0.000486, 0.000278, 0.000417],\nlast 10 vals [0.000625, 0.000625, 0.000556, 0.000208, 0.000417, 0.000417,\n0.000208, 0.000278, 0.000486, 0.000139]", "x": 0.0, "y": 1050}, {"color": null, "id": "Manually defined GPU job weight in on premise GPU server impact repartition", "label": "Manually defined GPU\njob weight in on\npremise GPU server\nimpact repartition", "shape": "dot", "size": 15, "title": "Manually defined GPU job weight in on premise GPU server impact repartition\n=\nHourly Manually defined GPU job average occurrences across usage patterns *\n(gpus needed on server on premise GPU server to process Manually defined GPU job\nfrom e-footprint hypothesis / Nb gpus of on premise GPU server from e-footprint\nhypothesis + RAM needed on server on premise GPU server to process Manually\ndefined GPU job from e-footprint hypothesis / on premise GPU server RAM)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00111, 0.0025, 0.000278, 0.000278, 0.00111, 0.000833,\n0.00194, 0.00111, 0.00167],\nlast 10 vals [0.0025, 0.0025, 0.00222, 0.000833, 0.00167, 0.00167, 0.000833,\n0.00111, 0.00194, 0.000556] * (1 gpu / 4 gpu + 50 MB ram / 320 GB ram)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000417, 0.000278, 0.000625, 0.0000695, 0.0000695, 0.000278,\n0.000208, 0.000486, 0.000278, 0.000417],\nlast 10 vals [0.000625, 0.000625, 0.000556, 0.000208, 0.000417, 0.000417,\n0.000208, 0.000278, 0.000486, 0.000139]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined GPU job weight in on premise GPU server impact repartition", "to": "Sum of on premise GPU server usage impact repartition weights"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_33fd06 {
+             #mynetwork_0fa881 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_33fd06" class="card-body"></div>
+            <div id="mynetwork_0fa881" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_33fd06');
+                  var container = document.getElementById('mynetwork_0fa881');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Compute per unit of edge computer CPU", "label": "Compute per unit of\nedge computer CPU", "shape": "dot", "size": 15, "title": "Compute per unit of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8 cpu_core)\n=\n8 cpu_core", "x": 0.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8 cpu_core", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Compute per unit of edge computer CPU", "label": "Compute per unit of\nedge computer CPU", "shape": "dot", "size": 15, "title": "Compute per unit of edge computer CPU\n=\nduplicate (Compute of edge computer)\n=\nduplicate (8 cpu core)\n=\n8 cpu core", "x": 0.0, "y": 300}, {"color": null, "id": "Compute of edge computer", "label": "Compute of edge\ncomputer", "shape": "dot", "size": 15, "title": "Compute of edge computer = 8 cpu core", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Compute of edge computer", "to": "Compute per unit of edge computer CPU"}]);
 
                   nodeColors = {};

@@ -3397,8 +3397,8 @@
 <h3 id="utc_hourly_usage_journey_starts">utc_hourly_usage_journey_starts</h3>
 <p>Usage pattern utc in occurrence.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],<br />
-    last 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4]  </p>
+    first 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],<br />
+    last 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_usage_journey_starts">usage pattern hourly nb of visits</a></li>
@@ -3438,7 +3438,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2d18a6 {
+             #mynetwork_7605fc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3460,7 +3460,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2d18a6" class="card-body"></div>
+            <div id="mynetwork_7605fc" class="card-body"></div>
         </div>
 
 
@@ -3490,12 +3490,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2d18a6');
+                  var container = document.getElementById('mynetwork_7605fc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [4, 6, 6, 1, 1, 7, 7, 1, 7, 9],\nlast 10 vals [6, 7, 1, 3, 1, 7, 5, 6, 3, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [4, 6, 6, 1, 1, 7, 7, 1, 7, 9],\nlast 10 vals [6, 7, 1, 3, 1, 7, 5, 6, 3, 3]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 6, 4, 9, 1, 1, 4, 3, 7, 4],\nlast 10 vals [8, 9, 9, 8, 3, 6, 6, 3, 4, 7] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2]", "x": 0.0, "y": 300}, {"color": null, "id": "usage pattern hourly nb of visits", "label": "usage pattern hourly\nnb of visits", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of visits = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [2, 6, 4, 9, 1, 1, 4, 3, 7, 4],\nlast 10 vals [8, 9, 9, 8, 3, 6, 6, 3, 4, 7]", "x": -75.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of visits", "to": "usage pattern UTC"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}]);
 
                   nodeColors = {};
@@ -3566,7 +3566,7 @@
 <p>Dictionary with Country as keys and 
                         Impact repartition weight as values, in dimensionless.  </p>
 <p>Example value: {<br />
-Country devices country (577263): 1 , <br />
+Country devices country (ff39a1): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3606,7 +3606,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_3d9c8a {
+             #mynetwork_f9cb47 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3628,7 +3628,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3d9c8a" class="card-body"></div>
+            <div id="mynetwork_f9cb47" class="card-body"></div>
         </div>
 
 
@@ -3658,7 +3658,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d9c8a');
+                  var container = document.getElementById('mynetwork_f9cb47');
 
 
 
@@ -3771,7 +3771,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_3c8f81 {
+             #mynetwork_8fe09f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3793,7 +3793,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3c8f81" class="card-body"></div>
+            <div id="mynetwork_8fe09f" class="card-body"></div>
         </div>
 
 
@@ -3823,7 +3823,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3c8f81');
+                  var container = document.getElementById('mynetwork_8fe09f');
 
 
 
@@ -3899,7 +3899,7 @@ Country devices country (577263): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Usage pattern fabrication impact attribution to devices country as values, in concurrent.  </p>
 <p>Example value: {<br />
-Country devices country (577263): 1 , <br />
+Country devices country (ff39a1): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3940,7 +3940,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_a2ed80 {
+             #mynetwork_5a648f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3962,7 +3962,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a2ed80" class="card-body"></div>
+            <div id="mynetwork_5a648f" class="card-body"></div>
         </div>
 
 
@@ -3992,7 +3992,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a2ed80');
+                  var container = document.getElementById('mynetwork_5a648f');
 
 
 
@@ -4068,7 +4068,7 @@ Country devices country (577263): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Impact repartition weight as values, in dimensionless.  </p>
 <p>Example value: {<br />
-Country devices country (577263): 1 , <br />
+Country devices country (ff39a1): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4108,7 +4108,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_6f1402 {
+             #mynetwork_db6066 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4130,7 +4130,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6f1402" class="card-body"></div>
+            <div id="mynetwork_db6066" class="card-body"></div>
         </div>
 
 
@@ -4160,7 +4160,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6f1402');
+                  var container = document.getElementById('mynetwork_db6066');
 
 
 
@@ -4273,7 +4273,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_b9fde7 {
+             #mynetwork_095582 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4295,7 +4295,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b9fde7" class="card-body"></div>
+            <div id="mynetwork_095582" class="card-body"></div>
         </div>
 
 
@@ -4325,7 +4325,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b9fde7');
+                  var container = document.getElementById('mynetwork_095582');
 
 
 
@@ -4401,7 +4401,7 @@ Country devices country (577263): 1 , <br />
 <p>Dictionary with Country as keys and 
                         Usage pattern usage impact attribution to devices country as values, in concurrent.  </p>
 <p>Example value: {<br />
-Country devices country (577263): 1 , <br />
+Country devices country (ff39a1): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4442,7 +4442,7 @@ Country devices country (577263): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_40df60 {
+             #mynetwork_d49900 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4464,7 +4464,7 @@ Country devices country (577263): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_40df60" class="card-body"></div>
+            <div id="mynetwork_d49900" class="card-body"></div>
         </div>
 
 
@@ -4494,7 +4494,7 @@ Country devices country (577263): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_40df60');
+                  var container = document.getElementById('mynetwork_d49900');
 
 
 

@@ -3598,16 +3598,16 @@
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li>
-<p><a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a></p>
+<p><a href="../EdgeDevice/">EdgeDevice</a></p>
 </li>
 <li>
-<p><a href="../EdgeDevice/">EdgeDevice</a></p>
+<p><a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a></p>
 </li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="ram">ram</h3>
 <p>ExplainableQuantity in gigabyte_ram, representing the Ram of edge ram component.  </p>
-<p>Example value: 8 GB_ram  </p>
+<p>Example value: 8 GB ram  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#ram_per_unit">RAM per unit of edge RAM component</a></li>
@@ -3647,7 +3647,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ae83b5 {
+             #mynetwork_e93d2a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3669,7 +3669,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ae83b5" class="card-body"></div>
+            <div id="mynetwork_e93d2a" class="card-body"></div>
         </div>
 
 
@@ -3699,12 +3699,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ae83b5');
+                  var container = document.getElementById('mynetwork_e93d2a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB_ram * 1\n=\n8 GB_ram", "x": 0.0, "y": 300}, {"color": null, "id": "RAM per unit of edge RAM component", "label": "RAM per unit of edge\nRAM component", "shape": "dot", "size": 15, "title": "RAM per unit of edge RAM component = 8 GB_ram", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge RAM component from e-footprint hypothesis", "label": "Number of units of\nedge RAM component\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge RAM component from e-footprint hypothesis = 1", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB ram * 1\n=\n8 GB ram", "x": 0.0, "y": 300}, {"color": null, "id": "RAM per unit of edge RAM component", "label": "RAM per unit of edge\nRAM component", "shape": "dot", "size": 15, "title": "RAM per unit of edge RAM component = 8 GB ram", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge RAM component from e-footprint hypothesis", "label": "Number of units of\nedge RAM component\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge RAM component from e-footprint hypothesis = 1", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM per unit of edge RAM component", "to": "RAM of edge RAM component"}, {"arrows": "to", "from": "Number of units of edge RAM component from e-footprint hypothesis", "to": "RAM of edge RAM component"}]);
 
                   nodeColors = {};
@@ -3773,7 +3773,7 @@
 <p>You can also visit the <a href='../calculus_graphs/edge_RAM_component_ram.html' target='_blank'>link to RAM of edge RAM component’s full calculation graph</a>.</p>
 <h3 id="available_ram_per_instance">available_ram_per_instance</h3>
 <p>ExplainableQuantity in gigabyte_ram, representing the Available ram per edge ram component instance.  </p>
-<p>Example value: 7 GB_ram  </p>
+<p>Example value: 7 GB ram  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#ram">RAM of edge RAM component</a></li>
@@ -3813,7 +3813,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_83d154 {
+             #mynetwork_7fc4e1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3835,7 +3835,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_83d154" class="card-body"></div>
+            <div id="mynetwork_7fc4e1" class="card-body"></div>
         </div>
 
 
@@ -3865,12 +3865,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_83d154');
+                  var container = document.getElementById('mynetwork_7fc4e1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge RAM component instance", "label": "Available RAM per\nedge RAM component\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge RAM component instance\n=\nRAM of edge RAM component - Base RAM consumption of edge RAM component\n=\n8 GB_ram - 1 GB_ram\n=\n7 GB_ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB_ram * 1\n=\n8 GB_ram", "x": -75.0, "y": 300}, {"color": null, "id": "Base RAM consumption of edge RAM component", "label": "Base RAM consumption\nof edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge RAM component = 1 GB_ram", "x": 75.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge RAM component instance", "label": "Available RAM per\nedge RAM component\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge RAM component instance\n=\nRAM of edge RAM component - Base RAM consumption of edge RAM component\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB ram * 1\n=\n8 GB ram", "x": -75.0, "y": 300}, {"color": null, "id": "Base RAM consumption of edge RAM component", "label": "Base RAM consumption\nof edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge RAM component = 1 GB ram", "x": 75.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM of edge RAM component", "to": "Available RAM per edge RAM component instance"}, {"arrows": "to", "from": "Base RAM consumption of edge RAM component", "to": "Available RAM per edge RAM component instance"}]);
 
                   nodeColors = {};
@@ -3941,7 +3941,7 @@
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge ram component hourly ram need for default edge usage pattern as values, in gigabyte_ram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB ram:<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -3984,7 +3984,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_b67930 {
+             #mynetwork_efe0a8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4006,7 +4006,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b67930" class="card-body"></div>
+            <div id="mynetwork_efe0a8" class="card-body"></div>
         </div>
 
 
@@ -4036,12 +4036,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b67930');
+                  var container = document.getElementById('mynetwork_efe0a8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge RAM component hourly RAM need for Default edge usage pattern", "label": "edge RAM component\nhourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component hourly RAM need for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern logically dependent\non Available RAM per edge RAM component instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB_ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -187.5, "y": 600}, {"color": null, "id": "Available RAM per edge RAM component instance", "label": "Available RAM per\nedge RAM component\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge RAM component instance\n=\nRAM of edge RAM component - Base RAM consumption of edge RAM component\n=\n8 GB_ram - 1 GB_ram\n=\n7 GB_ram", "x": 187.5, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge RAM component hourly RAM need for Default edge usage pattern", "label": "edge RAM component\nhourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component hourly RAM need for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern logically dependent\non Available RAM per edge RAM component instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -187.5, "y": 600}, {"color": null, "id": "Available RAM per edge RAM component instance", "label": "Available RAM per\nedge RAM component\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge RAM component instance\n=\nRAM of edge RAM component - Base RAM consumption of edge RAM component\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 187.5, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "edge RAM component hourly RAM need for Default edge usage pattern"}, {"arrows": "to", "from": "Available RAM per edge RAM component instance", "to": "edge RAM component hourly RAM need for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4150,7 +4150,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_983f2d {
+             #mynetwork_762a9b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4172,7 +4172,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_983f2d" class="card-body"></div>
+            <div id="mynetwork_762a9b" class="card-body"></div>
         </div>
 
 
@@ -4202,7 +4202,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_983f2d');
+                  var container = document.getElementById('mynetwork_762a9b');
 
 
 
@@ -4316,7 +4316,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_972434 {
+             #mynetwork_fbcfb7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4338,7 +4338,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_972434" class="card-body"></div>
+            <div id="mynetwork_fbcfb7" class="card-body"></div>
         </div>
 
 
@@ -4368,7 +4368,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_972434');
+                  var container = document.getElementById('mynetwork_fbcfb7');
 
 
 
@@ -4482,7 +4482,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_609bf5 {
+             #mynetwork_0c5f6b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4504,7 +4504,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_609bf5" class="card-body"></div>
+            <div id="mynetwork_0c5f6b" class="card-body"></div>
         </div>
 
 
@@ -4534,7 +4534,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_609bf5');
+                  var container = document.getElementById('mynetwork_0c5f6b');
 
 
 
@@ -4610,7 +4610,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge ram component unitary power for default edge usage pattern as values, in watt.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:<br />
     first 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],<br />
     last 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4], <br />
 }  </p>
@@ -4656,7 +4656,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_b50c65 {
+             #mynetwork_14ac8d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4678,7 +4678,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b50c65" class="card-body"></div>
+            <div id="mynetwork_14ac8d" class="card-body"></div>
         </div>
 
 
@@ -4708,12 +4708,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b50c65');
+                  var container = document.getElementById('mynetwork_14ac8d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge RAM component unitary power for Default edge usage pattern", "label": "edge RAM component\nunitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component unitary power for Default edge usage pattern\n=\n((edge RAM component hourly RAM need for Default edge usage pattern + Base RAM\nconsumption of edge RAM component) / RAM of edge RAM component) * (Power of edge\nRAM component - Idle power of edge RAM component) + Idle power of edge RAM\ncomponent\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB_ram) / 8 GB_ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}, {"color": null, "id": "edge RAM component hourly RAM need for Default edge usage pattern", "label": "edge RAM component\nhourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component hourly RAM need for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern logically dependent\non Available RAM per edge RAM component instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB_ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -360.0, "y": 750}, {"color": null, "id": "Base RAM consumption of edge RAM component", "label": "Base RAM consumption\nof edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge RAM component = 1 GB_ram", "x": 360.0, "y": 450}, {"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB_ram * 1\n=\n8 GB_ram", "x": 180.0, "y": 450}, {"color": null, "id": "Power of edge RAM component", "label": "Power of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Power of edge RAM component\n=\nPower per unit of edge RAM component * Number of units of edge RAM component\nfrom e-footprint hypothesis\n=\n10 W * 1\n=\n10 W", "x": 180.0, "y": 750}, {"color": null, "id": "Idle power of edge RAM component", "label": "Idle power of edge\nRAM component", "shape": "dot", "size": 15, "title": "Idle power of edge RAM component\n=\nIdle power per unit of edge RAM component * Number of units of edge RAM\ncomponent from e-footprint hypothesis\n=\n2 W * 1\n=\n2 W", "x": 360.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge RAM component unitary power for Default edge usage pattern", "label": "edge RAM component\nunitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component unitary power for Default edge usage pattern\n=\n((edge RAM component hourly RAM need for Default edge usage pattern + Base RAM\nconsumption of edge RAM component) / RAM of edge RAM component) * (Power of edge\nRAM component - Idle power of edge RAM component) + Idle power of edge RAM\ncomponent\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB ram) / 8 GB ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}, {"color": null, "id": "edge RAM component hourly RAM need for Default edge usage pattern", "label": "edge RAM component\nhourly RAM need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component hourly RAM need for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern logically dependent\non Available RAM per edge RAM component instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] logically dependent on 7 GB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": -360.0, "y": 750}, {"color": null, "id": "Base RAM consumption of edge RAM component", "label": "Base RAM consumption\nof edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge RAM component = 1 GB ram", "x": 360.0, "y": 450}, {"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB ram * 1\n=\n8 GB ram", "x": 180.0, "y": 450}, {"color": null, "id": "Power of edge RAM component", "label": "Power of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Power of edge RAM component\n=\nPower per unit of edge RAM component * Number of units of edge RAM component\nfrom e-footprint hypothesis\n=\n10 W * 1\n=\n10 W", "x": 180.0, "y": 750}, {"color": null, "id": "Idle power of edge RAM component", "label": "Idle power of edge\nRAM component", "shape": "dot", "size": 15, "title": "Idle power of edge RAM component\n=\nIdle power per unit of edge RAM component * Number of units of edge RAM\ncomponent from e-footprint hypothesis\n=\n2 W * 1\n=\n2 W", "x": 360.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge RAM component hourly RAM need for Default edge usage pattern", "to": "edge RAM component unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Base RAM consumption of edge RAM component", "to": "edge RAM component unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "RAM of edge RAM component", "to": "edge RAM component unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Power of edge RAM component", "to": "edge RAM component unitary power for Default edge usage pattern"}, {"arrows": "to", "from": "Idle power of edge RAM component", "to": "edge RAM component unitary power for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -4784,7 +4784,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly edge ram component fabrication footprint per edge device for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],<br />
     last 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114, 0.000759, 0.000379, 0], <br />
 }  </p>
@@ -4828,7 +4828,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_ec8c48 {
+             #mynetwork_f506be {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4850,7 +4850,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ec8c48" class="card-body"></div>
+            <div id="mynetwork_f506be" class="card-body"></div>
         </div>
 
 
@@ -4880,7 +4880,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ec8c48');
+                  var container = document.getElementById('mynetwork_f506be');
 
 
 
@@ -4956,7 +4956,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Hourly energy consumed by edge ram component per edge device for default edge usage pattern as values, in concurrent * hour * watt.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],<br />
     last 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0], <br />
 }  </p>
@@ -4999,7 +4999,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_d58b1d {
+             #mynetwork_1fbbdc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5021,7 +5021,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d58b1d" class="card-body"></div>
+            <div id="mynetwork_1fbbdc" class="card-body"></div>
         </div>
 
 
@@ -5051,12 +5051,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d58b1d');
+                  var container = document.getElementById('mynetwork_1fbbdc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge RAM\ncomponent per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge RAM\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -180.0, "y": 450}, {"color": null, "id": "edge RAM component unitary power for Default edge usage pattern", "label": "edge RAM component\nunitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component unitary power for Default edge usage pattern\n=\n((edge RAM component hourly RAM need for Default edge usage pattern + Base RAM\nconsumption of edge RAM component) / RAM of edge RAM component) * (Power of edge\nRAM component - Idle power of edge RAM component) + Idle power of edge RAM\ncomponent\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB_ram) / 8 GB_ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern", "label": "Hourly energy\nconsumed by edge RAM\ncomponent per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly energy consumed by edge RAM component per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * edge RAM\ncomponent unitary power for Default edge usage pattern * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4] * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nMWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00399, 0.00799, 0.012],\nlast 10 vals [0.02, 0.02, 0.02, 0.02, 0.02, 0.016, 0.012, 0.00799, 0.00399, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -180.0, "y": 450}, {"color": null, "id": "edge RAM component unitary power for Default edge usage pattern", "label": "edge RAM component\nunitary power for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge RAM component unitary power for Default edge usage pattern\n=\n((edge RAM component hourly RAM need for Default edge usage pattern + Base RAM\nconsumption of edge RAM component) / RAM of edge RAM component) * (Power of edge\nRAM component - Idle power of edge RAM component) + Idle power of edge RAM\ncomponent\n=\n((105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] + 1 GB ram) / 8 GB ram) * (10 W - 2\nW) + 2 W\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in W:\nfirst 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],\nlast 10 vals [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "edge RAM component unitary power for Default edge usage pattern", "to": "Hourly energy consumed by edge RAM component per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};
@@ -5127,7 +5127,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Edge ram component energy footprint per edge device for default edge usage pattern as values, in kilogram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],<br />
     last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.000679, 0.000339, 0], <br />
 }  </p>
@@ -5170,7 +5170,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_6bc546 {
+             #mynetwork_c8fc9c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5192,7 +5192,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6bc546" class="card-body"></div>
+            <div id="mynetwork_c8fc9c" class="card-body"></div>
         </div>
 
 
@@ -5222,7 +5222,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6bc546');
+                  var container = document.getElementById('mynetwork_c8fc9c');
 
 
 
@@ -5337,7 +5337,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_526da4 {
+             #mynetwork_a66c79 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5359,7 +5359,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_526da4" class="card-body"></div>
+            <div id="mynetwork_a66c79" class="card-body"></div>
         </div>
 
 
@@ -5389,7 +5389,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_526da4');
+                  var container = document.getElementById('mynetwork_a66c79');
 
 
 
@@ -5504,7 +5504,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_a152df {
+             #mynetwork_eddb32 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5526,7 +5526,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a152df" class="card-body"></div>
+            <div id="mynetwork_eddb32" class="card-body"></div>
         </div>
 
 
@@ -5556,7 +5556,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a152df');
+                  var container = document.getElementById('mynetwork_eddb32');
 
 
 
@@ -5671,7 +5671,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_90b827 {
+             #mynetwork_bdaeba {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5693,7 +5693,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_90b827" class="card-body"></div>
+            <div id="mynetwork_bdaeba" class="card-body"></div>
         </div>
 
 
@@ -5723,7 +5723,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_90b827');
+                  var container = document.getElementById('mynetwork_bdaeba');
 
 
 
@@ -5799,7 +5799,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with EdgeUsagePattern as keys and 
                         Total hourly need on edge ram component for default edge usage pattern as values, in gigabyte_ram.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB_ram:<br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB ram:<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -5841,7 +5841,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_285c32 {
+             #mynetwork_24329e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5863,7 +5863,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_285c32" class="card-body"></div>
+            <div id="mynetwork_24329e" class="card-body"></div>
         </div>
 
 
@@ -5893,12 +5893,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_285c32');
+                  var container = document.getElementById('mynetwork_24329e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nGB_ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need on edge RAM component for Default edge usage pattern", "label": "Total hourly need on\nedge RAM component\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge RAM component for Default edge usage pattern\n=\nRAM need unitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "RAM need unitary hourly need for Default edge usage pattern", "label": "RAM need unitary\nhourly need for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "RAM need unitary hourly need for Default edge usage pattern\n=\n(RAM need recurrent need expanded over timespan edge usage journey hourly nb of\nedge usage journeys in parallel converted to UTC from devices country timezone\nfrom user data) * Occurrences of RAM need within Default edge usage pattern\n=\n(168 values in GB ram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1] expanded over timespan 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "RAM need unitary hourly need for Default edge usage pattern", "to": "Total hourly need on edge RAM component for Default edge usage pattern"}]);
 
                   nodeColors = {};

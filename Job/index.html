@@ -3538,7 +3538,7 @@
 <h3 id="data_transferred">data_transferred</h3>
 <p>Sum of all data uploads and downloads for request manually defined job in kilobyte.</p>
 <h3 id="data_stored">data_stored</h3>
-<p>Data stored by request manually defined job in kilobyte.</p>
+<p>Data stored by request manually defined job in kilobyte_stored.</p>
 <h3 id="request_duration">request_duration</h3>
 <p>Request duration of manually defined job in second.</p>
 <h3 id="compute_needed">compute_needed</h3>
@@ -3559,10 +3559,10 @@
 <p>Dictionary with UsagePattern as keys and 
                         Hourly manually defined job occurrences in usagepattern usage pattern as values, in occurrence.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (7703de): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],<br />
-    last 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8], <br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
+UsagePattern usage pattern (c14c3c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],<br />
+    last 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4], <br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],<br />
     last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0], <br />
 }  </p>
@@ -3604,7 +3604,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_cbe8a8 {
+             #mynetwork_b672b7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3626,7 +3626,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cbe8a8" class="card-body"></div>
+            <div id="mynetwork_b672b7" class="card-body"></div>
         </div>
 
 
@@ -3656,12 +3656,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cbe8a8');
+                  var container = document.getElementById('mynetwork_b672b7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job occurrences in UsagePattern usage pattern", "label": "Hourly Manually\ndefined job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + usage pattern UTC shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4] shifted by no value + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [4, 6, 6, 1, 1, 7, 7, 1, 7, 9],\nlast 10 vals [6, 7, 1, 3, 1, 7, 5, 6, 3, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job occurrences in UsagePattern usage pattern", "label": "Hourly Manually\ndefined job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + usage pattern UTC shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] shifted by no value + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4]", "x": 0.0, "y": 450}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern hourly nb of visits converted to UTC from devices country timezone\nfrom user data\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [2, 6, 4, 9, 1, 1, 4, 3, 7, 4],\nlast 10 vals [8, 9, 9, 8, 3, 6, 6, 3, 4, 7] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "Hourly Manually defined job occurrences in UsagePattern usage pattern"}]);
 
                   nodeColors = {};
@@ -3732,10 +3732,10 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with UsagePattern as keys and 
                         Average hourly manually defined job occurrences in usage pattern as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (7703de): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556, 0.00389, 0.005, 0.000556],<br />
-    last 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333, 0.00167, 0.00167, 0.00222], <br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:<br />
+UsagePattern usage pattern (c14c3c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167, 0.00389, 0.00222, 0.00333],<br />
+    last 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167, 0.00222, 0.00389, 0.00111], <br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],<br />
     last 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832, 0.000555, 0.000277, 0], <br />
 }  </p>
@@ -3778,7 +3778,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_3a0730 {
+             #mynetwork_1e4921 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3800,7 +3800,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3a0730" class="card-body"></div>
+            <div id="mynetwork_1e4921" class="card-body"></div>
         </div>
 
 
@@ -3830,12 +3830,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3a0730');
+                  var container = document.getElementById('mynetwork_1e4921');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Manually defined job occurrences in UsagePattern usage pattern", "label": "Hourly Manually\ndefined job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + usage pattern UTC shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4] shifted by no value + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 6, 1, 1, 7, 7, 1, 7, 9, 1],\nlast 10 vals [7, 1, 3, 1, 7, 5, 6, 3, 3, 4] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8]", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 75.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Manually defined job occurrences in UsagePattern usage pattern", "label": "Hourly Manually\ndefined job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Manually defined job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value + usage pattern UTC shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] shifted by no value + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4]", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Manually defined job occurrences in UsagePattern usage pattern", "to": "Average hourly Manually defined job occurrences in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined job from e-footprint hypothesis", "to": "Average hourly Manually defined job occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -3906,10 +3906,10 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with UsagePattern as keys and 
                         Hourly data transferred for manually defined job in usage pattern as values, in megabyte.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (7703de): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:<br />
-    first 10 vals [1.8, 1.8, 0.3, 0.3, 2.1, 2.1, 0.3, 2.1, 2.7, 0.3],<br />
-    last 10 vals [2.1, 0.3, 0.9, 0.3, 2.1, 1.5, 1.8, 0.9, 0.9, 1.2], <br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:<br />
+UsagePattern usage pattern (c14c3c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:<br />
+    first 10 vals [1.8, 1.2, 2.7, 0.3, 0.3, 1.2, 0.9, 2.1, 1.2, 1.8],<br />
+    last 10 vals [2.7, 2.7, 2.4, 0.9, 1.8, 1.8, 0.9, 1.2, 2.1, 0.6], <br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00015, 0.0003, 0.00045],<br />
     last 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449, 0.000299, 0.00015, 0], <br />
 }  </p>
@@ -3953,7 +3953,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_dc276b {
+             #mynetwork_d72eb7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3975,7 +3975,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dc276b" class="card-body"></div>
+            <div id="mynetwork_d72eb7" class="card-body"></div>
         </div>
 
 
@@ -4005,12 +4005,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dc276b');
+                  var container = document.getElementById('mynetwork_d72eb7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222] * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.8, 0.3, 0.3, 2.1, 2.1, 0.3, 2.1, 2.7, 0.3],\nlast 10 vals [2.1, 0.3, 0.9, 0.3, 2.1, 1.5, 1.8, 0.9, 0.9, 1.2]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads for request Manually defined job from e-footprint hypothesis", "label": "Sum of all data\nuploads and\ndownloads for\nrequest Manually\ndefined job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis = 150 kB", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111] * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.2, 2.7, 0.3, 0.3, 1.2, 0.9, 2.1, 1.2, 1.8],\nlast 10 vals [2.7, 2.7, 2.4, 0.9, 1.8, 1.8, 0.9, 1.2, 2.1, 0.6]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Sum of all data uploads and downloads for request Manually defined job from e-footprint hypothesis", "label": "Sum of all data\nuploads and\ndownloads for\nrequest Manually\ndefined job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis = 150 kB", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined job occurrences in usage pattern", "to": "Hourly data transferred for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Sum of all data uploads and downloads for request Manually defined job from e-footprint hypothesis", "to": "Hourly data transferred for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined job from e-footprint hypothesis", "to": "Hourly data transferred for Manually defined job in usage pattern"}]);
 
                   nodeColors = {};
@@ -4079,12 +4079,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_job_hourly_data_transferred_per_usage_pattern.html' target='_blank'>link to Hourly data transferred for Manually defined job in usage pattern’s full calculation graph</a>.</p>
 <h3 id="hourly_data_stored_per_usage_pattern">hourly_data_stored_per_usage_pattern</h3>
 <p>Dictionary with UsagePattern as keys and 
-                        Hourly data stored for manually defined job in usage pattern as values, in megabyte.  </p>
+                        Hourly data stored for manually defined job in usage pattern as values, in megabyte_stored.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (7703de): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:<br />
-    first 10 vals [1.2, 1.2, 0.2, 0.2, 1.4, 1.4, 0.2, 1.4, 1.8, 0.2],<br />
-    last 10 vals [1.4, 0.2, 0.6, 0.2, 1.4, 1, 1.2, 0.6, 0.6, 0.8], <br />
-EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:<br />
+UsagePattern usage pattern (c14c3c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB stored:<br />
+    first 10 vals [1.2, 0.8, 1.8, 0.2, 0.2, 0.8, 0.6, 1.4, 0.8, 1.2],<br />
+    last 10 vals [1.8, 1.8, 1.6, 0.6, 1.2, 1.2, 0.6, 0.8, 1.4, 0.4], <br />
+EdgeUsagePattern Default edge usage pattern (fa81f1): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0000999, 0.0002, 0.0003],<br />
     last 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002, 0.0000997, 0], <br />
 }  </p>
@@ -4128,7 +4128,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_67a933 {
+             #mynetwork_b0c54d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4150,7 +4150,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_67a933" class="card-body"></div>
+            <div id="mynetwork_b0c54d" class="card-body"></div>
         </div>
 
 
@@ -4180,12 +4180,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_67a933');
+                  var container = document.getElementById('mynetwork_b0c54d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Data stored\nby request Manually defined job from e-footprint hypothesis * one hour / Request\nduration of Manually defined job from e-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222] * (100 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.2, 1.2, 0.2, 0.2, 1.4, 1.4, 0.2, 1.4, 1.8, 0.2],\nlast 10 vals [1.4, 0.2, 0.6, 0.2, 1.4, 1, 1.2, 0.6, 0.6, 0.8]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Manually defined job from e-footprint hypothesis", "label": "Data stored by\nrequest Manually\ndefined job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Manually defined job from e-footprint hypothesis = 100 kB", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Data stored\nby request Manually defined job from e-footprint hypothesis * one hour / Request\nduration of Manually defined job from e-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB\nstored:\nfirst 10 vals [1.2, 0.8, 1.8, 0.2, 0.2, 0.8, 0.6, 1.4, 0.8, 1.2],\nlast 10 vals [1.8, 1.8, 1.6, 0.6, 1.2, 1.2, 0.6, 0.8, 1.4, 0.4]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request Manually defined job from e-footprint hypothesis", "label": "Data stored by\nrequest Manually\ndefined job from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Data stored by request Manually defined job from e-footprint hypothesis = 100 kB\nstored", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration of Manually defined job from e-footprint hypothesis", "label": "Request duration of\nManually defined job\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Request duration of Manually defined job from e-footprint hypothesis = 1 s", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined job occurrences in usage pattern", "to": "Hourly data stored for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Data stored by request Manually defined job from e-footprint hypothesis", "to": "Hourly data stored for Manually defined job in usage pattern"}, {"arrows": "to", "from": "Request duration of Manually defined job from e-footprint hypothesis", "to": "Hourly data stored for Manually defined job in usage pattern"}]);
 
                   nodeColors = {};
@@ -4255,7 +4255,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>Hourly manually defined job average occurrences across usage patterns in concurrent.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:<br />
-    first 10 vals [0.00000333, 0.00000333, 0.000000556, 0.000000556, 0.00000389, 0.00000389, 0.000000556, 0.000281, 0.00056, 0.000833],<br />
+    first 10 vals [0.00000333, 0.00000222, 0.000005, 0.000000556, 0.000000556, 0.00000222, 0.00000167, 0.000281, 0.000557, 0.000836],<br />
     last 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832, 0.000555, 0.000277, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4296,7 +4296,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_87c12c {
+             #mynetwork_0e257b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4318,7 +4318,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_87c12c" class="card-body"></div>
+            <div id="mynetwork_0e257b" class="card-body"></div>
         </div>
 
 
@@ -4348,12 +4348,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_87c12c');
+                  var container = document.getElementById('mynetwork_0e257b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job average occurrences across usage patterns", "label": "Hourly Manually\ndefined job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job average occurrences across usage patterns\n=\nAverage hourly Manually defined job occurrences in usage pattern + Average\nhourly Manually defined job occurrences in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000333, 0.00000333, 0.000000556, 0.000000556, 0.00000389,\n0.00000389, 0.000000556, 0.000281, 0.00056, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 12, 2, 2, 14, 14, 2, 14, 18, 2],\nlast 10 vals [14, 2, 6, 2, 14, 10, 12, 6, 6, 8] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222]", "x": -187.5, "y": 900}, {"color": null, "id": "Average hourly Manually defined job occurrences in Default edge usage pattern", "label": "Average hourly\nManually defined job\noccurrences in\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in Default edge usage pattern\n=\nHourly Manually defined job occurrences in EdgeUsagePattern Default edge usage\npattern hourly occurrences average Request duration of Manually defined job from\ne-footprint hypothesis\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] hourly occurrences average 1 s\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": 187.5, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job average occurrences across usage patterns", "label": "Hourly Manually\ndefined job average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job average occurrences across usage patterns\n=\nAverage hourly Manually defined job occurrences in usage pattern + Average\nhourly Manually defined job occurrences in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000333, 0.00000222, 0.000005, 0.000000556, 0.000000556,\n0.00000222, 0.00000167, 0.000281, 0.000557, 0.000836],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "Average hourly Manually defined job occurrences in usage pattern", "label": "Average hourly\nManually defined job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in usage pattern\n=\nHourly Manually defined job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined job from e-footprint\nhypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [12, 8, 18, 2, 2, 8, 6, 14, 8, 12],\nlast 10 vals [18, 18, 16, 6, 12, 12, 6, 8, 14, 4] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111]", "x": -187.5, "y": 900}, {"color": null, "id": "Average hourly Manually defined job occurrences in Default edge usage pattern", "label": "Average hourly\nManually defined job\noccurrences in\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined job occurrences in Default edge usage pattern\n=\nHourly Manually defined job occurrences in EdgeUsagePattern Default edge usage\npattern hourly occurrences average Request duration of Manually defined job from\ne-footprint hypothesis\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] hourly occurrences average 1 s\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": 187.5, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined job occurrences in usage pattern", "to": "Hourly Manually defined job average occurrences across usage patterns"}, {"arrows": "to", "from": "Average hourly Manually defined job occurrences in Default edge usage pattern", "to": "Hourly Manually defined job average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -4423,7 +4423,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>Hourly manually defined job data transferred across usage patterns in megabyte.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:<br />
-    first 10 vals [0.0000018, 0.0000018, 0.0000003, 0.0000003, 0.0000021, 0.0000021, 0.0000003, 0.000152, 0.000302, 0.00045],<br />
+    first 10 vals [0.0000018, 0.0000012, 0.0000027, 0.0000003, 0.0000003, 0.0000012, 0.0000009, 0.000152, 0.000301, 0.000451],<br />
     last 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449, 0.000299, 0.00015, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4464,7 +4464,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_09ce88 {
+             #mynetwork_85dd47 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4486,7 +4486,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_09ce88" class="card-body"></div>
+            <div id="mynetwork_85dd47" class="card-body"></div>
         </div>
 
 
@@ -4516,12 +4516,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_09ce88');
+                  var container = document.getElementById('mynetwork_85dd47');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data transferred across usage patterns", "label": "Hourly Manually\ndefined job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data transferred across usage patterns\n=\nHourly data transferred for Manually defined job in usage pattern + Hourly data\ntransferred for Manually defined job in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.8, 0.3, 0.3, 2.1, 2.1, 0.3, 2.1, 2.7, 0.3],\nlast 10 vals [2.1, 0.3, 0.9, 0.3, 2.1, 1.5, 1.8, 0.9, 0.9, 1.2] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00015, 0.0003, 0.00045],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0.0000018, 0.0000018, 0.0000003, 0.0000003, 0.0000021, 0.0000021,\n0.0000003, 0.000152, 0.000302, 0.00045],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222] * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.8, 0.3, 0.3, 2.1, 2.1, 0.3, 2.1, 2.7, 0.3],\nlast 10 vals [2.1, 0.3, 0.9, 0.3, 2.1, 1.5, 1.8, 0.9, 0.9, 1.2]", "x": -187.5, "y": 1050}, {"color": null, "id": "Hourly data transferred for Manually defined job in Default edge usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis * one hour / Request duration of Manually defined job\nfrom e-footprint hypothesis)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (150 kB * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00015, 0.0003, 0.00045],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]", "x": 187.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data transferred across usage patterns", "label": "Hourly Manually\ndefined job data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data transferred across usage patterns\n=\nHourly data transferred for Manually defined job in usage pattern + Hourly data\ntransferred for Manually defined job in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.2, 2.7, 0.3, 0.3, 1.2, 0.9, 2.1, 1.2, 1.8],\nlast 10 vals [2.7, 2.7, 2.4, 0.9, 1.8, 1.8, 0.9, 1.2, 2.1, 0.6] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00015, 0.0003, 0.00045],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0.0000018, 0.0000012, 0.0000027, 0.0000003, 0.0000003, 0.0000012,\n0.0000009, 0.000152, 0.000301, 0.000451],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data transferred for Manually defined job in usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Sum of all\ndata uploads and downloads for request Manually defined job from e-footprint\nhypothesis * one hour / Request duration of Manually defined job from\ne-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111] * (150 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.8, 1.2, 2.7, 0.3, 0.3, 1.2, 0.9, 2.1, 1.2, 1.8],\nlast 10 vals [2.7, 2.7, 2.4, 0.9, 1.8, 1.8, 0.9, 1.2, 2.1, 0.6]", "x": -187.5, "y": 1050}, {"color": null, "id": "Hourly data transferred for Manually defined job in Default edge usage pattern", "label": "Hourly data\ntransferred for\nManually defined job\nin Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data transferred for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Sum of all data uploads and downloads for request Manually defined job from\ne-footprint hypothesis * one hour / Request duration of Manually defined job\nfrom e-footprint hypothesis)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (150 kB * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00015, 0.0003, 0.00045],\nlast 10 vals [0.00075, 0.000749, 0.000749, 0.00075, 0.00075, 0.000599, 0.000449,\n0.000299, 0.00015, 0]", "x": 187.5, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred for Manually defined job in usage pattern", "to": "Hourly Manually defined job data transferred across usage patterns"}, {"arrows": "to", "from": "Hourly data transferred for Manually defined job in Default edge usage pattern", "to": "Hourly Manually defined job data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -4589,9 +4589,9 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
 <p>You can also visit the <a href='../calculus_graphs/Manually_defined_job_hourly_data_transferred_across_usage_patterns.html' target='_blank'>link to Hourly Manually defined job data transferred across usage patterns’s full calculation graph</a>.</p>
 <h3 id="hourly_data_stored_across_usage_patterns">hourly_data_stored_across_usage_patterns</h3>
-<p>Hourly manually defined job data stored across usage patterns in megabyte.  </p>
-<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:<br />
-    first 10 vals [0.0000012, 0.0000012, 0.0000002, 0.0000002, 0.0000014, 0.0000014, 0.0000002, 0.000101, 0.000202, 0.0003],<br />
+<p>Hourly manually defined job data stored across usage patterns in megabyte_stored.  </p>
+<p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:<br />
+    first 10 vals [0.0000012, 0.0000008, 0.0000018, 0.0000002, 0.0000002, 0.0000008, 0.0000006, 0.000101, 0.000201, 0.000301],<br />
     last 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002, 0.0000997, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4632,7 +4632,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_4ca4fb {
+             #mynetwork_9f30c6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4654,7 +4654,7 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4ca4fb" class="card-body"></div>
+            <div id="mynetwork_9f30c6" class="card-body"></div>
         </div>
 
 
@@ -4684,12 +4684,12 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4ca4fb');
+                  var container = document.getElementById('mynetwork_9f30c6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern + Hourly data\nstored for Manually defined job in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.2, 1.2, 0.2, 0.2, 1.4, 1.4, 0.2, 1.4, 1.8, 0.2],\nlast 10 vals [1.4, 0.2, 0.6, 0.2, 1.4, 1, 1.2, 0.6, 0.6, 0.8] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0000999, 0.0002, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0.0000012, 0.0000012, 0.0000002, 0.0000002, 0.0000014, 0.0000014,\n0.0000002, 0.000101, 0.000202, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Data stored\nby request Manually defined job from e-footprint hypothesis * one hour / Request\nduration of Manually defined job from e-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00333, 0.000556, 0.000556, 0.00389, 0.00389, 0.000556,\n0.00389, 0.005, 0.000556],\nlast 10 vals [0.00389, 0.000556, 0.00167, 0.000556, 0.00389, 0.00278, 0.00333,\n0.00167, 0.00167, 0.00222] * (100 kB * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB:\nfirst 10 vals [1.2, 1.2, 0.2, 0.2, 1.4, 1.4, 0.2, 1.4, 1.8, 0.2],\nlast 10 vals [1.4, 0.2, 0.6, 0.2, 1.4, 1, 1.2, 0.6, 0.6, 0.8]", "x": -187.5, "y": 1050}, {"color": null, "id": "Hourly data stored for Manually defined job in Default edge usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Data stored by request Manually defined job from e-footprint hypothesis * one\nhour / Request duration of Manually defined job from e-footprint hypothesis)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (100 kB * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0000999, 0.0002, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]", "x": 187.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined job data stored across usage patterns", "label": "Hourly Manually\ndefined job data\nstored across usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined job data stored across usage patterns\n=\nHourly data stored for Manually defined job in usage pattern + Hourly data\nstored for Manually defined job in Default edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB\nstored:\nfirst 10 vals [1.2, 0.8, 1.8, 0.2, 0.2, 0.8, 0.6, 1.4, 0.8, 1.2],\nlast 10 vals [1.8, 1.8, 1.6, 0.6, 1.2, 1.2, 0.6, 0.8, 1.4, 0.4] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB stored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0000999, 0.0002, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.0000012, 0.0000008, 0.0000018, 0.0000002, 0.0000002, 0.0000008,\n0.0000006, 0.000101, 0.000201, 0.000301],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly data stored for Manually defined job in usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in usage pattern\n=\nAverage hourly Manually defined job occurrences in usage pattern * (Data stored\nby request Manually defined job from e-footprint hypothesis * one hour / Request\nduration of Manually defined job from e-footprint hypothesis)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00333, 0.00222, 0.005, 0.000556, 0.000556, 0.00222, 0.00167,\n0.00389, 0.00222, 0.00333],\nlast 10 vals [0.005, 0.005, 0.00444, 0.00167, 0.00333, 0.00333, 0.00167,\n0.00222, 0.00389, 0.00111] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in MB\nstored:\nfirst 10 vals [1.2, 0.8, 1.8, 0.2, 0.2, 0.8, 0.6, 1.4, 0.8, 1.2],\nlast 10 vals [1.8, 1.8, 1.6, 0.6, 1.2, 1.2, 0.6, 0.8, 1.4, 0.4]", "x": -187.5, "y": 1050}, {"color": null, "id": "Hourly data stored for Manually defined job in Default edge usage pattern", "label": "Hourly data stored\nfor Manually defined\njob in Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored for Manually defined job in Default edge usage pattern\n=\nAverage hourly Manually defined job occurrences in Default edge usage pattern *\n(Data stored by request Manually defined job from e-footprint hypothesis * one\nhour / Request duration of Manually defined job from e-footprint hypothesis)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (100 kB stored * 1 h / 1 s)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0000999, 0.0002, 0.0003],\nlast 10 vals [0.0005, 0.0005, 0.0005, 0.0005, 0.0005, 0.0004, 0.0003, 0.0002,\n0.0000997, 0]", "x": 187.5, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored for Manually defined job in usage pattern", "to": "Hourly Manually defined job data stored across usage patterns"}, {"arrows": "to", "from": "Hourly data stored for Manually defined job in Default edge usage pattern", "to": "Hourly Manually defined job data stored across usage patterns"}]);
 
                   nodeColors = {};
@@ -4760,10 +4760,10 @@ EdgeUsagePattern Default edge usage pattern (f80985): 105192 values from 2025-01
 <p>Dictionary with UsageJourneyStep as keys and 
                         20 min streaming weight in manually defined job impact repartition as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (624221): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],<br />
-    last 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67], <br />
-RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
+UsageJourneyStep 20 min streaming (c40ae2): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],<br />
+    last 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33], <br />
+RecurrentServerNeed Server need (122e46): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],<br />
     last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0], <br />
 }  </p>
@@ -4805,7 +4805,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_00ad84 {
+             #mynetwork_444b6d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4827,7 +4827,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_00ad84" class="card-body"></div>
+            <div id="mynetwork_444b6d" class="card-body"></div>
         </div>
 
 
@@ -4857,12 +4857,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_00ad84');
+                  var container = document.getElementById('mynetwork_444b6d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\nusage pattern fabrication weight in user journey impact repartition * Number of\noccurrences of 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\nusage pattern fabrication weight in user journey impact repartition * Number of\noccurrences of 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Manually defined job impact repartition"}]);
 
                   nodeColors = {};
@@ -4932,7 +4932,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of manually defined job fabrication impact repartition weights in concurrent.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:<br />
-    first 10 vals [0.000004, 0.000004, 0.000000667, 0.000000667, 0.00000467, 0.00000467, 0.000000667, 0.001, 0.002, 0.003],<br />
+    first 10 vals [0.000004, 0.00000267, 0.000006, 0.000000667, 0.000000667, 0.00000267, 0.000002, 0.001, 0.002, 0.003],<br />
     last 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4973,7 +4973,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_1746b0 {
+             #mynetwork_ec19df {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4995,7 +4995,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_1746b0" class="card-body"></div>
+            <div id="mynetwork_ec19df" class="card-body"></div>
         </div>
 
 
@@ -5025,12 +5025,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1746b0');
+                  var container = document.getElementById('mynetwork_ec19df');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined job fabrication impact repartition weights", "label": "Sum of Manually\ndefined job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.000004, 0.000000667, 0.000000667, 0.00000467,\n0.00000467, 0.000000667, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67]", "x": -150.0, "y": 1050}, {"color": null, "id": "Server need weight in Manually defined job impact repartition", "label": "Server need weight\nin Manually defined\njob impact\nrepartition", "shape": "dot", "size": 15, "title": "Server need weight in Manually defined job impact repartition\n=\nedge function weight in Server need impact repartition * Number of occurrences\nof Manually defined job in Server need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 150.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined job fabrication impact repartition weights", "label": "Sum of Manually\ndefined job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33] + 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.00000267, 0.000006, 0.000000667, 0.000000667,\n0.00000267, 0.000002, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33]", "x": -150.0, "y": 1050}, {"color": null, "id": "Server need weight in Manually defined job impact repartition", "label": "Server need weight\nin Manually defined\njob impact\nrepartition", "shape": "dot", "size": 15, "title": "Server need weight in Manually defined job impact repartition\n=\nedge function weight in Server need impact repartition * Number of occurrences\nof Manually defined job in Server need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 150.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined job impact repartition", "to": "Sum of Manually defined job fabrication impact repartition weights"}, {"arrows": "to", "from": "Server need weight in Manually defined job impact repartition", "to": "Sum of Manually defined job fabrication impact repartition weights"}]);
 
                   nodeColors = {};
@@ -5101,11 +5101,11 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 <p>Dictionary with UsageJourneyStep as keys and 
                         Manually defined job fabrication impact attribution to 20 min streaming as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (624221): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00299, 0.000222],<br />
+UsageJourneyStep 20 min streaming (c40ae2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00133, 0.00133],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], <br />
-RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.995, 0.997, 1],<br />
+RecurrentServerNeed Server need (122e46): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.995, 0.999, 0.999],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
@@ -5147,7 +5147,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_b9cc53 {
+             #mynetwork_18ef1c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5169,7 +5169,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b9cc53" class="card-body"></div>
+            <div id="mynetwork_18ef1c" class="card-body"></div>
         </div>
 
 
@@ -5199,12 +5199,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b9cc53');
+                  var container = document.getElementById('mynetwork_18ef1c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job fabrication impact attribution to 20 min streaming", "label": "Manually defined job\nfabrication impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Manually defined job fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in Manually defined job impact repartition / Sum of\nManually defined job fabrication impact repartition weights\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67] / 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.000004, 0.000000667, 0.000000667, 0.00000467,\n0.00000467, 0.000000667, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00299, 0.000222],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 2, 0.333, 0.333, 2.33, 2.33, 0.333, 2.33, 3, 0.333],\nlast 10 vals [2.33, 0.333, 1, 0.333, 2.33, 1.67, 2, 1, 1, 1.33] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67]", "x": -150.0, "y": 1050}, {"color": null, "id": "Sum of Manually defined job fabrication impact repartition weights", "label": "Sum of Manually\ndefined job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 4, 0.667, 0.667, 4.67, 4.67, 0.667, 4.67, 6, 0.667],\nlast 10 vals [4.67, 0.667, 2, 0.667, 4.67, 3.33, 4, 2, 2, 2.67] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.000004, 0.000000667, 0.000000667, 0.00000467,\n0.00000467, 0.000000667, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job fabrication impact attribution to 20 min streaming", "label": "Manually defined job\nfabrication impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Manually defined job fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in Manually defined job impact repartition / Sum of\nManually defined job fabrication impact repartition weights\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33] / 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.00000267, 0.000006, 0.000000667, 0.000000667,\n0.00000267, 0.000002, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00133, 0.00133],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33]", "x": -150.0, "y": 1050}, {"color": null, "id": "Sum of Manually defined job fabrication impact repartition weights", "label": "Sum of Manually\ndefined job\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job fabrication impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [4, 2.67, 6, 0.667, 0.667, 2.67, 2, 4.67, 2.67, 4],\nlast 10 vals [6, 6, 5.33, 2, 4, 4, 2, 2.67, 4.67, 1.33] + 105192 values from\n2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0.000004, 0.00000267, 0.000006, 0.000000667, 0.000000667,\n0.00000267, 0.000002, 0.001, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined job impact repartition", "to": "Manually defined job fabrication impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Manually defined job fabrication impact repartition weights", "to": "Manually defined job fabrication impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
@@ -5275,10 +5275,10 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 <p>Dictionary with UsageJourneyStep as keys and 
                         20 min streaming weight in manually defined job impact repartition as values, in concurrent * gram / kilowatt_hour.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (624221): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in ·g/kWh:<br />
-    first 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],<br />
-    last 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227], <br />
-RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
+UsageJourneyStep 20 min streaming (c40ae2): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in ·g/kWh:<br />
+    first 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],<br />
+    last 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113], <br />
+RecurrentServerNeed Server need (122e46): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],<br />
     last 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700, 0], <br />
 }  </p>
@@ -5320,7 +5320,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_9e3f2d {
+             #mynetwork_1de29d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5342,7 +5342,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9e3f2d" class="card-body"></div>
+            <div id="mynetwork_1de29d" class="card-body"></div>
         </div>
 
 
@@ -5372,12 +5372,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9e3f2d');
+                  var container = document.getElementById('mynetwork_1de29d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\nusage pattern usage weight in user journey impact repartition * Number of\noccurrences of 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in 20 min streaming impact repartition", "label": "user journey weight\nin 20 min streaming\nimpact repartition", "shape": "dot", "size": 15, "title": "user journey weight in 20 min streaming impact repartition\n=\nusage pattern usage weight in user journey impact repartition * Number of\noccurrences of 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in 20 min streaming impact repartition", "to": "20 min streaming weight in Manually defined job impact repartition"}]);
 
                   nodeColors = {};
@@ -5447,7 +5447,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 <h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
 <p>Sum of manually defined job usage impact repartition weights in concurrent * gram / kilowatt_hour.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in ·g/kWh:<br />
-    first 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 85300, 170000, 255000],<br />
+    first 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 85300, 170000, 255000],<br />
     last 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000, 84700, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5488,7 +5488,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_451542 {
+             #mynetwork_7a4c52 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5510,7 +5510,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_451542" class="card-body"></div>
+            <div id="mynetwork_7a4c52" class="card-body"></div>
         </div>
 
 
@@ -5540,12 +5540,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_451542');
+                  var container = document.getElementById('mynetwork_7a4c52');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined job usage impact repartition weights", "label": "Sum of Manually\ndefined job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job usage impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227] + 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227]", "x": -150.0, "y": 1050}, {"color": null, "id": "Server need weight in Manually defined job impact repartition", "label": "Server need weight\nin Manually defined\njob impact\nrepartition", "shape": "dot", "size": 15, "title": "Server need weight in Manually defined job impact repartition\n=\nedge function weight in Server need impact repartition * Number of occurrences\nof Manually defined job in Server need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 150.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined job usage impact repartition weights", "label": "Sum of Manually\ndefined job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job usage impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113]", "x": -150.0, "y": 1050}, {"color": null, "id": "Server need weight in Manually defined job impact repartition", "label": "Server need weight\nin Manually defined\njob impact\nrepartition", "shape": "dot", "size": 15, "title": "Server need weight in Manually defined job impact repartition\n=\nedge function weight in Server need impact repartition * Number of occurrences\nof Manually defined job in Server need\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 150.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined job impact repartition", "to": "Sum of Manually defined job usage impact repartition weights"}, {"arrows": "to", "from": "Server need weight in Manually defined job impact repartition", "to": "Sum of Manually defined job usage impact repartition weights"}]);
 
                   nodeColors = {};
@@ -5616,11 +5616,11 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 <p>Dictionary with UsageJourneyStep as keys and 
                         Manually defined job usage impact attribution to 20 min streaming as values, in concurrent.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (624221): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00299, 0.000222],<br />
+UsageJourneyStep 20 min streaming (c40ae2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00133, 0.00133],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], <br />
-RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.995, 0.997, 1],<br />
+RecurrentServerNeed Server need (122e46): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.995, 0.999, 0.999],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
@@ -5662,7 +5662,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_4e65ce {
+             #mynetwork_624d79 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5684,7 +5684,7 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4e65ce" class="card-body"></div>
+            <div id="mynetwork_624d79" class="card-body"></div>
         </div>
 
 
@@ -5714,12 +5714,12 @@ RecurrentServerNeed Server need (9b0e65): 105192 values from 2025-01-01 00:00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4e65ce');
+                  var container = document.getElementById('mynetwork_624d79');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job usage impact attribution to 20 min streaming", "label": "Manually defined job\nusage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Manually defined job usage impact attribution to 20 min streaming\n=\n20 min streaming weight in Manually defined job impact repartition / Sum of\nManually defined job usage impact repartition weights\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227] / 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00299, 0.000222],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 170, 28.3, 28.3, 198, 198, 28.3, 198, 255, 28.3],\nlast 10 vals [198, 28.3, 85, 28.3, 198, 142, 170, 85, 85, 113] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227]", "x": -150.0, "y": 1050}, {"color": null, "id": "Sum of Manually defined job usage impact repartition weights", "label": "Sum of Manually\ndefined job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job usage impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 397, 510, 56.7],\nlast 10 vals [397, 56.7, 170, 56.7, 397, 283, 340, 170, 170, 227] + 105192\nvalues from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 340, 56.7, 56.7, 397, 397, 56.7, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job usage impact attribution to 20 min streaming", "label": "Manually defined job\nusage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "Manually defined job usage impact attribution to 20 min streaming\n=\n20 min streaming weight in Manually defined job impact repartition / Sum of\nManually defined job usage impact repartition weights\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113] / 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 0.00465, 0.00133, 0.00133],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]", "x": 0.0, "y": 1350}, {"color": null, "id": "20 min streaming weight in Manually defined job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined job impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7] * 2\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113]", "x": -150.0, "y": 1050}, {"color": null, "id": "Sum of Manually defined job usage impact repartition weights", "label": "Sum of Manually\ndefined job usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of Manually defined job usage impact repartition weights\n=\n20 min streaming weight in Manually defined job impact repartition + Server need\nweight in Manually defined job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 397, 227, 340],\nlast 10 vals [510, 510, 453, 170, 340, 340, 170, 227, 397, 113] + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in \u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [340, 227, 510, 56.7, 56.7, 227, 170, 85300, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined job impact repartition", "to": "Manually defined job usage impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Sum of Manually defined job usage impact repartition weights", "to": "Manually defined job usage impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
