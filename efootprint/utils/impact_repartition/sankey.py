@@ -820,7 +820,7 @@ if __name__ == '__main__':
         import json
         with open(json_files[0], "r") as f:
             json_data = json.load(f)
-        class_obj_dict, flat_obj_dict = json_to_system(json_data)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(json_data)
         system = next(iter(class_obj_dict["System"].values()))
     sankey = ImpactRepartitionSankey(
         system, aggregation_threshold_percent=1,

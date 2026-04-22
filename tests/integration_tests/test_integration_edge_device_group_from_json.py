@@ -22,7 +22,7 @@ class IntegrationTestEdgeDeviceGroupFromJson(IntegrationEdgeDeviceGroupBaseClass
 
         with open(cls.system_json_filepath, "r") as f:
             system_dict = json.load(f)
-        _, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict, _ = json_to_system(system_dict)
 
         reloaded_system = flat_obj_dict[system.id]
         cls._setup_from_system(reloaded_system, start_date)

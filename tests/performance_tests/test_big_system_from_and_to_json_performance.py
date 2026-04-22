@@ -41,7 +41,7 @@ def update_on_system(
     system_to_json_duration = 0
     for i in range(nb_system_loadings):
         json_to_system_start = perf_counter()
-        class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
+        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(
             system_dict, launch_system_computations=False)
         json_to_system_duration += perf_counter() - json_to_system_start
         first_object = next(iter(class_obj_dict_computed[object_type].values()))
@@ -78,7 +78,7 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         start = perf_counter()
         nb_system_loadings = 3
         for i in range(nb_system_loadings):
-            class_obj_dict_computed, flat_obj_dict_computed = json_to_system(
+            class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(
                 system_dict, launch_system_computations=False)
         avg_loading_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     start = perf_counter()
     nb_system_loadings = 100
     for i in range(nb_system_loadings):
-        class_obj_dict_computed, flat_obj_dict_computed = json_to_system(system_dict, launch_system_computations=False)
+        class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(system_dict, launch_system_computations=False)
     avg_loading_time = (perf_counter() - start) / nb_system_loadings
     logger.info(
         f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")

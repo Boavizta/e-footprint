@@ -199,4 +199,4 @@ def json_to_system(
         elif launch_system_computations:
             system.after_init()
 
-    return class_obj_dict, flat_obj_dict
+    return class_obj_dict, flat_obj_dict, system_dict

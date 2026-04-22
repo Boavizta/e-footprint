@@ -31,7 +31,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "server_not_linked_to_usage_journey.json"), "rb") as file:
             full_dict["Server"].update(json.load(file))
 
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
 
         self.assertEqual(2, len(list(class_obj_dict["Server"].values())))
 
@@ -40,15 +40,15 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "uj_not_linked_to_usage_pattern.json"), "rb") as file:
             full_dict["UsageJourney"].update(json.load(file))
 
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
 
     def test_update_value_after_system_creation(self):
-        class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(self.base_system_dict)
 
         list(class_obj_dict["Job"].values())[0].data_transferred = SourceValue(100 * u.GB, label="new value")
 
     def test_system_id_doesnt_change(self):
-        class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(self.base_system_dict)
 
         self.assertEqual(
             list(class_obj_dict["System"].values())[0].id, list(self.base_system_dict["System"].values())[0]["id"])
@@ -57,37 +57,37 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_no_jobs.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_loads_version_9_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v9.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_loads_version_10_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v10.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_loads_version_11_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v11.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_loads_version_12_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v12.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_loads_version_13_system(self):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system_v13.json"), "rb") as file:
             base_system_dict = json.load(file)
 
-        class_obj_dict, flat_obj_dict = json_to_system(base_system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(base_system_dict)
 
     def test_json_to_system_doesnt_update_input_dict(self):
         input_dict = deepcopy(self.base_system_dict)
@@ -118,7 +118,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         input_dict = deepcopy(self.base_system_dict)
         input_dict["custom_metadata"] = []
 
-        class_obj_dict, flat_obj_dict = json_to_system(input_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(input_dict)
 
         self.assertEqual(1, len(class_obj_dict["System"]))
 
@@ -192,4 +192,4 @@ class TestJsonToSystem(IntegrationTestBaseClass):
             system_dict = json.load(file)
 
         logger.warning(f"Loading system from json")
-        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)

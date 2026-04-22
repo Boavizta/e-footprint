@@ -218,7 +218,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
     def run_test_system_to_json_and_back_preserves_group_counts(self):
         """JSON round-trip must preserve sub_group_counts and edge_device_counts."""
         system_json = system_to_json(self.system, save_calculated_attributes=False)
-        _, flat_obj_dict = json_to_system(system_json)
+        _, flat_obj_dict, _ = json_to_system(system_json)
 
         reloaded_building = flat_obj_dict[self.building_group.id]
         reloaded_floor = flat_obj_dict[self.floor_group.id]
@@ -244,7 +244,7 @@ class IntegrationEdgeDeviceGroupBaseClass(IntegrationTestBaseClass):
     def run_test_json_round_trip_recalculates_correct_effective_nb(self):
         """After a JSON round-trip, calculated attributes are correct."""
         system_json = system_to_json(self.system, save_calculated_attributes=False)
-        _, flat_obj_dict = json_to_system(system_json)
+        _, flat_obj_dict, _ = json_to_system(system_json)
 
         reloaded_building = flat_obj_dict[self.building_group.id]
         reloaded_floor = flat_obj_dict[self.floor_group.id]

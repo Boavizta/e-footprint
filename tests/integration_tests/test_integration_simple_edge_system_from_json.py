@@ -24,7 +24,7 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        _, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict, _ = json_to_system(system_dict)
 
         # Get the reloaded system and use common setup
         reloaded_system = flat_obj_dict[system.id]
@@ -33,7 +33,7 @@ class IntegrationTestSimpleEdgeSystemFromJson(IntegrationTestSimpleEdgeSystemBas
     def test_system_calculation_graph_right_after_json_to_system(self):
         with open(self.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        class_obj_dict, flat_obj_dict = json_to_system(system_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(system_dict)
         system = flat_obj_dict[self.system.id]
         self.assertFalse("None" in system.total_footprint.explain())
         graph = build_calculus_graph(system.total_footprint)

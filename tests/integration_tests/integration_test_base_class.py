@@ -290,7 +290,7 @@ class IntegrationTestBaseClass(TestCase):
                 if obj.name == name:
                     return obj
 
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
 
         initial_mod_objs = input_system.all_linked_objects + [input_system]
         for obj_id, obj in flat_obj_dict.items():

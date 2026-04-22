@@ -22,7 +22,7 @@ class IntegrationTestComplexSystemFromJson(IntegrationTestComplexSystemBaseClass
         system_to_json(system, save_calculated_attributes=True, output_filepath=cls.system_json_filepath)
         with open(cls.system_json_filepath, "r") as file:
             system_dict = json.load(file)
-        _, flat_obj_dict = json_to_system(system_dict)
+        _, flat_obj_dict, _ = json_to_system(system_dict)
 
         # Get the reloaded system and use common setup
         reloaded_system = flat_obj_dict[system.id]

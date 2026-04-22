@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [20.0.1] - 2026-04-22
+
+### Fixed
+- Return upgraded system_dict from json_to_system. Migrations that add new class keys (e.g. RecurrentEdgeStorageNeed in v16->v17) were applied to an internal deepcopy and never reached the caller's dict, so downstream code indexing by migrated class names would KeyError. json_to_system now returns the upgraded dict as a third value; callsites unpack it (or ignore it with _) explicitly.
+
 ## [20.0.0] - 2026-04-22
 
 ### Fixed
