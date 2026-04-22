@@ -520,6 +520,16 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
         attr_value["unit"] = "bit"
         return True
 
+    edge_component_id_to_class = {}
+    for class_name, objects_dict in system_dict.items():
+        if class_name == "efootprint_version" or not isinstance(objects_dict, dict):
+            continue
+        efootprint_class = efootprint_classes_with_suppressed.get(class_name)
+        if efootprint_class is None or not efootprint_class.is_subclass_of("EdgeComponent"):
+            continue
+        for obj_id in objects_dict:
+            edge_component_id_to_class[obj_id] = efootprint_class
+
     log_upgrade = False
     for class_name, objects_dict in system_dict.items():
         if class_name == "efootprint_version" or not isinstance(objects_dict, dict):
@@ -543,6 +553,7 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
             attr for (migration_class, attr) in dimensionless_to_bit_attrs
             if efootprint_class.is_subclass_of(migration_class)
         }
+        is_recurrent_edge_component_need = efootprint_class.is_subclass_of("RecurrentEdgeComponentNeed")
         for obj_dict in objects_dict.values():
             for attr in matching_stored_scalars | matching_stored_ts:
                 log_upgrade |= _migrate_attr(obj_dict, attr, "stored")
@@ -550,10 +561,18 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
                 log_upgrade |= _migrate_attr(obj_dict, attr, "ram")
             for attr in matching_dimensionless_to_bit:
                 log_upgrade |= _migrate_dimensionless_to_bit(obj_dict, attr)
+            if is_recurrent_edge_component_need:
+                component_class = edge_component_id_to_class.get(obj_dict.get("edge_component"))
+                if component_class is not None:
+                    if component_class.is_subclass_of("EdgeRAMComponent"):
+                        log_upgrade |= _migrate_attr(obj_dict, "recurrent_need", "ram")
+                    elif component_class.is_subclass_of("EdgeStorage"):
+                        log_upgrade |= _migrate_attr(obj_dict, "recurrent_need", "stored")
 
     if log_upgrade:
         logger.info("Upgraded system dict from version 19 to 20: appended `_stored`/`_ram` to byte-unit "
-                    "attributes (data_stored, power_per_storage_capacity, recurrent_storage_needed, ram_per_gpu).")
+                    "attributes (data_stored, power_per_storage_capacity, recurrent_storage_needed, ram_per_gpu, "
+                    "and RecurrentEdgeComponentNeed.recurrent_need based on the target component).")
     return system_dict
 
 

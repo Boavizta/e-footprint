@@ -11,12 +11,13 @@ e-footprint is a Python toolkit for modeling the environmental impact of digital
 ### Testing
 ```bash
 # Run tests with coverage
-export PYTHONPATH="./:$PYTHONPATH"
 poetry run python -m pytest --cov=tests
 
 # Run specific test
 poetry run pytest tests/path/to/test_file.py
 ```
+
+Do not prefix pytest commands with `PYTHONPATH=...`; the Poetry environment already resolves imports correctly.
 
 ## Code Architecture
 

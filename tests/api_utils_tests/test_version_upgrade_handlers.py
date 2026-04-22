@@ -1,7 +1,7 @@
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
-    upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19
+    upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -9,6 +9,83 @@ from unittest import TestCase
 
 
 class TestVersionUpgradeHandlers(TestCase):
+    def test_upgrade_19_to_20(self):
+        input_dict = {
+            "Job": {
+                "job_1": {
+                    "data_stored": {"value": 1.0, "unit": "MB", "label": "data stored"},
+                    "ram_needed": {"value": 512.0, "unit": "MB_ram", "label": "ram needed"},
+                }
+            },
+            "Storage": {
+                "storage_1": {
+                    "power_per_storage_capacity": {"value": 1.0, "unit": "W / TB_stored", "label": "power"},
+                }
+            },
+            "Server": {
+                "server_1": {
+                    "ram": {"value": 64.0, "unit": "GB_ram", "label": "server ram"},
+                    "base_ram_consumption": {"value": 1.0, "unit": "GB", "label": "base ram"},
+                }
+            },
+            "GPUServer": {
+                "gpu_server_1": {
+                    "ram_per_gpu": {"value": 16.0, "unit": "GB", "label": "ram per gpu"},
+                }
+            },
+            "VideoStreaming": {
+                "vs_1": {
+                    "bits_per_pixel": {"value": 0.1, "unit": "dimensionless", "label": "bits per pixel"},
+                }
+            },
+            "RecurrentEdgeProcess": {
+                "process_1": {
+                    "recurrent_storage_needed": {
+                        "recurring_values": "[1.0]", "unit": "GB", "label": "storage"},
+                }
+            },
+        }
+        expected_output = {
+            "Job": {
+                "job_1": {
+                    "data_stored": {"value": 1.0, "unit": "MB_stored", "label": "data stored"},
+                    "ram_needed": {"value": 512.0, "unit": "MB_ram", "label": "ram needed"},
+                }
+            },
+            "Storage": {
+                "storage_1": {
+                    "power_per_storage_capacity": {"value": 1.0, "unit": "W / TB_stored", "label": "power"},
+                }
+            },
+            "Server": {
+                "server_1": {
+                    "ram": {"value": 64.0, "unit": "GB_ram", "label": "server ram"},
+                    "base_ram_consumption": {"value": 1.0, "unit": "GB_ram", "label": "base ram"},
+                }
+            },
+            "GPUServer": {
+                "gpu_server_1": {
+                    "ram_per_gpu": {"value": 16.0, "unit": "GB_ram", "label": "ram per gpu"},
+                }
+            },
+            "VideoStreaming": {
+                "vs_1": {
+                    "bits_per_pixel": {"value": 0.1, "unit": "bit", "label": "bits per pixel"},
+                }
+            },
+            "RecurrentEdgeProcess": {
+                "process_1": {
+                    "recurrent_storage_needed": {
+                        "recurring_values": "[1.0]", "unit": "GB_stored", "label": "storage"},
+                }
+            },
+        }
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+
+        output_dict = upgrade_version_19_to_20(input_dict, efootprint_classes_dict)
+
+        self.assertEqual(output_dict, expected_output)
+
     def test_upgrade_18_to_19(self):
         input_dict = {
             "EdgeCPUComponent": {
@@ -787,3 +864,51 @@ class TestVersionUpgradeHandlers(TestCase):
         output_dict = upgrade_version_16_to_17(input_dict)
 
         self.assertEqual(output_dict, expected_output)
+
+    def test_upgrade_19_to_20_recurrent_need_units_based_on_target_component(self):
+        """RecurrentEdgeComponentNeed.recurrent_need should be migrated based on its target component."""
+        input_dict = {
+            "EdgeRAMComponent": {"ram_1": {"id": "ram_1", "name": "RAM 1"}},
+            "EdgeComputerRAMComponent": {"ram_2": {"id": "ram_2", "name": "RAM 2"}},
+            "EdgeCPUComponent": {"cpu_1": {"id": "cpu_1", "name": "CPU 1"}},
+            "EdgeStorage": {"storage_1": {"id": "storage_1", "name": "Storage 1"}},
+            "RecurrentEdgeComponentNeed": {
+                "ram_need_1": {
+                    "id": "ram_need_1", "name": "RAM need",
+                    "edge_component": "ram_1",
+                    "recurrent_need": {"recurring_values": "[1.0]", "unit": "GB", "label": "need"},
+                },
+                "cpu_need_1": {
+                    "id": "cpu_need_1", "name": "CPU need",
+                    "edge_component": "cpu_1",
+                    "recurrent_need": {"recurring_values": "[1.0]", "unit": "cpu_core", "label": "need"},
+                },
+            },
+            "RecurrentEdgeProcessRAMNeed": {
+                "process_ram_need": {
+                    "id": "process_ram_need", "name": "Process RAM need",
+                    "edge_component": "ram_2",
+                    "recurrent_need": {"recurring_values": "[2.0]", "unit": "megabyte", "label": "need"},
+                },
+            },
+            "RecurrentEdgeStorageNeed": {
+                "storage_need_1": {
+                    "id": "storage_need_1", "name": "Storage need",
+                    "edge_component": "storage_1",
+                    "recurrent_need": {"recurring_values": "[1.0]", "unit": "GB", "label": "need"},
+                },
+            },
+        }
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+
+        output_dict = upgrade_version_19_to_20(input_dict, efootprint_classes_dict)
+
+        self.assertEqual(
+            "GB_ram", output_dict["RecurrentEdgeComponentNeed"]["ram_need_1"]["recurrent_need"]["unit"])
+        self.assertEqual(
+            "cpu_core", output_dict["RecurrentEdgeComponentNeed"]["cpu_need_1"]["recurrent_need"]["unit"])
+        self.assertEqual(
+            "megabyte_ram",
+            output_dict["RecurrentEdgeProcessRAMNeed"]["process_ram_need"]["recurrent_need"]["unit"])
+        self.assertEqual(
+            "GB_stored", output_dict["RecurrentEdgeStorageNeed"]["storage_need_1"]["recurrent_need"]["unit"])
