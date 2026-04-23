@@ -257,12 +257,21 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return new_instance
 
     def set_label(self, new_label):
-        if self.source is not None and f"from {self.source.name}" not in new_label:
-            self.label = f"{new_label} from {self.source.name}"
-        else:
-            self.label = new_label
+        self.label = new_label
 
         return self
+
+    @property
+    def label_with_name(self):
+        return self.label + f" of {self.name}"
+
+    @property
+    def label_with_source(self):
+        return self.label + f" from {self.source.name}"
+
+    @property
+    def label_with_name_with_source(self):
+        return self.label + f" of {self.name} from {self.source.name}"
 
     @property
     def has_parent(self):
