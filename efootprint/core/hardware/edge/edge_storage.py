@@ -76,7 +76,7 @@ class EdgeStorage(EdgeComponent):
         del self.idle_power
         self.carbon_footprint_fabrication_per_storage_capacity = (
             carbon_footprint_fabrication_per_storage_capacity.set_label(
-                f"Fabrication carbon footprint per unit of {self.name} per storage capacity"))
+                f"Fabrication carbon footprint per unit per storage capacity"))
         self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
             f"Storage capacity per unit")
         self.storage_capacity = EmptyExplainableObject()

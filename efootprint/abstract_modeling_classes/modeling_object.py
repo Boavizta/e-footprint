@@ -826,7 +826,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         setattr(
             self,
             f"{phase}_impact_repartition_weight_sum",
-            impact_repartition_weight_sum.set_label(f"Sum of {self.name} {phase} impact repartition weights"),
+            impact_repartition_weight_sum.set_label(f"{phase.capitalize()} impact repartition weights sum"),
         )
 
     def update_fabrication_impact_repartition_weight_sum(self):

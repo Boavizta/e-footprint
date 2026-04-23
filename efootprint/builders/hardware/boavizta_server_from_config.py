@@ -206,11 +206,11 @@ class BoaviztaStorageFromConfig(Storage):
     def update_fixed_nb_of_instances(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]
         nb_units = ExplainableQuantity(
-            storage_spec["units"]["value"] * u.dimensionless, label=f"Number of {self.name} storage instances",
+            storage_spec["units"]["value"] * u.dimensionless, label=f"Number storage instances",
             left_parent=self.server.api_call_response, operator="data extraction",
             source=self.server.impact_source)
 
-        self.fixed_nb_of_instances = nb_units.set_label(f"Fixed number of {self.name} storage instances")
+        self.fixed_nb_of_instances = nb_units.set_label(f"Fixed number of storage instances")
 
     def update_carbon_footprint_fabrication_per_storage_capacity(self):
         storage_spec = self.server.api_call_response.value["verbose"][f"{self.storage_type.value}-1"]

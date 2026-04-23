@@ -86,7 +86,7 @@ class RecurrentServerNeed(ModelingObject):
             f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")
 
         unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
-                                                   label=f"Occurrences of {self.name} within {usage_pattern.name}")
+                                                   label=f"Occurrences within {usage_pattern.name}")
         self.unitary_hourly_volume_per_usage_pattern[usage_pattern] = unitary_hourly_volume.set_label(
             f"{self.name} unitary hourly need for {usage_pattern.name}")
 

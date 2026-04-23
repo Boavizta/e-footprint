@@ -87,13 +87,13 @@ class ServerBase(InfraHardware):
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE")
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
-            self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
+            self.average_carbon_intensity.set_label(f"Average carbon intensity of electricity")
         self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
         self.base_compute_consumption = base_compute_consumption.set_label(
             f"Base {self.compute_type.replace("_", " ")} consumption")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
-            f"User defined number of {self.name} instances").to(u.concurrent)
+            f"User defined number of instances").to(u.concurrent)
         self.storage = storage
 
         self.hour_by_hour_compute_need = EmptyExplainableObject()
@@ -204,15 +204,15 @@ class ServerBase(InfraHardware):
     def update_raw_nb_of_instances(self):
         nb_of_servers_based_on_ram_alone = (
                 self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.concurrent).set_label(
-            f"Raw nb of {self.name} instances based on RAM alone")
+            f"Raw nb of instances based on RAM alone")
         nb_of_servers_based_on_cpu_alone = (
                 self.hour_by_hour_compute_need / self.available_compute_per_instance).to(u.concurrent).set_label(
-            f"Raw nb of {self.name} instances based on CPU alone")
+            f"Raw nb of instances based on CPU alone")
 
         nb_of_servers_raw = nb_of_servers_based_on_ram_alone.np_compared_with(nb_of_servers_based_on_cpu_alone, "max")
 
         hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(
-            f"Hourly raw number of {self.name} instances")
+            f"Hourly raw number of instances")
 
         self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
 
@@ -234,13 +234,13 @@ class ServerBase(InfraHardware):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.ceil()
 
         self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
-            self.server_type).set_label(f"Hourly number of {self.name} instances")
+            self.server_type).set_label(f"Hourly number of instances")
 
     def serverless_update_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.copy()
 
         self.nb_of_instances = hour_by_hour_nb_of_instances.generate_explainable_object_with_logical_dependency(
-            self.server_type).set_label(f"Hourly number of {self.name} instances")
+            self.server_type).set_label(f"Hourly number of instances")
 
     def on_premise_update_nb_of_instances(self):
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
@@ -265,12 +265,12 @@ class ServerBase(InfraHardware):
                     u.concurrent)
 
                 nb_of_instances = ExplainableHourlyQuantities(
-                    nb_of_instances_np, self.raw_nb_of_instances.start_date,f"Hourly number of {self.name} instances",
+                    nb_of_instances_np, self.raw_nb_of_instances.start_date,f"Hourly number of instances",
                     left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances,
                     operator="depending on not being empty")
 
         self.nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
-            self.server_type).set_label(f"Hourly number of {self.name} instances")
+            self.server_type).set_label(f"Hourly number of instances")
 
     def update_nb_of_instances(self):
         logic_mapping = {

@@ -71,13 +71,13 @@ class Storage(InfraHardware):
         super().__init__(
             name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
         self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
-            .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
+            .set_label(f"Fabrication carbon footprint per storage capacity"))
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor")
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
-            f"User defined number of {self.name} instances").to(u.concurrent)
+            f"User defined number of instances").to(u.concurrent)
         self.full_cumulative_storage_need = EmptyExplainableObject()
         self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
 

@@ -170,7 +170,7 @@ class EdgeDevice(ModelingObject):
             [group.edge_device_counts[self] * group.effective_nb_of_units_within_root
              for group in parent_groups],
             start=EmptyExplainableObject())
-        self.total_nb_of_units = total.set_label(f"Total nb of {self.name} per ensemble")
+        self.total_nb_of_units = total.set_label(f"Total nb per ensemble")
 
     def self_delete(self):
         parent_groups = self._find_parent_groups()

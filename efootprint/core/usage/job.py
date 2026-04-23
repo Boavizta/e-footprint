@@ -122,7 +122,7 @@ class JobBase(ModelingObject):
                         nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
                         * ExplainableQuantity(
                             nb_of_occurrences_of_self_within_server_need * u.dimensionless,
-                            label=f"Occurrences of {self.name} within {recurrent_server_need.name}"))
+                            label=f"Occurrences within {recurrent_server_need.name}"))
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
             f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
