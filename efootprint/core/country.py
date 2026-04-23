@@ -57,4 +57,3 @@ class Country(ModelingObject):
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for system in self.systems:
             self.update_dict_element_in_usage_impact_repartition_weights(system)
-            
