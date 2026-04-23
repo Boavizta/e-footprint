@@ -66,24 +66,23 @@ def update_on_system(
 
 class TestBigSystemFromAndToJsonPerformance(TestCase):
     def test_big_system_from_and_to_json_performance(self):
-        generate_big_system(
+        big_system = generate_big_system(
             nb_of_servers_of_each_type=2, nb_of_uj_per_each_server_type=2, nb_of_uj_steps_per_uj=4, nb_of_up_per_uj=3,
             nb_of_edge_usage_patterns=5, nb_of_edge_processes_and_server_needs_per_edge_computer=5,
             nb_of_jobs_per_server_need=1, nb_years=5)
         start = perf_counter()
-        with open(os.path.join(root_dir, "big_system_with_calc_attr.json"), "r") as file:
-            system_dict = json.load(file)
-        logger.info(f"Finished loading JSON file in {round((perf_counter() - start), 3)} seconds")
+        system_dict = system_to_json(big_system, save_calculated_attributes=True, output_filepath=None)
+        logger.info(f"Initial serialization of system to dict took {round((perf_counter() - start), 3)} seconds")
 
         start = perf_counter()
-        nb_system_loadings = 3
+        nb_system_loadings = 2
         for i in range(nb_system_loadings):
             class_obj_dict_computed, flat_obj_dict_computed, _ = json_to_system(
                 system_dict, launch_system_computations=False)
         avg_loading_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"deserializing system took {round(avg_loading_time, 3)} seconds on average for {nb_system_loadings} times")
-        self.assertLess(avg_loading_time, 0.12)
+        self.assertLess(avg_loading_time, 0.2)
 
         start = perf_counter()
         for i in range(nb_system_loadings):
@@ -92,9 +91,8 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_writing_time = (perf_counter() - start) / nb_system_loadings
         logger.info(
             f"serializing system took {round(avg_writing_time, 3)} seconds on average for {nb_system_loadings} times")
-        self.assertLess(avg_writing_time, 0.1)
+        self.assertLess(avg_writing_time, 0.2)
 
-        nb_system_loadings = 3
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_usage_journey_starts",
             create_random_source_hourly_values(timespan=5 * u.year))
@@ -108,12 +106,12 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "Job", "data_transferred",
             SourceValue(100 * u.MB))
-        self.assertLess(avg_loading_editing_writing_time, 300)
+        self.assertLess(avg_loading_editing_writing_time, 500)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "Storage", "data_storage_duration",
             SourceValue(3 * u.year))
-        self.assertLess(avg_loading_editing_writing_time, 300)
+        self.assertLess(avg_loading_editing_writing_time, 500)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [20.0.2] - 2026-04-23
+
+### Fixed
+- upgrade_version_19_to_20 to handle Network’s bandwidth_energy_intensity and Storage’s carbon_footprint_fabrication_per_storage_capacity.
+
 ## [20.0.1] - 2026-04-22
 
 ### Fixed

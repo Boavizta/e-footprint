@@ -474,8 +474,16 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
     scalar_stored_attrs = {
         ("JobBase", "data_stored"),
         ("Storage", "power_per_storage_capacity"),
+        ("Storage", "storage_capacity"),
+        ("Storage", "base_storage_need"),
         ("EdgeStorage", "power_per_storage_capacity"),
         ("BoaviztaStorageFromConfig", "power_per_storage_capacity"),
+    }
+    per_bit_attrs = {
+        ("Network", "bandwidth_energy_intensity"),
+    }
+    per_stored_bit_attrs = {
+        ("Storage", "carbon_footprint_fabrication_per_storage_capacity"),
     }
     timeseries_stored_attrs = {
         ("RecurrentEdgeProcess", "recurrent_storage_needed"),
@@ -520,6 +528,46 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
         attr_value["unit"] = "bit"
         return True
 
+    def _strip_byte_suffix_from_denominator(unit_str):
+        """Remove `_stored` / `_ram` suffix from byte/bit tokens so they fall back to the plain information dim."""
+        parts = unit_str.split("/")
+        def _transform(token):
+            stripped = token.strip()
+            for tag in ("_stored", "_ram"):
+                if stripped.endswith(tag):
+                    base = stripped[: -len(tag)]
+                    return token.replace(stripped, base)
+            return token
+        return "/".join(_transform(p) for p in parts)
+
+    def _migrate_per_info_attr(obj_dict, attr_name, target_suffix, default_denominator):
+        """Normalize per-information denominators.
+
+        `target_suffix` is "" for plain information, "stored" for information_stored.
+        Happy path: if the unit has a `/` denominator, coerce the byte/bit token to the right dimension.
+        Edge case: if the denominator was dropped (pint simplification on a zero value), reattach
+        `default_denominator` so dimensional analysis still works downstream.
+        """
+        if attr_name not in obj_dict:
+            return False
+        attr_value = obj_dict[attr_name]
+        if not (isinstance(attr_value, dict) and isinstance(attr_value.get("unit"), str)):
+            return False
+        old_unit = attr_value["unit"]
+        if "/" in old_unit:
+            if target_suffix:
+                new_unit = _append_suffix_to_byte_tokens(old_unit, target_suffix)
+            else:
+                new_unit = _strip_byte_suffix_from_denominator(old_unit)
+        elif attr_value.get("value") == 0:
+            new_unit = f"{old_unit} / {default_denominator}"
+        else:
+            return False
+        if new_unit == old_unit:
+            return False
+        attr_value["unit"] = new_unit
+        return True
+
     edge_component_id_to_class = {}
     for class_name, objects_dict in system_dict.items():
         if class_name == "efootprint_version" or not isinstance(objects_dict, dict):
@@ -553,6 +601,14 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
             attr for (migration_class, attr) in dimensionless_to_bit_attrs
             if efootprint_class.is_subclass_of(migration_class)
         }
+        matching_per_bit = {
+            attr for (migration_class, attr) in per_bit_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
+        matching_per_stored_bit = {
+            attr for (migration_class, attr) in per_stored_bit_attrs
+            if efootprint_class.is_subclass_of(migration_class)
+        }
         is_recurrent_edge_component_need = efootprint_class.is_subclass_of("RecurrentEdgeComponentNeed")
         for obj_dict in objects_dict.values():
             for attr in matching_stored_scalars | matching_stored_ts:
@@ -561,6 +617,10 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
                 log_upgrade |= _migrate_attr(obj_dict, attr, "ram")
             for attr in matching_dimensionless_to_bit:
                 log_upgrade |= _migrate_dimensionless_to_bit(obj_dict, attr)
+            for attr in matching_per_bit:
+                log_upgrade |= _migrate_per_info_attr(obj_dict, attr, "", "gigabyte")
+            for attr in matching_per_stored_bit:
+                log_upgrade |= _migrate_per_info_attr(obj_dict, attr, "stored", "gigabyte_stored")
             if is_recurrent_edge_component_need:
                 component_class = edge_component_id_to_class.get(obj_dict.get("edge_component"))
                 if component_class is not None:

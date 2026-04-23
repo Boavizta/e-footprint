@@ -236,11 +236,6 @@ def generate_big_system(
         raise ValueError(f"Duplicate modeling object names detected ({len(sorted_duplicates)}): {msg}")
     logger.info(f"Finished generating system in {round((perf_counter() - start), 3)} seconds")
 
-    timed_system_to_json(system, save_calculated_attributes=False,
-                         output_filepath=os.path.join(root_dir, "big_system.json"))
-    timed_system_to_json(system, save_calculated_attributes=True,
-                         output_filepath=os.path.join(root_dir, "big_system_with_calc_attr.json"))
-
     return system
 
 @time_it
@@ -260,7 +255,7 @@ if __name__ == "__main__":
     for i in range(edition_iterations):
         system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(100 * u.MB)
         system.usage_patterns[0].usage_journey.uj_steps[0].jobs[1].data_transferred = SourceValue(30 * u.MB)
-    end = time()
+    end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / (edition_iterations * 2), 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per data transferred edition")
 

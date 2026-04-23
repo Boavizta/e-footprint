@@ -912,3 +912,72 @@ class TestVersionUpgradeHandlers(TestCase):
             output_dict["RecurrentEdgeProcessRAMNeed"]["process_ram_need"]["recurrent_need"]["unit"])
         self.assertEqual(
             "GB_stored", output_dict["RecurrentEdgeStorageNeed"]["storage_need_1"]["recurrent_need"]["unit"])
+
+    def test_upgrade_19_to_20_per_info_denominator(self):
+        input_dict = {
+            "Network": {
+                "net_happy_path": {
+                    "bandwidth_energy_intensity": {
+                        "value": 0.05, "unit": "kWh / GB_stored", "label": "bei"},
+                },
+                "net_already_correct": {
+                    "bandwidth_energy_intensity": {
+                        "value": 0.05, "unit": "kWh / GB", "label": "bei"},
+                },
+                "net_zero_dropped_denom": {
+                    "bandwidth_energy_intensity": {
+                        "value": 0.0, "unit": "kilowatt_hour", "label": "bei"},
+                },
+                "net_nonzero_dropped_denom": {
+                    "bandwidth_energy_intensity": {
+                        "value": 0.05, "unit": "kilowatt_hour", "label": "bei"},
+                },
+            },
+            "Storage": {
+                "storage_happy_path": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {
+                        "value": 160.0, "unit": "kilogram / terabyte", "label": "cff"},
+                },
+                "storage_already_correct": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {
+                        "value": 160.0, "unit": "kilogram / terabyte_stored", "label": "cff"},
+                },
+                "storage_zero_dropped_denom": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {
+                        "value": 0.0, "unit": "kilogram", "label": "cff"},
+                },
+                "storage_nonzero_dropped_denom": {
+                    "carbon_footprint_fabrication_per_storage_capacity": {
+                        "value": 160.0, "unit": "kilogram", "label": "cff"},
+                },
+            },
+        }
+        efootprint_classes_dict = {cls.__name__: cls for cls in ALL_EFOOTPRINT_CLASSES}
+
+        output_dict = upgrade_version_19_to_20(input_dict, efootprint_classes_dict)
+
+        network_out = output_dict["Network"]
+        self.assertEqual(
+            "kWh / GB", network_out["net_happy_path"]["bandwidth_energy_intensity"]["unit"])
+        self.assertEqual(
+            "kWh / GB", network_out["net_already_correct"]["bandwidth_energy_intensity"]["unit"])
+        self.assertEqual(
+            "kilowatt_hour / gigabyte",
+            network_out["net_zero_dropped_denom"]["bandwidth_energy_intensity"]["unit"])
+        self.assertEqual(
+            "kilowatt_hour",
+            network_out["net_nonzero_dropped_denom"]["bandwidth_energy_intensity"]["unit"])
+
+        storage_out = output_dict["Storage"]
+        self.assertEqual(
+            "kilogram / terabyte_stored",
+            storage_out["storage_happy_path"]["carbon_footprint_fabrication_per_storage_capacity"]["unit"])
+        self.assertEqual(
+            "kilogram / terabyte_stored",
+            storage_out["storage_already_correct"]["carbon_footprint_fabrication_per_storage_capacity"]["unit"])
+        self.assertEqual(
+            "kilogram / gigabyte_stored",
+            storage_out["storage_zero_dropped_denom"]["carbon_footprint_fabrication_per_storage_capacity"]["unit"])
+        self.assertEqual(
+            "kilogram",
+            storage_out["storage_nonzero_dropped_denom"]["carbon_footprint_fabrication_per_storage_capacity"]["unit"])
