@@ -78,7 +78,7 @@ class EdgeUsageJourney(ModelingObject):
     def update_dict_element_in_fabrication_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
         self.fabrication_impact_repartition_weights[usage_pattern] = self._edge_usage_pattern_base_weight(
             usage_pattern
-        ).set_label(f"{usage_pattern.name} fabrication weight in {self.name} impact repartition")
+        ).set_label(f"{usage_pattern.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
@@ -88,7 +88,7 @@ class EdgeUsageJourney(ModelingObject):
     def update_dict_element_in_usage_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
         self.usage_impact_repartition_weights[usage_pattern] = (
             self._edge_usage_pattern_base_weight(usage_pattern) * usage_pattern.country.average_carbon_intensity
-        ).set_label(f"{usage_pattern.name} usage weight in {self.name} impact repartition")
+        ).set_label(f"{usage_pattern.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
         self.usage_impact_repartition_weights = ExplainableObjectDict()

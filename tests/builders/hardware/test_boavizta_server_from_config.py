@@ -47,7 +47,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             self.test_server.cpu_config.value,
             {"units": 2, "core_units": 4}
         )
-        self.assertIn("cpu config", self.test_server.cpu_config.label)
+        self.assertIn("cpu config", self.test_server.cpu_config.label.lower())
 
     def test_update_ram_config(self):
         """
@@ -60,7 +60,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
             self.test_server.ram_config.value,
             {"units": 2, "capacity": 8}
         )
-        self.assertIn("ram config", self.test_server.ram_config.label)
+        self.assertIn("ram config", self.test_server.ram_config.label.lower())
 
     @patch("efootprint.builders.hardware.boavizta_server_from_config.call_boaviztapi")
     def test_update_api_call_response(self, mock_call):
@@ -111,7 +111,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
         # Check that the server's api_call_response is updated:
         self.assertIsInstance(self.test_server.api_call_response, ExplainableObject)
         self.assertEqual(self.test_server.api_call_response.value, mock_response)
-        self.assertIn("api call data", self.test_server.api_call_response.label)
+        self.assertIn("api call data", self.test_server.api_call_response.label.lower())
 
     def test_update_carbon_footprint_fabrication(self):
         """
@@ -159,7 +159,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
 
         self.test_server.update_power()
         self.assertEqual(self.test_server.power.value, 60.0 * u.W)
-        self.assertIn("power", self.test_server.power.label)
+        self.assertIn("power", self.test_server.power.label.lower())
 
     def test_update_ram(self):
         """
@@ -176,7 +176,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
 
         self.test_server.update_ram()
         self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
-        self.assertIn("ram", self.test_server.ram.label)
+        self.assertIn("ram", self.test_server.ram.label.lower())
 
     def test_update_compute(self):
         """
@@ -193,7 +193,7 @@ class TestBoaviztaServerFromConfig(unittest.TestCase):
 
         self.test_server.update_compute()
         self.assertEqual(self.test_server.compute.value, 8 * u.cpu_core)
-        self.assertIn("compute", self.test_server.compute.label)
+        self.assertIn("compute", self.test_server.compute.label.lower())
 
 
 if __name__ == "__main__":

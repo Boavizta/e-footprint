@@ -78,7 +78,7 @@ class ImpactRepartitionCachingModelingObject(ModelingObject):
 
     def update_dict_element_in_usage_impact_repartition_weights(self, modeling_object):
         self.usage_impact_repartition_weights[modeling_object] = ExplainableQuantity(
-            1 * u.concurrent, label=f"{modeling_object.name} weight in {self.name} impact repartition")
+            1 * u.concurrent, label=f"{modeling_object.name} weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
         self.usage_impact_repartition_weights = ExplainableObjectDict()

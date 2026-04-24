@@ -148,7 +148,7 @@ class Device(HardwareBase):
                 * uj_step.user_time_spent
             )
         self.fabrication_impact_repartition_weights[uj_step] = weight.set_label(
-            f"{uj_step.name} fabrication weight in {self.name} impact repartition"
+            f"{uj_step.name} fabrication weight in impact repartition"
         )
 
     def update_fabrication_impact_repartition_weights(self):
@@ -168,7 +168,7 @@ class Device(HardwareBase):
                 * uj_step.user_time_spent
             )
         self.usage_impact_repartition_weights[uj_step] = weight.set_label(
-            f"{uj_step.name} usage weight in {self.name} impact repartition"
+            f"{uj_step.name} usage weight in impact repartition"
         )
 
     def update_usage_impact_repartition_weights(self):

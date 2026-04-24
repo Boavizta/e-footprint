@@ -111,7 +111,7 @@ class TestEdgeStorage(TestCase):
             # Formula: 100 kg/TB * 2 TB = 200 kg
             self.assertAlmostEqual(200, self.edge_storage.carbon_footprint_fabrication.value.magnitude, places=5)
             self.assertEqual(u.kg, self.edge_storage.carbon_footprint_fabrication.value.units)
-            self.assertEqual("Carbon footprint of Test EdgeStorage",
+            self.assertEqual("Carbon footprint",
                              self.edge_storage.carbon_footprint_fabrication.label)
 
     def test_update_carbon_footprint_fabrication_with_nb_of_units(self):

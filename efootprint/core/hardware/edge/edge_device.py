@@ -338,7 +338,7 @@ class EdgeDevice(ModelingObject):
         self.fabrication_impact_repartition_weights[component_need] = self._compute_component_need_weight(
             component_need,
             self._fabrication_impact_per_usage_pattern_for_component(component_need.edge_component),
-        ).set_label(f"{component_need.name} fabrication weight in {self.name} impact repartition")
+        ).set_label(f"{component_need.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
@@ -348,7 +348,7 @@ class EdgeDevice(ModelingObject):
     def update_dict_element_in_usage_impact_repartition_weights(self, component_need: "RecurrentEdgeComponentNeed"):
         self.usage_impact_repartition_weights[component_need] = self._compute_component_need_weight(
             component_need, component_need.edge_component.energy_footprint_per_edge_device_per_usage_pattern
-        ).set_label(f"{component_need.name} usage weight in {self.name} impact repartition")
+        ).set_label(f"{component_need.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
         self.usage_impact_repartition_weights = ExplainableObjectDict()

@@ -195,7 +195,8 @@ class TestEdgeDevice(TestCase):
 
         result = self.edge_device.instances_fabrication_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude, rtol=1e-5))
-        self.assertIn("Test Device", result.label)
+        self.assertIn("Hourly", result.label)
+        self.assertIn("instances fabrication footprint", result.label)
         self.assertIn("Test Pattern", result.label)
 
     def test_update_dict_element_in_instances_fabrication_footprint_per_usage_pattern_with_components(self):
@@ -276,7 +277,7 @@ class TestEdgeDevice(TestCase):
         breakdown = self.edge_device.fabrication_footprint_breakdown_by_source
         # Expected: total_nb_of_units * per_device + structure_total / nb_components = 2*4 + 10/2 = 13
         self.assertEqual(13, breakdown[self.mock_component_1].value.to(u.kg).magnitude)
-        self.assertIn("Test Device", breakdown[self.mock_component_1].label)
+        self.assertIn("Fabrication footprint attributed to", breakdown[self.mock_component_1].label)
         self.assertIn("Component 1", breakdown[self.mock_component_1].label)
 
     def test_update_fabrication_footprint_breakdown_by_source(self):
@@ -344,7 +345,7 @@ class TestEdgeDevice(TestCase):
 
         result = self.edge_device.energy_footprint_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
-        self.assertIn("Test Device", result.label)
+        self.assertIn("Energy footprint", result.label)
         self.assertIn("Test Pattern", result.label)
 
     def test_update_instances_energy(self):
@@ -365,7 +366,7 @@ class TestEdgeDevice(TestCase):
         expected_energy = [150, 300]
         result = self.edge_device.instances_energy
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
-        self.assertIn("Test Device", result.label)
+        self.assertIn("Total energy consumed", result.label)
 
     def test_update_energy_footprint(self):
         """Test summing energy footprint across all usage patterns."""
@@ -385,7 +386,7 @@ class TestEdgeDevice(TestCase):
         expected_footprint = [1.5, 3]
         result = self.edge_device.energy_footprint
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
-        self.assertIn("Test Device", result.label)
+        self.assertIn("Total energy footprint", result.label)
 
     def test_update_instances_fabrication_footprint(self):
         """Test summing fabrication footprint across all usage patterns."""
@@ -405,7 +406,7 @@ class TestEdgeDevice(TestCase):
         expected_footprint = [15, 30]
         result = self.edge_device.instances_fabrication_footprint
         self.assertTrue(np.allclose(expected_footprint, result.value.to(u.kg).magnitude))
-        self.assertIn("Test Device", result.label)
+        self.assertIn("Total fabrication footprint", result.label)
 
     @patch("efootprint.core.hardware.edge.edge_device.EdgeDevice.recurrent_edge_component_needs",
            new_callable=PropertyMock)

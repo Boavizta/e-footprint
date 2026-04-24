@@ -213,7 +213,7 @@ class Storage(InfraHardware):
         ).to(u.GB_stored)
         self.fabrication_impact_repartition_weights[job] = (
             self.full_cumulative_storage_need_per_job[job] + shared_storage_per_job
-        ).set_label(f"{job.name} fabrication weight in {self.name} impact repartition")
+        ).set_label(f"{job.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()

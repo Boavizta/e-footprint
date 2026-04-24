@@ -18,7 +18,7 @@ class UsageJourneyStep(ModelingObject):
     def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: List[JobBase]):
         super().__init__(name)
         self.user_time_spent = user_time_spent
-        self.user_time_spent.set_label(f"Time spent on step {self.name}")
+        self.user_time_spent.set_label(f"Time spent by user")
         self.jobs = jobs
 
     @property

@@ -120,7 +120,7 @@ class TestEdgeCPUComponent(TestCase):
         result = self.cpu_component.unitary_hourly_compute_need_per_usage_pattern[mock_pattern]
         self.assertEqual(expected_values, result.value_as_float_list)
         self.assertEqual(u.cpu_core, result.unit)
-        self.assertIn("Test CPU hourly compute need for Test Pattern", result.label)
+        self.assertIn("Hourly compute need for Test Pattern", result.label)
 
     def test_update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern raises error when capacity is exceeded."""
@@ -161,7 +161,7 @@ class TestEdgeCPUComponent(TestCase):
         expected_values = [15, 35, 50]
         result = self.cpu_component.unitary_power_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_values, result.value.to(u.W).magnitude))
-        self.assertIn("Test CPU unitary power for Test Pattern", result.label)
+        self.assertIn("Unitary power for Test Pattern", result.label)
 
 
 if __name__ == "__main__":

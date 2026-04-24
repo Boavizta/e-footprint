@@ -66,7 +66,7 @@ class TestEdgeWorkloadComponent(TestCase):
         result = self.appliance_component.unitary_hourly_workload_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_values, result.value_as_float_list))
         self.assertEqual(u.concurrent, result.unit)
-        self.assertIn("Test Appliance hourly workload for Test Pattern", result.label)
+        self.assertIn("Hourly workload for Test Pattern", result.label)
 
     def test_update_dict_element_in_unitary_hourly_workload_per_usage_pattern_raises_when_sum_exceeds_one(self):
         """Test update_dict_element_in_unitary_hourly_workload_per_usage_pattern raises when aggregated workload exceeds 1."""
@@ -88,7 +88,7 @@ class TestEdgeWorkloadComponent(TestCase):
         with self.assertRaises(WorkloadOutOfBoundsError) as context:
             self.appliance_component.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(mock_pattern)
 
-        self.assertIn("Test Appliance aggregated workload for Test Pattern", str(context.exception))
+        self.assertIn("aggregated workload", str(context.exception).lower())
 
     def test_update_unitary_hourly_workload_per_usage_pattern(self):
         """Test update_unitary_hourly_workload_per_usage_pattern updates all patterns."""
@@ -133,7 +133,7 @@ class TestEdgeWorkloadComponent(TestCase):
         # = [5, 27.5, 50]
         expected_values = [5, 27.5, 50]
         self.assertTrue(np.allclose(expected_values, result.value.to(u.W).magnitude))
-        self.assertIn("Test Appliance unitary power for Test Pattern", result.label)
+        self.assertIn("Unitary power for Test Pattern", result.label)
 
     def test_update_dict_element_in_unitary_power_with_empty_workload(self):
         """Test power calculation with EmptyExplainableObject workload."""
@@ -146,7 +146,7 @@ class TestEdgeWorkloadComponent(TestCase):
         result = self.appliance_component.unitary_power_per_usage_pattern[mock_pattern]
         # With empty workload, power should be idle_power
         self.assertEqual(5 * u.W, result.value)
-        self.assertIn("Test Appliance unitary power for Test Pattern", result.label)
+        self.assertIn("Unitary power for Test Pattern", result.label)
 
     def test_update_unitary_power_per_usage_pattern(self):
         """Test update_unitary_power_per_usage_pattern updates all patterns."""

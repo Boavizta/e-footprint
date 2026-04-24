@@ -797,7 +797,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         weight = (sum([val for val in getattr(modeling_object, f"{phase}_impact_repartition_weights").values()],
                       start=EmptyExplainableObject())
                 * self.nb_of_occurrences_per_container[modeling_object]).set_label(
-            f"{modeling_object.name} weight in {self.name} impact repartition")
+            f"{modeling_object.name} weight in impact repartition")
         return weight
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, modeling_object: "ModelingObject"):

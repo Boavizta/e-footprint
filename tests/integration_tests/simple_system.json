@@ -19,7 +19,7 @@
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Usage Pattern hourly nb of visits from e-footprint hypothesis",
+                "label": "Hourly nb of usage journey starts",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -50,7 +50,7 @@
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
-                "label": "Time spent on step UJ step 1 from e-footprint hypothesis",
+                "label": "Time spent by user",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -66,7 +66,7 @@
             "user_time_spent": {
                 "value": 1.0,
                 "unit": "minute",
-                "label": "Time spent on step UJ step 2 from e-footprint hypothesis",
+                "label": "Time spent by user",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -84,7 +84,7 @@
             "data_transferred": {
                 "value": 150.0,
                 "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads for request job 1 from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads by request",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -93,7 +93,7 @@
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
-                "label": "Data stored by request job 1 from e-footprint hypothesis",
+                "label": "Data stored by request",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -102,7 +102,7 @@
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
-                "label": "Request duration of job 1 from e-footprint hypothesis",
+                "label": "Request duration",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -111,7 +111,7 @@
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
-                "label": "RAM needed on server Default server to process job 1 from e-footprint hypothesis",
+                "label": "RAM needed during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -120,7 +120,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process job 1 from e-footprint hypothesis",
+                "label": "cpu cores needed on server Default server to process job 1",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -134,7 +134,7 @@
             "data_transferred": {
                 "value": 150.0,
                 "unit": "kilobyte",
-                "label": "Sum of all data uploads and downloads for request job 2 from e-footprint hypothesis",
+                "label": "Sum of all data uploads and downloads by request",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -143,7 +143,7 @@
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
-                "label": "Data stored by request job 2 from e-footprint hypothesis",
+                "label": "Data stored by request",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -152,7 +152,7 @@
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
-                "label": "Request duration of job 2 from e-footprint hypothesis",
+                "label": "Request duration",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -161,7 +161,7 @@
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
-                "label": "RAM needed on server Default server to process job 2 from e-footprint hypothesis",
+                "label": "RAM needed during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -170,7 +170,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process job 2 from e-footprint hypothesis",
+                "label": "cpu cores needed on server Default server to process job 2",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -186,7 +186,7 @@
             "carbon_footprint_fabrication": {
                 "value": 600.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Default server from Base ADEME_V19",
+                "label": "Carbon footprint fabrication",
                 "source": {
                     "name": "Base ADEME_V19",
                     "link": "https://data.ademe.fr/datasets/base-carbone(r)"
@@ -195,7 +195,7 @@
             "power": {
                 "value": 300.0,
                 "unit": "watt",
-                "label": "Power of Default server from e-footprint hypothesis",
+                "label": "Power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -204,7 +204,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Default server from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -213,7 +213,7 @@
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Default server fraction of usage time from e-footprint hypothesis",
+                "label": "Fraction of usage time",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -221,7 +221,7 @@
             },
             "server_type": {
                 "value": "on-premise",
-                "label": "Server type of Default server from e-footprint hypothesis",
+                "label": "Server type",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -230,7 +230,7 @@
             "idle_power": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Idle power of Default server from e-footprint hypothesis",
+                "label": "Idle power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -239,7 +239,7 @@
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte_ram",
-                "label": "RAM of Default server from e-footprint hypothesis",
+                "label": "RAM",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -248,7 +248,7 @@
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
-                "label": "Nb cpu cores of Default server from e-footprint hypothesis",
+                "label": "Nb cpu cores",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -257,7 +257,7 @@
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
-                "label": "PUE of Default server from e-footprint hypothesis",
+                "label": "PUE",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -266,7 +266,7 @@
             "average_carbon_intensity": {
                 "value": 400.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of Default server electricity from e-footprint hypothesis",
+                "label": "Average carbon intensity of electricity",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -275,7 +275,7 @@
             "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
-                "label": "Default server utilization rate from e-footprint hypothesis",
+                "label": "Utilization rate",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -284,7 +284,7 @@
             "base_ram_consumption": {
                 "value": 300.0,
                 "unit": "megabyte_ram",
-                "label": "Base RAM consumption of Default server from e-footprint hypothesis",
+                "label": "Base RAM consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -293,7 +293,7 @@
             "base_compute_consumption": {
                 "value": 2.0,
                 "unit": "cpu_core",
-                "label": "Base cpu core consumption of Default server from e-footprint hypothesis",
+                "label": "Base cpu core consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -301,7 +301,7 @@
             },
             "fixed_nb_of_instances": {
                 "value": null,
-                "label": "User defined number of Default server instances"
+                "label": "User defined number of instances"
             },
             "storage": "Default-SSD-storage"
         }
@@ -313,7 +313,7 @@
             "power": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power of Default SSD storage from e-footprint hypothesis",
+                "label": "Power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -322,7 +322,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Default SSD storage from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -331,7 +331,7 @@
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Default SSD storage fraction of usage time from e-footprint hypothesis",
+                "label": "Fraction of usage time",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -340,7 +340,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint of Default SSD storage per storage capacity from e-footprint hypothesis",
+                "label": "Fabrication carbon footprint per storage capacity",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -349,7 +349,7 @@
             "storage_capacity": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
-                "label": "Storage capacity of Default SSD storage from e-footprint hypothesis",
+                "label": "Storage capacity",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -358,7 +358,7 @@
             "data_replication_factor": {
                 "value": 3.0,
                 "unit": "dimensionless",
-                "label": "Data replication factor of Default SSD storage from e-footprint hypothesis",
+                "label": "Data replication factor",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -367,7 +367,7 @@
             "data_storage_duration": {
                 "value": 3.0,
                 "unit": "hour",
-                "label": "Data storage duration of Default SSD storage from e-footprint hypothesis",
+                "label": "Data storage duration",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -376,7 +376,7 @@
             "base_storage_need": {
                 "value": 0.0,
                 "unit": "terabyte_stored",
-                "label": "Default SSD storage initial storage need from e-footprint hypothesis",
+                "label": "Initial storage need",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -385,7 +385,7 @@
             "fixed_nb_of_instances": {
                 "value": 10000.0,
                 "unit": "concurrent",
-                "label": "User defined number of Default SSD storage instances from e-footprint hypothesis",
+                "label": "User defined number of instances",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -400,7 +400,7 @@
             "carbon_footprint_fabrication": {
                 "value": 156.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
+                "label": "Carbon footprint fabrication",
                 "source": {
                     "name": "Base ADEME_V19",
                     "link": "https://data.ademe.fr/datasets/base-carbone(r)"
@@ -409,7 +409,7 @@
             "power": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Power of Default laptop from e-footprint hypothesis",
+                "label": "Power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -418,7 +418,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Default laptop from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -427,7 +427,7 @@
             "fraction_of_usage_time": {
                 "value": 7.0,
                 "unit": "hour / day",
-                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "label": "Fraction of usage time",
                 "source": {
                     "name": "DATA.AI - STATE OF MOBILE",
                     "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
@@ -442,7 +442,7 @@
             "bandwidth_energy_intensity": {
                 "value": 0.1,
                 "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity of Default network from e-footprint hypothesis",
+                "label": "bandwith energy intensity",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -458,7 +458,7 @@
             "average_carbon_intensity": {
                 "value": 44.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of France from Our world in data (2024)",
+                "label": "Average carbon intensity",
                 "source": {
                     "name": "Our world in data (2024)",
                     "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
@@ -466,7 +466,7 @@
             },
             "timezone": {
                 "zone": "Europe/Paris",
-                "label": "France timezone from user data",
+                "label": "Timezone",
                 "source": {
                     "name": "user data",
                     "link": null
