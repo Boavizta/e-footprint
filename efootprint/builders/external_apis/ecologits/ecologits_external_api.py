@@ -317,7 +317,7 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
         )
 
         self.impacts = ExplainableDict(
-            impacts, f"Ecologits impacts for {self.name}", left_parent=self.external_api.model_active_params,
+            impacts, f"Ecologits impacts", left_parent=self.external_api.model_active_params,
             right_parent=self.external_api.model_total_params,
             operator="compute impacts with EcoLogits compute_llm_impacts_dag function",
             source=compute_llm_impacts_dag_source).generate_explainable_object_with_logical_dependency(

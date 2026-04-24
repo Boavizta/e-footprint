@@ -163,11 +163,11 @@ class Storage(InfraHardware):
         else:
             all_cumulatives += self.base_storage_need
             self.full_cumulative_storage_need = all_cumulatives.set_label(
-                f"Full cumulative storage need for {self.name}")
+                f"Full cumulative storage need")
 
     def update_raw_nb_of_instances(self):
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.concurrent)
-        self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances for {self.name}")
+        self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances")
 
     def update_nb_of_instances(self):
         from efootprint.core.hardware.server_base import ServerTypes

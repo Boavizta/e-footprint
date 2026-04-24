@@ -158,7 +158,7 @@ class JobBase(ModelingObject):
         target_unit = u.MB_stored if data_exchange_type == "data_stored" else u.MB
 
         return hourly_data_exchange.set_label(
-                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}").to(target_unit)
+                f"Hourly {data_exchange_type_no_underscore} in {usage_pattern.name}").to(target_unit)
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
