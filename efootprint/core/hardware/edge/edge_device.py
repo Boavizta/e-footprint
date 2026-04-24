@@ -269,7 +269,7 @@ class EdgeDevice(ModelingObject):
             len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
         self.fabrication_footprint_breakdown_by_source[component] = (
             self.total_nb_of_units * component.fabrication_footprint_per_edge_device + equal_structure_share
-        ).set_label(f"{self.name} fabrication footprint attributed to {component.name}")
+        ).set_label(f"Fabrication footprint attributed to {component.name}")
 
     def update_fabrication_footprint_breakdown_by_source(self):
         self.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()

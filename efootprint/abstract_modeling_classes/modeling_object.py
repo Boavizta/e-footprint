@@ -847,7 +847,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         else:
             repartition_value = (
                 getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj] / impact_repartition_weight_sum
-            ).to(u.concurrent).set_label(f"{self.name} {phase} impact attribution to {modeling_obj.name}")
+            ).to(u.concurrent).set_label(f"{phase} impact attribution to {modeling_obj.name}")
 
         if isinstance(repartition_value, ExplainableHourlyQuantities):
             nan_values_mask = np.isnan(repartition_value.magnitude)
@@ -920,7 +920,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 if expl_dict.attr_name_in_mod_obj_container == "fabrication_impact_repartition":
                     attributed_fabrication_footprint_per_source[expl_dict.modeling_obj_container] = (
                             expl_dict[self] * expl_dict.modeling_obj_container.attributed_fabrication_footprint
-                    ).set_label(f"{self.name} fabrication footprint due to {expl_dict.modeling_obj_container.name}")
+                    ).set_label(f"Fabrication footprint due to {expl_dict.modeling_obj_container.name}")
                 
         return attributed_fabrication_footprint_per_source
 
@@ -929,7 +929,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         attributed_fabrication_footprint = sum(
             [val for val in self.attributed_fabrication_footprint_per_source.values()], start=EmptyExplainableObject())
         
-        return attributed_fabrication_footprint.to(u.kg).set_label(f"{self.name} attributed fabrication footprint")
+        return attributed_fabrication_footprint.to(u.kg).set_label("Attributed fabrication footprint")
 
     @cached_property
     def attributed_energy_footprint_per_source(self):
@@ -942,7 +942,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 if expl_dict.attr_name_in_mod_obj_container == "usage_impact_repartition":
                     attributed_energy_footprint_per_source[expl_dict.modeling_obj_container] = (
                             expl_dict[self] * expl_dict.modeling_obj_container.attributed_energy_footprint
-                    ).set_label(f"{self.name} energy footprint due to {expl_dict.modeling_obj_container.name}")
+                    ).set_label(f"Energy footprint due to {expl_dict.modeling_obj_container.name}")
 
         return attributed_energy_footprint_per_source
 
@@ -951,4 +951,4 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         attributed_energy_footprint = sum(
             [val for val in self.attributed_energy_footprint_per_source.values()], start=EmptyExplainableObject())
 
-        return attributed_energy_footprint.to(u.kg).set_label(f"{self.name} attributed energy footprint")
+        return attributed_energy_footprint.to(u.kg).set_label("Attributed energy footprint")

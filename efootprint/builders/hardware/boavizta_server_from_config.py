@@ -232,7 +232,7 @@ class BoaviztaStorageFromConfig(Storage):
 
         self.power_per_storage_capacity = (
             power_per_storage_capacity.generate_explainable_object_with_logical_dependency(
-                self.storage_type).set_label(f"{self.name} power per storage capacity"))
+                self.storage_type).set_label("Power per storage capacity"))
 
     def update_lifespan(self):
         lifespan = None

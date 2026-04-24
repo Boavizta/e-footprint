@@ -20,7 +20,7 @@ class HardwareBase(ModelingObject):
             f"Carbon footprint fabrication")
         self.power = power.set_label(f"Power")
         self.lifespan = lifespan.set_label(f"Lifespan")
-        self.fraction_of_usage_time = fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
+        self.fraction_of_usage_time = fraction_of_usage_time.set_label("Fraction of usage time")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

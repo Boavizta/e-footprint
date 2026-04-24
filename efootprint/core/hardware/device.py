@@ -109,7 +109,7 @@ class Device(HardwareBase):
         ).to(u.kWh)
         self.energy_footprint_per_usage_pattern[usage_pattern] = (
             instances_energy * usage_pattern.country.average_carbon_intensity
-        ).to(u.kg).set_label(f"{self.name} usage footprint for {usage_pattern.name}")
+        ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
     def update_energy_footprint_per_usage_pattern(self):
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -126,7 +126,7 @@ class Device(HardwareBase):
         device_fabrication_footprint_over_one_hour = (
                 self.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
                 / (self.lifespan * self.fraction_of_usage_time)
-        ).to(u.g).set_label(f"{self.name} fabrication footprint over one hour")
+        ).to(u.g).set_label("Fabrication footprint over one hour")
 
         for usage_pattern in self.usage_patterns:
             instances_fabrication_footprint += (

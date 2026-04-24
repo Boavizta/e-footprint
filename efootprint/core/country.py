@@ -26,7 +26,7 @@ class Country(ModelingObject):
         super().__init__(name)
         self.short_name = short_name
         self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity")
-        self.timezone = timezone.set_label(f"{self.name} timezone")
+        self.timezone = timezone.set_label("Timezone")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):

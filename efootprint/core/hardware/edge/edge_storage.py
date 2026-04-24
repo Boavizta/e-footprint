@@ -80,7 +80,7 @@ class EdgeStorage(EdgeComponent):
         self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
             f"Storage capacity per unit")
         self.storage_capacity = EmptyExplainableObject()
-        self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
+        self.base_storage_need = base_storage_need.set_label("Initial storage need")
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
     @property

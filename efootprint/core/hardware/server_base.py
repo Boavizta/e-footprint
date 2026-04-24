@@ -88,7 +88,7 @@ class ServerBase(InfraHardware):
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of electricity")
-        self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
+        self.utilization_rate = utilization_rate.set_label("Utilization rate")
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
         self.base_compute_consumption = base_compute_consumption.set_label(
             f"Base {self.compute_type.replace("_", " ")} consumption")
@@ -160,7 +160,7 @@ class ServerBase(InfraHardware):
             hour_by_hour_resource_needs += (
                     job.hourly_avg_occurrences_across_usage_patterns * getattr(job, f"{resource}_needed"))
 
-        return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
+        return hour_by_hour_resource_needs.to(resource_unit).set_label(f"Hour by hour {resource} need")
 
     def update_hour_by_hour_ram_need(self):
         self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")

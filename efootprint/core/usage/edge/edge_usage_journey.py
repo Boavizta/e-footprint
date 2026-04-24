@@ -62,7 +62,7 @@ class EdgeUsageJourney(ModelingObject):
             edge_usage_pattern.utc_hourly_edge_usage_journey_starts, self.usage_span)
         self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern] = (
             nb_of_edge_usage_journeys_in_parallel.to(u.concurrent)
-            .set_label(f"{self.name} hourly nb of edge usage journeys in parallel"))
+            .set_label("Hourly nb of edge usage journeys in parallel"))
 
     def update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self):
         self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()

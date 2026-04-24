@@ -43,7 +43,7 @@ class UsagePattern(ModelingObject):
         utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)
 
-        self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label(f"{self.name} UTC")
+        self.utc_hourly_usage_journey_starts = utc_hourly_usage_journey_starts.set_label("UTC")
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, country: "Country"):
         self.fabrication_impact_repartition_weights[country] = ExplainableQuantity(

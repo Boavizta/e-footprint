@@ -131,7 +131,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
 
     def __init__(self, name: str, provider: ExplainableObject, model_name: ExplainableObject):
         super().__init__(name=name)
-        self.provider = provider.set_label(f"{self.name} provider")
+        self.provider = provider.set_label("Provider")
         self.model_name = model_name.set_label(f"Model used")
         self.model_total_params = EmptyExplainableObject()
         self.model_active_params = EmptyExplainableObject()

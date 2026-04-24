@@ -83,4 +83,4 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
                 for usage_pattern in self.edge_usage_patterns
             ],
             start=EmptyExplainableObject(),
-        ).set_label(f"{self.name} total hourly need across usage patterns")
+        ).set_label("Total hourly need across usage patterns")
