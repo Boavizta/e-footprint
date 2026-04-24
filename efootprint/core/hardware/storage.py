@@ -75,7 +75,7 @@ class Storage(InfraHardware):
         self.storage_capacity = storage_capacity.set_label(f"Storage capacity")
         self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor")
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration")
-        self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
+        self.base_storage_need = base_storage_need.set_label("Initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of instances").to(u.concurrent)
         self.full_cumulative_storage_need = EmptyExplainableObject()

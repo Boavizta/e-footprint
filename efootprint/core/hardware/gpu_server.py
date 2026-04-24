@@ -47,13 +47,13 @@ class GPUServer(ServerBase):
             average_carbon_intensity=average_carbon_intensity, utilization_rate=utilization_rate,
             base_compute_consumption=base_compute_consumption, base_ram_consumption=base_ram_consumption,
             storage=storage, fixed_nb_of_instances=fixed_nb_of_instances)
-        self.gpu_power = gpu_power.set_label(f"{self.name} GPU power")
-        self.gpu_idle_power = gpu_idle_power.set_label(f"{self.name} GPU idle power")
-        self.ram_per_gpu = ram_per_gpu.set_label(f"{self.name} RAM per GPU")
+        self.gpu_power = gpu_power.set_label("GPU power")
+        self.gpu_idle_power = gpu_idle_power.set_label("GPU idle power")
+        self.ram_per_gpu = ram_per_gpu.set_label("RAM per GPU")
         self.carbon_footprint_fabrication_without_gpu = carbon_footprint_fabrication_without_gpu.set_label(
-            f"{self.name} carbon footprint without GPU")
+            "Carbon footprint without GPU")
         self.carbon_footprint_fabrication_per_gpu = carbon_footprint_fabrication_per_gpu.set_label(
-            f"{self.name} carbon footprint one GPU")
+            "Carbon footprint one GPU")
 
     @property
     def calculated_attributes(self):
@@ -62,13 +62,13 @@ class GPUServer(ServerBase):
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (self.carbon_footprint_fabrication_without_gpu
                 + self.compute * self.carbon_footprint_fabrication_per_gpu
-                ).set_label(f"{self.name} carbon footprint fabrication")
+                ).set_label("Carbon footprint fabrication")
 
     def update_power(self):
-        self.power = (self.gpu_power * self.compute).set_label(f"{self.name} power")
+        self.power = (self.gpu_power * self.compute).set_label("Power")
 
     def update_idle_power(self):
-        self.idle_power = (self.gpu_idle_power * self.compute).set_label(f"{self.name} idle power")
+        self.idle_power = (self.gpu_idle_power * self.compute).set_label("Idle power")
 
     def update_ram(self):
-        self.ram = (self.ram_per_gpu * self.compute).set_label(f"{self.name} RAM").to(u.GB_ram)
+        self.ram = (self.ram_per_gpu * self.compute).set_label("RAM").to(u.GB_ram)

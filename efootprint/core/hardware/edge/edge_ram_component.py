@@ -67,7 +67,7 @@ class EdgeRAMComponent(EdgeComponent):
                 raise InsufficientCapacityError(self, "RAM", self.available_ram_per_instance, max_ram_need)
 
         self.unitary_hourly_ram_need_per_usage_pattern[usage_pattern] = unitary_hourly_ram_need.to(u.GB_ram).set_label(
-            f"{self.name} hourly RAM need for {usage_pattern.name}").generate_explainable_object_with_logical_dependency(
+            f"Hourly RAM need for {usage_pattern.name}").generate_explainable_object_with_logical_dependency(
             self.available_ram_per_instance)
 
     def update_unitary_hourly_ram_need_per_usage_pattern(self):
@@ -88,7 +88,7 @@ class EdgeRAMComponent(EdgeComponent):
             unitary_power = self.idle_power + (self.power - self.idle_power) * ram_workload
 
         self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
-            f"{self.name} unitary power for {usage_pattern.name}")
+            f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()

@@ -72,8 +72,8 @@ class BoaviztaCloudServer(Server):
             utilization_rate=utilization_rate, base_ram_consumption=base_ram_consumption,
             base_compute_consumption=base_compute_consumption, storage=storage,
             fixed_nb_of_instances=fixed_nb_of_instances)
-        self.provider = provider.set_label(f"{self.name} cloud provider")
-        self.instance_type = instance_type.set_label(f"{self.name} instance type")
+        self.provider = provider.set_label("Cloud provider")
+        self.instance_type = instance_type.set_label("Instance type")
         self.impact_url = "https://api.boavizta.org/v1/cloud/instance"
         self.api_call_response = EmptyExplainableObject()
 
@@ -100,7 +100,7 @@ class BoaviztaCloudServer(Server):
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = ExplainableQuantity(
             float(self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"]) * u.kg,
-            f"{self.name} fabrication carbon footprint", left_parent=self.api_call_response,
+            "Fabrication carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
     def update_power(self):
@@ -111,7 +111,7 @@ class BoaviztaCloudServer(Server):
         average_power_value = float(self.api_call_response.value["verbose"]["avg_power"]["value"])
 
         self.power = ExplainableQuantity(
-            average_power_value * u.W, f"{self.name} power", left_parent=self.api_call_response,
+            average_power_value * u.W, "Power", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
     def update_ram(self):
@@ -120,14 +120,14 @@ class BoaviztaCloudServer(Server):
         ram_spec = float(self.api_call_response.value["verbose"]["memory"]["value"])
 
         self.ram = ExplainableQuantity(
-            ram_spec * u.GB_ram, f"{self.name} ram",
+            ram_spec * u.GB_ram, "RAM",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
     def update_compute(self):
         nb_vcpu = float(self.api_call_response.value["verbose"]["vcpu"]["value"])
 
         self.compute = ExplainableQuantity(
-            nb_vcpu * u.cpu_core, f"{self.name} compute",
+            nb_vcpu * u.cpu_core, "Compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
 logger.info(f"Imported BoaviztaCloudServer in {perf_counter() - start:.5f} seconds.")

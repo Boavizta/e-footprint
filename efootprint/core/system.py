@@ -310,7 +310,7 @@ class System(ModelingObject):
                 [sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
                 for key in self.fabrication_footprints], start=EmptyExplainableObject()
             )
-        ).to(u.kg).set_label(f"{self.name} total carbon footprint")
+        ).to(u.kg).set_label("Total carbon footprint")
 
         self.total_footprint = round(total_footprint, 4)
 

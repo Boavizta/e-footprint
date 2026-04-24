@@ -64,7 +64,7 @@ class JobBase(ModelingObject):
         # Use copy not to convert self.request_duration in place
         return ExplainableQuantity(
                 math.ceil(copy(self.request_duration.value).to(u.hour).magnitude) * u.dimensionless,
-                f"{self.name} duration in full hours")
+                "Duration in full hours")
 
     # Job objects can be referenced by UsageJourneySteps or by RecurrentServerNeeds
     @property

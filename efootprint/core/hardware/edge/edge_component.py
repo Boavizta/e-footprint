@@ -162,7 +162,7 @@ class EdgeComponent(ModelingObject):
         )
 
         self.energy_footprint_per_edge_device_per_usage_pattern[usage_pattern] = energy_footprint.set_label(
-            f"{self.name} energy footprint per edge device for {usage_pattern.name}").to(u.kg)
+            f"Energy footprint per edge device for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_edge_device_per_usage_pattern(self):
         """Calculate energy footprint per usage pattern."""
@@ -175,21 +175,21 @@ class EdgeComponent(ModelingObject):
         fabrication_footprint_per_edge_device = sum(
             self.fabrication_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.fabrication_footprint_per_edge_device = fabrication_footprint_per_edge_device.set_label(
-            f"{self.name} total fabrication footprint per edge device across usage patterns")
+            "Total fabrication footprint per edge device across usage patterns")
 
     def update_energy_per_edge_device(self):
         """Sum energy across usage patterns."""
         energy_per_edge_device = sum(
             self.energy_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_per_edge_device = energy_per_edge_device.set_label(
-            f"{self.name} total energy consumed per edge device across usage patterns")
+            "Total energy consumed per edge device across usage patterns")
 
     def update_energy_footprint_per_edge_device(self):
         """Sum energy footprint across usage patterns."""
         energy_footprint = sum(
             self.energy_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint_per_edge_device = energy_footprint.set_label(
-            f"{self.name} total energy footprint per edge device across usage patterns")
+            "Total energy footprint per edge device across usage patterns")
 
     def update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         self.total_unitary_hourly_need_per_usage_pattern[usage_pattern] = sum(

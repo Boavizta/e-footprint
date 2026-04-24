@@ -36,7 +36,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     def __init__(self, name: str, edge_component: EdgeComponent, recurrent_need: ExplainableRecurrentQuantities):
         super().__init__(name)
         self.edge_component = edge_component
-        self.recurrent_need = recurrent_need.set_label(f"{self.name} recurrent need")
+        self.recurrent_need = recurrent_need.set_label("Recurrent need")
         self.recurrent_need_validation = EmptyExplainableObject()
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         self.total_hourly_need_across_usage_patterns = EmptyExplainableObject()
@@ -116,7 +116,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
                                                    label=f"Occurrences within {usage_pattern.name}")
 
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = unitary_hourly_need.set_label(
-            f"{self.name} unitary hourly need for {usage_pattern.name}")
+            f"Unitary hourly need for {usage_pattern.name}")
 
     def update_unitary_hourly_need_per_usage_pattern(self):
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
@@ -129,4 +129,4 @@ class RecurrentEdgeComponentNeed(ModelingObject):
              * usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
              for usage_pattern in self.edge_usage_patterns],
             start=EmptyExplainableObject(),
-        ).set_label(f"{self.name} total hourly need across usage patterns")
+        ).set_label("Total hourly need across usage patterns")

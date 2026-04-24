@@ -39,7 +39,7 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
             return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_ram_needed.copy().set_label(
-            f"{self.name} recurrent need")
+            "Recurrent need")
 
 
 class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
@@ -49,7 +49,7 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
             return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_compute_needed.copy().set_label(
-            f"{self.name} recurrent need")
+            "Recurrent need")
 
 
 class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
@@ -60,7 +60,7 @@ class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeSto
             return
         recurrent_edge_device_need = self.recurrent_edge_device_needs[0]
         self.recurrent_need = recurrent_edge_device_need.recurrent_storage_needed.copy().set_label(
-            f"{self.name} recurrent need")
+            "Recurrent need")
 
 
 class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):

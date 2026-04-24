@@ -24,7 +24,7 @@ class EdgeUsagePattern(ModelingObject):
         self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
 
         self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.to(u.occurrence).set_label(
-            f"{self.name} hourly nb of edge device starts")
+            "Hourly nb of edge device starts")
         self.edge_usage_journey = edge_usage_journey
         self.network = network
         self.country = country
