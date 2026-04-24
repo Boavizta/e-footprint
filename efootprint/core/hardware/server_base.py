@@ -316,7 +316,7 @@ class ServerBase(InfraHardware):
                     * job.hourly_avg_occurrences_across_usage_patterns)
 
         self.job_repartition_weights[job] = weight.to(u.concurrent).set_label(
-            f"{job.name} weight in {self.name} impact repartition"
+            f"{job.name} weight in impact repartition"
         )
 
     def update_job_repartition_weights(self):
