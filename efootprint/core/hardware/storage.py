@@ -170,17 +170,13 @@ class Storage(InfraHardware):
         self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances for {self.name}")
 
     def update_nb_of_instances(self):
-        if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
-            self.nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
-            return
         from efootprint.core.hardware.server_base import ServerTypes
-        if self.server is not None and self.server.server_type == ServerTypes.serverless():
-            self.nb_of_instances = (self.raw_nb_of_instances.copy()
-                .generate_explainable_object_with_logical_dependency(self.server.server_type)
-                .set_label(f"Hourly number of {self.name} instances"))
-            return
-        ceiled_nb_of_instances = self.raw_nb_of_instances.ceil()
-        if not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
+        if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
+            nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
+        elif self.server is not None and self.server.server_type == ServerTypes.serverless():
+            nb_of_instances = self.raw_nb_of_instances.copy()
+        elif not isinstance(self.fixed_nb_of_instances, EmptyExplainableObject):
+            ceiled_nb_of_instances = self.raw_nb_of_instances.ceil()
             max_nb_of_instances = ceiled_nb_of_instances.max()
             if max_nb_of_instances > self.fixed_nb_of_instances:
                 raise InsufficientCapacityError(
@@ -194,11 +190,17 @@ class Storage(InfraHardware):
                 fixed_nb_of_instances = ExplainableHourlyQuantities(
                     fixed_nb_of_instances_quantity, self.raw_nb_of_instances.start_date, "Nb of instances",
                     left_parent=self.raw_nb_of_instances, right_parent=self.fixed_nb_of_instances)
-            self.nb_of_instances = fixed_nb_of_instances.set_label(f"Hourly fixed number of instances for {self.name}")
+            nb_of_instances = fixed_nb_of_instances
         else:
-            nb_of_instances = ceiled_nb_of_instances.generate_explainable_object_with_logical_dependency(
-                self.fixed_nb_of_instances)
-            self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
+            ceiled_nb_of_instances = self.raw_nb_of_instances.ceil()
+            nb_of_instances = ceiled_nb_of_instances
+        nb_of_instances = (nb_of_instances
+                           .generate_explainable_object_with_logical_dependency(self.fixed_nb_of_instances)
+                           .set_label(f"Hourly number of instances"))
+        if self.server is not None:
+            nb_of_instances = nb_of_instances.generate_explainable_object_with_logical_dependency(
+                self.server.server_type)
+        self.nb_of_instances = nb_of_instances
 
     def update_instances_energy(self):
         self.instances_energy = EmptyExplainableObject()
