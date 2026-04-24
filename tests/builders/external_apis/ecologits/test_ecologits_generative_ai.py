@@ -13,6 +13,10 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
+from efootprint.builders.external_apis.ecologits.ecologits_custom_external_api import (
+    EcoLogitsCustomGenAIExternalAPI,
+    EcoLogitsCustomGenAIExternalAPIJob,
+)
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIJob, ecologits_calculated_attributes)
 from efootprint.constants.units import u
@@ -308,6 +312,56 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
 
         job2.self_delete()
         self.assertNotIn(job2, external_api.jobs)
+
+
+class TestEcoLogitsCustomGenAIExternalAPI(TestCase):
+    def setUp(self):
+        self.external_api = EcoLogitsCustomGenAIExternalAPI.from_defaults(
+            "Custom EcoLogits API",
+            provider=SourceObject("openai"),
+            model_name=SourceObject("my-custom-model"),
+            custom_model_total_parameter_count=SourceValue(220 * u.billion),
+            custom_model_active_parameter_count=SourceValue(120 * u.billion),
+            custom_data_center_pue=SourceValue(1.15 * u.dimensionless),
+            custom_average_carbon_intensity=SourceValue(350 * u.g / u.kWh),
+            custom_batch_size=SourceValue(32 * u.dimensionless),
+            custom_model_quantization_bits=SourceValue(8 * u.dimensionless),
+            custom_server_power=SourceValue(1.8 * u.kW),
+            custom_server_gpu_count=SourceValue(4 * u.dimensionless),
+            custom_request_latency=SourceValue(2 * u.s),
+        )
+
+    def test_compatible_jobs(self):
+        self.assertEqual([EcoLogitsCustomGenAIExternalAPIJob], self.external_api.compatible_jobs())
+
+    def test_custom_parameters_are_used_for_calculated_attributes(self):
+        self.assertEqual(self.external_api.model_total_params.value, 220 * u.billion)
+        self.assertEqual(self.external_api.model_active_params.value, 120 * u.billion)
+        self.assertEqual(self.external_api.data_center_pue.value, 1.15 * u.dimensionless)
+        self.assertEqual(self.external_api.average_carbon_intensity.value.units, u.kg / u.kWh)
+        self.assertAlmostEqual(self.external_api.average_carbon_intensity.value.magnitude, 0.35)
+
+    def test_job_can_compute_impacts_with_custom_external_api(self):
+        job = EcoLogitsCustomGenAIExternalAPIJob(
+            name="Custom external api job",
+            external_api=self.external_api,
+            output_token_count=SourceValue(1000 * u.dimensionless),
+        )
+
+        job.update_impacts()
+
+        self.assertIsNotNone(job.impacts)
+        self.assertIn("request_usage_gwp", job.impacts.value)
+        self.assertIn("batch_size", job.impacts.value)
+        self.assertEqual(job.impacts.value["batch_size"], 32)
+        self.assertIn("model_quantization_bits", job.impacts.value)
+        self.assertEqual(job.impacts.value["model_quantization_bits"], 8)
+        self.assertIn("server_power", job.impacts.value)
+        self.assertEqual(job.impacts.value["server_power"], 1.8)
+        self.assertIn("server_gpu_count", job.impacts.value)
+        self.assertEqual(job.impacts.value["server_gpu_count"], 4)
+        self.assertIn("request_latency", job.impacts.value)
+        self.assertEqual(job.impacts.value["request_latency"], 2)
 
 
 
