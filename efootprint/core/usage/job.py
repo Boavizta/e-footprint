@@ -45,8 +45,8 @@ class JobBase(ModelingObject):
             f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
         self.request_duration = request_duration.set_label(f"Request duration")
-        self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}").to(u.MB_ram)
-        self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
+        self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
+        self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -214,7 +214,7 @@ class DirectServerJob(JobBase):
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.server = server
-        self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
+        self.ram_needed.set_label(f"RAM needed during job processing")
         self.compute_needed.set_label(
             f"{str(compute_needed.value.units).replace('_', ' ')}s needed on server {self.server.name} "
             f"to process {self.name}")

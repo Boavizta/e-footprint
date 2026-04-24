@@ -27,8 +27,8 @@ class ServiceJob(JobBase):
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.service = service
-        self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
-        self.compute_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
+        self.ram_needed.set_label(f"RAM needed on during job processing")
+        self.compute_needed.set_label(f"CPU needed during job processing")
 
     @property
     def server(self) -> ModelingObject:
