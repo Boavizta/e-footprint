@@ -89,7 +89,7 @@ class EdgeCPUComponent(EdgeComponent):
             unitary_power = self.idle_power + (self.power - self.idle_power) * unitary_compute_workload
 
         self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
-            f"{self.name} unitary power for {usage_pattern.name}")
+            f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()

@@ -50,13 +50,13 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
 
         # Re-set with updated label
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = base_storage_need.set_label(
-            f"{self.name} unitary hourly need for {usage_pattern.name}")
+            f"Unitary hourly need for {usage_pattern.name}")
 
     def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         storage_rate = self.unitary_hourly_need_per_usage_pattern[usage_pattern]
         if isinstance(storage_rate, EmptyExplainableObject):
             self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = EmptyExplainableObject(
-                left_parent=storage_rate, label=f"{self.name} cumulative unitary storage need for {usage_pattern.name}")
+                left_parent=storage_rate, label=f"Cumulative unitary storage need for {usage_pattern.name}")
             return
 
         from efootprint.constants.units import u
@@ -65,7 +65,7 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = ExplainableHourlyQuantities(
             cumulative_quantity,
             start_date=storage_rate.start_date,
-            label=f"{self.name} cumulative unitary storage need for {usage_pattern.name}",
+            label=f"Cumulative unitary storage need for {usage_pattern.name}",
             left_parent=storage_rate,
             operator="cumulative sum",
         )

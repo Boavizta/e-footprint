@@ -19,7 +19,7 @@ class UsagePattern(ModelingObject):
                  network: Network, country: Country, hourly_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
         self.hourly_usage_journey_starts = hourly_usage_journey_starts.to(u.occurrence).set_label(
-            f"{self.name} hourly nb of visits")
+            "Hourly nb of visits")
         self.usage_journey = usage_journey
         self.devices = devices
         self.network = network

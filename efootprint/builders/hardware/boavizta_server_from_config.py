@@ -82,7 +82,7 @@ class BoaviztaServerFromConfig(ServerBase):
                            "core_units": self.nb_of_cores_per_cpu_unit.to(u.dimensionless).magnitude}
 
         self.cpu_config = ExplainableObject(
-            cpu_config_dict, label=f"{self.name} cpu config", left_parent=self.nb_of_cpu_units,
+            cpu_config_dict, label="CPU config", left_parent=self.nb_of_cpu_units,
             right_parent=self.nb_of_cores_per_cpu_unit, operator="combined in Boavizta API with",
             source=Sources.USER_DATA)
 
@@ -91,7 +91,7 @@ class BoaviztaServerFromConfig(ServerBase):
                            "capacity": self.ram_quantity_per_unit.to(u.GB_ram).magnitude}
 
         self.ram_config = ExplainableObject(
-            ram_config_dict, label=f"{self.name} ram config", left_parent=self.nb_of_ram_units,
+            ram_config_dict, label="RAM config", left_parent=self.nb_of_ram_units,
             right_parent=self.ram_quantity_per_unit, operator="combined in Boavizta API with",
             source=Sources.USER_DATA)
 
@@ -103,7 +103,7 @@ class BoaviztaServerFromConfig(ServerBase):
         }
         self.api_call_response = ExplainableDict(
             call_boaviztapi(url=self.impact_url, params=self.params, json=api_call_data, method="POST"),
-            label=f"{self.name} api call data", left_parent=self.cpu_config, right_parent=self.ram_config,
+            label="API call data", left_parent=self.cpu_config, right_parent=self.ram_config,
             operator="combined in Boavizta API data with", source=Sources.USER_DATA)
 
     def update_carbon_footprint_fabrication(self):
@@ -137,21 +137,21 @@ class BoaviztaServerFromConfig(ServerBase):
         assert float(use_time_ratio) == 1, f"Unexpected use time ratio {use_time_ratio}"
         
         self.power = ExplainableQuantity(
-            average_power_value * u.W, f"{self.name} power", left_parent=self.api_call_response,
+            average_power_value * u.W, "Power", left_parent=self.api_call_response,
             operator="data extraction from", source=self.impact_source)
         
     def update_ram(self):
         ram_spec = self.api_call_response.value["verbose"]["RAM-1"]
 
         self.ram = ExplainableQuantity(
-            ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB_ram, f"{self.name} ram",
+            ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB_ram, "RAM",
             left_parent=self.api_call_response, operator="data extraction from", source=self.impact_source)
         
     def update_compute(self):
         cpu_spec = self.api_call_response.value["verbose"]["CPU-1"]
 
         self.compute = ExplainableQuantity(
-            cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.cpu_core, f"{self.name} compute",
+            cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.cpu_core, "Compute",
             left_parent=self.api_call_response, operator="data extraction from", source=self.impact_source)
         
 
@@ -192,7 +192,7 @@ class BoaviztaStorageFromConfig(Storage):
             storage_type = "HDD"
 
         self.storage_type = ExplainableObject(
-            storage_type, label=f"{self.name} storage type", left_parent=self.server.api_call_response.value,
+            storage_type, label="Storage type", left_parent=self.server.api_call_response.value,
             operator="data extraction from", source=self.server.impact_source)
 
     def update_storage_capacity(self):
@@ -200,7 +200,7 @@ class BoaviztaStorageFromConfig(Storage):
         storage_unit = getattr(u, storage_spec["capacity"]["unit"])
         
         self.storage_capacity = ExplainableQuantity(
-            storage_spec["capacity"]["value"] * storage_unit, f"{self.name} storage capacity", 
+            storage_spec["capacity"]["value"] * storage_unit, "Storage capacity", 
             left_parent=self.server.api_call_response, operator="data extraction", source=self.server.impact_source)
 
     def update_fixed_nb_of_instances(self):
@@ -242,4 +242,4 @@ class BoaviztaStorageFromConfig(Storage):
             lifespan = SourceValue(4 * u.year)
 
         self.lifespan = lifespan.generate_explainable_object_with_logical_dependency(self.storage_type).set_label(
-            f"{self.name} lifespan")
+            "Lifespan")

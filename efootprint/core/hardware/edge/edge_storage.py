@@ -134,9 +134,9 @@ class EdgeStorage(EdgeComponent):
             if np.max(total.value) > self.storage_capacity.value:
                 raise InsufficientCapacityError(
                     self, "storage capacity", self.storage_capacity,
-                    ExplainableQuantity(total.value.max(), label=f"{self.name} cumulative storage need"))
+                    ExplainableQuantity(total.value.max(), label="Cumulative storage need"))
         self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] = total.set_label(
-            f"{self.name} cumulative storage need for {usage_pattern.name}"
+            f"Cumulative storage need for {usage_pattern.name}"
         ).generate_explainable_object_with_logical_dependency(self.storage_capacity)
 
     def update_cumulative_unitary_storage_need_per_usage_pattern(self):

@@ -24,7 +24,7 @@ class VideoStreaming(Service):
                  ram_buffer_per_user: ExplainableQuantity):
         super().__init__(name, server)
         self.base_ram_consumption = base_ram_consumption.set_label(
-            f"{self.name} OS and streaming software base RAM consumption")
+            "OS and streaming software base RAM consumption")
         self.bits_per_pixel = bits_per_pixel.set_label("Bits per pixel")
         self.static_delivery_cpu_cost = static_delivery_cpu_cost.set_label("CPU cost per static stream")
         self.ram_buffer_per_user = ram_buffer_per_user.set_label("RAM buffer size per user")
@@ -77,11 +77,11 @@ class VideoStreamingJob(ServiceJob):
 
     def update_data_transferred(self):
         self.data_transferred = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
-            f"{self.name} data transferred")
+            "Data transferred")
 
     def update_compute_needed(self):
         self.compute_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(
-            f"{self.name} CPU needed")
+            "CPU needed")
 
     def update_ram_needed(self):
         self.ram_needed = self.service.ram_buffer_per_user.copy().set_label("RAM needed")

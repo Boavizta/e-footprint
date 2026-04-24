@@ -70,7 +70,7 @@ class RecurrentServerNeed(ModelingObject):
         if min_value < 0:
             raise NegativeServerNeedError(self.name, min_value)
         self.recurrent_need_validation = self.recurrent_volume_per_edge_device.copy().set_label(
-            f"{self.name} validated recurrent need")
+            "Validated recurrent need")
         
     def update_dict_element_in_unitary_hourly_volume_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_volume = self.recurrent_volume_per_edge_device.generate_hourly_quantities_over_timespan(
@@ -88,7 +88,7 @@ class RecurrentServerNeed(ModelingObject):
         unitary_hourly_volume *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
                                                    label=f"Occurrences within {usage_pattern.name}")
         self.unitary_hourly_volume_per_usage_pattern[usage_pattern] = unitary_hourly_volume.set_label(
-            f"{self.name} unitary hourly need for {usage_pattern.name}")
+            f"Unitary hourly need for {usage_pattern.name}")
 
     def update_unitary_hourly_volume_per_usage_pattern(self):
         self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()

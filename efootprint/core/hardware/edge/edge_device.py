@@ -237,7 +237,7 @@ class EdgeDevice(ModelingObject):
         self.energy_footprint_per_usage_pattern[usage_pattern] = (
             self.total_nb_of_units * total_energy_footprint
         ).set_label(
-            f"{self.name} energy footprint for {usage_pattern.name}").to(u.kg)
+            f"Energy footprint for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_usage_pattern(self):
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
@@ -248,19 +248,19 @@ class EdgeDevice(ModelingObject):
         instances_energy = sum(
             self.instances_energy_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_energy = instances_energy.set_label(
-            f"{self.name} total energy consumed across usage patterns")
+            "Total energy consumed across usage patterns")
 
     def update_energy_footprint(self):
         energy_footprint = sum(
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
-            f"{self.name} total energy footprint across usage patterns")
+            "Total energy footprint across usage patterns")
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = sum(
             self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
-            f"{self.name} total fabrication footprint across usage patterns")
+            "Total fabrication footprint across usage patterns")
 
     def update_dict_element_in_fabrication_footprint_breakdown_by_source(self, component: EdgeComponent):
         structure_fabrication_total = sum(
@@ -283,7 +283,7 @@ class EdgeDevice(ModelingObject):
     def energy_footprint_breakdown_by_source(self) -> ExplainableObjectDict:
         return ExplainableObjectDict({
             component: (self.total_nb_of_units * component.energy_footprint_per_edge_device).set_label(
-                f"{self.name} energy footprint attributed to {component.name}")
+                f"Energy footprint attributed to {component.name}")
             for component in self.components
         })
 

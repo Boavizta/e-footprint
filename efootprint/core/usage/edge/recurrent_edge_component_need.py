@@ -116,7 +116,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
                                                    label=f"Occurrences within {usage_pattern.name}")
 
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = unitary_hourly_need.set_label(
-            f"{self.name} unitary hourly need for {usage_pattern.name}")
+            f"Unitary hourly need for {usage_pattern.name}")
 
     def update_unitary_hourly_need_per_usage_pattern(self):
         self.unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()

@@ -43,10 +43,10 @@ class EdgeWorkloadComponent(EdgeComponent):
 
         if not isinstance(unitary_hourly_workload, EmptyExplainableObject):
             RecurrentEdgeComponentNeed.assert_recurrent_workload_is_between_0_and_1(
-                unitary_hourly_workload, f"{self.name} aggregated workload for {usage_pattern.name}")
+                unitary_hourly_workload, f"Aggregated workload for {usage_pattern.name}")
 
         self.unitary_hourly_workload_per_usage_pattern[usage_pattern] = unitary_hourly_workload.set_label(
-            f"{self.name} hourly workload for {usage_pattern.name}")
+            f"Hourly workload for {usage_pattern.name}")
 
     def update_unitary_hourly_workload_per_usage_pattern(self):
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
@@ -65,7 +65,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             unitary_power = self.idle_power + (self.power - self.idle_power) * workload
 
         self.unitary_power_per_usage_pattern[usage_pattern] = unitary_power.set_label(
-            f"{self.name} unitary power for {usage_pattern.name}")
+            f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()

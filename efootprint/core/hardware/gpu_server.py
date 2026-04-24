@@ -51,9 +51,9 @@ class GPUServer(ServerBase):
         self.gpu_idle_power = gpu_idle_power.set_label("GPU idle power")
         self.ram_per_gpu = ram_per_gpu.set_label("RAM per GPU")
         self.carbon_footprint_fabrication_without_gpu = carbon_footprint_fabrication_without_gpu.set_label(
-            f"{self.name} carbon footprint without GPU")
+            "Carbon footprint without GPU")
         self.carbon_footprint_fabrication_per_gpu = carbon_footprint_fabrication_per_gpu.set_label(
-            f"{self.name} carbon footprint one GPU")
+            "Carbon footprint one GPU")
 
     @property
     def calculated_attributes(self):
