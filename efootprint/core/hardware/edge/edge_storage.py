@@ -78,7 +78,7 @@ class EdgeStorage(EdgeComponent):
             carbon_footprint_fabrication_per_storage_capacity.set_label(
                 f"Fabrication carbon footprint per unit of {self.name} per storage capacity"))
         self.storage_capacity_per_unit = storage_capacity_per_unit.set_label(
-            f"Storage capacity per unit of {self.name}")
+            f"Storage capacity per unit")
         self.storage_capacity = EmptyExplainableObject()
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
@@ -109,13 +109,13 @@ class EdgeStorage(EdgeComponent):
 
     def update_storage_capacity(self):
         self.storage_capacity = (self.storage_capacity_per_unit * self.nb_of_units).set_label(
-            f"Storage capacity of {self.name}")
+            f"Storage capacity")
 
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_storage_capacity
             * self.storage_capacity
-        ).set_label(f"Carbon footprint of {self.name}")
+        ).set_label(f"Carbon footprint")
 
     def update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(self, usage_pattern):
         total = sum(

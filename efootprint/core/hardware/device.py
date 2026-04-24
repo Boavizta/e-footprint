@@ -119,7 +119,7 @@ class Device(HardwareBase):
     def update_energy_footprint(self):
         self.energy_footprint = sum(
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
-        ).set_label(f"Devices energy footprint of {self.name}")
+        ).set_label(f"Devices energy footprint")
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = EmptyExplainableObject()
@@ -134,7 +134,7 @@ class Device(HardwareBase):
                 * device_fabrication_footprint_over_one_hour).to(u.kg)
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
-            f"Devices fabrication footprint of {self.name}")
+            f"Devices fabrication footprint")
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
         weight = EmptyExplainableObject()

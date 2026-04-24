@@ -126,7 +126,7 @@ class BoaviztaServerFromConfig(ServerBase):
                 total_fabrication_footprint_storage_included - full_storage_carbon_footprint_fabrication)
         
         self.carbon_footprint_fabrication = total_fabrication_footprint_storage_excluded.set_label(
-            f"Fabrication footprint of {self.name}")
+            f"Fabrication footprint")
         
     def update_power(self):
         average_power_value = self.api_call_response.value["verbose"]["avg_power"]["value"]

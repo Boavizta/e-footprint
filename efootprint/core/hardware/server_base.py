@@ -79,19 +79,19 @@ class ServerBase(InfraHardware):
                  base_compute_consumption: ExplainableQuantity, storage: Storage,
                  fixed_nb_of_instances: ExplainableQuantity | EmptyExplainableObject = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
-        self.server_type = server_type.set_label(f"Server type of {self.name}")
-        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
-        self.ram = ram.set_label(f"RAM of {self.name}").to(u.GB_ram)
+        self.server_type = server_type.set_label(f"Server type")
+        self.idle_power = idle_power.set_label(f"Idle power")
+        self.ram = ram.set_label(f"RAM").to(u.GB_ram)
         self.compute = compute.set_label("tmp label")
-        self.compute.set_label(f"Nb {self.compute_type.replace("_", " ")}s of {self.name}")
-        self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
+        self.compute.set_label(f"Nb {self.compute_type.replace("_", " ")}s")
+        self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE")
         self.average_carbon_intensity = average_carbon_intensity
         if SOURCE_VALUE_DEFAULT_NAME in self.average_carbon_intensity.label:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
         self.utilization_rate = utilization_rate.set_label(f"{self.name} utilization rate")
-        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
+        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
         self.base_compute_consumption = base_compute_consumption.set_label(
-            f"Base {self.compute_type.replace("_", " ")} consumption of {self.name}")
+            f"Base {self.compute_type.replace("_", " ")} consumption")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.concurrent)
         self.storage = storage

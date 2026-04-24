@@ -24,7 +24,7 @@ class EdgeUsageJourney(ModelingObject):
     def __init__(self, name: str, edge_functions: List[EdgeFunction], usage_span: ExplainableQuantity):
         super().__init__(name)
         self.edge_functions = edge_functions
-        self.usage_span = usage_span.set_label(f"Usage span of {self.name}")
+        self.usage_span = usage_span.set_label(f"Usage span")
 
         self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
 

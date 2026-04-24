@@ -25,7 +25,7 @@ class Country(ModelingObject):
             timezone: ExplainableTimezone):
         super().__init__(name)
         self.short_name = short_name
-        self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity of {self.name}")
+        self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity")
         self.timezone = timezone.set_label(f"{self.name} timezone")
 
     @property

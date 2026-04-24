@@ -23,21 +23,21 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
     def update_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.power_per_unit = edge_device.power.copy().set_label(f"Power per unit of {self.name}")
+            self.power_per_unit = edge_device.power.copy().set_label(f"Power per unit")
         else:
             self.power_per_unit = EmptyExplainableObject()
 
     def update_idle_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power_per_unit = edge_device.idle_power.copy().set_label(f"Idle power per unit of {self.name}")
+            self.idle_power_per_unit = edge_device.idle_power.copy().set_label(f"Idle power per unit")
         else:
             self.idle_power_per_unit = EmptyExplainableObject()
 
     def update_lifespan(self):
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+            self.lifespan = edge_device.lifespan.copy().set_label(f"Lifespan")
         else:
             self.lifespan = EmptyExplainableObject()
 
@@ -58,9 +58,9 @@ class EdgeAppliance(EdgeDevice):
             components=[],
             lifespan=lifespan)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication of {self.name}")
-        self.power = power.set_label(f"Power of {self.name}")
-        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
+            f"Carbon footprint fabrication")
+        self.power = power.set_label(f"Power")
+        self.idle_power = idle_power.set_label(f"Idle power")
 
     @property
     def calculated_attributes(self):
@@ -68,7 +68,7 @@ class EdgeAppliance(EdgeDevice):
 
     def update_structure_carbon_footprint_fabrication(self):
         self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
-            f"Structure fabrication carbon footprint of {self.name}")
+            f"Structure fabrication carbon footprint")
 
     def after_init(self):
         if not self.components:

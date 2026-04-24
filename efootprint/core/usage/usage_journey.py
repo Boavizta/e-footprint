@@ -64,7 +64,7 @@ class UsageJourney(ModelingObject):
         user_time_spent_sum = sum(
             [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())
 
-        self.duration = user_time_spent_sum.set_label(f"Duration of {self.name}")
+        self.duration = user_time_spent_sum.set_label(f"Duration")
 
     def update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         nb_of_usage_journeys_in_parallel = compute_nb_avg_hourly_occurrences(

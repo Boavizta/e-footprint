@@ -39,7 +39,7 @@ class Network(ModelingObject):
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
-            f"bandwith energy intensity of {self.name}")
+            f"bandwith energy intensity")
 
     @property
     def calculated_attributes(self):

@@ -72,9 +72,9 @@ class Storage(InfraHardware):
             name, carbon_footprint_fabrication=SourceValue(0 * u.kg), power=SourceValue(0 * u.W), lifespan=lifespan)
         self.carbon_footprint_fabrication_per_storage_capacity = (carbon_footprint_fabrication_per_storage_capacity
             .set_label(f"Fabrication carbon footprint of {self.name} per storage capacity"))
-        self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
-        self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor of {self.name}")
-        self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration of {self.name}")
+        self.storage_capacity = storage_capacity.set_label(f"Storage capacity")
+        self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor")
+        self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration")
         self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
         self.fixed_nb_of_instances = (fixed_nb_of_instances or EmptyExplainableObject()).set_label(
             f"User defined number of {self.name} instances").to(u.concurrent)
@@ -124,7 +124,7 @@ class Storage(InfraHardware):
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
-            f"Carbon footprint of {self.name}")
+            f"Carbon footprint")
 
     def update_dict_element_in_full_cumulative_storage_need_per_job(self, job: "JobBase"):
         job_storage_rate = (

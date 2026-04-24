@@ -44,7 +44,7 @@ class JobBase(ModelingObject):
         self.data_transferred = data_transferred.set_label(
             f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
-        self.request_duration = request_duration.set_label(f"Request duration of {self.name}")
+        self.request_duration = request_duration.set_label(f"Request duration")
         self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}").to(u.MB_ram)
         self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
 

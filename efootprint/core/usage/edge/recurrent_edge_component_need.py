@@ -97,7 +97,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             self.assert_recurrent_workload_is_between_0_and_1(self.recurrent_need, self.name)
 
         self.recurrent_need_validation = self.recurrent_need.copy().set_label(
-            f"Validated recurrent need of {self.name}")
+            f"Validated recurrent need")
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_need = self.recurrent_need.generate_hourly_quantities_over_timespan(
