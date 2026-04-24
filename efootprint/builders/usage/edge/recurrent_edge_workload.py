@@ -43,7 +43,7 @@ class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
             name=name,
             edge_device=edge_device,
             recurrent_edge_component_needs=[])
-        self.recurrent_workload = recurrent_workload.set_label(f"Recurrent workload for {self.name}")
+        self.recurrent_workload = recurrent_workload.set_label(f"Recurrent workload")
 
     def after_init(self):
         if not self.recurrent_edge_component_needs:

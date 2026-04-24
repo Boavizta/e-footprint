@@ -32,9 +32,9 @@ class EdgeDevice(ModelingObject):
     def __init__(self, name: str, structure_carbon_footprint_fabrication: ExplainableQuantity,
                  components: List[EdgeComponent], lifespan: ExplainableQuantity):
         super().__init__(name)
-        self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
+        self.lifespan = lifespan.set_label(f"Lifespan")
         self.structure_carbon_footprint_fabrication = structure_carbon_footprint_fabrication.set_label(
-            f"Structure fabrication carbon footprint of {self.name}")
+            f"Structure fabrication carbon footprint")
         self.components = components
 
         self.lifespan_validation = EmptyExplainableObject()
@@ -170,7 +170,7 @@ class EdgeDevice(ModelingObject):
             [group.edge_device_counts[self] * group.effective_nb_of_units_within_root
              for group in parent_groups],
             start=EmptyExplainableObject())
-        self.total_nb_of_units = total.set_label(f"Total nb of {self.name} per ensemble")
+        self.total_nb_of_units = total.set_label(f"Total nb per ensemble")
 
     def self_delete(self):
         parent_groups = self._find_parent_groups()

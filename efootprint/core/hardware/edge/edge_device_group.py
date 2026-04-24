@@ -119,7 +119,7 @@ class EdgeDeviceGroup(ModelingObject):
                  for parent in parent_groups],
                 start=EmptyExplainableObject())
             self.effective_nb_of_units_within_root = effective_nb.set_label(
-                f"Effective nb of {self.name} within root group")
+                f"Effective nb within root group")
 
     @classmethod
     def sort_within_computation_chain(cls, instances):

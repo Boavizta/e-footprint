@@ -97,7 +97,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             self.assert_recurrent_workload_is_between_0_and_1(self.recurrent_need, self.name)
 
         self.recurrent_need_validation = self.recurrent_need.copy().set_label(
-            f"Validated recurrent need of {self.name}")
+            f"Validated recurrent need")
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_need = self.recurrent_need.generate_hourly_quantities_over_timespan(
@@ -113,7 +113,7 @@ class RecurrentEdgeComponentNeed(ModelingObject):
             f"since {usage_pattern.name} is in {self.edge_usage_patterns}.")
 
         unitary_hourly_need *= ExplainableQuantity(nb_of_occurrences_of_self_within_usage_pattern * u.dimensionless,
-                                                   label=f"Occurrences of {self.name} within {usage_pattern.name}")
+                                                   label=f"Occurrences within {usage_pattern.name}")
 
         self.unitary_hourly_need_per_usage_pattern[usage_pattern] = unitary_hourly_need.set_label(
             f"{self.name} unitary hourly need for {usage_pattern.name}")

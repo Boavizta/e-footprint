@@ -17,9 +17,9 @@ class HardwareBase(ModelingObject):
                  lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
         super().__init__(name)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication of {self.name}")
-        self.power = power.set_label(f"Power of {self.name}")
-        self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
+            f"Carbon footprint fabrication")
+        self.power = power.set_label(f"Power")
+        self.lifespan = lifespan.set_label(f"Lifespan")
         self.fraction_of_usage_time = fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
 
     @property

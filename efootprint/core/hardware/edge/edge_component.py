@@ -34,11 +34,11 @@ class EdgeComponent(ModelingObject):
         if nb_of_units is None:
             nb_of_units = SourceValue(1 * u.dimensionless)
         self.carbon_footprint_fabrication_per_unit = carbon_footprint_fabrication_per_unit.set_label(
-            f"Carbon footprint fabrication per unit of {self.name}")
-        self.power_per_unit = power_per_unit.set_label(f"Power per unit of {self.name}")
-        self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
-        self.idle_power_per_unit = idle_power_per_unit.set_label(f"Idle power per unit of {self.name}")
-        self.nb_of_units = nb_of_units.set_label(f"Number of units of {self.name}")
+            f"Carbon footprint fabrication per unit")
+        self.power_per_unit = power_per_unit.set_label(f"Power per unit")
+        self.lifespan = lifespan.set_label(f"Lifespan")
+        self.idle_power_per_unit = idle_power_per_unit.set_label(f"Idle power per unit")
+        self.nb_of_units = nb_of_units.set_label(f"Number of units")
         self.carbon_footprint_fabrication = EmptyExplainableObject()
         self.power = EmptyExplainableObject()
         self.idle_power = EmptyExplainableObject()
@@ -113,13 +113,13 @@ class EdgeComponent(ModelingObject):
     def update_carbon_footprint_fabrication(self):
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_unit * self.nb_of_units).set_label(
-                f"Carbon footprint fabrication of {self.name}")
+                f"Carbon footprint fabrication")
 
     def update_power(self):
-        self.power = (self.power_per_unit * self.nb_of_units).set_label(f"Power of {self.name}")
+        self.power = (self.power_per_unit * self.nb_of_units).set_label(f"Power")
 
     def update_idle_power(self):
-        self.idle_power = (self.idle_power_per_unit * self.nb_of_units).set_label(f"Idle power of {self.name}")
+        self.idle_power = (self.idle_power_per_unit * self.nb_of_units).set_label(f"Idle power")
 
     def update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(
             self, usage_pattern: "EdgeUsagePattern"):

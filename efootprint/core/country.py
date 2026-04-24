@@ -25,7 +25,7 @@ class Country(ModelingObject):
             timezone: ExplainableTimezone):
         super().__init__(name)
         self.short_name = short_name
-        self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity of {self.name}")
+        self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity")
         self.timezone = timezone.set_label(f"{self.name} timezone")
 
     @property
@@ -57,4 +57,3 @@ class Country(ModelingObject):
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for system in self.systems:
             self.update_dict_element_in_usage_impact_repartition_weights(system)
-            

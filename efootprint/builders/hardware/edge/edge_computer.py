@@ -29,7 +29,7 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
     def update_ram_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.ram_per_unit = self.edge_device.ram.copy().set_label(f"RAM per unit of {self.name}")
+            self.ram_per_unit = self.edge_device.ram.copy().set_label(f"RAM per unit")
         else:
             self.ram_per_unit = EmptyExplainableObject()
 
@@ -37,14 +37,14 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
         edge_device = self.edge_device
         if edge_device:
             self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
-                f"Base RAM consumption of {self.name}")
+                f"Base RAM consumption")
         else:
             self.base_ram_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
         else:
             self.lifespan = EmptyExplainableObject()
 
@@ -68,7 +68,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
     def update_compute_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.compute_per_unit = edge_device.compute.copy().set_label(f"Compute per unit of {self.name}")
+            self.compute_per_unit = edge_device.compute.copy().set_label(f"Compute per unit")
         else:
             self.compute_per_unit = EmptyExplainableObject()
 
@@ -76,21 +76,21 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         edge_device = self.edge_device
         if edge_device:
             self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
-                f"Base compute consumption of {self.name}")
+                f"Base compute consumption")
         else:
             self.base_compute_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
         edge_device = self.edge_device
         if edge_device:
-            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan of {self.name}")
+            self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
         else:
             self.lifespan = EmptyExplainableObject()
 
     def update_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.power_per_unit = self.edge_device.power.copy().set_label(f"Power per unit of {self.name}")
+            self.power_per_unit = self.edge_device.power.copy().set_label(f"Power per unit")
         else:
             self.power_per_unit = EmptyExplainableObject()
 
@@ -98,7 +98,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
     def update_idle_power_per_unit(self):
         edge_device = self.edge_device
         if edge_device:
-            self.idle_power_per_unit = self.edge_device.idle_power.copy().set_label(f"Idle power per unit of {self.name}")
+            self.idle_power_per_unit = self.edge_device.idle_power.copy().set_label(f"Idle power per unit")
         else:
             self.idle_power_per_unit = EmptyExplainableObject()
 
@@ -127,13 +127,13 @@ class EdgeComputer(EdgeDevice):
             lifespan=lifespan)
         self.storage = storage
         self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
-            f"Carbon footprint fabrication of {self.name}")
-        self.power = power.set_label(f"Power of {self.name}")
-        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
-        self.ram = ram.set_label(f"RAM of {self.name}")
-        self.compute = compute.set_label(f"Compute of {self.name}")
-        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
-        self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
+            f"Carbon footprint fabrication")
+        self.power = power.set_label(f"Power")
+        self.idle_power = idle_power.set_label(f"Idle power")
+        self.ram = ram.set_label(f"RAM")
+        self.compute = compute.set_label(f"Compute")
+        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption")
+        self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption")
 
     @property
     def calculated_attributes(self):
@@ -156,7 +156,7 @@ class EdgeComputer(EdgeDevice):
 
     def update_structure_carbon_footprint_fabrication(self):
         self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
-            f"Structure fabrication carbon footprint of {self.name}")
+            f"Structure fabrication carbon footprint")
 
     def after_init(self):
         if not hasattr(self, "components") or not self.components:

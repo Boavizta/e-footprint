@@ -44,9 +44,9 @@ class JobBase(ModelingObject):
         self.data_transferred = data_transferred.set_label(
             f"Sum of all data uploads and downloads for request {self.name}")
         self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
-        self.request_duration = request_duration.set_label(f"Request duration of {self.name}")
-        self.ram_needed = ram_needed.set_label(f"RAM needed to process {self.name}").to(u.MB_ram)
-        self.compute_needed = compute_needed.set_label(f"CPU needed to process {self.name}")
+        self.request_duration = request_duration.set_label(f"Request duration")
+        self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
+        self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -122,7 +122,7 @@ class JobBase(ModelingObject):
                         nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[usage_pattern]
                         * ExplainableQuantity(
                             nb_of_occurrences_of_self_within_server_need * u.dimensionless,
-                            label=f"Occurrences of {self.name} within {recurrent_server_need.name}"))
+                            label=f"Occurrences within {recurrent_server_need.name}"))
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
             f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
@@ -158,7 +158,7 @@ class JobBase(ModelingObject):
         target_unit = u.MB_stored if data_exchange_type == "data_stored" else u.MB
 
         return hourly_data_exchange.set_label(
-                f"Hourly {data_exchange_type_no_underscore} for {self.name} in {usage_pattern.name}").to(target_unit)
+                f"Hourly {data_exchange_type_no_underscore} in {usage_pattern.name}").to(target_unit)
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
@@ -214,7 +214,7 @@ class DirectServerJob(JobBase):
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
         super().__init__(name, data_transferred, data_stored, request_duration, compute_needed, ram_needed)
         self.server = server
-        self.ram_needed.set_label(f"RAM needed on server {self.server.name} to process {self.name}")
+        self.ram_needed.set_label(f"RAM needed during job processing")
         self.compute_needed.set_label(
             f"{str(compute_needed.value.units).replace('_', ' ')}s needed on server {self.server.name} "
             f"to process {self.name}")

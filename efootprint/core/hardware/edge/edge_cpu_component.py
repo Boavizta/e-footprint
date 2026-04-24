@@ -32,9 +32,9 @@ class EdgeCPUComponent(EdgeComponent):
         super().__init__(
             name, carbon_footprint_fabrication_per_unit, power_per_unit, lifespan, idle_power_per_unit,
             nb_of_units=nb_of_units)
-        self.compute_per_unit = compute_per_unit.set_label(f"Compute per unit of {self.name}")
+        self.compute_per_unit = compute_per_unit.set_label(f"Compute per unit")
         self.compute = EmptyExplainableObject()
-        self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption of {self.name}")
+        self.base_compute_consumption = base_compute_consumption.set_label(f"Base compute consumption")
 
         self.available_compute_per_instance = EmptyExplainableObject()
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
@@ -45,7 +45,7 @@ class EdgeCPUComponent(EdgeComponent):
                 + super().calculated_attributes)
 
     def update_compute(self):
-        self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute of {self.name}")
+        self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
 
     def update_available_compute_per_instance(self):
         available_compute_per_instance = (self.compute - self.base_compute_consumption)
