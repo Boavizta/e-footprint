@@ -25,9 +25,8 @@ These are the project's immutable rules. They must be respected by every code ch
 1. **Never paper over a bug.** If you discover unrelated bad behaviour while working on a task, fix it on the spot or surface it explicitly. Never silently work around it in tests or production code.
 2. **Never skip hooks (`--no-verify`)** unless explicitly authorized.
 3. **Ask before destructive operations** (force pushes, branch deletions, hard resets that touch unsaved work).
-4. **Don't mock the optimization layer in modeling tests.** Use `create_mod_obj_mock` from `tests/utils.py`. Use real `ExplainableObject` / `ExplainableQuantity` instances when possible.
-5. **Never use mutable objects as default parameter values** (e.g. `SourceValue(...)`) in function/method signatures. Use `None` and create the mutable inside the body.
-6. **Don't use forward references in `ModelingObject.__init__` signatures.**
+
+Other coding-style and testing rules live in `conventions.md` and `testing.md`.
 
 ## 4. Out of scope (rejected by default)
 

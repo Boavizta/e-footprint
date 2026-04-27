@@ -7,8 +7,8 @@ These are the strong preferences and patterns the project follows. They are soft
 - **Python ≥ 3.12** (constitution §4).
 - **Black** formatter, line length **120**. Keep the number of lines low; in particular, avoid creating a new line solely to close a parenthesis.
 - **Poetry** for dependency management.
-- **Type hints** are encouraged but not strictly enforced. Don't use forward references in `ModelingObject.__init__` signatures (constitution §3.6).
-- **Mutable defaults are forbidden** in function signatures (constitution §3.5). Use `None` and create the mutable inside.
+- **Type hints** are encouraged but not strictly enforced. Don't use forward references in `ModelingObject.__init__` signatures.
+- **Mutable defaults are forbidden** in function signatures (e.g. `SourceValue(...)`). Use `None` and create the mutable inside the body.
 - **Comments only when the WHY is non-obvious.** If a reader can derive intent from well-named identifiers, the comment is noise. Never comment what the code does — only why it does it that way.
 
 ## Modeling refactor preferences
