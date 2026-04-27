@@ -68,13 +68,13 @@ def return_class_str(input_obj):
 def _type_summary(input_obj, attr_name: str) -> str:
     """Short type/unit hint appended after the curated description."""
     def format_label(label: str):
-        return label.capitalize().replace(" from e-footprint hypothesis", "")
+        return label.capitalize()
 
     if isinstance(input_obj, ModelingObject):
         obj_class = return_class_str(input_obj)
         return f"An instance of [{obj_class}]({obj_class}.md)."
     if isinstance(input_obj, ExplainableQuantity):
-        return f"{format_label(input_obj.label)} in {input_obj.value.units}."
+        return f"Unit: {input_obj.value.units}."
     if isinstance(input_obj, list) and input_obj and isinstance(input_obj[0], ModelingObject):
         obj_class = return_class_str(input_obj[0])
         return f"A list of [{obj_class}s]({obj_class}.md)."
@@ -88,7 +88,7 @@ def _type_summary(input_obj, attr_name: str) -> str:
         return (f"{format_label(input_obj.label)}, in typical week of hourly timeseries data, starting on Monday "
                 f"at midnight. For example, {input_obj}")
     if isinstance(input_obj, ExplainableObject) and isinstance(input_obj.value, str):
-        return f"{format_label(input_obj.label)}. For example, {input_obj.value}."
+        return f"For example, {input_obj.value}."
     return ""
 
 
@@ -113,15 +113,8 @@ def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
         return_str += f"\n\n{rendered_doc}"
 
     calculation_graph_obj = input_obj
-    if isinstance(input_obj, ExplainableQuantity):
-        return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.capitalize()}."
-    elif isinstance(input_obj, ExplainableHourlyQuantities):
-        return_str += f"""  \n{input_obj.label.capitalize()} in {input_obj.unit}."""
-    elif isinstance(input_obj, ExplainableObjectDict):
+    if isinstance(input_obj, ExplainableObjectDict):
         dict_value = list(input_obj.values())[0]
-        dict_key = list(input_obj.keys())[0]
-        return_str += f"""  \nDictionary with {dict_key.class_as_simple_str} as keys and
-                        {dict_value.label.capitalize()} as values, in {dict_value.unit}."""
         calculation_graph_obj = dict_value
 
     str_input_obj_for_md = str(input_obj).replace("\n", "  \n")
