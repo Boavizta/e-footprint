@@ -6,7 +6,7 @@ These are the project's immutable rules. They must be respected by every code ch
 
 ## 1. Engineering principles
 
-1. **Three-layer separation.** Modeling logic (`efootprint/core/`) is independent of the optimization layer (`efootprint/abstract_modeling_classes/`) which is independent of the API/serialization layer (`efootprint/api_utils/`). New code respects this direction.
+1. **Three-layer separation.** `efootprint/abstract_modeling_classes/` is the framework layer (ModelingObject, ExplainableObject, dependency graph). `efootprint/core/` builds on it with the modeling primitives. `efootprint/api_utils/` builds on both for serialization. The dependency direction is strictly upward: `core/` must not import from `api_utils/`, and `abstract_modeling_classes/` must not import from `core/` or `api_utils/` (one pre-existing back-edge from `abstract_modeling_classes/modeling_object.py` to `core/` is documented in `architecture.md` and must not be extended).
 2. **No backward compatibility burden.** There are no other external callers besides e-footprint-interface, which is co-developed. Don't carry shims, deprecation cycles, or compatibility branches.
 3. **Leanness over cleverness.** Three similar lines beat a premature abstraction. Avoid speculative generality, defensive code for impossible states, and refactor-on-the-side during bug fixes.
 4. **Doc-as-code is the SSOT for object semantics.** Class docstrings, `param_descriptions` dicts, and `update_<attr>` method docstrings are the authoritative description of what an object/param/calculated-attribute means. The mkdocs reference and the interface both read from them; do not duplicate descriptions elsewhere.

@@ -2,17 +2,19 @@
 
 ## Three-layer separation
 
-The codebase is organised in three layers with a strict dependency direction:
+The codebase is organised in three layers with a strict dependency direction (foundation at the bottom, peripheral layers on top):
 
 ```
+efootprint/api_utils/                  (serialization — how to persist/load)
+        ↓ depends on
 efootprint/core/                       (modeling logic — what is computed)
         ↓ depends on
-efootprint/abstract_modeling_classes/  (optimization layer — how to recompute incrementally)
-        ↓ depends on
-efootprint/api_utils/                  (serialization — how to persist/load)
+efootprint/abstract_modeling_classes/  (framework — dependency tracking, ExplainableObject, incremental recompute)
 ```
 
-This separation is constitutional (`specs/constitution.md` §1.1). Modeling code should not need to know how dependency graphs are tracked; serialization should not need to know how calculations work.
+This separation is constitutional (`specs/constitution.md` §1.1). `core/` is built on top of `abstract_modeling_classes/`, but it must not import from `api_utils/` — modeling code shouldn't know how it gets persisted. `api_utils/` is the only layer allowed to import from both.
+
+**Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime) and `System` (TYPE_CHECKING). This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
 
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
