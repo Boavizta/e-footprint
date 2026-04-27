@@ -33,7 +33,15 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
 
 
 class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
+    """Internal {class:RecurrentEdgeComponentNeed} created automatically by a {class:RecurrentEdgeProcess}, mirroring its RAM need on the parent {class:EdgeComputer}'s RAM component."""
+
+    param_descriptions = {
+        "edge_component": (
+            "Component on the parent {class:EdgeComputer} that this need targets."),
+    }
+
     def update_recurrent_need(self):
+        """Recurrent RAM need, copied from the parent {class:RecurrentEdgeProcess}'s RAM profile."""
         if not self.recurrent_edge_device_needs:
             self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.GB_ram))
             return
@@ -43,7 +51,15 @@ class RecurrentEdgeProcessRAMNeed(RecurrentEdgeProcessNeed):
 
 
 class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
+    """Internal {class:RecurrentEdgeComponentNeed} created automatically by a {class:RecurrentEdgeProcess}, mirroring its compute need on the parent {class:EdgeComputer}'s CPU component."""
+
+    param_descriptions = {
+        "edge_component": (
+            "Component on the parent {class:EdgeComputer} that this need targets."),
+    }
+
     def update_recurrent_need(self):
+        """Recurrent compute need, copied from the parent {class:RecurrentEdgeProcess}'s compute profile."""
         if not self.recurrent_edge_device_needs:
             self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core))
             return
@@ -53,7 +69,15 @@ class RecurrentEdgeProcessCPUNeed(RecurrentEdgeProcessNeed):
 
 
 class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeStorageNeed):
+    """Internal {class:RecurrentEdgeStorageNeed} created automatically by a {class:RecurrentEdgeProcess}, mirroring its storage need on the parent {class:EdgeComputer}'s storage."""
+
+    param_descriptions = {
+        "edge_component": (
+            "Component on the parent {class:EdgeComputer} that this need targets."),
+    }
+
     def update_recurrent_need(self):
+        """Recurrent storage need, copied from the parent {class:RecurrentEdgeProcess}'s storage profile."""
         if not self.recurrent_edge_device_needs:
             self.recurrent_need = SourceRecurrentValues(
                 Quantity(np.array([0] * 168, dtype=np.float32), u.GB_stored))
@@ -64,6 +88,24 @@ class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeSto
 
 
 class RecurrentEdgeProcess(RecurrentEdgeDeviceNeed):
+    """A typical-week resource demand placed on an {class:EdgeComputer}, decomposed into separate hourly RAM, compute, and storage curves. Auto-creates the matching component-level needs at construction time."""
+
+    interactions = (
+        "Building a {class:RecurrentEdgeProcess} automatically creates the matching {class:RecurrentEdgeProcessRAMNeed}, "
+        "{class:RecurrentEdgeProcessCPUNeed}, and {class:RecurrentEdgeProcessStorageNeed}. Updating the linked "
+        "edge computer rewires those component needs to the new computer's components.")
+
+    param_descriptions = {
+        "edge_device": (
+            "{class:EdgeComputer} that runs the process."),
+        "recurrent_compute_needed": (
+            "Hourly compute usage over a typical week."),
+        "recurrent_ram_needed": (
+            "Hourly RAM usage over a typical week."),
+        "recurrent_storage_needed": (
+            "Hourly net storage rate over a typical week (positive = writes, negative = deletes)."),
+    }
+
     default_values = {
         "recurrent_compute_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.cpu_core)),
         "recurrent_ram_needed": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_ram)),

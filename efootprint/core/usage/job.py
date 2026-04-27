@@ -128,6 +128,7 @@ class JobBase(ModelingObject):
             f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
+        """Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered."""
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_occurrences_per_usage_pattern(up)
@@ -141,6 +142,7 @@ class JobBase(ModelingObject):
             f"Average hourly {self.name} occurrences in {usage_pattern.name}")
 
     def update_hourly_avg_occurrences_per_usage_pattern(self):
+        """Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets."""
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(up)
@@ -166,6 +168,7 @@ class JobBase(ModelingObject):
             self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_transferred")
 
     def update_hourly_data_transferred_per_usage_pattern(self):
+        """Hourly volume of data transferred over the network by this job, broken down by usage pattern."""
         self.hourly_data_transferred_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_data_transferred_per_usage_pattern(up)
@@ -176,6 +179,7 @@ class JobBase(ModelingObject):
             self.compute_hourly_data_exchange_for_usage_pattern(usage_pattern, "data_stored")
 
     def update_hourly_data_stored_per_usage_pattern(self):
+        """Hourly net change in storage volume caused by this job, broken down by usage pattern."""
         self.hourly_data_stored_per_usage_pattern = ExplainableObjectDict()
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_data_stored_per_usage_pattern(up)
@@ -190,14 +194,17 @@ class JobBase(ModelingObject):
                 f"Hourly {self.name} {calculated_attribute_label} across usage patterns")
 
     def update_hourly_avg_occurrences_across_usage_patterns(self):
+        """Total hourly count of duration-averaged job invocations summed over every usage pattern."""
         self.hourly_avg_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_avg_occurrences_per_usage_pattern", "average occurrences").to(u.concurrent)
 
     def update_hourly_data_transferred_across_usage_patterns(self):
+        """Total hourly volume of data transferred over the network by this job, summed over every usage pattern."""
         self.hourly_data_transferred_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_transferred_per_usage_pattern", "data transferred")
 
     def update_hourly_data_stored_across_usage_patterns(self):
+        """Total hourly net change in storage volume caused by this job, summed over every usage pattern."""
         self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_stored_per_usage_pattern", "data stored")
 
@@ -225,6 +232,34 @@ class DirectServerJob(JobBase):
 
 
 class Job(DirectServerJob):
+    """A unit of server-side processing triggered by a {class:UsageJourneyStep} or by a {class:RecurrentServerNeed}. Defines how much CPU, memory, network bandwidth, and storage are consumed per invocation."""
+
+    disambiguation = (
+        "Use {class:Job} for CPU jobs running on a {class:Server}. Use {class:GPUJob} for jobs whose compute "
+        "requirement is in GPUs. For high-level abstractions over common workloads (video streaming, generative "
+        "AI), prefer the corresponding service builder rather than wiring jobs by hand.")
+
+    pitfalls = (
+        "{param:Job.request_duration} drives concurrency. If the duration exceeds one hour the job is in flight "
+        "across multiple modeling buckets at once and consumes a fraction of the server's resources in each.")
+
+    param_descriptions = {
+        "server": (
+            "{class:Server} that processes the job. The server's resource use and footprint follow from the "
+            "jobs it hosts."),
+        "data_transferred": (
+            "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
+        "data_stored": (
+            "Net change in stored data per invocation. Positive values only. "
+            "Data deletion is handled by {param:Storage.data_storage_duration}"),
+        "request_duration": (
+            "How long the job takes to process from start to finish on the server."),
+        "compute_needed": (
+            "CPU consumed by one invocation of the job, expressed in CPU cores held for the request duration."),
+        "ram_needed": (
+            "RAM held by one invocation of the job for its full duration."),
+    }
+
     default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
             "data_stored": SourceValue(100 * u.kB_stored),
@@ -241,6 +276,24 @@ class Job(DirectServerJob):
 
 
 class GPUJob(DirectServerJob):
+    """A {class:Job} whose compute requirement is expressed in GPUs and which therefore must run on a {class:GPUServer}."""
+
+    param_descriptions = {
+        "server": (
+            "{class:GPUServer} that processes the job."),
+        "data_transferred": (
+            "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
+        "data_stored": (
+            "Net change in stored data per invocation. Positive values only. "
+            "Data deletion is handled by {param:Storage.data_storage_duration}"),
+        "request_duration": (
+            "How long the job takes to process from start to finish on the server."),
+        "compute_needed": (
+            "GPU consumed by one invocation of the job, expressed in GPUs held for the request duration."),
+        "ram_needed": (
+            "GPU memory held by one invocation of the job for its full duration."),
+    }
+
     default_values =  {
             "data_transferred": SourceValue(150 * u.kB),
             "data_stored": SourceValue(100 * u.kB_stored),

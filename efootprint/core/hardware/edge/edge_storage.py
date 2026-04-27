@@ -28,6 +28,26 @@ class NegativeCumulativeStorageNeedError(Exception):
 
 
 class EdgeStorage(EdgeComponent):
+    """Persistent storage embedded in an {class:EdgeDevice} (typically flash). Sized so that cumulative storage demand never exceeds total capacity."""
+
+    pitfalls = (
+        "Cumulative storage need must stay non-negative every hour: a {class:RecurrentEdgeStorageNeed} that "
+        "deletes more than it writes (over the modeling start) raises an error. Either start with a non-zero "
+        "{param:EdgeStorage.base_storage_need} or rebalance the recurring pattern.")
+
+    param_descriptions = {
+        "storage_capacity_per_unit": (
+            "Storage capacity provided by one unit. Total capacity is this value times {param:EdgeStorage.nb_of_units}."),
+        "carbon_footprint_fabrication_per_storage_capacity": (
+            "Embodied carbon emitted to manufacture one unit of storage capacity."),
+        "base_storage_need": (
+            "Storage permanently occupied independently of recurring needs (system files, baseline assets)."),
+        "lifespan": (
+            "Expected time before the storage is replaced. Embodied carbon is amortised over this duration."),
+        "nb_of_units": (
+            "Number of storage units making up the component."),
+    }
+
     compatible_root_units = [u.bit_stored]
     default_values = {
         "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
@@ -108,10 +128,12 @@ class EdgeStorage(EdgeComponent):
         ]
 
     def update_storage_capacity(self):
+        """Total storage capacity of the component, equal to per-unit capacity times the number of units."""
         self.storage_capacity = (self.storage_capacity_per_unit * self.nb_of_units).set_label(
             f"Storage capacity")
 
     def update_carbon_footprint_fabrication(self):
+        """Embodied carbon of the storage component, equal to per-capacity fabrication footprint times the total capacity."""
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_storage_capacity
             * self.storage_capacity
@@ -140,11 +162,13 @@ class EdgeStorage(EdgeComponent):
         ).generate_explainable_object_with_logical_dependency(self.storage_capacity)
 
     def update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises error if the cumulative goes negative or exceeds capacity."""
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
     def update_unitary_power_per_usage_pattern(self):
+        """Power profile of edge storage. Currently always empty: storage operating power is considered neglectable."""
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.unitary_power_per_usage_pattern[usage_pattern] = EmptyExplainableObject()

@@ -1,4 +1,5 @@
 import os
+from inspect import cleandoc
 
 from jinja2 import Template
 import ruamel.yaml
@@ -19,8 +20,42 @@ from docs_sources.doc_utils.docs_case import (
     cpu_component, ram_component, edge_device, ram_need, cpu_need, storage_need, edge_device_need,
     recurrent_server_need)
 from efootprint.logger import logger
+from efootprint.utils.placeholder_resolver import resolve_placeholders
 from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
+
+
+def _mkdocs_class_link(target: str) -> str:
+    return f"[{target}]({target}.md)"
+
+
+def _mkdocs_member_link(target: str) -> str:
+    class_name, member = target.split(".", 1)
+    return f"[{class_name}.{member}]({class_name}.md#{member})"
+
+
+def _mkdocs_doc_link(target: str) -> str:
+    return f"[{target}]({target}.md)"
+
+
+def _reject_ui(target: str) -> str:
+    raise ValueError(
+        f"Library description contains forbidden interface-only placeholder {{ui:{target}}}")
+
+
+MKDOCS_PLACEHOLDER_HANDLERS = {
+    "class": _mkdocs_class_link,
+    "param": _mkdocs_member_link,
+    "calc": _mkdocs_member_link,
+    "doc": _mkdocs_doc_link,
+    "ui": _reject_ui,
+}
+
+
+def _render(text: str | None) -> str | None:
+    if not text:
+        return None
+    return resolve_placeholders(cleandoc(text), MKDOCS_PLACEHOLDER_HANDLERS)
 
 
 def return_class_str(input_obj):
@@ -30,52 +65,56 @@ def return_class_str(input_obj):
     return str(obj_to_compute_class_on.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
 
 
-def obj_to_md(input_obj, attr_name):
+def _type_summary(input_obj, attr_name: str) -> str:
+    """Short type/unit hint appended after the curated description."""
     def format_label(label: str):
-        return label.capitalize().replace(" from e-footprint hypothesis", "")
+        return label.capitalize()
 
-    if attr_name == "name":
-        return f"""### name\nA human readable description of the object."""
-    elif isinstance(input_obj, ModelingObject):
+    if isinstance(input_obj, ModelingObject):
         obj_class = return_class_str(input_obj)
-        return f"### {attr_name}\nAn instance of [{obj_class}]({obj_class}.md)."
-    elif isinstance(input_obj, ExplainableQuantity):
-        return f"### {attr_name}\n{format_label(input_obj.label)} in {input_obj.value.units}."
-    elif isinstance(input_obj, list):
-        if isinstance(input_obj[0], ModelingObject):
-            obj_class = return_class_str(input_obj[0])
-            return f"### {attr_name}\nA list of [{obj_class}s]({obj_class}.md)."
-        else:
-            return "this shouldn’t happen"
-    elif isinstance(input_obj, EmptyExplainableObject):
-        return (f"### {attr_name}\n{format_label(input_obj.label)}. "
-                f"Can be an EmptyExplainableObject in which case the optimum number of instances will be computed,"
-                f" or an ExplainableQuantity with a dimensionless value, in which case e-footprint will raise an error "
-                f"if the object needs more instances than available.")
-    elif isinstance(input_obj, ExplainableHourlyQuantities):
-        return f"### {attr_name}\n{format_label(input_obj.label)}, in hourly timeseries data."
-    elif isinstance(input_obj, ExplainableRecurrentQuantities):
-        return (f"### {attr_name}\n{format_label(input_obj.label)}, in typical week of hourly timeseries data, "
-                f"starting on Monday at midnight.\n\n"
-                f"For example, {input_obj}")
-    elif isinstance(input_obj, ExplainableObject) and isinstance(input_obj.value, str):
-        return (f"### {attr_name}\n{format_label(input_obj.label)}. \n\nFor example, {input_obj.value}.")
-
-    return f"### {attr_name}\ndescription to be done"
-
-
-def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
-    return_str = f"### {attr_name}"
-    calculation_graph_obj = input_obj
+        return f"An instance of [{obj_class}]({obj_class}.md)."
     if isinstance(input_obj, ExplainableQuantity):
-        return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.capitalize()}."
-    elif isinstance(input_obj, ExplainableHourlyQuantities):
-        return_str += f"""  \n{input_obj.label.capitalize()} in {input_obj.unit}."""
-    elif isinstance(input_obj, ExplainableObjectDict):
+        return f"Unit: {input_obj.value.units}."
+    if isinstance(input_obj, list) and input_obj and isinstance(input_obj[0], ModelingObject):
+        obj_class = return_class_str(input_obj[0])
+        return f"A list of [{obj_class}s]({obj_class}.md)."
+    if isinstance(input_obj, EmptyExplainableObject):
+        return (f"{format_label(input_obj.label)}. Can be an EmptyExplainableObject in which case the optimum "
+                f"number of instances will be computed, or an ExplainableQuantity with a dimensionless value, "
+                f"in which case e-footprint will raise an error if the object needs more instances than available.")
+    if isinstance(input_obj, ExplainableHourlyQuantities):
+        return f"{format_label(input_obj.label)}, in hourly timeseries data."
+    if isinstance(input_obj, ExplainableRecurrentQuantities):
+        return (f"{format_label(input_obj.label)}, in typical week of hourly timeseries data, starting on Monday "
+                f"at midnight. For example, {input_obj}")
+    if isinstance(input_obj, ExplainableObject) and isinstance(input_obj.value, str):
+        return f"For example, {input_obj.value}."
+    return ""
+
+
+def obj_to_md(owning_class, input_obj, attr_name):
+    if attr_name == "name":
+        return f"### name\nA human readable description of the object."
+
+    description = _render((owning_class.__dict__.get("param_descriptions") or {}).get(attr_name))
+    type_hint = _type_summary(input_obj, attr_name)
+
+    body_parts = [part for part in (description, type_hint) if part]
+    body = "\n\n".join(body_parts) if body_parts else "description to be done"
+    return f"### {attr_name}\n{body}"
+
+
+def calc_attr_to_md(owning_class, input_obj: ExplainableObject, attr_name):
+    return_str = f"### {attr_name}"
+
+    method = getattr(owning_class, f"update_{attr_name}", None)
+    rendered_doc = _render(method.__doc__ if method is not None else None)
+    if rendered_doc:
+        return_str += f"\n\n{rendered_doc}"
+
+    calculation_graph_obj = input_obj
+    if isinstance(input_obj, ExplainableObjectDict):
         dict_value = list(input_obj.values())[0]
-        dict_key = list(input_obj.keys())[0]
-        return_str += f"""  \nDictionary with {dict_key.class_as_simple_str} as keys and 
-                        {dict_value.label.capitalize()} as values, in {dict_value.unit}."""
         calculation_graph_obj = dict_value
 
     str_input_obj_for_md = str(input_obj).replace("\n", "  \n")
@@ -117,17 +156,26 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
 def write_object_reference_file(mod_obj):
     if isinstance(mod_obj, ContextualModelingObjectAttribute):
         mod_obj = mod_obj._value
-    mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
-        set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
+    cls = type(mod_obj)
+    mod_obj_dict = {
+        "class": return_class_str(mod_obj),
+        "class_description": _render(cls.__doc__),
+        "disambiguation": _render(cls.__dict__.get("disambiguation")),
+        "pitfalls": _render(cls.__dict__.get("pitfalls")),
+        "interactions": _render(cls.__dict__.get("interactions")),
+        "modeling_obj_containers": list(
+            set([return_class_str(o) for o in mod_obj.modeling_obj_containers])),
+    }
 
-    init_sig_params = get_init_signature_params(type(mod_obj))
+    init_sig_params = get_init_signature_params(cls)
     mod_obj_dict["params"] = []
     mod_obj_dict["calculated_attrs"] = []
 
-    for key, elt in init_sig_params.items():
-        if key != "self":
-            # "type": str(elt).replace(f"{key}: ", "")
-            mod_obj_dict["params"].append(obj_to_md(getattr(mod_obj, key), key))
+    for key in init_sig_params:
+        if key == "self":
+            continue
+        attr_value = getattr(mod_obj, key, None)
+        mod_obj_dict["params"].append(obj_to_md(cls, attr_value, key))
 
     for attr in mod_obj.calculated_attributes:
         calc_attr = getattr(mod_obj, attr)
@@ -136,7 +184,7 @@ def write_object_reference_file(mod_obj):
             logger.warning(f"Attribute {attr} of {mod_obj_dict['class']} is an empty dict "
                            f"and won't be included in the documentation.")
             continue
-        mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
+        mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(cls, calc_attr, attr))
 
     with open(os.path.join(doc_utils_path, 'obj_template.md'), 'r') as file:
         template = Template(file.read(), trim_blocks=False)

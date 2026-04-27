@@ -17,6 +17,22 @@ if TYPE_CHECKING:
 
 
 class EdgeUsageJourney(ModelingObject):
+    """A long-running usage of edge hardware that triggers a set of {class:EdgeFunction}s for the whole time the device is in service."""
+
+    disambiguation = (
+        "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
+        "every minute or an industrial controller. Use {class:UsageJourney} for user-driven, request-style "
+        "interactions in a web context. See {doc:web_vs_edge}.")
+
+    param_descriptions = {
+        "edge_functions": (
+            "{class:EdgeFunction}s active during the journey, each describing what runs on devices and what "
+            "is sent to servers."),
+        "usage_span": (
+            "How long one edge device is in use, from deployment to retirement. The fabrication footprint is "
+            "amortised over this duration."),
+    }
+
     default_values = {
         "usage_span": SourceValue(6 * u.year)
     }
@@ -65,6 +81,7 @@ class EdgeUsageJourney(ModelingObject):
             .set_label("Hourly nb of edge usage journeys in parallel"))
 
     def update_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(self):
+        """Hourly count of edge usage journeys that are concurrently active in each pattern, derived from the journey-start timeseries and the journey usage span."""
         self.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict()
         for edge_usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(edge_usage_pattern)
@@ -81,6 +98,7 @@ class EdgeUsageJourney(ModelingObject):
         ).set_label(f"{usage_pattern.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-{class:EdgeUsagePattern} weight used to attribute downstream fabrication-phase emissions back to each pattern, proportional to concurrent edge journeys."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
@@ -91,6 +109,7 @@ class EdgeUsageJourney(ModelingObject):
         ).set_label(f"{usage_pattern.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
+        """Per-{class:EdgeUsagePattern} weight used to attribute downstream usage-phase emissions, scaled by the country's grid carbon intensity so high-carbon grids draw a larger share."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

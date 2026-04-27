@@ -13,6 +13,16 @@ if TYPE_CHECKING:
 
 
 class UsageJourneyStep(ModelingObject):
+    """One step within a {class:UsageJourney}, characterised by how long the user spends on it and which {class:Job}s it triggers on the server side."""
+
+    param_descriptions = {
+        "user_time_spent": (
+            "Wall-clock time the user spends on this step (during which her device is powered on)."),
+        "jobs": (
+            "{class:Job}s triggered on the server side during this step. Multiple jobs can fire per step; the "
+            "same {class:Job} can appear in several steps."),
+    }
+
     default_values =  {"user_time_spent": SourceValue(1 * u.min)}
 
     def __init__(self, name: str, user_time_spent: ExplainableQuantity, jobs: List[JobBase]):

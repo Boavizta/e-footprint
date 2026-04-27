@@ -805,6 +805,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             modeling_object, "fabrication")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Weights used to attribute fabrication-phase emissions of upstream impact sources to each container of this object."""
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for modeling_object in self.modeling_obj_containers:
@@ -815,6 +816,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             modeling_object, "usage")
 
     def update_usage_impact_repartition_weights(self):
+        """Weights used to attribute usage-phase emissions of upstream impact sources to each container of this object."""
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for modeling_object in self.modeling_obj_containers:
@@ -830,9 +832,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         )
 
     def update_fabrication_impact_repartition_weight_sum(self):
+        """Sum of fabrication impact repartition weights, used as the denominator when normalising into per-container shares."""
         self._update_impact_repartition_weight_sum("fabrication")
 
     def update_usage_impact_repartition_weight_sum(self):
+        """Sum of usage impact repartition weights, used as the denominator when normalising into per-container shares."""
         self._update_impact_repartition_weight_sum("usage")
 
     def _update_dict_element_in_impact_repartition(self, phase: str, modeling_obj: "ModelingObject"):
@@ -875,9 +879,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 modeling_obj.invalidate_impact_repartition_cache(recursive=True)
 
     def update_fabrication_impact_repartition(self):
+        """Normalised share of fabrication-phase emissions that this object attributes to each container."""
         self._update_impact_repartition("fabrication")
 
     def update_usage_impact_repartition(self):
+        """Normalised share of usage-phase emissions that this object attributes to each container."""
         self._update_impact_repartition("usage")
 
     def invalidate_impact_repartition_cache(self, recursive=False, visited=None):

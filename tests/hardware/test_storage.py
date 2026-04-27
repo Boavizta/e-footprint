@@ -220,7 +220,7 @@ class TestStorage(TestCase):
         self.assertEqual({}, self.storage_base.usage_impact_repartition_weights)
 
     def test_usage_impact_repartition_weights_raises_when_energy_logic_is_missing(self):
-        """Test storage usage repartition raises if a non-empty energy footprint exists without attribution logic."""
+        """Test storage usage repartition raises error if a non-empty energy footprint exists without attribution logic."""
         self.storage_base.energy_footprint = SourceValue(1 * u.kg)
 
         with self.assertRaises(NotImplementedError):

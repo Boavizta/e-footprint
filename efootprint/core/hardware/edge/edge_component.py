@@ -111,14 +111,17 @@ class EdgeComponent(ModelingObject):
         pass
 
     def update_carbon_footprint_fabrication(self):
+        """Embodied carbon of one component, equal to the per-unit fabrication footprint times the number of units in the component."""
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_unit * self.nb_of_units).set_label(
                 f"Carbon footprint fabrication")
 
     def update_power(self):
+        """Power drawn by one fully-loaded component, equal to per-unit power times the number of units."""
         self.power = (self.power_per_unit * self.nb_of_units).set_label(f"Power")
 
     def update_idle_power(self):
+        """Power drawn by one idle component, equal to per-unit idle power times the number of units."""
         self.idle_power = (self.idle_power_per_unit * self.nb_of_units).set_label(f"Idle power")
 
     def update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(
@@ -136,7 +139,7 @@ class EdgeComponent(ModelingObject):
         )
 
     def update_fabrication_footprint_per_edge_device_per_usage_pattern(self):
-        """Calculate fabrication footprint per usage pattern."""
+        """Hourly fabrication footprint of one component on one device, broken down by usage pattern. Equal to the component's amortised fabrication intensity times the number of concurrent edge journeys."""
         self.fabrication_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_fabrication_footprint_per_edge_device_per_usage_pattern(usage_pattern)
@@ -151,7 +154,7 @@ class EdgeComponent(ModelingObject):
             f"Hourly energy consumed by {self.name} per edge device for {usage_pattern.name}")
 
     def update_energy_per_edge_device_per_usage_pattern(self):
-        """Calculate energy per usage pattern."""
+        """Hourly energy consumed by one component on one device, broken down by usage pattern. Equal to the unitary power profile times the number of concurrent edge journeys."""
         self.energy_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_energy_per_edge_device_per_usage_pattern(usage_pattern)
@@ -165,27 +168,27 @@ class EdgeComponent(ModelingObject):
             f"Energy footprint per edge device for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_edge_device_per_usage_pattern(self):
-        """Calculate energy footprint per usage pattern."""
+        """Hourly carbon emissions caused by the component's electricity use, broken down by usage pattern. Equal to energy consumption times the country's grid carbon intensity."""
         self.energy_footprint_per_edge_device_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(usage_pattern)
 
     def update_fabrication_footprint_per_edge_device(self):
-        """Sum fabrication footprint across usage patterns."""
+        """Total hourly fabrication footprint per edge device, summed across all usage patterns this component appears in."""
         fabrication_footprint_per_edge_device = sum(
             self.fabrication_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.fabrication_footprint_per_edge_device = fabrication_footprint_per_edge_device.set_label(
             "Total fabrication footprint per edge device across usage patterns")
 
     def update_energy_per_edge_device(self):
-        """Sum energy across usage patterns."""
+        """Total hourly energy consumed per edge device, summed across all usage patterns."""
         energy_per_edge_device = sum(
             self.energy_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_per_edge_device = energy_per_edge_device.set_label(
             "Total energy consumed per edge device across usage patterns")
 
     def update_energy_footprint_per_edge_device(self):
-        """Sum energy footprint across usage patterns."""
+        """Total hourly energy-use footprint per edge device, summed across all usage patterns."""
         energy_footprint = sum(
             self.energy_footprint_per_edge_device_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint_per_edge_device = energy_footprint.set_label(
@@ -201,6 +204,7 @@ class EdgeComponent(ModelingObject):
         ).set_label(f"Total hourly need on {self.name} for {usage_pattern.name}")
 
     def update_total_unitary_hourly_need_per_usage_pattern(self):
+        """Aggregate hourly demand on this component for one device, summing every {class:RecurrentEdgeComponentNeed} that targets it."""
         self.total_unitary_hourly_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_total_unitary_hourly_need_per_usage_pattern(usage_pattern)

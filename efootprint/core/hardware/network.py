@@ -15,6 +15,14 @@ if TYPE_CHECKING:
 
 
 class Network(ModelingObject):
+    """Telecommunications network carrying traffic between users and the servers — Wi-Fi, fixed broadband, cellular. Modelled by its energy intensity per gigabyte transferred."""
+
+    param_descriptions = {
+        "bandwidth_energy_intensity": (
+            "Electricity consumed per gigabyte transferred end-to-end through the network. Multiplied by the "
+            "data transferred by jobs to obtain hourly energy use."),
+    }
+
     default_values = {
             "bandwidth_energy_intensity": SourceValue(0.1 * u.kWh / u.GB)
         }
@@ -64,6 +72,7 @@ class Network(ModelingObject):
         return list(dict.fromkeys(sum([up.jobs for up in self.usage_patterns], start=[])))
 
     def update_instances_fabrication_footprint(self):
+        """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
         self.instances_fabrication_footprint = EmptyExplainableObject()
 
     def update_dict_element_in_energy_footprint_per_job(self, job: "JobBase"):
@@ -79,11 +88,13 @@ class Network(ModelingObject):
         )
 
     def update_energy_footprint_per_job(self):
+        """Hourly carbon emissions caused by network traffic, broken down by job. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity."""
         self.energy_footprint_per_job = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_energy_footprint_per_job(job)
 
     def update_energy_footprint(self):
+        """Total hourly carbon emissions caused by network traffic, summed across all jobs that route through this network."""
         self.energy_footprint = sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
             f"Hourly {self.name} energy footprint"
         )
@@ -94,6 +105,7 @@ class Network(ModelingObject):
         )
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-job weights for attributing the network's fabrication footprint, currently empty since {class:Network} carries no fabrication footprint."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         if isinstance(self.instances_fabrication_footprint, EmptyExplainableObject):
             return

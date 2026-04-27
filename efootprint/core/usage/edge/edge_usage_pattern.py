@@ -18,6 +18,24 @@ if TYPE_CHECKING:
 
 
 class EdgeUsagePattern(ModelingObject):
+    """A population of edge devices in one country running an {class:EdgeUsageJourney}, with a given hourly volume of journey starts (deployments)."""
+
+    disambiguation = (
+        "Use {class:EdgeUsagePattern} for hardware deployed continuously in the field. Use {class:UsagePattern} "
+        "for end-user devices that run a request-style {class:UsageJourney} in a web context. See {doc:web_vs_edge}.")
+
+    param_descriptions = {
+        "edge_usage_journey": (
+            "The {class:EdgeUsageJourney} performed by the deployed edge devices."),
+        "network": (
+            "{class:Network} used by the edge devices to communicate with servers (when applicable)."),
+        "country": (
+            "{class:Country} where the edge devices are deployed. Drives grid carbon intensity and the "
+            "timezone of {param:EdgeUsagePattern.hourly_edge_usage_journey_starts}."),
+        "hourly_edge_usage_journey_starts": (
+            "Hourly timeseries giving how many edge devices are deployed in each hour of the modeling period."),
+    }
+
     def __init__(self, name: str, edge_usage_journey: EdgeUsageJourney, network: Network,
                  country: Country, hourly_edge_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
@@ -50,6 +68,7 @@ class EdgeUsagePattern(ModelingObject):
         return self.edge_usage_journey.jobs
 
     def update_utc_hourly_edge_usage_journey_starts(self):
+        """Hourly journey starts converted from the country's local timezone to UTC, so downstream calculations can be aggregated across patterns in different timezones."""
         utc_hourly_edge_usage_journey_starts = self.hourly_edge_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)
 
@@ -61,6 +80,7 @@ class EdgeUsagePattern(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Edge pattern fabrication weights routed entirely to its single {class:Country}, so the country acts as the geographic bucket for fabrication-side accounting."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_fabrication_impact_repartition_weights(self.country)
 
@@ -69,5 +89,6 @@ class EdgeUsagePattern(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_usage_impact_repartition_weights(self):
+        """Edge pattern usage weights routed entirely to its single {class:Country}."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_usage_impact_repartition_weights(self.country)

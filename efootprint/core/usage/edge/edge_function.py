@@ -10,6 +10,16 @@ if TYPE_CHECKING:
 
 
 class EdgeFunction(ModelingObject):
+    """A coherent feature of an edge deployment, grouping the recurring resource consumption it imposes on edge devices and the recurring server-side jobs it triggers."""
+
+    param_descriptions = {
+        "recurrent_edge_device_needs": (
+            "Recurring resource needs running on edge hardware: CPU, RAM, storage, or whole-device workloads "
+            "(see {class:RecurrentEdgeDeviceNeed} subclasses)."),
+        "recurrent_server_needs": (
+            "Recurring batches of server-side jobs triggered by this function (see {class:RecurrentServerNeed})."),
+    }
+
     def __init__(self, name: str, recurrent_edge_device_needs: List[RecurrentEdgeDeviceNeed],
                  recurrent_server_needs: List[RecurrentServerNeed]):
         super().__init__(name)

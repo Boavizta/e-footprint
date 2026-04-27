@@ -32,6 +32,42 @@ for cloud_provider in boavizta_cloud_providers_request_result:
 
 
 class BoaviztaCloudServer(Server):
+    """A {class:Server} whose hardware specifications and embodied carbon are looked up automatically from the Boavizta cloud-instance API. Provider and instance type pick a reference profile; the remaining parameters mirror {class:Server}."""
+
+    disambiguation = (
+        "Use {class:BoaviztaCloudServer} for managed cloud instances available in the Boavizta catalog "
+        "(AWS, Azure, GCP, Scaleway). Use {class:Server} when you have your own hardware specifications, or "
+        "{class:GPUServer} for GPU-bound workloads.")
+
+    param_descriptions = {
+        "provider": (
+            "Cloud provider key as exposed by the Boavizta API (e.g. aws, azure, gcp, scaleway)."),
+        "instance_type": (
+            "Provider-specific instance type identifier. Must be valid for the chosen "
+            "{param:BoaviztaCloudServer.provider}."),
+        "server_type": (
+            "Provisioning model of the server. See {param:Server.server_type} for semantics."),
+        "lifespan": (
+            "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power": (
+            "Electrical power drawn while the instance is on but idle."),
+        "power_usage_effectiveness": (
+            "Datacenter overhead multiplier applied to instance power."),
+        "average_carbon_intensity": (
+            "Average grid carbon intensity at the location where the server runs."),
+        "utilization_rate": (
+            "Fraction of the instance's RAM and compute considered usable by jobs after operating-system "
+            "and headroom overhead."),
+        "base_ram_consumption": (
+            "RAM consumed per instance independently of jobs."),
+        "base_compute_consumption": (
+            "Compute consumed per instance independently of jobs."),
+        "storage": (
+            "Backing {class:Storage} attached to the server."),
+        "fixed_nb_of_instances": (
+            "On-premise only: number of physical machines deployed. Leave empty for autoscaling and serverless."),
+    }
+
     default_values = {
             "provider": SourceObject("scaleway"),
             "instance_type": SourceObject("ent1-s"),
@@ -87,6 +123,7 @@ class BoaviztaCloudServer(Server):
         return super().attributes_that_shouldnt_trigger_update_logic + ["impact_url"]
 
     def update_api_call_response(self):
+        """Cached response from the Boavizta cloud-instance API for the chosen provider and instance type. Provides the impact and verbose hardware specification used by all subsequent updates."""
         params = {"provider": self.provider.value, "instance_type": self.instance_type.value}
         impact_source = Source(name="Boavizta API cloud instances",
                                link=f"{self.impact_url}?{'&'.join([key + '=' + params[key] for key in params])}")
@@ -98,12 +135,14 @@ class BoaviztaCloudServer(Server):
             source=impact_source)
 
     def update_carbon_footprint_fabrication(self):
+        """Embodied carbon of one instance, taken from the Boavizta API response (embedded GWP impact)."""
         self.carbon_footprint_fabrication = ExplainableQuantity(
             float(self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"]) * u.kg,
             "Fabrication carbon footprint", left_parent=self.api_call_response,
             operator="data extraction from", source=self.api_call_response.source)
 
     def update_power(self):
+        """Average power drawn by one instance, taken from the Boavizta API response."""
         average_power_unit = self.api_call_response.value["verbose"]["avg_power"]["unit"]
         use_time_ratio = self.api_call_response.value["verbose"]["use_time_ratio"]["value"]
         assert average_power_unit == "W", f"Unexpected power unit {average_power_unit}"
@@ -115,6 +154,7 @@ class BoaviztaCloudServer(Server):
             operator="data extraction from", source=self.api_call_response.source)
 
     def update_ram(self):
+        """Memory of one instance, taken from the Boavizta API response."""
         assert self.api_call_response.value["verbose"]["memory"]["unit"] == "GB", \
             f"Unexpected RAM unit {self.api_call_response.value['verbose']['memory']['unit']}"
         ram_spec = float(self.api_call_response.value["verbose"]["memory"]["value"])
@@ -124,6 +164,7 @@ class BoaviztaCloudServer(Server):
             left_parent=self.api_call_response, operator="data extraction from", source=self.api_call_response.source)
 
     def update_compute(self):
+        """Number of vCPU cores on one instance, taken from the Boavizta API response."""
         nb_vcpu = float(self.api_call_response.value["verbose"]["vcpu"]["value"])
 
         self.compute = ExplainableQuantity(

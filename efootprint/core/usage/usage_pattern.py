@@ -15,6 +15,29 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 
 
 class UsagePattern(ModelingObject):
+    """A population of users that performs a {class:UsageJourney}, in a given {class:Country}, on given {class:Device}s, with a given hourly volume of journey starts."""
+
+    disambiguation = (
+        "Use {class:UsagePattern} for traffic where each {class:UsageJourney} start is independent. Use "
+        "{class:EdgeUsagePattern} for edge devices that run continuously and trigger periodic loads. See "
+        "{doc:web_vs_edge}.")
+
+    param_descriptions = {
+        "usage_journey": (
+            "The {class:UsageJourney} performed by users in this pattern."),
+        "devices": (
+            "Devices that users perform the journey on. Fabrication and energy footprints of each device are "
+            "weighted by the time the journey occupies on it."),
+        "network": (
+            "{class:Network} carrying traffic between the user's device and the servers."),
+        "country": (
+            "{class:Country} where the users are located. Drives device-side electricity carbon intensity and "
+            "the timezone of {param:UsagePattern.hourly_usage_journey_starts}."),
+        "hourly_usage_journey_starts": (
+            "Hourly timeseries giving the number of usage journeys that begin in each hour of the modeling "
+            "period, expressed in the country's local timezone."),
+    }
+
     def __init__(self, name: str, usage_journey: UsageJourney, devices: List[Device],
                  network: Network, country: Country, hourly_usage_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
@@ -40,6 +63,7 @@ class UsagePattern(ModelingObject):
         return self.usage_journey.jobs
 
     def update_utc_hourly_usage_journey_starts(self):
+        """Hourly journey starts converted from the country's local timezone to UTC, so that downstream calculations can be combined across patterns in different timezones."""
         utc_hourly_usage_journey_starts = self.hourly_usage_journey_starts.convert_to_utc(
             local_timezone=self.country.timezone)
 
@@ -51,6 +75,7 @@ class UsagePattern(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_fabrication_impact_repartition_weights(self):
+        """All of this usage pattern's fabrication-phase impact attributes to its single {class:Country}, so the country acts as the geographic bucket for device-side fabrication emissions."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_fabrication_impact_repartition_weights(self.country)
 
@@ -59,5 +84,6 @@ class UsagePattern(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_usage_impact_repartition_weights(self):
+        """All of this usage pattern's usage-phase impact attributes to its single {class:Country}."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_usage_impact_repartition_weights(self.country)
