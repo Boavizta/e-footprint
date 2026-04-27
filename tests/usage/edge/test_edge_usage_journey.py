@@ -47,7 +47,7 @@ class TestEdgeUsageJourney(TestCase):
         """Test EdgeUsageJourney initialization."""
         self.assertEqual("test edge usage journey", self.edge_usage_journey.name)
         self.assertEqual([self.mock_edge_function_1, self.mock_edge_function_2], self.edge_usage_journey.edge_functions)
-        self.assertEqual("Usage span of test edge usage journey from e-footprint hypothesis", self.edge_usage_journey.usage_span.label)
+        self.assertEqual("Usage span", self.edge_usage_journey.usage_span.label)
         self.assertEqual(2 * u.year, self.edge_usage_journey.usage_span.value)
 
     def test_recurrent_edge_device_needs_property(self):

@@ -75,7 +75,7 @@ class TestRecurrentEdgeStorageNeed(TestCase):
             # Since we start on Monday 00:00, no values should be zeroed
             result = self.storage_need.unitary_hourly_need_per_usage_pattern[mock_pattern]
             np.testing.assert_array_equal(result.magnitude, original_values)
-            self.assertEqual("Test Storage Need unitary hourly need for Test Pattern Monday", result.label)
+            self.assertEqual("Unitary hourly need for Test Pattern Monday", result.label)
 
     def test_update_dict_element_in_unitary_hourly_need_per_usage_pattern_non_monday_start(self):
         """Test update when not starting on Monday 00:00 - values should be zeroed until first Monday."""

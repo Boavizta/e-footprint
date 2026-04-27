@@ -19,7 +19,7 @@
                 "unit": "occurrence",
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
-                "label": "Default edge usage pattern hourly nb of edge device starts from e-footprint hypothesis",
+                "label": "Hourly nb of edge usage journey starts",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -40,7 +40,7 @@
             "usage_span": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Usage span of Default edge usage journey from e-footprint hypothesis",
+                "label": "Usage span",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -72,7 +72,7 @@
             "recurrent_compute_needed": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
-                "label": "Recurrent compute needed for Default edge process from e-footprint hypothesis",
+                "label": "Recurrent compute needed",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -81,7 +81,7 @@
             "recurrent_ram_needed": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "gigabyte_ram",
-                "label": "Recurrent RAM needed for Default edge process from e-footprint hypothesis",
+                "label": "Recurrent RAM needed",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -90,7 +90,7 @@
             "recurrent_storage_needed": {
                 "recurring_values": "[200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0]",
                 "unit": "megabyte_stored",
-                "label": "Recurrent storage needed for Default edge process from e-footprint hypothesis",
+                "label": "Recurrent storage needed",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -105,7 +105,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Edge computer from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -120,7 +120,7 @@
             "carbon_footprint_fabrication": {
                 "value": 60.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication of Edge computer from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -129,7 +129,7 @@
             "power": {
                 "value": 30.0,
                 "unit": "watt",
-                "label": "Power of Edge computer from e-footprint hypothesis",
+                "label": "Power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -138,7 +138,7 @@
             "idle_power": {
                 "value": 5.0,
                 "unit": "watt",
-                "label": "Idle power of Edge computer from e-footprint hypothesis",
+                "label": "Idle power",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -147,7 +147,7 @@
             "ram": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
-                "label": "RAM of Edge computer from e-footprint hypothesis",
+                "label": "RAM",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -156,7 +156,7 @@
             "compute": {
                 "value": 4.0,
                 "unit": "cpu_core",
-                "label": "Compute of Edge computer from e-footprint hypothesis",
+                "label": "Compute",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -165,7 +165,7 @@
             "base_ram_consumption": {
                 "value": 1.0,
                 "unit": "gigabyte_ram",
-                "label": "Base RAM consumption of Edge computer from e-footprint hypothesis",
+                "label": "Base RAM consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -174,7 +174,7 @@
             "base_compute_consumption": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "Base compute consumption of Edge computer from e-footprint hypothesis",
+                "label": "Base compute consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -189,7 +189,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of Edge computer CPU from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -198,7 +198,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of Edge computer CPU from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -213,7 +213,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of Edge computer RAM from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -222,7 +222,7 @@
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power per unit of Edge computer RAM from e-footprint hypothesis",
+                "label": "Power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -231,7 +231,7 @@
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power per unit of Edge computer RAM from e-footprint hypothesis",
+                "label": "Idle power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -240,7 +240,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of Edge computer RAM from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -255,7 +255,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 0.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of Edge SSD storage from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -264,7 +264,7 @@
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Power per unit of Edge SSD storage from e-footprint hypothesis",
+                "label": "Power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -273,7 +273,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of Edge SSD storage from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -282,7 +282,7 @@
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
-                "label": "Idle power per unit of Edge SSD storage from e-footprint hypothesis",
+                "label": "Idle power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -291,7 +291,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of Edge SSD storage from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -300,7 +300,7 @@
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
-                "label": "Fabrication carbon footprint per unit of Edge SSD storage per storage capacity from e-footprint hypothesis",
+                "label": "Fabrication carbon footprint per unit per storage capacity",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -309,7 +309,7 @@
             "storage_capacity_per_unit": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
-                "label": "Storage capacity per unit of Edge SSD storage from e-footprint hypothesis",
+                "label": "Storage capacity per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -318,7 +318,7 @@
             "base_storage_need": {
                 "value": 100.0,
                 "unit": "gigabyte_stored",
-                "label": "Edge SSD storage initial storage need from e-footprint hypothesis",
+                "label": "Initial storage need",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -366,7 +366,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of custom edge device from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -375,7 +375,7 @@
             "structure_carbon_footprint_fabrication": {
                 "value": 50.0,
                 "unit": "kilogram",
-                "label": "Structure fabrication carbon footprint of custom edge device from e-footprint hypothesis",
+                "label": "Structure fabrication carbon footprint",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -395,7 +395,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of edge RAM component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -404,7 +404,7 @@
             "power_per_unit": {
                 "value": 10.0,
                 "unit": "watt",
-                "label": "Power per unit of edge RAM component from e-footprint hypothesis",
+                "label": "Power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -413,7 +413,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of edge RAM component from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -422,7 +422,7 @@
             "idle_power_per_unit": {
                 "value": 2.0,
                 "unit": "watt",
-                "label": "Idle power per unit of edge RAM component from e-footprint hypothesis",
+                "label": "Idle power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -431,7 +431,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of edge RAM component from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -440,7 +440,7 @@
             "ram_per_unit": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
-                "label": "RAM per unit of edge RAM component from e-footprint hypothesis",
+                "label": "RAM per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -449,7 +449,7 @@
             "base_ram_consumption": {
                 "value": 1.0,
                 "unit": "gigabyte_ram",
-                "label": "Base RAM consumption of edge RAM component from e-footprint hypothesis",
+                "label": "Base RAM consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -464,7 +464,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 20.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of edge CPU component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -473,7 +473,7 @@
             "power_per_unit": {
                 "value": 15.0,
                 "unit": "watt",
-                "label": "Power per unit of edge CPU component from e-footprint hypothesis",
+                "label": "Power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -482,7 +482,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of edge CPU component from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -491,7 +491,7 @@
             "idle_power_per_unit": {
                 "value": 3.0,
                 "unit": "watt",
-                "label": "Idle power per unit of edge CPU component from e-footprint hypothesis",
+                "label": "Idle power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -500,7 +500,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of edge CPU component from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -509,7 +509,7 @@
             "compute_per_unit": {
                 "value": 4.0,
                 "unit": "cpu_core",
-                "label": "Compute per unit of edge CPU component from e-footprint hypothesis",
+                "label": "Compute per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -518,7 +518,7 @@
             "base_compute_consumption": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "Base compute consumption of edge CPU component from e-footprint hypothesis",
+                "label": "Base compute consumption",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -533,7 +533,7 @@
             "carbon_footprint_fabrication_per_unit": {
                 "value": 100.0,
                 "unit": "kilogram",
-                "label": "Carbon footprint fabrication per unit of edge workload component from e-footprint hypothesis",
+                "label": "Carbon footprint fabrication per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -542,7 +542,7 @@
             "power_per_unit": {
                 "value": 50.0,
                 "unit": "watt",
-                "label": "Power per unit of edge workload component from e-footprint hypothesis",
+                "label": "Power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -551,7 +551,7 @@
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
-                "label": "Lifespan of edge workload component from e-footprint hypothesis",
+                "label": "Lifespan",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -560,7 +560,7 @@
             "idle_power_per_unit": {
                 "value": 5.0,
                 "unit": "watt",
-                "label": "Idle power per unit of edge workload component from e-footprint hypothesis",
+                "label": "Idle power per unit",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -569,7 +569,7 @@
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
-                "label": "Number of units of edge workload component from e-footprint hypothesis",
+                "label": "Number of units",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -585,7 +585,7 @@
             "recurrent_need": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "gigabyte_ram",
-                "label": "RAM need recurrent need from e-footprint hypothesis",
+                "label": "Recurrent need",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -599,7 +599,7 @@
             "recurrent_need": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
-                "label": "CPU need recurrent need from e-footprint hypothesis",
+                "label": "Recurrent need",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -613,7 +613,7 @@
             "recurrent_need": {
                 "recurring_values": "[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]",
                 "unit": "concurrent",
-                "label": "Workload need recurrent need from e-footprint hypothesis",
+                "label": "Recurrent need",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -628,7 +628,7 @@
             "bandwidth_energy_intensity": {
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
-                "label": "bandwith energy intensity of Default wifi network from Traficom study",
+                "label": "bandwith energy intensity",
                 "source": {
                     "name": "Traficom study",
                     "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
@@ -644,7 +644,7 @@
             "average_carbon_intensity": {
                 "value": 44.0,
                 "unit": "gram / kilowatt_hour",
-                "label": "Average carbon intensity of France from Our world in data (2024)",
+                "label": "Average carbon intensity",
                 "source": {
                     "name": "Our world in data (2024)",
                     "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
@@ -652,7 +652,7 @@
             },
             "timezone": {
                 "zone": "Europe/Paris",
-                "label": "France timezone from user data",
+                "label": "Timezone",
                 "source": {
                     "name": "user data",
                     "link": null

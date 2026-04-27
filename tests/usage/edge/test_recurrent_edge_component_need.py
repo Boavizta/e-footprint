@@ -39,7 +39,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
         """Test RecurrentEdgeComponentNeed initialization."""
         self.assertEqual("test component need", self.component_need.name)
         self.assertEqual(self.mock_edge_component, self.component_need.edge_component)
-        self.assertEqual("test component need recurrent need", self.component_need.recurrent_need.label)
+        self.assertEqual("Recurrent need", self.component_need.recurrent_need.label)
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that edge_component is returned as dependent object."""
@@ -193,7 +193,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         self.component_need.update_recurrent_need_validation()
 
-        self.assertEqual("Validated recurrent need of test component need",
+        self.assertEqual("Validated recurrent need",
                         self.component_need.recurrent_need_validation.label)
 
     def test_unit_validation_works_with_different_power_of_ten(self):
@@ -251,7 +251,7 @@ class TestRecurrentEdgeComponentNeed(TestCase):
 
         workload_component_need.update_recurrent_need_validation()
 
-        self.assertEqual("Validated recurrent need of workload need",
+        self.assertEqual("Validated recurrent need",
                         workload_component_need.recurrent_need_validation.label)
 
     def test_update_recurrent_need_validation_workload_out_of_bounds(self):

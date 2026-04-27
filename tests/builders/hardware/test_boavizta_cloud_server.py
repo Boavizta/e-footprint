@@ -119,7 +119,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
             123.45 * u.kg
         )
         self.assertIn("fabrication carbon footprint",
-                      self.test_server.carbon_footprint_fabrication.label)
+                      self.test_server.carbon_footprint_fabrication.label.lower())
 
     def test_update_power(self):
         """
@@ -136,7 +136,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
 
         self.test_server.update_power()
         self.assertEqual(self.test_server.power.value, 60.0 * u.W)
-        self.assertIn("power", self.test_server.power.label)
+        self.assertIn("power", self.test_server.power.label.lower())
 
     def test_update_ram(self):
         mock_data = {
@@ -152,7 +152,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
 
         self.test_server.update_ram()
         self.assertEqual(self.test_server.ram.value, 32 * u.GB_ram)
-        self.assertIn("ram", self.test_server.ram.label)
+        self.assertIn("ram", self.test_server.ram.label.lower())
 
     def test_update_compute(self):
         mock_data = {
@@ -166,7 +166,7 @@ class TestBoaviztaCloudServer(unittest.TestCase):
         self.test_server.update_compute()
         # 2 * 4 = 8 cpu_cores
         self.assertEqual(self.test_server.compute.value, 8 * u.cpu_core)
-        self.assertIn("compute", self.test_server.compute.label)
+        self.assertIn("compute", self.test_server.compute.label.lower())
 
     def test_installable_services(self):
         self.assertEqual(set(BoaviztaCloudServer.installable_services()), {VideoStreaming})

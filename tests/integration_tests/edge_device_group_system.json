@@ -1,0 +1,341 @@
+{
+    "efootprint_version": "20.0.2",
+    "System": {
+        "Edge-Device-Group-System": {
+            "name": "Edge Device Group System",
+            "id": "Edge-Device-Group-System",
+            "usage_patterns": [],
+            "edge_usage_patterns": [
+                "grouped-edge-usage-pattern"
+            ]
+        }
+    },
+    "EdgeUsagePattern": {
+        "grouped-edge-usage-pattern": {
+            "name": "grouped edge usage pattern",
+            "id": "grouped-edge-usage-pattern",
+            "hourly_edge_usage_journey_starts": {
+                "compressed_values": "KLUv/SAkpQAAQAAAekT6gDtFBAA7DYA7YNwHRwQ=",
+                "unit": "occurrence",
+                "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
+                "label": "Hourly nb of edge usage journey starts",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "edge_usage_journey": "grouped-edge-usage-journey",
+            "network": "Default-wifi-network",
+            "country": "France"
+        }
+    },
+    "EdgeUsageJourney": {
+        "grouped-edge-usage-journey": {
+            "name": "grouped edge usage journey",
+            "id": "grouped-edge-usage-journey",
+            "edge_functions": [
+                "grouped-edge-function"
+            ],
+            "usage_span": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Usage span",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "EdgeFunction": {
+        "grouped-edge-function": {
+            "name": "grouped edge function",
+            "id": "grouped-edge-function",
+            "recurrent_edge_device_needs": [
+                "grouped-edge-device-need"
+            ],
+            "recurrent_server_needs": []
+        }
+    },
+    "RecurrentEdgeDeviceNeed": {
+        "grouped-edge-device-need": {
+            "name": "grouped edge device need",
+            "id": "grouped-edge-device-need",
+            "edge_device": "grouped-edge-device",
+            "recurrent_edge_component_needs": [
+                "RAM-need",
+                "CPU-need"
+            ]
+        }
+    },
+    "EdgeDevice": {
+        "grouped-edge-device": {
+            "name": "grouped edge device",
+            "id": "grouped-edge-device",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "structure_carbon_footprint_fabrication": {
+                "value": 50.0,
+                "unit": "kilogram",
+                "label": "Structure fabrication carbon footprint",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "components": [
+                "edge-RAM-component",
+                "edge-CPU-component"
+            ]
+        }
+    },
+    "EdgeRAMComponent": {
+        "edge-RAM-component": {
+            "name": "edge RAM component",
+            "id": "edge-RAM-component",
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 20.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power_per_unit": {
+                "value": 10.0,
+                "unit": "watt",
+                "label": "Power per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power_per_unit": {
+                "value": 2.0,
+                "unit": "watt",
+                "label": "Idle power per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "ram_per_unit": {
+                "value": 8.0,
+                "unit": "gigabyte_ram",
+                "label": "RAM per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "value": 1.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "EdgeCPUComponent": {
+        "edge-CPU-component": {
+            "name": "edge CPU component",
+            "id": "edge-CPU-component",
+            "carbon_footprint_fabrication_per_unit": {
+                "value": 20.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "power_per_unit": {
+                "value": 15.0,
+                "unit": "watt",
+                "label": "Power per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power_per_unit": {
+                "value": 3.0,
+                "unit": "watt",
+                "label": "Idle power per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "nb_of_units": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Number of units",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "compute_per_unit": {
+                "value": 4.0,
+                "unit": "cpu_core",
+                "label": "Compute per unit",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "cpu_core",
+                "label": "Base compute consumption",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "RecurrentEdgeComponentNeed": {
+        "RAM-need": {
+            "name": "RAM need",
+            "id": "RAM-need",
+            "edge_component": "edge-RAM-component",
+            "recurrent_need": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "gigabyte_ram",
+                "label": "Recurrent need",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        },
+        "CPU-need": {
+            "name": "CPU need",
+            "id": "CPU-need",
+            "edge_component": "edge-CPU-component",
+            "recurrent_need": {
+                "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
+                "unit": "cpu_core",
+                "label": "Recurrent need",
+                "source": {
+                    "name": "e-footprint hypothesis",
+                    "link": null
+                }
+            }
+        }
+    },
+    "Network": {
+        "Default-wifi-network": {
+            "name": "Default wifi network",
+            "id": "Default-wifi-network",
+            "bandwidth_energy_intensity": {
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "France": {
+            "name": "France",
+            "id": "France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "value": 44.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity",
+                "source": {
+                    "name": "Our world in data (2024)",
+                    "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
+                }
+            },
+            "timezone": {
+                "zone": "Europe/Paris",
+                "label": "Timezone",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
+        }
+    },
+    "EdgeDeviceGroup": {
+        "floor-group": {
+            "name": "floor group",
+            "id": "floor-group",
+            "sub_group_counts": {},
+            "edge_device_counts": {
+                "grouped-edge-device": {
+                    "value": 4.0,
+                    "unit": "dimensionless",
+                    "label": "unnamed source",
+                    "source": {
+                        "name": "e-footprint hypothesis",
+                        "link": null
+                    }
+                }
+            }
+        },
+        "building-group": {
+            "name": "building group",
+            "id": "building-group",
+            "sub_group_counts": {
+                "floor-group": {
+                    "value": 3.0,
+                    "unit": "dimensionless",
+                    "label": "unnamed source",
+                    "source": {
+                        "name": "e-footprint hypothesis",
+                        "link": null
+                    }
+                }
+            },
+            "edge_device_counts": {}
+        }
+    }
+}

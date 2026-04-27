@@ -99,7 +99,7 @@ class TestRecurrentServerNeed(TestCase):
         """Test update_recurrent_need_validation with valid occurrence unit."""
         self.server_need.update_recurrent_need_validation()
 
-        self.assertEqual("test server need validated recurrent need",
+        self.assertEqual("Validated recurrent need",
                         self.server_need.recurrent_need_validation.label)
 
     def test_update_recurrent_need_validation_invalid_unit_raises_assertion(self):

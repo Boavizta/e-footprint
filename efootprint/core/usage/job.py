@@ -42,8 +42,8 @@ class JobBase(ModelingObject):
         self.hourly_data_transferred_across_usage_patterns = EmptyExplainableObject()
         self.hourly_data_stored_across_usage_patterns = EmptyExplainableObject()
         self.data_transferred = data_transferred.set_label(
-            f"Sum of all data uploads and downloads for request {self.name}")
-        self.data_stored = data_stored.set_label(f"Data stored by request {self.name}")
+            f"Sum of all data uploads and downloads by request")
+        self.data_stored = data_stored.set_label(f"Data stored by request")
         self.request_duration = request_duration.set_label(f"Request duration")
         self.ram_needed = ram_needed.set_label(f"RAM needed during job processing").to(u.MB_ram)
         self.compute_needed = compute_needed.set_label(f"CPU needed during job processing")

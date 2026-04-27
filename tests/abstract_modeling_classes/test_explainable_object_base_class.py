@@ -429,5 +429,5 @@ Label L + Label R
             pytz.timezone("Europe/Paris"), "timezone", source=Source("source name", "source link"))
 
         self.assertEqual(
-            {"label": "timezone from source name", "zone": "Europe/Paris",
+            {"zone": "Europe/Paris", "label": "timezone",
              "source": {"name": "source name", "link": "source link"}}, timezone_expl.to_json())

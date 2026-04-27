@@ -72,11 +72,11 @@ class TestEdgeComputer(TestCase):
 
     def test_labels_are_set_correctly(self):
         """Test that all attributes have correct labels."""
-        self.assertIn("Idle power of Test EdgeComputer", self.edge_computer.idle_power.label)
-        self.assertIn("RAM of Test EdgeComputer", self.edge_computer.ram.label)
-        self.assertIn("Compute of Test EdgeComputer", self.edge_computer.compute.label)
-        self.assertIn("Base RAM consumption of Test EdgeComputer", self.edge_computer.base_ram_consumption.label)
-        self.assertIn("Base compute consumption of Test EdgeComputer", self.edge_computer.base_compute_consumption.label)
+        self.assertIn("idle power", self.edge_computer.idle_power.label.lower())
+        self.assertIn("ram", self.edge_computer.ram.label.lower())
+        self.assertIn("compute", self.edge_computer.compute.label.lower())
+        self.assertIn("base ram consumption", self.edge_computer.base_ram_consumption.label.lower())
+        self.assertIn("base compute consumption", self.edge_computer.base_compute_consumption.label.lower())
 
     def test_modeling_objects_whose_attributes_depend_directly_on_me(self):
         """Test that components are returned as dependent objects."""

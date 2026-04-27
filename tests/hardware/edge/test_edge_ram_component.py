@@ -116,7 +116,7 @@ class TestEdgeRAMComponent(TestCase):
         result = self.ram_component.unitary_hourly_ram_need_per_usage_pattern[mock_pattern]
         self.assertEqual(expected_values, result.value_as_float_list)
         self.assertEqual(u.GB_ram, result.unit)
-        self.assertIn("Test RAM hourly RAM need for Test Pattern", result.label)
+        self.assertIn("Hourly RAM need for Test Pattern", result.label)
 
     def test_update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern_insufficient_capacity(self):
         """Test update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern raises error when capacity is exceeded."""
