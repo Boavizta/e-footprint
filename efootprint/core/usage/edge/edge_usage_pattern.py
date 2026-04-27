@@ -24,7 +24,7 @@ class EdgeUsagePattern(ModelingObject):
         self.utc_hourly_edge_usage_journey_starts = EmptyExplainableObject()
 
         self.hourly_edge_usage_journey_starts = hourly_edge_usage_journey_starts.to(u.occurrence).set_label(
-            "Hourly nb of edge device starts")
+            "Hourly nb of edge usage journey starts")
         self.edge_usage_journey = edge_usage_journey
         self.network = network
         self.country = country
@@ -54,7 +54,7 @@ class EdgeUsagePattern(ModelingObject):
             local_timezone=self.country.timezone)
 
         self.utc_hourly_edge_usage_journey_starts = utc_hourly_edge_usage_journey_starts.set_label(
-            f"{self.name} UTC")
+            f"Hourly nb of edge usage journey starts (UTC)")
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, country: "Country"):
         self.fabrication_impact_repartition_weights[country] = ExplainableQuantity(
