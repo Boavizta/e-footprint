@@ -11,7 +11,8 @@ It uses a **declarative modeling approach**: users describe the system (servers,
 - **Sustainability-aware product teams** sizing the environmental impact of a digital service before, during, or after building it.
 - **Industrial users** modeling fleets of deployed devices (IoT, edge) and the web services they depend on.
 - **Researchers and consultants** producing eco-design assessments who need a reproducible, transparent calculation.
-- **Indirect: e-footprint-interface users** — the Django UI co-developed with the library.
+
+e-footprint users will probably mainly interact with e-footprint through the **e-footprint-interface** — the Django UI co-developed with the library.
 
 The library is open-source and hosted within the [Boavizta](https://boavizta.org/) ecosystem.
 

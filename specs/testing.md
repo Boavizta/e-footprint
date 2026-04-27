@@ -16,6 +16,8 @@ Things covered by integration tests are duplication:
 - `modeling_objects_whose_attributes_depend_directly_on_me` (unless special logic).
 - Container/aggregation properties (unless special logic).
 - `default_values` or `calculated_attributes` list contents.
+
+Also don’t test:
 - Inheritance or parent class methods.
 - Shared base-class behavior already covered elsewhere.
 - When a complex test implies simpler tests pass, skip the simpler tests.
