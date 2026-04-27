@@ -7,6 +7,10 @@ from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadCo
 
 
 class EdgeApplianceComponent(EdgeWorkloadComponent):
+    """Internal {class:EdgeWorkloadComponent} created automatically by an {class:EdgeAppliance}. Mirrors the appliance's power and lifespan so the appliance behaves like a single workload-style component."""
+
+    param_descriptions = {}
+
     def __init__(self, name: str):
         super().__init__(
             name=name,
@@ -21,6 +25,7 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
         return ["power_per_unit", "idle_power_per_unit", "lifespan"] + super().calculated_attributes
 
     def update_power_per_unit(self):
+        """Power per unit, copied from the parent {class:EdgeAppliance}'s power."""
         edge_device = self.edge_device
         if edge_device:
             self.power_per_unit = edge_device.power.copy().set_label(f"Power per unit")
@@ -28,6 +33,7 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
             self.power_per_unit = EmptyExplainableObject()
 
     def update_idle_power_per_unit(self):
+        """Idle power per unit, copied from the parent {class:EdgeAppliance}'s idle power."""
         edge_device = self.edge_device
         if edge_device:
             self.idle_power_per_unit = edge_device.idle_power.copy().set_label(f"Idle power per unit")
@@ -35,6 +41,7 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
             self.idle_power_per_unit = EmptyExplainableObject()
 
     def update_lifespan(self):
+        """Lifespan, copied from the parent {class:EdgeAppliance}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
             self.lifespan = edge_device.lifespan.copy().set_label(f"Lifespan")
@@ -43,6 +50,24 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
 
 
 class EdgeAppliance(EdgeDevice):
+    """An appliance-style {class:EdgeDevice} described by a single power and lifespan, without breaking out individual components. Suitable for sealed devices whose internal hardware is not modelled separately."""
+
+    disambiguation = (
+        "Use {class:EdgeAppliance} when only an aggregate power and embodied carbon are known, and the load "
+        "is described as a 0..1 workload curve. Use {class:EdgeComputer} for computer-like devices with CPU, "
+        "RAM, and storage. Use {class:EdgeDevice} for fully bespoke hardware.")
+
+    param_descriptions = {
+        "carbon_footprint_fabrication": (
+            "Embodied carbon emitted to manufacture one appliance."),
+        "power": (
+            "Electrical power drawn at full workload."),
+        "lifespan": (
+            "Expected time before the appliance is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power": (
+            "Electrical power drawn at zero workload."),
+    }
+
     default_values = {
         "carbon_footprint_fabrication": SourceValue(100 * u.kg),
         "power": SourceValue(50 * u.W),
@@ -67,6 +92,7 @@ class EdgeAppliance(EdgeDevice):
         return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
 
     def update_structure_carbon_footprint_fabrication(self):
+        """Structure fabrication footprint of the appliance, copied from the appliance's own fabrication footprint since there are no separate component fabrication contributions."""
         self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
             f"Structure fabrication carbon footprint")
 

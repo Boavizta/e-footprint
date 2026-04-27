@@ -13,6 +13,25 @@ if TYPE_CHECKING:
 
 
 class EdgeCPUComponent(EdgeComponent):
+    """A CPU inside an {class:EdgeDevice}. Sized so that aggregated recurrent compute demand never exceeds available cores."""
+
+    param_descriptions = {
+        "carbon_footprint_fabrication_per_unit": (
+            "Embodied carbon emitted to manufacture one unit of this CPU."),
+        "power_per_unit": (
+            "Electrical power drawn by one fully-loaded CPU unit."),
+        "lifespan": (
+            "Expected time before a unit is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power_per_unit": (
+            "Electrical power drawn by one idle CPU unit."),
+        "compute_per_unit": (
+            "Number of CPU cores provided by one unit. Total compute is this value times {param:EdgeCPUComponent.nb_of_units}."),
+        "base_compute_consumption": (
+            "Compute permanently occupied independently of recurring needs."),
+        "nb_of_units": (
+            "Number of identical CPU units in the component."),
+    }
+
     compatible_root_units = [u.cpu_core]
     default_values = {
         "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
@@ -45,9 +64,11 @@ class EdgeCPUComponent(EdgeComponent):
                 + super().calculated_attributes)
 
     def update_compute(self):
+        """Total compute provided by the CPU component, equal to per-unit compute times the number of units."""
         self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
 
     def update_available_compute_per_instance(self):
+        """Compute available for recurring needs after subtracting the base consumption. Raises if the component is over-subscribed at design time."""
         available_compute_per_instance = (self.compute - self.base_compute_consumption)
 
         if available_compute_per_instance < SourceValue(0 * u.cpu_core):
@@ -72,6 +93,7 @@ class EdgeCPUComponent(EdgeComponent):
             self.available_compute_per_instance)
 
     def update_unitary_hourly_compute_need_per_usage_pattern(self):
+        """Hourly compute demand on one component, broken down by usage pattern. Raises if peak demand exceeds the component's available compute."""
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)
@@ -92,6 +114,7 @@ class EdgeCPUComponent(EdgeComponent):
             f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
+        """Hourly power profile of the component for one device, derived from the compute workload (current need plus base consumption divided by total compute) by linearly interpolating between idle and full power."""
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

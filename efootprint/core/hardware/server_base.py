@@ -163,22 +163,27 @@ class ServerBase(InfraHardware):
         return hour_by_hour_resource_needs.to(resource_unit).set_label(f"Hour by hour {resource} need")
 
     def update_hour_by_hour_ram_need(self):
+        """Hourly RAM demand placed on the server by all of its jobs combined."""
         self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
 
     def update_hour_by_hour_compute_need(self):
+        """Hourly compute demand placed on the server by all of its jobs combined."""
         self.hour_by_hour_compute_need = self.compute_hour_by_hour_resource_need("compute")
 
     def update_occupied_ram_per_instance(self):
+        """RAM that is permanently occupied on each instance, summing the server's own base consumption with the base consumption of every installed service."""
         self.occupied_ram_per_instance = (self.base_ram_consumption + sum(
             [service.base_ram_consumption for service in self.installed_services])).to(u.GB_ram).set_label(
             f"Occupied RAM per {self.name} instance including services")
 
     def update_occupied_compute_per_instance(self):
+        """Compute that is permanently occupied on each instance, summing the server's own base consumption with the base consumption of every installed service."""
         self.occupied_compute_per_instance = (self.base_compute_consumption + sum(
             [service.base_compute_consumption for service in self.installed_services])).set_label(
             f"Occupied CPU per {self.name} instance including services")
 
     def update_available_ram_per_instance(self):
+        """RAM each instance has left for jobs after applying the utilization rate and subtracting RAM occupied by installed services."""
         available_ram_per_instance_before_services_installation = (self.ram * self.utilization_rate).to(u.GB_ram)
         available_ram_per_instance = (
                 available_ram_per_instance_before_services_installation - self.occupied_ram_per_instance)
@@ -190,6 +195,7 @@ class ServerBase(InfraHardware):
             f"Available RAM per {self.name} instance")
 
     def update_available_compute_per_instance(self):
+        """Compute each instance has left for jobs after applying the utilization rate and subtracting compute occupied by installed services."""
         available_compute_per_instance_before_services_installation = self.compute * self.utilization_rate
         available_compute_per_instance = (
                 available_compute_per_instance_before_services_installation - self.occupied_compute_per_instance)
@@ -202,6 +208,7 @@ class ServerBase(InfraHardware):
             f"Available CPU per {self.name} instance")
 
     def update_raw_nb_of_instances(self):
+        """Hourly number of instances strictly required to serve hourly demand, taking the maximum across the RAM and compute dimensions, before rounding to whole instances."""
         nb_of_servers_based_on_ram_alone = (
                 self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.concurrent).set_label(
             f"Raw nb of instances based on RAM alone")
@@ -217,6 +224,7 @@ class ServerBase(InfraHardware):
         self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
 
     def update_instances_energy(self):
+        """Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied."""
         energy_spent_by_one_idle_instance_over_one_hour = (
                 self.idle_power * self.power_usage_effectiveness * ExplainableQuantity(1 * u.hour, "one hour"))
         extra_energy_spent_by_one_fully_active_instance_over_one_hour = (
@@ -273,6 +281,7 @@ class ServerBase(InfraHardware):
             self.server_type).set_label(f"Hourly number of instances")
 
     def update_nb_of_instances(self):
+        """Hourly number of instances actually billed, computed differently per server type: ceiled to whole instances for autoscaling, mirrored from raw demand for serverless, and held flat at peak (or the user-fixed count) for on-premise."""
         logic_mapping = {
             ServerTypes.autoscaling(): self.autoscaling_update_nb_of_instances,
             ServerTypes.on_premise(): self.on_premise_update_nb_of_instances,
@@ -288,6 +297,7 @@ class ServerBase(InfraHardware):
             f"Total job volume for {service.name}")
 
     def update_service_total_job_volumes(self):
+        """Total hourly volume of jobs going through each installed service, used to attribute service-level overhead to individual jobs."""
         self.service_total_job_volumes = ExplainableObjectDict()
         for service in self.installed_services:
             self.update_dict_element_in_service_total_job_volumes(service)
@@ -320,6 +330,7 @@ class ServerBase(InfraHardware):
         )
 
     def update_job_repartition_weights(self):
+        """Per-job weight used to attribute the server's fabrication and energy footprint back to its jobs, proportional to each job's share of compute and RAM consumption over the modeling period."""
         self.job_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_job_repartition_weights(job)

@@ -42,6 +42,7 @@ class InfraHardware(HardwareBase):
         return list(dict.fromkeys(sum([job.systems for job in self.jobs], start=[])))
 
     def update_instances_fabrication_footprint(self):
+        """Hourly fabrication-phase emissions of all instances, equal to the embodied carbon of one instance amortised over its lifespan and multiplied by the number of instances active in each hour."""
         instances_fabrication_footprint = (
                 self.carbon_footprint_fabrication * self.nb_of_instances * ExplainableQuantity(1 * u.hour, "one hour")
                 / self.lifespan)
@@ -50,6 +51,7 @@ class InfraHardware(HardwareBase):
                 f"Hourly {self.name} instances fabrication footprint")
 
     def update_energy_footprint(self):
+        """Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity."""
         if getattr(self, "average_carbon_intensity", None) is None:
             raise ValueError(
                 f"Variable 'average_carbon_intensity' is not defined in object {self.name}."

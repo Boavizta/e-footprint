@@ -13,6 +13,26 @@ if TYPE_CHECKING:
 
 
 class EdgeWorkloadComponent(EdgeComponent):
+    """A whole-device opaque resource described only by a 0..1 utilisation level (an "appliance-style" component). Used when individual CPU/RAM specs are not modelled, only how loaded the device is."""
+
+    disambiguation = (
+        "Use {class:EdgeWorkloadComponent} for appliance-style devices where the internal hardware is opaque. "
+        "Use {class:EdgeRAMComponent}, {class:EdgeCPUComponent}, and {class:EdgeStorage} when individual "
+        "components need to be modelled separately.")
+
+    param_descriptions = {
+        "carbon_footprint_fabrication_per_unit": (
+            "Embodied carbon emitted to manufacture the appliance."),
+        "power_per_unit": (
+            "Electrical power drawn at full workload."),
+        "lifespan": (
+            "Expected time before the appliance is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power_per_unit": (
+            "Electrical power drawn at zero workload."),
+        "nb_of_units": (
+            "Number of identical appliance units making up the component."),
+    }
+
     compatible_root_units = [u.concurrent]
     default_values = {
         "carbon_footprint_fabrication_per_unit": SourceValue(100 * u.kg),
@@ -49,6 +69,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             f"Hourly workload for {usage_pattern.name}")
 
     def update_unitary_hourly_workload_per_usage_pattern(self):
+        """Hourly workload (between 0 and 1) on one component, broken down by usage pattern. Raises if aggregated workload exceeds 1."""
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(usage_pattern)
@@ -68,6 +89,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
+        """Hourly power profile of the component for one device, linearly interpolated between idle and full power based on the workload."""
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

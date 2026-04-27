@@ -14,6 +14,29 @@ if TYPE_CHECKING:
 
 
 class Device(HardwareBase):
+    """End-user hardware (smartphone, laptop, set-top box, screen) on which a {class:UsageJourney} is performed. Contributes both fabrication and electricity-use emissions to each {class:UsagePattern} that runs on it."""
+
+    pitfalls = (
+        "{param:Device.fraction_of_usage_time} amortises fabrication: a device only used a few hours per day "
+        "still consumes its full embodied carbon during the modeling period, but the share attributed to this "
+        "service is scaled by the fraction it is actually used.")
+
+    interactions = (
+        "Pass a list of {class:Device}s to {param:UsagePattern.devices}. Use the archetype helpers "
+        "(`Device.smartphone()`, `Device.laptop()`, `Device.box()`, `Device.screen()`) for sensible defaults.")
+
+    param_descriptions = {
+        "carbon_footprint_fabrication": (
+            "Embodied carbon emitted to manufacture one device, amortised over its lifespan."),
+        "power": (
+            "Electrical power drawn by the device while a user is interacting with it."),
+        "lifespan": (
+            "Expected time before the device is replaced. Embodied carbon is amortised over this duration."),
+        "fraction_of_usage_time": (
+            "Fraction of each calendar day during which the device is in use across all activities, used to "
+            "share its fabrication footprint between this service and other uses of the same device."),
+    }
+
     default_values =  {
             "carbon_footprint_fabrication": SourceValue(150 * u.kg),
             "power": SourceValue(50 * u.W),
@@ -112,16 +135,19 @@ class Device(HardwareBase):
         ).to(u.kg).set_label(f"Usage footprint for {usage_pattern.name}")
 
     def update_energy_footprint_per_usage_pattern(self):
+        """Hourly carbon emissions caused by the device's electricity use, broken down by usage pattern. Equal to the energy spent by concurrent journeys times the country's grid carbon intensity."""
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
 
     def update_energy_footprint(self):
+        """Total hourly carbon emissions caused by the device's electricity use, summed across all usage patterns that run on this device."""
         self.energy_footprint = sum(
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
         ).set_label(f"Devices energy footprint")
 
     def update_instances_fabrication_footprint(self):
+        """Hourly fabrication-phase emissions of all devices in use, equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
         instances_fabrication_footprint = EmptyExplainableObject()
         device_fabrication_footprint_over_one_hour = (
                 self.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
@@ -152,6 +178,7 @@ class Device(HardwareBase):
         )
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-{class:UsageJourneyStep} weight used to attribute the device's fabrication footprint to the steps that occupy it, proportional to step occurrences times user-time-spent times concurrent journeys."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for uj_step in self.usage_journey_steps:
             self.update_dict_element_in_fabrication_impact_repartition_weights(uj_step)
@@ -172,6 +199,7 @@ class Device(HardwareBase):
         )
 
     def update_usage_impact_repartition_weights(self):
+        """Per-{class:UsageJourneyStep} weight used to attribute the device's electricity-use footprint to the steps that occupy it, weighted by per-pattern energy footprint and step occurrence count."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for uj_step in self.usage_journey_steps:
             self.update_dict_element_in_usage_impact_repartition_weights(uj_step)

@@ -10,8 +10,56 @@ BLOOM_PAPER_SOURCE = Source("Estimating the Carbon Footprint of BLOOM", "https:/
 
 
 class GPUServer(ServerBase):
+    """A server whose compute capacity is expressed in GPUs rather than CPU cores, with separate fabrication and power figures for the GPUs and the rest of the chassis."""
+
     def _abc_marker(self):
         pass  # silent override
+
+    disambiguation = (
+        "Use {class:GPUServer} when {param:GPUServer.compute} is measured in GPUs. Hardware specifications are "
+        "decomposed per-GPU so that varying the GPU count adjusts power, fabrication footprint, and available "
+        "memory consistently. Use {class:Server} for CPU-bound workloads.")
+
+    pitfalls = (
+        "{class:GPUServer} can only host {class:GPUJob}s. Wiring a {class:Job} that has CPU-core compute units "
+        "to a {class:GPUServer} fails when the model is computed.")
+
+    param_descriptions = {
+        "server_type": (
+            "Provisioning model of the server. Same semantics as {param:Server.server_type}: autoscaling, "
+            "serverless, or on-premise."),
+        "gpu_power": (
+            "Electrical power drawn by one fully-loaded GPU."),
+        "gpu_idle_power": (
+            "Electrical power drawn by a GPU that is on but not processing."),
+        "ram_per_gpu": (
+            "Memory available per GPU. Total instance RAM is derived by multiplying with the GPU count."),
+        "carbon_footprint_fabrication_per_gpu": (
+            "Embodied carbon emitted to manufacture one GPU."),
+        "average_carbon_intensity": (
+            "Average grid carbon intensity at the location where the server runs, used to convert energy "
+            "consumption into carbon emissions."),
+        "compute": (
+            "Number of GPUs in one server instance."),
+        "carbon_footprint_fabrication_without_gpu": (
+            "Embodied carbon of one server chassis excluding GPUs (CPUs, motherboard, chassis)."),
+        "lifespan": (
+            "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
+        "power_usage_effectiveness": (
+            "Datacenter overhead multiplier applied to the server's power consumption to account for cooling "
+            "and other site-wide energy use."),
+        "utilization_rate": (
+            "Fraction of available GPU and memory time considered usable after operating-system and headroom overhead."),
+        "base_compute_consumption": (
+            "GPU consumed per instance independently of jobs."),
+        "base_ram_consumption": (
+            "GPU memory consumed per instance independently of jobs."),
+        "storage": (
+            "Backing {class:Storage} attached to the server."),
+        "fixed_nb_of_instances": (
+            "On-premise only: number of physical servers deployed. Leave empty for autoscaling and serverless "
+            "server types."),
+    }
 
     default_values =  {
             "server_type": ServerTypes.serverless(),
@@ -60,15 +108,19 @@ class GPUServer(ServerBase):
         return ["carbon_footprint_fabrication", "power", "idle_power", "ram"] + super().calculated_attributes
 
     def update_carbon_footprint_fabrication(self):
+        """Embodied carbon of one server instance, equal to the chassis fabrication footprint plus the per-GPU fabrication footprint times the GPU count."""
         self.carbon_footprint_fabrication = (self.carbon_footprint_fabrication_without_gpu
                 + self.compute * self.carbon_footprint_fabrication_per_gpu
                 ).set_label("Carbon footprint fabrication")
 
     def update_power(self):
+        """Power drawn by one fully-loaded instance, equal to the per-GPU power times the GPU count."""
         self.power = (self.gpu_power * self.compute).set_label("Power")
 
     def update_idle_power(self):
+        """Power drawn by one idle instance, equal to the per-GPU idle power times the GPU count."""
         self.idle_power = (self.gpu_idle_power * self.compute).set_label("Idle power")
 
     def update_ram(self):
+        """Total memory of one instance, equal to per-GPU memory times the GPU count."""
         self.ram = (self.ram_per_gpu * self.compute).set_label("RAM").to(u.GB_ram)

@@ -11,6 +11,10 @@ from efootprint.core.hardware.edge.edge_storage import EdgeStorage
 
 
 class EdgeComputerRAMComponent(EdgeRAMComponent):
+    """Internal {class:EdgeRAMComponent} created automatically by an {class:EdgeComputer}. Its capacity, power, and lifespan are pulled from the parent computer."""
+
+    param_descriptions = {}
+
     def __init__(self, name: str):
         super().__init__(
             name=name,
@@ -27,6 +31,7 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
         return ["ram_per_unit", "base_ram_consumption", "lifespan"] + super().calculated_attributes
 
     def update_ram_per_unit(self):
+        """RAM per unit, copied from the parent {class:EdgeComputer}'s memory."""
         edge_device = self.edge_device
         if edge_device:
             self.ram_per_unit = self.edge_device.ram.copy().set_label(f"RAM per unit")
@@ -34,6 +39,7 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
             self.ram_per_unit = EmptyExplainableObject()
 
     def update_base_ram_consumption(self):
+        """Base RAM consumption, copied from the parent {class:EdgeComputer}'s base RAM consumption."""
         edge_device = self.edge_device
         if edge_device:
             self.base_ram_consumption = self.edge_device.base_ram_consumption.copy().set_label(
@@ -42,6 +48,7 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
             self.base_ram_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
+        """Lifespan, copied from the parent {class:EdgeComputer}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
             self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
@@ -50,6 +57,10 @@ class EdgeComputerRAMComponent(EdgeRAMComponent):
 
 
 class EdgeComputerCPUComponent(EdgeCPUComponent):
+    """Internal {class:EdgeCPUComponent} created automatically by an {class:EdgeComputer}. Its compute, power, and lifespan are pulled from the parent computer."""
+
+    param_descriptions = {}
+
     def __init__(self, name: str):
         super().__init__(
             name=name,
@@ -66,6 +77,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
         return ["compute_per_unit", "base_compute_consumption", "lifespan", "power_per_unit", "idle_power_per_unit"] + super().calculated_attributes
 
     def update_compute_per_unit(self):
+        """Compute per unit, copied from the parent {class:EdgeComputer}'s compute."""
         edge_device = self.edge_device
         if edge_device:
             self.compute_per_unit = edge_device.compute.copy().set_label(f"Compute per unit")
@@ -73,6 +85,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
             self.compute_per_unit = EmptyExplainableObject()
 
     def update_base_compute_consumption(self):
+        """Base compute consumption, copied from the parent {class:EdgeComputer}'s base compute consumption."""
         edge_device = self.edge_device
         if edge_device:
             self.base_compute_consumption = self.edge_device.base_compute_consumption.copy().set_label(
@@ -81,6 +94,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
             self.base_compute_consumption = EmptyExplainableObject()
 
     def update_lifespan(self):
+        """Lifespan, copied from the parent {class:EdgeComputer}'s lifespan."""
         edge_device = self.edge_device
         if edge_device:
             self.lifespan = self.edge_device.lifespan.copy().set_label(f"Lifespan")
@@ -88,6 +102,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
             self.lifespan = EmptyExplainableObject()
 
     def update_power_per_unit(self):
+        """Power per unit, copied from the parent {class:EdgeComputer}'s power."""
         edge_device = self.edge_device
         if edge_device:
             self.power_per_unit = self.edge_device.power.copy().set_label(f"Power per unit")
@@ -96,6 +111,7 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
 
 
     def update_idle_power_per_unit(self):
+        """Idle power per unit, copied from the parent {class:EdgeComputer}'s idle power."""
         edge_device = self.edge_device
         if edge_device:
             self.idle_power_per_unit = self.edge_device.idle_power.copy().set_label(f"Idle power per unit")
@@ -104,6 +120,34 @@ class EdgeComputerCPUComponent(EdgeCPUComponent):
 
 
 class EdgeComputer(EdgeDevice):
+    """A computer-like {class:EdgeDevice} described by aggregate CPU, RAM, and storage specs. Internally creates standard {class:EdgeCPUComponent}, {class:EdgeRAMComponent}, and reuses the provided {class:EdgeStorage} so loads can be sized against component capacity."""
+
+    disambiguation = (
+        "Use {class:EdgeComputer} for general-purpose edge compute hardware where CPU, RAM, and storage matter. "
+        "Use {class:EdgeAppliance} for sealed appliance-style hardware described only by total power and "
+        "embodied carbon. Use {class:EdgeDevice} for fully bespoke hardware.")
+
+    param_descriptions = {
+        "carbon_footprint_fabrication": (
+            "Embodied carbon emitted to manufacture one computer."),
+        "power": (
+            "Electrical power drawn at full load."),
+        "lifespan": (
+            "Expected time before the computer is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power": (
+            "Electrical power drawn at zero load."),
+        "ram": (
+            "Memory available on one computer."),
+        "compute": (
+            "Compute capacity available on one computer, expressed in CPU cores."),
+        "base_ram_consumption": (
+            "RAM consumed independently of recurring needs (operating system, baseline processes)."),
+        "base_compute_consumption": (
+            "Compute consumed independently of recurring needs."),
+        "storage": (
+            "{class:EdgeStorage} component holding persistent data on the computer."),
+    }
+
     default_values = {
         "carbon_footprint_fabrication": SourceValue(60 * u.kg),
         "power": SourceValue(30 * u.W),
@@ -155,6 +199,7 @@ class EdgeComputer(EdgeDevice):
         return component_needs_changes
 
     def update_structure_carbon_footprint_fabrication(self):
+        """Structure fabrication footprint of the computer, copied from the computer's own fabrication footprint since the auto-created sub-components carry no separate fabrication contribution."""
         self.structure_carbon_footprint_fabrication = self.carbon_footprint_fabrication.copy().set_label(
             f"Structure fabrication carbon footprint")
 

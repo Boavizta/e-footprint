@@ -43,6 +43,10 @@ def _mean_value_or_range(value_or_range: ValueOrRange) -> float:
 
 
 class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
+    """Virtual server backing an {class:EcoLogitsGenAIExternalAPI}. Aggregates the per-request fabrication and energy footprints emitted by the underlying EcoLogits model into hourly footprints."""
+
+    param_descriptions = {}
+
     @property
     def external_api(self) -> Optional["EcoLogitsGenAIExternalAPI"]:
         if self.modeling_obj_containers:
@@ -62,6 +66,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         return "no external API"
 
     def update_instances_fabrication_footprint(self) -> None:
+        """Hourly fabrication-phase footprint of the model server, equal to per-request embodied GWP times hourly request count, summed over jobs."""
         instances_fabrication_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
@@ -71,6 +76,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
             f"Instances fabrication footprint for {self.external_api_model_name}")
 
     def update_instances_energy(self) -> None:
+        """Hourly energy consumed by the model server, equal to per-request energy times hourly request count, summed over jobs."""
         instances_energy = EmptyExplainableObject()
 
         for job in self.jobs:
@@ -79,6 +85,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
     def update_energy_footprint(self) -> None:
+        """Hourly energy-use footprint of the model server, equal to per-request usage GWP times hourly request count, summed over jobs."""
         energy_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
@@ -92,6 +99,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         ).set_label(f"{job.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-job weights used to attribute the model server's fabrication footprint, proportional to per-request embodied GWP times hourly request volume."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_fabrication_impact_repartition_weights(job)
@@ -102,12 +110,28 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         ).set_label(f"{job.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
+        """Per-job weights used to attribute the model server's energy-use footprint, proportional to per-request usage GWP times hourly request volume."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_usage_impact_repartition_weights(job)
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):
+    """An external generative-AI API (OpenAI, Anthropic, Mistral...) modelled through the EcoLogits library. Picks a model and provider; EcoLogits supplies parameter counts, throughput, datacenter location, and grid carbon intensity."""
+
+    interactions = (
+        "Pick {param:EcoLogitsGenAIExternalAPI.provider} and {param:EcoLogitsGenAIExternalAPI.model_name} "
+        "from the EcoLogits catalog, then attach {class:EcoLogitsGenAIExternalAPIJob}s sized by output token "
+        "count. EcoLogits queries are cached as calculated attributes so they fire only when the model changes.")
+
+    param_descriptions = {
+        "provider": (
+            "Provider key from the EcoLogits catalog (anthropic, openai, mistralai...)."),
+        "model_name": (
+            "Specific model name from the chosen provider's EcoLogits catalog. Drives parameter counts, "
+            "throughput, and the datacenter location used for grid carbon intensity."),
+    }
+
     server_class = EcoLogitsGenAIExternalAPIServer
 
     default_values = {
@@ -157,6 +181,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         return model
 
     def update_model_total_params(self) -> None:
+        """Total parameter count of the chosen model in billions, looked up in the EcoLogits model repository."""
         model = self._get_model_or_raise()
         params = model.architecture.parameters
         if isinstance(params, ParametersMoE):
@@ -174,6 +199,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         )
 
     def update_model_active_params(self) -> None:
+        """Active parameter count per inference step in billions (less than total for mixture-of-experts models), looked up in the EcoLogits model repository."""
         model = self._get_model_or_raise()
         params = model.architecture.parameters
         if isinstance(params, ParametersMoE):
@@ -191,6 +217,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         )
 
     def update_tokens_per_second(self) -> None:
+        """Average generation throughput of the model in tokens per second, looked up in the EcoLogits model repository. Empty if the model does not publish a value."""
         model = self._get_model_or_raise()
         tps = model.deployment.tps if model.deployment else None
         if tps is None:
@@ -208,6 +235,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
             )
 
     def update_time_to_first_token(self) -> None:
+        """Time between sending the prompt and receiving the first generated token, looked up in the EcoLogits model repository. Empty if the model does not publish a value."""
         model = self._get_model_or_raise()
         ttft = model.deployment.ttft if model.deployment else None
         if ttft is None:
@@ -225,6 +253,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
             )
 
     def update_datacenter_location(self) -> None:
+        """Geographic zone where the provider's datacenter runs, looked up in the EcoLogits provider config. Drives which electricity mix is applied."""
         datacenter_location = PROVIDER_CONFIG_MAP[self.provider.value].datacenter_location
         self.datacenter_location = ExplainableObject(
             datacenter_location,
@@ -235,6 +264,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         )
 
     def update_data_center_pue(self) -> None:
+        """Power Usage Effectiveness of the provider's datacenter, looked up in the EcoLogits provider config."""
         datacenter_pue = _mean_value_or_range(PROVIDER_CONFIG_MAP[self.provider.value].datacenter_pue)
         self.data_center_pue = ExplainableQuantity(
             datacenter_pue * u.dimensionless,
@@ -245,6 +275,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         )
 
     def update_average_carbon_intensity(self) -> None:
+        """Average grid carbon intensity at the datacenter location, looked up in the EcoLogits electricity mix repository."""
         electricity_mix_zone = self.datacenter_location.value
         if electricity_mix_zone is None:
             electricity_mix_zone = "WOR"
@@ -262,6 +293,16 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
 
 
 class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
+    """One inference call against an {class:EcoLogitsGenAIExternalAPI}, sized by the average output token count. Per-request energy and embodied GWP are computed from the EcoLogits impact DAG."""
+
+    param_descriptions = {
+        "external_api": (
+            "{class:EcoLogitsGenAIExternalAPI} the call is routed to."),
+        "output_token_count": (
+            "Average number of tokens generated per call. Drives generation latency, energy use, and embodied "
+            "GWP through the EcoLogits impact model."),
+    }
+
     default_values = {
         "output_token_count": SourceValue(1000 * u.dimensionless)
     }
@@ -284,19 +325,23 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
                 ["hourly_occurrences_across_usage_patterns"])
 
     def update_data_transferred(self):
+        """Data transferred per call, estimated as 5 bytes per token (4 bytes UTF-8 plus 1 byte JSON overhead) times the output token count."""
         # One token is approximately 4 characters (4 bytes) + 1 byte json overhead
         bytes_per_token = ExplainableQuantity(5 * u.B, label="Bytes per token")
         self.data_transferred = (bytes_per_token * self.output_token_count).to(u.kB).set_label(
             f"Data transferred for {self.external_api.model_name}")
 
     def update_request_duration(self):
+        """Request duration of one call, equal to the generation latency derived from EcoLogits."""
         self.request_duration = self.generation_latency.copy()
 
     def update_hourly_occurrences_across_usage_patterns(self):
+        """Hourly count of occurrences of this job summed across all usage patterns that trigger it."""
         self.hourly_occurrences_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_occurrences_per_usage_pattern", "occurrences")
 
     def update_impacts(self) -> None:
+        """Cached EcoLogits impact dictionary for one call, computed from the model parameters, output token count, and grid carbon intensity. Subsequent updates extract individual fields from this dictionary."""
         datacenter_wue = _mean_value_or_range(PROVIDER_CONFIG_MAP[self.external_api.provider.value].datacenter_wue)
 
         impacts = compute_llm_impacts_dag(
@@ -327,6 +372,7 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
             self.external_api.time_to_first_token)
 
     def update_ecologits_calculated_attribute(self, attribute_name: str) -> None:
+        """Helper called by every auto-generated ``update_<ecologits_attr>`` method to read one field out of the cached EcoLogits impact dictionary, attach the right unit, and wire its EcoLogits formula and ancestors for explainability."""
         if attribute_name not in self.impacts.value:
             raise ValueError(f"Ecologits impacts has no attribute `{attribute_name}`.")
         attribute_value = self.impacts.value[attribute_name]
@@ -354,6 +400,9 @@ def _create_update_method(attribute_name: str):
     def update_method(self):
         self.update_ecologits_calculated_attribute(attribute_name)
     update_method.__name__ = f"update_{attribute_name}"
+    update_method.__doc__ = (
+        f"Extracts the {attribute_name} field from the cached EcoLogits impact dictionary on this job, "
+        f"converted into a typed e-footprint quantity.")
     return update_method
 
 

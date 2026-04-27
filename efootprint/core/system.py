@@ -28,6 +28,21 @@ from efootprint.utils.display import best_display_unit, human_readable_unit, dis
 
 
 class System(ModelingObject):
+    """Top-level container of an e-footprint model. Aggregates one or more {class:UsagePattern}s and {class:EdgeUsagePattern}s and exposes the total fabrication and energy footprint of the modelled digital service."""
+
+    interactions = (
+        "Construct {class:System} last, once all {class:UsagePattern} and {class:EdgeUsagePattern} objects "
+        "have been wired up. The system kicks off the calculation pipeline and is the entry point for "
+        "footprint plots and serialization helpers.")
+
+    param_descriptions = {
+        "usage_patterns": (
+            "List of {class:UsagePattern}s describing web-style traffic against the system's servers."),
+        "edge_usage_patterns": (
+            "List of {class:EdgeUsagePattern}s describing edge-side workloads. Pass an empty list for "
+            "purely web systems."),
+    }
+
     def __init__(self, name: str, usage_patterns: List[UsagePattern], edge_usage_patterns: List[EdgeUsagePattern],):
         super().__init__(name)
         self.total_footprint = EmptyExplainableObject()
@@ -305,6 +320,7 @@ class System(ModelingObject):
         return ExplainableObjectDict(energy_footprints)
 
     def update_total_footprint(self):
+        """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
         total_footprint = (
             sum(
                 [sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())

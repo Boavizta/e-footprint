@@ -15,6 +15,20 @@ if TYPE_CHECKING:
 
 
 class Country(ModelingObject):
+    """Geographic location whose grid carbon intensity and timezone are applied to a {class:UsagePattern} or an {class:EdgeUsagePattern}."""
+
+    param_descriptions = {
+        "short_name": (
+            "Short identifier such as a three-letter country code. Used in display labels; not part of any "
+            "calculation."),
+        "average_carbon_intensity": (
+            "Average grid carbon intensity over the modeling period, used to convert device-side electricity "
+            "consumption into carbon emissions."),
+        "timezone": (
+            "Local timezone of the country. Hourly journey starts are interpreted in this timezone before being "
+            "converted to UTC for cross-pattern aggregation."),
+    }
+
     default_values =  {
             "average_carbon_intensity": SourceValue(50 * u.g / u.kWh, label="Average carbon intensity of the country"),
             "timezone": SourceObject(pytz.timezone('Europe/Paris'), label="Country timezone")
@@ -45,6 +59,7 @@ class Country(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Country-level fabrication-impact weights, set to 1 per system: a country attributes all of its fabrication-side share to the system that contains it."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for system in self.systems:
             self.update_dict_element_in_fabrication_impact_repartition_weights(system)
@@ -54,6 +69,7 @@ class Country(ModelingObject):
             1 * u.dimensionless, label="Impact repartition weight")
 
     def update_usage_impact_repartition_weights(self):
+        """Country-level usage-impact weights, set to 1 per system: a country attributes all of its usage-side share to the system that contains it."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for system in self.systems:
             self.update_dict_element_in_usage_impact_repartition_weights(system)

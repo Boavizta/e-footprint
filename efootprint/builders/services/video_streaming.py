@@ -12,6 +12,29 @@ from efootprint.core.hardware.server import Server
 
 
 class VideoStreaming(Service):
+    """A video-streaming service installed on a {class:Server}. Provides the per-stream cost model that converts {class:VideoStreamingJob}s (defined by resolution and duration) into bandwidth, CPU, and RAM demand on the server."""
+
+    interactions = (
+        "Build {class:VideoStreaming} once per service tier, then attach {class:VideoStreamingJob}s for each "
+        "specific resolution / duration combination. The server hosting the service is the one that bills for "
+        "the streams.")
+
+    param_descriptions = {
+        "server": (
+            "{class:Server} on which the streaming service is installed. Streams consume the server's CPU "
+            "and RAM."),
+        "base_ram_consumption": (
+            "RAM occupied per server by the operating system and streaming software, independent of users."),
+        "bits_per_pixel": (
+            "Average compression density. Multiplied by pixel count and refresh rate to estimate the dynamic "
+            "bitrate of one stream."),
+        "static_delivery_cpu_cost": (
+            "CPU per unit of bitrate served (cores per GB/s). Multiplied by the dynamic bitrate to estimate "
+            "the CPU consumed by one concurrent stream."),
+        "ram_buffer_per_user": (
+            "RAM held by the streaming server for each concurrent user (read-ahead buffers, sockets)."),
+    }
+
     default_values =  {
             "base_ram_consumption": SourceValue(2 * u.GB_ram, source=Sources.HYPOTHESIS),
             "bits_per_pixel": SourceValue(0.1 * u.bit, source=Sources.HYPOTHESIS),
@@ -31,6 +54,22 @@ class VideoStreaming(Service):
 
 
 class VideoStreamingJob(ServiceJob):
+    """One streaming session of a given resolution and duration consumed against a {class:VideoStreaming} service. Bandwidth, CPU, and RAM are derived from the resolution, refresh rate, and the service-level cost coefficients."""
+
+    param_descriptions = {
+        "service": (
+            "{class:VideoStreaming} service that hosts the stream."),
+        "resolution": (
+            "Display resolution as a label like \"1080p (1920 x 1080)\". The pixel count is parsed from the "
+            "label and used to estimate the dynamic bitrate."),
+        "video_duration": (
+            "Duration of one streaming session, used as the request duration."),
+        "refresh_rate": (
+            "Frames-per-second rate of the stream. Higher refresh rates increase the bitrate proportionally."),
+        "data_stored": (
+            "Net change in stored data per session. Usually 0 for streamed video."),
+    }
+
     default_values =  {
             "resolution": SourceObject("1080p (1920 x 1080)"),
             "video_duration": SourceValue(1 * u.hour),
@@ -61,9 +100,11 @@ class VideoStreamingJob(ServiceJob):
                 + super().calculated_attributes)
 
     def update_request_duration(self):
+        """Request duration of one streaming session, equal to the chosen video duration."""
         self.request_duration = self.video_duration.copy().set_label("Request duration")
 
     def update_dynamic_bitrate(self):
+        """Estimated bitrate of the stream, equal to the pixel count parsed from the resolution times bits-per-pixel times refresh rate."""
         match = re.search(r"\((\d+)\s*x\s*(\d+)\)", self.resolution.value)
         if not match:
             raise ValueError(f"Invalid resolution format: {self.resolution.value}")
@@ -76,12 +117,15 @@ class VideoStreamingJob(ServiceJob):
                                 ).to(u.MB / u.s).set_label("Dynamic bitrate")
 
     def update_data_transferred(self):
+        """Data transferred per session, equal to the dynamic bitrate times the video duration."""
         self.data_transferred = (self.request_duration * self.dynamic_bitrate).to(u.GB).set_label(
             "Data transferred")
 
     def update_compute_needed(self):
+        """CPU consumed per session, equal to the service's per-bitrate CPU cost times the dynamic bitrate."""
         self.compute_needed = (self.service.static_delivery_cpu_cost * self.dynamic_bitrate).to(u.cpu_core).set_label(
             "CPU needed")
 
     def update_ram_needed(self):
+        """RAM consumed per session, equal to the service's per-user RAM buffer."""
         self.ram_needed = self.service.ram_buffer_per_user.copy().set_label("RAM needed")

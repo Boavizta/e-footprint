@@ -24,6 +24,26 @@ if TYPE_CHECKING:
 
 
 class EdgeDevice(ModelingObject):
+    """A piece of edge hardware (sensor, gateway, controller, embedded computer) made up of one or more {class:EdgeComponent}s plus a structural chassis. Aggregates fabrication and energy footprints of its components, then attributes them to the {class:RecurrentEdgeComponentNeed}s that load each one."""
+
+    disambiguation = (
+        "Use {class:EdgeDevice} to assemble bespoke hardware from individual {class:EdgeComponent}s. For "
+        "appliance-style hardware modelled as a single workload curve, prefer {class:EdgeAppliance}. For "
+        "computer-like hardware composed of CPU, RAM, and storage, prefer {class:EdgeComputer}.")
+
+    pitfalls = (
+        "{param:EdgeDevice.lifespan} must be longer than every {param:EdgeUsageJourney.usage_span} that uses "
+        "the device. Otherwise the device cannot last the journey and the model raises an error.")
+
+    param_descriptions = {
+        "structure_carbon_footprint_fabrication": (
+            "Embodied carbon of the chassis or structural envelope, separate from individual components."),
+        "components": (
+            "List of {class:EdgeComponent}s that make up the device (typically RAM, CPU, storage, or workload)."),
+        "lifespan": (
+            "Expected time before the device is replaced. Embodied carbon is amortised over this duration."),
+    }
+
     default_values = {
         "structure_carbon_footprint_fabrication": SourceValue(50 * u.kg),
         "lifespan": SourceValue(6 * u.year)
@@ -114,6 +134,7 @@ class EdgeDevice(ModelingObject):
         return self._filter_component_by_type(EdgeCPUComponent)
 
     def update_lifespan_validation(self):
+        """Validates that the device lifespan is at least as long as every {class:EdgeUsageJourney} that uses it; raises otherwise."""
         result = EmptyExplainableObject().generate_explainable_object_with_logical_dependency(self.lifespan)
         for edge_usage_journey in self.edge_usage_journeys:
             if self.lifespan < edge_usage_journey.usage_span:
@@ -122,7 +143,7 @@ class EdgeDevice(ModelingObject):
         self.lifespan_validation = result
 
     def update_component_needs_edge_device_validation(self):
-        """Validate that all component needs point to components of this edge_device."""
+        """Validates that every {class:RecurrentEdgeComponentNeed} loaded onto this device targets a component that actually belongs to it."""
         for component_need in self.recurrent_edge_component_needs:
             component_device = component_need.edge_component.edge_device
             if component_device is not None and component_device != self:
@@ -156,6 +177,7 @@ class EdgeDevice(ModelingObject):
         return list(dict.fromkeys(root_groups))
 
     def update_total_nb_of_units(self):
+        """How many copies of the device are deployed in total once group hierarchies are unrolled. Defaults to 1 if the device is not in any {class:EdgeDeviceGroup}."""
         parent_groups = self._find_parent_groups()
         if not parent_groups:
             self.total_nb_of_units = ExplainableQuantity(
@@ -189,6 +211,7 @@ class EdgeDevice(ModelingObject):
         ).to(u.kg).set_label(f"Hourly {self.name} structure fabrication footprint for {usage_pattern.name}")
 
     def update_structure_fabrication_footprint_per_usage_pattern(self):
+        """Hourly fabrication-phase emissions of the chassis (excluding components), broken down by usage pattern."""
         self.structure_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_structure_fabrication_footprint_per_usage_pattern(usage_pattern)
@@ -206,6 +229,7 @@ class EdgeDevice(ModelingObject):
             u.kg).set_label(f"Hourly {self.name} instances fabrication footprint for {usage_pattern.name}")
 
     def update_instances_fabrication_footprint_per_usage_pattern(self):
+        """Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern."""
         self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
@@ -223,6 +247,7 @@ class EdgeDevice(ModelingObject):
             f"Hourly energy consumed by {self.name} instances for {usage_pattern.name}")
 
     def update_instances_energy_per_usage_pattern(self):
+        """Hourly energy consumed by the whole device, broken down by usage pattern. Equal to the sum of component-level energy multiplied by the device count."""
         self.instances_energy_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_instances_energy_per_usage_pattern(usage_pattern)
@@ -240,23 +265,27 @@ class EdgeDevice(ModelingObject):
             f"Energy footprint for {usage_pattern.name}").to(u.kg)
 
     def update_energy_footprint_per_usage_pattern(self):
+        """Hourly carbon emissions caused by device electricity use, broken down by usage pattern. Equal to component-level energy footprints summed and multiplied by the device count."""
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
 
     def update_instances_energy(self):
+        """Total hourly energy consumed by all instances of the device, summed across every usage pattern."""
         instances_energy = sum(
             self.instances_energy_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_energy = instances_energy.set_label(
             "Total energy consumed across usage patterns")
 
     def update_energy_footprint(self):
+        """Total hourly energy-use carbon footprint, summed across every usage pattern."""
         energy_footprint = sum(
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.energy_footprint = energy_footprint.set_label(
             "Total energy footprint across usage patterns")
 
     def update_instances_fabrication_footprint(self):
+        """Total hourly fabrication-phase carbon footprint, summed across every usage pattern."""
         instances_fabrication_footprint = sum(
             self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
@@ -272,6 +301,7 @@ class EdgeDevice(ModelingObject):
         ).set_label(f"Fabrication footprint attributed to {component.name}")
 
     def update_fabrication_footprint_breakdown_by_source(self):
+        """Per-component breakdown of the device's fabrication footprint, attributing each component's own embodied carbon plus an even share of the chassis fabrication."""
         self.fabrication_footprint_breakdown_by_source = ExplainableObjectDict()
         if not self.components:
             return
@@ -341,6 +371,7 @@ class EdgeDevice(ModelingObject):
         ).set_label(f"{component_need.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-{class:RecurrentEdgeComponentNeed} weights used to attribute the device's fabrication footprint to the needs that load each component, proportional to each need's share of demand."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for recurrent_component_need in self.recurrent_edge_component_needs:
             self.update_dict_element_in_fabrication_impact_repartition_weights(recurrent_component_need)
@@ -351,6 +382,7 @@ class EdgeDevice(ModelingObject):
         ).set_label(f"{component_need.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
+        """Per-{class:RecurrentEdgeComponentNeed} weights used to attribute the device's energy-use footprint to the needs that load each component."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for recurrent_component_need in self.recurrent_edge_component_needs:
             self.update_dict_element_in_usage_impact_repartition_weights(recurrent_component_need)

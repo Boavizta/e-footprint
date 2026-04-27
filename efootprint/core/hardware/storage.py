@@ -22,6 +22,40 @@ if TYPE_CHECKING:
 
 
 class Storage(InfraHardware):
+    """Persistent storage backing a {class:Server} (typically SSD or HDD). Capacity is sized to the cumulative volume of data jobs write, plus an optional baseline."""
+
+    disambiguation = (
+        "Storage is allocated per-server through {param:Server.storage}. Use the archetype helpers "
+        "(`Storage.ssd()`, `Storage.hdd()`) for sensible defaults, then override fields as needed.")
+
+    pitfalls = (
+        "{param:Storage.data_storage_duration} controls how long data lives before it is automatically dumped. "
+        "Setting it longer than the modeling period means the storage need only ever grows, which can sharply "
+        "inflate the number of instances required.")
+
+    param_descriptions = {
+        "storage_capacity": (
+            "Capacity of one storage instance. Used as the divisor when sizing the number of instances "
+            "required to hold the cumulative storage need."),
+        "carbon_footprint_fabrication_per_storage_capacity": (
+            "Embodied carbon emitted to manufacture one unit of storage capacity. Multiplied by capacity to "
+            "obtain the per-instance fabrication footprint."),
+        "data_replication_factor": (
+            "Multiplier accounting for redundant copies stored on top of the live data, such as a value of 3 "
+            "for a triplicated cluster."),
+        "data_storage_duration": (
+            "How long stored data is retained before being automatically dumped. Drives how cumulative storage "
+            "grows over time."),
+        "base_storage_need": (
+            "Storage occupied independently of jobs (system data, indexes, baseline assets). Added on top of "
+            "the cumulative job-driven storage need."),
+        "lifespan": (
+            "Expected time before a storage instance is replaced. Embodied carbon is amortised over this duration."),
+        "fixed_nb_of_instances": (
+            "Number of physical storage units deployed when capacity is provisioned ahead of time. Leave empty "
+            "to let e-footprint size capacity from the cumulative storage need."),
+    }
+
     default_values = {
         "carbon_footprint_fabrication_per_storage_capacity": SourceValue(160 * u.kg / u.TB_stored),
         "lifespan": SourceValue(6 * u.years),
@@ -122,6 +156,7 @@ class Storage(InfraHardware):
             return EmptyExplainableObject()
 
     def update_carbon_footprint_fabrication(self):
+        """Embodied carbon of one storage instance, equal to the per-capacity fabrication footprint times the instance's capacity."""
         self.carbon_footprint_fabrication = (
             self.carbon_footprint_fabrication_per_storage_capacity * self.storage_capacity).set_label(
             f"Carbon footprint")
@@ -147,11 +182,13 @@ class Storage(InfraHardware):
             operator="cumulative sum with automatic dumps")
 
     def update_full_cumulative_storage_need_per_job(self):
+        """Per-job cumulative volume of stored data over time, applying the replication factor and dropping data older than {param:Storage.data_storage_duration}."""
         self.full_cumulative_storage_need_per_job = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_full_cumulative_storage_need_per_job(job)
 
     def update_full_cumulative_storage_need(self):
+        """Total cumulative storage volume held by this storage at each hour, summing per-job cumulative needs and adding the base storage need."""
         all_cumulatives = sum([val for val in self.full_cumulative_storage_need_per_job.values()],
                               start=EmptyExplainableObject())
         if isinstance(all_cumulatives, EmptyExplainableObject):
@@ -166,10 +203,12 @@ class Storage(InfraHardware):
                 f"Full cumulative storage need")
 
     def update_raw_nb_of_instances(self):
+        """Hourly storage instances strictly required to hold the cumulative storage need, before rounding."""
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.concurrent)
         self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances")
 
     def update_nb_of_instances(self):
+        """Hourly storage instances actually attributed: fractional for serverless backends (only used capacity is billed), held to the user-fixed count if set, otherwise ceiled to whole instances."""
         from efootprint.core.hardware.server_base import ServerTypes
         if isinstance(self.raw_nb_of_instances, EmptyExplainableObject):
             nb_of_instances = EmptyExplainableObject(left_parent=self.raw_nb_of_instances)
@@ -203,6 +242,7 @@ class Storage(InfraHardware):
         self.nb_of_instances = nb_of_instances
 
     def update_instances_energy(self):
+        """Hourly energy consumed by storage instances. Currently always empty: storage operating energy is folded into the hosting server's energy footprint rather than tracked separately."""
         self.instances_energy = EmptyExplainableObject()
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
@@ -216,6 +256,7 @@ class Storage(InfraHardware):
         ).set_label(f"{job.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-job weights used to attribute storage fabrication footprint to jobs, equal to each job's cumulative storage plus an even share of the unused capacity and base storage need."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_fabrication_impact_repartition_weights(job)

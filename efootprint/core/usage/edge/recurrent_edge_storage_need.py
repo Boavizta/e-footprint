@@ -15,6 +15,21 @@ if TYPE_CHECKING:
 
 
 class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
+    """A {class:RecurrentEdgeComponentNeed} targeting an {class:EdgeStorage} component. Tracks the cumulative storage consumed by writes and freed by negative values across the typical week."""
+
+    pitfalls = (
+        "Values represent net storage rate (positive = writes, negative = deletes). The cumulative integral "
+        "must stay non-negative within each week, otherwise the cumulative storage need would go below zero "
+        "and break downstream sizing.")
+
+    param_descriptions = {
+        "edge_component": (
+            "{class:EdgeStorage} component holding the data."),
+        "recurrent_need": (
+            "Hourly net storage rate over a typical week (positive for writes, negative for deletes). Cumulated "
+            "to derive the cumulative volume actually held."),
+    }
+
     def __init__(self, name: str, edge_component: EdgeStorage, recurrent_need: ExplainableRecurrentQuantities):
         super().__init__(name, edge_component, recurrent_need)
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
@@ -71,11 +86,13 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         )
 
     def update_cumulative_unitary_storage_need_per_usage_pattern(self):
+        """Hourly cumulative storage held by one edge device, integrating the net storage rate from the start of the modeling period."""
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
     def update_total_hourly_need_across_usage_patterns(self):
+        """Total hourly storage volume held across the deployed fleet, summing per-device cumulative storage weighted by the hourly count of edge devices in deployment."""
         self.total_hourly_need_across_usage_patterns = sum(
             [
                 self.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern]

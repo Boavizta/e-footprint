@@ -13,6 +13,13 @@ from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEd
 
 
 class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
+    """Internal {class:RecurrentEdgeComponentNeed} created automatically by a {class:RecurrentEdgeWorkload}, mirroring its 0..1 workload curve on the parent appliance's workload component."""
+
+    param_descriptions = {
+        "edge_component": (
+            "Workload component on the parent {class:EdgeAppliance} that this need targets."),
+    }
+
     def __init__(self, name: str, edge_component: EdgeComponent):
         from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues
         super().__init__(
@@ -25,6 +32,7 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
         return ["recurrent_need"] + super().calculated_attributes
 
     def update_recurrent_need(self):
+        """Recurrent workload, copied from the parent {class:RecurrentEdgeWorkload}'s workload profile."""
         if not self.recurrent_edge_device_needs:
             self.recurrent_need = SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent))
             return
@@ -34,6 +42,15 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
 
 
 class RecurrentEdgeWorkload(RecurrentEdgeDeviceNeed):
+    """A typical-week 0..1 utilisation curve placed on an {class:EdgeAppliance}. Auto-creates a {class:RecurrentEdgeWorkloadNeed} on the appliance's internal workload component."""
+
+    param_descriptions = {
+        "edge_device": (
+            "{class:EdgeAppliance} the workload runs on."),
+        "recurrent_workload": (
+            "Hourly utilisation over a typical week, with values between 0 (idle) and 1 (full load)."),
+    }
+
     default_values = {
         "recurrent_workload": SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.concurrent)),
     }

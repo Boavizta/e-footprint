@@ -16,6 +16,14 @@ if TYPE_CHECKING:
 
 
 class UsageJourney(ModelingObject):
+    """An ordered sequence of {class:UsageJourneyStep}s describing one end-to-end interaction a user has with the digital service."""
+
+    param_descriptions = {
+        "uj_steps": (
+            "Ordered list of {class:UsageJourneyStep}s that make up the journey. The journey duration is the "
+            "sum of step durations."),
+    }
+
     def __init__(self, name: str, uj_steps: List[UsageJourneyStep]):
         super().__init__(name)
         self.uj_steps = uj_steps
@@ -61,6 +69,7 @@ class UsageJourney(ModelingObject):
         return ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"] + super().calculated_attributes
 
     def update_duration(self):
+        """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps."""
         user_time_spent_sum = sum(
             [uj_step.user_time_spent for uj_step in self.uj_steps], start=EmptyExplainableObject())
 
@@ -74,6 +83,7 @@ class UsageJourney(ModelingObject):
             u.concurrent).set_label(f"{usage_pattern.name} hourly nb of user journeys in parallel")
 
     def update_nb_usage_journeys_in_parallel_per_usage_pattern(self):
+        """Hourly count of journeys that are concurrently in progress in each usage pattern, derived from journey starts and journey duration. Used to size devices that are occupied for the full journey duration."""
         self.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_nb_usage_journeys_in_parallel_per_usage_pattern(usage_pattern)
@@ -90,6 +100,7 @@ class UsageJourney(ModelingObject):
         ).set_label(f"{usage_pattern.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
+        """Per-usage-pattern weight used to attribute device-side fabrication emissions back to each pattern, proportional to concurrent journeys times journey occurrences."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
@@ -100,6 +111,7 @@ class UsageJourney(ModelingObject):
         ).set_label(f"{usage_pattern.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
+        """Per-usage-pattern weight used to attribute device-side usage emissions back to each pattern, weighted by the country's grid carbon intensity so high-carbon grids draw a larger share."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

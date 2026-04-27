@@ -13,6 +13,25 @@ if TYPE_CHECKING:
 
 
 class EdgeRAMComponent(EdgeComponent):
+    """A RAM bank inside an {class:EdgeDevice}. Represents one or more identical RAM units sized so that aggregated recurrent demand never exceeds available memory."""
+
+    param_descriptions = {
+        "carbon_footprint_fabrication_per_unit": (
+            "Embodied carbon emitted to manufacture one unit of this RAM bank."),
+        "power_per_unit": (
+            "Electrical power drawn by one fully-loaded RAM unit."),
+        "lifespan": (
+            "Expected time before a unit is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power_per_unit": (
+            "Electrical power drawn by one idle RAM unit."),
+        "ram_per_unit": (
+            "Memory provided by one unit. Total capacity is this value times {param:EdgeRAMComponent.nb_of_units}."),
+        "base_ram_consumption": (
+            "RAM permanently occupied independently of recurring needs (operating system, baseline processes)."),
+        "nb_of_units": (
+            "Number of identical RAM units in the component."),
+    }
+
     compatible_root_units = [u.bit_ram]
     default_values = {
         "carbon_footprint_fabrication_per_unit": SourceValue(20 * u.kg),
@@ -44,9 +63,11 @@ class EdgeRAMComponent(EdgeComponent):
         return ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"] + super().calculated_attributes
 
     def update_ram(self):
+        """Total memory provided by the RAM component, equal to per-unit RAM times the number of units."""
         self.ram = (self.ram_per_unit * self.nb_of_units).set_label(f"RAM")
 
     def update_available_ram_per_instance(self):
+        """Memory available for recurring needs after subtracting the base consumption. Raises if the component is over-subscribed at design time."""
         available_ram_per_instance = self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram)
 
         if available_ram_per_instance < SourceValue(0 * u.B_ram):
@@ -71,6 +92,7 @@ class EdgeRAMComponent(EdgeComponent):
             self.available_ram_per_instance)
 
     def update_unitary_hourly_ram_need_per_usage_pattern(self):
+        """Hourly RAM demand on one component, broken down by usage pattern. Raises if peak demand exceeds the component's available memory."""
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
@@ -91,6 +113,7 @@ class EdgeRAMComponent(EdgeComponent):
             f"Unitary power for {usage_pattern.name}")
 
     def update_unitary_power_per_usage_pattern(self):
+        """Hourly power profile of the component for one device, derived from the RAM workload (current need plus base consumption divided by total RAM) by linearly interpolating between idle and full power."""
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_power_per_usage_pattern(usage_pattern)

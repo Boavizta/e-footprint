@@ -26,6 +26,25 @@ class NegativeServerNeedError(Exception):
 
 
 class RecurrentServerNeed(ModelingObject):
+    """A bridge between edge and server modeling: a recurring batch of server-side {class:Job}s triggered by an edge deployment, scaled by the number of devices currently deployed."""
+
+    disambiguation = (
+        "{class:RecurrentServerNeed} is the canonical way to make an edge system reach back to a {class:Server}. "
+        "If the workload is purely on-device, use {class:RecurrentEdgeDeviceNeed} subclasses; if it is purely "
+        "request-driven, use a regular {class:UsageJourney} with {class:UsageJourneyStep}s. See {doc:web_vs_edge}.")
+
+    param_descriptions = {
+        "edge_device": (
+            "{class:EdgeDevice} that originates the calls. Used to size the volume against the number of "
+            "devices in deployment."),
+        "recurrent_volume_per_edge_device": (
+            "Hourly volume of triggered jobs over a typical week, per single edge device. Multiplied by the "
+            "deployed device count to obtain the total job volume."),
+        "jobs": (
+            "Server-side {class:Job}s triggered by each occurrence of this need. The same job can appear "
+            "multiple times to represent multiple invocations per occurrence."),
+    }
+
     default_values = {
         "recurrent_volume_per_edge_device": ExplainableRecurrentQuantities(
             np.array([1.0] * 168, dtype=np.float32) * u.occurrence, label="Default recurrent volume per edge device")
@@ -63,6 +82,7 @@ class RecurrentServerNeed(ModelingObject):
         return ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"] + super().calculated_attributes
 
     def update_recurrent_need_validation(self):
+        """Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise."""
         assert self.recurrent_volume_per_edge_device.unit == u.occurrence, \
             (f"RecurrentServerNeed '{self.name}' has invalid unit '{self.recurrent_volume_per_edge_device.unit}', "
              f"expected 'occurrence'.")
@@ -91,6 +111,7 @@ class RecurrentServerNeed(ModelingObject):
             f"Unitary hourly need for {usage_pattern.name}")
 
     def update_unitary_hourly_volume_per_usage_pattern(self):
+        """Hourly job-trigger volume for one edge device in each usage pattern, derived by replaying the typical-week pattern in the country's timezone and scaling by how many times the need appears in the journey."""
         self.unitary_hourly_volume_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_volume_per_usage_pattern(usage_pattern)
