@@ -68,7 +68,7 @@ class EdgeCPUComponent(EdgeComponent):
         self.compute = (self.compute_per_unit * self.nb_of_units).set_label(f"Compute")
 
     def update_available_compute_per_instance(self):
-        """Compute available for recurring needs after subtracting the base consumption. Raises if the component is over-subscribed at design time."""
+        """Compute available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_compute_per_instance = (self.compute - self.base_compute_consumption)
 
         if available_compute_per_instance < SourceValue(0 * u.cpu_core):
@@ -93,7 +93,7 @@ class EdgeCPUComponent(EdgeComponent):
             self.available_compute_per_instance)
 
     def update_unitary_hourly_compute_need_per_usage_pattern(self):
-        """Hourly compute demand on one component, broken down by usage pattern. Raises if peak demand exceeds the component's available compute."""
+        """Hourly compute demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available compute."""
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(usage_pattern)

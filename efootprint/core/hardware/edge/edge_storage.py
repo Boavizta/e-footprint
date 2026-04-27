@@ -162,7 +162,7 @@ class EdgeStorage(EdgeComponent):
         ).generate_explainable_object_with_logical_dependency(self.storage_capacity)
 
     def update_cumulative_unitary_storage_need_per_usage_pattern(self):
-        """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises if the cumulative goes negative or exceeds capacity."""
+        """Hourly cumulative storage held on one device, summing all storage needs that target this component plus the base need. Raises error if the cumulative goes negative or exceeds capacity."""
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)

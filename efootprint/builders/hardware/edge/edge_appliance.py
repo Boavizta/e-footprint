@@ -55,7 +55,7 @@ class EdgeAppliance(EdgeDevice):
     disambiguation = (
         "Use {class:EdgeAppliance} when only an aggregate power and embodied carbon are known, and the load "
         "is described as a 0..1 workload curve. Use {class:EdgeComputer} for computer-like devices with CPU, "
-        "RAM, and storage. Use {class:EdgeDevice} for fully bespoke hardware.")
+        "RAM, and storage. Use {class:EdgeDevice} for fully bespoke hardware with custom components.")
 
     param_descriptions = {
         "carbon_footprint_fabrication": (

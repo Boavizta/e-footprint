@@ -39,11 +39,6 @@ class BoaviztaCloudServer(Server):
         "(AWS, Azure, GCP, Scaleway). Use {class:Server} when you have your own hardware specifications, or "
         "{class:GPUServer} for GPU-bound workloads.")
 
-    interactions = (
-        "{class:BoaviztaCloudServer} fetches its hardware specifications from the Boavizta API at construction "
-        "time, so building the object requires network access. Reuse the same instance across the model rather "
-        "than recreating it.")
-
     param_descriptions = {
         "provider": (
             "Cloud provider key as exposed by the Boavizta API (e.g. aws, azure, gcp, scaleway)."),
@@ -55,7 +50,7 @@ class BoaviztaCloudServer(Server):
         "lifespan": (
             "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
         "idle_power": (
-            "Electrical power drawn while the instance is on but idle. Often left at 0 for serverless billing."),
+            "Electrical power drawn while the instance is on but idle."),
         "power_usage_effectiveness": (
             "Datacenter overhead multiplier applied to instance power."),
         "average_carbon_intensity": (

@@ -69,7 +69,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             f"Hourly workload for {usage_pattern.name}")
 
     def update_unitary_hourly_workload_per_usage_pattern(self):
-        """Hourly workload (between 0 and 1) on one component, broken down by usage pattern. Raises if aggregated workload exceeds 1."""
+        """Hourly workload (between 0 and 1) on one component, broken down by usage pattern. Raises error if aggregated workload exceeds 1."""
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(usage_pattern)

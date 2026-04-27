@@ -67,7 +67,7 @@ class EdgeRAMComponent(EdgeComponent):
         self.ram = (self.ram_per_unit * self.nb_of_units).set_label(f"RAM")
 
     def update_available_ram_per_instance(self):
-        """Memory available for recurring needs after subtracting the base consumption. Raises if the component is over-subscribed at design time."""
+        """Memory available for recurring needs after subtracting the base consumption. Raises error if the component is over-subscribed at design time."""
         available_ram_per_instance = self.ram.to(u.GB_ram) - self.base_ram_consumption.to(u.GB_ram)
 
         if available_ram_per_instance < SourceValue(0 * u.B_ram):
@@ -92,7 +92,7 @@ class EdgeRAMComponent(EdgeComponent):
             self.available_ram_per_instance)
 
     def update_unitary_hourly_ram_need_per_usage_pattern(self):
-        """Hourly RAM demand on one component, broken down by usage pattern. Raises if peak demand exceeds the component's available memory."""
+        """Hourly RAM demand on one component, broken down by usage pattern. Raises error if peak demand exceeds the component's available memory."""
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(usage_pattern)
