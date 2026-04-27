@@ -25,8 +25,6 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 - **Edge** — devices, components, processes, and groups for fleet modeling.
 - **System** — top-level container; manages usage patterns and computes total footprint.
 
-`System` is the only class explicitly listed in `CANONICAL_COMPUTATION_ORDER` for top-level recalculation ordering.
-
 ## Optimization layer (`efootprint/abstract_modeling_classes/`)
 
 Avoid gathering context here unless absolutely necessary — most modeling work doesn't require it.
@@ -55,14 +53,23 @@ Every modeling object defines:
 
 The `__setattr__` override in `ModelingObject` ensures that when a numerical or object attribute is changed, all dependent calculated attributes are recomputed automatically.
 
+## Class registration and ordering
+
+`efootprint/all_classes_in_order.py` exposes two registries:
+
+- **`ALL_EFOOTPRINT_CLASSES`** — every concrete `ModelingObject` subclass (core + builders + services). Used by JSON serialization/deserialization to resolve class names round-trip.
+- **`CANONICAL_COMPUTATION_ORDER`** — top-level core classes ordered low → high level (`Country`, `UsagePattern`, …, `System` last). Used to walk objects deterministically when recomputing dependents (`ModelingUpdate`), to assign sankey columns, and to give tests a stable iteration order.
+
+`SANKEY_COLUMNS`, `OBJECT_CATEGORIES`, and the various per-shape lists (`SERVER_CLASSES`, `EDGE_COMPONENT_CLASSES`, etc.) live alongside and are consumed by rendering and builder code.
+
 ## Adding a new modeling object
 
 1. Inherit from the appropriate core or builder base class.
 2. Define `default_values` and `calculated_attributes`.
 3. Implement an `update_<attr>` method per calculated attribute.
 4. Register the class in `efootprint/all_classes_in_order.py`:
-   - Always add to `ALL_EFOOTPRINT_CLASSES` (used for serialization and deserialization).
-   - For top-level core objects, also add to `CANONICAL_COMPUTATION_ORDER`.
+   - Always add to `ALL_EFOOTPRINT_CLASSES`.
+   - For top-level core classes, also add to `CANONICAL_COMPUTATION_ORDER` at the position that respects dependency order.
 
 This is a constitutional quality gate (`specs/constitution.md` §2.5).
 
