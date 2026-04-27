@@ -22,7 +22,7 @@ class EdgeUsagePattern(ModelingObject):
 
     disambiguation = (
         "Use {class:EdgeUsagePattern} for hardware deployed continuously in the field. Use {class:UsagePattern} "
-        "for end-user devices that run a request-style {class:UsageJourney}. See {doc:web_vs_edge}.")
+        "for end-user devices that run a request-style {class:UsageJourney} in a web context. See {doc:web_vs_edge}.")
 
     param_descriptions = {
         "edge_usage_journey": (

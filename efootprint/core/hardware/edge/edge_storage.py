@@ -168,7 +168,7 @@ class EdgeStorage(EdgeComponent):
             self.update_dict_element_in_cumulative_unitary_storage_need_per_usage_pattern(usage_pattern)
 
     def update_unitary_power_per_usage_pattern(self):
-        """Power profile of edge storage. Currently always empty: storage operating power is folded into the host device's other components rather than tracked separately."""
+        """Power profile of edge storage. Currently always empty: storage operating power is considered neglectable."""
         self.unitary_power_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.unitary_power_per_usage_pattern[usage_pattern] = EmptyExplainableObject()

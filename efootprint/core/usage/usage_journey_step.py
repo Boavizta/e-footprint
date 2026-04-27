@@ -17,8 +17,7 @@ class UsageJourneyStep(ModelingObject):
 
     param_descriptions = {
         "user_time_spent": (
-            "Wall-clock time the user spends on this step. Determines how long devices remain occupied by "
-            "the journey for this step's duration."),
+            "Wall-clock time the user spends on this step (during which her device is powered on)."),
         "jobs": (
             "{class:Job}s triggered on the server side during this step. Multiple jobs can fire per step; the "
             "same {class:Job} can appear in several steps."),

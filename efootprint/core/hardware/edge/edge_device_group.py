@@ -14,7 +14,7 @@ class EdgeDeviceGroup(ModelingObject):
 
     pitfalls = (
         "Cycles in the group hierarchy are forbidden — a group cannot contain itself transitively. The model "
-        "raises if a cycle is introduced. Counts in {param:EdgeDeviceGroup.sub_group_counts} and "
+        "raises error if a cycle is introduced. Counts in {param:EdgeDeviceGroup.sub_group_counts} and "
         "{param:EdgeDeviceGroup.edge_device_counts} must be dimensionless and non-negative.")
 
     param_descriptions = {

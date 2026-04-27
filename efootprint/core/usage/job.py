@@ -250,8 +250,8 @@ class Job(DirectServerJob):
         "data_transferred": (
             "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
         "data_stored": (
-            "Net change in stored data per invocation. Positive values write to {param:Server.storage}, "
-            "negative values free space."),
+            "Net change in stored data per invocation. Positive values only. "
+            "Data deletion is handled by {param:Storage.data_storage_duration}"),
         "request_duration": (
             "How long the job takes to process from start to finish on the server."),
         "compute_needed": (
@@ -284,7 +284,8 @@ class GPUJob(DirectServerJob):
         "data_transferred": (
             "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
         "data_stored": (
-            "Net change in stored data per invocation."),
+            "Net change in stored data per invocation. Positive values only. "
+            "Data deletion is handled by {param:Storage.data_storage_duration}"),
         "request_duration": (
             "How long the job takes to process from start to finish on the server."),
         "compute_needed": (

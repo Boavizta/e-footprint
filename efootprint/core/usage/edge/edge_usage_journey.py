@@ -17,12 +17,12 @@ if TYPE_CHECKING:
 
 
 class EdgeUsageJourney(ModelingObject):
-    """A long-running usage of edge hardware that triggers a set of {class:EdgeFunction}s for the whole time the device is in service. The web counterpart is {class:UsageJourney}, but edge journeys are open-ended rather than per-request."""
+    """A long-running usage of edge hardware that triggers a set of {class:EdgeFunction}s for the whole time the device is in service."""
 
     disambiguation = (
         "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
         "every minute or an industrial controller. Use {class:UsageJourney} for user-driven, request-style "
-        "interactions. See {doc:web_vs_edge}.")
+        "interactions in a web context. See {doc:web_vs_edge}.")
 
     param_descriptions = {
         "edge_functions": (

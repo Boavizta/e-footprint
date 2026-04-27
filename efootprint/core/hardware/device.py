@@ -17,9 +17,8 @@ class Device(HardwareBase):
     """End-user hardware (smartphone, laptop, set-top box, screen) on which a {class:UsageJourney} is performed. Contributes both fabrication and electricity-use emissions to each {class:UsagePattern} that runs on it."""
 
     pitfalls = (
-        "{param:Device.fraction_of_usage_time} amortises fabrication: a device only used a few hours per day "
-        "still consumes its full embodied carbon during the modeling period, but the share attributed to this "
-        "service is scaled by the fraction it is actually used.")
+        "{param:Device.fraction_of_usage_time} is used to compute effective usage lifespan by multiplying with device "
+        "lifespan in years. This effective usage lifespan is then used to compute fabrication amortization.")
 
     interactions = (
         "Pass a list of {class:Device}s to {param:UsagePattern.devices}. Use the archetype helpers "
@@ -34,7 +33,7 @@ class Device(HardwareBase):
             "Expected time before the device is replaced. Embodied carbon is amortised over this duration."),
         "fraction_of_usage_time": (
             "Fraction of each calendar day during which the device is in use across all activities, used to "
-            "share its fabrication footprint between this service and other uses of the same device."),
+            "scale lifespan in years to effective usage lifespan."),
     }
 
     default_values =  {
