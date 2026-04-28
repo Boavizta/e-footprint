@@ -14,6 +14,8 @@ It uses a **declarative modeling approach**: users describe the system (servers,
 
 e-footprint users will probably mainly interact with e-footprint through the **e-footprint-interface** — the Django UI co-developed with the library.
 
+For the broader **communication-target audience map** — peer-credibility community, broader tech population, academics, and the explicitly-deprioritized reporting segment — see [`../communications/strategy.md`](../communications/strategy.md) §2. The user types listed above map to circles 1a (sustainability-aware web product teams), 1b (industrial users), and 2/4 (researchers/consultants).
+
 The library is open-source and hosted within the [Boavizta](https://boavizta.org/) ecosystem.
 
 ## In scope (today)
