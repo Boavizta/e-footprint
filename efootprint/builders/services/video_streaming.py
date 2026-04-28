@@ -45,9 +45,8 @@ class VideoStreaming(Service):
     def __init__(self, name: str, server: Server, base_ram_consumption: ExplainableQuantity,
                  bits_per_pixel: ExplainableQuantity, static_delivery_cpu_cost: ExplainableQuantity,
                  ram_buffer_per_user: ExplainableQuantity):
-        super().__init__(name, server)
-        self.base_ram_consumption = base_ram_consumption.set_label(
-            "OS and streaming software base RAM consumption")
+        super().__init__(name, server, base_ram_consumption=base_ram_consumption.set_label(
+            "OS and streaming software base RAM consumption"))
         self.bits_per_pixel = bits_per_pixel.set_label("Bits per pixel")
         self.static_delivery_cpu_cost = static_delivery_cpu_cost.set_label("CPU cost per static stream")
         self.ram_buffer_per_user = ram_buffer_per_user.set_label("RAM buffer size per user")

@@ -9,7 +9,9 @@ from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
 from efootprint.core.hardware.edge.edge_ram_component import EdgeRAMComponent
+from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
 from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
@@ -17,6 +19,7 @@ from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
 
 start = perf_counter()
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.hardware.boavizta_cloud_server import BoaviztaCloudServer
 from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
@@ -263,6 +266,20 @@ edge_usage_pattern = EdgeUsagePattern(
         timespan=6 * u.year, input_volume=1000, frequency='weekly',
         active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
         )
+
+workload_component = EdgeWorkloadComponent(
+    "edge workload component",
+    carbon_footprint_fabrication_per_unit=SourceValue(80 * u.kg, source=None),
+    power_per_unit=SourceValue(40 * u.W, source=None),
+    lifespan=SourceValue(6 * u.year, source=None),
+    idle_power_per_unit=SourceValue(4 * u.W, source=None)
+)
+
+edge_device_group = EdgeDeviceGroup(
+    "edge device group",
+    edge_device_counts=ExplainableObjectDict(
+        {edge_device: SourceValue(2 * u.dimensionless, source=None)})
+)
 
 system = System("system", usage_patterns=[usage_pattern], edge_usage_patterns=[edge_usage_pattern])
 

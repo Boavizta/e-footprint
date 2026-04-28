@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.utils.tools import get_init_signature_params
 
@@ -33,12 +34,16 @@ class Service(ModelingObject):
 
         return compatible_jobs
 
-    def __init__(self, name, server: "ServerBase"):
+    def __init__(self, name, server: "ServerBase",
+                 base_ram_consumption: ExplainableQuantity = None,
+                 base_compute_consumption: ExplainableQuantity = None):
         super().__init__(name=name)
         self.name = name
         self.server = server
-        self.base_ram_consumption = EmptyExplainableObject()
-        self.base_compute_consumption = EmptyExplainableObject()
+        self.base_ram_consumption = (
+            base_ram_consumption if base_ram_consumption is not None else EmptyExplainableObject())
+        self.base_compute_consumption = (
+            base_compute_consumption if base_compute_consumption is not None else EmptyExplainableObject())
 
     def after_init(self):
         super().after_init()

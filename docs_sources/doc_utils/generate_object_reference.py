@@ -18,24 +18,11 @@ from docs_sources.doc_utils.docs_case import (
     video_streaming_job, genai_model_job, manually_written_job, custom_gpu_job, edge_computer,
     edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload,
     cpu_component, ram_component, edge_device, ram_need, cpu_need, storage_need, edge_device_need,
-    recurrent_server_need)
+    recurrent_server_need, edge_device_group, workload_component)
 from efootprint.logger import logger
 from efootprint.utils.placeholder_resolver import resolve_placeholders
 from efootprint.utils.tools import get_init_signature_params
 from format_tutorial_md import doc_utils_path, generated_mkdocs_sourcefiles_path
-
-
-def _mkdocs_class_link(target: str) -> str:
-    return f"[{target}]({target}.md)"
-
-
-def _mkdocs_member_link(target: str) -> str:
-    class_name, member = target.split(".", 1)
-    return f"[{class_name}.{member}]({class_name}.md#{member})"
-
-
-def _mkdocs_doc_link(target: str) -> str:
-    return f"[{target}]({target}.md)"
 
 
 def _reject_ui(target: str) -> str:
@@ -43,19 +30,39 @@ def _reject_ui(target: str) -> str:
         f"Library description contains forbidden interface-only placeholder {{ui:{target}}}")
 
 
-MKDOCS_PLACEHOLDER_HANDLERS = {
-    "class": _mkdocs_class_link,
-    "param": _mkdocs_member_link,
-    "calc": _mkdocs_member_link,
-    "doc": _mkdocs_doc_link,
-    "ui": _reject_ui,
-}
+def _build_placeholder_handlers(documented_classes: set[str]) -> dict:
+    def class_link(target: str) -> str:
+        if target in documented_classes:
+            return f"[{target}]({target}.md)"
+        return f"`{target}`"
+
+    def member_link(target: str) -> str:
+        class_name, member = target.split(".", 1)
+        if class_name in documented_classes:
+            return f"[{class_name}.{member}]({class_name}.md#{member})"
+        return f"`{class_name}.{member}`"
+
+    def doc_link(target: str) -> str:
+        return f"[{target}]({target}.md)"
+
+    return {
+        "class": class_link,
+        "param": member_link,
+        "calc": member_link,
+        "doc": doc_link,
+        "ui": _reject_ui,
+    }
+
+
+_PLACEHOLDER_HANDLERS: dict | None = None
 
 
 def _render(text: str | None) -> str | None:
     if not text:
         return None
-    return resolve_placeholders(cleandoc(text), MKDOCS_PLACEHOLDER_HANDLERS)
+    if _PLACEHOLDER_HANDLERS is None:
+        raise RuntimeError("Placeholder handlers not initialised")
+    return resolve_placeholders(cleandoc(text), _PLACEHOLDER_HANDLERS)
 
 
 def return_class_str(input_obj):
@@ -92,14 +99,33 @@ def _type_summary(input_obj, attr_name: str) -> str:
     return ""
 
 
-def obj_to_md(owning_class, input_obj, attr_name):
+def _find_param_description(cls, attr_name):
+    for klass in cls.__mro__:
+        descriptions = klass.__dict__.get("param_descriptions") or {}
+        if attr_name in descriptions:
+            return descriptions[attr_name]
+    return None
+
+
+def _format_fixed_value(input_obj: ExplainableObject):
+    if isinstance(input_obj, ExplainableQuantity):
+        return f"`{input_obj.value:~P}`"
+    if input_obj.value is not None:
+        return f"`{input_obj.value}`"
+    return f"`{input_obj}`"
+
+
+def obj_to_md(owning_class, input_obj, attr_name, fixed_by_class=None):
     if attr_name == "name":
         return f"### name\nA human readable description of the object."
 
-    description = _render((owning_class.__dict__.get("param_descriptions") or {}).get(attr_name))
+    description = _render(_find_param_description(owning_class, attr_name))
     type_hint = _type_summary(input_obj, attr_name)
 
     body_parts = [part for part in (description, type_hint) if part]
+    if fixed_by_class is not None:
+        body_parts.append(
+            f"*Fixed by {fixed_by_class.__name__} to {_format_fixed_value(input_obj)} — not configurable.*")
     body = "\n\n".join(body_parts) if body_parts else "description to be done"
     return f"### {attr_name}\n{body}"
 
@@ -167,15 +193,31 @@ def write_object_reference_file(mod_obj):
             set([return_class_str(o) for o in mod_obj.modeling_obj_containers])),
     }
 
-    init_sig_params = get_init_signature_params(cls)
+    own_init_params = list(get_init_signature_params(cls))
     mod_obj_dict["params"] = []
     mod_obj_dict["calculated_attrs"] = []
+    calc_attr_names = set(mod_obj.calculated_attributes)
 
-    for key in init_sig_params:
+    for key in own_init_params:
         if key == "self":
             continue
         attr_value = getattr(mod_obj, key, None)
         mod_obj_dict["params"].append(obj_to_md(cls, attr_value, key))
+
+    seen_params = set(own_init_params)
+    for parent_cls in cls.__mro__[1:]:
+        if parent_cls is object or "__init__" not in parent_cls.__dict__:
+            continue
+        for key in get_init_signature_params(parent_cls):
+            if key in seen_params or key == "self":
+                continue
+            seen_params.add(key)
+            if key in calc_attr_names or not hasattr(mod_obj, key):
+                continue
+            attr_value = getattr(mod_obj, key)
+            if not isinstance(attr_value, ExplainableObject):
+                continue
+            mod_obj_dict["params"].append(obj_to_md(cls, attr_value, key, fixed_by_class=cls))
 
     for attr in mod_obj.calculated_attributes:
         calc_attr = getattr(mod_obj, attr)
@@ -198,20 +240,26 @@ def write_object_reference_file(mod_obj):
 
 
 def generate_object_reference(automatically_update_yaml=False):
+    global _PLACEHOLDER_HANDLERS
     country = usage_pattern.country
     device = usage_pattern.devices[0]
 
-    nav_items = []
-    for mod_obj in (
+    mod_objs_to_document = (
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
-            video_streaming, genai_model, video_streaming_job, genai_model_job,
+            video_streaming, genai_model, genai_model.server, video_streaming_job, genai_model_job,
             storage, edge_usage_pattern, edge_function, edge_usage_journey, edge_computer, edge_storage, edge_process,
             recurrent_server_need, edge_process.storage_need, edge_process.compute_need, edge_process.ram_need,
             edge_appliance, edge_workload, edge_workload.workload_need, cpu_component, ram_component, edge_device,
-            ram_need, cpu_need, storage_need,
+            edge_device_group, workload_component, ram_need, cpu_need, storage_need,
             edge_device_need, edge_computer.ram_component, edge_computer.cpu_component,
-            edge_appliance.appliance_component):
+            edge_appliance.appliance_component)
+
+    documented_classes = {return_class_str(mod_obj) for mod_obj in mod_objs_to_document}
+    _PLACEHOLDER_HANDLERS = _build_placeholder_handlers(documented_classes)
+
+    nav_items = []
+    for mod_obj in mod_objs_to_document:
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)
 
