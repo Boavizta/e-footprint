@@ -125,7 +125,7 @@ class JobBase(ModelingObject):
                             label=f"Occurrences within {recurrent_server_need.name}"))
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
-            f"Hourly occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
+            f"Hourly occurrences in {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
         """Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered."""
