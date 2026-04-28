@@ -26,13 +26,20 @@ The three objectives are **aligned but cannot be told the same way**. The more e
 
 Five concentric circles, ordered by long-term priority.
 
-1. **Operational, hands-on sustainability leads in companies** — especially those with an explicit Green IT or ecodesign mission. Decision-makers on real product impact. **The end-user target.** Companies with significant digital footprint: retail, services, industry, media, SaaS.
-2. **Green IT / responsible-digital community** — Boavizta itself, INR, Green IT Club, ADEME, schools (CS, 42, ENSIMAG, CentraleSupélec…). Already sensitized, influential, demands substance.
-3. **Wider tech community** — developers, architects, DevOps. Activated via mainstream tech conferences (Devoxx, BDX I/O, Codeurs en Seine, FOSDEM…) and tech LinkedIn.
+1. **Tech product teams and operational sustainability leads** — joint priority; the people whose decisions drive a digital service's environmental impact. **The end-user target.**
+   - **Tech product teams** — engineers, designers, PMs, UX, architects. The joint decision-makers for what gets built and how. **e-footprint's purpose: empower these teams to control the environmental impact of what they build.** Companies with significant digital footprint: retail, services, industry, media, SaaS.
+   - **Operational, hands-on sustainability leads** — especially those with an explicit Green IT or ecodesign mission. Often work transversely across product teams; closest ally to product teams in companies where they exist.
+   - *Internal heterogeneity.* e-footprint deliberately bridges the code and non-code sides of product teams. In practice the **design/product side tends to be more aware and willing to act**; the engineering side is closer to implementation but less primed. Reaching both is essential — the team's *collective* decisions drive the impact. This is both a strength of e-footprint (whole-team tool) and a constraint (UX must be approachable for non-code folks while staying useful for code-savvy ones — *"no one left behind, depth available on demand"*, per the interface mission).
+
+2. **Green IT / responsible-digital community** — Boavizta itself, INR, Green IT Club, ADEME, schools (CS, 42, ENSIMAG, CentraleSupélec…). Already sensitized, influential, demands substance. **Peer credibility multiplier**: warmest, fastest circle to validate; unlocks adoption in circle 1.
+
+3. **Wider tech community beyond product roles** — developers, architects, ops not directly tied to product decisions (infra teams, internal tooling, generalist devs). Reached at scale via mainstream tech conferences (Devoxx, BDX I/O, Codeurs en Seine, FOSDEM…) and tech LinkedIn. **Awareness funnel for circle 1**, lower direct-adoption ROI per touch.
+
 4. **Academics and institutions** — LCA researchers, ADEME, EU regulators (CSRD, ecodesign directive). Slowest circle, highest long-term legitimacy.
+
 5. **Reporting-focused sustainability leads** — auditors, CSRD compliance officers. Explicitly **not** the priority. e-footprint may do some reporting eventually, but its purpose is **decision-making for impact reduction**, not compliance reporting. Calling this distinction out upfront protects the tool's positioning against drift.
 
-**Year-1 sequencing.** Peer credibility first via circle 2 (the warmest, fastest to validate), moving quickly to circle 1 (operational sustainability leads / product teams) once foundation content is in place. Circles 3–4 are addressed opportunistically (conferences, papers); circle 5 is deliberately deprioritized.
+**Year-1 sequencing.** Peer credibility first via circle 2 (the warmest, fastest to validate), moving quickly to circle 1 (tech product teams + operational sustainability leads) once foundation content is in place. Circles 3–4 are addressed opportunistically (conferences, papers); circle 5 is deliberately deprioritized.
 
 ---
 
@@ -44,7 +51,7 @@ Three differentiating messages reused across all channels:
 
 - **"Prioritize, don't guilt-trip."** e-footprint helps decide where to invest effort, not produce a guilt-inducing carbon report. Decision-focused, not reporting-focused.
 - **"Simulate before you act."** The environmental ROI of a product decision can be modeled before implementation, just like business ROI. Few other tools currently offer that.
-- **"Usage and functionality at the center."** Unlike top-down carbon assessments — and unlike pure unit-optimization narratives — e-footprint starts from what users actually do, at what volumes, and in what geographies. This guards against the **scope-neglect trap**: optimizing a unit by 90% on a low-traffic service produces tiny absolute gains. Volumes and geographies are first-class inputs, not footnotes.
+- **"Usage and functionality at the center."** Unlike top-down carbon assessments and unlike pure unit-optimization narratives, e-footprint starts from **how the service is actually used** — by humans and by automated processes alike — in what volumes and in what geographies. Usage is described as **usage journeys with steps** (web) or **functionalities** (edge), not as raw request counts. The same primitive covers user-facing flows (browse catalog → add to cart → checkout) and technical flows with no direct user interaction (an ML training run, a scheduled sync). A PM or designer recognizes the user-facing usage journeys; together with the technical ones, they form the full system story. This is the **structural differentiator**: the constraint (volumes must be phrased as usage journeys or functionalities, not dumped as raw counts) is also the unlock — the same description supports **what-if simulation** (*"what if I add AI to this journey, simplify that one"*) and guards against the **scope-neglect trap** (a 90% unit optimization on a low-traffic service produces tiny absolute gains).
 
 A **one-page messaging document** derived from this section is the next foundation deliverable; all subsequent content cites it. Tracked in the editorial calendar.
 
@@ -104,7 +111,11 @@ The priority is to give the three actors the **raw material** they need to commu
 ### Phase 2 — Ramp-up (months 3–6) — loose; revisit at month 3
 
 - **Boavizta introductory webinar** on e-footprint. Short format (~45 min), replay available. Modern replacement for the static videos the docs overhaul rightly avoids — a webinar is **dated**, so its obsolescence is acceptable and assumed.
-- **2–3 targeted conference submissions**: an Impact Summit / GreenTech Forum-type event (business audience), a mainstream tech conference (Devoxx or equivalent), an academic or LCA conference.
+- **2–3 targeted conference submissions** spanning audience reach:
+  - a green-IT or business event (Impact Summit, GreenTech Forum-type) — circles 1–2.
+  - a mainstream tech conference reaching the engineering side of circle 1 (Devoxx, BDX I/O, Codeurs en Seine, FOSDEM…) — circles 1 (engineering) + 3.
+  - an academic or LCA conference — circle 4.
+- **Reaching the design / non-engineering side of circle 1** (the more environmentally-receptive half) is harder via conferences. Default channel: LinkedIn (Vincent's feed and Boavizta reshares) plus the interface itself as a low-barrier entry point. A guest article on a UX/product publication is a candidate when a fit emerges; a design-side conference submission is a phase-3 option.
 - **Case study #2** — PS-owned.
 - **Presence in third-party resources** — guest article on GreenIT.fr / INR, mention in Boavizta training material, inclusion in community resource lists.
 
