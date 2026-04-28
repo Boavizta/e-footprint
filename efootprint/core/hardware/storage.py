@@ -166,7 +166,7 @@ class Storage(InfraHardware):
             job.hourly_data_stored_across_usage_patterns * self.data_replication_factor).to(u.TB_stored)
         if isinstance(job_storage_rate, EmptyExplainableObject):
             self.full_cumulative_storage_need_per_job[job] = EmptyExplainableObject(
-                left_parent=job_storage_rate, label=f"Cumulative storage for {job.name} in {self.name}")
+                left_parent=job_storage_rate, label=f"Cumulative storage need for {job.name}")
             return
         rate_array = np.copy(job_storage_rate.value.magnitude)
         storage_duration_in_hours = math.ceil(copy(self.data_storage_duration.to(u.hour)).magnitude)
@@ -177,7 +177,7 @@ class Storage(InfraHardware):
         cumulative_quantity = Quantity(np.cumsum(delta_array, dtype=np.float32), u.TB_stored)
         self.full_cumulative_storage_need_per_job[job] = ExplainableHourlyQuantities(
             cumulative_quantity, start_date=job_storage_rate.start_date,
-            label=f"Cumulative storage for {job.name} in {self.name}",
+            label=f"Cumulative storage need for {job.name}",
             left_parent=job_storage_rate, right_parent=self.data_storage_duration,
             operator="cumulative sum with automatic dumps")
 

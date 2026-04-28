@@ -125,7 +125,7 @@ class EdgeDeviceGroup(ModelingObject):
         if not parent_groups:
             # Root group: effective count is 1
             self.effective_nb_of_units_within_root = ExplainableQuantity(
-                1 * u.dimensionless, f"{self.name} is a root group")
+                1 * u.dimensionless, f"root group count of 1")
         else:
             # Sum contributions from all parents. When a group appears in multiple
             # parent hierarchies, its effective count is the sum of contributions from

@@ -75,7 +75,7 @@ class ExternalAPI(ModelingObject):
 
     def after_init(self):
         if not hasattr(self, "server") or self.server is None:
-            self.server = self.server_class(name=f"{self.name} server")
+            self.server = self.server_class(name=f"External API server")
         super().after_init()
         self.compute_calculated_attributes()
 

@@ -83,9 +83,7 @@ class Network(ModelingObject):
                 * job.hourly_data_transferred_per_usage_pattern[usage_pattern]
             ).to(u.kWh) * usage_pattern.country.average_carbon_intensity
 
-        self.energy_footprint_per_job[job] = energy_footprint.to(u.kg).set_label(
-            f"{job.name} energy footprint in {self.name}"
-        )
+        self.energy_footprint_per_job[job] = energy_footprint.to(u.kg).set_label(f"{job.name} network energy footprint")
 
     def update_energy_footprint_per_job(self):
         """Hourly carbon emissions caused by network traffic, broken down by job. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity."""
@@ -96,7 +94,7 @@ class Network(ModelingObject):
     def update_energy_footprint(self):
         """Total hourly carbon emissions caused by network traffic, summed across all jobs that route through this network."""
         self.energy_footprint = sum(self.energy_footprint_per_job.values(), start=EmptyExplainableObject()).set_label(
-            f"Hourly {self.name} energy footprint"
+            f"Hourly energy footprint"
         )
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "JobBase"):
