@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8b00c1 {
+             #mynetwork_86137d {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8b00c1" class="card-body"></div>
+            <div id="mynetwork_86137d" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8b00c1');
+                  var container = document.getElementById('mynetwork_86137d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "devices country fabrication impact attribution to system", "label": "devices country\nfabrication impact\nattribution to\nsystem", "shape": "dot", "size": 15, "title": "devices country fabrication impact attribution to system\n=\nImpact repartition weight / Sum of devices country fabrication impact\nrepartition weights\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Sum of devices country fabrication impact repartition weights", "label": "Sum of devices\ncountry fabrication\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of devices country fabrication impact repartition weights\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "devices country fabrication impact attribution to system"}, {"arrows": "to", "from": "Sum of devices country fabrication impact repartition weights", "to": "devices country fabrication impact attribution to system"}, {"arrows": "to", "from": "Impact repartition weight", "to": "Sum of devices country fabrication impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to system", "label": "fabrication impact\nattribution to\nsystem", "shape": "dot", "size": 15, "title": "fabrication impact attribution to system\n=\nImpact repartition weight / Fabrication impact repartition weights sum\n=\n1 / 1\n=\n1", "x": 0.0, "y": 450}, {"color": null, "id": "Impact repartition weight", "label": "Impact repartition\nweight", "shape": "dot", "size": 15, "title": "Impact repartition weight = 1", "x": 0.0, "y": 150}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nImpact repartition weight\n=\n1\n=\n1", "x": 0.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Impact repartition weight", "to": "fabrication impact attribution to system"}, {"arrows": "to", "from": "Fabrication impact repartition weights sum", "to": "fabrication impact attribution to system"}, {"arrows": "to", "from": "Impact repartition weight", "to": "Fabrication impact repartition weights sum"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

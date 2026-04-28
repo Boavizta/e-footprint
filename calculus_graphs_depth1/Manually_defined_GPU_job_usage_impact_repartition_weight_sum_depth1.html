@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d392dd {
+             #mynetwork_1d1507 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d392dd" class="card-body"></div>
+            <div id="mynetwork_1d1507" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d392dd');
+                  var container = document.getElementById('mynetwork_1d1507');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of Manually defined GPU job usage impact repartition weights", "label": "Sum of Manually\ndefined GPU job\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of Manually defined GPU job usage impact repartition weights\n=\n20 min streaming weight in Manually defined GPU job impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in Manually defined GPU job impact repartition", "label": "20 min streaming\nweight in Manually\ndefined GPU job\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in Manually defined GPU job impact repartition\n=\nuser journey weight in 20 min streaming impact repartition * Number of\noccurrences of Manually defined GPU job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [170, 113, 255, 28.3, 28.3, 113, 85, 198, 113, 170],\nlast 10 vals [255, 255, 227, 85, 170, 170, 85, 113, 198, 56.7]", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in Manually defined GPU job impact repartition", "to": "Sum of Manually defined GPU job usage impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [198, 56.7, 85, 28.3, 142, 198, 170, 113, 227, 142],\nlast 10 vals [170, 85, 85, 113, 28.3, 142, 56.7, 170, 85, 142]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [198, 56.7, 85, 28.3, 142, 198, 170, 113, 227, 142],\nlast 10 vals [170, 85, 85, 113, 28.3, 142, 56.7, 170, 85, 142]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Manually\ndefined GPU job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [198, 56.7, 85, 28.3, 142, 198, 170, 113, 227, 142],\nlast 10 vals [170, 85, 85, 113, 28.3, 142, 56.7, 170, 85, 142] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [198, 56.7, 85, 28.3, 142, 198, 170, 113, 227, 142],\nlast 10 vals [170, 85, 85, 113, 28.3, 142, 56.7, 170, 85, 142]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in impact repartition", "to": "Usage impact repartition weights sum"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

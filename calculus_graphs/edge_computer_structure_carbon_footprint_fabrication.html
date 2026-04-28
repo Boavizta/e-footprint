@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_3d3c0f {
+             #mynetwork_9d1f9c {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_3d3c0f" class="card-body"></div>
+            <div id="mynetwork_9d1f9c" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d3c0f');
+                  var container = document.getElementById('mynetwork_9d1f9c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Structure fabrication carbon footprint of edge computer", "label": "Structure\nfabrication carbon\nfootprint of edge\ncomputer", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint of edge computer\n=\nduplicate (Carbon footprint fabrication of edge computer)\n=\nduplicate (60 kg)\n=\n60 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication of edge computer", "label": "Carbon footprint\nfabrication of edge\ncomputer", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of edge computer = 60 kg", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of edge computer", "to": "Structure fabrication carbon footprint of edge computer"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Structure fabrication carbon footprint", "label": "Structure\nfabrication carbon\nfootprint", "shape": "dot", "size": 15, "title": "Structure fabrication carbon footprint\n=\nduplicate (Carbon footprint fabrication)\n=\nduplicate (60 kg)\n=\n60 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication = 60 kg", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication", "to": "Structure fabrication carbon footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_54b88b {
+             #mynetwork_e8176b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_54b88b" class="card-body"></div>
+            <div id="mynetwork_e8176b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_54b88b');
+                  var container = document.getElementById('mynetwork_e8176b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in edge process storage need impact repartition", "label": "edge process weight\nin edge process\nstorage need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in edge process storage need impact repartition\n=\nedge function weight in edge process impact repartition * Number of occurrences\nof edge process storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in edge process impact repartition", "label": "edge function weight\nin edge process\nimpact repartition", "shape": "dot", "size": 15, "title": "edge function weight in edge process impact repartition\n=\nedge usage journey weight in edge function impact repartition * Number of\noccurrences of edge process in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in edge process impact repartition", "to": "edge process weight in edge process storage need impact repartition"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "edge process weight in impact repartition", "label": "edge process weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "edge process weight in impact repartition\n=\nedge function weight in impact repartition * Number of occurrences of edge\nprocess storage need in edge process\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in impact repartition", "label": "edge function weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "edge function weight in impact repartition\n=\nedge usage journey weight in impact repartition * Number of occurrences of edge\nprocess in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\n\u00b7g/kWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 84900, 170000, 255000],\nlast 10 vals [425000, 425000, 425000, 425000, 425000, 340000, 255000, 170000,\n84700, 0]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in impact repartition", "to": "edge process weight in impact repartition"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

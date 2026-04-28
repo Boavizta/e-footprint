@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6d86d9 {
+             #mynetwork_7761e6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6d86d9" class="card-body"></div>
+            <div id="mynetwork_7761e6" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6d86d9');
+                  var container = document.getElementById('mynetwork_7761e6');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge computer RAM total energy footprint per edge device across usage patterns", "label": "edge computer RAM\ntotal energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "edge computer RAM total energy footprint per edge device across usage patterns\n=\nedge computer RAM energy footprint per edge device for Default edge usage\npattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "edge computer RAM energy footprint per edge device for Default edge usage pattern", "label": "edge computer RAM\nenergy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge computer RAM energy footprint per edge device for Default edge usage\npattern\n=\nHourly energy consumed by edge computer RAM per edge device for Default edge\nusage pattern * Average carbon intensity of devices country\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nmWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge computer RAM energy footprint per edge device for Default edge usage pattern", "to": "edge computer RAM total energy footprint per edge device across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint per edge device across usage patterns", "label": "Total energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy footprint per edge device across usage patterns\n=\nEnergy footprint per edge device for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nHourly energy consumed by per edge device for Default edge usage pattern *\nAverage carbon intensity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nmWh:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] * 85 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in mg:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Energy footprint per edge device for Default edge usage pattern", "to": "Total energy footprint per edge device across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

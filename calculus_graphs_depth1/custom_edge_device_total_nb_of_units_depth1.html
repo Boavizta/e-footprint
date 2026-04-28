@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_28bdb4 {
+             #mynetwork_dcdbbb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_28bdb4" class="card-body"></div>
+            <div id="mynetwork_dcdbbb" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_28bdb4');
+                  var container = document.getElementById('mynetwork_dcdbbb');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device has no group (default count = 1)", "label": "custom edge device\nhas no group\n(default count = 1)", "shape": "dot", "size": 15, "title": "custom edge device has no group (default count = 1) = 1", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total nb per ensemble", "label": "Total nb per\nensemble", "shape": "dot", "size": 15, "title": "Total nb per ensemble\n=\nunnamed source * root group count of 1\n=\n2 * 1\n=\n2", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 2", "x": -75.0, "y": 150}, {"color": null, "id": "root group count of 1", "label": "root group count of\n1", "shape": "dot", "size": 15, "title": "root group count of 1 = 1", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Total nb per ensemble"}, {"arrows": "to", "from": "root group count of 1", "to": "Total nb per ensemble"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

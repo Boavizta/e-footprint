@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_30d25f {
+             #mynetwork_dccfc0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_30d25f" class="card-body"></div>
+            <div id="mynetwork_dccfc0" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_30d25f');
+                  var container = document.getElementById('mynetwork_dccfc0');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge SSD storage total energy footprint per edge device across usage patterns", "label": "edge SSD storage\ntotal energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "edge SSD storage total energy footprint per edge device across usage patterns\n=\nedge SSD storage energy footprint per edge device for Default edge usage pattern\n=\nno value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "edge SSD storage energy footprint per edge device for Default edge usage pattern", "label": "edge SSD storage\nenergy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "edge SSD storage energy footprint per edge device for Default edge usage pattern\n=\nAverage carbon intensity of devices country * Hourly energy consumed by edge SSD\nstorage per edge device for Default edge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 0.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge SSD storage energy footprint per edge device for Default edge usage pattern", "to": "edge SSD storage total energy footprint per edge device across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint per edge device across usage patterns", "label": "Total energy\nfootprint per edge\ndevice across usage\npatterns", "shape": "dot", "size": 15, "title": "Total energy footprint per edge device across usage patterns\n=\nEnergy footprint per edge device for Default edge usage pattern\n=\nno value\n=\nno value", "x": 0.0, "y": 900}, {"color": null, "id": "Energy footprint per edge device for Default edge usage pattern", "label": "Energy footprint per\nedge device for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint per edge device for Default edge usage pattern\n=\nAverage carbon intensity * Hourly energy consumed by per edge device for Default\nedge usage pattern\n=\n85 g/kWh * no value\n=\nno value", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Energy footprint per edge device for Default edge usage pattern", "to": "Total energy footprint per edge device across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_abbe5d {
+             #mynetwork_74944b {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_abbe5d" class="card-body"></div>
+            <div id="mynetwork_74944b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_abbe5d');
+                  var container = document.getElementById('mynetwork_74944b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Power per unit of edge computer CPU", "label": "Power per unit of\nedge computer CPU", "shape": "dot", "size": 15, "title": "Power per unit of edge computer CPU\n=\nduplicate (Power of edge computer)\n=\nduplicate (30 W)\n=\n30 W", "x": 0.0, "y": 300}, {"color": null, "id": "Power of edge computer", "label": "Power of edge\ncomputer", "shape": "dot", "size": 15, "title": "Power of edge computer = 30 W", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of edge computer", "to": "Power per unit of edge computer CPU"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Power per unit", "label": "Power per unit", "shape": "dot", "size": 15, "title": "Power per unit\n=\nduplicate (Power)\n=\nduplicate (30 W)\n=\n30 W", "x": 0.0, "y": 300}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power = 30 W", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Power", "to": "Power per unit"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

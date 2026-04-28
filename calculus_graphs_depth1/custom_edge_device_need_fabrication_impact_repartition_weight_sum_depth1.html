@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_df3ffe {
+             #mynetwork_50ee6d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_df3ffe" class="card-body"></div>
+            <div id="mynetwork_50ee6d" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_df3ffe');
+                  var container = document.getElementById('mynetwork_50ee6d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of custom edge device need fabrication impact repartition weights", "label": "Sum of custom edge\ndevice need\nfabrication impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of custom edge device need fabrication impact repartition weights\n=\nedge function weight in custom edge device need impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in custom edge device need impact repartition", "label": "edge function weight\nin custom edge\ndevice need impact\nrepartition", "shape": "dot", "size": 15, "title": "edge function weight in custom edge device need impact repartition\n=\nedge usage journey weight in edge function impact repartition * Number of\noccurrences of custom edge device need in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in custom edge device need impact repartition", "to": "Sum of custom edge device need fabrication impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nedge function weight in impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 1050}, {"color": null, "id": "edge function weight in impact repartition", "label": "edge function weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "edge function weight in impact repartition\n=\nedge usage journey weight in impact repartition * Number of occurrences of\ncustom edge device need in edge function\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": 0.0, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge function weight in impact repartition", "to": "Fabrication impact repartition weights sum"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

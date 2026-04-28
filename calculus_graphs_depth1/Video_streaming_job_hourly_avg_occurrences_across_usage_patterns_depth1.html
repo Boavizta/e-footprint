@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a582f0 {
+             #mynetwork_59d59b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a582f0" class="card-body"></div>
+            <div id="mynetwork_59d59b" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a582f0');
+                  var container = document.getElementById('mynetwork_59d59b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Video streaming job average occurrences across usage patterns", "label": "Hourly Video\nstreaming job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Video streaming job average occurrences across usage patterns\n=\nAverage hourly Video streaming job occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Video streaming job occurrences in usage pattern", "to": "Hourly Video streaming job average occurrences across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

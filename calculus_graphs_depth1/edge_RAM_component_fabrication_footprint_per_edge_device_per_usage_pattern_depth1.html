@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f506be {
+             #mynetwork_390fa1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f506be" class="card-body"></div>
+            <div id="mynetwork_390fa1" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f506be');
+                  var container = document.getElementById('mynetwork_390fa1');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly edge RAM\ncomponent\nfabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly edge RAM component fabrication footprint per edge device for Default edge\nusage pattern\n=\nedge usage journey hourly nb of edge usage journeys in parallel * (Carbon\nfootprint fabrication of edge RAM component / Lifespan of edge RAM component) *\none hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": 0.0, "y": 600}, {"color": null, "id": "edge usage journey hourly nb of edge usage journeys in parallel", "label": "edge usage journey\nhourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "edge usage journey hourly nb of edge usage journeys in parallel\n=\nDefault edge usage pattern UTC hourly occurrences average Usage span of edge\nusage journey\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication of edge RAM component", "label": "Carbon footprint\nfabrication of edge\nRAM component", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of edge RAM component\n=\nCarbon footprint fabrication per unit of edge RAM component * Number of units of\nedge RAM component from e-footprint hypothesis\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan of edge RAM component", "label": "Lifespan of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Lifespan of edge RAM component = 6 yr", "x": 200.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge usage journey hourly nb of edge usage journeys in parallel", "to": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint fabrication of edge RAM component", "to": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan of edge RAM component", "to": "Hourly edge RAM component fabrication footprint per edge device for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly fabrication footprint per edge device for Default edge usage pattern", "label": "Hourly fabrication\nfootprint per edge\ndevice for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "Hourly fabrication footprint per edge device for Default edge usage pattern\n=\nHourly nb of edge usage journeys in parallel * (Carbon footprint fabrication /\nLifespan) * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] * (20 kg / 6 yr) * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00038, 0.00076, 0.00114],\nlast 10 vals [0.0019, 0.0019, 0.0019, 0.0019, 0.0019, 0.00152, 0.00114,\n0.000759, 0.000379, 0]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly nb of edge usage journeys in parallel", "label": "Hourly nb of edge\nusage journeys in\nparallel", "shape": "dot", "size": 15, "title": "Hourly nb of edge usage journeys in parallel\n=\nHourly nb of edge usage journey starts (UTC) hourly occurrences average Usage\nspan\n=\n52597 values from 2025-01-01 00:00:00+00:00 to 2031-01-01 13:00:00+00:00 in :\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 1000, 1000, 1000],\nlast 10 vals [0, 0, 0, 0, 1000, 1000, 1000, 1000, 1000, 0] hourly occurrences\naverage 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0]", "x": -200.0, "y": 450}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 450}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 200.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of edge usage journeys in parallel", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Carbon footprint fabrication", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly fabrication footprint per edge device for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

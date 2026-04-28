@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ef32fa {
+             #mynetwork_0b5cb6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ef32fa" class="card-body"></div>
+            <div id="mynetwork_0b5cb6" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ef32fa');
+                  var container = document.getElementById('mynetwork_0b5cb6');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint fabrication of edge computer RAM", "label": "Carbon footprint\nfabrication of edge\ncomputer RAM", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of edge computer RAM\n=\nCarbon footprint fabrication per unit of edge computer RAM from e-footprint\nhypothesis * Number of units of edge computer RAM from e-footprint hypothesis\n=\n0 mg * 1\n=\n0 mg", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Carbon footprint fabrication per unit of edge computer RAM from e-footprint hypothesis", "label": "Carbon footprint\nfabrication per unit\nof edge computer RAM\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication per unit of edge computer RAM from e-footprint\nhypothesis = 0 mg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge computer RAM from e-footprint hypothesis", "label": "Number of units of\nedge computer RAM\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge computer RAM from e-footprint hypothesis = 1", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication per unit of edge computer RAM from e-footprint hypothesis", "to": "Carbon footprint fabrication of edge computer RAM"}, {"arrows": "to", "from": "Number of units of edge computer RAM from e-footprint hypothesis", "to": "Carbon footprint fabrication of edge computer RAM"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n0 mg * 1\n=\n0 mg", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Carbon footprint fabrication per unit", "label": "Carbon footprint\nfabrication per unit", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication per unit = 0 mg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units", "label": "Number of units", "shape": "dot", "size": 15, "title": "Number of units = 1", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication per unit", "to": "Carbon footprint fabrication"}, {"arrows": "to", "from": "Number of units", "to": "Carbon footprint fabrication"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2fdf25 {
+             #mynetwork_b2d4d2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_2fdf25" class="card-body"></div>
+            <div id="mynetwork_b2d4d2" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2fdf25');
+                  var container = document.getElementById('mynetwork_b2d4d2');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication weight in user journey impact repartition", "label": "usage pattern\nfabrication weight\nin user journey\nimpact repartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in user journey impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "usage pattern fabrication weight in user journey impact repartition"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]", "x": 0.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "usage pattern fabrication weight in impact repartition"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

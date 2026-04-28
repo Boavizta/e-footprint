@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f6c776 {
+             #mynetwork_3404a4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f6c776" class="card-body"></div>
+            <div id="mynetwork_3404a4" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f6c776');
+                  var container = document.getElementById('mynetwork_3404a4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "to": "Ecologits generation_latency for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Ecologits generation_latency for claude-opus-4-5"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f9f01f {
+             #mynetwork_64edcd {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_f9f01f" class="card-body"></div>
+            <div id="mynetwork_64edcd" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f9f01f');
+                  var container = document.getElementById('mynetwork_64edcd');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "edge process CPU need recurrent need", "label": "edge process CPU\nneed recurrent need", "shape": "dot", "size": 15, "title": "edge process CPU need recurrent need\n=\nduplicate (Recurrent compute needed for edge process)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent compute needed for edge process", "label": "Recurrent compute\nneeded for edge\nprocess", "shape": "dot", "size": 15, "title": "Recurrent compute needed for edge process = 168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent compute needed for edge process", "to": "edge process CPU need recurrent need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Recurrent need", "label": "Recurrent need", "shape": "dot", "size": 15, "title": "Recurrent need\n=\nduplicate (Recurrent compute needed)\n=\nduplicate (168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "Recurrent compute needed", "label": "Recurrent compute\nneeded", "shape": "dot", "size": 15, "title": "Recurrent compute needed = 168 values in cpu core:\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Recurrent compute needed", "to": "Recurrent need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c7b569 {
+             #mynetwork_77b791 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c7b569" class="card-body"></div>
+            <div id="mynetwork_77b791" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c7b569');
+                  var container = document.getElementById('mynetwork_77b791');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)\nfrom Ecologits\nllm_impacts function", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction\n=\nGenerative AI model provider from e-footprint hypothesis query EcoLogits model\nrepository with Model used from e-footprint hypothesis\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670 billion", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Generative AI model provider from e-footprint hypothesis", "label": "Generative AI model\nprovider from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Generative AI model provider from e-footprint hypothesis = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used from e-footprint hypothesis", "label": "Model used from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Model used from e-footprint hypothesis = claude-opus-4-5", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Generative AI model provider from e-footprint hypothesis", "to": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function"}, {"arrows": "to", "from": "Model used from e-footprint hypothesis", "to": "claude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts function"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 total parameter count (in billions)", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670 billion", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 total parameter count (in billions)"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 total parameter count (in billions)"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

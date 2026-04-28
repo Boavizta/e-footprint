@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ffbb02 {
+             #mynetwork_65a3bc {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ffbb02" class="card-body"></div>
+            <div id="mynetwork_65a3bc" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ffbb02');
+                  var container = document.getElementById('mynetwork_65a3bc');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per server instance", "label": "Available RAM per\nserver instance", "shape": "dot", "size": 15, "title": "Available RAM per server instance\n=\nRAM of server * server utilization rate - Occupied RAM per server instance\nincluding services\n=\n128 GB ram * 0.9 - 2.3 GB ram\n=\n113 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of server", "label": "RAM of server", "shape": "dot", "size": 15, "title": "RAM of server = 128 GB ram", "x": -150.0, "y": 300}, {"color": null, "id": "server utilization rate", "label": "server utilization\nrate", "shape": "dot", "size": 15, "title": "server utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per server instance including services", "label": "Occupied RAM per\nserver instance\nincluding services", "shape": "dot", "size": 15, "title": "Occupied RAM per server instance including services\n=\nBase RAM consumption of server + Video streaming service OS and streaming\nsoftware base RAM consumption from e-footprint hypothesis\n=\n300 MB ram + 2 GB ram\n=\n2.3 GB ram", "x": 150.0, "y": 300}, {"color": null, "id": "Base RAM consumption of server", "label": "Base RAM consumption\nof server", "shape": "dot", "size": 15, "title": "Base RAM consumption of server = 300 MB ram", "x": -112.5, "y": 150}, {"color": "darkred", "id": "Video streaming service OS and streaming software base RAM consumption from e-footprint hypothesis", "label": "Video streaming\nservice OS and\nstreaming software\nbase RAM consumption\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service OS and streaming software base RAM consumption from\ne-footprint hypothesis = 2 GB ram", "x": 112.5, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of server", "to": "Available RAM per server instance"}, {"arrows": "to", "from": "server utilization rate", "to": "Available RAM per server instance"}, {"arrows": "to", "from": "Occupied RAM per server instance including services", "to": "Available RAM per server instance"}, {"arrows": "to", "from": "Base RAM consumption of server", "to": "Occupied RAM per server instance including services"}, {"arrows": "to", "from": "Video streaming service OS and streaming software base RAM consumption from e-footprint hypothesis", "to": "Occupied RAM per server instance including services"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n128 GB ram * 0.9 - 2.3 GB ram\n=\n113 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM = 128 GB ram", "x": -150.0, "y": 300}, {"color": null, "id": "Utilization rate", "label": "Utilization rate", "shape": "dot", "size": 15, "title": "Utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per instance including services", "label": "Occupied RAM per\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per instance including services\n=\nBase RAM consumption + OS and streaming software base RAM consumption\n=\n300 MB ram + 2 GB ram\n=\n2.3 GB ram", "x": 150.0, "y": 300}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption = 300 MB ram", "x": -112.5, "y": 150}, {"color": "darkred", "id": "OS and streaming software base RAM consumption", "label": "OS and streaming\nsoftware base RAM\nconsumption", "shape": "dot", "size": 15, "title": "OS and streaming software base RAM consumption = 2 GB ram", "x": 112.5, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Utilization rate", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Occupied RAM per instance including services", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Base RAM consumption", "to": "Occupied RAM per instance including services"}, {"arrows": "to", "from": "OS and streaming software base RAM consumption", "to": "Occupied RAM per instance including services"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

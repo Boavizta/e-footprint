@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b2d907 {
+             #mynetwork_340c7d {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_b2d907" class="card-body"></div>
+            <div id="mynetwork_340c7d" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b2d907');
+                  var container = document.getElementById('mynetwork_340c7d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Server need validated recurrent need", "label": "Server need\nvalidated recurrent\nneed", "shape": "dot", "size": 15, "title": "Server need validated recurrent need\n=\nduplicate (unnamed source)\n=\nduplicate (168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Server need validated recurrent need"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Validated recurrent need", "label": "Validated recurrent\nneed", "shape": "dot", "size": 15, "title": "Validated recurrent need\n=\nduplicate (unnamed source)\n=\nduplicate (168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1])\n=\n168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 300}, {"color": null, "id": "unnamed source", "label": "unnamed source", "shape": "dot", "size": 15, "title": "unnamed source = 168 values in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "unnamed source", "to": "Validated recurrent need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

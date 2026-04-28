@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1f0715 {
+             #mynetwork_044588 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_1f0715" class="card-body"></div>
+            <div id="mynetwork_044588" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1f0715');
+                  var container = document.getElementById('mynetwork_044588');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5\nfrom Ecologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits\ncompute_llm_impacts_dag function\n=\nextraction (Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n161 mg", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "label": "Ecologits impacts\nfor Generative AI\nmodel job from\nEcologits\ncompute_llm_impacts_dag\nfunction", "shape": "dot", "size": 15, "title": "Ecologits impacts for Generative AI model job from Ecologits\ncompute_llm_impacts_dag function\n=\nclaude-opus-4-5 active parameter count (in billions) from Ecologits llm_impacts\nfunction compute impacts with EcoLogits compute_llm_impacts_dag function\nclaude-opus-4-5 total parameter count (in billions) from Ecologits llm_impacts\nfunction logically dependent on Output token count for claude-opus-4-5 from\ne-footprint hypothesis logically dependent on Average carbon intensity of\nelectricity mix for anthropic from Ecologits llm_impacts function logically\ndependent on claude-opus-4-5 token per second from Ecologits llm_impacts\nfunction logically dependent on claude-opus-4-5 time to first token from\nEcologits llm_impacts function\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts for Generative AI model job from Ecologits compute_llm_impacts_dag function", "to": "Ecologits request_embodied_gwp for claude-opus-4-5 from Ecologits compute_llm_impacts_dag function"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n161 mg", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_embodied_gwp for claude-opus-4-5"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

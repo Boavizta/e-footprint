@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ed06bf {
+             #mynetwork_eb0398 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ed06bf" class="card-body"></div>
+            <div id="mynetwork_eb0398" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ed06bf');
+                  var container = document.getElementById('mynetwork_eb0398');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil (Hourly raw number of instances for storage) logically dependent on User\ndefined number of storage instances\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin k:\nfirst 10 vals [0.0000000036, 0.000000006, 0.0000000114, 0.000000012,\n0.0000000126, 0.000000015, 0.0000000168, 0.000000321, 0.000000922, 0.00000183],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1])\nlogically dependent on no value\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.0000036, 0.000006, 0.0000114, 0.000012, 0.0000126, 0.000015,\n0.0000168, 0.000321, 0.000922, 0.00183],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.0000000036, 0.000000006, 0.0000000114, 0.000000012,\n0.0000000126, 0.000000015, 0.0000000168, 0.000000321, 0.000000922, 0.00000183],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": -262.5, "y": 1650}, {"color": null, "id": "User defined number of storage instances", "label": "User defined number\nof storage instances", "shape": "dot", "size": 15, "title": "User defined number of storage instances = no value", "x": 262.5, "y": 1650}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances for storage", "to": "Hourly number of instances for storage"}, {"arrows": "to", "from": "User defined number of storage instances", "to": "Hourly number of instances for storage"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on User defined number\nof instances logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin k:\nfirst 10 vals [0.0000000042, 0.0000000054, 0.0000000072, 0.0000000078,\n0.0000000108, 0.000000015, 0.0000000186, 0.000000321, 0.000000925, 0.00000183],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1])\nlogically dependent on no value logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001,\n0.001],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nFull cumulative storage need / Storage capacity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in TB\nstored:\nfirst 10 vals [0.0000042, 0.0000054, 0.0000072, 0.0000078, 0.0000108, 0.000015,\n0.0000186, 0.000321, 0.000925, 0.00183],\nlast 10 vals [18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100, 18100,\n18100] / 1 TB stored\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.0000000042, 0.0000000054, 0.0000000072, 0.0000000078,\n0.0000000108, 0.000000015, 0.0000000186, 0.000000321, 0.000000925, 0.00000183],\nlast 10 vals [18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1, 18.1]", "x": -300.0, "y": 1650}, {"color": null, "id": "User defined number of instances", "label": "User defined number\nof instances", "shape": "dot", "size": 15, "title": "User defined number of instances = no value", "x": 0.0, "y": 1650}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 300.0, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "User defined number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

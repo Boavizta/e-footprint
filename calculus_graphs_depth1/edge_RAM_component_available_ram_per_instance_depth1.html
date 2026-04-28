@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7fc4e1 {
+             #mynetwork_ae767a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7fc4e1" class="card-body"></div>
+            <div id="mynetwork_ae767a" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7fc4e1');
+                  var container = document.getElementById('mynetwork_ae767a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per edge RAM component instance", "label": "Available RAM per\nedge RAM component\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per edge RAM component instance\n=\nRAM of edge RAM component - Base RAM consumption of edge RAM component\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM of edge RAM component", "label": "RAM of edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "RAM of edge RAM component\n=\nRAM per unit of edge RAM component * Number of units of edge RAM component from\ne-footprint hypothesis\n=\n8 GB ram * 1\n=\n8 GB ram", "x": -75.0, "y": 300}, {"color": null, "id": "Base RAM consumption of edge RAM component", "label": "Base RAM consumption\nof edge RAM\ncomponent", "shape": "dot", "size": 15, "title": "Base RAM consumption of edge RAM component = 1 GB ram", "x": 75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of edge RAM component", "to": "Available RAM per edge RAM component instance"}, {"arrows": "to", "from": "Base RAM consumption of edge RAM component", "to": "Available RAM per edge RAM component instance"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM - Base RAM consumption\n=\n8 GB ram - 1 GB ram\n=\n7 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per unit * Number of units\n=\n8 GB ram * 1\n=\n8 GB ram", "x": -75.0, "y": 300}, {"color": null, "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption = 1 GB ram", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Base RAM consumption", "to": "Available RAM per instance"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

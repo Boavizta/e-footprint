@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_b9f93d {
+             #mynetwork_e402c9 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_b9f93d" class="card-body"></div>
+            <div id="mynetwork_e402c9" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b9f93d');
+                  var container = document.getElementById('mynetwork_e402c9');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Base compute consumption of edge computer CPU", "label": "Base compute\nconsumption of edge\ncomputer CPU", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer CPU\n=\nduplicate (Base compute consumption of edge computer)\n=\nduplicate (0.1 cpu core)\n=\n0.1 cpu core", "x": 0.0, "y": 300}, {"color": null, "id": "Base compute consumption of edge computer", "label": "Base compute\nconsumption of edge\ncomputer", "shape": "dot", "size": 15, "title": "Base compute consumption of edge computer = 0.1 cpu core", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Base compute consumption of edge computer", "to": "Base compute consumption of edge computer CPU"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Base compute consumption", "label": "Base compute\nconsumption", "shape": "dot", "size": 15, "title": "Base compute consumption\n=\nduplicate (Base compute consumption)\n=\nduplicate (0.1 cpu core)\n=\n0.1 cpu core", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Base compute consumption", "to": "Base compute consumption"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

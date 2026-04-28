@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_638239 {
+             #mynetwork_49c506 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_638239" class="card-body"></div>
+            <div id="mynetwork_49c506" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_638239');
+                  var container = document.getElementById('mynetwork_49c506');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per on premise GPU server instance", "label": "Available RAM per on\npremise GPU server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise GPU server instance\n=\non premise GPU server RAM * on premise GPU server utilization rate - Occupied\nRAM per on premise GPU server instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "on premise GPU server RAM", "label": "on premise GPU\nserver RAM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM\n=\non premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n* Nb gpus of on premise GPU server from e-footprint hypothesis\n=\n80 GB ram/gpu * 4 gpu\n=\n320 GB ram", "x": -150.0, "y": 300}, {"color": null, "id": "on premise GPU server utilization rate", "label": "on premise GPU\nserver utilization\nrate", "shape": "dot", "size": 15, "title": "on premise GPU server utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per on premise GPU server instance including services", "label": "Occupied RAM per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per on premise GPU server instance including services\n=\nBase RAM consumption of on premise GPU server from e-footprint hypothesis\n=\n0 B ram\n=\n0 B ram", "x": 150.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server RAM", "to": "Available RAM per on premise GPU server instance"}, {"arrows": "to", "from": "on premise GPU server utilization rate", "to": "Available RAM per on premise GPU server instance"}, {"arrows": "to", "from": "Occupied RAM per on premise GPU server instance including services", "to": "Available RAM per on premise GPU server instance"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per GPU * Nb gpus\n=\n80 GB ram/gpu * 4 gpu\n=\n320 GB ram", "x": -150.0, "y": 300}, {"color": null, "id": "Utilization rate", "label": "Utilization rate", "shape": "dot", "size": 15, "title": "Utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per instance including services", "label": "Occupied RAM per\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per instance including services\n=\nBase RAM consumption\n=\n0 B ram\n=\n0 B ram", "x": 150.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Utilization rate", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Occupied RAM per instance including services", "to": "Available RAM per instance"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_df7bd5 {
+             #mynetwork_a41169 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_df7bd5" class="card-body"></div>
+            <div id="mynetwork_a41169" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_df7bd5');
+                  var container = document.getElementById('mynetwork_a41169');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil (Hourly raw number of server instances) logically dependent on Server type\nof server from e-footprint hypothesis\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000887, 0.000591, 0.00133, 0.000148, 0.000148, 0.000591,\n0.000444, 0.00181, 0.00305, 0.00458],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of server instances", "label": "Hourly raw number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly raw number of server instances\n=\nserver hour by hour ram need / Available RAM per server instance max compared\nwith server hour by hour compute need / Available CPU per server instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.1, 0.0668, 0.15, 0.0167, 0.0167, 0.0668, 0.0501, 0.131, 0.0945,\n0.142],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00655, 0.00437, 0.00983, 0.00109, 0.00109, 0.00437, 0.00328,\n0.0354, 0.0599, 0.0898],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000887, 0.000591, 0.00133, 0.000148, 0.000148, 0.000591,\n0.000444, 0.00181, 0.00305, 0.00458],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -412.5, "y": 1350}, {"color": "darkred", "id": "Server type of server from e-footprint hypothesis", "label": "Server type of\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Server type of server from e-footprint hypothesis = autoscaling", "x": 412.5, "y": 1350}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of server instances", "to": "Hourly number of server instances"}, {"arrows": "to", "from": "Server type of server from e-footprint hypothesis", "to": "Hourly number of server instances"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.00104, 0.000296, 0.000444, 0.000148, 0.000739, 0.00104,\n0.000887, 0.00164, 0.00328, 0.00453],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.117, 0.0334, 0.0501, 0.0167, 0.0835, 0.117, 0.1, 0.0806, 0.161,\n0.125],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00765, 0.00218, 0.00328, 0.00109, 0.00546, 0.00765, 0.00655,\n0.0321, 0.0642, 0.0887],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00104, 0.000296, 0.000444, 0.000148, 0.000739, 0.00104,\n0.000887, 0.00164, 0.00328, 0.00453],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -375.0, "y": 1350}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 375.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

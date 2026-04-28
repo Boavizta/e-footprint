@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8dd13b {
+             #mynetwork_648fa8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8dd13b" class="card-body"></div>
+            <div id="mynetwork_648fa8" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8dd13b');
+                  var container = document.getElementById('mynetwork_648fa8');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "custom edge device total energy footprint across usage patterns", "label": "custom edge device\ntotal energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "custom edge device total energy footprint across usage patterns\n=\ncustom edge device energy footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "custom edge device energy footprint for Default edge usage pattern", "label": "custom edge device\nenergy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "custom edge device energy footprint for Default edge usage pattern\n=\n(edge RAM component energy footprint per edge device for Default edge usage\npattern + edge CPU component energy footprint per edge device for Default edge\nusage pattern) * custom edge device has no group (default count\n=\n1)\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000874, 0.00175, 0.00262],\nlast 10 vals [0.00437, 0.00437, 0.00437, 0.00438, 0.00438, 0.0035, 0.00262,\n0.00175, 0.000873, 0]", "x": 0.0, "y": 1350}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "custom edge device energy footprint for Default edge usage pattern", "to": "custom edge device total energy footprint across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total energy footprint across usage patterns", "label": "Total energy\nfootprint across\nusage patterns", "shape": "dot", "size": 15, "title": "Total energy footprint across usage patterns\n=\nEnergy footprint for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00175, 0.0035, 0.00525],\nlast 10 vals [0.00875, 0.00875, 0.00875, 0.00875, 0.00875, 0.007, 0.00525,\n0.0035, 0.00175, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00175, 0.0035, 0.00525],\nlast 10 vals [0.00875, 0.00875, 0.00875, 0.00875, 0.00875, 0.007, 0.00525,\n0.0035, 0.00175, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Energy footprint for Default edge usage pattern", "label": "Energy footprint for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Energy footprint for Default edge usage pattern\n=\n(Energy footprint per edge device for Default edge usage pattern + Energy\nfootprint per edge device for Default edge usage pattern) * Total nb per\nensemble\n=\n(105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],\nlast 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102,\n0.000679, 0.000339, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],\nlast 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016,\n0.00107, 0.000534, 0]) * 2\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00175, 0.0035, 0.00525],\nlast 10 vals [0.00875, 0.00875, 0.00875, 0.00875, 0.00875, 0.007, 0.00525,\n0.0035, 0.00175, 0]", "x": 0.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Energy footprint for Default edge usage pattern", "to": "Total energy footprint across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

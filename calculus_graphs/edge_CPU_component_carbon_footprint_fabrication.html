@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d81b3b {
+             #mynetwork_0cca5a {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_d81b3b" class="card-body"></div>
+            <div id="mynetwork_0cca5a" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d81b3b');
+                  var container = document.getElementById('mynetwork_0cca5a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint fabrication of edge CPU component", "label": "Carbon footprint\nfabrication of edge\nCPU component", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of edge CPU component\n=\nCarbon footprint fabrication per unit of edge CPU component * Number of units of\nedge CPU component from e-footprint hypothesis\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication per unit of edge CPU component", "label": "Carbon footprint\nfabrication per unit\nof edge CPU\ncomponent", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication per unit of edge CPU component = 20 kg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units of edge CPU component from e-footprint hypothesis", "label": "Number of units of\nedge CPU component\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Number of units of edge CPU component from e-footprint hypothesis = 1", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication per unit of edge CPU component", "to": "Carbon footprint fabrication of edge CPU component"}, {"arrows": "to", "from": "Number of units of edge CPU component from e-footprint hypothesis", "to": "Carbon footprint fabrication of edge CPU component"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication\n=\nCarbon footprint fabrication per unit * Number of units\n=\n20 kg * 1\n=\n20 kg", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication per unit", "label": "Carbon footprint\nfabrication per unit", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication per unit = 20 kg", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Number of units", "label": "Number of units", "shape": "dot", "size": 15, "title": "Number of units = 1", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication per unit", "to": "Carbon footprint fabrication"}, {"arrows": "to", "from": "Number of units", "to": "Carbon footprint fabrication"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

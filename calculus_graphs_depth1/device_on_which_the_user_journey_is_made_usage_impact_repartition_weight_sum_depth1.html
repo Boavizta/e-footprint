@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6ca7dc {
+             #mynetwork_8ed125 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6ca7dc" class="card-body"></div>
+            <div id="mynetwork_8ed125" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6ca7dc');
+                  var container = document.getElementById('mynetwork_8ed125');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of device on which the user journey is made usage impact repartition weights", "label": "Sum of device on\nwhich the user\njourney is made\nusage impact\nrepartition weights", "shape": "dot", "size": 15, "title": "Sum of device on which the user journey is made usage impact repartition weights\n=\n20 min streaming usage weight in device on which the user journey is made impact\nrepartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.17, 0.113, 0.255, 0.0283, 0.0283, 0.113, 0.085, 0.198, 0.113,\n0.17],\nlast 10 vals [0.255, 0.255, 0.227, 0.085, 0.17, 0.17, 0.085, 0.113, 0.198,\n0.0567]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.17, 0.113, 0.255, 0.0283, 0.0283, 0.113, 0.085, 0.198, 0.113,\n0.17],\nlast 10 vals [0.255, 0.255, 0.227, 0.085, 0.17, 0.17, 0.085, 0.113, 0.198,\n0.0567]", "x": 0.0, "y": 900}, {"color": null, "id": "20 min streaming usage weight in device on which the user journey is made impact repartition", "label": "20 min streaming\nusage weight in\ndevice on which the\nuser journey is made\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming usage weight in device on which the user journey is made impact\nrepartition\n=\ndevice on which the user journey is made usage footprint for usage pattern *\nNumber of occurrences of device on which the user journey is made in usage\npattern * Number of occurrences of 20 min streaming in user journey * Time spent\non step 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [8.5, 5.67, 12.8, 1.42, 1.42, 5.67, 4.25, 9.92, 5.67, 8.5],\nlast 10 vals [12.8, 12.8, 11.3, 4.25, 8.5, 8.5, 4.25, 5.67, 9.92, 2.83] * 1 * 1\n* 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.17, 0.113, 0.255, 0.0283, 0.0283, 0.113, 0.085, 0.198, 0.113,\n0.17],\nlast 10 vals [0.255, 0.255, 0.227, 0.085, 0.17, 0.17, 0.085, 0.113, 0.198,\n0.0567]", "x": 0.0, "y": 750}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming usage weight in device on which the user journey is made impact repartition", "to": "Sum of device on which the user journey is made usage impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming usage weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.198, 0.0567, 0.085, 0.0283, 0.142, 0.198, 0.17, 0.113, 0.227,\n0.142],\nlast 10 vals [0.17, 0.085, 0.085, 0.113, 0.0283, 0.142, 0.0567, 0.17, 0.085,\n0.142]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.198, 0.0567, 0.085, 0.0283, 0.142, 0.198, 0.17, 0.113, 0.227,\n0.142],\nlast 10 vals [0.17, 0.085, 0.085, 0.113, 0.0283, 0.142, 0.0567, 0.17, 0.085,\n0.142]", "x": 0.0, "y": 900}, {"color": null, "id": "20 min streaming usage weight in impact repartition", "label": "20 min streaming\nusage weight in\nimpact repartition", "shape": "dot", "size": 15, "title": "20 min streaming usage weight in impact repartition\n=\nUsage footprint for usage pattern * Number of occurrences of device on which the\nuser journey is made in usage pattern * Number of occurrences of 20 min\nstreaming in user journey * Time spent by user\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in g:\nfirst 10 vals [9.92, 2.83, 4.25, 1.42, 7.08, 9.92, 8.5, 5.67, 11.3, 7.08],\nlast 10 vals [8.5, 4.25, 4.25, 5.67, 1.42, 7.08, 2.83, 8.5, 4.25, 7.08] * 1 * 1\n* 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in\nkg\u00b7min:\nfirst 10 vals [0.198, 0.0567, 0.085, 0.0283, 0.142, 0.198, 0.17, 0.113, 0.227,\n0.142],\nlast 10 vals [0.17, 0.085, 0.085, 0.113, 0.0283, 0.142, 0.0567, 0.17, 0.085,\n0.142]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming usage weight in impact repartition", "to": "Usage impact repartition weights sum"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

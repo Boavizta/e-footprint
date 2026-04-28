@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c1c760 {
+             #mynetwork_cbca6a {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c1c760" class="card-body"></div>
+            <div id="mynetwork_cbca6a" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c1c760');
+                  var container = document.getElementById('mynetwork_cbca6a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly storage energy footprint", "label": "Hourly storage\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly storage energy footprint\n=\nAverage carbon intensity of server electricity * no value\n=\n100 g/kWh * no value\n=\nno value", "x": 0.0, "y": 300}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100 g/kWh", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Average carbon intensity of server electricity", "to": "Hourly storage energy footprint"}, {"arrows": "to", "from": "no value", "to": "Hourly storage energy footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nAverage carbon intensity of electricity * no value\n=\n100 g/kWh * no value\n=\nno value", "x": 0.0, "y": 300}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": -75.0, "y": 150}, {"color": null, "id": "no value", "label": "no value", "shape": "dot", "size": 15, "title": "no value = no value", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly energy footprint"}, {"arrows": "to", "from": "no value", "to": "Hourly energy footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

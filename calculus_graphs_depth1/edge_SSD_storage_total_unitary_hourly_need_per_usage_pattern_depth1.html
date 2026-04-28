@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_2ce729 {
+             #mynetwork_809c9d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_2ce729" class="card-body"></div>
+            <div id="mynetwork_809c9d" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2ce729');
+                  var container = document.getElementById('mynetwork_809c9d');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need on edge SSD storage for Default edge usage pattern", "label": "Total hourly need on\nedge SSD storage for\nDefault edge usage\npattern", "shape": "dot", "size": 15, "title": "Total hourly need on edge SSD storage for Default edge usage pattern\n=\nedge process storage need unitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 750}, {"color": null, "id": "edge process storage need unitary hourly need for Default edge usage pattern", "label": "edge process storage\nneed unitary hourly\nneed for Default\nedge usage pattern", "shape": "dot", "size": 15, "title": "edge process storage need unitary hourly need for Default edge usage pattern\n=\n(edge process storage need recurrent need expanded over timespan edge usage\njourney hourly nb of edge usage journeys in parallel converted to UTC from\ndevices country timezone from user data) * Occurrences of edge process storage\nneed within Default edge usage pattern\n=\n(168 values in kB stored:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge process storage need unitary hourly need for Default edge usage pattern", "to": "Total hourly need on edge SSD storage for Default edge usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total hourly need for Default edge usage pattern", "label": "Total hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Total hourly need for Default edge usage pattern\n=\nUnitary hourly need for Default edge usage pattern\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 750}, {"color": null, "id": "Unitary hourly need for Default edge usage pattern", "label": "Unitary hourly need\nfor Default edge\nusage pattern", "shape": "dot", "size": 15, "title": "Unitary hourly need for Default edge usage pattern\n=\n(Recurrent need expanded over timespan Hourly nb of edge usage journeys in\nparallel converted to UTC from Timezone) * Occurrences within Default edge usage\npattern\n=\n(168 values in kB stored:\nfirst 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200] expanded over\ntimespan 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01\n00:00:00+00:00 in M:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000999, 0.002, 0.003],\nlast 10 vals [0.005, 0.005, 0.005, 0.005, 0.005, 0.004, 0.003, 0.002, 0.000997,\n0] converted to UTC from Europe/Paris) * 1\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kB\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [200, 200, 200, 200, 200, 200, 200, 200, 200, 200]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Unitary hourly need for Default edge usage pattern", "to": "Total hourly need for Default edge usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

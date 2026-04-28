@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7ea8ea {
+             #mynetwork_19ce97 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7ea8ea" class="card-body"></div>
+            <div id="mynetwork_19ce97" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7ea8ea');
+                  var container = document.getElementById('mynetwork_19ce97');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly Video streaming job occurrences in usage pattern", "label": "Average hourly Video\nstreaming job\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly Video streaming job occurrences in usage pattern\n=\nHourly Video streaming job occurrences in UsagePattern usage pattern hourly\noccurrences average Video streaming job request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2, 1.33, 3, 0.333, 0.333, 1.33, 1, 2.33, 1.33, 2],\nlast 10 vals [3, 3, 2.67, 1, 2, 2, 1, 1.33, 2.33, 0.667]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "label": "Hourly Video\nstreaming job\noccurrences in\nUsagePattern usage\npattern", "shape": "dot", "size": 15, "title": "Hourly Video streaming job occurrences in UsagePattern usage pattern\n=\nusage pattern UTC shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2]", "x": -75.0, "y": 450}, {"color": null, "id": "Video streaming job request duration", "label": "Video streaming job\nrequest duration", "shape": "dot", "size": 15, "title": "Video streaming job request duration\n=\nduplicate (Video streaming job video duration from e-footprint hypothesis)\n=\nduplicate (20 min)\n=\n20 min", "x": 75.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly Video streaming job occurrences in UsagePattern usage pattern", "to": "Average hourly Video streaming job occurrences in usage pattern"}, {"arrows": "to", "from": "Video streaming job request duration", "to": "Average hourly Video streaming job occurrences in usage pattern"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [2.33, 0.667, 1, 0.333, 1.67, 2.33, 2, 1.33, 2.67, 1.67],\nlast 10 vals [2, 1, 1, 1.33, 0.333, 1.67, 0.667, 2, 1, 1.67]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\nHourly nb of usage journey starts (UTC) shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5]", "x": -75.0, "y": 450}, {"color": null, "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration\n=\nduplicate (Video duration)\n=\nduplicate (20 min)\n=\n20 min", "x": 75.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Average hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Average hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

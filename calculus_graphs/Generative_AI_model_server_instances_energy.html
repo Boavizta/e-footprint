@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b2bf7a {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_b2bf7a" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b2bf7a');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances energy for claude-opus-4-5", "label": "Instances energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Instances energy for claude-opus-4-5\n=\nHourly occurrences across usage patterns * Ecologits request_energy for\nclaude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] * 4.88 Wh\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in Wh:\nfirst 10 vals [34.1, 9.75, 14.6, 4.88, 24.4, 34.1, 29.3, 19.5, 39, 24.4],\nlast 10 vals [29.3, 14.6, 14.6, 19.5, 4.88, 24.4, 9.75, 29.3, 14.6, 24.4]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly occurrences across usage patterns", "label": "Hourly occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly occurrences across usage patterns\n=\nHourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5]", "x": -262.5, "y": 750}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\nHourly nb of usage journey starts (UTC) shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5]", "x": -262.5, "y": 600}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [5, 7, 2, 3, 1, 5, 7, 6, 4, 8],\nlast 10 vals [5, 6, 3, 3, 4, 1, 5, 2, 6, 3] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5]", "x": -450.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [5, 7, 2, 3, 1, 5, 7, 6, 4, 8],\nlast 10 vals [5, 6, 3, 3, 4, 1, 5, 2, 6, 3]", "x": -420.0, "y": 300}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": -210.0, "y": 300}, {"color": null, "id": "Ecologits request_energy for claude-opus-4-5", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.88 Wh", "x": 262.5, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 262.5, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions)", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n134 billion", "x": -300.0, "y": 450}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 0.0, "y": 300}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions)", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670 billion", "x": -150.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5", "label": "Output token count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 = 1000", "x": 0.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 150.0, "y": 450}, {"color": null, "id": "Datacenter location for anthropic", "label": "Datacenter location\nfor anthropic", "shape": "dot", "size": 15, "title": "Datacenter location for anthropic\n=\nquery EcoLogits provider config (Provider)\n=\nquery EcoLogits provider config (anthropic)\n=\nUSA", "x": 210.0, "y": 300}, {"color": null, "id": "claude-opus-4-5 token per second", "label": "claude-opus-4-5\ntoken per second", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n34.1", "x": 300.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 time to first token", "label": "claude-opus-4-5 time\nto first token", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.59 s", "x": 450.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences across usage patterns", "to": "Instances energy for claude-opus-4-5"}, {"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Hourly occurrences across usage patterns"}, {"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "Hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Ecologits request_energy for claude-opus-4-5", "to": "Instances energy for claude-opus-4-5"}, {"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_energy for claude-opus-4-5"}, {"arrows": "to", "from": "claude-opus-4-5 active parameter count (in billions)", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 active parameter count (in billions)"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 active parameter count (in billions)"}, {"arrows": "to", "from": "claude-opus-4-5 total parameter count (in billions)", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 total parameter count (in billions)"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 total parameter count (in billions)"}, {"arrows": "to", "from": "Output token count for claude-opus-4-5", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for anthropic", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Datacenter location for anthropic", "to": "Average carbon intensity of electricity mix for anthropic"}, {"arrows": "to", "from": "Provider", "to": "Datacenter location for anthropic"}, {"arrows": "to", "from": "claude-opus-4-5 token per second", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 token per second"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 token per second"}, {"arrows": "to", "from": "claude-opus-4-5 time to first token", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 time to first token"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 time to first token"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

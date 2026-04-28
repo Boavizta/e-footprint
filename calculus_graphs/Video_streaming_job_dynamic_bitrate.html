@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_185ea7 {
+             #mynetwork_1bbe18 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_185ea7" class="card-body"></div>
+            <div id="mynetwork_1bbe18" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_185ea7');
+                  var container = document.getElementById('mynetwork_1bbe18');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Video streaming job dynamic bitrate", "label": "Video streaming job\ndynamic bitrate", "shape": "dot", "size": 15, "title": "Video streaming job dynamic bitrate\n=\n( pixel count computation (Video streaming job resolution from e-footprint\nhypothesis)) * Video streaming service bits per pixel from e-footprint\nhypothesis * Video streaming job frames per second from e-footprint hypothesis\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.0125 B * 30 1/s\n=\n0.778 MB/s", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Video streaming job resolution from e-footprint hypothesis", "label": "Video streaming job\nresolution from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job resolution from e-footprint hypothesis = 1080p (1920 x 1080)", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Video streaming service bits per pixel from e-footprint hypothesis", "label": "Video streaming\nservice bits per\npixel from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming service bits per pixel from e-footprint hypothesis = 0.0125 B", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Video streaming job frames per second from e-footprint hypothesis", "label": "Video streaming job\nframes per second\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Video streaming job frames per second from e-footprint hypothesis = 30 1/s", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Video streaming job resolution from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}, {"arrows": "to", "from": "Video streaming service bits per pixel from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}, {"arrows": "to", "from": "Video streaming job frames per second from e-footprint hypothesis", "to": "Video streaming job dynamic bitrate"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Dynamic bitrate", "label": "Dynamic bitrate", "shape": "dot", "size": 15, "title": "Dynamic bitrate\n=\n( pixel count computation (Resolution)) * Bits per pixel * Frames per second\n=\n( pixel count computation (1080p (1920 x 1080))) * 0.0125 B * 30 1/s\n=\n0.778 MB/s", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Resolution", "label": "Resolution", "shape": "dot", "size": 15, "title": "Resolution = 1080p (1920 x 1080)", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Bits per pixel", "label": "Bits per pixel", "shape": "dot", "size": 15, "title": "Bits per pixel = 0.0125 B", "x": 0.0, "y": 150}, {"color": "darkred", "id": "Frames per second", "label": "Frames per second", "shape": "dot", "size": 15, "title": "Frames per second = 30 1/s", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Resolution", "to": "Dynamic bitrate"}, {"arrows": "to", "from": "Bits per pixel", "to": "Dynamic bitrate"}, {"arrows": "to", "from": "Frames per second", "to": "Dynamic bitrate"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

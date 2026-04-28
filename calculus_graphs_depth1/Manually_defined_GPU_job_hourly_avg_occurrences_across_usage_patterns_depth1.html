@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_841352 {
+             #mynetwork_aaa707 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_841352" class="card-body"></div>
+            <div id="mynetwork_aaa707" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_841352');
+                  var container = document.getElementById('mynetwork_aaa707');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly Manually defined GPU job average occurrences across usage patterns", "label": "Hourly Manually\ndefined GPU job\naverage occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly Manually defined GPU job average occurrences across usage patterns\n=\nAverage hourly Manually defined GPU job occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00111, 0.0025, 0.000278, 0.000278, 0.00111, 0.000833,\n0.00194, 0.00111, 0.00167],\nlast 10 vals [0.0025, 0.0025, 0.00222, 0.000833, 0.00167, 0.00167, 0.000833,\n0.00111, 0.00194, 0.000556]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00111, 0.0025, 0.000278, 0.000278, 0.00111, 0.000833,\n0.00194, 0.00111, 0.00167],\nlast 10 vals [0.0025, 0.0025, 0.00222, 0.000833, 0.00167, 0.00167, 0.000833,\n0.00111, 0.00194, 0.000556]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly Manually defined GPU job occurrences in usage pattern", "label": "Average hourly\nManually defined GPU\njob occurrences in\nusage pattern", "shape": "dot", "size": 15, "title": "Average hourly Manually defined GPU job occurrences in usage pattern\n=\nHourly Manually defined GPU job occurrences in UsagePattern usage pattern hourly\noccurrences average Request duration of Manually defined GPU job from\ne-footprint hypothesis\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 4, 9, 1, 1, 4, 3, 7, 4, 6],\nlast 10 vals [9, 9, 8, 3, 6, 6, 3, 4, 7, 2] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00111, 0.0025, 0.000278, 0.000278, 0.00111, 0.000833,\n0.00194, 0.00111, 0.00167],\nlast 10 vals [0.0025, 0.0025, 0.00222, 0.000833, 0.00167, 0.00167, 0.000833,\n0.00111, 0.00194, 0.000556]", "x": 0.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly Manually defined GPU job occurrences in usage pattern", "to": "Hourly Manually defined GPU job average occurrences across usage patterns"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00194, 0.000556, 0.000833, 0.000278, 0.00139, 0.00194, 0.00167,\n0.00111, 0.00222, 0.00139],\nlast 10 vals [0.00167, 0.000833, 0.000833, 0.00111, 0.000278, 0.00139, 0.000556,\n0.00167, 0.000833, 0.00139]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00194, 0.000556, 0.000833, 0.000278, 0.00139, 0.00194, 0.00167,\n0.00111, 0.00222, 0.00139],\nlast 10 vals [0.00167, 0.000833, 0.000833, 0.00111, 0.000278, 0.00139, 0.000556,\n0.00167, 0.000833, 0.00139]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [7, 2, 3, 1, 5, 7, 6, 4, 8, 5],\nlast 10 vals [6, 3, 3, 4, 1, 5, 2, 6, 3, 5] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00194, 0.000556, 0.000833, 0.000278, 0.00139, 0.00194, 0.00167,\n0.00111, 0.00222, 0.00139],\nlast 10 vals [0.00167, 0.000833, 0.000833, 0.00111, 0.000278, 0.00139, 0.000556,\n0.00167, 0.000833, 0.00139]", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

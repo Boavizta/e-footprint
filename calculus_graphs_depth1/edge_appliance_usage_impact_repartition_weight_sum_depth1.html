@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c025af {
+             #mynetwork_a3a204 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c025af" class="card-body"></div>
+            <div id="mynetwork_a3a204" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c025af');
+                  var container = document.getElementById('mynetwork_a3a204');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Sum of edge appliance usage impact repartition weights", "label": "Sum of edge\nappliance usage\nimpact repartition\nweights", "shape": "dot", "size": 15, "title": "Sum of edge appliance usage impact repartition weights\n=\nedge workload workload need usage weight in edge appliance impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "edge workload workload need usage weight in edge appliance impact repartition", "label": "edge workload\nworkload need usage\nweight in edge\nappliance impact\nrepartition", "shape": "dot", "size": 15, "title": "edge workload workload need usage weight in edge appliance impact repartition\n=\nedge appliance appliance energy footprint per edge device for Default edge usage\npattern * (edge workload workload need unitary hourly need for Default edge\nusage pattern / Total hourly need on edge appliance appliance for Default edge\nusage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5] / 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]", "x": 0.0, "y": 1350}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "edge workload workload need usage weight in edge appliance impact repartition", "to": "Sum of edge appliance usage impact repartition weights"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\nedge workload workload need usage weight in impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "edge workload workload need usage weight in impact repartition", "label": "edge workload\nworkload need usage\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "edge workload workload need usage weight in impact repartition\n=\nEnergy footprint per edge device for Default edge usage pattern * (Unitary\nhourly need for Default edge usage pattern / Total hourly need for Default edge\nusage pattern)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0] * (105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5] / 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],\nlast 10 vals [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00149, 0.00297, 0.00446],\nlast 10 vals [0.00743, 0.00743, 0.00743, 0.00744, 0.00743, 0.00594, 0.00446,\n0.00297, 0.00148, 0]", "x": 0.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "edge workload workload need usage weight in impact repartition", "to": "Usage impact repartition weights sum"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

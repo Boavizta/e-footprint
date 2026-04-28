@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_78426f {
+             #mynetwork_4f6af4 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_78426f" class="card-body"></div>
+            <div id="mynetwork_4f6af4" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_78426f');
+                  var container = document.getElementById('mynetwork_4f6af4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per on premise GPU server instance", "label": "Available RAM per on\npremise GPU server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise GPU server instance\n=\non premise GPU server RAM * on premise GPU server utilization rate - Occupied\nRAM per on premise GPU server instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "on premise GPU server RAM", "label": "on premise GPU\nserver RAM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM\n=\non premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n* Nb gpus of on premise GPU server from e-footprint hypothesis\n=\n80 GB ram/gpu * 4 gpu\n=\n320 GB ram", "x": -150.0, "y": 300}, {"color": "darkred", "id": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "label": "on premise GPU\nserver RAM per GPU\nfrom Estimating the\nCarbon Footprint of\nBLOOM", "shape": "dot", "size": 15, "title": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM\n= 80 GB ram/gpu", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Nb gpus of on premise GPU server from e-footprint hypothesis", "label": "Nb gpus of on\npremise GPU server\nfrom e-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Nb gpus of on premise GPU server from e-footprint hypothesis = 4 gpu", "x": 0.0, "y": 150}, {"color": null, "id": "on premise GPU server utilization rate", "label": "on premise GPU\nserver utilization\nrate", "shape": "dot", "size": 15, "title": "on premise GPU server utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per on premise GPU server instance including services", "label": "Occupied RAM per on\npremise GPU server\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per on premise GPU server instance including services\n=\nBase RAM consumption of on premise GPU server from e-footprint hypothesis\n=\n0 B ram\n=\n0 B ram", "x": 150.0, "y": 300}, {"color": "darkred", "id": "Base RAM consumption of on premise GPU server from e-footprint hypothesis", "label": "Base RAM consumption\nof on premise GPU\nserver from\ne-footprint\nhypothesis", "shape": "dot", "size": 15, "title": "Base RAM consumption of on premise GPU server from e-footprint hypothesis = 0 B\nram", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "on premise GPU server RAM", "to": "Available RAM per on premise GPU server instance"}, {"arrows": "to", "from": "on premise GPU server RAM per GPU from Estimating the Carbon Footprint of BLOOM", "to": "on premise GPU server RAM"}, {"arrows": "to", "from": "Nb gpus of on premise GPU server from e-footprint hypothesis", "to": "on premise GPU server RAM"}, {"arrows": "to", "from": "on premise GPU server utilization rate", "to": "Available RAM per on premise GPU server instance"}, {"arrows": "to", "from": "Occupied RAM per on premise GPU server instance including services", "to": "Available RAM per on premise GPU server instance"}, {"arrows": "to", "from": "Base RAM consumption of on premise GPU server from e-footprint hypothesis", "to": "Occupied RAM per on premise GPU server instance including services"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n320 GB ram * 0.9 - 0 B ram\n=\n288 GB ram", "x": 0.0, "y": 450}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM\n=\nRAM per GPU * Nb gpus\n=\n80 GB ram/gpu * 4 gpu\n=\n320 GB ram", "x": -150.0, "y": 300}, {"color": "darkred", "id": "RAM per GPU", "label": "RAM per GPU", "shape": "dot", "size": 15, "title": "RAM per GPU = 80 GB ram/gpu", "x": -150.0, "y": 150}, {"color": "darkred", "id": "Nb gpus", "label": "Nb gpus", "shape": "dot", "size": 15, "title": "Nb gpus = 4 gpu", "x": 0.0, "y": 150}, {"color": null, "id": "Utilization rate", "label": "Utilization rate", "shape": "dot", "size": 15, "title": "Utilization rate = 0.9", "x": 0.0, "y": 300}, {"color": null, "id": "Occupied RAM per instance including services", "label": "Occupied RAM per\ninstance including\nservices", "shape": "dot", "size": 15, "title": "Occupied RAM per instance including services\n=\nBase RAM consumption\n=\n0 B ram\n=\n0 B ram", "x": 150.0, "y": 300}, {"color": "darkred", "id": "Base RAM consumption", "label": "Base RAM consumption", "shape": "dot", "size": 15, "title": "Base RAM consumption = 0 B ram", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM", "to": "Available RAM per instance"}, {"arrows": "to", "from": "RAM per GPU", "to": "RAM"}, {"arrows": "to", "from": "Nb gpus", "to": "RAM"}, {"arrows": "to", "from": "Utilization rate", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Occupied RAM per instance including services", "to": "Available RAM per instance"}, {"arrows": "to", "from": "Base RAM consumption", "to": "Occupied RAM per instance including services"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

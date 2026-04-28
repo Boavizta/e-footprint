@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7a1555 {
+             #mynetwork_378039 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_7a1555" class="card-body"></div>
+            <div id="mynetwork_378039" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7a1555');
+                  var container = document.getElementById('mynetwork_378039');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Lifespan of edge computer RAM", "label": "Lifespan of edge\ncomputer RAM", "shape": "dot", "size": 15, "title": "Lifespan of edge computer RAM\n=\nduplicate (Lifespan of edge computer)\n=\nduplicate (8 yr)\n=\n8 yr", "x": 0.0, "y": 300}, {"color": null, "id": "Lifespan of edge computer", "label": "Lifespan of edge\ncomputer", "shape": "dot", "size": 15, "title": "Lifespan of edge computer = 8 yr", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Lifespan of edge computer", "to": "Lifespan of edge computer RAM"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan\n=\nduplicate (Lifespan)\n=\nduplicate (8 yr)\n=\n8 yr", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Lifespan", "to": "Lifespan"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_992427 {
+             #mynetwork_66f72f {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_992427" class="card-body"></div>
+            <div id="mynetwork_66f72f" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_992427');
+                  var container = document.getElementById('mynetwork_66f72f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM per unit of edge computer RAM", "label": "RAM per unit of edge\ncomputer RAM", "shape": "dot", "size": 15, "title": "RAM per unit of edge computer RAM\n=\nduplicate (RAM of edge computer)\n=\nduplicate (16 GB ram)\n=\n16 GB ram", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of edge computer", "label": "RAM of edge computer", "shape": "dot", "size": 15, "title": "RAM of edge computer = 16 GB ram", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of edge computer", "to": "RAM per unit of edge computer RAM"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM per unit", "label": "RAM per unit", "shape": "dot", "size": 15, "title": "RAM per unit\n=\nduplicate (RAM)\n=\nduplicate (16 GB ram)\n=\n16 GB ram", "x": 0.0, "y": 300}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM = 16 GB ram", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM", "to": "RAM per unit"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

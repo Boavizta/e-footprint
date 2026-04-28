@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_49e1bc {
+             #mynetwork_5d1c92 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_49e1bc" class="card-body"></div>
+            <div id="mynetwork_5d1c92" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_49e1bc');
+                  var container = document.getElementById('mynetwork_5d1c92');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Idle power per unit of edge computer CPU", "label": "Idle power per unit\nof edge computer CPU", "shape": "dot", "size": 15, "title": "Idle power per unit of edge computer CPU\n=\nduplicate (Idle power of edge computer)\n=\nduplicate (5 W)\n=\n5 W", "x": 0.0, "y": 300}, {"color": null, "id": "Idle power of edge computer", "label": "Idle power of edge\ncomputer", "shape": "dot", "size": 15, "title": "Idle power of edge computer = 5 W", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Idle power of edge computer", "to": "Idle power per unit of edge computer CPU"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Idle power per unit", "label": "Idle power per unit", "shape": "dot", "size": 15, "title": "Idle power per unit\n=\nduplicate (Idle power)\n=\nduplicate (5 W)\n=\n5 W", "x": 0.0, "y": 300}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 5 W", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Idle power", "to": "Idle power per unit"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
