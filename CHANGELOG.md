@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [20.1.0] - 2026-04-28
+
+### Fixed
+- Factor dependencies to fixed_nb_of_instances and server.server_type in Storage’s update_nb_of_instances. Before, dependency to server.server_type could be missed.
+
+### Updated
+- Remove object name from explainable attributes labels to improve readability. label_with_name, label_with_source and label_with_name_with_source properties have been introduced to give the possibility to keep the name in the label when needed.
+- md files have been refactored in the repository to facilitate spec-driven development.
+
+### Added
+- Single source of truth descriptions in e-footprint modeling objects. Docstrings for all classes and update_ methods, + class attribute param_descriptions for input parameters, and optional disambiguation and pitfalls class attributes. Reference documentation has been updated to display those descriptions in the documentation, and they will also be used in the interface to display tooltips and help texts.
+
 ## [20.0.2] - 2026-04-23
 
 ### Fixed

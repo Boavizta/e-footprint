@@ -125,7 +125,7 @@ class JobBase(ModelingObject):
                             label=f"Occurrences within {recurrent_server_need.name}"))
 
         self.hourly_occurrences_per_usage_pattern[usage_pattern] = job_occurrences.to(u.occurrence).set_label(
-            f"Hourly {self.name} occurrences in {usage_pattern.class_as_simple_str} {usage_pattern.name}")
+            f"Hourly occurrences in {usage_pattern.name}")
 
     def update_hourly_occurrences_per_usage_pattern(self):
         """Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered."""
@@ -139,7 +139,7 @@ class JobBase(ModelingObject):
             self.hourly_occurrences_per_usage_pattern[usage_pattern], self.request_duration)
 
         self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] = hourly_avg_job_occurrences.to(u.concurrent).set_label(
-            f"Average hourly {self.name} occurrences in {usage_pattern.name}")
+            f"Average hourly occurrences in {usage_pattern.name}")
 
     def update_hourly_avg_occurrences_per_usage_pattern(self):
         """Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets."""
@@ -154,7 +154,7 @@ class JobBase(ModelingObject):
         data_exchange_per_hour = (
                 getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
                 / self.request_duration
-        ).set_label(f"{data_exchange_type_no_underscore} per hour for job {self.name} in {usage_pattern.name}")
+        ).set_label(f"{data_exchange_type_no_underscore} per hour in {usage_pattern.name}")
 
         hourly_data_exchange = self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] * data_exchange_per_hour
         target_unit = u.MB_stored if data_exchange_type == "data_stored" else u.MB
@@ -191,7 +191,7 @@ class JobBase(ModelingObject):
             hourly_calc_attr_summed_across_ups += getattr(self, calculated_attribute_name)[usage_pattern]
 
         return hourly_calc_attr_summed_across_ups.set_label(
-                f"Hourly {self.name} {calculated_attribute_label} across usage patterns")
+                f"Hourly {calculated_attribute_label} across usage patterns")
 
     def update_hourly_avg_occurrences_across_usage_patterns(self):
         """Total hourly count of duration-averaged job invocations summed over every usage pattern."""
@@ -224,7 +224,7 @@ class DirectServerJob(JobBase):
         self.ram_needed.set_label(f"RAM needed during job processing")
         self.compute_needed.set_label(
             f"{str(compute_needed.value.units).replace('_', ' ')}s needed on server {self.server.name} "
-            f"to process {self.name}")
+            f"during job processing")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:

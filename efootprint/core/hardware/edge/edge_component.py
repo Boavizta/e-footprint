@@ -135,7 +135,7 @@ class EdgeComponent(ModelingObject):
 
         self.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern] = (
             fabrication_footprint_per_edge_device.to(u.kg).set_label(
-                f"Hourly {self.name} fabrication footprint per edge device for {usage_pattern.name}")
+                f"Hourly fabrication footprint per edge device for {usage_pattern.name}")
         )
 
     def update_fabrication_footprint_per_edge_device_per_usage_pattern(self):
@@ -151,7 +151,7 @@ class EdgeComponent(ModelingObject):
         energy_per_edge_device = nb_instances * unitary_energy
 
         self.energy_per_edge_device_per_usage_pattern[usage_pattern] = energy_per_edge_device.set_label(
-            f"Hourly energy consumed by {self.name} per edge device for {usage_pattern.name}")
+            f"Hourly energy consumed by per edge device for {usage_pattern.name}")
 
     def update_energy_per_edge_device_per_usage_pattern(self):
         """Hourly energy consumed by one component on one device, broken down by usage pattern. Equal to the unitary power profile times the number of concurrent edge journeys."""
@@ -201,7 +201,7 @@ class EdgeComponent(ModelingObject):
                 for recurrent_need in self.recurrent_edge_component_needs
             ],
             start=EmptyExplainableObject(),
-        ).set_label(f"Total hourly need on {self.name} for {usage_pattern.name}")
+        ).set_label(f"Total hourly need for {usage_pattern.name}")
 
     def update_total_unitary_hourly_need_per_usage_pattern(self):
         """Aggregate hourly demand on this component for one device, summing every {class:RecurrentEdgeComponentNeed} that targets it."""

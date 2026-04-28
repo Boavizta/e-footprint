@@ -109,7 +109,7 @@ class BoaviztaServerFromConfig(ServerBase):
     def update_carbon_footprint_fabrication(self):
         total_fabrication_footprint_storage_included = ExplainableQuantity(
             self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
-            f"Total {self.name} fabrication footprint storage included", 
+            f"Total fabrication footprint storage included",
             left_parent=self.api_call_response, operator="data extraction from",
             source=self.impact_source)
 
@@ -118,7 +118,7 @@ class BoaviztaServerFromConfig(ServerBase):
             raise ValueError("Both SSD and HDD storage found in the server impact data. This is not implemented yet")
         
         full_storage_carbon_footprint_fabrication = ExplainableQuantity(
-            storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, f"Total {self.name} fabrication footprint",
+            storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, f"Total fabrication footprint",
             left_parent=self.api_call_response, operator="data extraction from",
             source=self.impact_source)
         
@@ -217,11 +217,11 @@ class BoaviztaStorageFromConfig(Storage):
         full_storage_carbon_footprint_fabrication = ExplainableQuantity(
             storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, left_parent=self.storage_type,
             source=self.server.impact_source,
-            label=f"Total {self.name} fabrication footprint")
+            label=f"Total fabrication footprint")
         
         self.carbon_footprint_fabrication_per_storage_capacity = (
                 full_storage_carbon_footprint_fabrication / (self.fixed_nb_of_instances * self.storage_capacity)
-        ).set_label(f"Fabrication footprint of one {self.name} storage instance")
+        ).set_label(f"Fabrication footprint of one storage instance")
 
     def update_power_per_storage_capacity(self):
         power_per_storage_capacity = None

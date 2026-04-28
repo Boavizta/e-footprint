@@ -200,7 +200,7 @@ class TestJob(TestCase):
             result = self.job.sum_calculated_attribute_across_usage_patterns("hourly_calc_attr_per_up", "my calc attr")
 
             self.assertEqual([4, 4, 9], result.value_as_float_list)
-            self.assertEqual("Hourly test job my calc attr across usage patterns", result.label)
+            self.assertEqual("Hourly my calc attr across usage patterns", result.label)
 
         del self.job.hourly_calc_attr_per_up
 

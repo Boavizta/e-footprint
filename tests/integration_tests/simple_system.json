@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "20.0.2",
+    "efootprint_version": "20.1.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -120,7 +120,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process job 1",
+                "label": "cpu cores needed on server Default server during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -170,7 +170,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Default server to process job 2",
+                "label": "cpu cores needed on server Default server during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

@@ -181,7 +181,7 @@ class EdgeDevice(ModelingObject):
         parent_groups = self._find_parent_groups()
         if not parent_groups:
             self.total_nb_of_units = ExplainableQuantity(
-                1 * u.dimensionless, f"{self.name} has no group (default count = 1)")
+                1 * u.dimensionless, f"no group (default count = 1)")
             return
 
         # Sum contributions from all parent groups. When a device belongs to multiple
@@ -208,7 +208,7 @@ class EdgeDevice(ModelingObject):
             usage_pattern]
         self.structure_fabrication_footprint_per_usage_pattern[usage_pattern] = (
             self.total_nb_of_units * nb_instances * structure_fabrication_intensity * ExplainableQuantity(1 * u.hour, "one hour")
-        ).to(u.kg).set_label(f"Hourly {self.name} structure fabrication footprint for {usage_pattern.name}")
+        ).to(u.kg).set_label(f"Hourly structure fabrication footprint for {usage_pattern.name}")
 
     def update_structure_fabrication_footprint_per_usage_pattern(self):
         """Hourly fabrication-phase emissions of the chassis (excluding components), broken down by usage pattern."""
@@ -226,7 +226,7 @@ class EdgeDevice(ModelingObject):
                                     * component.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern])
 
         self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = total_footprint.to(
-            u.kg).set_label(f"Hourly {self.name} instances fabrication footprint for {usage_pattern.name}")
+            u.kg).set_label(f"Hourly instances fabrication footprint for {usage_pattern.name}")
 
     def update_instances_fabrication_footprint_per_usage_pattern(self):
         """Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern."""
@@ -243,8 +243,7 @@ class EdgeDevice(ModelingObject):
 
         self.instances_energy_per_usage_pattern[usage_pattern] = (
             self.total_nb_of_units * total_energy
-        ).set_label(
-            f"Hourly energy consumed by {self.name} instances for {usage_pattern.name}")
+        ).set_label(f"Hourly energy consumed by instances for {usage_pattern.name}")
 
     def update_instances_energy_per_usage_pattern(self):
         """Hourly energy consumed by the whole device, broken down by usage pattern. Equal to the sum of component-level energy multiplied by the device count."""
@@ -295,7 +294,7 @@ class EdgeDevice(ModelingObject):
         structure_fabrication_total = sum(
             self.structure_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject())
         equal_structure_share = structure_fabrication_total / ExplainableQuantity(
-            len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
+            len(self.components) * u.dimensionless, label=f"Number of components")
         self.fabrication_footprint_breakdown_by_source[component] = (
             self.total_nb_of_units * component.fabrication_footprint_per_edge_device + equal_structure_share
         ).set_label(f"Fabrication footprint attributed to {component.name}")
@@ -353,7 +352,7 @@ class EdgeDevice(ModelingObject):
 
     def _fabrication_impact_per_usage_pattern_for_component(self, component: EdgeComponent):
         structure_component_share = ExplainableQuantity(
-            len(self.components) * u.dimensionless, label=f"Number of components in {self.name}")
+            len(self.components) * u.dimensionless, label=f"Number of components")
         return ExplainableObjectDict({
             usage_pattern: (
                 component.fabrication_footprint_per_edge_device_per_usage_pattern.get(

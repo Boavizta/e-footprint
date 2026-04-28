@@ -26,21 +26,21 @@
     "hourly_data_stored_per_usage_pattern": {},
     "hourly_avg_occurrences_across_usage_patterns": {
       "value": null,
-      "label": "Hourly Test Job average occurrences across usage patterns",
+      "label": "Hourly average occurrences across usage patterns",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
     },
     "hourly_data_transferred_across_usage_patterns": {
       "value": null,
-      "label": "Hourly Test Job data transferred across usage patterns",
+      "label": "Hourly data transferred across usage patterns",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
     },
     "hourly_data_stored_across_usage_patterns": {
       "value": null,
-      "label": "Hourly Test Job data stored across usage patterns",
+      "label": "Hourly data stored across usage patterns",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
@@ -131,7 +131,7 @@
     },
     "hourly_occurrences_across_usage_patterns": {
       "value": null,
-      "label": "Hourly Test Job occurrences across usage patterns",
+      "label": "Hourly occurrences across usage patterns",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null

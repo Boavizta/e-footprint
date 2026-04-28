@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "20.0.2",
+    "efootprint_version": "20.1.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -179,7 +179,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process server 1 job 1",
+                "label": "cpu cores needed on server Server 1 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -229,7 +229,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process server 1 job 2",
+                "label": "cpu cores needed on server Server 1 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -279,7 +279,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 1 to process server 1 job 3",
+                "label": "cpu cores needed on server Server 1 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -329,7 +329,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 2 to process server 2 job",
+                "label": "cpu cores needed on server Server 2 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -379,7 +379,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 3 to process server 3 job",
+                "label": "cpu cores needed on server Server 3 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null
@@ -429,7 +429,7 @@
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
-                "label": "cpu cores needed on server Server 3 to process server 3 job 2",
+                "label": "cpu cores needed on server Server 3 during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

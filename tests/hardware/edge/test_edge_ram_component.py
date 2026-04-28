@@ -51,8 +51,6 @@ class TestEdgeRAMComponent(TestCase):
         self.assertAlmostEqual(
             expected_value, self.ram_component.available_ram_per_instance.value.magnitude, places=5)
         self.assertEqual(u.GB_ram, self.ram_component.available_ram_per_instance.value.units)
-        self.assertIn("Available RAM per Test RAM instance",
-                     self.ram_component.available_ram_per_instance.label)
 
     def test_update_available_ram_per_instance_with_nb_of_units(self):
         """Test update_available_ram_per_instance multiplies RAM by nb_of_units."""

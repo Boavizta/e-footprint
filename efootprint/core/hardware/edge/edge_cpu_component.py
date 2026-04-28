@@ -75,7 +75,7 @@ class EdgeCPUComponent(EdgeComponent):
             raise InsufficientCapacityError(self, "compute", self.compute, self.base_compute_consumption)
 
         self.available_compute_per_instance = available_compute_per_instance.set_label(
-            f"Available compute per {self.name} instance")
+            f"Available compute per instance")
 
     def update_dict_element_in_unitary_hourly_compute_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_compute_need = sum(

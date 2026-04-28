@@ -261,7 +261,6 @@ class TestEdgeDevice(TestCase):
 
         result = self.edge_device.instances_energy_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
-        self.assertIn("Test Device", result.label)
 
     def test_update_dict_element_in_fabrication_footprint_breakdown_by_source(self):
         """Test per-component fabrication breakdown scales by total_nb_of_units and splits structure equally."""

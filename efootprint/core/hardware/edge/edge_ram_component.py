@@ -73,8 +73,7 @@ class EdgeRAMComponent(EdgeComponent):
         if available_ram_per_instance < SourceValue(0 * u.B_ram):
             raise InsufficientCapacityError(self, "RAM", self.ram.to(u.GB_ram), self.base_ram_consumption)
 
-        self.available_ram_per_instance = available_ram_per_instance.set_label(
-            f"Available RAM per {self.name} instance")
+        self.available_ram_per_instance = available_ram_per_instance.set_label(f"Available RAM per instance")
 
     def update_dict_element_in_unitary_hourly_ram_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_ram_need = sum(

@@ -55,8 +55,6 @@ class TestEdgeCPUComponent(TestCase):
         self.assertAlmostEqual(
             expected_value, self.cpu_component.available_compute_per_instance.value.magnitude, places=5)
         self.assertEqual(u.cpu_core, self.cpu_component.available_compute_per_instance.value.units)
-        self.assertIn("Available compute per Test CPU instance",
-                     self.cpu_component.available_compute_per_instance.label)
 
     def test_update_available_compute_per_instance_with_nb_of_units(self):
         """Test update_available_compute_per_instance multiplies compute by nb_of_units."""

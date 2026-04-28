@@ -48,7 +48,7 @@ class InfraHardware(HardwareBase):
                 / self.lifespan)
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
-                f"Hourly {self.name} instances fabrication footprint")
+                f"Hourly instances fabrication footprint")
 
     def update_energy_footprint(self):
         """Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity."""
@@ -58,4 +58,4 @@ class InfraHardware(HardwareBase):
                 f" This shouldn’t happen as server objects have it as input parameter and Storage as property")
         energy_footprint = (self.instances_energy * self.average_carbon_intensity)
 
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly energy footprint")

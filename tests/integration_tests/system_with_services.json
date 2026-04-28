@@ -1,5 +1,5 @@
 {
-    "efootprint_version": "20.0.2",
+    "efootprint_version": "20.1.0",
     "System": {
         "system-1": {
             "name": "system 1",
@@ -105,7 +105,7 @@
             "compute_needed": {
                 "value": 1.0,
                 "unit": "gpu",
-                "label": "gpus needed on server GPU server to process direct GPU server job",
+                "label": "gpus needed on server GPU server during job processing",
                 "source": {
                     "name": "e-footprint hypothesis",
                     "link": null

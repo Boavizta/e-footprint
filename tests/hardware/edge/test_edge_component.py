@@ -72,8 +72,6 @@ class TestEdgeComponent(TestCase):
 
         result = self.component.fabrication_footprint_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertAlmostEqual(expected_footprint, result.value.to(u.kg).magnitude, places=5)
-        self.assertIn("Test Component", result.label)
-        self.assertIn("Test Pattern", result.label)
 
     def test_update_dict_element_in_energy_per_edge_device_per_usage_pattern(self):
         """Test energy per edge device calculation for a single pattern."""
@@ -93,7 +91,6 @@ class TestEdgeComponent(TestCase):
 
         result = self.component.energy_per_edge_device_per_usage_pattern[mock_pattern]
         self.assertTrue(np.allclose(expected_energy, result.value.to(u.Wh).magnitude))
-        self.assertIn("Test Component", result.label)
 
     def test_update_dict_element_in_energy_footprint_per_edge_device_per_usage_pattern(self):
         """Test energy footprint per edge device calculation for a single pattern."""
