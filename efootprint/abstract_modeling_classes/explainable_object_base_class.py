@@ -1,12 +1,13 @@
+import uuid
 from collections import deque
 from copy import copy
 from typing import Type, Optional, TYPE_CHECKING
-from dataclasses import dataclass
 import os
 
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
 from efootprint.constants.units import u
 from efootprint.logger import logger
+from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
 
@@ -14,21 +15,65 @@ if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
-@dataclass
 class Source:
+    _use_name_as_id: bool = False
+
+    def __init__(self, name: str, link: Optional[str] = None, id: Optional[str] = None):
+        self.name = name
+        self.link = link if link else None
+        if id is not None:
+            self.id = id
+        elif Source._use_name_as_id:
+            self.id = css_escape(name)
+        else:
+            self.id = str(uuid.uuid4())[:6]
+
     @classmethod
     def from_json_dict(cls, d):
         if "name" not in d:
             raise ValueError("Source JSON must contain 'name' field")
-        return cls(name=d["name"], link=d.get("link", None))
-    name: str
-    link: Optional[str]
+        return cls(name=d["name"], link=d.get("link", None), id=d.get("id"))
 
     def to_json(self):
-        output_dict = {"name": self.name}
-        if self.link is not None:
-            output_dict["link"] = self.link
-        return output_dict
+        return {"id": self.id, "name": self.name, "link": self.link}
+
+    def __repr__(self):
+        return f"Source(id={self.id!r}, name={self.name!r}, link={self.link!r})"
+
+
+def _apply_json_source(obj: "ExplainableObject", json_dict: dict, sources_dict: dict) -> None:
+    source_ref = json_dict.get("source") if isinstance(json_dict, dict) else None
+    if source_ref is None:
+        return
+    if isinstance(source_ref, str):
+        if sources_dict is not None and source_ref in sources_dict:
+            obj.source = sources_dict[source_ref]
+            return
+        sentinel = _resolve_sentinel_source(source_ref)
+        if sentinel is not None:
+            obj.source = sentinel
+            return
+        raise ValueError(
+            f"Source id ref '{source_ref}' not found in sources_dict while loading {obj}.")
+    elif isinstance(source_ref, dict):
+        obj.source = Source.from_json_dict(source_ref)
+    else:
+        raise TypeError(f"Unexpected source field type {type(source_ref)} on {obj}.")
+
+
+def explainable_object_from_json(d: dict, sources_dict: dict) -> "ExplainableObject":
+    obj = ExplainableObject.from_json_dict(d)
+    _apply_json_source(obj, d, sources_dict)
+    return obj
+
+
+def _resolve_sentinel_source(source_id: str) -> Optional[Source]:
+    from efootprint.constants.sources import Sources
+    if source_id == Sources.USER_DATA.id:
+        return Sources.USER_DATA
+    if source_id == Sources.HYPOTHESIS.id:
+        return Sources.HYPOTHESIS
+    return None
 
 
 def retrieve_update_function_from_mod_obj_and_attr_name(mod_obj: "ModelingObject", attr_name: str):
@@ -105,7 +150,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         'operator',
         '_keys_of_direct_ancestors_with_id_loaded_from_json',
         '_keys_of_direct_children_with_id_loaded_from_json',
-        'flat_obj_dict',
+        '_flat_obj_dict',
+        '_sources_dict',
         '_direct_ancestors_with_id',
         '_direct_children_with_id',
         'explain_nested_tuples_from_json',
@@ -127,18 +173,20 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             if matcher(d):
                 return subclass.from_json_dict(d)
         if "value" in d and isinstance(d["value"], str):
-            source = Source.from_json_dict(d.get("source")) if d.get("source") else None
-            return cls(d["value"], label=d.get("label", None), source=source)
+            return cls(d["value"], label=d.get("label", None))
         raise ValueError("No matching subclass found for data: {}".format(d))
 
-    def initialize_calculus_graph_data_from_json(self, json_input: dict, flat_obj_dict: dict[str, "ModelingObject"]):
+    def initialize_calculus_graph_data_from_json(
+            self, json_input: dict, flat_obj_dict: dict[str, "ModelingObject"],
+            sources_dict: Optional[dict] = None):
+        self._sources_dict = sources_dict
         if "direct_ancestors_with_id" in json_input:
             self._keys_of_direct_ancestors_with_id_loaded_from_json = json_input[
                 "direct_ancestors_with_id"]
             self._keys_of_direct_children_with_id_loaded_from_json = json_input[
                 "direct_children_with_id"]
             self.explain_nested_tuples_from_json = json_input["explain_nested_tuples"]
-            self.flat_obj_dict = flat_obj_dict
+            self._flat_obj_dict = flat_obj_dict
 
     def __init__(
             self, value: object, label: str = None, left_parent: "ExplainableObject" = None,
@@ -159,7 +207,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self.operator = operator
         self._keys_of_direct_ancestors_with_id_loaded_from_json = None
         self._keys_of_direct_children_with_id_loaded_from_json = None
-        self.flat_obj_dict = None
+        self._flat_obj_dict = None
+        self._sources_dict = None
         self._direct_ancestors_with_id = []
         self._direct_children_with_id = []
         self.explain_nested_tuples_from_json = None
@@ -187,6 +236,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @property
     def explain_nested_tuples(self):
         if self._explain_nested_tuples is None and self.explain_nested_tuples_from_json is not None:
+            sources_dict = self._sources_dict
+
             def recursively_deserialize_explain_nested_tuple(explain_nested_tuple):
                 if isinstance(explain_nested_tuple, list) or isinstance(explain_nested_tuple, tuple):
                     return (recursively_deserialize_explain_nested_tuple(explain_nested_tuple[0]),
@@ -194,9 +245,9 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                             recursively_deserialize_explain_nested_tuple(explain_nested_tuple[2]))
                 elif explain_nested_tuple is not None:
                     if isinstance(explain_nested_tuple, str):
-                        return get_attribute_from_flat_obj_dict(explain_nested_tuple, self.flat_obj_dict)
+                        return get_attribute_from_flat_obj_dict(explain_nested_tuple, self._flat_obj_dict)
                     elif isinstance(explain_nested_tuple, dict):
-                        return ExplainableObject.from_json_dict(explain_nested_tuple)
+                        return explainable_object_from_json(explain_nested_tuple, sources_dict)
                 return None
 
             self._explain_nested_tuples = recursively_deserialize_explain_nested_tuple(
@@ -218,11 +269,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if (self._keys_of_direct_ancestors_with_id_loaded_from_json is not None
                 and self._keys_of_direct_children_with_id_loaded_from_json is not None):
             self.direct_ancestors_with_id = [
-                get_attribute_from_flat_obj_dict(direct_ancestor_key, self.flat_obj_dict) for direct_ancestor_key in
+                get_attribute_from_flat_obj_dict(direct_ancestor_key, self._flat_obj_dict) for direct_ancestor_key in
                 self._keys_of_direct_ancestors_with_id_loaded_from_json
             ]
             self.direct_children_with_id = [
-                get_attribute_from_flat_obj_dict(direct_child_key, self.flat_obj_dict) for direct_child_key in
+                get_attribute_from_flat_obj_dict(direct_child_key, self._flat_obj_dict) for direct_child_key in
                 self._keys_of_direct_children_with_id_loaded_from_json
             ]
 
@@ -457,9 +508,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                 f" = {element_value_to_print}"
 
     def compute_explain_nested_tuples(self, return_self_if_self_has_mod_obj_container_or_no_ancestors=False):
-        if (return_self_if_self_has_mod_obj_container_or_no_ancestors and
-                (self.modeling_obj_container is not None or len(self.direct_ancestors_with_id) == 0)):
-            return self
+        if return_self_if_self_has_mod_obj_container_or_no_ancestors:
+            if self.modeling_obj_container is not None or len(self.direct_ancestors_with_id) == 0:
+                return self
+            if self.source is not None:
+                raise ValueError(
+                    f"'{self.label}' is an intermediate calculation node with source '{self.source}' "
+                    f"but no modeling_obj_container. Move the source to the final calculated attribute.")
 
         left_explanation = None
         right_explanation = None
@@ -643,7 +698,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         output_dict["label"] = self.label
 
         if self.source is not None:
-            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
+            output_dict["source"] = self.source.id
 
         if save_calculated_attributes:
             if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:

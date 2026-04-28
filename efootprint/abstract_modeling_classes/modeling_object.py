@@ -4,7 +4,6 @@ from copy import copy
 from functools import cached_property
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
-import re
 import time
 from collections import defaultdict
 
@@ -14,6 +13,7 @@ from IPython.display import HTML
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     retrieve_update_function_from_mod_obj_and_attr_name, ExplainableObject)
@@ -81,21 +81,6 @@ class ABCAfterInitMeta(AfterInitMeta, ABCMeta):
         return AfterInitMeta.__instancecheck__(cls, instance)
 
 
-def css_escape(input_string):
-    """
-    Escape a string to be used as a CSS identifier.
-    """
-    def escape_char(c):
-        if re.match(r'[a-zA-Z0-9_-]', c):
-            return c
-        elif c == ' ':
-            return '-'
-        else:
-            return f'{ord(c):x}'
-
-    return ''.join(escape_char(c) for c in input_string)
-
-
 def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
     from efootprint.all_classes_in_order import CANONICAL_COMPUTATION_ORDER
     initial_chain_len = len(mod_objs_computation_chain)
@@ -161,8 +146,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     @classmethod
     def from_json_dict(cls, object_json_dict: dict, flat_obj_dict: dict, set_trigger_modeling_updates_to_true=False,
-                       is_loaded_from_system_with_calculated_attributes=False):
+                       is_loaded_from_system_with_calculated_attributes=False, sources_dict: dict | None = None):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+        from efootprint.abstract_modeling_classes.explainable_object_base_class import explainable_object_from_json
         new_obj = cls.__new__(cls)
         new_obj.__dict__["contextual_modeling_obj_containers"] = []
         new_obj.__dict__["explainable_object_dicts_containers"] = []
@@ -170,11 +156,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         explainable_object_dicts_to_create_after_objects_creation = {}
         for attr_key, attr_value in object_json_dict.items():
             if isinstance(attr_value, dict) and "label" in attr_value:
-                new_value = ExplainableObject.from_json_dict(attr_value)
+                new_value = explainable_object_from_json(attr_value, sources_dict)
                 new_obj.__setattr__(attr_key, new_value, check_input_validity=False)
                 # Calculus graph data is added after setting as new_obj attribute to not interfere
                 # with set_modeling_obj_container logic
-                new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict)
+                new_value.initialize_calculus_graph_data_from_json(attr_value, flat_obj_dict, sources_dict)
             elif isinstance(attr_value, dict) and "label" not in attr_value:
                 explainable_object_dicts_to_create_after_objects_creation[(new_obj, attr_key)] = attr_value
             elif isinstance(attr_value, str) and attr_key != "id" and attr_value in flat_obj_dict:

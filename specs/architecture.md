@@ -41,6 +41,7 @@ Avoid gathering context here unless absolutely necessary — most modeling work 
 
 - **`json_to_system.py`** / **`system_to_json.py`** — serialization round-trip. Saves systems with or without calculated attributes.
 - **`version_upgrade_handlers.py`** — migration logic for schema changes. Migrations apply to JSON files saved without calculated attributes.
+- **`Source` is a top-level JSON entity (since v21).** Each `Source` carries a deterministic `id` (uuid in production, name-based in tests via `Source._use_name_as_id`). `ExplainableObject.source` serializes as `"source": "<source_id>"`; the system JSON has a top-level `"Sources": {id: {...}}` block with only the sources actually referenced. Sentinel ids `"user_data"` and `"hypothesis"` are pinned so `Sources.USER_DATA` / `Sources.HYPOTHESIS` re-identify with the live Python singletons across reloads. Source application during JSON load is centralized in `_apply_json_source` (in `explainable_object_base_class.py`); per-subclass `from_json_dict` no longer constructs `Source` instances.
 
 ## Modeling object structure
 

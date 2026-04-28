@@ -20,8 +20,7 @@ class ExplainableQuantity(ExplainableObject):
     @classmethod
     def from_json_dict(cls, d):
         value = {key: d[key] for key in ["value", "unit"]}
-        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
-        return cls(value, label=d["label"], source=source)
+        return cls(value, label=d["label"])
 
     def __init__(
             self, value: Quantity | dict, label: str = None, left_parent: ExplainableObject = None,

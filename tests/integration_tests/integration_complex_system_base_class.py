@@ -406,7 +406,3 @@ class IntegrationTestComplexSystemBaseClass(IntegrationTestBaseClass):
     def run_test_dict_container_integrity(self):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""
         self.verify_dict_container_integrity(self.system)
-
-    def run_test_semantic_units_in_calculated_attributes(self):
-        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
-        self.check_semantic_units_in_calculated_attributes(self.system)

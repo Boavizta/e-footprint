@@ -110,7 +110,7 @@ class VideoStreamingJob(ServiceJob):
         width, height = map(int, match.groups())
         pixel_count = ExplainableQuantity(
             width * height * u.dimensionless, f"pixel count for resolution {self.resolution}",
-            left_parent=self.resolution, operator="pixel count computation", source=Sources.USER_DATA)
+            left_parent=self.resolution, operator="pixel count computation")
 
         self.dynamic_bitrate = (pixel_count * self.service.bits_per_pixel * self.refresh_rate
                                 ).to(u.MB / u.s).set_label("Dynamic bitrate")

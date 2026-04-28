@@ -2,7 +2,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import S
 
 
 class Sources:
-    USER_DATA = Source("user data", None)
+    USER_DATA = Source("user data", None, id="user_data")
     ADEME_STUDY = Source(
         name="Étude ADEME",
         link="https://docs.google.com/spreadsheets/d/1s-B4WLXAxSE8ddoY9929SX2tPdCZ4OEl/edit#gid=155161832",
@@ -19,7 +19,7 @@ class Sources:
     TRAFICOM_STUDY = Source(
         "Traficom study", "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
     )
-    HYPOTHESIS = Source("e-footprint hypothesis", None)
+    HYPOTHESIS = Source("e-footprint hypothesis", None, id="hypothesis")
     ECHOS_DU_NET = Source(
         "echosdunet",
         "https://www.echosdunet.net/dossiers/facture-denergie-peut-on-reduire-consommation-electrique-sa-box-internet",

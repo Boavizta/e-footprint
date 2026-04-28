@@ -10,11 +10,10 @@ class EcoLogitsExplainableQuantity(ExplainableQuantity):
     @classmethod
     def from_json_dict(cls, d):
         value = {key: d[key] for key in ["value", "unit"]}
-        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
-        return cls(value, label=d["label"], ancestors=d["ancestors"], formula=d["formula"], source=source)
+        return cls(value, label=d["label"], ancestors=d["ancestors"], formula=d["formula"])
 
     def __init__(self, value: Quantity|dict, label: str, ancestors: dict[str, Quantity|dict],
-                 formula: str, source: Source, parent: ExplainableObject=None, operator: str=None):
+                 formula: str, source: Source = None, parent: ExplainableObject=None, operator: str=None):
         super().__init__(value, label, left_parent=parent, source=source, operator=operator)
         self._ancestors = ancestors
         self.formula = formula

@@ -28,10 +28,9 @@ class ExplainableRecurrentQuantities(ExplainableObject):
 
     @classmethod
     def from_json_dict(cls, d):
-        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
         value = Quantity(np.array(eval(d["recurring_values"]), dtype=np.float32), get_unit(d["unit"]))
 
-        return cls(value, label=d["label"], source=source)
+        return cls(value, label=d["label"])
 
     def __init__(
             self, value: Quantity, label: str = None,

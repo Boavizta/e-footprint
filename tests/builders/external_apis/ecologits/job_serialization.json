@@ -67,10 +67,7 @@
       "value": 0.0,
       "unit": "megabyte_stored",
       "label": "Data stored by request",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
@@ -93,10 +90,7 @@
       "value": 0.0,
       "unit": "megabyte_ram",
       "label": "RAM needed during job processing",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
@@ -105,10 +99,7 @@
       "value": 0.0,
       "unit": "cpu_core",
       "label": "CPU needed during job processing",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [],
       "explain_nested_tuples": null
@@ -118,10 +109,7 @@
       "value": 1000.0,
       "unit": "dimensionless",
       "label": "Output token count for gpt-4o",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [
         "('Test-Job', 'data_transferred', None)",
@@ -186,6 +174,7 @@
         "request_usage_wcf": 0.0011709673942188795
       },
       "label": "Ecologits impacts",
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'model_active_params', None)",
         "('Test-EcoLogits-API', 'model_total_params', None)",
@@ -231,10 +220,7 @@
       "value": 0.0906377035298003,
       "unit": "watt_hour",
       "label": "Ecologits gpu_energy for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -258,10 +244,7 @@
       "value": 25.41562189054726,
       "unit": "second",
       "label": "Ecologits generation_latency for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -290,10 +273,7 @@
       "value": 1056.0,
       "unit": "gigabyte_ram",
       "label": "Ecologits model_required_memory for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -313,10 +293,7 @@
       "value": 16.0,
       "unit": "dimensionless",
       "label": "Ecologits gpu_required_count for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -336,10 +313,7 @@
       "value": 0.2647460613598673,
       "unit": "watt_hour",
       "label": "Ecologits server_energy for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -362,10 +336,7 @@
       "value": 2.0579391814040062,
       "unit": "watt_hour",
       "label": "Ecologits request_energy for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -387,10 +358,7 @@
       "value": 0.7893225730275066,
       "unit": "gram",
       "label": "Ecologits request_usage_gwp for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -410,10 +378,7 @@
       "value": 15768.0,
       "unit": "kilogram",
       "label": "Ecologits server_gpu_embodied_gwp for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -435,10 +400,7 @@
       "value": 0.06618651533996682,
       "unit": "gram",
       "label": "Ecologits request_embodied_gwp for gpt-4o",
-      "source": {
-        "name": "Ecologits compute_llm_impacts_dag function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py"
-      },
+      "source": "Ecologits-compute_llm_impacts_dag-function",
       "direct_ancestors_with_id": [
         "('Test-Job', 'impacts', None)"
       ],
@@ -464,10 +426,7 @@
     "provider": {
       "value": "openai",
       "label": "Provider",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [
         "('Test-EcoLogits-API', 'model_total_params', None)",
@@ -482,10 +441,7 @@
     "model_name": {
       "value": "gpt-4o",
       "label": "Model used",
-      "source": {
-        "name": "e-footprint hypothesis",
-        "link": null
-      },
+      "source": "hypothesis",
       "direct_ancestors_with_id": [],
       "direct_children_with_id": [
         "('Test-EcoLogits-API', 'model_total_params', None)",
@@ -499,10 +455,7 @@
       "value": 440.0,
       "unit": "billion",
       "label": "gpt-4o total parameter count (in billions)",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)",
         "('Test-EcoLogits-API', 'model_name', None)"
@@ -520,10 +473,7 @@
       "value": 88.0,
       "unit": "billion",
       "label": "gpt-4o active parameter count (in billions)",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)",
         "('Test-EcoLogits-API', 'model_name', None)"
@@ -541,10 +491,7 @@
       "value": 40.2,
       "unit": "dimensionless",
       "label": "gpt-4o token per second",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)",
         "('Test-EcoLogits-API', 'model_name', None)"
@@ -562,10 +509,7 @@
       "value": 0.54,
       "unit": "second",
       "label": "gpt-4o time to first token",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)",
         "('Test-EcoLogits-API', 'model_name', None)"
@@ -582,10 +526,7 @@
     "datacenter_location": {
       "value": "USA",
       "label": "Datacenter location for openai",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)"
       ],
@@ -602,10 +543,7 @@
       "value": 1.2,
       "unit": "dimensionless",
       "label": "Datacenter PUE for openai",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'provider', None)"
       ],
@@ -620,10 +558,7 @@
       "value": 0.38355,
       "unit": "kilogram / kilowatt_hour",
       "label": "Average carbon intensity of electricity mix for openai",
-      "source": {
-        "name": "Ecologits llm_impacts function",
-        "link": "https://github.com/genai-impact/ecologits/blob/main/ecologits/tracers/utils.py#L60"
-      },
+      "source": "Ecologits-llm_impacts-function",
       "direct_ancestors_with_id": [
         "('Test-EcoLogits-API', 'datacenter_location', None)"
       ],

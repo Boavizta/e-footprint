@@ -68,7 +68,6 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     @classmethod
     def from_json_dict(cls, d):
-        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
         if "values" in d:
             value = Quantity(np.array(d["values"], dtype=np.float32), get_unit(d["unit"]))
         elif "compressed_values" in d:
@@ -80,7 +79,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
         if d.get("timezone", None) is not None:
             start_date = pytz.timezone(d["timezone"]).localize(start_date)
 
-        return cls(value, start_date=start_date, label=d["label"], source=source)
+        return cls(value, start_date=start_date, label=d["label"])
 
     def __init__(
             self, value: Quantity | dict, start_date: datetime, label: str = None,

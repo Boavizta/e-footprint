@@ -1,5 +1,27 @@
 {
-    "efootprint_version": "20.1.0",
+    "efootprint_version": "21.0.0",
+    "Sources": {
+        "Our-world-in-data-28202429": {
+            "id": "Our-world-in-data-28202429",
+            "name": "Our world in data (2024)",
+            "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
+        },
+        "Traficom-study": {
+            "id": "Traficom-study",
+            "name": "Traficom study",
+            "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+        },
+        "hypothesis": {
+            "id": "hypothesis",
+            "name": "e-footprint hypothesis",
+            "link": null
+        },
+        "user_data": {
+            "id": "user_data",
+            "name": "user data",
+            "link": null
+        }
+    },
     "System": {
         "Edge-system": {
             "name": "Edge system",
@@ -20,10 +42,7 @@
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Hourly nb of edge usage journey starts",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "edge_usage_journey": "Default-edge-usage-journey",
             "network": "Default-wifi-network",
@@ -41,10 +60,7 @@
                 "value": 6.0,
                 "unit": "year",
                 "label": "Usage span",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -73,28 +89,19 @@
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
                 "label": "Recurrent compute needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "recurrent_ram_needed": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "gigabyte_ram",
                 "label": "Recurrent RAM needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "recurrent_storage_needed": {
                 "recurring_values": "[200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0, -200.0]",
                 "unit": "megabyte_stored",
                 "label": "Recurrent storage needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -106,10 +113,7 @@
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "components": [
                 "Edge-computer-CPU",
@@ -121,64 +125,43 @@
                 "value": 60.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power": {
                 "value": 30.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power": {
                 "value": 5.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute": {
                 "value": 4.0,
                 "unit": "cpu_core",
                 "label": "Compute",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 1.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "Base compute consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -190,19 +173,13 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -214,37 +191,25 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -256,73 +221,49 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
                 "label": "Fabrication carbon footprint per unit per storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "storage_capacity_per_unit": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
                 "label": "Storage capacity per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_storage_need": {
                 "value": 100.0,
                 "unit": "gigabyte_stored",
                 "label": "Initial storage need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -367,19 +308,13 @@
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "structure_carbon_footprint_fabrication": {
                 "value": 50.0,
                 "unit": "kilogram",
                 "label": "Structure fabrication carbon footprint",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "components": [
                 "edge-RAM-component",
@@ -396,64 +331,43 @@
                 "value": 20.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 10.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 2.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_per_unit": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 1.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -465,64 +379,43 @@
                 "value": 20.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 15.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 3.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_per_unit": {
                 "value": 4.0,
                 "unit": "cpu_core",
                 "label": "Compute per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "Base compute consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -534,46 +427,31 @@
                 "value": 100.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 5.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -586,10 +464,7 @@
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "gigabyte_ram",
                 "label": "Recurrent need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         },
         "CPU-need": {
@@ -600,10 +475,7 @@
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
                 "label": "Recurrent need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         },
         "Workload-need": {
@@ -614,10 +486,7 @@
                 "recurring_values": "[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]",
                 "unit": "concurrent",
                 "label": "Recurrent need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -629,10 +498,7 @@
                 "value": 0.05,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity",
-                "source": {
-                    "name": "Traficom study",
-                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
-                }
+                "source": "Traficom-study"
             }
         }
     },
@@ -645,18 +511,12 @@
                 "value": 44.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity",
-                "source": {
-                    "name": "Our world in data (2024)",
-                    "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
-                }
+                "source": "Our-world-in-data-28202429"
             },
             "timezone": {
                 "zone": "Europe/Paris",
                 "label": "Timezone",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
+                "source": "user_data"
             }
         }
     }

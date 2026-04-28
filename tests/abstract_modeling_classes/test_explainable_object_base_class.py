@@ -425,9 +425,8 @@ Label L + Label R
             self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")
 
     def test_to_json_for_timezone(self):
-        timezone_expl = ExplainableTimezone(
-            pytz.timezone("Europe/Paris"), "timezone", source=Source("source name", "source link"))
+        source = Source("source name", "source link")
+        timezone_expl = ExplainableTimezone(pytz.timezone("Europe/Paris"), "timezone", source=source)
 
         self.assertEqual(
-            {"zone": "Europe/Paris", "label": "timezone",
-             "source": {"name": "source name", "link": "source link"}}, timezone_expl.to_json())
+            {"zone": "Europe/Paris", "label": "timezone", "source": source.id}, timezone_expl.to_json())

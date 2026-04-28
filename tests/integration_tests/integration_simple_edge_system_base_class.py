@@ -573,10 +573,6 @@ class IntegrationTestSimpleEdgeSystemBaseClass(IntegrationTestBaseClass):
         """Test bidirectional consistency of explainable_object_dicts_containers tracking."""
         self.verify_dict_container_integrity(self.system)
 
-    def run_test_semantic_units_in_calculated_attributes(self):
-        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
-        self.check_semantic_units_in_calculated_attributes(self.system)
-
     def run_test_append_edge_usage_pattern_with_new_country_computes_country(self):
         """Test that appending an EdgeUsagePattern with a new Country properly computes the Country's attributes."""
         new_country = Countries.MALAYSIA()

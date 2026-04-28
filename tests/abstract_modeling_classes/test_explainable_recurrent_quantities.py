@@ -141,17 +141,18 @@ class TestExplainableRecurrentQuantities(unittest.TestCase):
         self.assertEqual(obj.value_as_float_list, [1.0, 2.0, 3.0])
 
     def test_from_json_dict_with_source(self):
-        from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
+        from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, explainable_object_from_json
+        source = Source("test_source", "http://test.com")
         json_data = {
             "recurring_values": "[1.0, 2.0]",
             "unit": "watt",
             "label": "Test",
-            "source": {"name": "test_source", "link": "http://test.com"}
+            "source": source.id,
         }
-        
-        obj = ExplainableObject.from_json_dict(json_data)
-        
-        self.assertIsInstance(obj.source, Source)
+
+        obj = explainable_object_from_json(json_data, {source.id: source})
+
+        self.assertIs(obj.source, source)
         self.assertEqual(obj.source.name, "test_source")
 
     def test_str_short_array(self):

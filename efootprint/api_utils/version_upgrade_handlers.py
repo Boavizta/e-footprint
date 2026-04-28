@@ -636,6 +636,71 @@ def upgrade_version_19_to_20(system_dict, efootprint_classes_dict=None):
     return system_dict
 
 
+def upgrade_version_20_to_21(system_dict, efootprint_classes_dict=None):
+    """Hoist inline ExplainableObject sources to a top-level "Sources" block keyed by id-ref.
+
+    v20: every ExplainableObject payload carries `"source": {"name": ..., "link": ...}` inline.
+    v21: payloads carry `"source": "<source_id>"`; the top-level `"Sources"` block holds
+    `{source_id: {"id": ..., "name": ..., "link": ...}}`. Two sentinel ids — `"user_data"` and
+    `"hypothesis"` — are reserved so the canonical `Sources.USER_DATA` / `Sources.HYPOTHESIS`
+    re-identify with the live Python singletons across reloads.
+    """
+    sentinel_id_for_key = {
+        ("user data", None): "user_data",
+        ("e-footprint hypothesis", None): "hypothesis",
+    }
+    sources_block = {}
+    sources_id_by_key = {}
+
+    def _normalise_link(link):
+        return link if link else None
+
+    def _ensure_source_id(name, link):
+        link = _normalise_link(link)
+        key = (name, link)
+        if key in sentinel_id_for_key:
+            source_id = sentinel_id_for_key[key]
+        elif key in sources_id_by_key:
+            return sources_id_by_key[key]
+        else:
+            source_id = str(uuid.uuid4())[:6]
+        sources_id_by_key[key] = source_id
+        sources_block[source_id] = {"id": source_id, "name": name, "link": link}
+        return source_id
+
+    def _walk(node):
+        if isinstance(node, dict):
+            source_field = node.get("source")
+            if isinstance(source_field, dict) and "name" in source_field:
+                node["source"] = _ensure_source_id(source_field["name"], source_field.get("link"))
+            for value in node.values():
+                _walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                _walk(item)
+
+    for class_key, class_dict in system_dict.items():
+        if class_key in ("efootprint_version", "Sources") or not isinstance(class_dict, dict):
+            continue
+        _walk(class_dict)
+
+    if sources_block:
+        system_dict["Sources"] = sources_block
+        # Re-order so Sources sits right after efootprint_version.
+        ordered = {"efootprint_version": system_dict["efootprint_version"], "Sources": sources_block}
+        for k, v in system_dict.items():
+            if k in ordered:
+                continue
+            ordered[k] = v
+        system_dict.clear()
+        system_dict.update(ordered)
+        logger.info(
+            "Upgraded system dict from version 20 to 21: hoisted inline ExplainableObject sources to a "
+            "top-level 'Sources' block keyed by id-ref.")
+
+    return system_dict
+
+
 VERSION_UPGRADE_HANDLERS = {
     9: upgrade_version_9_to_10,
     10: upgrade_version_10_to_11,
@@ -648,4 +713,5 @@ VERSION_UPGRADE_HANDLERS = {
     17: upgrade_version_17_to_18,
     18: upgrade_version_18_to_19,
     19: upgrade_version_19_to_20,
+    20: upgrade_version_20_to_21,
 }

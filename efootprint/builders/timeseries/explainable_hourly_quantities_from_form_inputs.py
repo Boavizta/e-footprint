@@ -20,9 +20,7 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
 
     @classmethod
     def from_json_dict(cls, d):
-        source = Source.from_json_dict(d.get("source")) if d.get("source") else None
-
-        return cls(form_inputs=d["form_inputs"], label=d["label"], source=source)
+        return cls(form_inputs=d["form_inputs"], label=d["label"])
 
     def __init__(self, form_inputs: dict, label: str = "no label",
                  left_parent=None, right_parent=None, operator: str = None, source: Source = None):

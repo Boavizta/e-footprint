@@ -361,15 +361,18 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
             if not isinstance(self.external_api.time_to_first_token, EmptyExplainableObject) else None,
         )
 
-        self.impacts = ExplainableDict(
+        impacts = ExplainableDict(
             impacts, f"Ecologits impacts", left_parent=self.external_api.model_active_params,
             right_parent=self.external_api.model_total_params,
-            operator="compute impacts with EcoLogits compute_llm_impacts_dag function",
-            source=compute_llm_impacts_dag_source).generate_explainable_object_with_logical_dependency(
+            operator="compute impacts with EcoLogits compute_llm_impacts_dag function"
+            ).generate_explainable_object_with_logical_dependency(
             self.output_token_count).generate_explainable_object_with_logical_dependency(
             self.external_api.average_carbon_intensity).generate_explainable_object_with_logical_dependency(
             self.external_api.tokens_per_second).generate_explainable_object_with_logical_dependency(
             self.external_api.time_to_first_token)
+        impacts.source = compute_llm_impacts_dag_source
+
+        self.impacts = impacts
 
     def update_ecologits_calculated_attribute(self, attribute_name: str) -> None:
         """Helper called by every auto-generated ``update_<ecologits_attr>`` method to read one field out of the cached EcoLogits impact dictionary, attach the right unit, and wire its EcoLogits formula and ancestors for explainability."""

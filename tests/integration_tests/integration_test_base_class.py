@@ -454,6 +454,8 @@ class IntegrationTestBaseClass(TestCase):
             """
             if isinstance(calc_attr, EmptyExplainableObject):
                 return
+            if not hasattr(calc_attr, "unit"):
+                return
             unit_str = str(calc_attr.unit)
             attr_path = f"{calc_attr_name}{key_str}"
 
@@ -488,3 +490,7 @@ class IntegrationTestBaseClass(TestCase):
 
         if errors:
             self.fail("Unit errors found:\n" + "\n".join(errors))
+
+    def run_test_semantic_units_in_calculated_attributes(self):
+        """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
+        self.check_semantic_units_in_calculated_attributes(self.system)

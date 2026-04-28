@@ -110,8 +110,7 @@ class BoaviztaServerFromConfig(ServerBase):
         total_fabrication_footprint_storage_included = ExplainableQuantity(
             self.api_call_response.value["impacts"]["gwp"]["embedded"]["value"] * u.kg,
             f"Total fabrication footprint storage included",
-            left_parent=self.api_call_response, operator="data extraction from",
-            source=self.impact_source)
+            left_parent=self.api_call_response, operator="data extraction from")
 
         storage_spec = self.api_call_response.value["verbose"].get("SSD-1", self.api_call_response.value["verbose"].get("HDD-1", None))
         if storage_spec is None:
@@ -119,12 +118,12 @@ class BoaviztaServerFromConfig(ServerBase):
         
         full_storage_carbon_footprint_fabrication = ExplainableQuantity(
             storage_spec["impacts"]["gwp"]["embedded"]["value"] * u.kg, f"Total fabrication footprint",
-            left_parent=self.api_call_response, operator="data extraction from",
-            source=self.impact_source)
+            left_parent=self.api_call_response, operator="data extraction from")
         
         total_fabrication_footprint_storage_excluded = (
                 total_fabrication_footprint_storage_included - full_storage_carbon_footprint_fabrication)
-        
+
+        total_fabrication_footprint_storage_excluded.source = self.impact_source
         self.carbon_footprint_fabrication = total_fabrication_footprint_storage_excluded.set_label(
             f"Fabrication footprint")
         

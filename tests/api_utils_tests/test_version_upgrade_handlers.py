@@ -1,11 +1,20 @@
+import copy
+import json
+import os
+import uuid as _uuid
+from unittest import TestCase
+from unittest.mock import patch
+
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
+from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.version_upgrade_handlers import upgrade_version_9_to_10, upgrade_version_10_to_11, \
     upgrade_version_11_to_12, upgrade_version_12_to_13, upgrade_version_13_to_14, upgrade_version_14_to_15, \
-    upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20
+    upgrade_version_15_to_16, upgrade_version_16_to_17, upgrade_version_18_to_19, upgrade_version_19_to_20, \
+    upgrade_version_20_to_21
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
-from unittest import TestCase
+API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestVersionUpgradeHandlers(TestCase):
@@ -981,3 +990,54 @@ class TestVersionUpgradeHandlers(TestCase):
         self.assertEqual(
             "kilogram",
             storage_out["storage_nonzero_dropped_denom"]["carbon_footprint_fabrication_per_storage_capacity"]["unit"])
+
+    def test_upgrade_20_to_21(self):
+        input_dict = {
+            "efootprint_version": "20.1.0",
+            "Job": {
+                "job_1": {
+                    "name": "job 1", "id": "job_1",
+                    "data_transferred": {
+                        "value": 1, "unit": "kilobyte", "label": "data_transferred",
+                        "source": {"name": "e-footprint hypothesis", "link": None},
+                    },
+                    "data_stored": {
+                        "value": 1, "unit": "kilobyte", "label": "data_stored",
+                        "source": {"name": "user data", "link": None},
+                    },
+                    "compute_needed": {
+                        "value": 1, "unit": "cpu_core", "label": "compute_needed",
+                        "source": {"name": "Custom source", "link": "https://example.com"},
+                    },
+                }
+            },
+        }
+        expected_output = {
+            "efootprint_version": "20.1.0",
+            "Sources": {
+                "hypothesis": {"id": "hypothesis", "name": "e-footprint hypothesis", "link": None},
+                "user_data": {"id": "user_data", "name": "user data", "link": None},
+                "abc123": {"id": "abc123", "name": "Custom source", "link": "https://example.com"},
+            },
+            "Job": {
+                "job_1": {
+                    "name": "job 1", "id": "job_1",
+                    "data_transferred": {
+                        "value": 1, "unit": "kilobyte", "label": "data_transferred",
+                        "source": "hypothesis",
+                    },
+                    "data_stored": {
+                        "value": 1, "unit": "kilobyte", "label": "data_stored",
+                        "source": "user_data",
+                    },
+                    "compute_needed": {
+                        "value": 1, "unit": "cpu_core", "label": "compute_needed",
+                        "source": "abc123",
+                    },
+                }
+            },
+        }
+        with patch("efootprint.api_utils.version_upgrade_handlers.uuid.uuid4",
+                   return_value=_uuid.UUID("abc12300-0000-0000-0000-000000000000")):
+            output_dict = upgrade_version_20_to_21(copy.deepcopy(input_dict))
+        self.assertEqual(expected_output, output_dict)

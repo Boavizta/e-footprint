@@ -46,9 +46,35 @@ def recursively_write_json_dict(
     return output_dict
 
 
+def collect_referenced_sources(input_system):
+    from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+    from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+    sources_by_id = {}
+    for mod_obj in [input_system] + input_system.all_linked_objects:
+        for value in mod_obj.__dict__.values():
+            if isinstance(value, ExplainableObject) and value.source is not None:
+                sources_by_id.setdefault(value.source.id, value.source)
+            elif isinstance(value, ExplainableObjectDict):
+                for elt in value.values():
+                    if isinstance(elt, ExplainableObject) and elt.source is not None:
+                        sources_by_id.setdefault(elt.source.id, elt.source)
+    return sources_by_id
+
+
 def system_to_json(input_system, save_calculated_attributes, output_filepath=None, indent=4):
     output_dict = {"efootprint_version": efootprint.__version__}
     recursively_write_json_dict(output_dict, input_system, save_calculated_attributes)
+
+    sources_by_id = collect_referenced_sources(input_system)
+    if sources_by_id:
+        sources_block = {sid: src.to_json() for sid, src in sorted(sources_by_id.items())}
+        # Insert Sources block right after efootprint_version, before modeling-class blocks.
+        new_output_dict = {"efootprint_version": output_dict["efootprint_version"], "Sources": sources_block}
+        for k, v in output_dict.items():
+            if k == "efootprint_version":
+                continue
+            new_output_dict[k] = v
+        output_dict = new_output_dict
 
     if output_filepath is not None:
         with open(output_filepath, "w") as file:

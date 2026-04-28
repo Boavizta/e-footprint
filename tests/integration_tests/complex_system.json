@@ -1,5 +1,32 @@
 {
-    "efootprint_version": "20.1.0",
+    "efootprint_version": "21.0.0",
+    "Sources": {
+        "Base-ADEME_V19": {
+            "id": "Base-ADEME_V19",
+            "name": "Base ADEME_V19",
+            "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+        },
+        "DATA2eAI---STATE-OF-MOBILE": {
+            "id": "DATA2eAI---STATE-OF-MOBILE",
+            "name": "DATA.AI - STATE OF MOBILE",
+            "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+        },
+        "Our-world-in-data-28202429": {
+            "id": "Our-world-in-data-28202429",
+            "name": "Our world in data (2024)",
+            "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
+        },
+        "hypothesis": {
+            "id": "hypothesis",
+            "name": "e-footprint hypothesis",
+            "link": null
+        },
+        "user_data": {
+            "id": "user_data",
+            "name": "user data",
+            "link": null
+        }
+    },
     "System": {
         "system-1": {
             "name": "system 1",
@@ -23,10 +50,7 @@
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Hourly nb of usage journey starts",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "usage_journey": "Usage-journey",
             "devices": [
@@ -44,10 +68,7 @@
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Hourly nb of usage journey starts",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "usage_journey": "Usage-journey",
             "devices": [
@@ -77,10 +98,7 @@
                 "value": 1.0,
                 "unit": "minute",
                 "label": "Time spent by user",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "jobs": [
                 "server-1-job-1"
@@ -93,10 +111,7 @@
                 "value": 1.0,
                 "unit": "minute",
                 "label": "Time spent by user",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "jobs": [
                 "server-1-job-2"
@@ -109,10 +124,7 @@
                 "value": 1.0,
                 "unit": "minute",
                 "label": "Time spent by user",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "jobs": [
                 "server-1-job-3"
@@ -125,10 +137,7 @@
                 "value": 1.0,
                 "unit": "minute",
                 "label": "Time spent by user",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "jobs": [
                 "server-2-job",
@@ -144,46 +153,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 1 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-1"
         },
@@ -194,46 +188,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 1 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-1"
         },
@@ -244,46 +223,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 1 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-1"
         },
@@ -294,46 +258,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 2 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-2"
         },
@@ -344,46 +293,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 3 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-3"
         },
@@ -394,46 +328,31 @@
                 "value": 150.0,
                 "unit": "kilobyte",
                 "label": "Sum of all data uploads and downloads by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_stored": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Data stored by request",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "request_duration": {
                 "value": 1.0,
                 "unit": "second",
                 "label": "Request duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram_needed": {
                 "value": 50.0,
                 "unit": "megabyte_ram",
                 "label": "RAM needed during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute_needed": {
                 "value": 0.1,
                 "unit": "cpu_core",
                 "label": "cpu cores needed on server Server 3 during job processing",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server": "Server-3"
         }
@@ -446,117 +365,78 @@
                 "value": 600.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
+                "source": "Base-ADEME_V19"
             },
             "power": {
                 "value": 300.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server_type": {
                 "value": "autoscaling",
                 "label": "Server type",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
                 "label": "Nb cpu cores",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
                 "label": "PUE",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "average_carbon_intensity": {
                 "value": 400.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of electricity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Utilization rate",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 0.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.0,
                 "unit": "cpu_core",
                 "label": "Base cpu core consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -571,117 +451,78 @@
                 "value": 600.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
+                "source": "Base-ADEME_V19"
             },
             "power": {
                 "value": 300.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server_type": {
                 "value": "on-premise",
                 "label": "Server type",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
                 "label": "Nb cpu cores",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
                 "label": "PUE",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "average_carbon_intensity": {
                 "value": 400.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of electricity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Utilization rate",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 0.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.0,
                 "unit": "cpu_core",
                 "label": "Base cpu core consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -696,117 +537,78 @@
                 "value": 600.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
+                "source": "Base-ADEME_V19"
             },
             "power": {
                 "value": 300.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "server_type": {
                 "value": "serverless",
                 "label": "Server type",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram": {
                 "value": 128.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute": {
                 "value": 24.0,
                 "unit": "cpu_core",
                 "label": "Nb cpu cores",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_usage_effectiveness": {
                 "value": 1.2,
                 "unit": "dimensionless",
                 "label": "PUE",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "average_carbon_intensity": {
                 "value": 400.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of electricity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "utilization_rate": {
                 "value": 0.9,
                 "unit": "dimensionless",
                 "label": "Utilization rate",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 0.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.0,
                 "unit": "cpu_core",
                 "label": "Base cpu core consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -823,73 +625,49 @@
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
                 "label": "Fabrication carbon footprint per storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "storage_capacity": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_replication_factor": {
                 "value": 3.0,
                 "unit": "dimensionless",
                 "label": "Data replication factor",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_storage_duration": {
                 "value": 43830.0,
                 "unit": "hour",
                 "label": "Data storage duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_storage_need": {
                 "value": 0.0,
                 "unit": "terabyte_stored",
                 "label": "Initial storage need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -903,73 +681,49 @@
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
                 "label": "Fabrication carbon footprint per storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "storage_capacity": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_replication_factor": {
                 "value": 3.0,
                 "unit": "dimensionless",
                 "label": "Data replication factor",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_storage_duration": {
                 "value": 43830.0,
                 "unit": "hour",
                 "label": "Data storage duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_storage_need": {
                 "value": 0.0,
                 "unit": "terabyte_stored",
                 "label": "Initial storage need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -983,73 +737,49 @@
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 1.0,
                 "unit": "kilogram / kilobyte_stored",
                 "label": "Fabrication carbon footprint per storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "storage_capacity": {
                 "value": 100.0,
                 "unit": "kilobyte_stored",
                 "label": "Storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_replication_factor": {
                 "value": 3.0,
                 "unit": "dimensionless",
                 "label": "Data replication factor",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "data_storage_duration": {
                 "value": 43830.0,
                 "unit": "hour",
                 "label": "Data storage duration",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_storage_need": {
                 "value": 0.0,
                 "unit": "terabyte_stored",
                 "label": "Initial storage need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fixed_nb_of_instances": {
                 "value": null,
@@ -1065,37 +795,25 @@
                 "value": 156.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
+                "source": "Base-ADEME_V19"
             },
             "power": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 7.0,
                 "unit": "hour / day",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "DATA.AI - STATE OF MOBILE",
-                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
-                }
+                "source": "DATA2eAI---STATE-OF-MOBILE"
             }
         },
         "Laptop-2": {
@@ -1105,37 +823,25 @@
                 "value": 156.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
+                "source": "Base-ADEME_V19"
             },
             "power": {
                 "value": 50.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "fraction_of_usage_time": {
                 "value": 7.0,
                 "unit": "hour / day",
                 "label": "Fraction of usage time",
-                "source": {
-                    "name": "DATA.AI - STATE OF MOBILE",
-                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
-                }
+                "source": "DATA2eAI---STATE-OF-MOBILE"
             }
         }
     },
@@ -1147,10 +853,7 @@
                 "value": 0.1,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         },
         "network-2": {
@@ -1160,10 +863,7 @@
                 "value": 0.1,
                 "unit": "kilowatt_hour / gigabyte",
                 "label": "bandwith energy intensity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1176,18 +876,12 @@
                 "value": 44.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity",
-                "source": {
-                    "name": "Our world in data (2024)",
-                    "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
-                }
+                "source": "Our-world-in-data-28202429"
             },
             "timezone": {
                 "zone": "Europe/Paris",
                 "label": "Timezone",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
+                "source": "user_data"
             }
         }
     },
@@ -1201,10 +895,7 @@
                 "start_date": "2025-01-01 00:00:00",
                 "timezone": null,
                 "label": "Hourly nb of edge usage journey starts",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "edge_usage_journey": "Edge-usage-journey",
             "network": "network-1",
@@ -1222,10 +913,7 @@
                 "value": 6.0,
                 "unit": "year",
                 "label": "Usage span",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1256,28 +944,19 @@
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "cpu_core",
                 "label": "Recurrent compute needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "recurrent_ram_needed": {
                 "recurring_values": "[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]",
                 "unit": "gigabyte_ram",
                 "label": "Recurrent RAM needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "recurrent_storage_needed": {
                 "recurring_values": "[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
                 "unit": "gigabyte_stored",
                 "label": "Recurrent storage needed",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1289,10 +968,7 @@
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "components": [
                 "Edge-device-CPU",
@@ -1304,64 +980,43 @@
                 "value": 60.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power": {
                 "value": 30.0,
                 "unit": "watt",
                 "label": "Power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power": {
                 "value": 5.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "ram": {
                 "value": 8.0,
                 "unit": "gigabyte_ram",
                 "label": "RAM",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "compute": {
                 "value": 4.0,
                 "unit": "cpu_core",
                 "label": "Compute",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_ram_consumption": {
                 "value": 1.0,
                 "unit": "gigabyte_ram",
                 "label": "Base RAM consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_compute_consumption": {
                 "value": 0.0,
                 "unit": "cpu_core",
                 "label": "Base compute consumption",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1373,19 +1028,13 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1397,37 +1046,25 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },
@@ -1439,73 +1076,49 @@
                 "value": 0.0,
                 "unit": "kilogram",
                 "label": "Carbon footprint fabrication per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
                 "label": "Lifespan",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "idle_power_per_unit": {
                 "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "nb_of_units": {
                 "value": 1.0,
                 "unit": "dimensionless",
                 "label": "Number of units",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "carbon_footprint_fabrication_per_storage_capacity": {
                 "value": 160.0,
                 "unit": "kilogram / terabyte_stored",
                 "label": "Fabrication carbon footprint per unit per storage capacity",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "storage_capacity_per_unit": {
                 "value": 1.0,
                 "unit": "terabyte_stored",
                 "label": "Storage capacity per unit",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             },
             "base_storage_need": {
                 "value": 30.0,
                 "unit": "gigabyte_stored",
                 "label": "Initial storage need",
-                "source": {
-                    "name": "e-footprint hypothesis",
-                    "link": null
-                }
+                "source": "hypothesis"
             }
         }
     },

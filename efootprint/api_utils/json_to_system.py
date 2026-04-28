@@ -7,9 +7,10 @@ import efootprint
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import Source, explainable_object_from_json
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES
 from efootprint.api_utils.suppressed_efootprint_classes import ALL_SUPPRESSED_EFOOTPRINT_CLASSES_DICT
+from efootprint.constants.sources import Sources
 from efootprint.logger import logger
 from efootprint.utils.tools import get_init_signature_params
 
@@ -126,6 +127,18 @@ def upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict=
     return system_dict
 
 
+def build_sources_dict_from_system_dict(system_dict):
+    raw_sources = system_dict.get("Sources", {}) or {}
+    sources_dict = {}
+    sentinel_singletons = {Sources.USER_DATA.id: Sources.USER_DATA, Sources.HYPOTHESIS.id: Sources.HYPOTHESIS}
+    for source_id, source_payload in raw_sources.items():
+        if source_id in sentinel_singletons:
+            sources_dict[source_id] = sentinel_singletons[source_id]
+        else:
+            sources_dict[source_id] = Source.from_json_dict(source_payload)
+    return sources_dict
+
+
 def json_to_system(
         system_dict, launch_system_computations=True, efootprint_classes_dict=None):
     if efootprint_classes_dict is None:
@@ -137,6 +150,8 @@ def json_to_system(
     validate_system_dict_structure(system_dict, valid_class_keys)
 
     system_dict = upgrade_system_dict_to_current_version(system_dict, efootprint_classes_dict)
+
+    sources_dict = build_sources_dict_from_system_dict(system_dict)
 
     class_obj_dict = {}
     flat_obj_dict = {}
@@ -153,7 +168,8 @@ def json_to_system(
         for class_instance_key in system_dict[class_key]:
             new_obj, new_obj_expl_obj_dicts_to_create_after_objects_creation = current_class.from_json_dict(
                 system_dict[class_key][class_instance_key], flat_obj_dict, set_trigger_modeling_updates_to_true=False,
-                is_loaded_from_system_with_calculated_attributes=is_loaded_from_system_with_calculated_attributes)
+                is_loaded_from_system_with_calculated_attributes=is_loaded_from_system_with_calculated_attributes,
+                sources_dict=sources_dict)
 
             explainable_object_dicts_to_create_after_objects_creation.update(
                 new_obj_expl_obj_dicts_to_create_after_objects_creation)
@@ -175,8 +191,10 @@ def json_to_system(
         class_obj_dict[class_key] = current_class_dict
 
     for (modeling_obj, attr_key), attr_value in explainable_object_dicts_to_create_after_objects_creation.items():
-        explainable_object_dict = ExplainableObjectDict(
-            {flat_obj_dict[key]: ExplainableObject.from_json_dict(value) for key, value in attr_value.items()})
+        new_dict_items = {}
+        for key, value in attr_value.items():
+            new_dict_items[flat_obj_dict[key]] = explainable_object_from_json(value, sources_dict)
+        explainable_object_dict = ExplainableObjectDict(new_dict_items)
 
         current_dict = getattr(modeling_obj, attr_key, None)
         if current_dict is not None and isinstance(current_dict, ExplainableObjectDict):
@@ -186,7 +204,8 @@ def json_to_system(
 
         for explainable_object_item, explainable_object_json \
                 in zip(explainable_object_dict.values(), attr_value.values()):
-            explainable_object_item.initialize_calculus_graph_data_from_json(explainable_object_json, flat_obj_dict)
+            explainable_object_item.initialize_calculus_graph_data_from_json(
+                explainable_object_json, flat_obj_dict, sources_dict)
 
         # Enable live updates on input dicts (those not in calculated_attributes)
         if attr_key not in modeling_obj.calculated_attributes:
