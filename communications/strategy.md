@@ -107,7 +107,7 @@ The priority is to give the three actors the **raw material** they need to commu
 - **Redesigned e-footprint landing page** with a real pitch (today's `index.md` is dry). One page that answers in 30 seconds: what is it, who is it for, why is it different.
 - **Shared pitch deck** (10 slides) usable by any of the three parties for talks, meetings, interventions.
 - **2–3 foundation articles**:
-  - "Why we should model rather than estimate the impact of digital services" — substance-heavy, Boavizta-published, Vincent's LinkedIn relay. Paradigm-agnostic.
+  - "Best practices, measurement, simulation: three strategies for ecodesign" — substance-heavy, Boavizta-published, Vincent's LinkedIn relay. Paradigm-agnostic. Argues that none of the three strategies suffices alone; simulation is what enables prioritization.
   - An **applied case study** — PS-owned, with client consent (see §7). **Industrial-flavored**, derived from the French industrial-actor mission: edge fleet modeling, mixed web/edge concerns, decision-making for impact reduction in a non-web context. Establishes industrial as a first-class use case in published content from day one.
   - A technical article on the method (usage-and-functionality framing, volumes/geographies, simulation, prioritization). Paradigm-agnostic; uses both web and edge examples.
 - **LinkedIn rhythm starts**: Vincent 1/week + Boavizta 1/month.
@@ -164,6 +164,6 @@ Three deliverables unlock everything else:
 
 - **One-page messaging document** (§3) — locks the shared narrative; cited by all subsequent content.
 - **Shared pitch deck** (§5 phase 1) — usable by all three parties for talks and meetings.
-- **First Boavizta-published article** (likely "Why we should model rather than estimate") — establishes the substance baseline and gives LinkedIn a derivative source to point to.
+- **First Boavizta-published article** (working title: "Best practices, measurement, simulation: three strategies for ecodesign") — establishes the substance baseline and gives LinkedIn a derivative source to point to.
 
 Tracked in `editorial-calendar.csv`.
