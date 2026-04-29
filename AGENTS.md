@@ -38,7 +38,7 @@ Feature work follows four stages, each gated by your review:
 1. **Specify** — write `specs/features/<name>/spec.md` (problem, scope, success criteria). Skill: `spec-specify`.
 2. **Plan** — write `plan.md` (approach, affected modules, risks). Skill: `spec-plan`.
 3. **Tasks** — write `tasks.md` (ordered, independently-shippable steps). Skill: `spec-tasks`.
-4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `spec-implement`.
+4. **Implement** — execute one task at a time, respecting constitution gates. Skill: `task-implement`.
 
 Investigations and ad-hoc design work are exempt; the four-stage flow is for features that ship.
 

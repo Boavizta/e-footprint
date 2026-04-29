@@ -73,11 +73,13 @@ For each task in `tasks.md`:
 
 1. Implement.
 2. Run quality gates from `specs/constitution.md`.
-3. Open PR titled `[<feature-name>] <task summary>`.
+3. Mark the task done in `tasks.md` and commit.
+4. Run `task-review` on the commit — review findings with the agent, address what's worth fixing before moving on.
+5. Open PR titled `[<feature-name>] <task summary>`.
 
 Each task ships independently. The feature is complete when all tasks are done.
 
-Skill: `spec-implement` picks up a task and executes it.
+Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit.
 
 ## Skills location
 

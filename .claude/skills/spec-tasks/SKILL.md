@@ -64,4 +64,4 @@ Tell the user:
 
 - Path of `tasks.md`.
 - Number of tasks and their high-level order.
-- The next step: human review, then `spec-implement` per task.
+- The next step: human review, then `task-implement` per task.

@@ -1,9 +1,9 @@
 ---
-name: spec-implement
+name: task-implement
 description: Use to execute a single task from an approved tasks.md. Fourth stage of the four-stage spec-driven workflow. Reads spec.md, plan.md, tasks.md, then implements one task at a time, respecting constitution gates.
 ---
 
-# spec-implement
+# task-implement
 
 You are about to implement one task from an approved tasks list.
 
@@ -21,7 +21,13 @@ You are about to implement one task from an approved tasks list.
 
 5. **Update `tasks.md`** to mark the task done (e.g. add a `**Status:** Done` line under it).
 
-6. **Tell the user** what was implemented, what tests pass, what's left in the tasks list.
+6. **Commit the task.** Stage all changes and commit with a message following the repo convention:
+   - Prefix: pick one of `[ADD]`, `[UPDATE]`, `[FIX]`, `[REFACTO]`, `[REMOVE]` based on the nature of the task.
+   - Body: `<feature-name>: <task title from tasks.md>`.
+   - Example: `[ADD] source-block: hoist inline sources to top-level Sources block`.
+   This scopes the diff so `task-review` can analyse it cleanly.
+
+7. **Tell the user** what was implemented, what tests pass, what's left in the tasks list. Also remind the user to run the `task-review` skill on the task.
 
 ## Constraints
 
