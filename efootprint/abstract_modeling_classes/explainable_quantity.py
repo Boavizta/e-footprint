@@ -1,5 +1,6 @@
 import numbers
 from copy import copy, deepcopy
+from typing import Literal
 
 import numpy as np
 from pint import Quantity
@@ -24,7 +25,8 @@ class ExplainableQuantity(ExplainableObject):
 
     def __init__(
             self, value: Quantity | dict, label: str = None, left_parent: ExplainableObject = None,
-            right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
+            right_parent: ExplainableObject = None, operator: str = None, source: Source = None,
+            confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
         from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
         self._ExplainableHourlyQuantities = ExplainableHourlyQuantities
@@ -33,12 +35,12 @@ class ExplainableQuantity(ExplainableObject):
         if isinstance(value, Quantity):
             if not isinstance(value.magnitude, float):
                 value = float(value.magnitude) * value.units
-            super().__init__(value, label, left_parent, right_parent, operator, source)
+            super().__init__(value, label, left_parent, right_parent, operator, source, confidence, comment)
         elif isinstance(value, dict):
             self.json_value_data = value
-            super().__init__(None, label, left_parent, right_parent, operator, source)
+            super().__init__(None, label, left_parent, right_parent, operator, source, confidence, comment)
         else:
-            raise ValueError(f"Variable 'value' of type {type(value)} isn’t a Quantity or a dict")
+            raise ValueError(f"Variable ‘value’ of type {type(value)} isn’t a Quantity or a dict")
 
     @property
     def value(self):
@@ -223,4 +225,6 @@ class ExplainableQuantity(ExplainableObject):
             return str(self.value)
 
     def __copy__(self):
-        return ExplainableQuantity(copy(self.value), label=copy(self.label), source=copy(self.source))
+        return ExplainableQuantity(
+            copy(self.value), label=copy(self.label), source=copy(self.source),
+            confidence=self.confidence, comment=self.comment)

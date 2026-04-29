@@ -1,14 +1,23 @@
+from copy import copy
+from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
+import numpy as np
 import pytz
+from pint import Quantity
 
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
-    optimize_attr_updates_chain
+    optimize_attr_updates_chain, _apply_json_metadata
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
 from efootprint.abstract_modeling_classes.source_objects import Source
+from efootprint.builders.timeseries.explainable_hourly_quantities_from_form_inputs import \
+    ExplainableHourlyQuantitiesFromFormInputs
+from efootprint.builders.timeseries.explainable_recurrent_quantities_from_constant import \
+    ExplainableRecurrentQuantitiesFromConstant
 from efootprint.constants.units import u
 
 
@@ -430,3 +439,62 @@ Label L + Label R
 
         self.assertEqual(
             {"zone": "Europe/Paris", "label": "timezone", "source": source.id}, timezone_expl.to_json())
+
+    def test_invalid_confidence_level_raises(self):
+        with self.assertRaises(AssertionError):
+            ExplainableQuantity(1 * u.kg, label="x", confidence="excellent")
+
+    def test_confidence_and_comment_default_to_none(self):
+        eo = ExplainableObject(value=1, label="a")
+        self.assertIsNone(eo.confidence)
+        self.assertIsNone(eo.comment)
+
+    def test_to_json_omits_confidence_and_comment_when_none(self):
+        eo = ExplainableQuantity(1 * u.kg, label="x")
+        json_dict = eo.to_json()
+        self.assertNotIn("confidence", json_dict)
+        self.assertNotIn("comment", json_dict)
+
+    def test_to_json_emits_confidence_and_comment_when_set(self):
+        eo = ExplainableQuantity(1 * u.kg, label="x", confidence="medium", comment="cross-checked")
+        json_dict = eo.to_json()
+        self.assertEqual("medium", json_dict["confidence"])
+        self.assertEqual("cross-checked", json_dict["comment"])
+
+    def test_round_trip_confidence_and_comment(self):
+        source = Source("src", None)
+        eo = ExplainableQuantity(2 * u.kg, label="q", source=source, confidence="high", comment="my note")
+        json_dict = eo.to_json()
+        loaded = ExplainableObject.from_json_dict(json_dict)
+        _apply_json_metadata(loaded, json_dict, {source.id: source})
+        self.assertEqual("high", loaded.confidence)
+        self.assertEqual("my note", loaded.comment)
+        self.assertIs(source, loaded.source)
+
+    def test_copy_propagates_confidence_and_comment(self):
+        form_inputs_hourly = {
+            "start_date": "2024-01-01", "modeling_duration": 1, "modeling_duration_unit": "year",
+            "initial_volume": 10, "initial_volume_unit": "occurrence", "initial_volume_timespan": "day",
+            "net_growth_rate_in_percentage": 0, "net_growth_rate_timespan": "month",
+        }
+        instances = [
+            ExplainableQuantity(3 * u.kg, label="q", confidence="low", comment="note"),
+            ExplainableHourlyQuantities(
+                Quantity(np.array([1.0], dtype=np.float32), u.W),
+                start_date=datetime(2024, 1, 1), label="hq", confidence="low", comment="note"),
+            ExplainableHourlyQuantitiesFromFormInputs(
+                form_inputs_hourly, label="form", confidence="low", comment="note"),
+            ExplainableRecurrentQuantitiesFromConstant(
+                {"constant_value": 1.0, "constant_unit": "watt"}, label="rqc", confidence="low", comment="note"),
+        ]
+        for eo in instances:
+            copied = copy(eo)
+            self.assertEqual("low", copied.confidence, msg=type(eo).__name__)
+            self.assertEqual("note", copied.comment, msg=type(eo).__name__)
+
+    def test_loading_old_json_without_confidence_and_comment_yields_none(self):
+        json_dict = {"value": 1, "unit": "kilogram", "label": "x"}
+        loaded = ExplainableObject.from_json_dict(json_dict)
+        _apply_json_metadata(loaded, json_dict, {})
+        self.assertIsNone(loaded.confidence)
+        self.assertIsNone(loaded.comment)

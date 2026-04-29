@@ -101,42 +101,51 @@ class TestTopLevelSourcesBlockRoundTrip(TestCase):
 
 
 class TestAllExplainableSubclassesRoundTrip(TestCase):
-    """Ensure every concrete ExplainableObject subclass round-trips its source via the
-    centralized loader (no subclass overrides the source-application path)."""
+    """Ensure every concrete ExplainableObject subclass round-trips its source, confidence,
+    and comment via the centralized loader."""
 
     def _round_trip(self, eo, source):
         json_dict = eo.to_json()
         self.assertEqual(source.id, json_dict["source"])
+        self.assertEqual("medium", json_dict.get("confidence"))
+        self.assertEqual("a test comment", json_dict.get("comment"))
         loaded = explainable_object_from_json(json_dict, {source.id: source})
         self.assertIs(source, loaded.source)
+        self.assertEqual("medium", loaded.confidence)
+        self.assertEqual("a test comment", loaded.comment)
         return loaded
 
     def test_explainable_quantity(self):
         source = Source("custom source", "https://example.com")
-        self._round_trip(ExplainableQuantity(2 * u.kg, label="x", source=source), source)
+        self._round_trip(
+            ExplainableQuantity(2 * u.kg, label="x", source=source, confidence="medium", comment="a test comment"),
+            source)
 
     def test_explainable_hourly_quantities(self):
         source = Source("hourly source", None)
-        eo = ExplainableHourlyQuantities(
+        self._round_trip(ExplainableHourlyQuantities(
             Quantity(np.array([1.0, 2.0], dtype=np.float32), u.W),
-            start_date=datetime(2024, 1, 1), label="hq", source=source)
-        self._round_trip(eo, source)
+            start_date=datetime(2024, 1, 1), label="hq", source=source, confidence="medium",
+            comment="a test comment"), source)
 
     def test_explainable_recurrent_quantities(self):
         source = Source("recurrent source", None)
-        eo = ExplainableRecurrentQuantities(
-            Quantity(np.array([1.0, 2.0], dtype=np.float32), u.W), label="rq", source=source)
-        self._round_trip(eo, source)
+        self._round_trip(ExplainableRecurrentQuantities(
+            Quantity(np.array([1.0, 2.0], dtype=np.float32), u.W), label="rq", source=source,
+            confidence="medium", comment="a test comment"), source)
 
     def test_explainable_timezone(self):
         source = Source("tz source", None)
-        eo = ExplainableTimezone(pytz.timezone("Europe/Paris"), label="tz", source=source)
-        self._round_trip(eo, source)
+        self._round_trip(
+            ExplainableTimezone(pytz.timezone("Europe/Paris"), label="tz", source=source,
+                                confidence="medium", comment="a test comment"),
+            source)
 
     def test_explainable_dict(self):
         source = Source("dict source", None)
-        eo = ExplainableDict({"a": 1}, label="d", source=source)
-        self._round_trip(eo, source)
+        self._round_trip(
+            ExplainableDict({"a": 1}, label="d", source=source, confidence="medium", comment="a test comment"),
+            source)
 
     def test_explainable_hourly_quantities_from_form_inputs(self):
         source = Source("form source", None)
@@ -145,14 +154,14 @@ class TestAllExplainableSubclassesRoundTrip(TestCase):
             "initial_volume": 10, "initial_volume_unit": "occurrence", "initial_volume_timespan": "day",
             "net_growth_rate_in_percentage": 0, "net_growth_rate_timespan": "month",
         }
-        eo = ExplainableHourlyQuantitiesFromFormInputs(form_inputs, label="form", source=source)
-        self._round_trip(eo, source)
+        self._round_trip(ExplainableHourlyQuantitiesFromFormInputs(
+            form_inputs, label="form", source=source, confidence="medium", comment="a test comment"), source)
 
     def test_explainable_recurrent_quantities_from_constant(self):
         source = Source("rq const source", None)
         form_inputs = {"constant_value": 1.0, "constant_unit": "watt"}
-        eo = ExplainableRecurrentQuantitiesFromConstant(form_inputs, label="rqc", source=source)
-        self._round_trip(eo, source)
+        self._round_trip(ExplainableRecurrentQuantitiesFromConstant(
+            form_inputs, label="rqc", source=source, confidence="medium", comment="a test comment"), source)
 
 
 class TestBuildSourcesDict(TestCase):

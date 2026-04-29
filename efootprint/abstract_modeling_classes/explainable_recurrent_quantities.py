@@ -1,5 +1,5 @@
 from datetime import timezone
-from typing import TYPE_CHECKING
+from typing import Literal, TYPE_CHECKING
 
 import pytz
 from pint import Unit, Quantity
@@ -35,7 +35,7 @@ class ExplainableRecurrentQuantities(ExplainableObject):
     def __init__(
             self, value: Quantity, label: str = None,
             left_parent: ExplainableObject = None, right_parent: ExplainableObject = None, operator: str = None,
-            source: Source = None):
+            source: Source = None, confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
         from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
         self._ExplainableQuantity = ExplainableQuantity
@@ -47,7 +47,7 @@ class ExplainableRecurrentQuantities(ExplainableObject):
                     f"converting value {label} to float32. This is surprising, a casting to np.float32 is probably "
                     f"missing somewhere.")
                 value = value.magnitude.astype(np.float32, copy=False) * value.units
-            super().__init__(value, label, left_parent, right_parent, operator, source)
+            super().__init__(value, label, left_parent, right_parent, operator, source, confidence, comment)
         else:
             raise ValueError(
                 f"ExplainableRecurrentQuantities values must be Pint Quantities of numpy arrays, got {type(value)}"

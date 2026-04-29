@@ -1,4 +1,5 @@
 from copy import deepcopy, copy
+from typing import Literal
 
 import numpy as np
 from pint import Quantity
@@ -21,7 +22,8 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
         return cls(form_inputs=d["form_inputs"], label=d["label"])
 
     def __init__(self, form_inputs: dict, label: str = "no label",
-                 left_parent=None, right_parent=None, operator: str = None, source: Source = None):
+                 left_parent=None, right_parent=None, operator: str = None, source: Source = None,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         """
         Initialize with a constant value that will be repeated 168 times.
 
@@ -38,7 +40,8 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
         # Initialize parent with empty dict value, will be computed in property
         super().__init__(
             value=self._compute_recurrent_values(), label=label, left_parent=left_parent,
-            right_parent=right_parent, operator=operator, source=source
+            right_parent=right_parent, operator=operator, source=source,
+            confidence=confidence, comment=comment
         )
 
 
@@ -58,4 +61,5 @@ class ExplainableRecurrentQuantitiesFromConstant(ExplainableRecurrentQuantities)
 
     def __copy__(self):
         return ExplainableRecurrentQuantitiesFromConstant(
-            form_inputs=deepcopy(self.form_inputs), label=copy(self.label), source=copy(self.source))
+            form_inputs=deepcopy(self.form_inputs), label=copy(self.label), source=copy(self.source),
+            confidence=self.confidence, comment=self.comment)

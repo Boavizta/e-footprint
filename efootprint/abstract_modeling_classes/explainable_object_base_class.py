@@ -1,7 +1,7 @@
 import uuid
 from collections import deque
 from copy import copy
-from typing import Type, Optional, TYPE_CHECKING
+from typing import Literal, Type, Optional, TYPE_CHECKING
 import os
 
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObj
@@ -41,29 +41,32 @@ class Source:
         return f"Source(id={self.id!r}, name={self.name!r}, link={self.link!r})"
 
 
-def _apply_json_source(obj: "ExplainableObject", json_dict: dict, sources_dict: dict) -> None:
-    source_ref = json_dict.get("source") if isinstance(json_dict, dict) else None
-    if source_ref is None:
+def _apply_json_metadata(obj: "ExplainableObject", json_dict: dict, sources_dict: dict) -> None:
+    if not isinstance(json_dict, dict):
         return
-    if isinstance(source_ref, str):
-        if sources_dict is not None and source_ref in sources_dict:
-            obj.source = sources_dict[source_ref]
-            return
-        sentinel = _resolve_sentinel_source(source_ref)
-        if sentinel is not None:
-            obj.source = sentinel
-            return
-        raise ValueError(
-            f"Source id ref '{source_ref}' not found in sources_dict while loading {obj}.")
-    elif isinstance(source_ref, dict):
-        obj.source = Source.from_json_dict(source_ref)
-    else:
-        raise TypeError(f"Unexpected source field type {type(source_ref)} on {obj}.")
+    source_ref = json_dict.get("source")
+    if source_ref is not None:
+        if isinstance(source_ref, str):
+            if sources_dict is not None and source_ref in sources_dict:
+                obj.source = sources_dict[source_ref]
+            else:
+                sentinel = _resolve_sentinel_source(source_ref)
+                if sentinel is not None:
+                    obj.source = sentinel
+                else:
+                    raise ValueError(
+                        f"Source id ref '{source_ref}' not found in sources_dict while loading {obj}.")
+        elif isinstance(source_ref, dict):
+            obj.source = Source.from_json_dict(source_ref)
+        else:
+            raise TypeError(f"Unexpected source field type {type(source_ref)} on {obj}.")
+    obj.confidence = json_dict.get("confidence")
+    obj.comment = json_dict.get("comment")
 
 
 def explainable_object_from_json(d: dict, sources_dict: dict) -> "ExplainableObject":
     obj = ExplainableObject.from_json_dict(d)
-    _apply_json_source(obj, d, sources_dict)
+    _apply_json_metadata(obj, d, sources_dict)
     return obj
 
 
@@ -144,6 +147,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         'initial_modeling_obj_container',
         '_value',
         'source',
+        'confidence',
+        'comment',
         'label',
         'left_parent',
         'right_parent',
@@ -190,7 +195,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     def __init__(
             self, value: object, label: str = None, left_parent: "ExplainableObject" = None,
-            right_parent: "ExplainableObject" = None, operator: str = None, source: Source = None):
+            right_parent: "ExplainableObject" = None, operator: str = None, source: Source = None,
+            confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         super().__init__()
         self.simulation_twin = None
         self.baseline_twin = None
@@ -199,7 +205,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         self._value = value
         if not label and (left_parent is None and right_parent is None):
             raise ValueError(f"ExplainableObject without parent should have a label")
+        assert confidence in (None, "low", "medium", "high"), \
+            f"confidence must be 'low', 'medium', 'high', or None, got {confidence!r}"
         self.source = source
+        self.confidence = confidence
+        self.comment = comment
         self.label = None
         self.set_label(label)
         self.left_parent = left_parent
@@ -303,7 +313,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         cls = self.__class__
         new_instance = cls.__new__(cls)
         new_instance.__init__(
-            value=copy(self.value), label=copy(self.label), source=copy(getattr(self, "source", None)))
+            value=copy(self.value), label=copy(self.label), source=copy(getattr(self, "source", None)),
+            confidence=self.confidence, comment=self.comment)
 
         return new_instance
 
@@ -699,6 +710,12 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         if self.source is not None:
             output_dict["source"] = self.source.id
+
+        if self.confidence is not None:
+            output_dict["confidence"] = self.confidence
+
+        if self.comment is not None:
+            output_dict["comment"] = self.comment
 
         if save_calculated_attributes:
             if self._keys_of_direct_ancestors_with_id_loaded_from_json is not None:

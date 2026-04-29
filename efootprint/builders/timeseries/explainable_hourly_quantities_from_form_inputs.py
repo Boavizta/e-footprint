@@ -1,5 +1,6 @@
 from copy import deepcopy, copy
 from datetime import datetime
+from typing import Literal
 import numpy as np
 from pint import Quantity
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -23,7 +24,8 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
         return cls(form_inputs=d["form_inputs"], label=d["label"])
 
     def __init__(self, form_inputs: dict, label: str = "no label",
-                 left_parent=None, right_parent=None, operator: str = None, source: Source = None):
+                 left_parent=None, right_parent=None, operator: str = None, source: Source = None,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
         """
         Initialize with form inputs dict containing:
         - start_date: str (YYYY-MM-DD)
@@ -42,7 +44,8 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
         super().__init__(
             value={}, start_date=datetime.strptime(form_inputs["start_date"], "%Y-%m-%d"),
             label=label, left_parent=left_parent,
-            right_parent=right_parent, operator=operator, source=source
+            right_parent=right_parent, operator=operator, source=source,
+            confidence=confidence, comment=comment
         )
         # No need to handle json_compressed_value_data because form inputs are already a great compression in themselves
         del self.json_compressed_value_data
@@ -113,4 +116,5 @@ class ExplainableHourlyQuantitiesFromFormInputs(ExplainableHourlyQuantities):
 
     def __copy__(self):
         return ExplainableHourlyQuantitiesFromFormInputs(
-            deepcopy(self.form_inputs), label=copy(self.label), source=copy(self.source))
+            deepcopy(self.form_inputs), label=copy(self.label), source=copy(self.source),
+            confidence=self.confidence, comment=self.comment)

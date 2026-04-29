@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [21.0.0] - 2026-04-28
+## [21.0.0] - 2026-04-29
 
 ### Changed
-- `Source` is now a top-level JSON entity with a deterministic id. `ExplainableObject.source` is serialized as a string id-ref (`"source": "<source_id>"`) and the system JSON gains a top-level `"Sources"` block keyed by id. Sentinel ids `"user_data"` and `"hypothesis"` re-identify the live `Sources.USER_DATA` / `Sources.HYPOTHESIS` Python singletons across reloads. Source application during JSON load is centralized in `_apply_json_source`; per-subclass `from_json_dict` no longer constructs `Source` instances. `upgrade_version_20_to_21` migrates v20 systems forward by hoisting inline source dicts and rewriting refs.
+- `Source` is now a top-level JSON entity with a deterministic id. `ExplainableObject.source` is serialized as a string id-ref (`"source": "<source_id>"`) and the system JSON gains a top-level `"Sources"` block keyed by id. Sentinel ids `"user_data"` and `"hypothesis"` re-identify the live `Sources.USER_DATA` / `Sources.HYPOTHESIS` Python singletons across reloads. Source application during JSON load is centralized in `_apply_json_metadata`; per-subclass `from_json_dict` no longer constructs `Source` instances. `upgrade_version_20_to_21` migrates v20 systems forward by hoisting inline source dicts and rewriting refs.
+
+### Added
+- `ExplainableObject` gains `confidence` (`"low"` / `"medium"` / `"high"` / `None`) and `comment` (`str | None`) attributes, settable at construction time on all subclasses. Both default `None`, are omitted from JSON when `None`, round-trip cleanly, and propagate through `__copy__`. Loading JSON without these fields yields `None`.
 
 ## [20.1.0] - 2026-04-28
 

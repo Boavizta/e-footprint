@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pint import Quantity
 
@@ -16,30 +17,35 @@ SOURCE_VALUE_DEFAULT_NAME = "unnamed source"
 class SourceObject(ExplainableObject):
     __slots__ = ()
 
-    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=label, source=source)
+    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
+        super().__init__(value, label=label, source=source, confidence=confidence, comment=comment)
 
 class SourceTimezone(ExplainableTimezone):
     __slots__ = ()
 
-    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=label, source=source)
+    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
+        super().__init__(value, label=label, source=source, confidence=confidence, comment=comment)
 
 class SourceValue(ExplainableQuantity):
     __slots__ = ()
 
-    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=label, source=source)
+    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
+        super().__init__(value, label=label, source=source, confidence=confidence, comment=comment)
 
 class SourceHourlyValues(ExplainableHourlyQuantities):
     __slots__ = ()
 
     def __init__(self, value: Quantity, start_date: datetime, source: Source = Sources.HYPOTHESIS,
-                 label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, start_date=start_date, label=label, source=source)
+                 label: str = SOURCE_VALUE_DEFAULT_NAME, confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
+        super().__init__(value, start_date=start_date, label=label, source=source, confidence=confidence,
+                         comment=comment)
 
 class SourceRecurrentValues(ExplainableRecurrentQuantities):
     __slots__ = ()
 
-    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=label, source=source)
+    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, label: str = SOURCE_VALUE_DEFAULT_NAME,
+                 confidence: Literal["low", "medium", "high"] | None = None, comment: str = None):
+        super().__init__(value, label=label, source=source, confidence=confidence, comment=comment)
