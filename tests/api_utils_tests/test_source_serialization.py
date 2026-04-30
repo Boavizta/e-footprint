@@ -27,6 +27,7 @@ from efootprint.builders.timeseries.explainable_recurrent_quantities_from_consta
     ExplainableRecurrentQuantitiesFromConstant)
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
+from efootprint.core.hardware.server import Server
 
 from tests.integration_tests.integration_simple_system_base_class import IntegrationTestSimpleSystemBaseClass
 
@@ -181,3 +182,17 @@ class TestBuildSourcesDict(TestCase):
     def test_handles_missing_sources_block(self):
         sources_dict = build_sources_dict_from_system_dict({})
         self.assertEqual({}, sources_dict)
+
+
+class TestSystemToJsonOnNonSystemObject(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.system, _ = IntegrationTestSimpleSystemBaseClass.generate_simple_system()
+
+    def test_system_to_json_does_not_raise_on_non_system_object(self):
+        """Regression: no AttributeError when calling system_to_json on a non-System ModelingObject.
+        Previously collect_referenced_sources used all_linked_objects, a System-only attribute."""
+        server = next(obj for obj in self.system.all_linked_objects if isinstance(obj, Server))
+        result = system_to_json(server, save_calculated_attributes=False)
+        self.assertIn("efootprint_version", result)
+        self.assertIn("Server", result)
