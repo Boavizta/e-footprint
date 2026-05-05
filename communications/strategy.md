@@ -97,7 +97,15 @@ LinkedIn posts are **mostly derivative**: each post hooks into an article, a fea
 
 ### Stance toward adjacent tools
 
-**Cooperative.** EcoIndex, Green Metrics Tool, Carbonalyser, CarbonAPI, ClimateChange.ai etc. are cited as **complementary**: e-footprint occupies a different niche (modeling vs measurement, prioritization vs reporting). No combative comparisons on any channel.
+**Cooperative.** Adjacent tools are cited only when they help explain an actual integration, dependency, or future integration path. The authoritative list and framing live in [`../specs/adjacent_tools.md`](../specs/adjacent_tools.md). No tool rankings or ad hoc comparison lists on any channel.
+
+Rules for communication assets:
+
+- Do not rank adjacent tools.
+- Do not introduce ad hoc tool lists.
+- Mention a tool only when it is in `specs/adjacent_tools.md` and the mention helps explain an actual integration, dependency, or future integration path.
+- Compare by role and question answered, not by superiority. For example: inventory feeds modeling; measurement calibrates modeling; analytics estimates usage volumes; observability maps usage to backend work.
+- Keep the main message stable: e-footprint's distinctive role is explainable service-level modeling for scenario comparison and ecodesign prioritization.
 
 ### Phase 1 — Foundations (months 0–3) — committed
 

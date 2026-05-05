@@ -95,7 +95,7 @@ e-footprint is not a from-scratch carbon database. It's a **modeling layer** on 
 
 This composition is the point: e-footprint focuses on **system-level structure** (usage journeys, functionalities, propagation, simulation) and delegates **point-data sourcing** to specialized projects. Each does what it does best. The open green-IT stack benefits from the division of labor.
 
-*(These are upstream collaborators, not adjacent competitors — different cooperative framing from the measurement-tools mention in the previous article.)*
+*(These are current integrations/dependencies. Broader adjacent-tool framing lives in `specs/adjacent_tools.md`.)*
 
 ### §7 — Conclusion
 
@@ -115,7 +115,7 @@ The shape — usage journeys, functionalities, volumes, geographies — is what 
 ## Outbound references
 
 - **BoaviztAPI** — https://github.com/Boavizta/boaviztapi
-- **EcoLogits** — canonical URL TBD at draft time
+- **EcoLogits** — https://ecologits.ai/
 - Sankey HTML examples — existing files in `e-footprint/` repo root (`Full impact repartition sankey.html`, etc.) — decide hosting/embedding for the published article
 
 ## LinkedIn derivative hooks
@@ -131,7 +131,7 @@ The shape — usage journeys, functionalities, volumes, geographies — is what 
 
 - [ ] Confirm exact names of edge primitives (functionality, `EdgeDeviceGroup`, etc.) per current object reference at draft time.
 - [ ] Sankey diagrams: decide hosting (embed in mkdocs companion page; PNG screenshot in the blog post; link to interactive HTML).
-- [ ] EcoLogits canonical URL.
+- [ ] Confirm EcoLogits canonical URL at publication time.
 - [ ] §3 example: pick a clean volume-geography contrast (e.g., same service deployed in coal-grid vs hydro-grid region — order-of-magnitude difference).
 - [ ] §5 audit example: pick one calculated value and trace its full derivation chain end-to-end (e.g., *"journey X emits Y kg CO₂eq"* → server-time formula → electricity-mix factor → BoaviztAPI hardware fab data).
 - [ ] §6: confirm with Boavizta whether to mention any other ecosystem dependencies (carbon-intensity grids data, etc.).

@@ -36,9 +36,7 @@ Two limits:
 
 ### §3 — Measurement: the snapshot, not the projection
 
-What measurement does well: calibrating models against reality where measurable; finding low-hanging optimizations on existing systems.
-
-Cooperative tool mention (per strategy §5 stance): EcoIndex (page-load assessments), Green Metrics Tool (energy in CI), Carbonalyser (browser-side network traffic), CarbonAPI. Each is useful for what it measures.
+What measurement does well: calibrating models against reality where measurable; finding low-hanging optimizations on existing systems. If a named complementary tool is needed in this section, use only the SSOT in `specs/adjacent_tools.md` and explain the integration path rather than building a general market list.
 
 Two limits:
 - **You can't measure what isn't there yet.** A feature you haven't built; a scale you haven't reached; a region you haven't deployed to. Decisions need projection — measurement of the present alone can't compare candidate futures.
@@ -69,7 +67,7 @@ None of the three strategies replaces the others.
 | Measurement | A diagnostic of the current system | No projection; misses what isn't there yet |
 | Simulation | Decision-grade priorities | Requires structured input (constraint as unlock) |
 
-The argument is for the right *relationship* between them, not a winner. Restate the cooperative tool naming: EcoIndex / GMT / Carbonalyser are **complementary** to e-footprint — they address different questions.
+The argument is for the right *relationship* between the strategies, not a winner. Measurement, analytics, inventory, and observability can feed the model; simulation turns those inputs into decision-grade scenario comparison.
 
 ### §6 — What this looks like in practice
 
@@ -101,13 +99,11 @@ Only simulation answers the priority question. Best practices and measurement re
 - `UsageJourney`, `UsagePattern` object reference (auto-generated) — referenced in §4
 - `ecodesign_strategies.md` (this article's mkdocs home, created when article publishes)
 
-## Adjacent-tool references (cooperative, by name)
+## Adjacent-tool references
 
-- **EcoIndex** — page-load environmental assessment.
-- **Green Metrics Tool** — energy-and-resource measurement of running software.
-- **Carbonalyser** — browser-side network traffic measurement.
-- **CarbonAPI** — methodology and infrastructure footprint API.
-- *(others to add per Boavizta volunteer feedback on tone)*
+- Use `specs/adjacent_tools.md` as the only source for named adjacent tools.
+- Do not introduce ad hoc lists in the article draft.
+- If a named example is useful, tie it to an integration path: measurement calibrates the model, inventory initializes the model, analytics estimates usage volumes, observability maps usage to backend work.
 
 ## LinkedIn derivative hooks
 
@@ -115,13 +111,13 @@ Only simulation answers the priority question. Best practices and measurement re
 - *"The intuition trap: you can feel latency, you can't feel carbon."* — derived from §1, links to `why_efootprint.md`.
 - *"When the model says 'you're fine': the most useful answer it can give."* — derived from §6.
 - *"Compression, lazy-loading, efficient regions — useful, but which one matters for **your** service?"* — derived from §2.
-- *"EcoIndex measures, e-footprint models. We need both."* — derived from §3 / restates strategy §5 cooperative stance.
+- *"Measurement calibrates the model. Simulation turns it into a decision."* — derived from §3 / restates strategy §5 cooperative stance.
 - *"Why a PM can read an e-footprint model: usage journeys, not raw request counts."* — derived from §4; doubles as cross-promotion for Article #3.
 
 ## Open items for full draft
 
 - [ ] Resolve the §6 "your service is too small" example: anonymized historical case (the Paylib insight, if reusable in anonymized form) or a clean hypothetical.
 - [ ] §2 — pick 3–4 best-practice examples concrete enough to land but not platform-specific.
-- [ ] §3 — confirm with Michalina that Boavizta-blog tone supports naming adjacent tools by name, or whether to genericise.
+- [ ] §3 — decide whether to include one named complementary tool from `specs/adjacent_tools.md`, or keep the measurement discussion generic.
 - [ ] §4 — decide whether to include a small inline example (sample usage journey table) or keep prose-only.
 - [ ] Full prose pass once tutorial-and-documentation SSOT vocabulary is settled.
