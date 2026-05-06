@@ -511,7 +511,8 @@
                 "value": 44.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity",
-                "source": "Our-world-in-data-28202429"
+                "source": "Our-world-in-data-28202429",
+                "confidence": "high"
             },
             "timezone": {
                 "zone": "Europe/Paris",

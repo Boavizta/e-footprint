@@ -34,7 +34,8 @@ def country_generator_from_csv(country_name):
                 source = Source(f"Our world in data ({row["Year"]})",
                                 "https://ourworldindata.org/grapher/carbon-intensity-electricity")
                 country_carbon_int = SourceValue(
-                    int(float(row["Carbon intensity of electricity - gCO2/kWh"])) * u.g / u.kWh, source)
+                    int(float(row["Carbon intensity of electricity - gCO2/kWh"])) * u.g / u.kWh, source,
+                    confidence="high")
                 timezone = tz(row["Timezone"])
                 break
 
