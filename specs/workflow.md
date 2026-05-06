@@ -81,6 +81,19 @@ Each task ships independently. The feature is complete when all tasks are done.
 
 Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit.
 
+### 5. Archive
+
+**Output:** `archives/features/<feature-name>.md`. The `specs/features/<feature-name>/` folder is deleted (git keeps the history).
+
+When all tasks have shipped:
+
+1. **Promote durable insight into the live specs first.** Any decision, convention, or constraint that a future contributor or agent would need to make a sound call belongs in `architecture.md` / `conventions.md` / `testing.md`, not in an archive that nobody will read. Most of this should already have happened during implementation; this step is the final check.
+2. **Write a short summary at `archives/features/<feature-name>.md`.** Frontmatter with `shipped: <version>`, `date: <YYYY-MM-DD>`, `repos:`. Body covers why the feature existed, key decisions and their reasons (include rejected alternatives only when the rejection still constrains future work), surprises that diverged from plan, and the explicit "out of scope, may revisit" list. Aim for one page; cut everything that duplicates code or live specs. The summary is **purely historical** and must not carry authoritative information.
+3. **Delete `specs/features/<feature-name>/`.** Git history preserves the original spec / plan / tasks if anyone needs them.
+4. **Update `CHANGELOG.md`** if not already done.
+
+For cross-repo features, the archive lives in the driving repo (same rule as the feature folder).
+
 ## Skills location
 
 Skills live at `.claude/skills/` in each repo. Canonical versions are in e-footprint; mirrors in e-footprint-interface.
