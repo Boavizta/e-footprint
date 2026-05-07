@@ -18,6 +18,12 @@ class ExternalAPIJob(JobBase):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "external_api": (
+            "{class:ExternalAPI} that the job is routed to. The API's underlying server bears the resource cost."),
+        **JobBase.param_descriptions,
+    }
+
     @classmethod
     def compatible_external_apis(cls):
         init_sig_params = get_init_signature_params(cls)

@@ -15,6 +15,12 @@ class ServiceJob(JobBase):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "service": (
+            "{class:Service} that hosts the job. The job runs on the service's underlying server."),
+        **JobBase.param_descriptions,
+    }
+
     @classmethod
     def compatible_services(cls):
         init_sig_params = get_init_signature_params(cls)

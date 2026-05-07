@@ -26,6 +26,19 @@ class EdgeComponent(ModelingObject):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "carbon_footprint_fabrication_per_unit": (
+            "Embodied carbon emitted to manufacture one unit of the component."),
+        "power_per_unit": (
+            "Electrical power drawn by one fully-loaded unit."),
+        "lifespan": (
+            "Expected time before a unit is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power_per_unit": (
+            "Electrical power drawn by one idle unit."),
+        "nb_of_units": (
+            "Number of identical units in the component."),
+    }
+
     def __init__(self, name: str, carbon_footprint_fabrication_per_unit: ExplainableQuantity,
                  power_per_unit: ExplainableQuantity, lifespan: ExplainableQuantity,
                  idle_power_per_unit: ExplainableQuantity,

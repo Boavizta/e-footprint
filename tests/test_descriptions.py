@@ -131,13 +131,36 @@ _class_params = pytest.mark.parametrize(
     "cls", ALL_EFOOTPRINT_CLASSES, ids=lambda c: c.__name__)
 
 
+def _classes_for_param_descriptions_test():
+    """Concrete classes plus abstract bases that have user-facing __init__ params.
+
+    Abstract bases without user-facing params (e.g. ``ModelingObject``) are skipped
+    because there's nothing to document.
+    """
+    classes = list(ALL_EFOOTPRINT_CLASSES)
+    seen = set(classes)
+    for concrete in ALL_EFOOTPRINT_CLASSES:
+        for cls in concrete.__mro__:
+            if cls in seen or cls is object:
+                continue
+            if not _expected_param_keys(cls):
+                continue
+            classes.append(cls)
+            seen.add(cls)
+    return classes
+
+
+_param_descriptions_class_params = pytest.mark.parametrize(
+    "cls", _classes_for_param_descriptions_test(), ids=lambda c: c.__name__)
+
+
 @_class_params
 def test_class_has_docstring(cls):
     assert cls.__doc__ and cls.__doc__.strip(), (
         f"{cls.__name__} has no class docstring")
 
 
-@_class_params
+@_param_descriptions_class_params
 def test_param_descriptions_cover_init_params(cls):
     pd = _own_class_attr(cls, "param_descriptions")
     assert pd is not None, (

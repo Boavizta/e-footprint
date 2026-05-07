@@ -30,6 +30,25 @@ class JobBase(ModelingObject):
     def default_values(cls):
         pass
 
+    pitfalls = (
+        "{param:Job.request_duration} drives concurrency. If the duration exceeds one hour the job is in flight "
+        "across multiple modeling buckets at once and consumes a fraction of the server's resources in each.")
+
+    param_descriptions = {
+        "data_transferred": (
+            "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
+        "data_stored": (
+            "Net change in stored data per invocation. Positive values only. "
+            "Data deletion is handled by {param:Storage.data_storage_duration}"),
+        "request_duration": (
+            "How long the job takes to process from start to finish on the server."),
+        "compute_needed": (
+            "Computational resource consumed by one invocation of the job, held for the request duration. "
+            "Units depend on the server type."),
+        "ram_needed": (
+            "Memory held by one invocation of the job for its full duration."),
+    }
+
     def __init__(self, name: str, data_transferred: ExplainableQuantity, data_stored: ExplainableQuantity,
                  request_duration: ExplainableQuantity, compute_needed: ExplainableQuantity,
                  ram_needed: ExplainableQuantity):
@@ -216,6 +235,13 @@ class DirectServerJob(JobBase):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "server": (
+            "{class:ServerBase} that processes the job. The server's resource use and footprint follow from the "
+            "jobs it hosts."),
+        **JobBase.param_descriptions,
+    }
+
     def __init__(self, name: str, server: ServerBase, data_transferred: ExplainableQuantity,
                  data_stored: ExplainableQuantity, request_duration: ExplainableQuantity,
                  compute_needed: ExplainableQuantity, ram_needed: ExplainableQuantity):
@@ -239,21 +265,11 @@ class Job(DirectServerJob):
         "requirement is in GPUs. For high-level abstractions over common workloads (video streaming, generative "
         "AI), prefer the corresponding service builder rather than wiring jobs by hand.")
 
-    pitfalls = (
-        "{param:Job.request_duration} drives concurrency. If the duration exceeds one hour the job is in flight "
-        "across multiple modeling buckets at once and consumes a fraction of the server's resources in each.")
-
     param_descriptions = {
+        **DirectServerJob.param_descriptions,
         "server": (
             "{class:Server} that processes the job. The server's resource use and footprint follow from the "
             "jobs it hosts."),
-        "data_transferred": (
-            "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
-        "data_stored": (
-            "Net change in stored data per invocation. Positive values only. "
-            "Data deletion is handled by {param:Storage.data_storage_duration}"),
-        "request_duration": (
-            "How long the job takes to process from start to finish on the server."),
         "compute_needed": (
             "CPU consumed by one invocation of the job, expressed in CPU cores held for the request duration."),
         "ram_needed": (
@@ -279,15 +295,9 @@ class GPUJob(DirectServerJob):
     """A {class:Job} whose compute requirement is expressed in GPUs and which therefore must run on a {class:GPUServer}."""
 
     param_descriptions = {
+        **DirectServerJob.param_descriptions,
         "server": (
             "{class:GPUServer} that processes the job."),
-        "data_transferred": (
-            "Total bytes uploaded plus downloaded over the network for one invocation of the job."),
-        "data_stored": (
-            "Net change in stored data per invocation. Positive values only. "
-            "Data deletion is handled by {param:Storage.data_storage_duration}"),
-        "request_duration": (
-            "How long the job takes to process from start to finish on the server."),
         "compute_needed": (
             "GPU consumed by one invocation of the job, expressed in GPUs held for the request duration."),
         "ram_needed": (

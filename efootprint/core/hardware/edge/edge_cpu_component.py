@@ -16,20 +16,11 @@ class EdgeCPUComponent(EdgeComponent):
     """A CPU inside an {class:EdgeDevice}. Sized so that aggregated recurrent compute demand never exceeds available cores."""
 
     param_descriptions = {
-        "carbon_footprint_fabrication_per_unit": (
-            "Embodied carbon emitted to manufacture one unit of this CPU."),
-        "power_per_unit": (
-            "Electrical power drawn by one fully-loaded CPU unit."),
-        "lifespan": (
-            "Expected time before a unit is replaced. Embodied carbon is amortised over this duration."),
-        "idle_power_per_unit": (
-            "Electrical power drawn by one idle CPU unit."),
+        **EdgeComponent.param_descriptions,
         "compute_per_unit": (
             "Number of CPU cores provided by one unit. Total compute is this value times {param:EdgeCPUComponent.nb_of_units}."),
         "base_compute_consumption": (
             "Compute permanently occupied independently of recurring needs."),
-        "nb_of_units": (
-            "Number of identical CPU units in the component."),
     }
 
     compatible_root_units = [u.cpu_core]

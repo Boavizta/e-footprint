@@ -132,8 +132,7 @@ class EdgeComputer(EdgeDevice):
             "Embodied carbon emitted to manufacture one computer."),
         "power": (
             "Electrical power drawn at full load."),
-        "lifespan": (
-            "Expected time before the computer is replaced. Embodied carbon is amortised over this duration."),
+        "lifespan": EdgeDevice.param_descriptions["lifespan"],
         "idle_power": (
             "Electrical power drawn at zero load."),
         "ram": (

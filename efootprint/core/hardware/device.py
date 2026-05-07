@@ -25,12 +25,9 @@ class Device(HardwareBase):
         "(`Device.smartphone()`, `Device.laptop()`, `Device.box()`, `Device.screen()`) for sensible defaults.")
 
     param_descriptions = {
-        "carbon_footprint_fabrication": (
-            "Embodied carbon emitted to manufacture one device, amortised over its lifespan."),
+        **HardwareBase.param_descriptions,
         "power": (
             "Electrical power drawn by the device while a user is interacting with it."),
-        "lifespan": (
-            "Expected time before the device is replaced. Embodied carbon is amortised over this duration."),
         "fraction_of_usage_time": (
             "Fraction of each calendar day during which the device is in use across all activities, used to "
             "scale lifespan in years to effective usage lifespan."),

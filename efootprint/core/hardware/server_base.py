@@ -46,6 +46,54 @@ class ServerBase(InfraHardware):
 
     default_values = {}
 
+    pitfalls = (
+        "{param:ServerBase.fixed_nb_of_instances} only applies when {param:ServerBase.server_type} is on-premise. "
+        "Setting it on an autoscaling or serverless server has no effect; setting it too low on an on-premise "
+        "server raises an error when peak demand exceeds capacity.")
+
+    interactions = (
+        "Construct the server with all required quantities, then attach jobs by passing the server to each job's "
+        "constructor. The server is wired into the system through the jobs that reference it.")
+
+    param_descriptions = {
+        **InfraHardware.param_descriptions,
+        "server_type": (
+            "Provisioning model of the server, which decides how many instances are attributed in each hour. "
+            "Autoscaling rounds the hourly demand up to a whole number of instances, so an instance is billed "
+            "even when it is only partially loaded. Serverless attributes only the fractional instance-hours "
+            "actually used. On-premise holds a fixed number of physical instances over the whole modeling "
+            "period (capacity sized to peak demand, or to {param:ServerBase.fixed_nb_of_instances} if set)."),
+        "lifespan": (
+            "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
+        "idle_power": (
+            "Electrical power drawn by one instance that is on but not running any jobs."),
+        "ram": (
+            "Total memory available on one instance. Combined with {param:ServerBase.utilization_rate} to "
+            "obtain the memory usable by jobs."),
+        "compute": (
+            "Total compute capacity available on one instance."),
+        "power_usage_effectiveness": (
+            "Datacenter overhead multiplier applied to instance power to account for cooling, lighting, and "
+            "other site-wide energy use."),
+        "average_carbon_intensity": (
+            "Average grid carbon intensity at the location where the server runs, used to convert energy "
+            "consumption into carbon emissions."),
+        "utilization_rate": (
+            "Fraction of an instance's resources that is considered usable by jobs after operating-system "
+            "and headroom overhead."),
+        "base_ram_consumption": (
+            "Memory consumed per instance independently of jobs, for the operating system, agents, and idle "
+            "services."),
+        "base_compute_consumption": (
+            "Compute consumed per instance independently of jobs."),
+        "storage": (
+            "Backing {class:Storage} attached to the server. Storage emissions are reported separately from "
+            "the server's own footprint."),
+        "fixed_nb_of_instances": (
+            "On-premise only: number of physical machines deployed. Used to detect when traffic exceeds "
+            "capacity. Leave empty for autoscaling and serverless server types."),
+    }
+
     list_values =  {"server_type": ServerTypes.all()}
 
     conditional_list_values =  {

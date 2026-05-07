@@ -20,11 +20,10 @@ class VideoStreaming(Service):
         "the streams.")
 
     param_descriptions = {
+        **{k: v for k, v in Service.param_descriptions.items() if k != "base_compute_consumption"},
         "server": (
             "{class:Server} on which the streaming service is installed. Streams consume the server's CPU "
             "and RAM."),
-        "base_ram_consumption": (
-            "RAM occupied per server by the operating system and streaming software, independent of users."),
         "bits_per_pixel": (
             "Average compression density. Multiplied by pixel count and refresh rate to estimate the dynamic "
             "bitrate of one stream."),

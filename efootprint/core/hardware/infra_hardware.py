@@ -9,6 +9,10 @@ from efootprint.core.hardware.hardware_base import HardwareBase
 
 
 class InfraHardware(HardwareBase):
+    param_descriptions = {
+        k: v for k, v in HardwareBase.param_descriptions.items() if k != "fraction_of_usage_time"
+    }
+
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity):
         super().__init__(

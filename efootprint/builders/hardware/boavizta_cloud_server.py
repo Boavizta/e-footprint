@@ -45,27 +45,8 @@ class BoaviztaCloudServer(Server):
         "instance_type": (
             "Provider-specific instance type identifier. Must be valid for the chosen "
             "{param:BoaviztaCloudServer.provider}."),
-        "server_type": (
-            "Provisioning model of the server. See {param:Server.server_type} for semantics."),
-        "lifespan": (
-            "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
-        "idle_power": (
-            "Electrical power drawn while the instance is on but idle."),
-        "power_usage_effectiveness": (
-            "Datacenter overhead multiplier applied to instance power."),
-        "average_carbon_intensity": (
-            "Average grid carbon intensity at the location where the server runs."),
-        "utilization_rate": (
-            "Fraction of the instance's RAM and compute considered usable by jobs after operating-system "
-            "and headroom overhead."),
-        "base_ram_consumption": (
-            "RAM consumed per instance independently of jobs."),
-        "base_compute_consumption": (
-            "Compute consumed per instance independently of jobs."),
-        "storage": (
-            "Backing {class:Storage} attached to the server."),
-        "fixed_nb_of_instances": (
-            "On-premise only: number of physical machines deployed. Leave empty for autoscaling and serverless."),
+        **{k: v for k, v in Server.param_descriptions.items()
+           if k not in ("compute", "carbon_footprint_fabrication", "power", "ram")},
     }
 
     default_values = {

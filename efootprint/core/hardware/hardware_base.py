@@ -13,6 +13,18 @@ class HardwareBase(ModelingObject):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "carbon_footprint_fabrication": (
+            "Embodied carbon emitted to manufacture one unit of the hardware. Amortised over the lifespan "
+            "when computing the hourly fabrication footprint."),
+        "power": (
+            "Electrical power drawn by one fully-loaded unit, before applying any datacenter overhead."),
+        "lifespan": (
+            "Expected time before the hardware is replaced. Embodied carbon is amortised over this duration."),
+        "fraction_of_usage_time": (
+            "Fraction of the modeling period during which the hardware is in active use."),
+    }
+
     def __init__(self, name: str, carbon_footprint_fabrication: ExplainableQuantity, power: ExplainableQuantity,
                  lifespan: ExplainableQuantity, fraction_of_usage_time: ExplainableQuantity):
         super().__init__(name)

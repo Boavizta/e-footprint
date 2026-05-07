@@ -16,20 +16,11 @@ class EdgeRAMComponent(EdgeComponent):
     """A RAM bank inside an {class:EdgeDevice}. Represents one or more identical RAM units sized so that aggregated recurrent demand never exceeds available memory."""
 
     param_descriptions = {
-        "carbon_footprint_fabrication_per_unit": (
-            "Embodied carbon emitted to manufacture one unit of this RAM bank."),
-        "power_per_unit": (
-            "Electrical power drawn by one fully-loaded RAM unit."),
-        "lifespan": (
-            "Expected time before a unit is replaced. Embodied carbon is amortised over this duration."),
-        "idle_power_per_unit": (
-            "Electrical power drawn by one idle RAM unit."),
+        **EdgeComponent.param_descriptions,
         "ram_per_unit": (
             "Memory provided by one unit. Total capacity is this value times {param:EdgeRAMComponent.nb_of_units}."),
         "base_ram_consumption": (
             "RAM permanently occupied independently of recurring needs (operating system, baseline processes)."),
-        "nb_of_units": (
-            "Number of identical RAM units in the component."),
     }
 
     compatible_root_units = [u.bit_ram]

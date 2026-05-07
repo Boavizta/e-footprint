@@ -17,6 +17,17 @@ class Service(ModelingObject):
     def default_values(cls):
         pass
 
+    param_descriptions = {
+        "server": (
+            "{class:ServerBase} on which the service is installed. The service consumes the server's compute "
+            "and memory and inherits its provisioning and energy model."),
+        "base_ram_consumption": (
+            "RAM occupied per server by the service itself (operating system, runtime, idle services), "
+            "independent of jobs running through the service."),
+        "base_compute_consumption": (
+            "Compute occupied per server by the service itself, independent of jobs running through the service."),
+    }
+
     @classmethod
     def installable_on(cls) -> List:
         init_sig_params = get_init_signature_params(cls)

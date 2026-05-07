@@ -7,6 +7,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 class ExternalAPIServer(ModelingObject):
+    param_descriptions = {}
+
     def __init__(self, name: str):
         super().__init__(name=name)
         self.instances_fabrication_footprint = EmptyExplainableObject()
@@ -61,7 +63,9 @@ class ExternalAPI(ModelingObject):
     @abstractmethod
     def default_values(cls):
         pass
-    
+
+    param_descriptions = {}
+
     classes_outside_init_params_needed_for_generating_from_json = [ExternalAPIServer]
     server_class = ExternalAPIServer
 

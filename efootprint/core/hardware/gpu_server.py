@@ -25,9 +25,8 @@ class GPUServer(ServerBase):
         "to a {class:GPUServer} fails when the model is computed.")
 
     param_descriptions = {
-        "server_type": (
-            "Provisioning model of the server. Same semantics as {param:Server.server_type}: autoscaling, "
-            "serverless, or on-premise."),
+        **{k: v for k, v in ServerBase.param_descriptions.items()
+           if k not in ("carbon_footprint_fabrication", "power", "idle_power", "ram")},
         "gpu_power": (
             "Electrical power drawn by one fully-loaded GPU."),
         "gpu_idle_power": (
@@ -36,29 +35,14 @@ class GPUServer(ServerBase):
             "Memory available per GPU. Total instance RAM is derived by multiplying with the GPU count."),
         "carbon_footprint_fabrication_per_gpu": (
             "Embodied carbon emitted to manufacture one GPU."),
-        "average_carbon_intensity": (
-            "Average grid carbon intensity at the location where the server runs, used to convert energy "
-            "consumption into carbon emissions."),
         "compute": (
             "Number of GPUs in one server instance."),
         "carbon_footprint_fabrication_without_gpu": (
             "Embodied carbon of one server chassis excluding GPUs (CPUs, motherboard, chassis)."),
-        "lifespan": (
-            "Expected time before the server is replaced. Embodied carbon is amortised over this duration."),
-        "power_usage_effectiveness": (
-            "Datacenter overhead multiplier applied to the server's power consumption to account for cooling "
-            "and other site-wide energy use."),
-        "utilization_rate": (
-            "Fraction of available GPU and memory time considered usable after operating-system and headroom overhead."),
         "base_compute_consumption": (
             "GPU consumed per instance independently of jobs."),
         "base_ram_consumption": (
             "GPU memory consumed per instance independently of jobs."),
-        "storage": (
-            "Backing {class:Storage} attached to the server."),
-        "fixed_nb_of_instances": (
-            "On-premise only: number of physical servers deployed. Leave empty for autoscaling and serverless "
-            "server types."),
     }
 
     default_values =  {

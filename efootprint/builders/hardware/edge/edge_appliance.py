@@ -62,8 +62,7 @@ class EdgeAppliance(EdgeDevice):
             "Embodied carbon emitted to manufacture one appliance."),
         "power": (
             "Electrical power drawn at full workload."),
-        "lifespan": (
-            "Expected time before the appliance is replaced. Embodied carbon is amortised over this duration."),
+        "lifespan": EdgeDevice.param_descriptions["lifespan"],
         "idle_power": (
             "Electrical power drawn at zero workload."),
     }

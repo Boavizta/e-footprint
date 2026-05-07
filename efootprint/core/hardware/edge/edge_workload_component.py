@@ -20,18 +20,7 @@ class EdgeWorkloadComponent(EdgeComponent):
         "Use {class:EdgeRAMComponent}, {class:EdgeCPUComponent}, and {class:EdgeStorage} when compute and memory "
         "components need to be modelled separately.")
 
-    param_descriptions = {
-        "carbon_footprint_fabrication_per_unit": (
-            "Embodied carbon emitted to manufacture the appliance."),
-        "power_per_unit": (
-            "Electrical power drawn at full workload."),
-        "lifespan": (
-            "Expected time before the appliance is replaced. Embodied carbon is amortised over this duration."),
-        "idle_power_per_unit": (
-            "Electrical power drawn at zero workload."),
-        "nb_of_units": (
-            "Number of identical appliance units making up the component."),
-    }
+    param_descriptions = {**EdgeComponent.param_descriptions}
 
     compatible_root_units = [u.concurrent]
     default_values = {

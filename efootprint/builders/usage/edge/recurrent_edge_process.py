@@ -16,6 +16,10 @@ from efootprint.core.hardware.edge.edge_component import EdgeComponent
 
 
 class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
+    param_descriptions = {
+        "edge_component": RecurrentEdgeComponentNeed.param_descriptions["edge_component"],
+    }
+
     def __init__(self, name: str, edge_component: EdgeComponent):
         super().__init__(
             name=name,
