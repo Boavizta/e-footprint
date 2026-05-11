@@ -81,5 +81,8 @@ cite a credible source in a {class:Source}.
   {param:Server.base_compute_consumption} are zero. A database with no
   queries still consumes resources.
 
+See {doc:server_to_server_interaction} for how to wire these jobs into
+a usage journey alongside an upstream web server.
+
 > Load this scenario in the e-footprint interface:
 > [Database modeling]({{ config.extra.interface_base_url }}/database_modeling)
