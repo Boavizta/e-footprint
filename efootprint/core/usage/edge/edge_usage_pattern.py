@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class EdgeUsagePattern(ModelingObject):
-    """A population of edge devices in one country running an {class:EdgeUsageJourney}, with a given hourly volume of journey starts (deployments)."""
+    """The deployment schedule of a fleet of edge devices in a given {class:Country}, expressed as an hourly volume of {class:EdgeUsageJourney} deployments."""
 
     disambiguation = (
         "Use {class:EdgeUsagePattern} for hardware deployed continuously in the field. Use {class:UsagePattern} "

@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class EdgeUsageJourney(ModelingObject):
-    """A long-running usage of edge hardware that triggers a set of {class:EdgeFunction}s for the whole time the device is in service."""
+    """A long-running activity of an edge fleet, composed of {class:EdgeFunction}s that run for the {param:EdgeUsageJourney.usage_span} of the deployment and can span several device types."""
 
     disambiguation = (
         "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
