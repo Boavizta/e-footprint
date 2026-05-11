@@ -51,9 +51,7 @@ class EdgeDeviceGroup(ModelingObject):
         # Cycles are structurally impossible (a group cannot be its own ancestor).
         return list(self.sub_group_counts.keys()) + list(self.edge_device_counts.keys())
 
-    @property
-    def calculated_attributes(self):
-        return ["counts_validation", "no_cycle_validation", "effective_nb_of_units_within_root"]
+    calculated_attributes = ["counts_validation", "no_cycle_validation", "effective_nb_of_units_within_root"]
 
     def _find_parent_groups(self) -> List["EdgeDeviceGroup"]:
         from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import (

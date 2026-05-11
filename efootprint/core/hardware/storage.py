@@ -126,12 +126,10 @@ class Storage(InfraHardware):
         else:
             return None
 
-    @property
-    def calculated_attributes(self):
-        return ([
-            "carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
-        + InfraHardware.calculated_attributes.fget(self)
-        + [attr for attr in ModelingObject.calculated_attributes.fget(self)
+    calculated_attributes = (
+        ["carbon_footprint_fabrication", "full_cumulative_storage_need_per_job", "full_cumulative_storage_need"]
+        + InfraHardware.calculated_attributes
+        + [attr for attr in ModelingObject.calculated_attributes
            if attr not in {"usage_impact_repartition_weights"}])
 
     @property

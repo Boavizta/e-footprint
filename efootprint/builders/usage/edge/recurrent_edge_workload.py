@@ -27,9 +27,7 @@ class RecurrentEdgeWorkloadNeed(RecurrentEdgeComponentNeed):
             edge_component=edge_component,
             recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.concurrent)))
 
-    @property
-    def calculated_attributes(self):
-        return ["recurrent_need"] + super().calculated_attributes
+    calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
     def update_recurrent_need(self):
         """Recurrent workload, copied from the parent {class:RecurrentEdgeWorkload}'s workload profile."""

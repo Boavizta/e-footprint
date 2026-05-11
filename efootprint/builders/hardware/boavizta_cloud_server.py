@@ -94,10 +94,9 @@ class BoaviztaCloudServer(Server):
         self.impact_url = "https://api.boavizta.org/v1/cloud/instance"
         self.api_call_response = EmptyExplainableObject()
 
-    @property
-    def calculated_attributes(self):
-        return (["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]
-                + super().calculated_attributes)
+    calculated_attributes = (
+        ["api_call_response", "carbon_footprint_fabrication", "power", "ram", "compute"]
+        + Server.calculated_attributes)
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):

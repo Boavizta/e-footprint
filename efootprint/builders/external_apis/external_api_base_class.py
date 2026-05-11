@@ -23,10 +23,9 @@ class ExternalAPIServer(ModelingObject):
     def external_api(self) -> "ExternalAPI":
         return self.modeling_obj_containers[0]
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return (["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
-                + super().calculated_attributes)
+    calculated_attributes: List[str] = (
+        ["instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+        + ModelingObject.calculated_attributes)
 
     @abstractmethod
     def update_instances_fabrication_footprint(self) -> None:
@@ -121,6 +120,4 @@ class ExternalAPI(ModelingObject):
         super().self_delete()
         self.server.self_delete()
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return []
+    calculated_attributes: List[str] = []

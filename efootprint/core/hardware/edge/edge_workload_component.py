@@ -40,9 +40,7 @@ class EdgeWorkloadComponent(EdgeComponent):
             nb_of_units=nb_of_units)
         self.unitary_hourly_workload_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def calculated_attributes(self):
-        return ["unitary_hourly_workload_per_usage_pattern"] + super().calculated_attributes
+    calculated_attributes = ["unitary_hourly_workload_per_usage_pattern"] + EdgeComponent.calculated_attributes
 
     def update_dict_element_in_unitary_hourly_workload_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         unitary_hourly_workload = sum(

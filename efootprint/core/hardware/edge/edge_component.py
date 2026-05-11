@@ -73,14 +73,12 @@ class EdgeComponent(ModelingObject):
             return [self.edge_device]
         return []
 
-    @property
-    def calculated_attributes(self):
-        return ["carbon_footprint_fabrication", "power", "idle_power",
-                "unitary_power_per_usage_pattern", "fabrication_footprint_per_edge_device_per_usage_pattern",
-                "energy_per_edge_device_per_usage_pattern", "energy_footprint_per_edge_device_per_usage_pattern",
-                "fabrication_footprint_per_edge_device", "energy_per_edge_device",
-                "energy_footprint_per_edge_device",
-                "total_unitary_hourly_need_per_usage_pattern"]
+    calculated_attributes = ["carbon_footprint_fabrication", "power", "idle_power",
+                             "unitary_power_per_usage_pattern", "fabrication_footprint_per_edge_device_per_usage_pattern",
+                             "energy_per_edge_device_per_usage_pattern", "energy_footprint_per_edge_device_per_usage_pattern",
+                             "fabrication_footprint_per_edge_device", "energy_per_edge_device",
+                             "energy_footprint_per_edge_device",
+                             "total_unitary_hourly_need_per_usage_pattern"]
 
     @property
     def recurrent_edge_component_needs(self) -> List["RecurrentEdgeComponentNeed"]:

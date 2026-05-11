@@ -56,11 +56,9 @@ class RecurrentEdgeComponentNeed(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[EdgeComponent]:
         return [self.edge_component]
 
-    @property
-    def calculated_attributes(self):
-        return [
-            "recurrent_need_validation", "unitary_hourly_need_per_usage_pattern",
-            "total_hourly_need_across_usage_patterns"] + super().calculated_attributes
+    calculated_attributes = [
+        "recurrent_need_validation", "unitary_hourly_need_per_usage_pattern",
+        "total_hourly_need_across_usage_patterns"] + ModelingObject.calculated_attributes
 
     @property
     def recurrent_edge_device_needs(self):

@@ -27,9 +27,7 @@ class RecurrentEdgeProcessNeed(RecurrentEdgeComponentNeed):
             recurrent_need=EmptyExplainableObject()
         )
 
-    @property
-    def calculated_attributes(self):
-        return ["recurrent_need"] + super().calculated_attributes
+    calculated_attributes = ["recurrent_need"] + RecurrentEdgeComponentNeed.calculated_attributes
 
     @abstractmethod
     def update_recurrent_need(self):
@@ -79,6 +77,10 @@ class RecurrentEdgeProcessStorageNeed(RecurrentEdgeProcessNeed, RecurrentEdgeSto
         "edge_component": (
             "Component on the parent {class:EdgeComputer} that this need targets."),
     }
+
+    # Diamond inheritance: spelt out so the storage-specific "cumulative_unitary_storage_need_per_usage_pattern"
+    # entry is preserved alongside the "recurrent_need" prepended by RecurrentEdgeProcessNeed.
+    calculated_attributes = ["recurrent_need"] + RecurrentEdgeStorageNeed.calculated_attributes
 
     def update_recurrent_need(self):
         """Recurrent storage need, copied from the parent {class:RecurrentEdgeProcess}'s storage profile."""

@@ -68,9 +68,7 @@ class System(ModelingObject):
         self.check_no_object_to_link_is_already_linked_to_another_system()
         super().compute_calculated_attributes()
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return ["total_footprint"]
+    calculated_attributes: List[str] = ["total_footprint"]
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):

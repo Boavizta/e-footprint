@@ -49,15 +49,13 @@ class Network(ModelingObject):
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
             f"bandwith energy intensity")
 
-    @property
-    def calculated_attributes(self):
-        return [
-            "energy_footprint_per_job",
-            "instances_fabrication_footprint",
-            "energy_footprint",
-        ] + [
-            attr for attr in super().calculated_attributes if attr != "usage_impact_repartition_weights"
-        ]
+    calculated_attributes = [
+        "energy_footprint_per_job",
+        "instances_fabrication_footprint",
+        "energy_footprint",
+    ] + [
+        attr for attr in ModelingObject.calculated_attributes if attr != "usage_impact_repartition_weights"
+    ]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

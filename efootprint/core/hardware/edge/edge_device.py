@@ -73,16 +73,14 @@ class EdgeDevice(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
 
-    @property
-    def calculated_attributes(self):
-        return (["lifespan_validation", "component_needs_edge_device_validation",
-                "total_nb_of_units",
-                "structure_fabrication_footprint_per_usage_pattern",
-                "instances_fabrication_footprint_per_usage_pattern",
-                "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
-                "instances_fabrication_footprint", "fabrication_footprint_breakdown_by_source",
-                "instances_energy", "energy_footprint"]
-                + super().calculated_attributes)
+    calculated_attributes = [
+        "lifespan_validation", "component_needs_edge_device_validation",
+        "total_nb_of_units",
+        "structure_fabrication_footprint_per_usage_pattern",
+        "instances_fabrication_footprint_per_usage_pattern",
+        "instances_energy_per_usage_pattern", "energy_footprint_per_usage_pattern",
+        "instances_fabrication_footprint", "fabrication_footprint_breakdown_by_source",
+        "instances_energy", "energy_footprint"] + ModelingObject.calculated_attributes
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:

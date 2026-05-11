@@ -6,18 +6,18 @@ These tests enforce the contract defined in
 1. Every concrete class has a non-empty ``__doc__``.
 2. ``param_descriptions`` is defined on the class itself and its keys exactly
    cover the ``__init__`` params minus ``self`` and ``name``.
-3. Every ``update_<attr>`` method on the class (excluding the
-   ``update_dict_element_in_*`` fan-out helpers) has a non-empty docstring on
-   the method that the class actually resolves to.
-4. If ``param_interactions`` is defined, its keys are a subset of
+3. Every entry in ``calculated_attributes`` has a corresponding ``update_<attr>``
+   method on the class with a non-empty docstring.
+4. Every subclass's ``calculated_attributes`` is a superset of each base's,
+   so an author can't silently drop inherited entries when redeclaring the list.
+5. If ``param_interactions`` is defined, its keys are a subset of
    ``param_descriptions`` keys.
-5. Every ``{kind:target}`` placeholder in any description string resolves:
+6. Every ``{kind:target}`` placeholder in any description string resolves:
    ``class:X`` → ``X`` is in ``ALL_EFOOTPRINT_CLASSES_DICT``;
    ``param:X.y`` → ``y`` is a ``__init__`` param of ``X`` (excluding ``self``);
-   ``calc:X.y`` → ``y`` is an ``update_*`` method on ``X`` (excluding the
-   ``dict_element_in_*`` helpers); ``doc:...`` is accepted (validated by the
-   mkdocs build).
-6. ``{ui:...}`` and any unknown kind in library strings is a hard failure.
+   ``calc:X.y`` → ``y`` is in ``X.calculated_attributes``; ``doc:...`` is
+   accepted (validated by the mkdocs build).
+7. ``{ui:...}`` and any unknown kind in library strings is a hard failure.
 """
 from typing import Iterable, List, Tuple
 
@@ -43,22 +43,9 @@ def _own_class_attr(cls, name):
     return cls.__dict__.get(name)
 
 
-def _update_method_attr_names(cls) -> List[str]:
-    """Names of calculated attributes inferred from ``update_<attr>`` methods on ``cls``'s MRO.
-
-    Excludes ``update_dict_element_in_*`` fan-out helpers — those are
-    implementation detail, not user-visible calculated attributes.
-    """
-    seen = set()
-    for klass in cls.__mro__:
-        for member_name in vars(klass):
-            if not member_name.startswith("update_"):
-                continue
-            attr = member_name[len("update_"):]
-            if attr.startswith("dict_element_in_"):
-                continue
-            seen.add(attr)
-    return sorted(seen)
+def _calculated_attribute_names(cls) -> List[str]:
+    """User-facing calculated attributes declared on ``cls`` (or inherited)."""
+    return list(cls.calculated_attributes)
 
 
 def _collect_description_strings(cls) -> List[Tuple[str, str]]:
@@ -85,7 +72,7 @@ def _collect_description_strings(cls) -> List[Tuple[str, str]]:
     for key, value in pi.items():
         items.append((f"{cls.__name__}.param_interactions[{key!r}]", value))
 
-    for attr in _update_method_attr_names(cls):
+    for attr in _calculated_attribute_names(cls):
         method = getattr(cls, f"update_{attr}", None)
         if method is not None and method.__doc__:
             items.append((f"{cls.__name__}.update_{attr}.__doc__", method.__doc__))
@@ -122,8 +109,8 @@ def _validate_placeholder(kind: str, target: str) -> Iterable[str]:
             if member not in params:
                 yield f"{{param:{target}}} is not in __init__ of {class_name}"
         else:  # calc
-            if member not in _update_method_attr_names(cls):
-                yield f"{{calc:{target}}} has no matching update_{member} on {class_name}"
+            if member not in cls.calculated_attributes:
+                yield f"{{calc:{target}}} is not in {class_name}.calculated_attributes"
 
 
 # Parametrize once — pytest uses ids for readable failure output.
@@ -184,7 +171,7 @@ def test_param_descriptions_cover_init_params(cls):
 @_class_params
 def test_update_methods_have_docstrings(cls):
     missing = []
-    for attr in _update_method_attr_names(cls):
+    for attr in _calculated_attribute_names(cls):
         method = getattr(cls, f"update_{attr}", None)
         if method is None:
             missing.append(f"update_{attr} not resolvable on {cls.__name__}")
@@ -192,6 +179,33 @@ def test_update_methods_have_docstrings(cls):
         if not (method.__doc__ and method.__doc__.strip()):
             missing.append(f"update_{attr} has no docstring (resolved to {method.__qualname__})")
     assert not missing, "\n".join(missing)
+
+
+@_class_params
+def test_calculated_attributes_covers_each_modeling_base_under_diamond(cls):
+    """For classes with multiple modeling-derived bases, `calculated_attributes`
+    must include every entry from each base's list. Python's MRO doesn't merge
+    class attributes across siblings, so a diamond-inherited subclass with a
+    plain `[X.calculated_attributes]` composition silently drops the other
+    parent's entries — this test pins the explicit-superset spelling.
+
+    Linear inheritance is the author's responsibility: many classes
+    intentionally redeclare a different list (System, EdgeComponent, Network,
+    EdgeStorage, ExternalAPI, Service all drop some inherited attrs by design).
+    """
+    modeling_bases = [b for b in cls.__bases__
+                      if b is not object and hasattr(b, "calculated_attributes")]
+    if len(modeling_bases) <= 1:
+        return
+    own = set(cls.calculated_attributes)
+    missing = []
+    for base in modeling_bases:
+        for attr in base.calculated_attributes:
+            if attr not in own:
+                missing.append(f"{attr!r} (from {base.__name__})")
+    assert not missing, (
+        f"{cls.__name__} has multiple modeling bases but its calculated_attributes "
+        f"is missing entries: {missing}. Spell out the merged list explicitly.")
 
 
 @_class_params

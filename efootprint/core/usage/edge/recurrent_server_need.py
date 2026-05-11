@@ -77,9 +77,9 @@ class RecurrentServerNeed(ModelingObject):
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(dict.fromkeys(sum([euj.edge_usage_patterns for euj in self.edge_usage_journeys], start=[])))
 
-    @property
-    def calculated_attributes(self):
-        return ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"] + super().calculated_attributes
+    calculated_attributes = (
+        ["recurrent_need_validation", "unitary_hourly_volume_per_usage_pattern"]
+        + ModelingObject.calculated_attributes)
 
     def update_recurrent_need_validation(self):
         """Validates that the recurrent volume is expressed in occurrences and is non-negative; raises a typed error otherwise."""

@@ -34,15 +34,13 @@ class RecurrentEdgeStorageNeed(RecurrentEdgeComponentNeed):
         super().__init__(name, edge_component, recurrent_need)
         self.cumulative_unitary_storage_need_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def calculated_attributes(self):
-        base_attrs = super().calculated_attributes
-        total_hourly_need_attr_index = base_attrs.index("total_hourly_need_across_usage_patterns")
-        return (
-            base_attrs[:total_hourly_need_attr_index]
-            + ["cumulative_unitary_storage_need_per_usage_pattern"]
-            + base_attrs[total_hourly_need_attr_index:]
-        )
+    calculated_attributes = (
+        RecurrentEdgeComponentNeed.calculated_attributes[
+            :RecurrentEdgeComponentNeed.calculated_attributes.index("total_hourly_need_across_usage_patterns")]
+        + ["cumulative_unitary_storage_need_per_usage_pattern"]
+        + RecurrentEdgeComponentNeed.calculated_attributes[
+            RecurrentEdgeComponentNeed.calculated_attributes.index("total_hourly_need_across_usage_patterns"):]
+    )
 
     def update_dict_element_in_unitary_hourly_need_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         # First compute the base hourly need using parent logic

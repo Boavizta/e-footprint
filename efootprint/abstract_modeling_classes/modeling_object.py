@@ -440,16 +440,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
         pass
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return [
-            "fabrication_impact_repartition_weights",
-            "fabrication_impact_repartition_weight_sum",
-            "fabrication_impact_repartition",
-            "usage_impact_repartition_weights",
-            "usage_impact_repartition_weight_sum",
-            "usage_impact_repartition",
-        ]
+    calculated_attributes: List[str] = [
+        "fabrication_impact_repartition_weights",
+        "fabrication_impact_repartition_weight_sum",
+        "fabrication_impact_repartition",
+        "usage_impact_repartition_weights",
+        "usage_impact_repartition_weight_sum",
+        "usage_impact_repartition",
+    ]
 
     @property
     def validation_attributes(self) -> List[str]:

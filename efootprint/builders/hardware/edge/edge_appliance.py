@@ -20,9 +20,8 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
             idle_power_per_unit=SourceValue(0 * u.W),
             nb_of_units=SourceValue(1 * u.dimensionless))
 
-    @property
-    def calculated_attributes(self):
-        return ["power_per_unit", "idle_power_per_unit", "lifespan"] + super().calculated_attributes
+    calculated_attributes = (
+        ["power_per_unit", "idle_power_per_unit", "lifespan"] + EdgeWorkloadComponent.calculated_attributes)
 
     def update_power_per_unit(self):
         """Power per unit, copied from the parent {class:EdgeAppliance}'s power."""
@@ -86,9 +85,7 @@ class EdgeAppliance(EdgeDevice):
         self.power = power.set_label(f"Power")
         self.idle_power = idle_power.set_label(f"Idle power")
 
-    @property
-    def calculated_attributes(self):
-        return ["structure_carbon_footprint_fabrication"] + super().calculated_attributes
+    calculated_attributes = ["structure_carbon_footprint_fabrication"] + EdgeDevice.calculated_attributes
 
     def update_structure_carbon_footprint_fabrication(self):
         """Structure fabrication footprint of the appliance, copied from the appliance's own fabrication footprint since there are no separate component fabrication contributions."""

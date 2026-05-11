@@ -23,11 +23,9 @@ class InfraHardware(HardwareBase):
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
 
-    @property
-    def calculated_attributes(self):
-        return (
-            ["raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
-             "energy_footprint"])
+    calculated_attributes = [
+        "raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
+        "energy_footprint"]
 
     @abstractmethod
     def update_raw_nb_of_instances(self):

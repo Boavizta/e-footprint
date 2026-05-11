@@ -71,12 +71,11 @@ class JobBase(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
         return self.networks
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return ["hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
-                "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
-                "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
-                "hourly_data_stored_across_usage_patterns"] + super().calculated_attributes
+    calculated_attributes: List[str] = [
+        "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
+        "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",
+        "hourly_avg_occurrences_across_usage_patterns", "hourly_data_transferred_across_usage_patterns",
+        "hourly_data_stored_across_usage_patterns"] + ModelingObject.calculated_attributes
 
     @property
     def duration_in_full_hours(self):

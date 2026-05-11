@@ -163,23 +163,21 @@ class ServerBase(InfraHardware):
     def compute_type(self) -> str:
         return str(self.compute.value.units)
 
-    @property
-    def calculated_attributes(self):
-        return [
-            "hour_by_hour_ram_need",
-            "hour_by_hour_compute_need",
-            "occupied_ram_per_instance",
-            "occupied_compute_per_instance",
-            "available_ram_per_instance",
-            "available_compute_per_instance",
-        ] + InfraHardware.calculated_attributes.fget(self) + [
-            "service_total_job_volumes",
-            "job_repartition_weights",
-        ] + [
-            attr
-            for attr in ModelingObject.calculated_attributes.fget(self)
-            if attr not in {"fabrication_impact_repartition_weights", "usage_impact_repartition_weights"}
-        ]
+    calculated_attributes: List[str] = [
+        "hour_by_hour_ram_need",
+        "hour_by_hour_compute_need",
+        "occupied_ram_per_instance",
+        "occupied_compute_per_instance",
+        "available_ram_per_instance",
+        "available_compute_per_instance",
+    ] + InfraHardware.calculated_attributes + [
+        "service_total_job_volumes",
+        "job_repartition_weights",
+    ] + [
+        attr
+        for attr in ModelingObject.calculated_attributes
+        if attr not in {"fabrication_impact_repartition_weights", "usage_impact_repartition_weights"}
+    ]
 
     @property
     def resources_unit_dict(self):

@@ -87,9 +87,7 @@ class GPUServer(ServerBase):
         self.carbon_footprint_fabrication_per_gpu = carbon_footprint_fabrication_per_gpu.set_label(
             "Carbon footprint one GPU")
 
-    @property
-    def calculated_attributes(self):
-        return ["carbon_footprint_fabrication", "power", "idle_power", "ram"] + super().calculated_attributes
+    calculated_attributes = ["carbon_footprint_fabrication", "power", "idle_power", "ram"] + ServerBase.calculated_attributes
 
     def update_carbon_footprint_fabrication(self):
         """Embodied carbon of one server instance, equal to the chassis fabrication footprint plus the per-GPU fabrication footprint times the GPU count."""

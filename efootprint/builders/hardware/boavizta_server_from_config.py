@@ -61,10 +61,9 @@ class BoaviztaServerFromConfig(ServerBase):
         self.ram_config = EmptyExplainableObject()
         self.api_call_response = EmptyExplainableObject()
         
-    @property
-    def calculated_attributes(self):
-        return (["cpu_config", "ram_config", "api_call_response", "carbon_footprint_fabrication", "power", "ram", 
-                 "compute"] + super().calculated_attributes)
+    calculated_attributes = (
+        ["cpu_config", "ram_config", "api_call_response", "carbon_footprint_fabrication", "power", "ram",
+         "compute"] + ServerBase.calculated_attributes)
 
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
@@ -174,11 +173,10 @@ class BoaviztaStorageFromConfig(Storage):
         
         self.storage_type = EmptyExplainableObject()
 
-    @property
-    def calculated_attributes(self):
-        return (["storage_type", "storage_capacity", "fixed_nb_of_instances",
-                 "carbon_footprint_fabrication_per_storage_capacity",
-                 "power_per_storage_capacity", "lifespan"] + super().calculated_attributes)
+    calculated_attributes = (
+        ["storage_type", "storage_capacity", "fixed_nb_of_instances",
+         "carbon_footprint_fabrication_per_storage_capacity",
+         "power_per_storage_capacity", "lifespan"] + Storage.calculated_attributes)
 
     def update_storage_type(self):
         storage_type = None

@@ -64,9 +64,9 @@ class UsageJourney(ModelingObject):
 
         return output_list
 
-    @property
-    def calculated_attributes(self):
-        return ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"] + super().calculated_attributes
+    calculated_attributes = (
+        ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
+        + ModelingObject.calculated_attributes)
 
     def update_duration(self):
         """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps."""

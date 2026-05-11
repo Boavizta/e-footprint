@@ -49,10 +49,9 @@ class EdgeCPUComponent(EdgeComponent):
         self.available_compute_per_instance = EmptyExplainableObject()
         self.unitary_hourly_compute_need_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def calculated_attributes(self):
-        return (["compute", "available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
-                + super().calculated_attributes)
+    calculated_attributes = (
+        ["compute", "available_compute_per_instance", "unitary_hourly_compute_need_per_usage_pattern"]
+        + EdgeComponent.calculated_attributes)
 
     def update_compute(self):
         """Total compute provided by the CPU component, equal to per-unit compute times the number of units."""

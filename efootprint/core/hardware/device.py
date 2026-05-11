@@ -112,13 +112,11 @@ class Device(HardwareBase):
     def usage_journey_steps(self) -> List["UsageJourneyStep"]:
         return list(dict.fromkeys(sum([usage_pattern.usage_journey.uj_steps for usage_pattern in self.usage_patterns], [])))
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return [
-            "energy_footprint_per_usage_pattern",
-            "energy_footprint",
-            "instances_fabrication_footprint",
-        ] + super().calculated_attributes
+    calculated_attributes: List[str] = [
+        "energy_footprint_per_usage_pattern",
+        "energy_footprint",
+        "instances_fabrication_footprint",
+    ] + HardwareBase.calculated_attributes
 
     def update_dict_element_in_energy_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
         energy_spent_over_one_full_hour_by_one_device = self.power * ExplainableQuantity(1 * u.hour, "one full hour")

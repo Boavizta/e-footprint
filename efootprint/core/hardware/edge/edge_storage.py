@@ -120,12 +120,10 @@ class EdgeStorage(EdgeComponent):
                 f"Please check your model structure.")
         return recurrent_edge_storage_needs
 
-    @property
-    def calculated_attributes(self):
-        return ["storage_capacity", "cumulative_unitary_storage_need_per_usage_pattern"] + [
-            attr for attr in super().calculated_attributes
-            if attr not in ["power", "idle_power"]
-        ]
+    calculated_attributes = ["storage_capacity", "cumulative_unitary_storage_need_per_usage_pattern"] + [
+        attr for attr in EdgeComponent.calculated_attributes
+        if attr not in ["power", "idle_power"]
+    ]
 
     def update_storage_capacity(self):
         """Total storage capacity of the component, equal to per-unit capacity times the number of units."""

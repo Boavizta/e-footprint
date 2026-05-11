@@ -54,9 +54,7 @@ class UsagePattern(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[UsageJourney]:
         return [self.usage_journey]
 
-    @property
-    def calculated_attributes(self):
-        return ["utc_hourly_usage_journey_starts"] + super().calculated_attributes
+    calculated_attributes = ["utc_hourly_usage_journey_starts"] + ModelingObject.calculated_attributes
 
     @property
     def jobs(self) -> List[Job]:

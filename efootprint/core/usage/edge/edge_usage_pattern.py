@@ -51,9 +51,7 @@ class EdgeUsagePattern(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> (List[EdgeUsageJourney]):
         return [self.edge_usage_journey]
 
-    @property
-    def calculated_attributes(self):
-        return (["utc_hourly_edge_usage_journey_starts"] + super().calculated_attributes)
+    calculated_attributes = ["utc_hourly_edge_usage_journey_starts"] + ModelingObject.calculated_attributes
 
     @property
     def recurrent_edge_device_needs(self) -> List["RecurrentEdgeDeviceNeed"]:

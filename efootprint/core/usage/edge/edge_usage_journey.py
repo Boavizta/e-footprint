@@ -68,9 +68,9 @@ class EdgeUsageJourney(ModelingObject):
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
-    @property
-    def calculated_attributes(self) -> List[str]:
-        return ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"] + super().calculated_attributes
+    calculated_attributes: List[str] = (
+        ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
+        + ModelingObject.calculated_attributes)
 
     def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
             self, edge_usage_pattern: "EdgeUsagePattern"):

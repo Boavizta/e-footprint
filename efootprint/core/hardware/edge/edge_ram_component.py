@@ -49,9 +49,9 @@ class EdgeRAMComponent(EdgeComponent):
         self.available_ram_per_instance = EmptyExplainableObject()
         self.unitary_hourly_ram_need_per_usage_pattern = ExplainableObjectDict()
 
-    @property
-    def calculated_attributes(self):
-        return ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"] + super().calculated_attributes
+    calculated_attributes = (
+        ["ram", "available_ram_per_instance", "unitary_hourly_ram_need_per_usage_pattern"]
+        + EdgeComponent.calculated_attributes)
 
     def update_ram(self):
         """Total memory provided by the RAM component, equal to per-unit RAM times the number of units."""
