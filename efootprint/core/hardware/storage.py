@@ -31,7 +31,10 @@ class Storage(InfraHardware):
     pitfalls = (
         "{param:Storage.data_storage_duration} controls how long data lives before it is automatically dumped. "
         "Setting it longer than the modeling period means the storage need only ever grows, which can sharply "
-        "inflate the number of instances required.")
+        "inflate the number of instances required. "
+        "{param:Storage.base_storage_need} is the physical storage required at t=0 (replicas already included) "
+        "and is not multiplied by {param:Storage.data_replication_factor} — that factor only applies to "
+        "job-driven growth.")
 
     param_descriptions = {
         "storage_capacity": (
@@ -47,8 +50,9 @@ class Storage(InfraHardware):
             "How long stored data is retained before being automatically dumped. Drives how cumulative storage "
             "grows over time."),
         "base_storage_need": (
-            "Storage occupied independently of jobs (system data, indexes, baseline assets). Added on top of "
-            "the cumulative job-driven storage need."),
+            "Physical storage required at t=0, before any job has written data — replicas included if the "
+            "baseline data is replicated in reality. Added on top of the cumulative job-driven storage need; "
+            "unlike that one, it is not multiplied by {param:Storage.data_replication_factor}."),
         "lifespan": (
             "Expected time before a storage instance is replaced. Embodied carbon is amortised over this duration."),
         "fixed_nb_of_instances": (
