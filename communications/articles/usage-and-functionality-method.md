@@ -20,6 +20,8 @@
 
 Most carbon assessment frameworks start from inventory (component lists, host counts, traffic totals) or from lifecycle process stages. e-footprint starts from **how the service is used** — described as **usage journeys with steps** (web) or **functionalities** (edge).
 
+The diagnosis is sharper than a framework comparison: **per-unit reasoning (per visit, per request) without ever stepping back to the system level is the dominant ecodesign practice today** — and the practice e-footprint is built to displace.
+
 Concrete shape:
 - A usage journey is an ordered sequence of steps a "user" takes — where "user" covers humans and automated systems alike (an ML training run is a usage journey).
 - Each step makes one or more **jobs** (requests).

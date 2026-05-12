@@ -114,6 +114,13 @@ Only simulation answers the priority question. Best practices and measurement re
 - *"Measurement calibrates the model. Simulation turns it into a decision."* — derived from §3 / restates strategy §5 cooperative stance.
 - *"Why a PM can read an e-footprint model: usage journeys, not raw request counts."* — derived from §4; doubles as cross-promotion for Article #3.
 
+## Prose hooks surfaced by the May 2026 Alliancy tribune
+
+A PS-channel instantiation of this framing was published as the [May 2026 Alliancy tribune](2026-05-tribune-alliancy/). Two formulations from that draft are worth reusing in the full Boavizta-channel prose:
+
+- **"Missing third pillar" articulation.** The dominant conceptual frame in the responsible-digital community today rests on two pillars — *measure* (reporting, GHG inventories) and *apply* (best practices). The article can lead with this framing and position simulation as the third, missing pillar — *model to decide*.
+- **Finance analogy.** Reporting is to environmental impact what the quarterly close is to budget: indispensable for accountability, insufficient for decisions. Modeling is the **business plan** that informs decisions before they are made. Reusable as the §3 opener or as the LinkedIn hook at article launch.
+
 ## Open items for full draft
 
 - [ ] Resolve the §6 "your service is too small" example: anonymized historical case (the Paylib insight, if reusable in anonymized form) or a clean hypothetical.

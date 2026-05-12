@@ -12,3 +12,5 @@ If the system is big enough, and once the model has been refined enough, comes t
 
 ## Simulation and priorisation
 When ecodesign opportunities or new features are considered, they are implemented as changes to the e-footprint model, e-footprint computes the new impact of the system, and the difference between the old and the new footprint is the **environmental return on investment of the action**. Since modeling often takes orders of magnitude less time than implementing, this approach allows for an efficient **prioritization of effort: you will finally be able to choose the most impactful best practice for your particular conditions** !
+
+This simulation loop should be re-triggered at every **structuring decision** of the service lifecycle — scaling up, adding a feature (typically an AI capability), considering an ecodesign action, changing hosting — not only once after the model is first refined. Modeling before deciding puts the trade-off back on informed ground.
