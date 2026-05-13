@@ -1,5 +1,7 @@
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -106,3 +108,34 @@ class EdgeUsageJourney(ModelingObject):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
+
+    @cached_property
+    def attributed_energy_footprint_per_usage_pattern(self) -> ExplainableObjectDict:
+        country_dependent_per_up = {
+            up: up.country_dependent_usage_footprint for up in self.edge_usage_patterns}
+        country_dependent_total = sum(
+            country_dependent_per_up.values(), start=EmptyExplainableObject()
+        ).to(u.kg).set_label("Country-dependent edge usage footprint")
+        neutral_total = (
+            self.attributed_energy_footprint - country_dependent_total
+        ).to(u.kg).set_label("Neutral edge usage footprint")
+        activity_per_up = {up: up.usage_activity_weight for up in self.edge_usage_patterns}
+        activity_total = sum(activity_per_up.values(), start=EmptyExplainableObject()).set_label(
+            "Edge usage journey activity weight sum")
+        activity_total_is_zero = (
+            isinstance(activity_total, EmptyExplainableObject)
+            or bool(getattr(activity_total.magnitude == 0, "all", lambda: activity_total.magnitude == 0)())
+        )
+
+        attributed = ExplainableObjectDict()
+        for up in self.edge_usage_patterns:
+            if activity_total_is_zero:
+                neutral_share = EmptyExplainableObject()
+            else:
+                neutral_share = (activity_per_up[up] / activity_total).to(u.concurrent).set_label(
+                    f"{up.name} neutral usage activity share")
+            attributed[up] = (
+                country_dependent_per_up[up] + neutral_total * neutral_share
+            ).to(u.kg).set_label(f"{up.name} attributed energy footprint")
+
+        return attributed

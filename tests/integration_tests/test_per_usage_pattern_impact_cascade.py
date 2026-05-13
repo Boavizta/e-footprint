@@ -120,6 +120,68 @@ class TestPerUsagePatternImpactCascade(TestCase):
             places=6,
         )
 
+    def test_leaf_mutation_invalidates_attributed_energy_footprint_cache(self):
+        storage = self._neutral_storage("web storage")
+        server = self._server("web server", storage)
+        job = Job.from_defaults(
+            "web job",
+            server=server,
+            data_transferred=SourceValue(1 * u.GB),
+            data_stored=SourceValue(0 * u.GB_stored),
+            request_duration=SourceValue(1 * u.hour),
+            compute_needed=SourceValue(1 * u.cpu_core),
+            ram_needed=SourceValue(0 * u.GB_ram),
+        )
+        step = UsageJourneyStep("web step", SourceValue(1 * u.hour), [job])
+        journey = UsageJourney("shared web journey", [step])
+        device = Device.from_defaults(
+            "shared laptop",
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1000 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
+        )
+        network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
+        start_date = datetime(2026, 1, 1)
+        low_country = self._country("low carbon country", 100 * u.g / u.kWh)
+        high_country = self._country("high carbon country", 200 * u.g / u.kWh)
+        low_carbon_pattern = UsagePattern(
+            "low carbon web usage", journey, [device], network, low_country,
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        high_carbon_pattern = UsagePattern(
+            "high carbon web usage", journey, [device], network, high_country,
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
+
+        def read_low_footprint():
+            return low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude
+
+        def assert_invalidates(label: str, mutate):
+            before = read_low_footprint()
+            self.assertIn("attributed_energy_footprint_per_usage_pattern", journey.__dict__, label)
+            mutate()
+            self.assertNotIn(
+                "attributed_energy_footprint_per_usage_pattern", journey.__dict__,
+                f"{label}: UJ cache not flushed",
+            )
+            after = read_low_footprint()
+            self.assertNotAlmostEqual(before, after, places=6, msg=f"{label}: footprint unchanged after mutation")
+
+        assert_invalidates(
+            "country.average_carbon_intensity",
+            lambda: setattr(low_country, "average_carbon_intensity", SourceValue(300 * u.g / u.kWh)),
+        )
+        assert_invalidates(
+            "device.power",
+            lambda: setattr(device, "power", SourceValue(2000 * u.W)),
+        )
+        assert_invalidates(
+            "network.bandwidth_energy_intensity",
+            lambda: setattr(network, "bandwidth_energy_intensity", SourceValue(2 * u.kWh / u.GB)),
+        )
+
     def test_shared_edge_usage_journey_attributes_edge_device_and_recurrent_server_usage_separately(self):
         storage = self._neutral_storage("edge server storage")
         server = self._server("edge server", storage)

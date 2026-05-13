@@ -141,6 +141,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         "attributed_fabrication_footprint",
         "attributed_energy_footprint_per_source",
         "attributed_energy_footprint",
+        "attributed_energy_footprint_per_usage_pattern",
     )
     _impact_repartition_phases = ("fabrication", "usage")
 
@@ -849,6 +850,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             repartition_value.value[nan_values_mask] = 1
 
         getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
+        modeling_obj.invalidate_impact_repartition_cache(recursive=True)
 
     def update_dict_element_in_fabrication_impact_repartition(self, modeling_obj: "ModelingObject"):
         self._update_dict_element_in_impact_repartition("fabrication", modeling_obj)

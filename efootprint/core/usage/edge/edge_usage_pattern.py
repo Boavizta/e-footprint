@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -91,66 +92,25 @@ class EdgeUsagePattern(ModelingObject):
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_usage_impact_repartition_weights(self.country)
 
-    def _usage_activity_weight(self):
+    @property
+    def usage_activity_weight(self):
         return (
             self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[self]
             * self.edge_usage_journey.nb_of_occurrences_per_container[self]
         ).to(u.concurrent)
 
-    def _usage_activity_weight_sum(self):
-        return sum(
-            [
-                usage_pattern._usage_activity_weight()
-                for usage_pattern in self.edge_usage_journey.edge_usage_patterns
-            ],
-            start=EmptyExplainableObject(),
-        ).set_label("Edge usage journey activity weight sum")
-
-    def _neutral_usage_activity_share(self):
-        activity_weight_sum = self._usage_activity_weight_sum()
-        if isinstance(activity_weight_sum, EmptyExplainableObject):
-            return EmptyExplainableObject()
-        is_zero = activity_weight_sum.magnitude == 0
-        if hasattr(is_zero, "all"):
-            is_zero = is_zero.all()
-        if is_zero:
-            return EmptyExplainableObject()
-
-        return (self._usage_activity_weight() / activity_weight_sum).to(u.concurrent).set_label(
-            f"{self.name} neutral usage activity share")
-
-    def _country_dependent_usage_footprint(self):
+    @property
+    def country_dependent_usage_footprint(self):
         footprint = EmptyExplainableObject()
         for edge_device in self.edge_usage_journey.edge_devices:
             footprint += edge_device.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
         footprint += self.network.energy_footprint_for_usage_pattern(self)
         return footprint.to(u.kg).set_label(f"{self.name} country-dependent edge usage footprint")
 
-    def _country_dependent_usage_footprint_sum(self):
-        return sum(
-            [
-                usage_pattern._country_dependent_usage_footprint()
-                for usage_pattern in self.edge_usage_journey.edge_usage_patterns
-            ],
-            start=EmptyExplainableObject(),
-        ).to(u.kg).set_label("Country-dependent edge usage footprint")
-
-    def _corrected_attributed_energy_footprint(self):
-        neutral_usage_footprint = (
-            self.edge_usage_journey.attributed_energy_footprint
-            - self._country_dependent_usage_footprint_sum()
-        ).to(u.kg).set_label("Neutral edge usage footprint")
-        return (
-            self._country_dependent_usage_footprint()
-            + neutral_usage_footprint * self._neutral_usage_activity_share()
-        ).to(u.kg).set_label("Attributed energy footprint")
-
-    @property
-    def attributed_energy_footprint_per_source(self):
-        return ExplainableObjectDict({
-            self.edge_usage_journey: self._corrected_attributed_energy_footprint()
-        })
-
-    @property
+    @cached_property
     def attributed_energy_footprint(self):
-        return self._corrected_attributed_energy_footprint()
+        return self.edge_usage_journey.attributed_energy_footprint_per_usage_pattern[self]
+
+    @cached_property
+    def attributed_energy_footprint_per_source(self):
+        return ExplainableObjectDict({self.edge_usage_journey: self.attributed_energy_footprint})

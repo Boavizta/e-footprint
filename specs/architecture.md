@@ -93,9 +93,13 @@ Generic impact repartition propagates source footprints through the object graph
 (`UsageJourneyStep`s or `EdgeFunction`s) so upstream usage impact can route through them, but they do not own
 `usage_impact_repartition` toward patterns.
 
-Country-dependent shared-journey usage totals are owned by `UsagePattern` and `EdgeUsagePattern`: device,
-edge-device, and network usage stays on the country where it occurs, while the remaining neutral journey usage
-(servers, storage/service overhead, external APIs) is split by neutral activity volume.
+The corrected per-pattern usage total is held on the journey side as a `@cached_property`
+(`UsageJourney.attributed_energy_footprint_per_usage_pattern` and its edge counterpart): device/edge-device and
+network usage stays on the country where it occurs, while the remaining neutral journey usage (servers,
+storage/service overhead, external APIs) is split by neutral activity volume. `UsagePattern` and
+`EdgeUsagePattern` look up their own entry from that dict. The dict is registered in
+`ModelingObject._attributed_footprint_cached_property_names`, so it is flushed by the standard
+`invalidate_impact_repartition_cache` walk along with the other attributed-footprint caches.
 
 ## `ExplainableObjectDict` as input attribute
 

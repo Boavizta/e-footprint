@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Correct shared `UsageJourney` / `EdgeUsageJourney` usage attribution across countries by keeping
   country-dependent device, edge-device, and network energy on the target pattern, while splitting neutral upstream
   usage by activity volume.
+- Flush `_attributed_footprint_cached_property_names` caches on incremental `usage_impact_repartition` element
+  updates, not only on bulk recomputation, so attributed-footprint reads stay consistent after leaf-input mutations.
 
 ## [21.0.0] - 2026-04-29
 
