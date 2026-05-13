@@ -24,6 +24,7 @@ class TestEdgeUsageJourney(TestCase):
     def setUp(self):
         self.mock_edge_device = create_mod_obj_mock(EdgeDevice, name="Mock Device")
         self.mock_edge_device.lifespan = SourceValue(4 * u.year)
+        self.mock_edge_device.energy_footprint_per_usage_pattern = ExplainableObjectDict()
 
         self.mock_edge_need_1 = create_mod_obj_mock(RecurrentEdgeDeviceNeed, name="Mock Need 1")
         self.mock_edge_need_1.edge_device = self.mock_edge_device
@@ -163,14 +164,10 @@ class TestEdgeUsageJourney(TestCase):
             self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[edge_usage_pattern],
             mock_result)
 
-    def test_update_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
+    def test_update_fabrication_impact_repartition_weights_uses_parallel_journeys_and_container_occurrences(self):
         self.edge_usage_journey.trigger_modeling_updates = False
         edge_usage_pattern_a = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern A")
         edge_usage_pattern_b = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern B")
-        edge_usage_pattern_a.country = MagicMock()
-        edge_usage_pattern_a.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
-        edge_usage_pattern_b.country = MagicMock()
-        edge_usage_pattern_b.country.average_carbon_intensity = SourceValue(200 * u.g / u.kWh)
         set_modeling_obj_containers(
             # It is currently not possible for an edge usage journey to be linked several times to the same
             # usage pattern, but it might happen someday and the logic will be already tested.
@@ -181,13 +178,37 @@ class TestEdgeUsageJourney(TestCase):
         })
 
         self.edge_usage_journey.update_fabrication_impact_repartition_weights()
-        self.edge_usage_journey.update_usage_impact_repartition_weights()
 
         self.assertEqual(4, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_a].magnitude)
         self.assertEqual(5, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_b].magnitude)
         self.assertEqual(u.concurrent, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_a].unit)
-        self.assertEqual(400, self.edge_usage_journey.usage_impact_repartition_weights[edge_usage_pattern_a].magnitude)
-        self.assertEqual(1000, self.edge_usage_journey.usage_impact_repartition_weights[edge_usage_pattern_b].magnitude)
+
+    def test_usage_impact_attribution_sources_are_edge_functions(self):
+        self.assertEqual(
+            [self.mock_edge_function_1, self.mock_edge_function_2],
+            self.edge_usage_journey.usage_impact_attribution_sources,
+        )
+
+    def test_edge_function_usage_impact_can_route_through_journey_without_journey_usage_repartition(self):
+        edge_usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern")
+        edge_function = EdgeFunction("Edge Function", [], [])
+        edge_usage_journey = EdgeUsageJourney("Edge Usage Journey", [edge_function], SourceValue(1 * u.hour))
+        set_modeling_obj_containers(edge_usage_journey, [edge_usage_pattern])
+        edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict({
+            edge_usage_pattern: SourceValue(3 * u.concurrent),
+        })
+        edge_usage_journey.update_fabrication_impact_repartition_weights()
+
+        edge_function.update_usage_impact_repartition_weights()
+
+        self.assertEqual(3, edge_function.usage_impact_repartition_weights[edge_usage_journey].magnitude)
+        self.assertEqual(u.concurrent, edge_function.usage_impact_repartition_weights[edge_usage_journey].unit)
+
+    def test_usage_impact_repartition_is_not_owned_by_edge_usage_journey(self):
+        self.assertNotIn("usage_impact_repartition_weights", self.edge_usage_journey.calculated_attributes)
+        self.assertNotIn("usage_impact_repartition_weight_sum", self.edge_usage_journey.calculated_attributes)
+        self.assertNotIn("usage_impact_repartition", self.edge_usage_journey.calculated_attributes)
+        self.assertFalse(hasattr(self.edge_usage_journey, "usage_impact_repartition"))
 
 
 

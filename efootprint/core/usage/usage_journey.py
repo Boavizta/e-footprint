@@ -64,9 +64,13 @@ class UsageJourney(ModelingObject):
 
         return output_list
 
+    @property
+    def usage_impact_attribution_sources(self) -> List[UsageJourneyStep]:
+        return self.uj_steps
+
     calculated_attributes = (
         ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
-        + ModelingObject.calculated_attributes)
+        + [attr for attr in ModelingObject.calculated_attributes if not attr.startswith("usage_impact_repartition")])
 
     def update_duration(self):
         """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps."""
@@ -104,14 +108,3 @@ class UsageJourney(ModelingObject):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
             self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, usage_pattern: "UsagePattern"):
-        self.usage_impact_repartition_weights[usage_pattern] = (
-            self._usage_pattern_base_weight(usage_pattern) * usage_pattern.country.average_carbon_intensity
-        ).set_label(f"{usage_pattern.name} usage weight in impact repartition")
-
-    def update_usage_impact_repartition_weights(self):
-        """Per-usage-pattern weight used to attribute device-side usage emissions back to each pattern, weighted by the country's grid carbon intensity so high-carbon grids draw a larger share."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

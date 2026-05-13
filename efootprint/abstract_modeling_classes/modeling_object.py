@@ -778,7 +778,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def _compute_default_impact_repartition_weight(
             self, modeling_object: "ModelingObject", phase: str):
-        weight = (sum([val for val in getattr(modeling_object, f"{phase}_impact_repartition_weights").values()],
+        repartition_weights = getattr(modeling_object, f"{phase}_impact_repartition_weights", None)
+        attribution_sources = getattr(modeling_object, f"{phase}_impact_attribution_sources", ())
+        if repartition_weights is None and phase == "usage" and self in attribution_sources:
+            repartition_weights = modeling_object.fabrication_impact_repartition_weights
+        if repartition_weights is None:
+            raise AttributeError(f"{modeling_object.name} has no {phase}_impact_repartition_weights")
+
+        weight = (sum([val for val in repartition_weights.values()],
                       start=EmptyExplainableObject())
                 * self.nb_of_occurrences_per_container[modeling_object]).set_label(
             f"{modeling_object.name} weight in impact repartition")

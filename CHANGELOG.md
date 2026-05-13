@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## Unreleased
+
+### Fixed
+- Correct shared `UsageJourney` / `EdgeUsageJourney` usage attribution across countries by keeping
+  country-dependent device, edge-device, and network energy on the target pattern, while splitting neutral upstream
+  usage by activity volume.
+
 ## [21.0.0] - 2026-04-29
 
 ### Changed

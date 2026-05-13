@@ -1,0 +1,190 @@
+from datetime import datetime
+
+import numpy as np
+import pytz
+from pint import Quantity
+from unittest import TestCase
+
+from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
+from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue
+from efootprint.builders.time_builders import create_source_hourly_values_from_list
+from efootprint.constants.units import u
+from efootprint.core.country import Country
+from efootprint.core.hardware.device import Device
+from efootprint.core.hardware.edge.edge_device import EdgeDevice
+from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
+from efootprint.core.hardware.network import Network
+from efootprint.core.hardware.server import Server, ServerTypes
+from efootprint.core.hardware.storage import Storage
+from efootprint.core.system import System
+from efootprint.core.usage.edge.edge_function import EdgeFunction
+from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
+from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
+from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
+from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from efootprint.core.usage.job import Job
+from efootprint.core.usage.usage_journey import UsageJourney
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_pattern import UsagePattern
+
+
+class TestPerUsagePatternImpactCascade(TestCase):
+    @staticmethod
+    def _country(name: str, carbon_intensity):
+        return Country(
+            name,
+            name[:3].upper(),
+            SourceValue(carbon_intensity),
+            ExplainableTimezone(pytz.utc, "UTC timezone"),
+        )
+
+    @staticmethod
+    def _neutral_storage(name: str):
+        return Storage.from_defaults(
+            name,
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(0 * u.kg / u.TB_stored),
+            data_storage_duration=SourceValue(1 * u.hour),
+            base_storage_need=SourceValue(0 * u.TB_stored),
+        )
+
+    @staticmethod
+    def _server(name: str, storage: Storage):
+        return Server.from_defaults(
+            name,
+            server_type=ServerTypes.serverless(),
+            storage=storage,
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1000 * u.W),
+            idle_power=SourceValue(0 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            ram=SourceValue(1 * u.GB_ram),
+            compute=SourceValue(1 * u.cpu_core),
+            power_usage_effectiveness=SourceValue(1 * u.dimensionless),
+            average_carbon_intensity=SourceValue(500 * u.g / u.kWh),
+            utilization_rate=SourceValue(1 * u.dimensionless),
+            base_ram_consumption=SourceValue(0 * u.GB_ram),
+            base_compute_consumption=SourceValue(0 * u.cpu_core),
+        )
+
+    def test_shared_usage_journey_attributes_country_dependent_and_neutral_usage_separately(self):
+        storage = self._neutral_storage("web storage")
+        server = self._server("web server", storage)
+        job = Job.from_defaults(
+            "web job",
+            server=server,
+            data_transferred=SourceValue(1 * u.GB),
+            data_stored=SourceValue(0 * u.GB_stored),
+            request_duration=SourceValue(1 * u.hour),
+            compute_needed=SourceValue(1 * u.cpu_core),
+            ram_needed=SourceValue(0 * u.GB_ram),
+        )
+        step = UsageJourneyStep("web step", SourceValue(1 * u.hour), [job])
+        journey = UsageJourney("shared web journey", [step])
+        device = Device.from_defaults(
+            "shared laptop",
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1000 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
+        )
+        network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
+        start_date = datetime(2026, 1, 1)
+        low_carbon_pattern = UsagePattern(
+            "low carbon web usage",
+            journey,
+            [device],
+            network,
+            self._country("low carbon country", 100 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        high_carbon_pattern = UsagePattern(
+            "high carbon web usage",
+            journey,
+            [device],
+            network,
+            self._country("high carbon country", 200 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        system = System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
+
+        self.assertAlmostEqual(0.7, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(0.9, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(1.6, system.total_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            system.total_footprint.sum().to(u.kg).magnitude,
+            (
+                low_carbon_pattern.attributed_energy_footprint.sum()
+                + high_carbon_pattern.attributed_energy_footprint.sum()
+            ).to(u.kg).magnitude,
+            places=6,
+        )
+
+    def test_shared_edge_usage_journey_attributes_edge_device_and_recurrent_server_usage_separately(self):
+        storage = self._neutral_storage("edge server storage")
+        server = self._server("edge server", storage)
+        job = Job.from_defaults(
+            "edge server job",
+            server=server,
+            data_transferred=SourceValue(0 * u.GB),
+            data_stored=SourceValue(0 * u.GB_stored),
+            request_duration=SourceValue(1 * u.hour),
+            compute_needed=SourceValue(1 * u.cpu_core),
+            ram_needed=SourceValue(0 * u.GB_ram),
+        )
+        workload_component = EdgeWorkloadComponent.from_defaults(
+            "edge workload component",
+            carbon_footprint_fabrication_per_unit=SourceValue(0 * u.kg),
+            power_per_unit=SourceValue(1000 * u.W),
+            idle_power_per_unit=SourceValue(0 * u.W),
+            lifespan=SourceValue(1 * u.year),
+        )
+        edge_device = EdgeDevice.from_defaults(
+            "edge device",
+            structure_carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            components=[workload_component],
+            lifespan=SourceValue(1 * u.year),
+        )
+        component_need = RecurrentEdgeComponentNeed(
+            "edge workload need",
+            workload_component,
+            SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.concurrent)),
+        )
+        device_need = RecurrentEdgeDeviceNeed("edge device need", edge_device, [component_need])
+        server_need = RecurrentServerNeed(
+            "edge server need",
+            edge_device,
+            SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.occurrence)),
+            [job],
+        )
+        edge_function = EdgeFunction("edge function", [device_need], [server_need])
+        journey = EdgeUsageJourney("shared edge journey", [edge_function], SourceValue(1 * u.hour))
+        network = Network("edge network", SourceValue(1 * u.kWh / u.GB))
+        start_date = datetime(2026, 1, 1)
+        low_carbon_pattern = EdgeUsagePattern(
+            "low carbon edge usage",
+            journey,
+            network,
+            self._country("low carbon edge country", 100 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        high_carbon_pattern = EdgeUsagePattern(
+            "high carbon edge usage",
+            journey,
+            network,
+            self._country("high carbon edge country", 200 * u.g / u.kWh),
+            create_source_hourly_values_from_list([1], start_date),
+        )
+        system = System("shared edge system", [], [low_carbon_pattern, high_carbon_pattern])
+
+        self.assertAlmostEqual(0.6, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(0.7, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(1.3, system.total_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            system.total_footprint.sum().to(u.kg).magnitude,
+            (
+                low_carbon_pattern.attributed_energy_footprint.sum()
+                + high_carbon_pattern.attributed_energy_footprint.sum()
+            ).to(u.kg).magnitude,
+            places=6,
+        )

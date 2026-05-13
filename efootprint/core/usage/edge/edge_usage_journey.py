@@ -68,9 +68,13 @@ class EdgeUsageJourney(ModelingObject):
     def edge_devices(self) -> List["EdgeDevice"]:
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
+    @property
+    def usage_impact_attribution_sources(self) -> List[EdgeFunction]:
+        return self.edge_functions
+
     calculated_attributes: List[str] = (
         ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
-        + ModelingObject.calculated_attributes)
+        + [attr for attr in ModelingObject.calculated_attributes if not attr.startswith("usage_impact_repartition")])
 
     def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
             self, edge_usage_pattern: "EdgeUsagePattern"):
@@ -102,14 +106,3 @@ class EdgeUsageJourney(ModelingObject):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_fabrication_impact_repartition_weights(usage_pattern)
-
-    def update_dict_element_in_usage_impact_repartition_weights(self, usage_pattern: "EdgeUsagePattern"):
-        self.usage_impact_repartition_weights[usage_pattern] = (
-            self._edge_usage_pattern_base_weight(usage_pattern) * usage_pattern.country.average_carbon_intensity
-        ).set_label(f"{usage_pattern.name} usage weight in impact repartition")
-
-    def update_usage_impact_repartition_weights(self):
-        """Per-{class:EdgeUsagePattern} weight used to attribute downstream usage-phase emissions, scaled by the country's grid carbon intensity so high-carbon grids draw a larger share."""
-        self.usage_impact_repartition_weights = ExplainableObjectDict()
-        for usage_pattern in self.edge_usage_patterns:
-            self.update_dict_element_in_usage_impact_repartition_weights(usage_pattern)

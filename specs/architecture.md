@@ -86,6 +86,17 @@ There are three relationship types between modeling objects:
 
 All three populate `contextual_modeling_obj_containers` on the child objects so they can discover their parents. Dict-based relationships can also be discovered via `explainable_object_dicts_containers`.
 
+## Usage attribution boundary
+
+Generic impact repartition propagates source footprints through the object graph, but shared `UsageJourney` and
+`EdgeUsageJourney` objects are neutral usage pass-throughs. They expose `usage_impact_attribution_sources`
+(`UsageJourneyStep`s or `EdgeFunction`s) so upstream usage impact can route through them, but they do not own
+`usage_impact_repartition` toward patterns.
+
+Country-dependent shared-journey usage totals are owned by `UsagePattern` and `EdgeUsagePattern`: device,
+edge-device, and network usage stays on the country where it occurs, while the remaining neutral journey usage
+(servers, storage/service overhead, external APIs) is split by neutral activity volume.
+
 ## `ExplainableObjectDict` as input attribute
 
 `ExplainableObjectDict` can be used both as a calculated attribute and as an `__init__` parameter (input attribute). Behaviour differs:

@@ -12,16 +12,17 @@ shared journeys across countries by making the `UsageJourney -> UsagePattern` an
 skipped/excluded unfolding remains on the existing renderer logic until Task 2.
 
 **Implementation direction:**
-- In `efootprint/core/usage/usage_journey.py`, override or bypass the generic
-  `usage_impact_repartition_weights -> usage_impact_repartition_weight_sum -> usage_impact_repartition` path for
-  usage attribution.
-- Compute each UP's corrected aggregate usage total explicitly:
+- `UsageJourney` and `EdgeUsageJourney` do not own usage repartition toward patterns. Instead they expose a simple
+  `usage_impact_attribution_sources` list (`UsageJourneyStep`s or `EdgeFunction`s) so upstream usage impact can
+  route through them with neutral activity weights.
+- Compute each UP/EUP's corrected aggregate usage total explicitly on `UsagePattern` / `EdgeUsagePattern`:
   - `Device` contribution uses existing device per-UP energy footprints.
   - `Network` contribution uses per-UP network energy footprint; add `Network.energy_footprint_per_usage_pattern`
     if absent.
   - Server-side hardware, storage/service overhead, and external API usage contributions split by neutral activity
     volume, not by user-country carbon intensity.
-- Normalize corrected per-UP totals into `usage_impact_repartition[usage_pattern]`.
+- Return those corrected totals from pattern-level `attributed_energy_footprint` and
+  `attributed_energy_footprint_per_source`.
 - Preserve fabrication attribution behavior.
 - Apply the analogous correction in `efootprint/core/usage/edge/edge_usage_journey.py`:
   - edge device/component usage keeps edge-country dependence;
@@ -44,7 +45,7 @@ skipped/excluded unfolding remains on the existing renderer logic until Task 2.
 
 **Depends on:** none.
 
-**Status:** Not started.
+**Status:** Done.
 
 ---
 

@@ -85,3 +85,67 @@ class UsagePattern(ModelingObject):
         """All of this usage pattern's usage-phase impact attributes to its single {class:Country}."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         self.update_dict_element_in_usage_impact_repartition_weights(self.country)
+
+    def _usage_activity_weight(self):
+        return (
+            self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[self]
+            * self.usage_journey.nb_of_occurrences_per_container[self]
+        ).to(u.concurrent)
+
+    def _usage_activity_weight_sum(self):
+        return sum(
+            [
+                usage_pattern._usage_activity_weight()
+                for usage_pattern in self.usage_journey.usage_patterns
+            ],
+            start=EmptyExplainableObject(),
+        ).set_label("Usage journey activity weight sum")
+
+    def _neutral_usage_activity_share(self):
+        activity_weight_sum = self._usage_activity_weight_sum()
+        if isinstance(activity_weight_sum, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        is_zero = activity_weight_sum.magnitude == 0
+        if hasattr(is_zero, "all"):
+            is_zero = is_zero.all()
+        if is_zero:
+            return EmptyExplainableObject()
+
+        return (self._usage_activity_weight() / activity_weight_sum).to(u.concurrent).set_label(
+            f"{self.name} neutral usage activity share")
+
+    def _country_dependent_usage_footprint(self):
+        footprint = EmptyExplainableObject()
+        for device in self.devices:
+            footprint += device.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
+        footprint += self.network.energy_footprint_for_usage_pattern(self)
+        return footprint.to(u.kg).set_label(f"{self.name} country-dependent usage footprint")
+
+    def _country_dependent_usage_footprint_sum(self):
+        return sum(
+            [
+                usage_pattern._country_dependent_usage_footprint()
+                for usage_pattern in self.usage_journey.usage_patterns
+            ],
+            start=EmptyExplainableObject(),
+        ).to(u.kg).set_label("Country-dependent usage footprint")
+
+    def _corrected_attributed_energy_footprint(self):
+        neutral_usage_footprint = (
+            self.usage_journey.attributed_energy_footprint
+            - self._country_dependent_usage_footprint_sum()
+        ).to(u.kg).set_label("Neutral usage footprint")
+        return (
+            self._country_dependent_usage_footprint()
+            + neutral_usage_footprint * self._neutral_usage_activity_share()
+        ).to(u.kg).set_label("Attributed energy footprint")
+
+    @property
+    def attributed_energy_footprint_per_source(self):
+        return ExplainableObjectDict({
+            self.usage_journey: self._corrected_attributed_energy_footprint()
+        })
+
+    @property
+    def attributed_energy_footprint(self):
+        return self._corrected_attributed_energy_footprint()
