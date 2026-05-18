@@ -108,6 +108,20 @@ class TestPerUsagePatternImpactCascade(TestCase):
         )
         system = System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
+        # Country-dependent share (device + network), pinned per pattern so a regression that re-balances
+        # between the country-dependent and neutral branches while preserving totals would still fail.
+        self.assertAlmostEqual(
+            0.2, low_carbon_pattern.country_dependent_usage_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.4, high_carbon_pattern.country_dependent_usage_footprint.sum().to(u.kg).magnitude, places=6)
+        # Neutral remainder (server-side) is split evenly by activity volume; both patterns have one journey start.
+        low_neutral = (low_carbon_pattern.attributed_energy_footprint.sum()
+                       - low_carbon_pattern.country_dependent_usage_footprint.sum()).to(u.kg).magnitude
+        high_neutral = (high_carbon_pattern.attributed_energy_footprint.sum()
+                        - high_carbon_pattern.country_dependent_usage_footprint.sum()).to(u.kg).magnitude
+        self.assertAlmostEqual(0.5, low_neutral, places=6)
+        self.assertAlmostEqual(0.5, high_neutral, places=6)
+        # Aggregate totals.
         self.assertAlmostEqual(0.7, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(0.9, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.6, system.total_footprint.sum().to(u.kg).magnitude, places=6)
@@ -293,6 +307,19 @@ class TestPerUsagePatternImpactCascade(TestCase):
         )
         system = System("shared edge system", [], [low_carbon_pattern, high_carbon_pattern])
 
+        # Country-dependent share (edge-device only; this scenario has no network data transfer).
+        self.assertAlmostEqual(
+            0.1, low_carbon_pattern.country_dependent_usage_footprint.sum().to(u.kg).magnitude, places=6)
+        self.assertAlmostEqual(
+            0.2, high_carbon_pattern.country_dependent_usage_footprint.sum().to(u.kg).magnitude, places=6)
+        # Neutral remainder (recurrent server work) split evenly by edge activity volume.
+        low_neutral = (low_carbon_pattern.attributed_energy_footprint.sum()
+                       - low_carbon_pattern.country_dependent_usage_footprint.sum()).to(u.kg).magnitude
+        high_neutral = (high_carbon_pattern.attributed_energy_footprint.sum()
+                        - high_carbon_pattern.country_dependent_usage_footprint.sum()).to(u.kg).magnitude
+        self.assertAlmostEqual(0.5, low_neutral, places=6)
+        self.assertAlmostEqual(0.5, high_neutral, places=6)
+        # Aggregate totals.
         self.assertAlmostEqual(0.6, low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(0.7, high_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude, places=6)
         self.assertAlmostEqual(1.3, system.total_footprint.sum().to(u.kg).magnitude, places=6)
