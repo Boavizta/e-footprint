@@ -24,6 +24,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   3600x for s/h, etc.). Now matches `__mul__` by passing `equalize_units=False`. This corrects, for example, the
   per-`UsageJourneyStep` repartition produced by `Device.usage_impact_repartition_weights` when steps have
   different `user_time_spent` units, which previously did not sum to 1 across keys.
+- `UsageJourney` / `EdgeUsageJourney` `attributed_energy_footprint_per_usage_pattern` now raises `ValueError`
+  if the neutral remainder (`attributed_energy_footprint − country_dependent total`) is negative at any hour:
+  this invariant cannot break in a correct attribution chain, and surfacing it loudly avoids silently emitting
+  negative neutral-share allocations. Zero-activity hours are handled explicitly so 0/0 doesn't leak NaN into
+  per-pattern attribution. The scalar-vs-array zero-total branch is simplified.
 
 ### Changed
 - `UsageJourney` / `EdgeUsageJourney` expose `usage_impact_repartition_weights` as a `@property` returning

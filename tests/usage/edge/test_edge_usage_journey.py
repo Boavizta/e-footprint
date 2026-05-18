@@ -219,6 +219,19 @@ class TestEdgeUsageJourney(TestCase):
         self.assertNotIn("usage_impact_repartition", self.edge_usage_journey.calculated_attributes)
         self.assertFalse(hasattr(self.edge_usage_journey, "usage_impact_repartition"))
 
+    def test_attributed_energy_footprint_per_usage_pattern_raises_when_neutral_total_negative(self):
+        edge_usage_pattern = create_mod_obj_mock(EdgeUsagePattern, name="EUP")
+        edge_usage_pattern.country_dependent_usage_footprint = SourceValue(10 * u.kg).set_label(
+            "EUP country-dependent")
+        edge_usage_pattern.usage_activity_weight = SourceValue(1 * u.concurrent)
+        set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern])
+        self.edge_usage_journey.__dict__["attributed_energy_footprint"] = SourceValue(5 * u.kg).set_label(
+            "Attributed energy footprint")
+
+        with self.assertRaises(ValueError) as ctx:
+            self.edge_usage_journey.attributed_energy_footprint_per_usage_pattern
+        self.assertIn("neutral remainder is negative", str(ctx.exception))
+
 
 
 if __name__ == "__main__":

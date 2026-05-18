@@ -146,6 +146,19 @@ class TestUsageJourney(TestCase):
         self.assertNotIn("usage_impact_repartition", self.usage_journey.calculated_attributes)
         self.assertFalse(hasattr(self.usage_journey, "usage_impact_repartition"))
 
+    def test_attributed_energy_footprint_per_usage_pattern_raises_when_neutral_total_negative(self):
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="UP")
+        usage_pattern.country_dependent_usage_footprint = SourceValue(10 * u.kg).set_label(
+            "UP country-dependent")
+        usage_pattern.usage_activity_weight = SourceValue(1 * u.concurrent)
+        set_modeling_obj_containers(self.usage_journey, [usage_pattern])
+        self.usage_journey.__dict__["attributed_energy_footprint"] = SourceValue(5 * u.kg).set_label(
+            "Attributed energy footprint")
+
+        with self.assertRaises(ValueError) as ctx:
+            self.usage_journey.attributed_energy_footprint_per_usage_pattern
+        self.assertIn("neutral remainder is negative", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

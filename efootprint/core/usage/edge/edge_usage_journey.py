@@ -1,7 +1,10 @@
 from functools import cached_property
 from typing import List, TYPE_CHECKING
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -122,23 +125,34 @@ class EdgeUsageJourney(ModelingObject):
         neutral_total = (
             self.attributed_energy_footprint - country_dependent_total
         ).to(u.kg).set_label("Neutral edge usage footprint")
+        if np.any(np.asarray(getattr(neutral_total, "magnitude", 0)) < 0):
+            raise ValueError(
+                f"{self.name}: attributed_energy_footprint must be >= the sum of patterns' "
+                f"country_dependent_usage_footprint at every hour, but the neutral remainder is negative.")
+
         activity_per_up = {up: up.usage_activity_weight for up in self.edge_usage_patterns}
         activity_total = sum(activity_per_up.values(), start=EmptyExplainableObject()).set_label(
             "Edge usage journey activity weight sum")
-        activity_total_is_zero = (
-            isinstance(activity_total, EmptyExplainableObject)
-            or bool(getattr(activity_total.magnitude == 0, "all", lambda: activity_total.magnitude == 0)())
-        )
 
         attributed = ExplainableObjectDict()
         for up in self.edge_usage_patterns:
-            if activity_total_is_zero:
-                neutral_share = EmptyExplainableObject()
-            else:
-                neutral_share = (activity_per_up[up] / activity_total).to(u.concurrent).set_label(
-                    f"{up.name} neutral usage activity share")
+            neutral_share = self._neutral_activity_share(activity_per_up[up], activity_total, up.name)
             attributed[up] = (
                 country_dependent_per_up[up] + neutral_total * neutral_share
             ).to(u.kg).set_label(f"{up.name} attributed energy footprint")
 
         return attributed
+
+    @staticmethod
+    def _neutral_activity_share(activity_for_pattern, activity_total, pattern_name: str):
+        if isinstance(activity_total, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        if isinstance(activity_total, ExplainableQuantity) and activity_total.magnitude == 0:
+            return EmptyExplainableObject()
+        share = (activity_for_pattern / activity_total).to(u.concurrent).set_label(
+            f"{pattern_name} neutral usage activity share")
+        if isinstance(share, ExplainableHourlyQuantities):
+            # Hours with zero total activity have zero neutral footprint by construction
+            # (the upstream attribution chain is itself activity-weighted), so 0/0 → share = 0.
+            share.value[np.isnan(share.magnitude)] = 0
+        return share

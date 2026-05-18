@@ -120,6 +120,50 @@ class TestPerUsagePatternImpactCascade(TestCase):
             places=6,
         )
 
+    def test_per_usage_pattern_attribution_handles_partial_zero_activity_hours(self):
+        storage = self._neutral_storage("web storage")
+        server = self._server("web server", storage)
+        job = Job.from_defaults(
+            "web job",
+            server=server,
+            data_transferred=SourceValue(1 * u.GB),
+            data_stored=SourceValue(0 * u.GB_stored),
+            request_duration=SourceValue(1 * u.hour),
+            compute_needed=SourceValue(1 * u.cpu_core),
+            ram_needed=SourceValue(0 * u.GB_ram),
+        )
+        step = UsageJourneyStep("web step", SourceValue(1 * u.hour), [job])
+        journey = UsageJourney("shared web journey", [step])
+        device = Device.from_defaults(
+            "shared laptop",
+            carbon_footprint_fabrication=SourceValue(0 * u.kg),
+            power=SourceValue(1000 * u.W),
+            lifespan=SourceValue(1 * u.year),
+            fraction_of_usage_time=SourceValue(24 * u.hour / u.day),
+        )
+        network = Network("shared network", SourceValue(1 * u.kWh / u.GB))
+        start_date = datetime(2026, 1, 1)
+        low_carbon_pattern = UsagePattern(
+            "low carbon web usage", journey, [device], network,
+            self._country("low carbon country", 100 * u.g / u.kWh),
+            create_source_hourly_values_from_list([0, 1, 0, 1], start_date),
+        )
+        high_carbon_pattern = UsagePattern(
+            "high carbon web usage", journey, [device], network,
+            self._country("high carbon country", 200 * u.g / u.kWh),
+            create_source_hourly_values_from_list([0, 1, 0, 1], start_date),
+        )
+        System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
+
+        for pattern in (low_carbon_pattern, high_carbon_pattern):
+            magnitudes = np.asarray(pattern.attributed_energy_footprint.magnitude)
+            self.assertFalse(
+                np.any(np.isnan(magnitudes)),
+                f"{pattern.name}: NaN in attributed_energy_footprint at zero-activity hours",
+            )
+            self.assertAlmostEqual(0.0, float(magnitudes[0]), places=6)
+            self.assertAlmostEqual(0.0, float(magnitudes[2]), places=6)
+
     def test_leaf_mutation_invalidates_attributed_energy_footprint_cache(self):
         storage = self._neutral_storage("web storage")
         server = self._server("web server", storage)
