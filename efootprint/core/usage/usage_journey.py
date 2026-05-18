@@ -4,7 +4,7 @@ from typing import List, TYPE_CHECKING
 import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import divide_or_fallback
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -153,9 +153,5 @@ class UsageJourney(ModelingObject):
             return EmptyExplainableObject()
         # Hours with zero total activity have zero neutral footprint by construction (the upstream attribution
         # chain is itself activity-weighted), so the hourly 0/0 → share = 0 fallback is the correct semantic.
-        if isinstance(activity_for_pattern, ExplainableHourlyQuantities) and isinstance(
-                activity_total, ExplainableHourlyQuantities):
-            share = activity_for_pattern.divide_with_zero_fallback(activity_total, nan_replacement=0)
-        else:
-            share = activity_for_pattern / activity_total
+        share = divide_or_fallback(activity_for_pattern, activity_total, fallback=0)
         return share.to(u.concurrent).set_label(f"{pattern_name} neutral usage activity share")

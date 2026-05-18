@@ -2,7 +2,7 @@ from typing import List, TYPE_CHECKING
 
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import divide_or_fallback
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -352,11 +352,7 @@ class EdgeDevice(ModelingObject):
             if isinstance(component_pattern_impact, EmptyExplainableObject):
                 continue
             # Hourly 0/0 means this need contributes nothing during idle hours where total demand is also zero.
-            if isinstance(component_need_demand, ExplainableHourlyQuantities) and isinstance(
-                    sibling_need_demand, ExplainableHourlyQuantities):
-                share = component_need_demand.divide_with_zero_fallback(sibling_need_demand, nan_replacement=0)
-            else:
-                share = component_need_demand / sibling_need_demand
+            share = divide_or_fallback(component_need_demand, sibling_need_demand, fallback=0)
             weight += component_pattern_impact * share
 
         return weight

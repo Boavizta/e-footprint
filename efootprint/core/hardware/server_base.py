@@ -5,7 +5,8 @@ import numpy as np
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
+    ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -365,13 +366,10 @@ class ServerBase(InfraHardware):
                     * self.nb_of_instances)
                 # Zero service-total at a given hour means no jobs run on the service then; the base load
                 # attributed to this job is therefore 0 at those hours.
-                job_volume = job.hourly_avg_occurrences_across_usage_patterns
-                service_total_volume = self.service_total_job_volumes[service]
-                if isinstance(job_volume, ExplainableHourlyQuantities) and isinstance(
-                        service_total_volume, ExplainableHourlyQuantities):
-                    job_volume_share = job_volume.divide_with_zero_fallback(service_total_volume, nan_replacement=0)
-                else:
-                    job_volume_share = job_volume / service_total_volume
+                job_volume_share = divide_or_fallback(
+                    job.hourly_avg_occurrences_across_usage_patterns,
+                    self.service_total_job_volumes[service],
+                    fallback=0)
                 weight = (
                     service_base_weight * job_volume_share
                     + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))

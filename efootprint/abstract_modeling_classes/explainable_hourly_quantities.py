@@ -558,3 +558,17 @@ class ExplainableHourlyQuantities(ExplainableObject):
             plt.show()
 
         return fig, ax
+
+
+def divide_or_fallback(numerator, denominator, fallback: float = 0):
+    """Divide ``numerator / denominator``; for two ``ExplainableHourlyQuantities`` route through
+    :meth:`ExplainableHourlyQuantities.divide_with_zero_fallback` so zero-denominator hours are filled with
+    ``fallback`` instead of raising. Other type combinations use the regular ``/`` operator.
+
+    Use at sites where the numerator and denominator may both be hourly time series with coincident zero hours
+    that carry a domain-specific meaning: ``fallback=0`` for "no contribution when no activity",
+    ``fallback=1`` for "equal-share fallback when total weight is zero".
+    """
+    if isinstance(numerator, ExplainableHourlyQuantities) and isinstance(denominator, ExplainableHourlyQuantities):
+        return numerator.divide_with_zero_fallback(denominator, nan_replacement=fallback)
+    return numerator / denominator

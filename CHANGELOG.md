@@ -56,6 +56,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   `_sum_attribution_leaves` walk is folded into the recursive resolver so a single traversal owns the
   post-exclusion semantics. `ImpactRepartitionSankey` dispatches through the public resolved-attribution methods
   and memoizes per-build to avoid quadratic re-resolution at deeper tree levels.
+- Added `divide_or_fallback(numerator, denominator, fallback=0)` in `explainable_hourly_quantities`. The seven
+  sites that needed to dispatch between `ExplainableHourlyQuantities.divide_with_zero_fallback` and the regular
+  `/` operator (resolve helpers, `_update_dict_element_in_impact_repartition`, both `_neutral_activity_share`,
+  `EdgeDevice._compute_component_need_weight`, `ServerBase.update_dict_element_in_job_repartition_weights`) now
+  call the helper instead of repeating the `isinstance` dispatch inline.
 
 ## [21.0.0] - 2026-04-29
 

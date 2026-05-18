@@ -10,7 +10,8 @@ from collections import defaultdict
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
+    ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.utils import css_escape
 from efootprint.logger import logger
@@ -833,17 +834,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
               and impact_repartition_weight_sum.sum().magnitude == 0):
             repartition_value = EmptyExplainableObject()
         else:
-            weight = getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj]
             # When weight_sum is zero at a given hour, every sibling weight is also zero at that hour. The
             # natural fallback is equal-share (1.0 per sibling) so that downstream attribution still distributes
             # whatever upstream footprint arrives, rather than dropping it on the floor.
-            if isinstance(weight, ExplainableHourlyQuantities) and isinstance(
-                    impact_repartition_weight_sum, ExplainableHourlyQuantities):
-                repartition_value = weight.divide_with_zero_fallback(impact_repartition_weight_sum, nan_replacement=1)
-            else:
-                repartition_value = weight / impact_repartition_weight_sum
-            repartition_value = repartition_value.to(u.concurrent).set_label(
-                f"{phase} impact attribution to {modeling_obj.name}")
+            weight = getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj]
+            repartition_value = divide_or_fallback(weight, impact_repartition_weight_sum, fallback=1).to(
+                u.concurrent).set_label(f"{phase} impact attribution to {modeling_obj.name}")
 
         getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
         modeling_obj.invalidate_impact_repartition_cache(recursive=True)
@@ -1054,15 +1050,12 @@ def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, 
                 breakdown, source_phase_footprint = _impact_source_breakdown_for(source, phase)
                 if breakdown is None or not _is_positive_attribution_value(source_phase_footprint):
                     continue
+                # Zero-denominator hours mean no flow at that hour, so the rescaled contribution is 0 there.
+                scale = divide_or_fallback(value, source_phase_footprint, fallback=0)
                 for child, child_value in breakdown.items():
                     if (_matches_configured_class(child, excluded_object_types)
                             or _matches_configured_class(child, skipped_object_types)):
                         continue
-                    if isinstance(value, ExplainableHourlyQuantities) and isinstance(
-                            source_phase_footprint, ExplainableHourlyQuantities):
-                        scale = value.divide_with_zero_fallback(source_phase_footprint, nan_replacement=0)
-                    else:
-                        scale = value / source_phase_footprint
                     contribution = child_value * scale
                     if not _is_positive_attribution_value(contribution):
                         continue
@@ -1074,12 +1067,8 @@ def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, 
             if not _is_positive_attribution_value(sub_total):
                 continue
             # Zero-denominator hours mean no flow into the skipped subtree at that hour, so the rescaled
-            # contribution is 0 there. Use the explicit zero-fallback divide to make that intent loud.
-            if isinstance(value, ExplainableHourlyQuantities) and isinstance(
-                    sub_total, ExplainableHourlyQuantities):
-                scale = value.divide_with_zero_fallback(sub_total, nan_replacement=0)
-            else:
-                scale = value / sub_total
+            # contribution is 0 there.
+            scale = divide_or_fallback(value, sub_total, fallback=0)
             for sub_source, sub_value in sub.items():
                 contribution = sub_value * scale
                 result[sub_source] = (result[sub_source] + contribution) if sub_source in result else contribution
