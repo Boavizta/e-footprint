@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch, MagicMock, PropertyMock, call
 
+import numpy as np
+
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -637,6 +639,37 @@ class TestResolvedAttribution(unittest.TestCase):
         self.assertAlmostEqual(20, resolved_b[leaf].magnitude)
         self.assertNotIn(intermediate, resolved_a)
         self.assertNotIn(intermediate, resolved_b)
+
+    def test_resolved_skipping_intermediate_preserves_hourly_values_when_some_hours_are_zero(self):
+        """Test that hourly time series with zero-activity hours don't produce NaN through skip expansion.
+
+        Regression: ``value / sub_total`` on two ``ExplainableHourlyQuantities`` that share zero hours
+        produces 0/0 = NaN per hour. The contribution then carries NaN through to Sankey link values,
+        and downstream nodes get filtered by positivity checks.
+        """
+        from efootprint.builders.time_builders import create_source_hourly_values_from_list
+        leaf = ImpactRepartitionCachingModelingObject("hourly_leaf")
+        intermediate = SkippedIntermediateModelingObject("hourly_intermediate")
+        root = ImpactRepartitionCachingModelingObject("hourly_root")
+        # Hourly footprint with idle (zero) hours between activity hours
+        leaf.trigger_modeling_updates = False
+        leaf.__setattr__(
+            "energy_footprint",
+            create_source_hourly_values_from_list([10, 0, 5, 0, 0, 7], pint_unit=u.kg),
+            check_input_validity=False,
+        )
+        leaf.trigger_modeling_updates = True
+        self._wire(leaf, intermediate)
+        self._wire(intermediate, root)
+
+        resolved = root.attributed_energy_footprint_per_source_resolved(
+            skipped_object_types=(SkippedIntermediateModelingObject,))
+
+        self.assertIn(leaf, resolved)
+        magnitudes = resolved[leaf].value.magnitude
+        # No hour should be NaN — zero-activity hours should remain zero, not NaN.
+        self.assertFalse(np.isnan(magnitudes).any(), f"resolved values contain NaN: {magnitudes}")
+        self.assertAlmostEqual(22.0, float(magnitudes.sum()), places=3)
 
     def test_resolved_excluded_type_drops_subtree_and_reduces_value(self):
         """Test excluded object types are removed; remaining branches keep their values."""

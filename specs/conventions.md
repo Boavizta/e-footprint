@@ -10,6 +10,7 @@ These are the strong preferences and patterns the project follows. They are soft
 - **Type hints** are encouraged but not strictly enforced. Don't use forward references in `ModelingObject.__init__` signatures.
 - **Mutable defaults are forbidden** in function signatures (e.g. `SourceValue(...)`). Use `None` and create the mutable inside the body.
 - **Comments only when the WHY is non-obvious.** If a reader can derive intent from well-named identifiers, the comment is noise. Never comment what the code does — only why it does it that way.
+- **Fail loudly on impossible states.** When a value reaches code that assumes it is well-formed (e.g. a positive Pint quantity, a non-NaN magnitude, a populated dict), raise a `ValueError`/`AssertionError` with a message that points at the upstream root cause rather than silently coercing or filtering. Silent passes (returning `False` for NaN, defaulting to zero, swallowing a missing key) hide real bugs and make them hard to debug later. Filtering is only acceptable at intentional UX boundaries (e.g. dropping zero-magnitude flows from a chart) — and even there, NaN and negative values are bugs and should raise.
 
 ## Modeling refactor preferences
 

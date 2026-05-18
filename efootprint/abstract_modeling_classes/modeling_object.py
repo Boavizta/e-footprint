@@ -997,6 +997,16 @@ def _is_positive_attribution_value(value) -> bool:
         return True
 
 
+def _zero_filled_nan(value):
+    """Replace NaN entries with 0 in an hourly scale. Element-wise division of two hourly series with
+    coincident zero hours produces 0/0=NaN at those hours; the contribution there must be 0 (no flow)."""
+    if isinstance(value, ExplainableHourlyQuantities):
+        nan_mask = np.isnan(value.magnitude)
+        if nan_mask.any():
+            value.value[nan_mask] = 0
+    return value
+
+
 def _sum_values(values):
     """Sum without forcing an ``EmptyExplainableObject`` start; works for any value type supporting ``+``."""
     total = None
@@ -1052,7 +1062,7 @@ def resolve_attributed_footprint_per_source(
             sub_total = _sum_values(sub.values())
             if not _is_positive_attribution_value(sub_total):
                 continue
-            scale = value / sub_total
+            scale = _zero_filled_nan(value / sub_total)
             for sub_source, sub_value in sub.items():
                 contribution = sub_value * scale
                 result[sub_source] = (result[sub_source] + contribution) if sub_source in result else contribution

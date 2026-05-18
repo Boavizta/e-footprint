@@ -226,7 +226,14 @@ class ImpactRepartitionSankey:
 
     @staticmethod
     def _is_positive(quantity: Quantity) -> bool:
-        return quantity.magnitude > 0
+        import math
+        magnitude = quantity.magnitude
+        if isinstance(magnitude, float) and math.isnan(magnitude):
+            raise ValueError(
+                f"NaN encountered in Sankey value ({quantity}). NaN values in attributed-footprint inputs indicate an "
+                f"upstream attribution bug (e.g. 0/0 in hourly-series division). Fix the source rather than silently "
+                f"filtering the flow.")
+        return magnitude > 0
 
     def _in_reference_unit(self, quantity: Quantity, reference_quantity: Quantity | None = None) -> Quantity:
         reference = reference_quantity or self.total_system_value

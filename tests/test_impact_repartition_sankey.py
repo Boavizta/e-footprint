@@ -399,6 +399,18 @@ class TestImpactRepartitionSankey(TestCase):
         # deduplication even though this node has 2 parents.
         self.assertEqual([(shared_idx, leaf_idx, 0.1)], [link for link in links if link[0] == shared_idx])
 
+    def test_is_positive_raises_on_nan_to_surface_upstream_attribution_bugs(self):
+        """Test _is_positive raises on NaN so attribution bugs don't get silently filtered."""
+        import math
+        sankey = ImpactRepartitionSankey(MagicMock(), aggregation_threshold_percent=0)
+        with self.assertRaises(ValueError) as ctx:
+            sankey._is_positive(self._kg(float("nan")))
+        self.assertIn("NaN", str(ctx.exception))
+        # Positive and non-positive scalars still work normally.
+        self.assertTrue(sankey._is_positive(self._kg(1.0)))
+        self.assertFalse(sankey._is_positive(self._kg(0.0)))
+        self.assertFalse(math.isnan(self._kg(1.0).magnitude))
+
     def test_build_skipping_shared_intermediate_preserves_per_parent_flow_to_leaves(self):
         """Test skipped intermediate routes each parent's flow into the same leaves with per-parent scaling."""
         leaf_a = self._make_leaf("LeafA", manufacturing_kg=60)
