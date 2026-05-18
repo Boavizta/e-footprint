@@ -66,12 +66,15 @@ class UsageJourney(ModelingObject):
         return output_list
 
     @property
-    def usage_impact_attribution_sources(self) -> List[UsageJourneyStep]:
-        return self.uj_steps
+    def usage_impact_repartition_weights(self) -> ExplainableObjectDict:
+        return self.fabrication_impact_repartition_weights
 
     calculated_attributes = (
         ["duration", "nb_usage_journeys_in_parallel_per_usage_pattern"]
-        + [attr for attr in ModelingObject.calculated_attributes if not attr.startswith("usage_impact_repartition")])
+        + [attr for attr in ModelingObject.calculated_attributes
+           if attr not in ("usage_impact_repartition_weights",
+                           "usage_impact_repartition_weight_sum",
+                           "usage_impact_repartition")])
 
     def update_duration(self):
         """Total wall-clock time of one journey, equal to the sum of {param:UsageJourneyStep.user_time_spent} across all steps."""

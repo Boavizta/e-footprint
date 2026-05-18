@@ -71,12 +71,15 @@ class EdgeUsageJourney(ModelingObject):
         return list(dict.fromkeys([edge_need.edge_device for edge_need in self.recurrent_edge_device_needs]))
 
     @property
-    def usage_impact_attribution_sources(self) -> List[EdgeFunction]:
-        return self.edge_functions
+    def usage_impact_repartition_weights(self) -> ExplainableObjectDict:
+        return self.fabrication_impact_repartition_weights
 
     calculated_attributes: List[str] = (
         ["nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern"]
-        + [attr for attr in ModelingObject.calculated_attributes if not attr.startswith("usage_impact_repartition")])
+        + [attr for attr in ModelingObject.calculated_attributes
+           if attr not in ("usage_impact_repartition_weights",
+                           "usage_impact_repartition_weight_sum",
+                           "usage_impact_repartition")])
 
     def update_dict_element_in_nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern(
             self, edge_usage_pattern: "EdgeUsagePattern"):

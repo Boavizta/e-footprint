@@ -89,9 +89,12 @@ All three populate `contextual_modeling_obj_containers` on the child objects so 
 ## Usage attribution boundary
 
 Generic impact repartition propagates source footprints through the object graph, but shared `UsageJourney` and
-`EdgeUsageJourney` objects are neutral usage pass-throughs. They expose `usage_impact_attribution_sources`
-(`UsageJourneyStep`s or `EdgeFunction`s) so upstream usage impact can route through them, but they do not own
-`usage_impact_repartition` toward patterns.
+`EdgeUsageJourney` objects are neutral usage pass-throughs: the usage-phase split between their containing
+patterns does not follow grid-carbon-weighted normalization. To keep the framework path uniform while opting
+out of the default usage repartition machinery, they expose `usage_impact_repartition_weights` as a
+`@property` that returns `fabrication_impact_repartition_weights` (pure activity volume), and they do not own
+`usage_impact_repartition_weight_sum` or outgoing `usage_impact_repartition` toward patterns. The same trick
+is used by `Network`, whose `usage_impact_repartition_weights` returns `energy_footprint_per_job`.
 
 The corrected per-pattern usage total is held on the journey side as a `@cached_property`
 (`UsageJourney.attributed_energy_footprint_per_usage_pattern` and its edge counterpart): device/edge-device and

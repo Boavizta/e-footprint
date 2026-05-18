@@ -1,4 +1,3 @@
-from functools import cached_property
 from typing import List
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -102,10 +101,10 @@ class UsagePattern(ModelingObject):
         footprint += self.network.energy_footprint_for_usage_pattern(self)
         return footprint.to(u.kg).set_label(f"{self.name} country-dependent usage footprint")
 
-    @cached_property
+    @property
     def attributed_energy_footprint(self):
         return self.usage_journey.attributed_energy_footprint_per_usage_pattern[self]
 
-    @cached_property
+    @property
     def attributed_energy_footprint_per_source(self):
         return ExplainableObjectDict({self.usage_journey: self.attributed_energy_footprint})

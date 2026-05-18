@@ -110,12 +110,20 @@ class TestUsageJourney(TestCase):
         self.assertEqual(4, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_b].magnitude)
         self.assertEqual(u.concurrent, self.usage_journey.fabrication_impact_repartition_weights[usage_pattern_a].unit)
 
-    def test_usage_impact_attribution_sources_are_steps(self):
-        step_1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1")
-        step_2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2")
-        usage_journey = UsageJourney("test user journey", uj_steps=[step_1, step_2])
+    def test_usage_impact_repartition_weights_returns_fabrication_weights(self):
+        usage_pattern_a = create_mod_obj_mock(UsagePattern, name="Usage Pattern A")
+        usage_pattern_b = create_mod_obj_mock(UsagePattern, name="Usage Pattern B")
+        set_modeling_obj_containers(self.usage_journey, [usage_pattern_a, usage_pattern_b])
+        self.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern = ExplainableObjectDict({
+            usage_pattern_a: SourceValue(2 * u.concurrent),
+            usage_pattern_b: SourceValue(4 * u.concurrent),
+        })
+        self.usage_journey.update_fabrication_impact_repartition_weights()
 
-        self.assertEqual([step_1, step_2], usage_journey.usage_impact_attribution_sources)
+        self.assertIs(
+            self.usage_journey.fabrication_impact_repartition_weights,
+            self.usage_journey.usage_impact_repartition_weights,
+        )
 
     def test_step_usage_impact_can_route_through_journey_without_journey_usage_repartition(self):
         usage_pattern = create_mod_obj_mock(UsagePattern, name="Usage Pattern")

@@ -183,10 +183,19 @@ class TestEdgeUsageJourney(TestCase):
         self.assertEqual(5, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_b].magnitude)
         self.assertEqual(u.concurrent, self.edge_usage_journey.fabrication_impact_repartition_weights[edge_usage_pattern_a].unit)
 
-    def test_usage_impact_attribution_sources_are_edge_functions(self):
-        self.assertEqual(
-            [self.mock_edge_function_1, self.mock_edge_function_2],
-            self.edge_usage_journey.usage_impact_attribution_sources,
+    def test_usage_impact_repartition_weights_returns_fabrication_weights(self):
+        edge_usage_pattern_a = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern A")
+        edge_usage_pattern_b = create_mod_obj_mock(EdgeUsagePattern, name="Edge Usage Pattern B")
+        set_modeling_obj_containers(self.edge_usage_journey, [edge_usage_pattern_a, edge_usage_pattern_b])
+        self.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern = ExplainableObjectDict({
+            edge_usage_pattern_a: SourceValue(2 * u.concurrent),
+            edge_usage_pattern_b: SourceValue(5 * u.concurrent),
+        })
+        self.edge_usage_journey.update_fabrication_impact_repartition_weights()
+
+        self.assertIs(
+            self.edge_usage_journey.fabrication_impact_repartition_weights,
+            self.edge_usage_journey.usage_impact_repartition_weights,
         )
 
     def test_edge_function_usage_impact_can_route_through_journey_without_journey_usage_repartition(self):

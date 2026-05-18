@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Flush `_attributed_footprint_cached_property_names` caches on incremental `usage_impact_repartition` element
   updates, not only on bulk recomputation, so attributed-footprint reads stay consistent after leaf-input mutations.
 
+### Changed
+- `UsageJourney` / `EdgeUsageJourney` expose `usage_impact_repartition_weights` as a `@property` returning
+  `fabrication_impact_repartition_weights` (the pure activity-volume weights), instead of routing the usage phase
+  through a framework-side fallback. This keeps `_compute_default_impact_repartition_weight` uniform across phases
+  and aligns the journey classes with the convention already used by `Network`.
+
 ## [21.0.0] - 2026-04-29
 
 ### Changed
