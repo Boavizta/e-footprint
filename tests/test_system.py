@@ -257,12 +257,16 @@ class TestSystem(TestCase):
 
     def test_external_apis_have_their_own_category_in_footprints(self):
         from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
+        from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
         external_api = create_mod_obj_mock(ExternalAPI, name="external_api", systems=[])
         external_api.instances_fabrication_footprint = self._hourly_kg(values=(4, 4, 4))
         external_api.energy_footprint = self._hourly_kg(values=(2, 2, 2))
         external_api.server = MagicMock()
         external_api.server.installed_services = []
-        self.usage_pattern.jobs[0].external_api = external_api
+        api_job = create_mod_obj_mock(ExternalAPIJob, name="api_job", systems=[])
+        api_job.external_api = external_api
+        api_job.server = external_api.server
+        self.usage_pattern.jobs = [api_job]
 
         fab_footprints = self.system.fabrication_footprints
         energy_footprints = self.system.energy_footprints

@@ -115,10 +115,13 @@ class EmptyExplainableObject(ExplainableObject):
 
     def __truediv__(self, other):
         if isinstance(other, self._ExplainableQuantity):
-            assert other.value.magnitude != 0, "Cannot divide by a non-zero ExplainableQuantity"
+            if other.value.magnitude == 0:
+                raise ZeroDivisionError("Cannot divide EmptyExplainableObject by a zero-magnitude ExplainableQuantity")
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="/")
         elif isinstance(other, self._ExplainableHourlyQuantities):
-            assert other.value.magnitude.sum() != 0, "Cannot divide by a non-zero ExplainableHourlyQuantities"
+            if other.value.magnitude.sum() == 0:
+                raise ZeroDivisionError(
+                    "Cannot divide EmptyExplainableObject by a zero-sum ExplainableHourlyQuantities")
             return EmptyExplainableObject(left_parent=self, right_parent=other, operator="/")
         else:
             raise ValueError(f"Cannot divide EmptyExplainableObject by object of type {type(other)}")

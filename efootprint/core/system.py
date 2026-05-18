@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.builders.services.service_base_class import Service
 from efootprint.constants.units import u
 from efootprint.builders.hardware.edge.edge_computer import EdgeComputer
@@ -188,8 +189,8 @@ class System(ModelingObject):
 
     @property
     def servers(self) -> List[Server]:
-        return list(dict.fromkeys([job.server for job in self.jobs if hasattr(job, "server")
-                         and isinstance(job.server, ServerBase)]))
+        # Every JobBase subclass exposes `server` (Job/GPUJob direct, ServiceJob and ExternalAPIJob via property).
+        return list(dict.fromkeys([job.server for job in self.jobs if isinstance(job.server, ServerBase)]))
 
     @property
     def services(self) -> List[Service]:
@@ -197,7 +198,7 @@ class System(ModelingObject):
 
     @property
     def external_apis(self) -> List[ExternalAPI]:
-        return list(dict.fromkeys([job.external_api for job in self.jobs if hasattr(job, "external_api")]))
+        return list(dict.fromkeys([job.external_api for job in self.jobs if isinstance(job, ExternalAPIJob)]))
 
     @property
     def external_api_servers(self) -> List[ExternalAPIServer]:

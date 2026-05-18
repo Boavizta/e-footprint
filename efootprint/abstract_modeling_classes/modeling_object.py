@@ -991,13 +991,7 @@ def _is_positive_attribution_value(value) -> bool:
         return False
     if isinstance(value, ExplainableHourlyQuantities):
         return float(value.sum().magnitude) > 0
-    magnitude = getattr(value, "magnitude", None)
-    if magnitude is None:
-        return True
-    try:
-        return float(magnitude) > 0
-    except (TypeError, ValueError):
-        return True
+    return float(value.magnitude) > 0
 
 
 def _sum_values(values):

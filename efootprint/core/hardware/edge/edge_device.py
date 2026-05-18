@@ -330,14 +330,25 @@ class EdgeDevice(ModelingObject):
         component = component_need.edge_component
         weight = EmptyExplainableObject()
         for usage_pattern in component_need.edge_usage_patterns:
-            component_need_demand = component_need.unitary_hourly_need_per_usage_pattern.get(
-                usage_pattern, EmptyExplainableObject())
-            sibling_need_demand = component.total_unitary_hourly_need_per_usage_pattern.get(
-                usage_pattern, EmptyExplainableObject()
-            )
+            if usage_pattern not in component_need.unitary_hourly_need_per_usage_pattern:
+                raise KeyError(
+                    f"{usage_pattern.name} listed in {component_need.name}.edge_usage_patterns is missing from "
+                    f"{component_need.name}.unitary_hourly_need_per_usage_pattern. The per-pattern need dict must "
+                    f"cover every edge_usage_pattern that references the need.")
+            if usage_pattern not in component.total_unitary_hourly_need_per_usage_pattern:
+                raise KeyError(
+                    f"{usage_pattern.name} is missing from {component.name}.total_unitary_hourly_need_per_usage_pattern."
+                    f" The component must aggregate demand for every pattern that uses it.")
+            component_need_demand = component_need.unitary_hourly_need_per_usage_pattern[usage_pattern]
+            sibling_need_demand = component.total_unitary_hourly_need_per_usage_pattern[usage_pattern]
             if isinstance(sibling_need_demand, EmptyExplainableObject) or sibling_need_demand.sum().magnitude == 0:
                 continue
-            component_pattern_impact = component_impact_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
+            if usage_pattern not in component_impact_per_usage_pattern:
+                raise KeyError(
+                    f"{usage_pattern.name} is missing from component_impact_per_usage_pattern for "
+                    f"{component.name}. The component's per-pattern impact dict must cover every pattern that "
+                    f"exercises it.")
+            component_pattern_impact = component_impact_per_usage_pattern[usage_pattern]
             if isinstance(component_pattern_impact, EmptyExplainableObject):
                 continue
             # Hourly 0/0 means this need contributes nothing during idle hours where total demand is also zero.
