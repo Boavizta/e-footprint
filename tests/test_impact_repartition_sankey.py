@@ -1,6 +1,7 @@
+import math
+import re
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
-import re
 
 from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
@@ -417,7 +418,6 @@ class TestImpactRepartitionSankey(TestCase):
 
     def test_is_positive_raises_on_nan_to_surface_upstream_attribution_bugs(self):
         """Test _is_positive raises on NaN so attribution bugs don't get silently filtered."""
-        import math
         sankey = ImpactRepartitionSankey(MagicMock(), aggregation_threshold_percent=0)
         with self.assertRaises(ValueError) as ctx:
             sankey._is_positive(self._kg(float("nan")))

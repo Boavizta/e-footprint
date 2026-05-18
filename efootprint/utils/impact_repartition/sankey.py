@@ -1,5 +1,6 @@
 import colorsys
 import hashlib
+import math
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from typing import Any, TypeAlias
@@ -235,7 +236,6 @@ class ImpactRepartitionSankey:
 
     @staticmethod
     def _is_positive(quantity: Quantity) -> bool:
-        import math
         magnitude = quantity.magnitude
         if isinstance(magnitude, float) and math.isnan(magnitude):
             raise ValueError(
