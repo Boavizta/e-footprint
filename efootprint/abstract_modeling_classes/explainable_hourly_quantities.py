@@ -394,8 +394,12 @@ class ExplainableHourlyQuantities(ExplainableObject):
                 (f"To divide two ExplainableHourlyQuantities, the second one must cover at least the same time range "
                  f"as the first one. Got start_date {self.start_date} and end_date {self.end_date} for the first one, "
                  f"and start_date {other.start_date} and end_date {other.end_date} for the second one.")
+            # Keep both arrays in their natural units (like __mul__) so the result label `self.unit / other.unit`
+            # describes the actual magnitude. Passing equalize_units=True would silently apply the conversion
+            # factor to the magnitudes while leaving the label as the raw ratio, producing values off by the
+            # unit-conversion factor (e.g. `kg·s / kg·min` ending up 60x smaller than physical reality).
             aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
-                self.value, self.start_date, other.value, other.start_date)
+                self.value, self.start_date, other.value, other.start_date, equalize_units=False)
             zero_denominator_mask = aligned_second_array == 0
             if not zero_denominator_mask.any():
                 result_array = aligned_first_array / aligned_second_array

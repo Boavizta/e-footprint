@@ -151,6 +151,28 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual(denominator, division_result.right_parent)
         self.assertEqual("/", division_result.operator)
 
+    def test_division_between_hourly_quantities_with_dimensionally_compatible_units_preserves_value(self):
+        # Two operands with the same dimension but different unit prefixes (s vs min). Pint's natural division
+        # is `0.3 kg·s / 0.6 kg·min = 0.5 s/min`, which converts to 0.5/60 = 0.00833 dimensionless. The historical
+        # bug double-applied the conversion factor, producing 0.00833 s/min (effectively 60x too small).
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([0.3, 0.6], dtype=np.float32), u.kg * u.s),
+            self.start_date,
+            "Numerator",
+        )
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([0.6, 1.2], dtype=np.float32), u.kg * u.min),
+            self.start_date,
+            "Denominator",
+        )
+
+        ratio = numerator / denominator
+
+        self.assertEqual(u.s / u.min, ratio.unit)
+        self.assertTrue(np.allclose([0.5, 0.5], ratio.magnitude))
+        # And converting downstream to dimensionless / concurrent applies the factor exactly once.
+        self.assertTrue(np.allclose([0.5 / 60, 0.5 / 60], ratio.to(u.dimensionless).magnitude))
+
     def test_division_between_hourly_quantities_raises_when_denominator_does_not_cover_timerange(self):
         numerator = ExplainableHourlyQuantities(
             Quantity(np.array([10, 20, 30], dtype=np.float32), u.W),

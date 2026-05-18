@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   rewritten. Previously only the downstream container's cache was flushed, leaving the source's cache referencing the
   pre-mutation `energy_footprint` / `instances_fabrication_footprint`; the staleness then propagated up through the
   attribution chain. Gated on `is_impact_source` to keep intermediate objects' still-valid caches intact.
+- `ExplainableHourlyQuantities.__truediv__` no longer double-applies the unit-conversion factor when the two
+  operands have different (but dimensionally-compatible) units. The helper `align_temporally_quantity_arrays` was
+  being called with `equalize_units=True`, which silently scales the denominator's magnitude into the numerator's
+  unit; the result was then labeled with the raw `self.unit / other.unit` ratio, so callers reading the result
+  in a downstream unit (e.g. `.to(u.concurrent)`) saw values off by the conversion factor (60x for s/min,
+  3600x for s/h, etc.). Now matches `__mul__` by passing `equalize_units=False`. This corrects, for example, the
+  per-`UsageJourneyStep` repartition produced by `Device.usage_impact_repartition_weights` when steps have
+  different `user_time_spent` units, which previously did not sum to 1 across keys.
 
 ### Changed
 - `UsageJourney` / `EdgeUsageJourney` expose `usage_impact_repartition_weights` as a `@property` returning
