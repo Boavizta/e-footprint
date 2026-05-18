@@ -46,6 +46,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   from non-excluded leaves. `ImpactRepartitionSankey` now consumes this API instead of owning recursive
   attribution traversal itself.
 
+### Changed
+- Skipped impact sources that expose a `footprint_breakdown_by_source` are now replaced by their rescaled
+  breakdown children inside `resolve_attributed_footprint_per_source` (model layer) instead of in the Sankey
+  renderer's `_handle_impact_source`. The renderer keeps the decoration breakdown beneath non-skipped impact
+  sources, so the convention "attribution semantics belong on model/domain objects, not renderers" now holds
+  end-to-end. `resolve_attributed_footprint_per_source` is split into a public entry point and a private
+  `_resolve_recursive` helper (no more `_visited` leaked into the public signature), and the redundant
+  `_sum_attribution_leaves` walk is folded into the recursive resolver so a single traversal owns the
+  post-exclusion semantics. `ImpactRepartitionSankey` dispatches through the public resolved-attribution methods
+  and memoizes per-build to avoid quadratic re-resolution at deeper tree levels.
+
 ## [21.0.0] - 2026-04-29
 
 ### Changed

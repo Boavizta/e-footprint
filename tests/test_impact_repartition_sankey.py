@@ -58,6 +58,22 @@ class _DummyObject:
     def attributed_footprint_per_source(self):
         return self._attributed_footprint_per_source
 
+    def attributed_fabrication_footprint_per_source_resolved(
+            self, skipped_object_types=(), excluded_object_types=()):
+        from efootprint.abstract_modeling_classes.modeling_object import resolve_attributed_footprint_per_source
+        if not skipped_object_types and not excluded_object_types:
+            return self._attributed_footprint_per_source[LifeCyclePhases.MANUFACTURING]
+        return resolve_attributed_footprint_per_source(
+            self, LifeCyclePhases.MANUFACTURING, skipped_object_types, excluded_object_types)
+
+    def attributed_energy_footprint_per_source_resolved(
+            self, skipped_object_types=(), excluded_object_types=()):
+        from efootprint.abstract_modeling_classes.modeling_object import resolve_attributed_footprint_per_source
+        if not skipped_object_types and not excluded_object_types:
+            return self._attributed_footprint_per_source[LifeCyclePhases.USAGE]
+        return resolve_attributed_footprint_per_source(
+            self, LifeCyclePhases.USAGE, skipped_object_types, excluded_object_types)
+
     @property
     def canonical_class(self):
         if hasattr(self, "_canonical_class_override"):

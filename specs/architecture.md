@@ -114,15 +114,19 @@ to view per-source attribution with intermediate objects collapsed or whole subt
 
 Default arguments return the cached `attributed_*_footprint_per_source` dict unchanged. With arguments:
 
-- Skipped intermediates are traversed through: each parent's incoming attribution to a skipped object is rescaled
-  to its resolved descendants, so per-parent flows are preserved instead of using the skipped object's global
-  child mix.
+- Skipped non-impact-source intermediates are traversed through: each parent's incoming attribution to a skipped
+  object is rescaled to its resolved descendants, so per-parent flows are preserved instead of using the skipped
+  object's global child mix.
+- Skipped impact sources that expose a `footprint_breakdown_by_source` are replaced by their rescaled breakdown
+  children, so the convention "attribution semantics belong on the model" holds end-to-end. Skipped impact
+  sources without a breakdown are dropped.
 - Excluded subtrees are dropped entirely; remaining values along a branch are recomputed from non-excluded leaves
   so that the surviving attribution still sums to the right per-source totals.
 
-The implementation lives in `efootprint/abstract_modeling_classes/modeling_object.py` as a module-level
-`resolve_attributed_footprint_per_source` helper that the two methods delegate to. Renderers (notably
-`ImpactRepartitionSankey`) consume this API instead of owning recursive attribution traversal themselves.
+The implementation lives in `efootprint/abstract_modeling_classes/modeling_object.py` as a public
+`resolve_attributed_footprint_per_source` entry point delegating to a private `_resolve_recursive` helper. The
+public methods delegate to it. Renderers (notably `ImpactRepartitionSankey`) consume the API via the public
+methods and memoize per-build to avoid quadratic re-resolution at deeper tree levels.
 
 ## `ExplainableObjectDict` as input attribute
 

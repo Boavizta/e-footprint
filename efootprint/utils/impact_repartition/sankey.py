@@ -9,8 +9,7 @@ from pint import Quantity
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.modeling_object import (
-    ModelingObject, resolve_attributed_footprint_per_source)
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
@@ -72,6 +71,7 @@ class ImpactRepartitionSankey:
         self._category_node_indices: set[int] = set()
         self._leaf_node_indices: set[int] = set()
         self._breakdown_node_indices: set[int] = set()
+        self._resolved_attribution_cache: dict[tuple[int, LifeCyclePhases], dict] = {}
 
     @property
     def node_labels(self) -> list[str]:
@@ -136,15 +136,23 @@ class ImpactRepartitionSankey:
         return tuple(cls for cls in map(_resolve, configured_classes) if isinstance(cls, type))
 
     def _resolved_attribution_for(self, obj: ModelingObject, phase: LifeCyclePhases) -> dict:
+        cache_key = (id(obj), phase)
+        cached = self._resolved_attribution_cache.get(cache_key)
+        if cached is not None:
+            return cached
         if not self.skipped_impact_repartition_classes and not self.excluded_object_types:
-            return obj.attributed_footprint_per_source[phase]
-        # Only non-impact-source matches are routed through the model's skip-expansion; impact-source skipping is
-        # a Sankey display concern (footprint_breakdown_by_source) and is handled in _handle_impact_source.
-        return resolve_attributed_footprint_per_source(
-            obj, phase,
-            skipped_object_types=self._resolved_class_objects(self.skipped_impact_repartition_classes),
-            excluded_object_types=self._resolved_class_objects(self.excluded_object_types),
-        )
+            resolved = obj.attributed_footprint_per_source[phase]
+        else:
+            method_name = (
+                "attributed_fabrication_footprint_per_source_resolved"
+                if phase == LifeCyclePhases.MANUFACTURING
+                else "attributed_energy_footprint_per_source_resolved")
+            resolved = getattr(obj, method_name)(
+                skipped_object_types=self._resolved_class_objects(self.skipped_impact_repartition_classes),
+                excluded_object_types=self._resolved_class_objects(self.excluded_object_types),
+            )
+        self._resolved_attribution_cache[cache_key] = resolved
+        return resolved
 
     @staticmethod
     def _get_canonical_class_name(obj: ModelingObject) -> str:
@@ -181,6 +189,7 @@ class ImpactRepartitionSankey:
         self._category_node_indices = set()
         self._leaf_node_indices = set()
         self._breakdown_node_indices = set()
+        self._resolved_attribution_cache = {}
 
     def _add_node(
             self, label: str, key: NodeKey, color_key: str | None = None, obj: ModelingObject | None = None) -> int:
@@ -334,10 +343,8 @@ class ImpactRepartitionSankey:
         if self.skip_object_footprint_split:
             return
 
-        if self._should_skip_object(source):
-            self._expand_impact_source_breakdown(source, leaf_parent_idx, phase, phase_context, value)
-            return
-
+        # Skipped impact sources are replaced by their breakdown children inside `resolve_attributed_footprint_per_source`,
+        # so a skipped source never reaches this method. The decoration breakdown below stays in the renderer.
         source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
         self._leaf_node_indices.add(source_idx)
         self._add_flow_to_node(leaf_parent_idx, source_idx, value)

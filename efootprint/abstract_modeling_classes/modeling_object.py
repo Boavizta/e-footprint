@@ -983,7 +983,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
 
 def _matches_configured_class(obj, configured_classes) -> bool:
-    return any(isinstance(cls, type) and isinstance(obj, cls) for cls in configured_classes)
+    return any(isinstance(obj, cls) for cls in configured_classes)
 
 
 def _is_positive_attribution_value(value) -> bool:
@@ -1004,31 +1004,34 @@ def _sum_values(values):
     return total if total is not None else EmptyExplainableObject()
 
 
-def _sum_attribution_leaves(obj, phase, excluded_object_types, visited):
-    if obj.id in visited:
-        return EmptyExplainableObject()
-    next_visited = visited | {obj.id}
-    leaves = []
-    for source, value in obj.attributed_footprint_per_source[phase].items():
-        if _matches_configured_class(source, excluded_object_types):
-            continue
-        if source.is_impact_source:
-            leaves.append(value)
-            continue
-        leaves.append(_sum_attribution_leaves(source, phase, excluded_object_types, next_visited))
-    return _sum_values(leaves)
+def _impact_source_breakdown_for(source, phase):
+    """Return ``(breakdown_dict, source_phase_footprint)`` for an impact source with a breakdown, else ``(None, None)``."""
+    breakdown_by_source = getattr(source, "footprint_breakdown_by_source", None)
+    if not isinstance(breakdown_by_source, dict):
+        return None, None
+    breakdown = breakdown_by_source.get(phase, None)
+    if not breakdown:
+        return None, None
+    source_phase_footprint = (
+        source.instances_fabrication_footprint if phase == LifeCyclePhases.MANUFACTURING
+        else source.energy_footprint)
+    return breakdown, source_phase_footprint
 
 
-def resolve_attributed_footprint_per_source(
-        obj, phase, skipped_object_types=(), excluded_object_types=(), _visited=None):
+def resolve_attributed_footprint_per_source(obj, phase, skipped_object_types=(), excluded_object_types=()):
     """Flatten ``obj.attributed_footprint_per_source[phase]`` against ``skipped`` and ``excluded`` class lists.
 
-    Skipped sources are replaced by their own resolved sources, rescaled so the parent's incoming value is conserved.
-    Excluded sources (and their subtrees) are removed; remaining values are recomputed from non-excluded leaves so
-    they reflect only the surviving attribution. Returns a plain ``dict`` so callers operating on duck-typed values
-    (Sankey test doubles) work uniformly with real ``ExplainableObject`` values.
+    Skipped non-impact-source intermediates are replaced by their own resolved sources, rescaled so the parent's
+    incoming value is conserved. Skipped impact sources with a ``footprint_breakdown_by_source`` are replaced by
+    their breakdown children, rescaled to the parent's incoming flow. Excluded sources (and their subtrees) are
+    removed; remaining values are recomputed from non-excluded leaves so they reflect only the surviving
+    attribution. Returns a plain ``dict`` so callers operating on duck-typed values (Sankey test doubles) work
+    uniformly with real ``ExplainableObject`` values.
     """
-    visited = set() if _visited is None else _visited
+    return _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, set())
+
+
+def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, visited):
     if obj.id in visited:
         return {}
     next_visited = visited | {obj.id}
@@ -1037,13 +1040,34 @@ def resolve_attributed_footprint_per_source(
     for source, value in obj.attributed_footprint_per_source[phase].items():
         if _matches_configured_class(source, excluded_object_types):
             continue
-        if excluded_object_types and not source.is_impact_source:
-            value = _sum_attribution_leaves(source, phase, excluded_object_types, next_visited)
+        sub = None
+        if not source.is_impact_source and (skipped_object_types or excluded_object_types):
+            sub = _resolve_recursive(source, phase, skipped_object_types, excluded_object_types, next_visited)
+            if excluded_object_types:
+                # Exclusions can shrink the branch; use the recursively-resolved sum as the canonical value
+                # so a single walk is the source of truth for the post-exclusion total.
+                value = _sum_values(sub.values()) if sub else EmptyExplainableObject()
         if not _is_positive_attribution_value(value):
             continue
-        if _matches_configured_class(source, skipped_object_types) and not source.is_impact_source:
-            sub = resolve_attributed_footprint_per_source(
-                source, phase, skipped_object_types, excluded_object_types, next_visited)
+        if _matches_configured_class(source, skipped_object_types):
+            if source.is_impact_source:
+                breakdown, source_phase_footprint = _impact_source_breakdown_for(source, phase)
+                if breakdown is None or not _is_positive_attribution_value(source_phase_footprint):
+                    continue
+                for child, child_value in breakdown.items():
+                    if (_matches_configured_class(child, excluded_object_types)
+                            or _matches_configured_class(child, skipped_object_types)):
+                        continue
+                    if isinstance(value, ExplainableHourlyQuantities) and isinstance(
+                            source_phase_footprint, ExplainableHourlyQuantities):
+                        scale = value.divide_with_zero_fallback(source_phase_footprint, nan_replacement=0)
+                    else:
+                        scale = value / source_phase_footprint
+                    contribution = child_value * scale
+                    if not _is_positive_attribution_value(contribution):
+                        continue
+                    result[child] = (result[child] + contribution) if child in result else contribution
+                continue
             if not sub:
                 continue
             sub_total = _sum_values(sub.values())
