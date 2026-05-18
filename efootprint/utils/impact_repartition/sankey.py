@@ -9,7 +9,8 @@ from pint import Quantity
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.modeling_object import (
+    ModelingObject, resolve_attributed_footprint_per_source)
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.utils.display import best_display_unit, format_display_number, format_quantity_for_display, human_readable_unit
@@ -126,9 +127,24 @@ class ImpactRepartitionSankey:
         return obj
 
     def _matches_configured_class(self, obj: ModelingObject, configured_classes: Sequence[ConfiguredClass]) -> bool:
+        return any(isinstance(obj, cls) for cls in self._resolved_class_objects(configured_classes))
+
+    @staticmethod
+    def _resolved_class_objects(configured_classes: Sequence[ConfiguredClass]) -> tuple[type, ...]:
         def _resolve(cc):
             return ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
-        return any(isinstance(obj, cls) for cls in map(_resolve, configured_classes) if isinstance(cls, type))
+        return tuple(cls for cls in map(_resolve, configured_classes) if isinstance(cls, type))
+
+    def _resolved_attribution_for(self, obj: ModelingObject, phase: LifeCyclePhases) -> dict:
+        if not self.skipped_impact_repartition_classes and not self.excluded_object_types:
+            return obj.attributed_footprint_per_source[phase]
+        # Only non-impact-source matches are routed through the model's skip-expansion; impact-source skipping is
+        # a Sankey display concern (footprint_breakdown_by_source) and is handled in _handle_impact_source.
+        return resolve_attributed_footprint_per_source(
+            obj, phase,
+            skipped_object_types=self._resolved_class_objects(self.skipped_impact_repartition_classes),
+            excluded_object_types=self._resolved_class_objects(self.excluded_object_types),
+        )
 
     @staticmethod
     def _get_canonical_class_name(obj: ModelingObject) -> str:
@@ -196,7 +212,7 @@ class ImpactRepartitionSankey:
         return phase.value
 
     def _iter_resolved_sources(self, obj: ModelingObject, phase: LifeCyclePhases) -> Iterator[_ResolvedFootprintSource]:
-        for original_source, value in obj.attributed_footprint_per_source[phase].items():
+        for original_source, value in self._resolved_attribution_for(obj, phase).items():
             source = self._normalize_sankey_source(original_source)
             if original_source is not source and self._is_excluded(original_source):
                 continue
@@ -204,24 +220,9 @@ class ImpactRepartitionSankey:
                 continue
             yield _ResolvedFootprintSource(source=source, value=self._get_total_value(value))
 
-    def _get_phase_total_value(
-            self, root: ModelingObject, root_footprint: dict[LifeCyclePhases, dict[ModelingObject, Any]],
-            phase: LifeCyclePhases) -> Quantity:
-        if self.excluded_object_types:
-            return self._sum_leaf_values(root, phase, set())
-        return sum((self._get_total_value(value) for value in root_footprint[phase].values()), start=0 * u.kg)
-
-    def _sum_leaf_values(self, obj: ModelingObject, phase: LifeCyclePhases, visited: set[str]) -> Quantity:
-        if obj.id in visited:
-            return 0 * u.kg
-        next_visited = visited | {obj.id}
-        total = 0 * u.kg
-        for resolved_source in self._iter_resolved_sources(obj, phase):
-            if resolved_source.source.is_impact_source:
-                total += resolved_source.value
-                continue
-            total += self._sum_leaf_values(resolved_source.source, phase, next_visited)
-        return total
+    def _get_phase_total_value(self, root: ModelingObject, phase: LifeCyclePhases) -> Quantity:
+        return sum(
+            (resolved.value for resolved in self._iter_resolved_sources(root, phase)), start=0 * u.kg)
 
     @staticmethod
     def _is_positive(quantity: Quantity) -> bool:
@@ -246,14 +247,10 @@ class ImpactRepartitionSankey:
         resolved_sources: list[tuple[ModelingObject, Quantity]] = []
         obj_phase_total_value = 0 * u.kg
         for resolved_source in self._iter_resolved_sources(obj, phase):
-            source = resolved_source.source
-            value = resolved_source.value
-            if self.excluded_object_types and not source.is_impact_source:
-                value = self._sum_leaf_values(source, phase, next_visited)
-            if not self._is_positive(value):
+            if not self._is_positive(resolved_source.value):
                 continue
-            resolved_sources.append((source, value))
-            obj_phase_total_value += value
+            resolved_sources.append((resolved_source.source, resolved_source.value))
+            obj_phase_total_value += resolved_source.value
 
         if not self._is_positive(obj_phase_total_value):
             return
@@ -265,9 +262,6 @@ class ImpactRepartitionSankey:
                 continue
             if source.is_impact_source:
                 self._handle_impact_source(source, value, phase, phase_context, parent_idx)
-                continue
-            if self._should_skip_object(source):
-                self._traverse(source, phase, phase_context, parent_idx, value, next_visited)
                 continue
             source_idx = self._add_node(source.name, (source.id, phase_context), color_key=source.id, obj=source)
             self._add_flow_to_node(parent_idx, source_idx, value)
@@ -350,15 +344,8 @@ class ImpactRepartitionSankey:
 
         root = self.system
         phases = self._get_phases()
-        root_footprint = root.attributed_footprint_per_source
-
-        if self.excluded_object_types:
-            self._total_system_value = sum((self._sum_leaf_values(root, phase, set()) for phase in phases), start=0 * u.kg)
-        else:
-            self._total_system_value = sum(
-                (self._get_total_value(v) for phase in phases for v in root_footprint[phase].values()),
-                start=0 * u.kg,
-            )
+        phase_totals = {phase: self._get_phase_total_value(root, phase) for phase in phases}
+        self._total_system_value = sum(phase_totals.values(), start=0 * u.kg)
 
         current_column_index = 1
         root_idx = None
@@ -379,7 +366,7 @@ class ImpactRepartitionSankey:
                 color_key = "__fabrication__" if phase == LifeCyclePhases.MANUFACTURING else "__energy__"
                 phase_idx = self._add_node(phase.value, ("phase", phase.value), color_key=color_key)
                 self._node_columns[phase_idx] = current_column_index
-                self._add_flow_to_node(root_idx, phase_idx, self._get_phase_total_value(root, root_footprint, phase))
+                self._add_flow_to_node(root_idx, phase_idx, phase_totals[phase])
                 phase_parents[phase] = phase_idx
             self._manual_column_information.append({
                 "column_index": current_column_index,
@@ -395,13 +382,8 @@ class ImpactRepartitionSankey:
 
         for phase in phases:
             self._traverse(
-                root,
-                phase,
-                self._get_phase_context(phase),
-                phase_parents[phase],
-                self._get_phase_total_value(root, root_footprint, phase),
-                visited=set(),
-            )
+                root, phase, self._get_phase_context(phase), phase_parents[phase], phase_totals[phase],
+                visited=set())
 
         self._assign_columns()
         self._assign_category_leaf_and_breakdown_columns()

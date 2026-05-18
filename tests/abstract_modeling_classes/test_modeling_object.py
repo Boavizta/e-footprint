@@ -94,6 +94,14 @@ class CanonicalChildModelingObject(CanonicalParentModelingObject):
     pass
 
 
+class SkippedIntermediateModelingObject(ImpactRepartitionCachingModelingObject):
+    pass
+
+
+class ExcludedLeafModelingObject(ImpactRepartitionCachingModelingObject):
+    pass
+
+
 class TestModelingObject(unittest.TestCase):
     def setUp(self):
         patcher = patch.object(ListLinkedToModelingObj, "check_value_type", return_value=True)
@@ -557,6 +565,97 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertEqual([], old_child.modeling_obj_containers)
         self.assertEqual([parent], new_child.modeling_obj_containers)
+
+class TestResolvedAttribution(unittest.TestCase):
+    @staticmethod
+    def _wire(parent, *children):
+        parent.trigger_modeling_updates = False
+        parent.targets = list(children)
+        parent.trigger_modeling_updates = True
+        parent.update_usage_impact_repartition_weights()
+        parent.update_usage_impact_repartition_weight_sum()
+        parent.update_usage_impact_repartition()
+        parent.update_fabrication_impact_repartition_weights()
+        parent.update_fabrication_impact_repartition_weight_sum()
+        parent.update_fabrication_impact_repartition()
+
+    def test_resolved_default_args_returns_cached_attributed_per_source(self):
+        """Test default args reproduce the cached attributed_*_footprint_per_source dicts."""
+        source = ImpactRepartitionCachingModelingObject("res_source", energy_footprint=SourceValue(10 * u.kg))
+        child = ImpactRepartitionCachingModelingObject("res_child")
+        self._wire(source, child)
+
+        self.assertIs(
+            child.attributed_energy_footprint_per_source,
+            child.attributed_energy_footprint_per_source_resolved())
+        self.assertIs(
+            child.attributed_fabrication_footprint_per_source,
+            child.attributed_fabrication_footprint_per_source_resolved())
+
+    def test_resolved_skipping_intermediate_preserves_total_and_exposes_descendants(self):
+        """Test skipping an intermediate object passes through to its descendants while preserving total."""
+        leaf = ImpactRepartitionCachingModelingObject("skip_leaf", energy_footprint=SourceValue(20 * u.kg))
+        intermediate = SkippedIntermediateModelingObject("skip_intermediate")
+        root = ImpactRepartitionCachingModelingObject("skip_root")
+        self._wire(leaf, intermediate)
+        self._wire(intermediate, root)
+
+        # Default: root attributes through intermediate to leaf.
+        default = root.attributed_energy_footprint_per_source
+        self.assertIn(intermediate, default)
+        self.assertEqual(20, default[intermediate].magnitude)
+
+        resolved = root.attributed_energy_footprint_per_source_resolved(
+            skipped_object_types=(SkippedIntermediateModelingObject,))
+        self.assertNotIn(intermediate, resolved)
+        self.assertIn(leaf, resolved)
+        self.assertEqual(20, resolved[leaf].magnitude)
+
+    def test_resolved_skipping_through_two_parents_preserves_parent_specific_flow(self):
+        """Test a skipped intermediate routes each parent's incoming flow to descendants independently."""
+        leaf = ImpactRepartitionCachingModelingObject("two_parent_leaf", energy_footprint=SourceValue(60 * u.kg))
+        intermediate = SkippedIntermediateModelingObject("shared_intermediate")
+        parent_a = ImpactRepartitionCachingModelingObject("parent_a")
+        parent_b = ImpactRepartitionCachingModelingObject("parent_b")
+        self._wire(leaf, intermediate)
+        # Intermediate split 40/20 between two parents via update_dict_element on each
+        intermediate.usage_impact_repartition_weights = ExplainableObjectDict({
+            parent_a: ExplainableQuantity(40 * u.concurrent, label="A weight"),
+            parent_b: ExplainableQuantity(20 * u.concurrent, label="B weight"),
+        })
+        intermediate.update_usage_impact_repartition_weight_sum()
+        intermediate.update_dict_element_in_usage_impact_repartition(parent_a)
+        intermediate.update_dict_element_in_usage_impact_repartition(parent_b)
+
+        resolved_a = parent_a.attributed_energy_footprint_per_source_resolved(
+            skipped_object_types=(SkippedIntermediateModelingObject,))
+        resolved_b = parent_b.attributed_energy_footprint_per_source_resolved(
+            skipped_object_types=(SkippedIntermediateModelingObject,))
+
+        # Conservation per parent: A gets 40/60 * 60 = 40; B gets 20/60 * 60 = 20.
+        self.assertAlmostEqual(40, resolved_a[leaf].magnitude)
+        self.assertAlmostEqual(20, resolved_b[leaf].magnitude)
+        self.assertNotIn(intermediate, resolved_a)
+        self.assertNotIn(intermediate, resolved_b)
+
+    def test_resolved_excluded_type_drops_subtree_and_reduces_value(self):
+        """Test excluded object types are removed; remaining branches keep their values."""
+        excluded_leaf = ExcludedLeafModelingObject("excluded_leaf", energy_footprint=SourceValue(30 * u.kg))
+        kept_leaf = ImpactRepartitionCachingModelingObject("kept_leaf", energy_footprint=SourceValue(20 * u.kg))
+        intermediate = ImpactRepartitionCachingModelingObject("excl_intermediate")
+        intermediate_b = ImpactRepartitionCachingModelingObject("excl_intermediate_b")
+        # excluded_leaf and kept_leaf both flow up to intermediate; intermediate_b only has the kept branch
+        self._wire(excluded_leaf, intermediate)
+        self._wire(kept_leaf, intermediate, intermediate_b)
+
+        resolved = intermediate.attributed_energy_footprint_per_source_resolved(
+            excluded_object_types=(ExcludedLeafModelingObject,))
+
+        self.assertNotIn(excluded_leaf, resolved)
+        self.assertIn(kept_leaf, resolved)
+        # intermediate's kept share of kept_leaf = 20 * (1 / 2) = 10kg (kept_leaf split between intermediate and b)
+        self.assertAlmostEqual(10, resolved[kept_leaf].magnitude)
+
 
 class TestValidationAttributes(unittest.TestCase):
     def test_validation_attributes_returns_attributes_ending_with_validation(self):

@@ -952,3 +952,110 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             [val for val in self.attributed_energy_footprint_per_source.values()], start=EmptyExplainableObject())
 
         return attributed_energy_footprint.to(u.kg).set_label("Attributed energy footprint")
+
+    def attributed_fabrication_footprint_per_source_resolved(
+            self, skipped_object_types: tuple = (), excluded_object_types: tuple = ()):
+        """Per-source fabrication attribution after expanding skipped intermediates and dropping excluded subtrees.
+
+        Default args reproduce ``attributed_fabrication_footprint_per_source`` exactly. Skipped intermediates are
+        traversed through and their resolved children are rescaled to preserve the parent's incoming attribution;
+        excluded subtrees are removed and the remaining attribution is preserved on surviving descendants.
+        """
+        if not skipped_object_types and not excluded_object_types:
+            return self.attributed_fabrication_footprint_per_source
+        return resolve_attributed_footprint_per_source(
+            self, LifeCyclePhases.MANUFACTURING, skipped_object_types, excluded_object_types)
+
+    def attributed_energy_footprint_per_source_resolved(
+            self, skipped_object_types: tuple = (), excluded_object_types: tuple = ()):
+        """Per-source energy attribution after expanding skipped intermediates and dropping excluded subtrees.
+
+        Default args reproduce ``attributed_energy_footprint_per_source`` exactly. See
+        :meth:`attributed_fabrication_footprint_per_source_resolved` for the resolution semantics.
+        """
+        if not skipped_object_types and not excluded_object_types:
+            return self.attributed_energy_footprint_per_source
+        return resolve_attributed_footprint_per_source(
+            self, LifeCyclePhases.USAGE, skipped_object_types, excluded_object_types)
+
+
+def _matches_configured_class(obj, configured_classes) -> bool:
+    return any(isinstance(cls, type) and isinstance(obj, cls) for cls in configured_classes)
+
+
+def _is_positive_attribution_value(value) -> bool:
+    if isinstance(value, EmptyExplainableObject):
+        return False
+    if isinstance(value, ExplainableHourlyQuantities):
+        return float(value.sum().magnitude) > 0
+    magnitude = getattr(value, "magnitude", None)
+    if magnitude is None:
+        return True
+    try:
+        return float(magnitude) > 0
+    except (TypeError, ValueError):
+        return True
+
+
+def _sum_values(values):
+    """Sum without forcing an ``EmptyExplainableObject`` start; works for any value type supporting ``+``."""
+    total = None
+    for value in values:
+        if isinstance(value, EmptyExplainableObject):
+            continue
+        total = value if total is None else total + value
+    return total if total is not None else EmptyExplainableObject()
+
+
+def _sum_attribution_leaves(obj, phase, excluded_object_types, visited):
+    if obj.id in visited:
+        return EmptyExplainableObject()
+    next_visited = visited | {obj.id}
+    leaves = []
+    for source, value in obj.attributed_footprint_per_source[phase].items():
+        if _matches_configured_class(source, excluded_object_types):
+            continue
+        if source.is_impact_source:
+            leaves.append(value)
+            continue
+        leaves.append(_sum_attribution_leaves(source, phase, excluded_object_types, next_visited))
+    return _sum_values(leaves)
+
+
+def resolve_attributed_footprint_per_source(
+        obj, phase, skipped_object_types=(), excluded_object_types=(), _visited=None):
+    """Flatten ``obj.attributed_footprint_per_source[phase]`` against ``skipped`` and ``excluded`` class lists.
+
+    Skipped sources are replaced by their own resolved sources, rescaled so the parent's incoming value is conserved.
+    Excluded sources (and their subtrees) are removed; remaining values are recomputed from non-excluded leaves so
+    they reflect only the surviving attribution. Returns a plain ``dict`` so callers operating on duck-typed values
+    (Sankey test doubles) work uniformly with real ``ExplainableObject`` values.
+    """
+    visited = set() if _visited is None else _visited
+    if obj.id in visited:
+        return {}
+    next_visited = visited | {obj.id}
+
+    result: dict = {}
+    for source, value in obj.attributed_footprint_per_source[phase].items():
+        if _matches_configured_class(source, excluded_object_types):
+            continue
+        if excluded_object_types and not source.is_impact_source:
+            value = _sum_attribution_leaves(source, phase, excluded_object_types, next_visited)
+        if not _is_positive_attribution_value(value):
+            continue
+        if _matches_configured_class(source, skipped_object_types) and not source.is_impact_source:
+            sub = resolve_attributed_footprint_per_source(
+                source, phase, skipped_object_types, excluded_object_types, next_visited)
+            if not sub:
+                continue
+            sub_total = _sum_values(sub.values())
+            if not _is_positive_attribution_value(sub_total):
+                continue
+            scale = value / sub_total
+            for sub_source, sub_value in sub.items():
+                contribution = sub_value * scale
+                result[sub_source] = (result[sub_source] + contribution) if sub_source in result else contribution
+            continue
+        result[source] = value
+    return result

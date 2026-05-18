@@ -28,6 +28,7 @@ These have accumulated as we refactored the impact-repartition logic. They are p
 - If a structure or parent-level impact is evenly shared across children, **keep that logic at the parent object level** unless there is a strong ownership reason to move it. Do not pollute child attributes with parent-specific policy if a parent cached attribute can express it cleanly.
 - If the exact same `ExplainableObjectDict` should serve both as a reusable computed quantity and as repartition weights, prefer **exposing the repartition weights as a property returning that dict** instead of copying the same explainable objects into another calculated attribute. This avoids explainability-graph conflicts from attributing one explainable object to multiple attributes on the same modeling object.
 - If a lifecycle phase is intentionally unsupported for an object, prefer **making that explicit**. For example: return an empty repartition-weight dict while the corresponding footprint is empty, and raise `NotImplementedError` if a non-empty footprint is later introduced without implementing the matching repartition logic.
+- **Attribution semantics belong on model/domain objects, not renderers.** Skip and exclude resolution for per-source attribution is owned by `ModelingObject.attributed_*_footprint_per_source_resolved`. Renderers (e.g. `ImpactRepartitionSankey`) consume the resolved dict for layout and presentation; they do not re-implement recursive attribution.
 
 ## Class-level metadata inheritance
 

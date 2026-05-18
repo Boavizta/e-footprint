@@ -104,6 +104,26 @@ storage/service overhead, external APIs) is split by neutral activity volume. `U
 `ModelingObject._attributed_footprint_cached_property_names`, so it is flushed by the standard
 `invalidate_impact_repartition_cache` walk along with the other attributed-footprint caches.
 
+## Resolved attribution (skip / exclude semantics)
+
+`ModelingObject` exposes parametrized resolved-attribution methods used by renderers and other callers that need
+to view per-source attribution with intermediate objects collapsed or whole subtrees removed:
+
+- `attributed_fabrication_footprint_per_source_resolved(skipped_object_types=(), excluded_object_types=())`
+- `attributed_energy_footprint_per_source_resolved(skipped_object_types=(), excluded_object_types=())`
+
+Default arguments return the cached `attributed_*_footprint_per_source` dict unchanged. With arguments:
+
+- Skipped intermediates are traversed through: each parent's incoming attribution to a skipped object is rescaled
+  to its resolved descendants, so per-parent flows are preserved instead of using the skipped object's global
+  child mix.
+- Excluded subtrees are dropped entirely; remaining values along a branch are recomputed from non-excluded leaves
+  so that the surviving attribution still sums to the right per-source totals.
+
+The implementation lives in `efootprint/abstract_modeling_classes/modeling_object.py` as a module-level
+`resolve_attributed_footprint_per_source` helper that the two methods delegate to. Renderers (notably
+`ImpactRepartitionSankey`) consume this API instead of owning recursive attribution traversal themselves.
+
 ## `ExplainableObjectDict` as input attribute
 
 `ExplainableObjectDict` can be used both as a calculated attribute and as an `__init__` parameter (input attribute). Behaviour differs:

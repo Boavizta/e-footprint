@@ -20,6 +20,27 @@ class _DummyQuantity:
     def sum(self):
         return self
 
+    def _coerce(self, other):
+        if isinstance(other, _DummyQuantity):
+            return other.magnitude
+        if hasattr(other, "magnitude"):
+            return other.magnitude
+        return other
+
+    def __add__(self, other):
+        return _DummyQuantity(self.magnitude + self._coerce(other))
+
+    def __radd__(self, other):
+        return self.__add__(other)
+
+    def __mul__(self, other):
+        return _DummyQuantity(self.magnitude * self._coerce(other))
+
+    __rmul__ = __mul__
+
+    def __truediv__(self, other):
+        return _DummyQuantity(self.magnitude / self._coerce(other))
+
 
 class _DummyObject:
     def __init__(self, name, object_id, is_impact_source=False):
@@ -377,6 +398,37 @@ class TestImpactRepartitionSankey(TestCase):
         # Test that the shared node passes 100 / 1000 = 0.1 to the leaf node, meaning there has been no impact
         # deduplication even though this node has 2 parents.
         self.assertEqual([(shared_idx, leaf_idx, 0.1)], [link for link in links if link[0] == shared_idx])
+
+    def test_build_skipping_shared_intermediate_preserves_per_parent_flow_to_leaves(self):
+        """Test skipped intermediate routes each parent's flow into the same leaves with per-parent scaling."""
+        leaf_a = self._make_leaf("LeafA", manufacturing_kg=60)
+        leaf_b = self._make_leaf("LeafB", manufacturing_kg=40)
+        shared = self._make_intermediate(
+            "Shared", manufacturing_sources={leaf_a: 60, leaf_b: 40}, obj_cls=_SkippedObject)
+        parent_a = self._make_intermediate("ParentA", manufacturing_sources={shared: 70})
+        parent_b = self._make_intermediate("ParentB", manufacturing_sources={shared: 30})
+        system = self._make_simple_system_with_attributed_footprint(fab_sources={parent_a: 70, parent_b: 30})
+
+        sankey = ImpactRepartitionSankey(
+            system, aggregation_threshold_percent=0, skipped_impact_repartition_classes=[_SkippedObject],
+            skip_object_category_footprint_split=True)
+        sankey.build()
+
+        parent_a_idx = sankey.node_indices[(parent_a.id, "Manufacturing")]
+        parent_b_idx = sankey.node_indices[(parent_b.id, "Manufacturing")]
+        leaf_a_idx = sankey.node_indices[(leaf_a.id, "Manufacturing")]
+        leaf_b_idx = sankey.node_indices[(leaf_b.id, "Manufacturing")]
+        link_values_by_edge = {
+            (source, target): value.to(u.kg).magnitude
+            for source, target, value in zip(sankey.link_sources, sankey.link_targets, sankey.link_values)
+        }
+        # parent_a (flow=70) splits 60/100 to leaf_a, 40/100 to leaf_b → 42 and 28
+        self.assertAlmostEqual(42, link_values_by_edge[(parent_a_idx, leaf_a_idx)])
+        self.assertAlmostEqual(28, link_values_by_edge[(parent_a_idx, leaf_b_idx)])
+        # parent_b (flow=30) splits 60/100 to leaf_a, 40/100 to leaf_b → 18 and 12
+        self.assertAlmostEqual(18, link_values_by_edge[(parent_b_idx, leaf_a_idx)])
+        self.assertAlmostEqual(12, link_values_by_edge[(parent_b_idx, leaf_b_idx)])
+        self.assertNotIn((shared.id, "Manufacturing"), sankey.node_indices)
 
     def test_build_skips_configured_impact_repartition_classes(self):
         """Test that objects matching skipped classes are passed through."""

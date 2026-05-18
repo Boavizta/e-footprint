@@ -36,6 +36,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   through a framework-side fallback. This keeps `_compute_default_impact_repartition_weight` uniform across phases
   and aligns the journey classes with the convention already used by `Network`.
 
+### Added
+- `ModelingObject.attributed_fabrication_footprint_per_source_resolved` and
+  `attributed_energy_footprint_per_source_resolved` parametrize per-source attribution with
+  `skipped_object_types` and `excluded_object_types`. Default arguments reproduce the cached
+  `attributed_*_footprint_per_source` dicts; with arguments, skipped intermediates are traversed through with
+  per-parent rescaling (so each parent's flow into a skipped object distributes to its descendants instead of
+  using the skipped object's global mix), and excluded subtrees are dropped with surviving branches recomputed
+  from non-excluded leaves. `ImpactRepartitionSankey` now consumes this API instead of owning recursive
+  attribution traversal itself.
+
 ## [21.0.0] - 2026-04-29
 
 ### Changed
