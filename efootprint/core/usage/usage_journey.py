@@ -151,10 +151,11 @@ class UsageJourney(ModelingObject):
             return EmptyExplainableObject()
         if isinstance(activity_total, ExplainableQuantity) and activity_total.magnitude == 0:
             return EmptyExplainableObject()
-        share = (activity_for_pattern / activity_total).to(u.concurrent).set_label(
-            f"{pattern_name} neutral usage activity share")
-        if isinstance(share, ExplainableHourlyQuantities):
-            # Hours with zero total activity have zero neutral footprint by construction
-            # (the upstream attribution chain is itself activity-weighted), so 0/0 → share = 0.
-            share.value[np.isnan(share.magnitude)] = 0
-        return share
+        # Hours with zero total activity have zero neutral footprint by construction (the upstream attribution
+        # chain is itself activity-weighted), so the hourly 0/0 → share = 0 fallback is the correct semantic.
+        if isinstance(activity_for_pattern, ExplainableHourlyQuantities) and isinstance(
+                activity_total, ExplainableHourlyQuantities):
+            share = activity_for_pattern.divide_with_zero_fallback(activity_total, nan_replacement=0)
+        else:
+            share = activity_for_pattern / activity_total
+        return share.to(u.concurrent).set_label(f"{pattern_name} neutral usage activity share")

@@ -1,6 +1,5 @@
 from typing import List, TYPE_CHECKING
 
-import numpy as np
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
@@ -341,11 +340,14 @@ class EdgeDevice(ModelingObject):
             component_pattern_impact = component_impact_per_usage_pattern.get(usage_pattern, EmptyExplainableObject())
             if isinstance(component_pattern_impact, EmptyExplainableObject):
                 continue
-            weight += component_pattern_impact * (component_need_demand / sibling_need_demand)
+            # Hourly 0/0 means this need contributes nothing during idle hours where total demand is also zero.
+            if isinstance(component_need_demand, ExplainableHourlyQuantities) and isinstance(
+                    sibling_need_demand, ExplainableHourlyQuantities):
+                share = component_need_demand.divide_with_zero_fallback(sibling_need_demand, nan_replacement=0)
+            else:
+                share = component_need_demand / sibling_need_demand
+            weight += component_pattern_impact * share
 
-        if isinstance(weight, ExplainableHourlyQuantities):
-            nan_values_mask = np.isnan(weight.magnitude)
-            weight.magnitude[nan_values_mask] = 0
         return weight
 
     def _fabrication_impact_per_usage_pattern_for_component(self, component: EdgeComponent):

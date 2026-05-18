@@ -363,8 +363,15 @@ class ServerBase(InfraHardware):
                 service_base_weight = (
                     ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
                     * self.nb_of_instances)
-                job_volume_share = (
-                    job.hourly_avg_occurrences_across_usage_patterns / self.service_total_job_volumes[service])
+                # Zero service-total at a given hour means no jobs run on the service then; the base load
+                # attributed to this job is therefore 0 at those hours.
+                job_volume = job.hourly_avg_occurrences_across_usage_patterns
+                service_total_volume = self.service_total_job_volumes[service]
+                if isinstance(job_volume, ExplainableHourlyQuantities) and isinstance(
+                        service_total_volume, ExplainableHourlyQuantities):
+                    job_volume_share = job_volume.divide_with_zero_fallback(service_total_volume, nan_replacement=0)
+                else:
+                    job_volume_share = job_volume / service_total_volume
                 weight = (
                     service_base_weight * job_volume_share
                     + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))

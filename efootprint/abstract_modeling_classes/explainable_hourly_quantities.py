@@ -388,29 +388,28 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def __rmul__(self, other):
         return self.__mul__(other)
 
+    def _align_for_division(self, other: "ExplainableHourlyQuantities"):
+        assert self.start_date >= other.start_date and self.end_date <= other.end_date, \
+            (f"To divide two ExplainableHourlyQuantities, the second one must cover at least the same time range "
+             f"as the first one. Got start_date {self.start_date} and end_date {self.end_date} for the first one, "
+             f"and start_date {other.start_date} and end_date {other.end_date} for the second one.")
+        # Keep both arrays in their natural units (like __mul__) so the result label `self.unit / other.unit`
+        # describes the actual magnitude. Passing equalize_units=True would silently apply the conversion
+        # factor to the magnitudes while leaving the label as the raw ratio, producing values off by the
+        # unit-conversion factor (e.g. `kg·s / kg·min` ending up 60x smaller than physical reality).
+        return align_temporally_quantity_arrays(
+            self.value, self.start_date, other.value, other.start_date, equalize_units=False)
+
     def __truediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):
-            assert self.start_date >= other.start_date and self.end_date <= other.end_date, \
-                (f"To divide two ExplainableHourlyQuantities, the second one must cover at least the same time range "
-                 f"as the first one. Got start_date {self.start_date} and end_date {self.end_date} for the first one, "
-                 f"and start_date {other.start_date} and end_date {other.end_date} for the second one.")
-            # Keep both arrays in their natural units (like __mul__) so the result label `self.unit / other.unit`
-            # describes the actual magnitude. Passing equalize_units=True would silently apply the conversion
-            # factor to the magnitudes while leaving the label as the raw ratio, producing values off by the
-            # unit-conversion factor (e.g. `kg·s / kg·min` ending up 60x smaller than physical reality).
-            aligned_first_array, aligned_second_array, common_start = align_temporally_quantity_arrays(
-                self.value, self.start_date, other.value, other.start_date, equalize_units=False)
+            aligned_first_array, aligned_second_array, common_start = self._align_for_division(other)
             zero_denominator_mask = aligned_second_array == 0
-            if not zero_denominator_mask.any():
-                result_array = aligned_first_array / aligned_second_array
-            else:
-                nonzero_numerator_on_zero_denominator_mask = zero_denominator_mask & (aligned_first_array != 0)
-                if nonzero_numerator_on_zero_denominator_mask.any():
-                    raise ZeroDivisionError(
-                        "Cannot divide ExplainableHourlyQuantities by zero when the numerator is non-zero.")
-                result_array = np.empty_like(aligned_first_array, dtype=np.float32)
-                result_array.fill(np.nan)
-                np.divide(aligned_first_array, aligned_second_array, out=result_array, where=~zero_denominator_mask)
+            if zero_denominator_mask.any():
+                raise ZeroDivisionError(
+                    "Cannot divide ExplainableHourlyQuantities by zero at any hour. Use divide_with_zero_fallback "
+                    "to explicitly mask zero-denominator hours with a chosen replacement value (e.g. 0 when zero "
+                    "hours mean 'no contribution', 1 when they mean 'equal share fallback').")
+            result_array = aligned_first_array / aligned_second_array
             return ExplainableHourlyQuantities(
                 Quantity(result_array, self.unit / other.unit), common_start, "", self, other, "/")
         elif isinstance(other, self._ExplainableQuantity):
@@ -422,6 +421,26 @@ class ExplainableHourlyQuantities(ExplainableObject):
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
                 f"not with {type(other)}")
+
+    def divide_with_zero_fallback(
+            self, other: "ExplainableHourlyQuantities", nan_replacement: float = 0) -> "ExplainableHourlyQuantities":
+        """Divide elementwise; replace zero-denominator hours with ``nan_replacement`` instead of raising.
+
+        Use when zero-denominator hours have a domain-specific meaning that is well-defined despite the absence of
+        a mathematical quotient. Examples:
+
+        - ``nan_replacement=0`` for activity-share / no-contribution-when-no-activity semantics.
+        - ``nan_replacement=1`` for impact-repartition equal-share fallback when total weight is zero.
+
+        Numerator entries on zero-denominator hours are ignored (they need not also be zero).
+        """
+        aligned_first_array, aligned_second_array, common_start = self._align_for_division(other)
+        zero_denominator_mask = aligned_second_array == 0
+        result_array = np.empty_like(aligned_first_array, dtype=np.float32)
+        result_array.fill(nan_replacement)
+        np.divide(aligned_first_array, aligned_second_array, out=result_array, where=~zero_denominator_mask)
+        return ExplainableHourlyQuantities(
+            Quantity(result_array, self.unit / other.unit), common_start, "", self, other, "/")
 
     def __rtruediv__(self, other):
         if isinstance(other, ExplainableHourlyQuantities):

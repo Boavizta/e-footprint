@@ -7,7 +7,6 @@ import os
 import time
 from collections import defaultdict
 
-import numpy as np
 from IPython.display import HTML
 
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
@@ -834,13 +833,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
               and impact_repartition_weight_sum.sum().magnitude == 0):
             repartition_value = EmptyExplainableObject()
         else:
-            repartition_value = (
-                getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj] / impact_repartition_weight_sum
-            ).to(u.concurrent).set_label(f"{phase} impact attribution to {modeling_obj.name}")
-
-        if isinstance(repartition_value, ExplainableHourlyQuantities):
-            nan_values_mask = np.isnan(repartition_value.magnitude)
-            repartition_value.value[nan_values_mask] = 1
+            weight = getattr(self, f"{phase}_impact_repartition_weights")[modeling_obj]
+            # When weight_sum is zero at a given hour, every sibling weight is also zero at that hour. The
+            # natural fallback is equal-share (1.0 per sibling) so that downstream attribution still distributes
+            # whatever upstream footprint arrives, rather than dropping it on the floor.
+            if isinstance(weight, ExplainableHourlyQuantities) and isinstance(
+                    impact_repartition_weight_sum, ExplainableHourlyQuantities):
+                repartition_value = weight.divide_with_zero_fallback(impact_repartition_weight_sum, nan_replacement=1)
+            else:
+                repartition_value = weight / impact_repartition_weight_sum
+            repartition_value = repartition_value.to(u.concurrent).set_label(
+                f"{phase} impact attribution to {modeling_obj.name}")
 
         getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
         modeling_obj.invalidate_impact_repartition_cache(recursive=True)
@@ -997,16 +1000,6 @@ def _is_positive_attribution_value(value) -> bool:
         return True
 
 
-def _zero_filled_nan(value):
-    """Replace NaN entries with 0 in an hourly scale. Element-wise division of two hourly series with
-    coincident zero hours produces 0/0=NaN at those hours; the contribution there must be 0 (no flow)."""
-    if isinstance(value, ExplainableHourlyQuantities):
-        nan_mask = np.isnan(value.magnitude)
-        if nan_mask.any():
-            value.value[nan_mask] = 0
-    return value
-
-
 def _sum_values(values):
     """Sum without forcing an ``EmptyExplainableObject`` start; works for any value type supporting ``+``."""
     total = None
@@ -1062,7 +1055,13 @@ def resolve_attributed_footprint_per_source(
             sub_total = _sum_values(sub.values())
             if not _is_positive_attribution_value(sub_total):
                 continue
-            scale = _zero_filled_nan(value / sub_total)
+            # Zero-denominator hours mean no flow into the skipped subtree at that hour, so the rescaled
+            # contribution is 0 there. Use the explicit zero-fallback divide to make that intent loud.
+            if isinstance(value, ExplainableHourlyQuantities) and isinstance(
+                    sub_total, ExplainableHourlyQuantities):
+                scale = value.divide_with_zero_fallback(sub_total, nan_replacement=0)
+            else:
+                scale = value / sub_total
             for sub_source, sub_value in sub.items():
                 contribution = sub_value * scale
                 result[sub_source] = (result[sub_source] + contribution) if sub_source in result else contribution
