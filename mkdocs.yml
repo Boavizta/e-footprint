@@ -24,6 +24,7 @@ nav:
   - Explanation overview: explanation_overview.md
   - e-footprint scope: efootprint_scope.md
   - Why e-footprint ?: why_efootprint.md
+  - Best practices, measurement, simulation: ecodesign_strategies.md
   - How to get started: get_started.md
   - The e-footprint methodology: methodology.md
   - e-footprint design choices deep dive: design_deep_dive.md
@@ -94,8 +95,6 @@ nav:
   - System: System.md
   - Country: Country.md
 - FAQ:
-    - What about best practices ?: best_practices.md
-    - What about measurement tools ?: measurement_tools.md
     - What about the build process of the service ?: build_process.md
     - Why only CO2 ?: only_CO2.md
 - External links: links.md

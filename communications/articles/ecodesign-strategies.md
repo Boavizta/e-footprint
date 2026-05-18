@@ -1,6 +1,6 @@
 # Best practices, measurement, simulation: three strategies for ecodesign and where each one stops
 
-> **Status:** skeleton draft. Full prose to be written after the tutorial-and-documentation specs ship; the SSOT vocabulary and updated mkdocs structure will inform the final wording. `measurement_tools.md` to be written separately by Vincent first; this article links into it.
+> **Status:** skeleton draft. Full prose to be written after the tutorial-and-documentation specs ship; the SSOT vocabulary and updated mkdocs structure will inform the final wording. The umbrella mkdocs page `ecodesign_strategies.md` is already published and frames the three pillars at navigator depth; this article expands on it for the Boavizta channel and links into its anchors.
 
 ## Meta
 
@@ -10,7 +10,7 @@
 - **Length target:** ~1800–2200 words
 - **Voice:** substance-heavy, cooperative; no PS mention
 - **Audience:** strategy circles 1–2; paradigm-agnostic
-- **Companion mkdocs page:** ships into `docs_sources/mkdocs_sourcefiles/ecodesign_strategies.md` when article publishes
+- **Companion mkdocs page:** `docs_sources/mkdocs_sourcefiles/ecodesign_strategies.md` (already published — umbrella the article expands on)
 
 ---
 
@@ -29,7 +29,7 @@ Most ecodesign content covers one of three strategies. Each is useful; each stop
 Recipes for what's possible (compress images, lazy-load modules, efficient cloud regions, AVIF over JPEG, etc.).
 
 Two limits:
-- **Variability defeats them.** Best practices shine when systems have low variability; digital services are highly variable, so best-practice lists risk pointing you at low-leverage actions on your specific service. *(cite `best_practices.md`)*
+- **Variability defeats them.** Best practices shine when systems have low variability; digital services are highly variable, so best-practice lists risk pointing you at low-leverage actions on your specific service. *(cite `ecodesign_strategies.md#best-practices-the-catalogue-of-possible-moves`)*
 - **They induce guilt without leverage.** A long list of "things you should do" with no information about which matter for your service lands as "you're not doing enough" — without telling you where to start.
 
 → Differentiator: **"Prioritize, don't guilt-trip."**
@@ -59,13 +59,7 @@ The structural property that enables this: usage is described in terms a PM/desi
 
 ### §5 — The three legs together
 
-None of the three strategies replaces the others.
-
-| Strategy | Gives you | Limit when used alone |
-|---|---|---|
-| Best practices | A catalogue of possible moves | No leverage info per move |
-| Measurement | A diagnostic of the current system | No projection; misses what isn't there yet |
-| Simulation | Decision-grade priorities | Requires structured input (constraint as unlock) |
+None of the three strategies replaces the others. The recap table comparing what each gives you and what each cannot give alone lives in the umbrella mkdocs page at `ecodesign_strategies.md#the-three-together` — the article reuses it by reference rather than duplicating it, to avoid drift.
 
 The argument is for the right *relationship* between the strategies, not a winner. Measurement, analytics, inventory, and observability can feed the model; simulation turns those inputs into decision-grade scenario comparison.
 
@@ -92,12 +86,13 @@ Only simulation answers the priority question. Best practices and measurement re
 
 ## Internal mkdocs links checklist
 
-- `best_practices.md` (existing) — cited in §2
+- `ecodesign_strategies.md#best-practices-the-catalogue-of-possible-moves` — cited in §2 (replaces the former standalone `best_practices.md`)
+- `ecodesign_strategies.md#measurement-the-snapshot-of-what-is` — linked from §3 (replaces the former planned standalone `measurement_tools.md`)
+- `ecodesign_strategies.md#modeling-the-projection-that-lets-you-decide` — natural §4 anchor for the umbrella's framing of the simulation pillar
+- `ecodesign_strategies.md#the-three-together` — natural §5 anchor for the recap table
 - `methodology.md` (existing) — cited in §6
 - `why_efootprint.md` (existing) — cited in §4 for the user-journey argument
-- `measurement_tools.md` (Vincent to write first) — linked from §3
 - `UsageJourney`, `UsagePattern` object reference (auto-generated) — referenced in §4
-- `ecodesign_strategies.md` (this article's mkdocs home, created when article publishes)
 
 ## Adjacent-tool references
 
@@ -107,12 +102,14 @@ Only simulation answers the priority question. Best practices and measurement re
 
 ## LinkedIn derivative hooks
 
-- **Headline hook (Title D):** *"Best practices tell you what's possible. Measurement tells you what is. Only simulation tells you what to prioritize."* — high-impact opener, derives directly from §5 table. Use as a standalone LinkedIn post around article launch.
-- *"The intuition trap: you can feel latency, you can't feel carbon."* — derived from §1, links to `why_efootprint.md`.
-- *"When the model says 'you're fine': the most useful answer it can give."* — derived from §6.
-- *"Compression, lazy-loading, efficient regions — useful, but which one matters for **your** service?"* — derived from §2.
-- *"Measurement calibrates the model. Simulation turns it into a decision."* — derived from §3 / restates strategy §5 cooperative stance.
-- *"Why a PM can read an e-footprint model: usage journeys, not raw request counts."* — derived from §4; doubles as cross-promotion for Article #3.
+- **Headline hook (Title D):** *"Best practices tell you what's possible. Measurement tells you what is. Only simulation tells you what to prioritize."* — high-impact opener, derives directly from the umbrella's recap table (`ecodesign_strategies.md#the-three-together`). Use as a standalone LinkedIn post around article launch.
+- *"The intuition trap: you can feel latency, you can't feel carbon."* — links to `why_efootprint.md`, where the intuition argument lives in full.
+- *"When the model says 'you're fine': the most useful answer it can give."* — derived from article §6 (article-specific payoff; not in the umbrella mkdocs page).
+- *"Compression, lazy-loading, efficient regions — useful, but which one matters for **your** service?"* — derived from `ecodesign_strategies.md#best-practices-the-catalogue-of-possible-moves`.
+- *"Measurement calibrates the model. Simulation turns it into a decision."* — restates the cooperative stance from `ecodesign_strategies.md#the-three-together`.
+- *"Why a PM can read an e-footprint model: usage journeys, not raw request counts."* — derived from `ecodesign_strategies.md#modeling-the-projection-that-lets-you-decide`; doubles as cross-promotion for Article #3.
+- *"Leaving the parts you can't measure out of scope is a hypothesis: that they're worth zero. Modeling makes the alternative explicit."* — derived from `ecodesign_strategies.md#measurement-the-snapshot-of-what-is`. Reframes the measurement-only stance as a choice, not a default.
+- *"Best practices and measurement are catalogues and snapshots. Modeling is the decision arrow that connects them."* — derived from `ecodesign_strategies.md#the-three-together`. One-line landing of the cooperative frame.
 
 ## Prose hooks surfaced by the May 2026 Alliancy tribune
 
