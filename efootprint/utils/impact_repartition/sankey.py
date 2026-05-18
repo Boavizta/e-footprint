@@ -10,6 +10,7 @@ from pint import Quantity
 from efootprint.all_classes_in_order import ALL_EFOOTPRINT_CLASSES_DICT
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
@@ -207,7 +208,7 @@ class ImpactRepartitionSankey:
             return value.sum().value
         if isinstance(value, Quantity):
             return value
-        if hasattr(value, "value"):
+        if isinstance(value, ExplainableObject):
             return value.value
         raise TypeError(f"Unsupported footprint value type: {type(value)}")
 

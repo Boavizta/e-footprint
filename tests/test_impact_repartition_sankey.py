@@ -13,34 +13,11 @@ from efootprint.utils.impact_repartition import ImpactRepartitionSankey
 from tests.utils import set_modeling_obj_containers
 
 
-class _DummyQuantity:
-    def __init__(self, magnitude):
-        self.magnitude = magnitude
-        self.value = magnitude * u.kg
-
-    def sum(self):
-        return self
-
-    def _coerce(self, other):
-        if isinstance(other, _DummyQuantity):
-            return other.magnitude
-        if hasattr(other, "magnitude"):
-            return other.magnitude
-        return other
-
-    def __add__(self, other):
-        return _DummyQuantity(self.magnitude + self._coerce(other))
-
-    def __radd__(self, other):
-        return self.__add__(other)
-
-    def __mul__(self, other):
-        return _DummyQuantity(self.magnitude * self._coerce(other))
-
-    __rmul__ = __mul__
-
-    def __truediv__(self, other):
-        return _DummyQuantity(self.magnitude / self._coerce(other))
+def _DummyQuantity(magnitude):
+    """Test-fixture factory: return a real Pint ``Quantity`` in kg so the renderer's arithmetic and unit-aware
+    branches exercise the same code paths as production. Replaces a previous test-only class that duplicated
+    Quantity arithmetic via ``__add__``/``__mul__``/``__truediv__``."""
+    return magnitude * u.kg
 
 
 class _DummyObject:

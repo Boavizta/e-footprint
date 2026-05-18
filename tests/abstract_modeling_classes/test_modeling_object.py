@@ -570,14 +570,27 @@ class TestModelingObject(unittest.TestCase):
 
 class TestResolvedAttribution(unittest.TestCase):
     @staticmethod
-    def _wire(parent, *children):
+    def _wire(parent, *children, target_weights: dict = None):
+        """Wire ``parent`` to attribute upward to ``children`` via both phases.
+
+        ``target_weights`` optionally specifies per-target weight magnitudes (in ``u.concurrent``); when omitted,
+        the default ``update_*_impact_repartition_weights`` path assigns weight 1 to every child.
+        """
         parent.trigger_modeling_updates = False
         parent.targets = list(children)
         parent.trigger_modeling_updates = True
-        parent.update_usage_impact_repartition_weights()
+        if target_weights is None:
+            parent.update_usage_impact_repartition_weights()
+            parent.update_fabrication_impact_repartition_weights()
+        else:
+            weights = ExplainableObjectDict({
+                child: ExplainableQuantity(magnitude * u.concurrent, label=f"{child.name} weight")
+                for child, magnitude in target_weights.items()
+            })
+            parent.usage_impact_repartition_weights = weights
+            parent.fabrication_impact_repartition_weights = ExplainableObjectDict(weights)
         parent.update_usage_impact_repartition_weight_sum()
         parent.update_usage_impact_repartition()
-        parent.update_fabrication_impact_repartition_weights()
         parent.update_fabrication_impact_repartition_weight_sum()
         parent.update_fabrication_impact_repartition()
 
@@ -620,14 +633,7 @@ class TestResolvedAttribution(unittest.TestCase):
         parent_a = ImpactRepartitionCachingModelingObject("parent_a")
         parent_b = ImpactRepartitionCachingModelingObject("parent_b")
         self._wire(leaf, intermediate)
-        # Intermediate split 40/20 between two parents via update_dict_element on each
-        intermediate.usage_impact_repartition_weights = ExplainableObjectDict({
-            parent_a: ExplainableQuantity(40 * u.concurrent, label="A weight"),
-            parent_b: ExplainableQuantity(20 * u.concurrent, label="B weight"),
-        })
-        intermediate.update_usage_impact_repartition_weight_sum()
-        intermediate.update_dict_element_in_usage_impact_repartition(parent_a)
-        intermediate.update_dict_element_in_usage_impact_repartition(parent_b)
+        self._wire(intermediate, parent_a, parent_b, target_weights={parent_a: 40, parent_b: 20})
 
         resolved_a = parent_a.attributed_energy_footprint_per_source_resolved(
             skipped_object_types=(SkippedIntermediateModelingObject,))
