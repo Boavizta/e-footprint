@@ -95,7 +95,7 @@ nav:
   - System: System.md
   - Country: Country.md
 - FAQ:
-    - What about the build process of the service ?: build_process.md
+    - Should I model the development process of my service ?: development_process.md
     - Why only CO2 ?: only_CO2.md
 - External links: links.md
 - Changelog: Changelog.md
