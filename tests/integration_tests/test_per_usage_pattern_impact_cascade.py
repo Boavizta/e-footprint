@@ -153,7 +153,8 @@ class TestPerUsagePatternImpactCascade(TestCase):
             "high carbon web usage", journey, [device], network, high_country,
             create_source_hourly_values_from_list([1], start_date),
         )
-        System("shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
+        system = System(
+            "shared web system", [low_carbon_pattern, high_carbon_pattern], edge_usage_patterns=[])
 
         def read_low_footprint():
             return low_carbon_pattern.attributed_energy_footprint.sum().to(u.kg).magnitude
@@ -168,6 +169,15 @@ class TestPerUsagePatternImpactCascade(TestCase):
             )
             after = read_low_footprint()
             self.assertNotAlmostEqual(before, after, places=6, msg=f"{label}: footprint unchanged after mutation")
+            # Conservation: per-pattern attribution must sum to system total after the mutation,
+            # which fails if any source's own attributed_* cache is left stale post-recompute.
+            self.assertAlmostEqual(
+                system.total_footprint.sum().to(u.kg).magnitude,
+                (low_carbon_pattern.attributed_energy_footprint.sum()
+                 + high_carbon_pattern.attributed_energy_footprint.sum()).to(u.kg).magnitude,
+                places=6,
+                msg=f"{label}: per-pattern attributed footprints do not sum to system total",
+            )
 
         assert_invalidates(
             "country.average_carbon_intensity",

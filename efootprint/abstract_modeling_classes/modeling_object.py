@@ -844,6 +844,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         getattr(self, f"{phase}_impact_repartition")[modeling_obj] = repartition_value
         modeling_obj.invalidate_impact_repartition_cache(recursive=True)
+        if self.is_impact_source:
+            # For impact sources, attributed_*_footprint_per_source caches the leaf
+            # `self.energy_footprint` / `self.instances_fabrication_footprint` directly. A
+            # repartition rewrite here typically means the source's own footprint just recomputed,
+            # so the cache is stale; the downstream walk above only flushes `modeling_obj`.
+            # Non-source intermediates derive their cache from upstream containers, not from their
+            # own outgoing repartition, so skip them to avoid invalidating still-valid caches.
+            self.invalidate_impact_repartition_cache(recursive=False)
 
     def update_dict_element_in_fabrication_impact_repartition(self, modeling_obj: "ModelingObject"):
         self._update_dict_element_in_impact_repartition("fabrication", modeling_obj)

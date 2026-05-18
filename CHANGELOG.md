@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   usage by activity volume.
 - Flush `_attributed_footprint_cached_property_names` caches on incremental `usage_impact_repartition` element
   updates, not only on bulk recomputation, so attributed-footprint reads stay consistent after leaf-input mutations.
+- Also flush an impact source's own `attributed_*_footprint(_per_source)` caches when its outgoing repartition is
+  rewritten. Previously only the downstream container's cache was flushed, leaving the source's cache referencing the
+  pre-mutation `energy_footprint` / `instances_fabrication_footprint`; the staleness then propagated up through the
+  attribution chain. Gated on `is_impact_source` to keep intermediate objects' still-valid caches intact.
 
 ### Changed
 - `UsageJourney` / `EdgeUsageJourney` expose `usage_impact_repartition_weights` as a `@property` returning
