@@ -104,23 +104,23 @@ def retrieve_dict_element_update_function_from_mod_obj_and_attr_name(
 
 
 def optimize_attr_updates_chain(attr_updates_chain):
+    # Walk backward keeping the last occurrence of each attr.id and dropping dict-element entries whose dict
+    # container is recomputed later (the whole-dict recomputation will refresh every key).
     initial_chain_len = len(attr_updates_chain)
-    attr_to_update_ids = [attr.id for attr in attr_updates_chain]
-    optimized_chain = []
+    seen_later_ids = set()
+    reversed_result = []
 
-    for index in range(len(attr_updates_chain)):
-        attr_to_update = attr_updates_chain[index]
-        is_not_recomputed_later = attr_to_update.id not in attr_to_update_ids[index + 1:]
-        doesnt_belong_to_dict = attr_to_update.dict_container is None
-        belongs_to_dict_and_dict_is_not_recomputed_later = (
-            attr_to_update.dict_container is not None and
-            attr_to_update.dict_container.id not in attr_to_update_ids[index + 1:]
-        )
+    for attr_to_update in reversed(attr_updates_chain):
+        attr_id = attr_to_update.id
+        if attr_id in seen_later_ids:
+            continue
+        dict_container = attr_to_update.dict_container
+        if dict_container is not None and dict_container.id in seen_later_ids:
+            continue
+        reversed_result.append(attr_to_update)
+        seen_later_ids.add(attr_id)
 
-        if is_not_recomputed_later and (doesnt_belong_to_dict or belongs_to_dict_and_dict_is_not_recomputed_later):
-            # Keep only last occurrence of each attribute to update
-            optimized_chain.append(attr_to_update)
-
+    optimized_chain = reversed_result[::-1]
     optimized_chain_len = len(optimized_chain)
 
     if optimized_chain_len != initial_chain_len:
