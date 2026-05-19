@@ -1025,54 +1025,69 @@ def resolve_attributed_footprint_per_source(obj, phase, skipped_object_types=(),
     attribution. Returns a plain ``dict`` so callers operating on duck-typed values (Sankey test doubles) work
     uniformly with real ``ExplainableObject`` values.
     """
-    return _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, set())
+    return _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types)
 
 
-def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types, visited):
-    if obj.id in visited:
-        return {}
-    next_visited = visited | {obj.id}
-
+def _resolve_recursive(obj, phase, skipped_object_types, excluded_object_types):
+    # The attribution graph follows the modeling-object DAG, so no cycle guard is needed: each descent
+    # eventually terminates at impact sources (which have no further `attributed_footprint_per_source`
+    # to expand) or at nodes with empty attribution.
     result: dict = {}
     for source, value in obj.attributed_footprint_per_source[phase].items():
+        # Excluded sources (and the entire subtree below them) disappear from the result.
         if _matches_configured_class(source, excluded_object_types):
             continue
+
+        # For non-impact-source intermediates with any skip/exclude rules active, resolve the subtree
+        # before deciding what to do with this entry. When exclusions are active, the post-exclusion
+        # sum *replaces* the parent-recorded `value` — that way the recursive walk is the single source
+        # of truth for the surviving attribution and we don't need a second pass to recompute totals.
         sub = None
         if not source.is_impact_source and (skipped_object_types or excluded_object_types):
-            sub = _resolve_recursive(source, phase, skipped_object_types, excluded_object_types, next_visited)
+            sub = _resolve_recursive(source, phase, skipped_object_types, excluded_object_types)
             if excluded_object_types:
-                # Exclusions can shrink the branch; use the recursively-resolved sum as the canonical value
-                # so a single walk is the source of truth for the post-exclusion total.
                 value = _sum_values(sub.values()) if sub else EmptyExplainableObject()
+
         if not _is_positive_attribution_value(value):
             continue
+
+        # Skipped sources are dissolved: their contribution flows through to their children, rescaled
+        # so the parent's incoming `value` is conserved across the dissolution. Impact sources are
+        # dissolved into their own breakdown; non-impact intermediates are dissolved into `sub`.
         if _matches_configured_class(source, skipped_object_types):
             if source.is_impact_source:
                 breakdown, source_phase_footprint = _impact_source_breakdown_for(source, phase)
                 if breakdown is None or not _is_positive_attribution_value(source_phase_footprint):
                     continue
-                # Zero-denominator hours mean no flow at that hour, so the rescaled contribution is 0 there.
-                scale = divide_or_fallback(value, source_phase_footprint, fallback=0)
-                for child, child_value in breakdown.items():
-                    if (_matches_configured_class(child, excluded_object_types)
-                            or _matches_configured_class(child, skipped_object_types)):
-                        continue
-                    contribution = child_value * scale
-                    if not _is_positive_attribution_value(contribution):
-                        continue
-                    result[child] = (result[child] + contribution) if child in result else contribution
-                continue
-            if not sub:
-                continue
-            sub_total = _sum_values(sub.values())
-            if not _is_positive_attribution_value(sub_total):
-                continue
-            # Zero-denominator hours mean no flow into the skipped subtree at that hour, so the rescaled
-            # contribution is 0 there.
-            scale = divide_or_fallback(value, sub_total, fallback=0)
-            for sub_source, sub_value in sub.items():
-                contribution = sub_value * scale
-                result[sub_source] = (result[sub_source] + contribution) if sub_source in result else contribution
+                # Breakdown children that are themselves skipped or excluded are dropped here rather
+                # than recursed into — the breakdown is a flat replacement, not a new node to resolve.
+                children = {
+                    child: child_value for child, child_value in breakdown.items()
+                    if not _matches_configured_class(child, excluded_object_types)
+                    and not _matches_configured_class(child, skipped_object_types)}
+                _merge_rescaled(result, children, incoming=value, total=source_phase_footprint)
+            elif sub:
+                sub_total = _sum_values(sub.values())
+                if _is_positive_attribution_value(sub_total):
+                    _merge_rescaled(result, sub, incoming=value, total=sub_total)
             continue
+
         result[source] = value
     return result
+
+
+def _merge_rescaled(result, children, incoming, total):
+    """Rescale ``children`` so they sum to ``incoming`` (instead of ``total``) and merge into ``result``.
+
+    Used when a node is dissolved into its children: the children's raw values were measured against
+    the dissolved node's own footprint ``total``, but only ``incoming`` actually reached this branch.
+    The ``incoming / total`` factor conserves the parent's contribution across the dissolution.
+    Hours where ``total == 0`` carry no flow at that hour, so the rescaled contribution is 0 there
+    (handled by ``fallback=0``).
+    """
+    scale = divide_or_fallback(incoming, total, fallback=0)
+    for child, child_value in children.items():
+        contribution = child_value * scale
+        if not _is_positive_attribution_value(contribution):
+            continue
+        result[child] = (result[child] + contribution) if child in result else contribution
