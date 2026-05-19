@@ -23,6 +23,11 @@ if TYPE_CHECKING:
 class UsageJourney(ModelingObject):
     """An ordered sequence of {class:UsageJourneyStep}s describing one end-to-end interaction a user has with the digital service."""
 
+    _attributed_footprint_cached_property_names = (
+        *ModelingObject._attributed_footprint_cached_property_names,
+        "attributed_energy_footprint_per_usage_pattern",
+    )
+
     param_descriptions = {
         "uj_steps": (
             "Ordered list of {class:UsageJourneyStep}s that make up the journey. The journey duration is the "

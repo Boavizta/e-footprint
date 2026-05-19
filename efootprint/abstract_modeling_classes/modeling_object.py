@@ -141,7 +141,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         "attributed_fabrication_footprint",
         "attributed_energy_footprint_per_source",
         "attributed_energy_footprint",
-        "attributed_energy_footprint_per_usage_pattern",
     )
     _impact_repartition_phases = ("fabrication", "usage")
 

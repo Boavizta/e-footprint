@@ -16,6 +16,8 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 
 **Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime) and `System` (TYPE_CHECKING). This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
 
+**No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), the base exposes an extension point (typically a class-level tuple) and the domain subclass extends it. Example: `ModelingObject._attributed_footprint_cached_property_names` lists only generic entries; `UsageJourney` and `EdgeUsageJourney` extend it with `attributed_energy_footprint_per_usage_pattern`, which is consumed by `invalidate_impact_repartition_cache` and the setattr guard via normal MRO lookup.
+
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
 ## Core (`efootprint/core/`)
