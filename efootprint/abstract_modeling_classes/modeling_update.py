@@ -1,3 +1,4 @@
+import math
 from copy import copy
 from datetime import datetime, timedelta
 from time import perf_counter
@@ -324,9 +325,11 @@ class ModelingUpdate:
             if start.tzinfo is None:
                 start = hourly_quantities.modeling_obj_container.country.timezone.value.localize(start)
 
-            # Find positions at or after simulation_date
-            mask = [start + timedelta(hours=i) >= self.simulation_date for i in range(len(hourly_quantities.value))]
-            filtered_values = hourly_quantities.value[mask]
+            # Array is hour-spaced from start, so the first index i with (start + i h) >= simulation_date
+            # is ceil((simulation_date - start) / 1h). Closed-form avoids an O(N) tz-aware datetime loop.
+            delta_hours = (self.simulation_date - start).total_seconds() / 3600
+            first_idx = max(0, math.ceil(delta_hours))
+            filtered_values = hourly_quantities.value[first_idx:]
 
             if len(filtered_values) == 0:
                 new_value = EmptyExplainableObject()
