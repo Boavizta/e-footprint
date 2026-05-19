@@ -215,6 +215,18 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertEqual([0, 1, 0], zero_fill.value_as_float_list)
         self.assertEqual([1, 1, 1], one_fill.value_as_float_list)
 
+    def test_divide_with_zero_fallback_raises_when_numerator_nonzero_on_zero_denominator(self):
+        """Test divide_with_zero_fallback raises when the 0/0 invariant is violated (would yield inf)."""
+        numerator = ExplainableHourlyQuantities(
+            Quantity(np.array([3, 2, 0], dtype=np.float32), u.W), self.start_date, "Numerator")
+        denominator = ExplainableHourlyQuantities(
+            Quantity(np.array([0, 2, 0], dtype=np.float32), u.W), self.start_date, "Denominator")
+
+        with self.assertRaises(ZeroDivisionError) as context:
+            numerator.divide_with_zero_fallback(denominator, nan_replacement=0)
+
+        self.assertIn("0/0 invariant", str(context.exception))
+
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1
         self.assertEqual([1] * 24, result.value_as_float_list)

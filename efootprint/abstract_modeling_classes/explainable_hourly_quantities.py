@@ -436,6 +436,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         """
         aligned_first_array, aligned_second_array, common_start = self._align_for_division(other)
         zero_denominator_mask = aligned_second_array == 0
+        if (aligned_first_array[zero_denominator_mask] != 0).any():
+            raise ZeroDivisionError(
+                "divide_with_zero_fallback expects a 0/0 invariant on zero-denominator hours, but the numerator "
+                "is non-zero on at least one such hour (would yield inf, not NaN). This indicates a modeling bug "
+                "rather than a fallback case.")
         result_array = np.empty_like(aligned_first_array, dtype=np.float32)
         result_array.fill(nan_replacement)
         np.divide(aligned_first_array, aligned_second_array, out=result_array, where=~zero_denominator_mask)
