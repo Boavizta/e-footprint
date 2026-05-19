@@ -55,7 +55,8 @@ class TestNetwork(TestCase):
         self.assertTrue(np.allclose([0.5], self.network.energy_footprint_per_job[job_2].magnitude))
         self.assertEqual(u.kg, self.network.energy_footprint_per_job[job_1].unit)
 
-    def test_energy_footprint_per_usage_pattern_uses_country_weighted_network_energy(self):
+    def test_update_energy_footprint_per_usage_pattern_uses_country_weighted_network_energy(self):
+        """Test per-usage-pattern energy footprint sums each pattern's jobs weighted by its country's carbon intensity."""
         usage_pattern_fr = create_mod_obj_mock(UsagePattern, name="Usage Pattern FR")
         usage_pattern_fr.country = MagicMock()
         usage_pattern_fr.country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
@@ -79,11 +80,13 @@ class TestNetwork(TestCase):
                 patch.object(self.network, "bandwidth_energy_intensity", SourceValue(1 * u.kWh / u.GB)):
             mock_ups.return_value = [usage_pattern_fr, usage_pattern_us]
 
-            energy_footprint_per_usage_pattern = self.network.energy_footprint_per_usage_pattern
+            self.network.update_energy_footprint_per_usage_pattern()
 
-        self.assertTrue(np.allclose([0.5], energy_footprint_per_usage_pattern[usage_pattern_fr].magnitude))
-        self.assertTrue(np.allclose([0.2], energy_footprint_per_usage_pattern[usage_pattern_us].magnitude))
-        self.assertEqual(u.kg, energy_footprint_per_usage_pattern[usage_pattern_fr].unit)
+        self.assertTrue(
+            np.allclose([0.5], self.network.energy_footprint_per_usage_pattern[usage_pattern_fr].magnitude))
+        self.assertTrue(
+            np.allclose([0.2], self.network.energy_footprint_per_usage_pattern[usage_pattern_us].magnitude))
+        self.assertEqual(u.kg, self.network.energy_footprint_per_usage_pattern[usage_pattern_fr].unit)
 
     def test_update_energy_footprint_sums_precomputed_per_job_values(self):
         job_1 = create_mod_obj_mock(JobBase, name="Job 1")

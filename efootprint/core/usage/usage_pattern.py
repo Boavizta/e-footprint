@@ -98,7 +98,7 @@ class UsagePattern(ModelingObject):
         footprint = EmptyExplainableObject()
         for device in self.devices:
             footprint += device.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
-        footprint += self.network.energy_footprint_for_usage_pattern(self)
+        footprint += self.network.energy_footprint_per_usage_pattern[self]
         return footprint.to(u.kg).set_label(f"{self.name} country-dependent usage footprint")
 
     @property

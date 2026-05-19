@@ -44,6 +44,7 @@ class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
         self.energy_footprint_per_job = ExplainableObjectDict()
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
@@ -51,6 +52,7 @@ class Network(ModelingObject):
 
     calculated_attributes = [
         "energy_footprint_per_job",
+        "energy_footprint_per_usage_pattern",
         "instances_fabrication_footprint",
         "energy_footprint",
     ] + [
@@ -76,21 +78,22 @@ class Network(ModelingObject):
             * job.hourly_data_transferred_per_usage_pattern[usage_pattern]
         ).to(u.kWh) * usage_pattern.country.average_carbon_intensity
 
-    def energy_footprint_for_usage_pattern(self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
+    def update_dict_element_in_energy_footprint_per_usage_pattern(
+            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
         energy_footprint = EmptyExplainableObject()
         for job in usage_pattern.jobs:
             if usage_pattern not in job.hourly_data_transferred_per_usage_pattern:
                 continue
             energy_footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
 
-        return energy_footprint.to(u.kg).set_label(f"{usage_pattern.name} network energy footprint")
+        self.energy_footprint_per_usage_pattern[usage_pattern] = energy_footprint.to(u.kg).set_label(
+            f"{usage_pattern.name} network energy footprint")
 
-    @property
-    def energy_footprint_per_usage_pattern(self):
-        return ExplainableObjectDict({
-            usage_pattern: self.energy_footprint_for_usage_pattern(usage_pattern)
-            for usage_pattern in self.usage_patterns
-        })
+    def update_energy_footprint_per_usage_pattern(self):
+        """Hourly carbon emissions caused by network traffic, broken down by usage pattern. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity, summed across the pattern's jobs."""
+        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
+        for usage_pattern in self.usage_patterns:
+            self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
 
     def update_instances_fabrication_footprint(self):
         """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""

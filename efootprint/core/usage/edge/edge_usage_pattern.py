@@ -103,7 +103,7 @@ class EdgeUsagePattern(ModelingObject):
         footprint = EmptyExplainableObject()
         for edge_device in self.edge_usage_journey.edge_devices:
             footprint += edge_device.energy_footprint_per_usage_pattern.get(self, EmptyExplainableObject())
-        footprint += self.network.energy_footprint_for_usage_pattern(self)
+        footprint += self.network.energy_footprint_per_usage_pattern[self]
         return footprint.to(u.kg).set_label(f"{self.name} country-dependent edge usage footprint")
 
     @property
