@@ -320,11 +320,20 @@ class System(ModelingObject):
 
     def update_total_footprint(self):
         """Total system carbon footprint as an hourly timeseries, summing fabrication and energy footprints across every category of object (servers, storages, devices, networks, edge components)."""
-        total_footprint = (
-            sum(
-                [sum(self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
-                for key in self.fabrication_footprints], start=EmptyExplainableObject()
-            )
+        # Snapshot the category breakdown once. Without this, `self.fabrication_footprints` and
+        # `self.energy_footprints` each rebuild `_objects_by_category()` (which walks `all_linked_objects`
+        # and re-derives jobs/servers/etc. from scratch), and the `for key in self.fabrication_footprints`
+        # iteration would do it a third time. Each rebuild costs ~3 ms on a system of ~200 objects.
+        categories = self._objects_by_category()
+        fab = {category: [obj.instances_fabrication_footprint for obj in objs
+                          if hasattr(obj, "instances_fabrication_footprint")]
+               for category, objs in categories.items()}
+        energy = {category: [obj.energy_footprint for obj in objs
+                             if hasattr(obj, "energy_footprint")]
+                  for category, objs in categories.items()}
+        total_footprint = sum(
+            [sum(fab[key]) + sum(energy[key]) for key in fab],
+            start=EmptyExplainableObject(),
         ).to(u.kg).set_label("Total carbon footprint")
 
         self.total_footprint = round(total_footprint, 4)
