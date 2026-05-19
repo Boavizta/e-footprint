@@ -30,8 +30,21 @@ def align_temporally_quantity_arrays(
     if equalize_units and first_quantity.units != second_quantity.units:
         second_quantity = second_quantity.to(first_quantity.units)
 
-    first_quantity_array = first_quantity.magnitude.astype(np.float32)
-    second_quantity_array = second_quantity.magnitude.astype(np.float32)
+    first_quantity_array = first_quantity.magnitude
+    second_quantity_array = second_quantity.magnitude
+
+    # Fast path: operands share grid (same start, same length) → return magnitudes directly.
+    # Callers use the returned arrays read-only, so views are safe.
+    if (first_start_date == second_start_date
+            and len(first_quantity_array) == len(second_quantity_array)):
+        if first_quantity_array.dtype != np.float32:
+            first_quantity_array = first_quantity_array.astype(np.float32)
+        if second_quantity_array.dtype != np.float32:
+            second_quantity_array = second_quantity_array.astype(np.float32)
+        return first_quantity_array, second_quantity_array, first_start_date
+
+    first_quantity_array = first_quantity_array.astype(np.float32)
+    second_quantity_array = second_quantity_array.astype(np.float32)
 
     # Align by start_date
     end1 = first_start_date + timedelta(hours=len(first_quantity_array))
