@@ -866,7 +866,9 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         setattr(self, repartition_attr_name, ExplainableObjectDict())
         for modeling_obj in weights:
             getattr(self, f"update_dict_element_in_{phase}_impact_repartition")(modeling_obj)
-        for modeling_obj in old_impacted_objects | set(getattr(self, repartition_attr_name).keys()):
+        # Per-element calls above already invalidated current keys; only the dropped keys still need flushing.
+        removed_objects = old_impacted_objects - set(getattr(self, repartition_attr_name).keys())
+        for modeling_obj in removed_objects:
             if isinstance(modeling_obj, ModelingObject):
                 modeling_obj.invalidate_impact_repartition_cache(recursive=True)
 
