@@ -206,6 +206,7 @@ class TestStorage(TestCase):
             self.storage_base.storage_capacity = SourceValue(2 * u.TB_stored)
             self.storage_base.base_storage_need = SourceValue(2 * u.TB_stored)
 
+            self.storage_base.update_shared_storage_per_job()
             self.storage_base.update_fabrication_impact_repartition_weights()
 
         # full cumulative = 8 TB (including 2 TB base), total provisioned = 10 TB, unused = 2 TB, shared = 2 TB/job
