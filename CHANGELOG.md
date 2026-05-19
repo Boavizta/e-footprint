@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## Unreleased
+## 21.0.1
 
 ### Fixed
 - Correct shared `UsageJourney` / `EdgeUsageJourney` usage attribution across countries by keeping

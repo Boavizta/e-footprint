@@ -1,5 +1,4 @@
 import numpy as np
-from copy import copy
 
 from pint import Quantity
 from scipy.signal import fftconvolve
@@ -35,13 +34,11 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
     if isinstance(hourly_occurrences_starts, EmptyExplainableObject) or event_duration.magnitude == 0:
         return EmptyExplainableObject(left_parent=hourly_occurrences_starts, right_parent=event_duration)
 
-    # Convert duration to number of hours
-    event_duration_in_hours = copy(event_duration.value).to(u.hour).magnitude
+    event_duration_in_hours = event_duration.value.to(u.hour).magnitude
     nb_full_hours = int(np.floor(event_duration_in_hours))
 
-    values = hourly_occurrences_starts.value.astype(np.float32, copy=False).magnitude
+    values = hourly_occurrences_starts.value.magnitude.astype(np.float32, copy=False)
 
-    # --- Full-hour contribution ---
     if nb_full_hours > 0:
         kernel = np.ones(nb_full_hours, dtype=np.float32)
         result = fftconvolve(values, kernel, mode="full")
@@ -50,18 +47,16 @@ def compute_nb_avg_hourly_occurrences(hourly_occurrences_starts, event_duration)
 
     nonfull_duration_rest = event_duration_in_hours - nb_full_hours
     if nonfull_duration_rest > 0:
+        rest_f32 = np.float32(nonfull_duration_rest)
         if result is None:
-            result = (
-                    hourly_occurrences_starts.value.astype(np.float32, copy=False) * nonfull_duration_rest)
+            result = values * rest_f32
         else:
-            initial_values_padded = np.pad(
-                result, (0, 1), constant_values=np.float32(0))
-            shifted_values = np.pad(
-                hourly_occurrences_starts.value.astype(np.float32, copy=False), (nb_full_hours, 0),
-                constant_values=np.float32(0))
-            result = initial_values_padded + shifted_values * nonfull_duration_rest
+            initial_values_padded = np.pad(result, (0, 1), constant_values=np.float32(0))
+            shifted_values = np.pad(values, (nb_full_hours, 0), constant_values=np.float32(0))
+            result = initial_values_padded + shifted_values * rest_f32
 
-    result = np.maximum(result, 0)  # Clip FFT numerical noise and avoid negative values that could lead to NegativeCumulativeStorageNeedError.
+    # Clip FFT numerical noise and avoid negative values that could lead to NegativeCumulativeStorageNeedError.
+    np.maximum(result, 0, out=result)
 
     return ExplainableHourlyQuantities(
         Quantity(result, u.concurrent),
