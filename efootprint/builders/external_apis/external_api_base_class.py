@@ -57,6 +57,8 @@ class ExternalAPIServer(ModelingObject):
 
 
 class ExternalAPI(ModelingObject):
+    """Abstract base for third-party APIs the digital service calls out to. Concrete subclasses (e.g. {class:EcoLogitsGenAIExternalAPI}) model the per-call carbon and energy cost of a specific provider; usage is driven by {class:Job}s that target the API, and an internal {class:ExternalAPIServer} aggregates the resulting hourly footprints."""
+
     # Mark the class as abstract but not its children when they define a default_values class attribute
     @classmethod
     @abstractmethod

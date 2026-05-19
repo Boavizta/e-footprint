@@ -41,6 +41,8 @@ class ServerTypes:
 
 
 class ServerBase(InfraHardware):
+    """Abstract base for the infrastructure hardware that runs {class:Job}s as part of a digital service. Concrete subclasses model on-premise servers ({class:Server}), GPU servers ({class:GPUServer}), and cloud servers with provider-supplied hardware profiles ({class:BoaviztaCloudServer}); each rolls hourly job demand into energy and fabrication footprints according to its {param:ServerBase.server_type}."""
+
     @abstractmethod
     def _abc_marker(self):  # private abstract method so that this class is considered abstract
         pass
