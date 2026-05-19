@@ -43,11 +43,13 @@ def validate_timeseries_unit(value: Quantity, label: str = None):
     Raises:
         ValueError: If the value uses dimensionless unit
     """
-    from efootprint.constants.units import u
-
-    # Allow dimensionless for unlabeled intermediate calculations (e.g., during division operations)
-    # These will be converted to occurrence/concurrent before being assigned
-    if value.units == u.dimensionless and label:
+    # Allow dimensionless for unlabeled intermediate calculations (e.g., during division operations);
+    # those will be converted to occurrence/concurrent before being assigned. Most call sites pass
+    # label=None or "", so label is checked first to skip the unit comparison entirely.
+    # `str(value.units) == "dimensionless"` is faster than `value.units == u.dimensionless` and
+    # preserves the original semantics: occurrence and concurrent are dimensionally dimensionless
+    # but distinct units, and remain allowed.
+    if label and str(value.units) == "dimensionless":
         raise ValueError(
             f"Timeseries cannot use dimensionless unit. "
             f"Use 'occurrence' (for discrete occurrences, aggregated by sum) or "
