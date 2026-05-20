@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 
 import numpy as np
@@ -8,7 +8,8 @@ from efootprint.utils.display import best_display_unit, human_readable_unit
 
 
 def get_time_axis(start_date: datetime, length: int) -> np.ndarray:
-    return np.array([start_date + timedelta(hours=i) for i in range(length)])
+    naive_start = start_date.replace(tzinfo=None) if start_date.tzinfo is not None else start_date
+    return np.datetime64(naive_start) + np.arange(length) * np.timedelta64(1, "h")
 
 
 def prepare_data(q: Quantity, start: datetime, apply_cumsum=False) -> tuple[np.ndarray, Quantity]:
