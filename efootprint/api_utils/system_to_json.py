@@ -8,10 +8,11 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 def recursively_write_json_dict(
         output_dict, mod_obj, save_calculated_attributes, deferred_linked_objects=None,
-        is_processing_deferred_links=False, sources_by_id=None):
+        deferred_linked_object_ids=None, is_processing_deferred_links=False, sources_by_id=None):
     owns_deferred_queue = deferred_linked_objects is None
     if deferred_linked_objects is None:
         deferred_linked_objects = []
+        deferred_linked_object_ids = set()
     mod_obj_class = mod_obj.class_as_simple_str
     if mod_obj_class not in output_dict:
         output_dict[mod_obj_class] = {}
@@ -23,8 +24,9 @@ def recursively_write_json_dict(
                     candidate is not None
                     and isinstance(candidate, ModelingObject)
                     and candidate.id not in output_dict.get(candidate.class_as_simple_str, {})
-                    and candidate not in deferred_linked_objects):
+                    and candidate.id not in deferred_linked_object_ids):
                 deferred_linked_objects.append(candidate)
+                deferred_linked_object_ids.add(candidate.id)
 
         for key, value in mod_obj.__dict__.items():
             if sources_by_id is not None:
@@ -36,11 +38,12 @@ def recursively_write_json_dict(
                             sources_by_id.setdefault(elt.source.id, elt.source)
             if isinstance(value, ModelingObject):
                 recursively_write_json_dict(output_dict, value, save_calculated_attributes, deferred_linked_objects,
-                                            sources_by_id=sources_by_id)
+                                            deferred_linked_object_ids, sources_by_id=sources_by_id)
             elif isinstance(value, list) and len(value) > 0 and isinstance(value[0], ModelingObject):
                 for mod_obj_elt in value:
                     recursively_write_json_dict(output_dict, mod_obj_elt, save_calculated_attributes,
-                                                deferred_linked_objects, sources_by_id=sources_by_id)
+                                                deferred_linked_objects, deferred_linked_object_ids,
+                                                sources_by_id=sources_by_id)
             elif isinstance(value, ExplainableObjectDict):
                 for dict_key in value:
                     add_deferred_linked_object(dict_key)
@@ -49,9 +52,11 @@ def recursively_write_json_dict(
 
         if owns_deferred_queue and not is_processing_deferred_links:
             while deferred_linked_objects:
+                next_obj = deferred_linked_objects.pop(0)
+                deferred_linked_object_ids.discard(next_obj.id)
                 recursively_write_json_dict(
-                    output_dict, deferred_linked_objects.pop(0), save_calculated_attributes, deferred_linked_objects,
-                    is_processing_deferred_links=True, sources_by_id=sources_by_id)
+                    output_dict, next_obj, save_calculated_attributes, deferred_linked_objects,
+                    deferred_linked_object_ids, is_processing_deferred_links=True, sources_by_id=sources_by_id)
 
     return output_dict
 
