@@ -35,11 +35,21 @@ from efootprint.core.country import Country
 from efootprint.core.system import System
 from efootprint.constants.countries import country_generator, tz, Countries
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_hourly_usage_from_frequency, create_random_source_hourly_values
+from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 from efootprint.logger import logger
 logger.info(f"Finished importing modules in {round((perf_counter() - start), 3)} seconds")
 
 root_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+def form_inputs_hourly_starts(nb_years: int, initial_volume: float = 1000.0):
+    """Build a form-inputs hourly-starts timeseries matching production interface usage."""
+    return ExplainableHourlyQuantitiesFromFormInputs({
+        "start_date": "2024-01-01",
+        "modeling_duration_value": nb_years, "modeling_duration_unit": "year",
+        "net_growth_rate_in_percentage": 2, "net_growth_rate_timespan": "month",
+        "initial_volume": initial_volume, "initial_volume_timespan": "month",
+    })
 
 
 def generate_big_system(
@@ -137,9 +147,7 @@ def generate_big_system(
                             unique(f"devices country server {server_index} uj {uj_index} up {up_nb}"),
                             "its 3 letter shortname, for example FRA",
                             SourceValue(85 * u.g / u.kWh, source=None), tz('Europe/Paris'))(),
-                        hourly_usage_journey_starts=create_hourly_usage_from_frequency(
-                            timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
-                            active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+                        hourly_usage_journey_starts=form_inputs_hourly_starts(nb_years)
                     )
                 )
 
@@ -208,9 +216,7 @@ def generate_big_system(
             edge_usage_journey=edge_usage_journey,
             network=network,
             country=new_france(unique(f"France for edge usage pattern {edge_usage_pattern_index}")),
-            hourly_edge_usage_journey_starts=create_hourly_usage_from_frequency(
-                timespan=nb_years * u.year, input_volume=1000, frequency='weekly',
-                active_days=[0, 1, 2, 3, 4, 5], hours=[8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19])
+            hourly_edge_usage_journey_starts=form_inputs_hourly_starts(nb_years)
                 )
         edge_usage_patterns.append(edge_usage_pattern)
 
@@ -261,16 +267,14 @@ if __name__ == "__main__":
 
     start = perf_counter()
     for i in range(edition_iterations):
-        system.usage_patterns[0].hourly_usage_journey_starts = create_random_source_hourly_values(
-            timespan=nb_years * u.year)
+        system.usage_patterns[0].hourly_usage_journey_starts = form_inputs_hourly_starts(nb_years)
     end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per hourly usage journey starts edition")
 
     start = perf_counter()
     for i in range(edition_iterations):
-        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = create_random_source_hourly_values(
-            timespan=nb_years * u.year)
+        system.edge_usage_patterns[0].hourly_edge_usage_journey_starts = form_inputs_hourly_starts(nb_years)
     end = perf_counter()
     compute_time_per_edition = round(1000 * (end - start) / edition_iterations, 1)
     logger.info(f"edition took {compute_time_per_edition} ms on average per edge hourly usage journey starts edition")

@@ -11,10 +11,9 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import O
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
-from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
 from efootprint.constants.units import u
-from tests.performance_tests.generate_big_system import generate_big_system, root_dir
+from tests.performance_tests.generate_big_system import generate_big_system, form_inputs_hourly_starts, root_dir
 
 
 def log_number_of_live_objects(sleep_duration=0.5):
@@ -95,13 +94,13 @@ class TestBigSystemFromAndToJsonPerformance(TestCase):
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "UsagePattern","hourly_usage_journey_starts",
-            create_random_source_hourly_values(timespan=5 * u.year))
-        self.assertLess(avg_loading_editing_writing_time, 1200)
+            form_inputs_hourly_starts(nb_years=5))
+        self.assertLess(avg_loading_editing_writing_time, 500)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "EdgeUsagePattern", "hourly_edge_usage_journey_starts",
-            create_random_source_hourly_values(timespan=5 * u.year))
-        self.assertLess(avg_loading_editing_writing_time, 1200)
+            form_inputs_hourly_starts(nb_years=5))
+        self.assertLess(avg_loading_editing_writing_time, 500)
 
         avg_loading_editing_writing_time = update_on_system(
             nb_system_loadings, system_dict, "Job", "data_transferred",

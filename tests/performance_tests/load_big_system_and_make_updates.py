@@ -7,8 +7,8 @@ import os
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.builders.time_builders import create_random_source_hourly_values
 from efootprint.logger import logger
+from tests.performance_tests.generate_big_system import form_inputs_hourly_starts
 from tests.performance_tests.test_big_system_from_and_to_json_performance import root_dir, update_on_system, \
     log_number_of_live_objects
 
@@ -22,7 +22,7 @@ log_number_of_live_objects()
 nb_system_loadings = 10
 update_on_system(
     nb_system_loadings, deepcopy(system_dict), "UsagePattern", "hourly_usage_journey_starts",
-    create_random_source_hourly_values(timespan=3 * u.year))
+    form_inputs_hourly_starts(nb_years=3))
 
 log_number_of_live_objects()
 
