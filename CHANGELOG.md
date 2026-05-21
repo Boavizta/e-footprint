@@ -4,6 +4,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## Unreleased
+
+### Added
+- `efootprint.modeling_templates` package shipping three how-to reference systems
+  (`database_modeling`, `machine_learning_workflow`, `server_to_server_interaction`)
+  as JSON, alongside re-runnable Python authoring scripts under
+  `efootprint/modeling_templates/how_to/_authoring/` and a typed registry with
+  public helpers `list_how_to_templates`, `get_template`, `load_template_system`.
+- `docs_sources/doc_utils/doc_topic_registry.py` mapping `{doc:topic}` placeholder
+  ids to mkdocs source filenames; wired into `generate_object_reference.py` and
+  validated by `tests/test_descriptions.py`.
+- `tests/test_modeling_templates.py` covering template load, JSON-to-system
+  round trip, total-footprint compute, authoring-script round-trip stability,
+  metadata schema, doc-path existence, and the How-to → template reverse link.
+- `extra.interface_base_url` in `mkdocs.yml` for the "Try this interactively"
+  deep links on the How-to pages. Enabled via the `mkdocs-macros-plugin` dev
+  dependency so the `{{ config.extra.interface_base_url }}` Jinja syntax
+  actually resolves at build time.
+
+### Changed
+- `mkdocs.yml` nav: added `Web vs edge modeling` under Explanation, plus
+  `hardware_edge_index.md` and `usage_edge_index.md` landing pages for the Edge
+  sub-buckets in the Reference section.
+- `CONTRIBUTING.md` documents the manual `mkdocs build --strict` pre-merge check.
+
+### Removed
+- Stub pages `docs_sources/mkdocs_sourcefiles/design_deep_dive.md` and
+  `evolution_across_time.md`, along with their `mkdocs.yml` nav entries and
+  the dangling links to `design_deep_dive.md` from `explanation_overview.md`,
+  `get_started.md`, and `why_efootprint.md`.
+
 ## 21.0.1
 
 ### Fixed

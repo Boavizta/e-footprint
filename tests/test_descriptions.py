@@ -19,14 +19,21 @@ These tests enforce the contract defined in
    accepted (validated by the mkdocs build).
 7. ``{ui:...}`` and any unknown kind in library strings is a hard failure.
 """
+import re
+from pathlib import Path
 from typing import Iterable, List, Tuple
 
 import pytest
 
+from docs_sources.doc_utils.doc_topic_registry import DOC_TOPICS
 from efootprint.all_classes_in_order import (
     ALL_EFOOTPRINT_CLASSES, ALL_EFOOTPRINT_CLASSES_DICT)
 from efootprint.utils.placeholder_resolver import extract_placeholders
 from efootprint.utils.tools import get_init_signature_params
+
+MKDOCS_SOURCEFILES = (
+    Path(__file__).resolve().parent.parent / "docs_sources" / "mkdocs_sourcefiles")
+_TOPIC_KEY_PATTERN = re.compile(r"^[a-zA-Z][a-zA-Z0-9_]*$")
 
 
 ALLOWED_LIBRARY_KINDS = {"class", "param", "calc", "doc"}
@@ -89,7 +96,9 @@ def _validate_placeholder(kind: str, target: str) -> Iterable[str]:
         yield f"unknown placeholder kind {kind!r}"
         return
     if kind == "doc":
-        # Validation deferred to mkdocs build.
+        if target not in DOC_TOPICS:
+            yield (f"{{doc:{target}}} is not registered in DOC_TOPICS "
+                   f"(docs_sources/doc_utils/doc_topic_registry.py)")
         return
     if kind == "class":
         if target not in ALL_EFOOTPRINT_CLASSES_DICT:
@@ -228,3 +237,16 @@ def test_placeholders_resolve(cls):
             for problem in _validate_placeholder(kind, target):
                 errors.append(f"{source}: {problem}")
     assert not errors, "\n".join(errors)
+
+
+def test_doc_topics_keys_are_well_formed():
+    bad = [k for k in DOC_TOPICS if not _TOPIC_KEY_PATTERN.match(k)]
+    assert not bad, f"DOC_TOPICS keys must match [A-Za-z_][A-Za-z0-9_]*: {bad}"
+
+
+def test_doc_topics_point_at_existing_files():
+    missing = [(k, v) for k, v in DOC_TOPICS.items()
+               if not (MKDOCS_SOURCEFILES / v).is_file()]
+    assert not missing, (
+        f"DOC_TOPICS entries point at files that do not exist under "
+        f"{MKDOCS_SOURCEFILES}: {missing}")

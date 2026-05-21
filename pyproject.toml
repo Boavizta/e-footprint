@@ -10,7 +10,8 @@ description = "Digital service environmental footprint model"
 authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"
 include = ["efootprint/constants/custom_units.txt",
-    "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv"]
+    "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv",
+    "efootprint/modeling_templates/how_to/*.json"]
 
 [tool.black]
 line-length = 120
@@ -59,6 +60,7 @@ pytest-cov = '*'
 jupyter = "^1"
 ipykernel = "^7"
 mkdocs-material = "*"
+mkdocs-macros-plugin = "^1.5"
 pymdown-extensions = "*"
 jinja2 = "*"
 nbconvert = "*"

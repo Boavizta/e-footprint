@@ -1,0 +1,559 @@
+{
+    "efootprint_version": "21.0.1",
+    "Sources": {
+        "Base-ADEME_V19": {
+            "id": "Base-ADEME_V19",
+            "name": "Base ADEME_V19",
+            "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+        },
+        "DATA2eAI---STATE-OF-MOBILE": {
+            "id": "DATA2eAI---STATE-OF-MOBILE",
+            "name": "DATA.AI - STATE OF MOBILE",
+            "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+        },
+        "Estimating-the-Carbon-Footprint-of-BLOOM": {
+            "id": "Estimating-the-Carbon-Footprint-of-BLOOM",
+            "name": "Estimating the Carbon Footprint of BLOOM",
+            "link": "https://arxiv.org/abs/2211.05100"
+        },
+        "Our-world-in-data-28202429": {
+            "id": "Our-world-in-data-28202429",
+            "name": "Our world in data (2024)",
+            "link": "https://ourworldindata.org/grapher/carbon-intensity-electricity"
+        },
+        "hypothesis": {
+            "id": "hypothesis",
+            "name": "e-footprint hypothesis",
+            "link": null
+        },
+        "user_data": {
+            "id": "user_data",
+            "name": "user data",
+            "link": null
+        }
+    },
+    "System": {
+        "Machine-learning-workflow-system": {
+            "name": "Machine learning workflow system",
+            "id": "Machine-learning-workflow-system",
+            "usage_patterns": [
+                "Weekly-retraining-pattern",
+                "Production-inference-pattern"
+            ],
+            "edge_usage_patterns": []
+        }
+    },
+    "UsagePattern": {
+        "Weekly-retraining-pattern": {
+            "name": "Weekly retraining pattern",
+            "id": "Weekly-retraining-pattern",
+            "hourly_usage_journey_starts": {
+                "compressed_values": "KLUv/WCECZ0AACgAAIA/AAMA/40SP9AEqtGtAiw=",
+                "unit": "occurrence",
+                "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
+                "label": "Hourly nb of usage journey starts",
+                "source": "hypothesis"
+            },
+            "usage_journey": "Weekly-retraining-journey",
+            "devices": [],
+            "network": "Default-network",
+            "country": "France"
+        },
+        "Production-inference-pattern": {
+            "name": "Production inference pattern",
+            "id": "Production-inference-pattern",
+            "hourly_usage_journey_starts": {
+                "compressed_values": "KLUv/WCECX0AACgAAEhDAAIAHxqDD3QCWg==",
+                "unit": "occurrence",
+                "start_date": "2025-01-01 00:00:00",
+                "timezone": null,
+                "label": "Hourly nb of usage journey starts",
+                "source": "hypothesis"
+            },
+            "usage_journey": "Inference-journey",
+            "devices": [
+                "Default-laptop"
+            ],
+            "network": "Default-network",
+            "country": "France"
+        }
+    },
+    "UsageJourney": {
+        "Weekly-retraining-journey": {
+            "name": "Weekly retraining journey",
+            "id": "Weekly-retraining-journey",
+            "uj_steps": [
+                "Training-run"
+            ]
+        },
+        "Inference-journey": {
+            "name": "Inference journey",
+            "id": "Inference-journey",
+            "uj_steps": [
+                "Inference-call"
+            ]
+        }
+    },
+    "UsageJourneyStep": {
+        "Training-run": {
+            "name": "Training run",
+            "id": "Training-run",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": [
+                "Weekly-retraining"
+            ]
+        },
+        "Inference-call": {
+            "name": "Inference call",
+            "id": "Inference-call",
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "minute",
+                "label": "Time spent by user",
+                "source": "hypothesis"
+            },
+            "jobs": [
+                "Inference-call"
+            ]
+        }
+    },
+    "GPUJob": {
+        "Weekly-retraining": {
+            "name": "Weekly retraining",
+            "id": "Weekly-retraining",
+            "data_transferred": {
+                "value": 500.0,
+                "unit": "gigabyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 50.0,
+                "unit": "gigabyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 8.0,
+                "unit": "hour",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 640000.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 8.0,
+                "unit": "gpu",
+                "label": "gpus needed on server Training GPU server during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Training-GPU-server"
+        },
+        "Inference-call": {
+            "name": "Inference call",
+            "id": "Inference-call",
+            "data_transferred": {
+                "value": 20.0,
+                "unit": "kilobyte",
+                "label": "Sum of all data uploads and downloads by request",
+                "source": "hypothesis"
+            },
+            "data_stored": {
+                "value": 0.0,
+                "unit": "kilobyte_stored",
+                "label": "Data stored by request",
+                "source": "hypothesis"
+            },
+            "request_duration": {
+                "value": 2.0,
+                "unit": "second",
+                "label": "Request duration",
+                "source": "hypothesis"
+            },
+            "ram_needed": {
+                "value": 40000.0,
+                "unit": "megabyte_ram",
+                "label": "RAM needed during job processing",
+                "source": "hypothesis"
+            },
+            "compute_needed": {
+                "value": 1.0,
+                "unit": "gpu",
+                "label": "gpus needed on server Inference GPU server during job processing",
+                "source": "hypothesis"
+            },
+            "server": "Inference-GPU-server"
+        }
+    },
+    "GPUServer": {
+        "Training-GPU-server": {
+            "name": "Training GPU server",
+            "id": "Training-GPU-server",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "server_type": {
+                "value": "on-premise",
+                "label": "Server type",
+                "source": "hypothesis"
+            },
+            "compute": {
+                "value": 8.0,
+                "unit": "gpu",
+                "label": "Nb gpus",
+                "source": "hypothesis"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "label": "PUE",
+                "source": "hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 400.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity of electricity",
+                "source": "hypothesis"
+            },
+            "utilization_rate": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Utilization rate",
+                "source": "hypothesis"
+            },
+            "base_ram_consumption": {
+                "value": 0.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": "hypothesis"
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "gpu",
+                "label": "Base gpu consumption",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            },
+            "storage": "Training-dataset-storage",
+            "gpu_power": {
+                "value": 400.0,
+                "unit": "watt / gpu",
+                "label": "GPU power",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "gpu_idle_power": {
+                "value": 50.0,
+                "unit": "watt / gpu",
+                "label": "GPU idle power",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "ram_per_gpu": {
+                "value": 80.0,
+                "unit": "gigabyte_ram / gpu",
+                "label": "RAM per GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "carbon_footprint_fabrication_without_gpu": {
+                "value": 2500.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint without GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "carbon_footprint_fabrication_per_gpu": {
+                "value": 150.0,
+                "unit": "kilogram / gpu",
+                "label": "Carbon footprint one GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            }
+        },
+        "Inference-GPU-server": {
+            "name": "Inference GPU server",
+            "id": "Inference-GPU-server",
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "server_type": {
+                "value": "autoscaling",
+                "label": "Server type",
+                "source": "hypothesis"
+            },
+            "compute": {
+                "value": 4.0,
+                "unit": "gpu",
+                "label": "Nb gpus",
+                "source": "hypothesis"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "label": "PUE",
+                "source": "hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 400.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity of electricity",
+                "source": "hypothesis"
+            },
+            "utilization_rate": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Utilization rate",
+                "source": "hypothesis"
+            },
+            "base_ram_consumption": {
+                "value": 0.0,
+                "unit": "gigabyte_ram",
+                "label": "Base RAM consumption",
+                "source": "hypothesis"
+            },
+            "base_compute_consumption": {
+                "value": 0.0,
+                "unit": "gpu",
+                "label": "Base gpu consumption",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            },
+            "storage": "Inference-cache-storage",
+            "gpu_power": {
+                "value": 400.0,
+                "unit": "watt / gpu",
+                "label": "GPU power",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "gpu_idle_power": {
+                "value": 50.0,
+                "unit": "watt / gpu",
+                "label": "GPU idle power",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "ram_per_gpu": {
+                "value": 80.0,
+                "unit": "gigabyte_ram / gpu",
+                "label": "RAM per GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "carbon_footprint_fabrication_without_gpu": {
+                "value": 2500.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint without GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            },
+            "carbon_footprint_fabrication_per_gpu": {
+                "value": 150.0,
+                "unit": "kilogram / gpu",
+                "label": "Carbon footprint one GPU",
+                "source": "Estimating-the-Carbon-Footprint-of-BLOOM"
+            }
+        }
+    },
+    "Storage": {
+        "Training-dataset-storage": {
+            "name": "Training dataset storage",
+            "id": "Training-dataset-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "value": 160.0,
+                "unit": "kilogram / terabyte_stored",
+                "label": "Fabrication carbon footprint per storage capacity",
+                "source": "hypothesis"
+            },
+            "storage_capacity": {
+                "value": 1.0,
+                "unit": "terabyte_stored",
+                "label": "Storage capacity",
+                "source": "hypothesis"
+            },
+            "data_replication_factor": {
+                "value": 3.0,
+                "unit": "dimensionless",
+                "label": "Data replication factor",
+                "source": "hypothesis"
+            },
+            "data_storage_duration": {
+                "value": 43830.0,
+                "unit": "hour",
+                "label": "Data storage duration",
+                "source": "hypothesis"
+            },
+            "base_storage_need": {
+                "value": 0.0,
+                "unit": "terabyte_stored",
+                "label": "Initial storage need",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            }
+        },
+        "Inference-cache-storage": {
+            "name": "Inference cache storage",
+            "id": "Inference-cache-storage",
+            "power": {
+                "value": 0.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1.0,
+                "unit": "dimensionless",
+                "label": "Fraction of usage time",
+                "source": "hypothesis"
+            },
+            "carbon_footprint_fabrication_per_storage_capacity": {
+                "value": 160.0,
+                "unit": "kilogram / terabyte_stored",
+                "label": "Fabrication carbon footprint per storage capacity",
+                "source": "hypothesis"
+            },
+            "storage_capacity": {
+                "value": 1.0,
+                "unit": "terabyte_stored",
+                "label": "Storage capacity",
+                "source": "hypothesis"
+            },
+            "data_replication_factor": {
+                "value": 3.0,
+                "unit": "dimensionless",
+                "label": "Data replication factor",
+                "source": "hypothesis"
+            },
+            "data_storage_duration": {
+                "value": 43830.0,
+                "unit": "hour",
+                "label": "Data storage duration",
+                "source": "hypothesis"
+            },
+            "base_storage_need": {
+                "value": 0.0,
+                "unit": "terabyte_stored",
+                "label": "Initial storage need",
+                "source": "hypothesis"
+            },
+            "fixed_nb_of_instances": {
+                "value": null,
+                "label": "User defined number of instances"
+            }
+        }
+    },
+    "Network": {
+        "Default-network": {
+            "name": "Default network",
+            "id": "Default-network",
+            "bandwidth_energy_intensity": {
+                "value": 0.1,
+                "unit": "kilowatt_hour / gigabyte",
+                "label": "bandwith energy intensity",
+                "source": "hypothesis"
+            }
+        }
+    },
+    "Country": {
+        "France": {
+            "name": "France",
+            "id": "France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "value": 44.0,
+                "unit": "gram / kilowatt_hour",
+                "label": "Average carbon intensity",
+                "source": "Our-world-in-data-28202429",
+                "confidence": "high"
+            },
+            "timezone": {
+                "zone": "Europe/Paris",
+                "label": "Timezone",
+                "source": "user_data"
+            }
+        }
+    },
+    "Device": {
+        "Default-laptop": {
+            "name": "Default laptop",
+            "id": "Default-laptop",
+            "carbon_footprint_fabrication": {
+                "value": 156.0,
+                "unit": "kilogram",
+                "label": "Carbon footprint fabrication",
+                "source": "Base-ADEME_V19"
+            },
+            "power": {
+                "value": 50.0,
+                "unit": "watt",
+                "label": "Power",
+                "source": "hypothesis"
+            },
+            "lifespan": {
+                "value": 6.0,
+                "unit": "year",
+                "label": "Lifespan",
+                "source": "hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "label": "Fraction of usage time",
+                "source": "DATA2eAI---STATE-OF-MOBILE"
+            }
+        }
+    }
+}

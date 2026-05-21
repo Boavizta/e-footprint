@@ -20,6 +20,8 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
+`efootprint/modeling_templates/` ships reference systems backing the mkdocs how-to pages: JSON files under `how_to/`, regenerable Python authoring scripts under `how_to/_authoring/`, and a typed registry (`HowToTemplate`, `HOW_TO_TEMPLATES`). Public helpers `list_how_to_templates`, `get_template`, `load_template_system` live on the package; imports are upward-only (`api_utils` for load/save).
+
 ## Core (`efootprint/core/`)
 
 - **Usage** — patterns, journeys, and jobs that define how systems are used.

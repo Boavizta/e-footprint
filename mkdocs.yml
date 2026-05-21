@@ -17,6 +17,13 @@ docs_dir: docs_sources/generated_mkdocs_sourcefiles
 
 site_dir: docs
 
+plugins:
+- search
+- macros
+
+extra:
+  interface_base_url: https://e-footprint.boavizta.org
+
 nav:
 - Introduction: index.md
 - Tutorial: tutorial.md
@@ -27,11 +34,10 @@ nav:
   - Best practices, measurement, simulation: ecodesign_strategies.md
   - How to get started: get_started.md
   - The e-footprint methodology: methodology.md
-  - e-footprint design choices deep dive: design_deep_dive.md
+  - Web vs edge modeling: web_vs_edge.md
 - How-to guides:
     - How to model a machine learning workflow: machine_learning_workflow.md
     - How to model a database: database_modeling.md
-    - How to model the evolution of a system across time: evolution_across_time.md
     - How to model server to server interaction: server_to_server_interaction.md
 - e-footprint objects reference:
   - How to read the object reference: object_reference.md
@@ -44,6 +50,7 @@ nav:
       - Network: Network.md
       - Storage: Storage.md
       - Edge:
+          - Edge hardware overview: hardware_edge_index.md
           - Edge device:
               - Edge device (base object): EdgeDevice.md
               - Edge device group: EdgeDeviceGroup.md
@@ -75,6 +82,7 @@ nav:
       - Job: Job.md
       - GPU job: GPUJob.md
       - Edge:
+        - Edge usage overview: usage_edge_index.md
         - Edge usage pattern: EdgeUsagePattern.md
         - Edge usage journey: EdgeUsageJourney.md
         - Edge function: EdgeFunction.md

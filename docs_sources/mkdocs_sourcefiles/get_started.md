@@ -9,4 +9,4 @@ What we recommend is that an **e-footprint owner** be identified in the team, wh
 
 While there is one owner responsible for fully understanding the modeling of the digital service built by the team, when ecodesign decisions are made or when the impact of a new feature is anticipated, **the whole team looks at the simulation and makes a collegiate decision**.
 
-The e-footprint model owner is very much advised to read and understand the [e-footprint methodology](methodology.md), [why e-footprint has been built](why_efootprint.md), and its [model choices](design_deep_dive.md).
+The e-footprint model owner is very much advised to read and understand the [e-footprint methodology](methodology.md) and [why e-footprint has been built](why_efootprint.md).

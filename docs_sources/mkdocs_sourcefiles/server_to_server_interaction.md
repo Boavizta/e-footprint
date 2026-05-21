@@ -73,4 +73,4 @@ methodology is iterative ({doc:methodology}) — start coarse, then
 refine the parts that turn out to dominate.
 
 > Load this scenario in the e-footprint interface:
-> [Server-to-server interaction]({{ config.extra.interface_base_url }}/database_modeling)
+> [Server-to-server interaction]({{ config.extra.interface_base_url }}/server_to_server_interaction)

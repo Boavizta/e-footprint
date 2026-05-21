@@ -12,6 +12,7 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from docs_sources.doc_utils.doc_topic_registry import DOC_TOPICS
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_gpu_server, video_streaming, genai_model,
@@ -43,7 +44,9 @@ def _build_placeholder_handlers(documented_classes: set[str]) -> dict:
         return f"`{class_name}.{member}`"
 
     def doc_link(target: str) -> str:
-        return f"[{target}]({target}.md)"
+        if target not in DOC_TOPICS:
+            raise ValueError(f"Unknown {{doc:{target}}} placeholder: not registered in DOC_TOPICS")
+        return f"[{target}]({DOC_TOPICS[target]})"
 
     return {
         "class": class_link,

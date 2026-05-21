@@ -35,8 +35,6 @@ Moreover, it is necessary to take a life cycle analysis approach to understand a
 
 e-footprint is a modeling tool that embeds a model of the relationships between components of a digital service and the associated environmental footprint. When you describe your digital service with e-footprint, what you get is a modeling of this service.
 
-For more details on the model design decisions in e-footprint, check the [model design deep dive](design_deep_dive.md).
-
 ## Get started
 
 Now that you understand the concepts on which e-footprint is built, read the [How to get started](get_started.md) article to start your ecodesign journey !
