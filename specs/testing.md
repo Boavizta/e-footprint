@@ -24,6 +24,8 @@ Also don’t test:
 
 Prefer the simplest readable test that proves the class-specific logic.
 
+When logic is shared by several subclasses via a base class, test it once in its own `test_<base>_base.py` module that exercises the base class directly (instantiate it when concrete, or mock its collaborators), rather than re-testing it through each subclass. Subclass test files then only cover subclass-specific logic.
+
 ## What TO test in unit tests
 
 1. **Update methods (`update_*`)** — happy path, error conditions, boundary cases.

@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [V22.2.0] — 2026-06-17
+
+### Added
+- EcoLogits video-generation integration: new
+  `EcoLogitsVideoGenExternalAPIServer`, `EcoLogitsVideoGenExternalAPI`, and
+  `EcoLogitsVideoGenExternalAPIJob` classes under
+  `efootprint/builders/external_apis/ecologits/ecologits_video_external_api.py`.
+  Mirrors the EcoLogits LLM trio for AI video generation (Sora, Veo, Kling,
+  Seedance, Runway…). Per-call GWP, energy, and embodied GWP are computed by
+  calling the EcoLogits `compute_video_impacts_dag` once per relevant input
+  change and extracting typed e-footprint quantities.
+- Anti-drift guard test pinning EcoLogits' `duration_to_frames(d) == int(d * 24 + 1)`
+  formula. Meant to fail loudly on upstream re-fits.
+- Added time/duration unit family to display module: [ms, s, minute, hour, day, year] to UNIT_FAMILIES so durations normalize to the most readable unit (43800 h -> 5 yr, 90 min -> 1.5 h).
+- Added SystemComparison class, that powers new method System.compare_to and provides analysis of Deltas between 2 systems.
+
+### Changed
+- `ModelingObject.check_belonging_to_authorized_values` now supports dotted
+  `depends_on` paths (e.g. `"external_api.model_name"`) so a `conditional_list_values`
+  entry can express a cross-object cascade.
+- `ExplainableObject.to_json` / `from_json_dict` now round-trip boolean values,
+  not just strings — needed for the new boolean `SourceObject` (`with_audio`).
+
 ## [V22.1.0]
 
 ### Added

@@ -177,7 +177,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         for matcher, subclass in cls._registry:
             if matcher(d):
                 return subclass.from_json_dict(d)
-        if "value" in d and isinstance(d["value"], str):
+        if "value" in d and isinstance(d["value"], (str, bool)):
             return cls(d["value"], label=d.get("label", None))
         raise ValueError("No matching subclass found for data: {}".format(d))
 
@@ -704,7 +704,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     def to_json(self, save_calculated_attributes=False):
         output_dict = {}
 
-        if isinstance(self._value, str):
+        if isinstance(self._value, (str, bool)):
             output_dict["value"] = self.value
 
         output_dict["label"] = self.label

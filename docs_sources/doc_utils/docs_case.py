@@ -5,6 +5,8 @@ from pint import Quantity
 
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import EcoLogitsGenAIExternalAPI, \
     EcoLogitsGenAIExternalAPIJob
+from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+    EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIJob)
 from efootprint.builders.hardware.edge.edge_appliance import EdgeAppliance
 from efootprint.builders.usage.edge.recurrent_edge_workload import RecurrentEdgeWorkload
 from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
@@ -95,17 +97,20 @@ on_premise_gpu_server = GPUServer.from_defaults(
 
 video_streaming = VideoStreaming.from_defaults("Video streaming service", server=autoscaling_server)
 genai_model = EcoLogitsGenAIExternalAPI.from_defaults("Generative AI model")
+genai_video_model = EcoLogitsVideoGenExternalAPI.from_defaults("Generative AI video model")
 
 video_streaming_job = VideoStreamingJob.from_defaults(
     "Video streaming job", service=video_streaming, video_duration=SourceValue(20 * u.min))
 genai_model_job = EcoLogitsGenAIExternalAPIJob.from_defaults("Generative AI model job", external_api=genai_model)
+genai_video_model_job = EcoLogitsVideoGenExternalAPIJob.from_defaults(
+    "Generative AI video model job", external_api=genai_video_model)
 manually_written_job = Job.from_defaults("Manually defined job", server=autoscaling_server)
 custom_gpu_job = GPUJob.from_defaults("Manually defined GPU job", server=on_premise_gpu_server)
 
 streaming_step = UsageJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
-    jobs=[genai_model_job, video_streaming_job, manually_written_job, custom_gpu_job,
+    jobs=[genai_model_job, genai_video_model_job, video_streaming_job, manually_written_job, custom_gpu_job,
           manually_written_job]
     )
 

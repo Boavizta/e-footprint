@@ -38,15 +38,17 @@ from efootprint.core.system import System
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPIJob, EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIServer)
+from efootprint.builders.external_apis.ecologits.ecologits_video_external_api import (
+    EcoLogitsVideoGenExternalAPIJob, EcoLogitsVideoGenExternalAPI, EcoLogitsVideoGenExternalAPIServer)
 # Import timeseries so they get registered in ExplainableObject registry and can be parsed from json
 from efootprint.builders import timeseries
 
 
 SERVICE_CLASSES = [VideoStreaming]
 SERVICE_JOB_CLASSES = [VideoStreamingJob]
-EXTERNAL_API_SERVER_CLASSES = [EcoLogitsGenAIExternalAPIServer]
-EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI]
-EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob]
+EXTERNAL_API_SERVER_CLASSES = [EcoLogitsGenAIExternalAPIServer, EcoLogitsVideoGenExternalAPIServer]
+EXTERNAL_API_CLASSES = [EcoLogitsGenAIExternalAPI, EcoLogitsVideoGenExternalAPI]
+EXTERNAL_API_JOB_CLASSES = [EcoLogitsGenAIExternalAPIJob, EcoLogitsVideoGenExternalAPIJob]
 SERVER_CLASSES = [Server, GPUServer]
 SERVER_BUILDER_CLASSES = [BoaviztaCloudServer]
 EDGE_COMPONENT_CLASSES = [EdgeRAMComponent, EdgeCPUComponent, EdgeWorkloadComponent, EdgeStorage]

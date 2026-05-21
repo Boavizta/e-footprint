@@ -372,7 +372,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         if name in self.conditional_list_values:
             conditional_attr_name = self.conditional_list_values[name]['depends_on']
-            conditional_value = getattr(self, self.conditional_list_values[name]["depends_on"])
+            # depends_on may be a dotted path (e.g. "external_api.model_name") to reach an attribute on a related object
+            conditional_value = self
+            for part in conditional_attr_name.split("."):
+                conditional_value = getattr(conditional_value, part, None)
+                if conditional_value is None:
+                    break
             if conditional_value is None:
                 raise ValueError(f"Value for attribute {conditional_attr_name} is not set but required for checking "
                                  f"validity of {name}")

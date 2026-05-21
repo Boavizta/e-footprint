@@ -1,22 +1,23 @@
 import math
-from typing import List, Optional
+from typing import List
 
 from ecologits.electricity_mix_repository import electricity_mixes
-from ecologits.impacts.llm import compute_llm_impacts_dag
+from ecologits.impacts.llm import compute_llm_impacts_dag, dag as llm_dag
 from ecologits.model_repository import ModelRepository
 from ecologits.model_repository import ParametersMoE
 from ecologits.tracers.utils import PROVIDER_CONFIG_MAP
-from ecologits.utils.range_value import ValueOrRange
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_dict import ExplainableDict
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
-from efootprint.builders.external_apis.ecologits.ecologits_dag_structure import ECOLOGITS_DEPENDENCY_GRAPH, get_formula
-from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity import EcoLogitsExplainableQuantity
+from efootprint.builders.external_apis.ecologits.ecologits_utils import (
+    ECOLOGITS_LLM_DEPENDENCY_GRAPH, create_update_method_for_ecologits_attribute, mean_value_or_range)
+from efootprint.builders.external_apis.ecologits.ecologits_external_api_server_base import (
+    EcoLogitsExternalAPIServerBase)
 from efootprint.builders.external_apis.ecologits.ecologits_unit_mapping import ECOLOGITS_UNIT_MAPPING
-from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
+from efootprint.builders.external_apis.external_api_base_class import ExternalAPI
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.constants.units import u
 from efootprint.core.lifecycle_phases import LifeCyclePhases
@@ -31,86 +32,15 @@ compute_llm_impacts_dag_source = Source("Ecologits compute_llm_impacts_dag funct
                                         "https://github.com/genai-impact/ecologits/blob/main/ecologits/impacts/llm.py")
 
 ecologits_calculated_attributes = [
-    elt for elt in ECOLOGITS_DEPENDENCY_GRAPH.keys() if elt in ECOLOGITS_UNIT_MAPPING
+    elt for elt in ECOLOGITS_LLM_DEPENDENCY_GRAPH.keys() if elt in ECOLOGITS_UNIT_MAPPING
     and not elt.endswith("_wue") and not elt.endswith("_pe") and not elt.endswith("_adpe")]
 ecologits_input_hypotheses = [elt for elt in ECOLOGITS_UNIT_MAPPING if elt not in ecologits_calculated_attributes]
 
 
-def _mean_value_or_range(value_or_range: ValueOrRange) -> float:
-    if isinstance(value_or_range, (int, float)):
-        return float(value_or_range)
-    return (value_or_range.min + value_or_range.max) / 2
-
-
-class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
+class EcoLogitsGenAIExternalAPIServer(EcoLogitsExternalAPIServerBase):
     """Virtual server backing an {class:EcoLogitsGenAIExternalAPI}. Aggregates the per-request fabrication and energy footprints emitted by the underlying EcoLogits model into hourly footprints."""
 
     param_descriptions = {}
-
-    @staticmethod
-    def _spread_over_request_duration(job, per_request_value):
-        """Spread a per-request total over the hours the request runs, mirroring the network/storage
-        per-hour-spread idiom: (per_request_value * 1h / request_duration) * avg hourly occurrences.
-        Returns an empty object when the per-request value isn't set yet (e.g. a job with no usage
-        patterns), whose request_duration is still its 0 s default."""
-        if isinstance(per_request_value, EmptyExplainableObject):
-            return EmptyExplainableObject()
-        per_hour_value = per_request_value * ExplainableQuantity(1 * u.hour, "one hour") / job.request_duration
-        return per_hour_value * job.hourly_avg_occurrences_across_usage_patterns
-
-    @property
-    def external_api(self) -> Optional["EcoLogitsGenAIExternalAPI"]:
-        if self.modeling_obj_containers:
-            return self.modeling_obj_containers[0]
-        return None
-
-    @property
-    def jobs(self) -> List["EcoLogitsGenAIExternalAPIJob"]:
-        if self.external_api:
-            return self.external_api.jobs
-        return []
-    
-    @property
-    def external_api_model_name(self) -> str:
-        if self.external_api:
-            return str(self.external_api.model_name)
-        return "no external API"
-
-    def update_instances_fabrication_footprint(self) -> None:
-        """Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
-        instances_fabrication_footprint = EmptyExplainableObject()
-
-        for job in self.jobs:
-            instances_fabrication_footprint += self._spread_over_request_duration(job, job.request_embodied_gwp)
-
-        self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
-            f"Instances fabrication footprint for {self.external_api_model_name}")
-
-    def update_instances_energy(self) -> None:
-        """Hourly energy consumed by the model server: each job's per-request energy spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
-        instances_energy = EmptyExplainableObject()
-
-        for job in self.jobs:
-            instances_energy += self._spread_over_request_duration(job, job.request_energy)
-
-        self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
-
-    def update_energy_footprint(self) -> None:
-        """Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
-        energy_footprint = EmptyExplainableObject()
-
-        for job in self.jobs:
-            energy_footprint += self._spread_over_request_duration(job, job.request_usage_gwp)
-
-        self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
-
-    def job_request_footprint(self, job: "EcoLogitsGenAIExternalAPIJob", phase: LifeCyclePhases):
-        """The job's duration-aware request footprint for a life-cycle phase: per-request embodied (fabrication)
-        or usage (energy) GWP spread over request_duration times hourly average occurrences — the per-job
-        summand of the matching eager footprint total."""
-        per_request_gwp = (job.request_embodied_gwp if phase == LifeCyclePhases.MANUFACTURING
-                           else job.request_usage_gwp)
-        return self._spread_over_request_duration(job, per_request_gwp)
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):
@@ -180,9 +110,9 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         model = self._get_model_or_raise()
         params = model.architecture.parameters
         if isinstance(params, ParametersMoE):
-            model_total_params = _mean_value_or_range(params.total)
+            model_total_params = mean_value_or_range(params.total)
         else:
-            model_total_params = _mean_value_or_range(params)
+            model_total_params = mean_value_or_range(params)
 
         self.model_total_params = ExplainableQuantity(
             model_total_params * ECOLOGITS_UNIT_MAPPING["model_total_parameter_count"],
@@ -198,9 +128,9 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
         model = self._get_model_or_raise()
         params = model.architecture.parameters
         if isinstance(params, ParametersMoE):
-            model_active_params = _mean_value_or_range(params.active)
+            model_active_params = mean_value_or_range(params.active)
         else:
-            model_active_params = _mean_value_or_range(params)
+            model_active_params = mean_value_or_range(params)
 
         self.model_active_params = ExplainableQuantity(
             model_active_params * ECOLOGITS_UNIT_MAPPING["model_active_parameter_count"],
@@ -260,7 +190,7 @@ class EcoLogitsGenAIExternalAPI(ExternalAPI):
 
     def update_data_center_pue(self) -> None:
         """Power Usage Effectiveness of the provider's datacenter, looked up in the EcoLogits provider config."""
-        datacenter_pue = _mean_value_or_range(PROVIDER_CONFIG_MAP[self.provider.value].datacenter_pue)
+        datacenter_pue = mean_value_or_range(PROVIDER_CONFIG_MAP[self.provider.value].datacenter_pue)
         self.data_center_pue = ExplainableQuantity(
             datacenter_pue * u.dimensionless,
             f"Datacenter PUE for {self.provider}",
@@ -336,7 +266,7 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
 
     def update_impacts(self) -> None:
         """Cached EcoLogits impact dictionary for one call, computed from the model parameters, output token count, and grid carbon intensity. Subsequent updates extract individual fields from this dictionary."""
-        datacenter_wue = _mean_value_or_range(PROVIDER_CONFIG_MAP[self.external_api.provider.value].datacenter_wue)
+        datacenter_wue = mean_value_or_range(PROVIDER_CONFIG_MAP[self.external_api.provider.value].datacenter_wue)
 
         impacts = compute_llm_impacts_dag(
             model_active_parameter_count=self.external_api.model_active_params.value.magnitude,
@@ -368,42 +298,7 @@ class EcoLogitsGenAIExternalAPIJob(ExternalAPIJob):
 
         self.impacts = impacts
 
-    def update_ecologits_calculated_attribute(self, attribute_name: str) -> None:
-        """Helper called by every auto-generated ``update_<ecologits_attr>`` method to read one field out of the cached EcoLogits impact dictionary, attach the right unit, and wire its EcoLogits formula and ancestors for explainability."""
-        if attribute_name not in self.impacts.value:
-            raise ValueError(f"Ecologits impacts has no attribute `{attribute_name}`.")
-        attribute_value = self.impacts.value[attribute_name]
-        ancestors = {}
-        for ancestor in ECOLOGITS_DEPENDENCY_GRAPH[attribute_name]:
-            if ancestor in self.impacts.value:
-                ancestors[ancestor] = self.impacts.value[ancestor]
-        formula = get_formula(attribute_name)
-        ecologits_unit = ECOLOGITS_UNIT_MAPPING[attribute_name]
-        value = attribute_value * ecologits_unit
-        if ecologits_unit == u.kWh and value.magnitude < 0.01:
-            value = value.to(u.Wh)
-        if ecologits_unit == u.kg and value.magnitude < 0.01:
-            value = value.to(u.g)
-        attribute_explainable = EcoLogitsExplainableQuantity(
-            value,
-            f"Ecologits {attribute_name} for {self.external_api.model_name}",
-            parent=self.impacts, operator="extraction", ancestors=dict(sorted(ancestors.items())), formula=formula,
-            source=compute_llm_impacts_dag_source)
-        setattr(self, attribute_name, attribute_explainable)
 
-
-def _create_update_method(attribute_name: str):
-    """Factory function to create update methods for ecologits calculated attributes."""
-    def update_method(self):
-        self.update_ecologits_calculated_attribute(attribute_name)
-    update_method.__name__ = f"update_{attribute_name}"
-    update_method.__doc__ = (
-        f"Extracts the {attribute_name} field from the cached EcoLogits impact dictionary on this job, "
-        f"converted into a typed e-footprint quantity.")
-    return update_method
-
-
-# Auto-generate update methods for each ecologits calculated attribute
 for attr_name in ecologits_calculated_attributes:
-    method_name = f"update_{attr_name}"
-    setattr(EcoLogitsGenAIExternalAPIJob, method_name, _create_update_method(attr_name))
+    setattr(EcoLogitsGenAIExternalAPIJob, f"update_{attr_name}", create_update_method_for_ecologits_attribute(
+        attr_name, ECOLOGITS_LLM_DEPENDENCY_GRAPH, llm_dag, compute_llm_impacts_dag_source))

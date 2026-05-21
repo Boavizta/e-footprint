@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.modeling_object import (
     optimize_mod_objs_computation_chain)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceObject, SourceValue
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
 from efootprint.core.hardware.server import Server
@@ -479,6 +479,49 @@ class TestValidationAttributes(unittest.TestCase):
             self.assertEqual([], obj.validation_attributes)
             self.assertEqual(["energy_footprint", "fabrication_footprint"],
                              obj.calculated_attributes_without_validations)
+
+
+class TestCheckBelongingToAuthorizedValues(unittest.TestCase):
+    """Pins the dotted-path traversal in `conditional_list_values['depends_on']`. Single-segment
+    paths (back-compat) and multi-segment paths must both resolve through `getattr`, and a missing
+    intermediate attribute must short-circuit to the existing "value not set" error.
+
+    Synthetic attributes are written through `object.__setattr__` to bypass the framework's
+    input-validation / update machinery — the unit under test here is the conditional-list lookup,
+    not the setter."""
+
+    def _make_obj(self, depends_on: str):
+        obj = ModelingObjectForTesting("test")
+        a_value, b_value = SourceObject("a"), SourceObject("b")
+        object.__setattr__(obj, "conditional_list_values", {
+            "child": {
+                "depends_on": depends_on,
+                "conditional_list_values": {a_value: [SourceObject("x")], b_value: [SourceObject("y")]},
+            }
+        })
+        return obj, a_value, b_value
+
+    def test_single_segment_path_resolves_via_getattr(self):
+        obj, a_value, _ = self._make_obj("parent_attr")
+        object.__setattr__(obj, "parent_attr", a_value)
+        obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
+        with self.assertRaises(ValueError):
+            obj.check_belonging_to_authorized_values("child", SourceObject("y"), {})
+
+    def test_dotted_path_traverses_each_segment(self):
+        obj, a_value, _ = self._make_obj("intermediate.parent_attr")
+        intermediate = MagicMock()
+        intermediate.parent_attr = a_value
+        object.__setattr__(obj, "intermediate", intermediate)
+        obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
+        with self.assertRaises(ValueError):
+            obj.check_belonging_to_authorized_values("child", SourceObject("y"), {})
+
+    def test_dotted_path_short_circuits_when_intermediate_is_none(self):
+        obj, _, _ = self._make_obj("intermediate.parent_attr")
+        object.__setattr__(obj, "intermediate", None)
+        with self.assertRaisesRegex(ValueError, "intermediate.parent_attr"):
+            obj.check_belonging_to_authorized_values("child", SourceObject("x"), {})
 
 
 if __name__ == "__main__":

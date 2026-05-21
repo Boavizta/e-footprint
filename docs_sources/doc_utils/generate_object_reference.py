@@ -15,8 +15,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.doc_topic_registry import DOC_TOPICS
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, usage_journey, network, streaming_step, autoscaling_server, storage,
-    serverless_server, on_premise_gpu_server, video_streaming, genai_model,
-    video_streaming_job, genai_model_job, manually_written_job, custom_gpu_job, edge_computer,
+    serverless_server, on_premise_gpu_server, video_streaming, genai_model, genai_video_model,
+    video_streaming_job, genai_model_job, genai_video_model_job, manually_written_job, custom_gpu_job, edge_computer,
     edge_usage_pattern, edge_function, edge_usage_journey, edge_storage, edge_process, edge_appliance, edge_workload,
     cpu_component, ram_component, edge_device, ram_need, cpu_need, storage_need, edge_device_need,
     recurrent_server_need, edge_device_group, workload_component)
@@ -249,7 +249,8 @@ def _get_mod_objs_to_document():
     return (
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
-            video_streaming, genai_model, genai_model.server, video_streaming_job, genai_model_job,
+            video_streaming, genai_model, genai_model.server, genai_video_model, genai_video_model.server,
+            video_streaming_job, genai_model_job, genai_video_model_job,
             storage, edge_usage_pattern, edge_function, edge_usage_journey, edge_computer, edge_storage, edge_process,
             recurrent_server_need, edge_process.storage_need, edge_process.compute_need, edge_process.ram_need,
             edge_appliance, edge_workload, edge_workload.workload_need, cpu_component, ram_component, edge_device,

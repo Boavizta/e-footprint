@@ -26,12 +26,12 @@ from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 class TestEcoLogitsGenAIExternalAPI(TestCase):
     def setUp(self):
+        self.start_date = datetime(2026, 1, 1)
         self.provider = SourceObject("mistralai")
         self.model_name = SourceObject("open-mistral-7b")
         self.external_api = EcoLogitsGenAIExternalAPI(
             name="Test EcoLogits API", provider=self.provider, model_name=self.model_name)
         self.external_api.server.trigger_modeling_updates = False
-        self.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
 
     def test_initialization_sets_provider_and_model_name(self):
         """Test that initialization correctly sets provider and model_name."""
@@ -297,8 +297,8 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
     def test_calculated_attributes(self):
         calculated_attributes = [
             "data_transferred", "impacts", "gpu_energy", "generation_latency", "model_required_memory",
-            "gpu_required_count", "server_energy", "request_energy", "request_it_energy",
-            "request_usage_gwp", "server_gpu_embodied_gwp",
+            "gpu_required_count", "server_energy", "request_energy", "request_it_energy", "request_usage_gwp",
+            "server_gpu_embodied_gwp",
             "request_embodied_gwp", "request_duration",
             "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
             "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",

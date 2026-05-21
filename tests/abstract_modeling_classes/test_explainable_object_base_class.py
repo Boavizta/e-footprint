@@ -498,3 +498,17 @@ Label L + Label R
         _apply_json_metadata(loaded, json_dict, {})
         self.assertIsNone(loaded.confidence)
         self.assertIsNone(loaded.comment)
+
+    def test_bool_value_round_trips_as_bool_not_string(self):
+        # Bool values reach the base-class to_json / from_json_dict branch (no dedicated subclass).
+        # The reconstructed value must remain typed bool — round-tripping as the string "True"
+        # would silently break truth-checks downstream (e.g. EcoLogits with_audio).
+        for original in (True, False):
+            eo = ExplainableObject(value=original, label="with_audio")
+            json_dict = eo.to_json()
+            self.assertEqual(original, json_dict["value"])
+            self.assertIsInstance(json_dict["value"], bool)
+
+            loaded = ExplainableObject.from_json_dict(json_dict)
+            self.assertEqual(original, loaded.value)
+            self.assertIsInstance(loaded.value, bool)

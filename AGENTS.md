@@ -1,5 +1,7 @@
 # AGENTS — e-footprint
 
+> **Working on `ecologits-video`?** Read [`PRIVATE_INTEGRATION.md`](PRIVATE_INTEGRATION.md) first — this branch has a private remote, a git-pinned `ecologits` dep, and will be reverted post-Vivatech 2026.
+
 This file orients agents and contributors. It is intentionally short. Substance lives under `specs/`.
 
 ## Read this first
