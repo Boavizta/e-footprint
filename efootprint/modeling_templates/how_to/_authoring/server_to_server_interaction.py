@@ -5,10 +5,8 @@ Mirrors the Python sketch in ``server_to_server_interaction.md``: a web
 {class:UsageJourneyStep} listing both jobs to encode the inter-server fan-out.
 """
 from datetime import datetime
-from pathlib import Path
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.builders.time_builders import create_hourly_usage_from_frequency
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
@@ -71,6 +69,5 @@ def build_system() -> System:
 
 
 if __name__ == "__main__":
-    target = Path(__file__).resolve().parents[1] / "server_to_server_interaction.json"
-    system_to_json(build_system(), save_calculated_attributes=False, output_filepath=str(target))
-    print(f"Wrote {target}")
+    from efootprint.modeling_templates.how_to._authoring import _write_template
+    _write_template("server_to_server_interaction", build_system)

@@ -30,8 +30,4 @@ def load_template_system(template_id: str):
     tpl = get_template(template_id)
     with open(tpl.json_path) as f:
         class_obj_dict, _, _ = json_to_system(json.load(f))
-    systems = list(class_obj_dict.get("System", {}).values())
-    if len(systems) != 1:
-        raise ValueError(
-            f"Expected exactly one System in template {template_id!r}, got {len(systems)}")
-    return systems[0]
+    return next(iter(class_obj_dict["System"].values()))
