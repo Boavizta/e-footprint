@@ -10,16 +10,7 @@ topic.
 
 DOC_TOPICS: dict[str, str] = {
     "database_modeling": "database_modeling.md",
-    "development_process": "development_process.md",
-    "ecodesign_strategies": "ecodesign_strategies.md",
-    "efootprint_scope": "efootprint_scope.md",
-    "explanation_overview": "explanation_overview.md",
-    "get_started": "get_started.md",
-    "hardware_edge_index": "hardware_edge_index.md",
-    "machine_learning_workflow": "machine_learning_workflow.md",
     "methodology": "methodology.md",
-    "object_reference": "object_reference.md",
-    "only_CO2": "only_CO2.md",
     "server_to_server_interaction": "server_to_server_interaction.md",
     "usage_edge_index": "usage_edge_index.md",
     "web_vs_edge": "web_vs_edge.md",

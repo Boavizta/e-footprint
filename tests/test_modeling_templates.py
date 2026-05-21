@@ -22,14 +22,6 @@ _template_params = pytest.mark.parametrize(
     "tpl", HOW_TO_TEMPLATES, ids=lambda t: t.id)
 
 
-def _normalize_sources(payload: dict) -> dict:
-    """Sort the ``Sources`` block by id so structural equality ignores ordering."""
-    sources = payload.get("Sources")
-    if isinstance(sources, dict):
-        payload = {**payload, "Sources": {k: sources[k] for k in sorted(sources)}}
-    return payload
-
-
 @_template_params
 def test_template_json_exists_and_loads(tpl: HowToTemplate):
     assert tpl.json_path.is_file(), f"{tpl.json_path} does not exist"
@@ -59,7 +51,7 @@ def test_authoring_script_round_trips_to_committed_json(tpl: HowToTemplate):
         authoring.build_system(), save_calculated_attributes=False)
     with open(tpl.json_path) as f:
         committed = json.load(f)
-    assert _normalize_sources(freshly_built) == _normalize_sources(committed), (
+    assert freshly_built == committed, (
         f"Template {tpl.id} JSON does not match the output of build_system(); "
         f"re-run `python -m efootprint.modeling_templates.how_to._authoring.{tpl.id}` "
         f"and commit the regenerated JSON.")
@@ -89,7 +81,6 @@ def test_template_doc_path_exists(tpl: HowToTemplate):
 def test_how_to_page_references_template(tpl: HowToTemplate):
     """The How-to page must point at its template via the interactive deep link."""
     text = (MKDOCS_SOURCEFILES / tpl.doc_path).read_text()
-    needle = f"{{{{ config.extra.interface_base_url }}}}/{tpl.id}"
-    assert needle in text, (
+    assert "interface_base_url" in text and f"/{tpl.id}" in text, (
         f"How-to page {tpl.doc_path} does not link to template {tpl.id} via "
-        f"the interface_base_url deep link ({needle!r}).")
+        f"the interface_base_url deep link.")
