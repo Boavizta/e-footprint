@@ -242,12 +242,11 @@ def write_object_reference_file(mod_obj):
     return filename
 
 
-def generate_object_reference(automatically_update_yaml=False):
-    global _PLACEHOLDER_HANDLERS
+def _get_mod_objs_to_document():
     country = usage_pattern.country
     device = usage_pattern.devices[0]
 
-    mod_objs_to_document = (
+    return (
             system, usage_pattern, usage_journey, country, device, network, streaming_step,
             manually_written_job, custom_gpu_job, autoscaling_server, serverless_server, on_premise_gpu_server,
             video_streaming, genai_model, genai_model.server, video_streaming_job, genai_model_job,
@@ -258,8 +257,19 @@ def generate_object_reference(automatically_update_yaml=False):
             edge_device_need, edge_computer.ram_component, edge_computer.cpu_component,
             edge_appliance.appliance_component)
 
-    documented_classes = {return_class_str(mod_obj) for mod_obj in mod_objs_to_document}
-    _PLACEHOLDER_HANDLERS = _build_placeholder_handlers(documented_classes)
+
+def build_doc_placeholder_handlers() -> dict:
+    """Build the placeholder handler dict used to resolve ``{class:}``/``{param:}``/
+    ``{calc:}``/``{doc:}`` tokens in mkdocs sources — both auto-generated object
+    reference pages and hand-written explanation pages."""
+    documented_classes = {return_class_str(mod_obj) for mod_obj in _get_mod_objs_to_document()}
+    return _build_placeholder_handlers(documented_classes)
+
+
+def generate_object_reference(automatically_update_yaml=False):
+    global _PLACEHOLDER_HANDLERS
+    mod_objs_to_document = _get_mod_objs_to_document()
+    _PLACEHOLDER_HANDLERS = build_doc_placeholder_handlers()
 
     nav_items = []
     for mod_obj in mod_objs_to_document:

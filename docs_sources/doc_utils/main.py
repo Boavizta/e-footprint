@@ -3,8 +3,10 @@ import shutil
 
 from docs_sources.doc_utils.format_tutorial_md import efootprint_tutorial_to_md, \
     format_tutorial_and_save_to_mkdocs_sourcefiles
-from docs_sources.doc_utils.generate_object_reference import generate_object_reference
+from docs_sources.doc_utils.generate_object_reference import (
+    build_doc_placeholder_handlers, generate_object_reference)
 from efootprint.logger import logger
+from efootprint.utils.placeholder_resolver import resolve_placeholders
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 mkdocs_sourcefiles = os.path.join(file_path, "..", "mkdocs_sourcefiles")
@@ -41,5 +43,20 @@ changelog = changelog.replace("./", "https://github.com/Boavizta/e-footprint/tre
 with open(os.path.join(generated_mkdocs_sourcefiles, "Changelog.md"), "w") as file:
     file.write(changelog)
 
-# Copy the entire directory tree
-shutil.copytree(mkdocs_sourcefiles, generated_mkdocs_sourcefiles, dirs_exist_ok=True)
+# Copy the entire directory tree, resolving placeholders in hand-written .md files
+placeholder_handlers = build_doc_placeholder_handlers()
+for root, _, files in os.walk(mkdocs_sourcefiles):
+    rel_dir = os.path.relpath(root, mkdocs_sourcefiles)
+    dest_dir = os.path.join(generated_mkdocs_sourcefiles, rel_dir) if rel_dir != "." \
+        else generated_mkdocs_sourcefiles
+    os.makedirs(dest_dir, exist_ok=True)
+    for filename in files:
+        src_path = os.path.join(root, filename)
+        dest_path = os.path.join(dest_dir, filename)
+        if filename.endswith(".md"):
+            with open(src_path, "r") as src_file:
+                rendered = resolve_placeholders(src_file.read(), placeholder_handlers)
+            with open(dest_path, "w") as dest_file:
+                dest_file.write(rendered)
+        else:
+            shutil.copy2(src_path, dest_path)
