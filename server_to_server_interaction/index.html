@@ -9,7 +9,7 @@
       
       
       
-        <link rel="prev" href="../evolution_across_time/">
+        <link rel="prev" href="../database_modeling/">
       
       
         <link rel="next" href="../object_reference/">
@@ -62,6 +62,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#how-to-model-server-to-server-interaction" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -376,6 +381,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../ecodesign_strategies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Best practices, measurement, simulation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -432,14 +465,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../design_deep_dive/" class="md-nav__link">
+      <a href="../web_vs_edge/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    e-footprint design choices deep dive
+    Web vs edge modeling
   
 
     
@@ -569,34 +602,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../evolution_across_time/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    How to model the evolution of a system across time
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -606,6 +611,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to model server to server interaction
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -623,6 +648,58 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-e-footprint-models-inter-server-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How e-footprint models inter-server calls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worked-example-web-server-querying-a-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked example: web server querying a database
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeling-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modeling granularity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -1034,6 +1111,34 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../hardware_edge_index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edge hardware overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -1043,10 +1148,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_2" >
         
           
-          <label class="md-nav__link" for="__nav_5_2_5_1" id="__nav_5_2_5_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_2_5_2" id="__nav_5_2_5_2_label" tabindex="0">
             
   
   
@@ -1064,8 +1169,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_2_5_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_2_5_1">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_2_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_5_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1146,10 +1251,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_1_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_2_3" >
         
           
-          <label class="md-nav__link" for="__nav_5_2_5_1_3" id="__nav_5_2_5_1_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_2_5_2_3" id="__nav_5_2_5_2_3_label" tabindex="0">
             
   
   
@@ -1167,8 +1272,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_2_5_1_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_2_5_1_3">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_2_5_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_5_2_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1285,10 +1390,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_1_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_2_4" >
         
           
-          <label class="md-nav__link" for="__nav_5_2_5_1_4" id="__nav_5_2_5_1_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_2_5_2_4" id="__nav_5_2_5_2_4_label" tabindex="0">
             
   
   
@@ -1306,8 +1411,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_2_5_1_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_2_5_1_4">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_2_5_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_5_2_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1404,10 +1509,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2_5_3" >
         
           
-          <label class="md-nav__link" for="__nav_5_2_5_2" id="__nav_5_2_5_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_2_5_3" id="__nav_5_2_5_3_label" tabindex="0">
             
   
   
@@ -1425,8 +1530,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_2_5_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_2_5_2">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_2_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2_5_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2173,6 +2278,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../usage_edge_index/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edge usage overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../EdgeUsagePattern/" class="md-nav__link">
         
   
@@ -2265,10 +2398,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_5" >
         
           
-          <label class="md-nav__link" for="__nav_5_5_6_4" id="__nav_5_5_6_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_5_6_5" id="__nav_5_5_6_5_label" tabindex="0">
             
   
   
@@ -2286,8 +2419,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_5_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_5_6_4">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_5_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_6_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2340,10 +2473,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_4_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_5_2" >
         
           
-          <label class="md-nav__link" for="__nav_5_5_6_4_2" id="__nav_5_5_6_4_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_5_6_5_2" id="__nav_5_5_6_5_2_label" tabindex="0">
             
   
   
@@ -2361,8 +2494,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_5_6_4_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_5_6_4_2">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_5_6_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_6_5_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2451,10 +2584,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_4_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_5_3" >
         
           
-          <label class="md-nav__link" for="__nav_5_5_6_4_3" id="__nav_5_5_6_4_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_5_6_5_3" id="__nav_5_5_6_5_3_label" tabindex="0">
             
   
   
@@ -2472,8 +2605,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_5_6_4_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_5_6_4_3">
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_5_5_6_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_6_5_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2654,10 +2787,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_6_7" >
         
           
-          <label class="md-nav__link" for="__nav_5_5_6_6" id="__nav_5_5_6_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_5_6_7" id="__nav_5_5_6_7_label" tabindex="0">
             
   
   
@@ -2675,8 +2808,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_5_6_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_5_6_6">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_5_5_6_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_6_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2883,70 +3016,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../best_practices/" class="md-nav__link">
+      <a href="../development_process/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    What about best practices ?
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../measurement_tools/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    What about measurement tools ?
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../build_process/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    What about the build process of the service ?
+    Should I model the development process of my service ?
   
 
     
@@ -3066,6 +3143,49 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-e-footprint-models-inter-server-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How e-footprint models inter-server calls
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#worked-example-web-server-querying-a-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked example: web server querying a database
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeling-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modeling granularity
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -3082,9 +3202,70 @@
 
 
 
-  <h1>How to model server to server interaction</h1>
-
-<p>Work in progress</p>
+<h1 id="how-to-model-server-to-server-interaction">How to model server-to-server interaction</h1>
+<h2 id="how-e-footprint-models-inter-server-calls">How e-footprint models inter-server calls</h2>
+<p>There is no first-class primitive in e-footprint for "service A calls
+service B." The modeling technique is simpler and worth stating outright:</p>
+<p><strong>List every <a href="../Job/">Job</a> the user request triggers — direct or
+transitive — as a job of the upstream <a href="../UsageJourneyStep/">UsageJourneyStep</a>, each
+pointing at the <a href="../Server/">Server</a> that actually handles it.</strong></p>
+<p>The framework attributes each job's footprint to its server
+automatically. The fan-out is captured by repetition: if one user
+action triggers one frontend call and three database queries, the
+journey step lists four jobs.</p>
+<p>The same <a href="../Job/">Job</a> object can be referenced from several
+<a href="../UsageJourneyStep/">UsageJourneyStep</a> instances. When two user actions both hit the
+same backend query, sharing the job rather than duplicating it keeps
+per-call parameters in one place — easier to read, and robust to
+later changes in the underlying numbers.</p>
+<h2 id="worked-example-web-server-querying-a-database">Worked example: web server querying a database</h2>
+<p>Building on <a href="../database_modeling/">database_modeling</a>, suppose a user browses a product.
+The action triggers an API call to a web server, which in turn queries
+the PostgreSQL database from the previous page. The journey step lists
+both jobs:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Reusing db_server, storage, read_query from [database_modeling](database_modeling.md).</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">web_server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">&quot;Web application server&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">base_ram_consumption</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">GB_ram</span><span class="p">),</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">base_compute_consumption</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">cpu_core</span><span class="p">),</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">storage</span><span class="o">=</span><span class="n">Storage</span><span class="p">(</span><span class="s2">&quot;Web app local storage&quot;</span><span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">serve_product_page</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="s2">&quot;Serve product page&quot;</span><span class="p">,</span> <span class="n">server</span><span class="o">=</span><span class="n">web_server</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    <span class="n">request_duration</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">50</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">ms</span><span class="p">),</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">compute_needed</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mf">0.3</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">cpu_core</span><span class="p">),</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">ram_needed</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">MB_ram</span><span class="p">),</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">data_transferred</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">30</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kB</span><span class="p">),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">data_stored</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">0</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">kB</span><span class="p">),</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="p">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="n">browse_product</span> <span class="o">=</span> <span class="n">UsageJourneyStep</span><span class="p">(</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="s2">&quot;Browse a product&quot;</span><span class="p">,</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    <span class="n">user_time_spent</span><span class="o">=</span><span class="n">SourceValue</span><span class="p">(</span><span class="mi">15</span> <span class="o">*</span> <span class="n">u</span><span class="o">.</span><span class="n">s</span><span class="p">),</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="n">jobs</span><span class="o">=</span><span class="p">[</span><span class="n">serve_product_page</span><span class="p">,</span> <span class="n">read_query</span><span class="p">],</span>  <span class="c1"># two servers involved</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>The user's device only sees <code>serve_product_page</code> directly;
+<code>read_query</code> is downstream. From e-footprint's point of view that
+distinction does not matter — both are listed on the step, each is
+processed on its own server.</p>
+<p>If a single product page triggered three database queries (catalog
+read, pricing read, inventory check), the step's <code>jobs</code> list would
+contain <code>serve_product_page</code> plus three database jobs.</p>
+<h2 id="modeling-granularity">Modeling granularity</h2>
+<p>The example above lists one <a href="../Job/">Job</a> per downstream call, but that
+is a modeling choice, not a requirement. Aggregating several small
+downstream calls into one composite job is fine when their individual
+contributions do not change the order of magnitude of the result;
+conversely, splitting a single call into several jobs is worth doing
+only if the split changes the result meaningfully. e-footprint's
+methodology is iterative (<a href="../methodology/">methodology</a>) — start coarse, then
+refine the parts that turn out to dominate.</p>
+<blockquote>
+<p>Load this scenario in the e-footprint interface:
+<a href="https://e-footprint.boavizta.org/server_to_server_interaction">Server-to-server interaction</a></p>
+</blockquote>
 
 
 

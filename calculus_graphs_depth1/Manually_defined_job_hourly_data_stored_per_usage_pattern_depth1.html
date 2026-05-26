@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_224b45 {
+             #mynetwork_ec80b3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_224b45" class="card-body"></div>
+            <div id="mynetwork_ec80b3" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_224b45');
+                  var container = document.getElementById('mynetwork_ec80b3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00389, 0.00111, 0.00167, 0.000556, 0.00278, 0.00389, 0.00333,\n0.00222, 0.00444, 0.00278],\nlast 10 vals [0.00333, 0.00167, 0.00167, 0.00222, 0.000556, 0.00278, 0.00111,\n0.00333, 0.00167, 0.00278] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [1400, 400, 600, 200, 1000, 1400, 1200, 800, 1600, 1000],\nlast 10 vals [1200, 600, 600, 800, 200, 1000, 400, 1200, 600, 1000]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [14, 4, 6, 2, 10, 14, 12, 8, 16, 10],\nlast 10 vals [12, 6, 6, 8, 2, 10, 4, 12, 6, 10] hourly occurrences average 1 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00389, 0.00111, 0.00167, 0.000556, 0.00278, 0.00389, 0.00333,\n0.00222, 0.00444, 0.00278],\nlast 10 vals [0.00333, 0.00167, 0.00167, 0.00222, 0.000556, 0.00278, 0.00111,\n0.00333, 0.00167, 0.00278]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 100 kB stored", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00444, 0.00333, 0.00333, 0.00111, 0.000556, 0.000556,\n0.005, 0.00444, 0.005],\nlast 10 vals [0.00278, 0.005, 0.00278, 0.00333, 0.00333, 0.000556, 0.000556,\n0.005, 0.00444, 0.00278] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [600, 1600, 1200, 1200, 400, 200, 200, 1800, 1600, 1800],\nlast 10 vals [1000, 1800, 1000, 1200, 1200, 200, 200, 1800, 1600, 1000]", "x": 0.0, "y": 750}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Request duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [6, 16, 12, 12, 4, 2, 2, 18, 16, 18],\nlast 10 vals [10, 18, 10, 12, 12, 2, 2, 18, 16, 10] hourly occurrences average 1\ns\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00444, 0.00333, 0.00333, 0.00111, 0.000556, 0.000556,\n0.005, 0.00444, 0.005],\nlast 10 vals [0.00278, 0.005, 0.00278, 0.00333, 0.00333, 0.000556, 0.000556,\n0.005, 0.00444, 0.00278]", "x": -150.0, "y": 600}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 100 kB stored", "x": 0.0, "y": 600}, {"color": "darkred", "id": "Request duration", "label": "Request duration", "shape": "dot", "size": 15, "title": "Request duration = 1 s", "x": 112.5, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Data stored by request", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Request duration", "to": "Hourly data stored in usage pattern"}]);
 
                   nodeColors = {};
