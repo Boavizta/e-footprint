@@ -21,6 +21,7 @@ You are reviewing the diff of the last commit. You are a critic, not a fixer. Yo
    - **Dead defensive code** — code guarding hypothetical cases not grounded in real data or an enforced invariant.
    - **Missed invariant** — a constraint that is assumed downstream but not asserted at the earliest possible layer.
    - **Test quality** — piecemeal property assertions instead of full expected-state assertions; tests covering scenarios that can't actually happen.
+   - **Integration coverage of new public-API consumption** — if the diff calls a public method/property/dict-attr on a `ModelingObject` subclass that no existing test path was reaching, flag whether the relevant integration fixture has an assertion that touches the new call site. `run_test_materialize_all_cached_properties` already covers new `cached_property` definitions; this rule catches the rest (plain `@property`, methods, dict lookups, new behavioural shapes on existing APIs).
    - **Convention violation** — anything contradicting `constitution.md` or `conventions.md`.
    - **Code quality / boy scout** — anything in touched or adjacent code worth improving regardless of the task: poor naming, un-Pythonic patterns, structural awkwardness, circumvolutions forced by the existing code shape that a broader refactor could resolve. Apply the boy scout rule: if the task revealed a smell, surface it even if the task itself is clean.
 

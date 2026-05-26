@@ -209,6 +209,8 @@ For impact repartition tests, prefer exercising real share logic instead of only
 
 `IntegrationTestBaseClass.run_test_materialize_all_cached_properties` runs on every fixture (code + `_from_json`) and forces every `functools.cached_property` on every linked object to compute. A successfully-built system should always materialize cleanly. When adding a new `cached_property` to a modeling class, this test will cover it automatically — no per-feature assertion needed.
 
+For everything else — plain `@property`, methods, dict-attr lookups, new behavioural shapes on existing APIs — the materialization walk does not reach the new call site. When a feature consumes such a public API for the first time, add one assertion in the relevant integration fixture (`run_test_*` method in the appropriate base class) that touches it. One line is enough; the goal is presence in a run, not deep validation. The `task-review` skill flags this as a checklist item.
+
 ## When refactors change test shape
 
 When a class is refactored to compute per-source dicts first and totals as sums, simplify tests to match: one focused test for per-source computation, one focused test for summation/property reuse. Don't keep older overlapping end-to-end tests.
