@@ -494,3 +494,28 @@ class IntegrationTestBaseClass(TestCase):
     def run_test_semantic_units_in_calculated_attributes(self):
         """Test that all calculated attributes use correct semantic units (occurrence, concurrent, byte_ram)."""
         self.check_semantic_units_in_calculated_attributes(self.system)
+
+    def run_test_materialize_all_cached_properties(self):
+        """Force every cached_property on every linked modeling object to compute.
+
+        Defends against bugs that only surface through lazy attribution paths (e.g. Sankey)
+        and never run during plain total_footprint computation.
+        """
+        import functools
+
+        failures = []
+        for obj in [self.system] + self.system.all_linked_objects:
+            seen = set()
+            for cls in type(obj).__mro__:
+                for name, attr in vars(cls).items():
+                    if name in seen or not isinstance(attr, functools.cached_property):
+                        continue
+                    seen.add(name)
+                    try:
+                        getattr(obj, name)
+                    except Exception as e:
+                        failures.append(
+                            f"{type(obj).__name__}({getattr(obj, 'name', '?')!r}).{name} "
+                            f"raised {type(e).__name__}: {e}")
+        if failures:
+            self.fail("Cached property materialization failures:\n" + "\n".join(failures))
