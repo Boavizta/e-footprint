@@ -19,13 +19,14 @@ class EmptyExplainableObject(ExplainableObject):
         return cls(label=d["label"])
 
     def __init__(self, label="no value", left_parent: ExplainableObject = None, right_parent: ExplainableObject = None,
-                 operator: str = None):
+                 operator: str = None, source=None, confidence=None, comment=None):
         from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
         from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
         self._ExplainableQuantity = ExplainableQuantity
         self._ExplainableHourlyQuantities = ExplainableHourlyQuantities
         super().__init__(
-            value=None, label=label, left_parent=left_parent, right_parent=right_parent, operator=operator)
+            value=None, label=label, left_parent=left_parent, right_parent=right_parent, operator=operator,
+            source=source, confidence=confidence, comment=comment)
         self.value = self
 
     def to(self, unit):
@@ -131,7 +132,8 @@ class EmptyExplainableObject(ExplainableObject):
 
     def __deepcopy__(self, memo):
         return EmptyExplainableObject(label=self.label, left_parent=self.left_parent, right_parent=self.right_parent,
-                                      operator=self.operator)
+                                      operator=self.operator, source=copy(self.source), confidence=self.confidence,
+                                      comment=self.comment)
 
     def np_compared_with(self, compared_object, comparator):
         if isinstance(compared_object, EmptyExplainableObject):

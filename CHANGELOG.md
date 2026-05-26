@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [21.1.2] - 2026-05-26
+
+### Fixed
+- Accept source/confidence/comment in EmptyExplainableObject. Forward these kwargs to the base ExplainableObject constructor and preserve them in __deepcopy__. Ecologits builder passes source=... when constructing empty TPS/TTFT values, which previously raised TypeError.
+
 ## [21.1.1] - 2026-05-26
 
 ### Fixed
