@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## [V21.1.0] - 2026-05-26
+## [21.1.1] - 2026-05-26
+
+### Fixed
+
+- EdgeUsagePattern attribution KeyError when journey has no jobs: country_dependent_usage_footprint dereferenced network.energy_footprint_per_usage_pattern[self] unconditionally, which KeyErrors when the EdgeUsageJourney has no recurrent server needs (and therefore no jobs registering the pattern in the network dict). Switch to .get(..., EmptyExplainableObject()) and add a comment explaining the no-jobs case. The edge_device side is the inverse: it is always populated for any pattern in the journey, so the safe .get() there was hiding intent — switched to [self] to fail loud on real desyncs.
+
+## [21.1.0] - 2026-05-26
 
 ### Added
 - `efootprint.modeling_templates` package shipping three how-to reference systems

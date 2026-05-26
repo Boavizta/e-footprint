@@ -203,6 +203,12 @@ In some shell environments, matplotlib tries to use the macOS GUI backend and ab
 
 For impact repartition tests, prefer exercising real share logic instead of only trivial one-need cases. If the code is supposed to split impact across sibling needs, include at least one test where a component has several needs so the proportional split is actually covered.
 
+## Defending against lazy-attribution bugs
+
+`total_footprint` only walks the impact-source side of the graph; the attribution chain (`attributed_energy_footprint`, `attributed_*_per_source`, Sankey-facing paths) lives in `cached_property` methods that fire only when something asks for them. Bugs in those paths stay invisible until a UI feature reaches in.
+
+`IntegrationTestBaseClass.run_test_materialize_all_cached_properties` runs on every fixture (code + `_from_json`) and forces every `functools.cached_property` on every linked object to compute. A successfully-built system should always materialize cleanly. When adding a new `cached_property` to a modeling class, this test will cover it automatically — no per-feature assertion needed.
+
 ## When refactors change test shape
 
 When a class is refactored to compute per-source dicts first and totals as sums, simplify tests to match: one focused test for per-source computation, one focused test for summation/property reuse. Don't keep older overlapping end-to-end tests.
