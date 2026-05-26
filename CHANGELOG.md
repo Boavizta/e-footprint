@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
-## Unreleased
+## [V21.1.0] - 2026-05-26
 
 ### Added
 - `efootprint.modeling_templates` package shipping three how-to reference systems
@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
   the dangling links to `design_deep_dive.md` from `explanation_overview.md`,
   `get_started.md`, and `why_efootprint.md`.
 
-## 21.0.1
+## [21.0.1] - 2026-05-19
 
 ### Fixed
 - Correct shared `UsageJourney` / `EdgeUsageJourney` usage attribution across countries by keeping
