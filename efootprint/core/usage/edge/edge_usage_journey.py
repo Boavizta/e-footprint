@@ -130,7 +130,14 @@ class EdgeUsageJourney(ModelingObject):
         neutral_total = (
             self.attributed_energy_footprint - country_dependent_total
         ).to(u.kg).set_label("Neutral edge usage footprint")
-        if np.any(np.asarray(getattr(neutral_total, "magnitude", 0)) < 0):
+        # attributed_energy_footprint and country_dependent_total are computed along
+        # structurally different paths; when they should be equal they can disagree by ULP-scale
+        # float noise. Raise only on a real shortfall, not on that noise.
+        neutral_mag = np.asarray(getattr(neutral_total, "magnitude", 0))
+        attributed_mag = np.asarray(getattr(self.attributed_energy_footprint, "magnitude", 0))
+        peak = float(np.abs(attributed_mag).max()) if attributed_mag.size else 0.0
+        tolerance = max(1e-6, 1e-6 * peak)
+        if np.any(neutral_mag < -tolerance):
             raise ValueError(
                 f"{self.name}: attributed_energy_footprint must be >= the sum of patterns' "
                 f"country_dependent_usage_footprint at every hour, but the neutral remainder is negative.")
