@@ -1,6 +1,6 @@
 ---
 name: task-implement
-description: Use to execute a single task from an approved tasks.md. Fourth stage of the four-stage spec-driven workflow. Reads spec.md, plan.md, tasks.md, then implements one task at a time, respecting constitution gates.
+description: Use to execute a single task from an approved tasks.md. Fourth stage of the four-stage spec-driven workflow. Reads spec.html, plan.html, tasks.md, then implements one task at a time, respecting constitution gates.
 ---
 
 # task-implement

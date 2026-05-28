@@ -1,6 +1,6 @@
 ---
 name: spec-tasks
-description: Use after the user approves a plan.md to break it into ordered, independently-shippable tasks. Third stage of the four-stage spec-driven workflow. Output is tasks.md; still no code execution.
+description: Use after the user approves a plan.html to break it into ordered, independently-shippable tasks. Third stage of the four-stage spec-driven workflow. Output is tasks.md; still no code execution.
 ---
 
 # spec-tasks
@@ -11,7 +11,7 @@ You are about to decompose an approved plan into ordered tasks. Do NOT write cod
 
 A task in this skill is a **review-sized unit of change** — one commit / one PR. That is not the same as an atomic unit of work, and conflating the two leads to over-splitting (5+ narrowly-scoped tasks where 2–3 fit the change better). Decompose in two passes:
 
-1. **Confirm which feature.** Both `spec.md` and `plan.md` must exist and be approved.
+1. **Confirm which feature.** Both `spec.html` and `plan.html` must exist and be approved.
 
 2. **Read the plan and the spec.** Tasks should map back to plan steps, but a single task may aggregate several plan steps and a plan step may span several tasks.
 
@@ -39,7 +39,7 @@ A task in this skill is a **review-sized unit of change** — one commit / one P
 # <Feature title> — Tasks
 
 **Status:** Tasks — under review.
-**Spec:** [`spec.md`](spec.md). **Plan:** [`plan.md`](plan.md).
+**Spec:** [`spec.html`](spec.html). **Plan:** [`plan.html`](plan.html).
 
 ## Task 1 — <short title>
 

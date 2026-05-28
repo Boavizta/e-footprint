@@ -9,7 +9,7 @@ You are reviewing the diff of the last commit. You are a critic, not a fixer. Yo
 
 ## Process
 
-1. **Identify the task.** The user will tell you the feature name and task. Read `specs/features/<feature-name>/spec.md`, `plan.md`, and `tasks.md` to understand the intent of the task.
+1. **Identify the task.** The user will tell you the feature name and task. Read `specs/features/<feature-name>/spec.html`, `plan.html`, and `tasks.md` to understand the intent of the task.
 
 2. **Get the diff.** Run `git show HEAD` to obtain the full diff of the last commit.
 

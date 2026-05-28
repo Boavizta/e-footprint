@@ -18,9 +18,11 @@ Exempt:
 
 ## The four stages
 
+**Document formats.** `spec` and `plan` are authored as **self-contained HTML** (`spec.html`, `plan.html`) — they are write-once review documents where mockups, diagrams, tables, and collapsible sections aid review; the `spec-specify` / `spec-plan` skills carry the template (classless CSS inlined, no frameworks/CDNs). `tasks` stays **Markdown** (`tasks.md`): it is a living checklist edited as tasks are marked done, where clean one-line diffs matter more than rich rendering. All three are committed during the feature's life and deleted at archive (stage 5); durable insight is promoted to the live `.md` specs.
+
 ### 1. Specify
 
-**Output:** `specs/features/<feature-name>/spec.md`.
+**Output:** `specs/features/<feature-name>/spec.html`.
 
 A spec answers:
 
@@ -37,7 +39,7 @@ Skill: `spec-specify` walks you through a template.
 
 ### 2. Plan
 
-**Output:** `specs/features/<feature-name>/plan.md`.
+**Output:** `specs/features/<feature-name>/plan.html`.
 
 A plan answers:
 
