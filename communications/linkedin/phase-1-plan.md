@@ -4,7 +4,7 @@
 
 ## Pacing model
 
-- **Pre-condition.** Articles #1 (`ecodesign-strategies.md`) and #2 (`usage-and-functionality-method.md`) drafted in full prose before any post in this series goes out. Articles drafted ≠ articles published; articles publish on their LinkedIn launch dates below, but the prose exists in advance.
+- **Pre-condition.** Articles #1 (`ecodesign-strategies-article.md`) and #2 (`usage-and-functionality-method.md`) drafted in full prose before any post in this series goes out. Articles drafted ≠ articles published; articles publish on their LinkedIn launch dates below, but the prose exists in advance.
 - **Weekly cadence.** Starts when articles are ready. Runs through early July (~6 posts).
 - **July (slow).** 2 posts.
 - **August.** Silent.
@@ -50,7 +50,7 @@ Dates below assume series start = **Mon 2026-06-01**. Shift accordingly if artic
 
 ## Dependencies before LinkedIn series can start
 
-- [ ] Article #1 fully drafted (`ecodesign-strategies.md` full prose).
+- [ ] Article #1 fully drafted (`ecodesign-strategies-article.md` full prose).
 - [ ] Article #2 fully drafted (`usage-and-functionality-method.md` full prose).
 - [ ] Posts #1–#7 fully drafted as LinkedIn-ready prose.
 - [ ] **Step 6 (introductory templates + template picker) shipped in the interface** — required for the template-reference CTAs in W2–W5. **Fallback** if not shipped in time: replace template CTAs with mkdocs reading-recommendation CTAs (link to `methodology.md`, `why_efootprint.md`), accepting a less-concrete CTA in exchange for keeping the cadence.
