@@ -15,7 +15,7 @@
 Of all the things a team could do to cut a service's impact, only some move the needle — and on every service it's a *different* some. Answering *which, and in what order* takes three complementary strategies:
 
 - **Best practices** tell you *what's possible* — the catalogue of moves (compress images, efficient regions, longer device life…).
-- **Measurement** tells you *what is* — the footprint of the system as it runs today.
+- **Measurement** tells you *what is* — the footprint of the measured parts of the system, as it runs today.
 - **Modeling** tells you *what to prioritize* — it represents the whole service from how it's used, and lets you **simulate** the impact of a change *before* you make it.
 
 The three feed each other and none replaces the others. **e-footprint occupies the third — modeling — the least-developed of the three for digital services, and the one whose what-if simulation turns the other two into decisions.**
@@ -28,8 +28,8 @@ Why the third leg can't be skipped: unlike performance, environmental impact sit
 
 The reusable distillation of the thesis — use these three, in these words, across all channels.
 
-1. **Prioritize, don't guilt-trip.**
-   e-footprint helps you decide *where to invest effort*, not produce a guilt-inducing carbon report. A 90% gain on a minor contributor avoids far less CO₂ than a modest gain on the dominant one — modeling makes that arbitrage visible *before* you spend the effort.
+1. **Beyond reporting, prioritize action.**
+   e-footprint's distinctive value is telling you *where to invest effort*. It can produce a carbon report, but its point is the next step — which action to take first: a 90% gain on a minor contributor avoids far less CO₂ than a modest gain on the dominant one, and modeling makes that arbitrage visible *before* you spend the effort.
 
 2. **Simulate before you act.**
    The environmental ROI of a product decision can be modeled before implementation, just like its business ROI. *"What if we add an AI step to this journey? Drop region X? Serve 10× the volume?"* — answered in advance. Few other tools offer this today.

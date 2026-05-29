@@ -30,9 +30,9 @@ Recipes for what's possible (compress images, lazy-load modules, efficient cloud
 
 Two limits:
 - **Variability defeats them.** Best practices shine when systems have low variability; digital services are highly variable, so best-practice lists risk pointing you at low-leverage actions on your specific service. *(cite `ecodesign_strategies.md#best-practices-the-catalogue-of-possible-moves`)*
-- **They induce guilt without leverage.** A long list of "things you should do" with no information about which matter for your service lands as "you're not doing enough" — without telling you where to start.
+- **They don't tell you what to prioritize.** A long list of "things you should do" carries no information about which actions matter for your service — so it can't tell you where to start.
 
-→ Differentiator: **"Prioritize, don't guilt-trip."**
+→ Differentiator: **"Beyond reporting, prioritize action."**
 
 ### §3 — Measurement: the snapshot, not the projection
 

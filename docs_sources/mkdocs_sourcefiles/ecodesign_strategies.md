@@ -8,7 +8,7 @@ Most ecodesign content rests on one of three strategies: **best practices**, **m
 
 Best practices are accumulated recipes for what works: compress images, lazy-load modules, pick efficient cloud regions, avoid dark patterns etc. They answer *what could I do?*.
 
-Their limit is variability. Digital services differ enormously in shape, scale, and usage, and what dominates one service's footprint is negligible in another's. Applied without knowing which apply to *your* service, a list of best practices points you at low-leverage actions as often as high-leverage ones, and lands as a guilt-inducing checklist — many things you should be doing, no information about where to start.
+Their limit is variability. Digital services differ enormously in shape, scale, and usage, and what dominates one service's footprint is negligible in another's. Applied without knowing which apply to *your* service, a list of best practices points you at low-leverage actions as often as high-leverage ones, and reads as an undifferentiated checklist — many things you could be doing, no information about where to start.
 
 Best practices remain indispensable as a **source of candidate actions**. The question they cannot answer alone is *which of these actions should I do first on this service?*.
 
