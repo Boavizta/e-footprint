@@ -1,5 +1,5 @@
 target_date,type,title,channel,owner,subject_repo,draft_path,status,notes
-2026-05,deck,Messaging one-pager,shared,shared,efootprint,communications/messaging-one-pager.md,idea,Locks the shared narrative; cited by all other pieces
+2026-05,deck,Messaging one-pager,shared,shared,efootprint,communications/messaging-one-pager.md,draft,Locks the shared narrative; cited by all other pieces. Drafted; pending review by the three actors.
 2026-05,deck,Shared pitch deck (10 slides),shared,shared,efootprint,communications/pitch-deck-outline.md,idea,Outline in repo; slides built externally
 2026-06,landing-page,Redesigned e-footprint landing page,mkdocs,shared,efootprint,docs_sources/index.md,idea,Replaces dry current pitch
 2026-06,article,"Best practices, measurement, simulation: three strategies for ecodesign",boavizta-blog,vincent,efootprint,communications/articles/ecodesign-strategies.md,idea,Substance-heavy; LinkedIn relay by Vincent. Skeleton drafted; full prose after tutorial-and-documentation specs ship.

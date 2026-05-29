@@ -6,7 +6,10 @@ Working assets for e-footprint's external communication. **Not** part of the pub
 
 This folder is the brand-level home for e-footprint communications:
 
-- **Strategy and foundations** — `strategy.md`, `messaging-one-pager.md`, `pitch-deck-outline.md`. Source of truth for all three actors (Boavizta, Publicis Sapient, Vincent).
+- **Strategy and foundations** — source of truth for all three actors (Boavizta, Publicis Sapient, Vincent):
+  - `strategy.md` — the *why* and the per-actor rules (audiences, narrative rationale, coexistence rules). The authoritative reference; on any conflict, it wins.
+  - `messaging-one-pager.md` — the shared narrative in one page (*what we say*: thesis, three differentiating messages, ready-to-use phrasings). All downstream pieces cite it rather than restate it.
+  - `pitch-deck-outline.md` — *(planned)* outline for the shared 10-slide deck.
 - **Editorial calendar** — `editorial-calendar.csv`. Single pipeline view across both repos.
 - **Tool/method content** — articles and LinkedIn posts whose subject is the tool, the method, or the underlying modeling concepts. Lives in `articles/` and `linkedin/posts/`.
 - **Conference tracker** — `conferences/submissions.md`. CFP targets and submission status.
