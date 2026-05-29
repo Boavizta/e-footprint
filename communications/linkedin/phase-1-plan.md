@@ -36,7 +36,7 @@ Dates below assume series start = **Mon 2026-06-01**. Shift accordingly if artic
 | # | Date | Type | Hook | Core | Coordination |
 |---|---|---|---|---|---|
 | 1 | Jun 15 | Original intro | *"Did you know there's an open-source modeling tool for ecodesigning digital services in our ecosystem? Meet e-footprint."* | Light introduction of e-footprint to Boavizta's broader audience; positions it among the open-source family alongside BoaviztAPI and EcoLogits. | Same week as Vincent's W3 (different angle, complementary) |
-| 2 | Jul 13 | Reshare + angle | *"Vincent has just published 'Best practices, measurement, simulation' on the Boavizta blog. Why this lands for our ecosystem: complementarity over competition."* | Reshare of Article #1 with a Boavizta frame: open-source ecosystem cooperating, not competing. | Reshares Vincent's W6 launch one week later |
+| 2 | Jul 13 | Reshare + angle | *"Vincent has just published 'Best practices, measurement, modeling' on the Boavizta blog. Why this lands for our ecosystem: complementarity over competition."* | Reshare of Article #1 with a Boavizta frame: open-source ecosystem cooperating, not competing. | Reshares Vincent's W6 launch one week later |
 | 3 | Sep 14 | Reshare + angle | *"Sankey diagrams for carbon: this is what open-source modeling looks like."* | Reshare of Vincent's Sep 14 Sankey post; ecosystem-level framing. | Same-day relay of Vincent's #10 |
 
 ## Pacing rationale

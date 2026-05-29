@@ -1,4 +1,4 @@
-# Best practices, measurement, simulation: three strategies for ecodesign
+# Best practices, measurement, modeling: three strategies for ecodesign
 
 Ecodesigning a digital service is a decision problem: out of all the things a team could do to reduce a service's environmental impact, which ones move the needle? Answering that requires both *what's possible* — the catalogue of actions a team can take — and *what's likely to matter* — the relative impact of each action on the specific service at hand.
 

@@ -1,4 +1,4 @@
-# Best practices, measurement, simulation: three strategies for ecodesign and where each one stops
+# Best practices, measurement, modeling: three strategies for ecodesign and where each one stops
 
 > **Status:** skeleton draft. Full prose to be written after the tutorial-and-documentation specs ship; the SSOT vocabulary and updated mkdocs structure will inform the final wording. The umbrella mkdocs page `ecodesign_strategies.md` is already published and frames the three pillars at navigator depth; this article expands on it for the Boavizta channel and links into its anchors.
 
@@ -44,7 +44,7 @@ Two limits:
 
 → Differentiator: **"Simulate before you act."**
 
-### §4 — Simulation: the projection that lets you decide
+### §4 — Modeling: the projection that lets you decide
 
 What modeling adds: a system description in **usage journeys with steps** (web) or **functionalities** (edge), with volumes and geographies as first-class inputs.
 
