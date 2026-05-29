@@ -49,7 +49,7 @@ Five concentric circles, ordered by long-term priority.
 
 ## 3. Core narrative
 
-The thesis stays load-bearing across every channel: **"the environmental impact of digital services lies beyond the reach of intuition; only explicit modeling allows us to prioritize ecodesign efforts."**
+The thesis stays load-bearing across every channel: **ecodesign is not "what should I do?" but "what should I do first?" — and only explicit modeling answers the priority question, as the decisive leg alongside best practices and measurement.** The full argument — why an explicit model is necessary and what it must contain — is the canonical [*Why e-footprint?*](../docs_sources/mkdocs_sourcefiles/why_efootprint.md) explanation page; this section captures only the messaging derived from it.
 
 Three differentiating messages reused across all channels:
 
@@ -57,7 +57,7 @@ Three differentiating messages reused across all channels:
 - **"Simulate before you act."** The environmental ROI of a product decision can be modeled before implementation, just like business ROI. Few other tools currently offer that.
 - **"Usage and functionality at the center."** Unlike top-down carbon assessments and unlike pure unit-optimization narratives, e-footprint starts from **how the service is actually used** — by humans and by automated processes alike — in what volumes and in what geographies. Usage is described as **usage journeys with steps** (web) or **functionalities** (edge), not as raw request counts. The same primitive covers user-facing flows (browse catalog → add to cart → checkout) and technical flows with no direct user interaction (an ML training run, a scheduled sync). A PM or designer recognizes the user-facing usage journeys; together with the technical ones, they form the full system story. This is the **structural differentiator**: the constraint (volumes must be phrased as usage journeys or functionalities, not dumped as raw counts) is also the unlock — the same description supports **what-if simulation** (*"what if I add AI to this journey, simplify that one"*) and guards against the **scope-neglect trap** (a 90% unit optimization on a low-traffic service produces tiny absolute gains).
 
-A **one-page messaging document** derived from this section is the next foundation deliverable; all subsequent content cites it. Tracked in the editorial calendar.
+A **one-page messaging document** derived from this section — [`messaging-one-pager.md`](./messaging-one-pager.md) — distills these messages into ready-to-use phrasings; all subsequent content cites it. Tracked in the editorial calendar.
 
 ---
 

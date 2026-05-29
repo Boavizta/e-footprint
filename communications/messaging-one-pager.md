@@ -12,17 +12,11 @@
 
 > **Ecodesigning a digital service isn't "what should I do?" — it's "what should I do first?"**
 
-Of all the things a team could do to cut a service's impact, only some move the needle — and on every service it's a *different* some. Answering *which, and in what order* takes three complementary strategies:
-
-- **Best practices** tell you *what's possible* — the catalogue of moves (compress images, efficient regions, longer device life…).
-- **Measurement** tells you *what is* — the footprint of the measured parts of the system, as it runs today.
-- **Modeling** tells you *what to prioritize* — it represents the whole service from how it's used, and lets you **simulate** the impact of a change *before* you make it.
-
-The three feed each other and none replaces the others. **e-footprint occupies the third — modeling — the least-developed of the three for digital services, and the one whose what-if simulation turns the other two into decisions.**
-
-Why the third leg can't be skipped: unlike performance, environmental impact sits **outside the reach of our senses** — you can feel latency, you can't feel carbon. It is spread across user devices, network, servers, and storage, across fabrication and usage, and swings by orders of magnitude with usage volume and geography. The dominant contributor differs from one service to the next, and shifts within a single service as volumes, features, and architecture change. No intuition keeps up with that — only an explicit model, at the right order of magnitude, does.
+Three complementary strategies answer parts of that question — **best practices** (*what's possible*), **measurement** (*what is*), and **modeling** (*what to prioritize*) — and they feed each other rather than compete. e-footprint occupies the third: it models the whole service from how it's used and lets you **simulate** a change before you make it. That's the leg that turns the other two into decisions.
 
 > **One-liner:** *Best practices tell you what's possible. Measurement tells you what is. Only simulation tells you what to prioritize.*
+
+The full argument — why an explicit model is necessary, and what a model must contain — is the canonical [*Why e-footprint?*](../docs_sources/mkdocs_sourcefiles/why_efootprint.md) explanation page (published on the docs site). This one-pager distills it for communication; cite that page for substance.
 
 ## The three differentiating messages
 
