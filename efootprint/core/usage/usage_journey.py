@@ -68,11 +68,10 @@ class UsageJourney(ModelingObject):
 
     @property
     def jobs(self) -> List[Job]:
-        output_list = []
-        for uj_step in self.uj_steps:
-            output_list += uj_step.jobs
-
-        return output_list
+        # Distinct jobs across steps: a job listed several times in a step still
+        # appears once here. Per-step multiplicity is preserved at uj_step.jobs,
+        # which is where occurrence counting happens. Mirrors edge_usage_journey.
+        return list(dict.fromkeys(sum([uj_step.jobs for uj_step in self.uj_steps], start=[])))
 
     @property
     def usage_impact_repartition_weights(self) -> ExplainableObjectDict:

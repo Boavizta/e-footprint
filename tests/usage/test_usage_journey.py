@@ -76,6 +76,26 @@ class TestUsageJourney(TestCase):
         self.assertEqual(2, len(set(uj.jobs)))
         self.assertEqual({job1, job2}, set(uj.jobs))
 
+    def test_jobs_deduplicates_jobs_repeated_across_and_within_steps(self):
+        """A job referenced several times must appear once: downstream per-job
+        aggregations would otherwise double-count (and build a depth-N
+        explainable tree). Per-step multiplicity stays available on uj_step.jobs.
+        """
+        job1 = MagicMock()
+        job2 = MagicMock()
+
+        uj_step1 = create_mod_obj_mock(UsageJourneyStep, name="Step 1", id="uj_step1")
+        uj_step2 = create_mod_obj_mock(UsageJourneyStep, name="Step 2", id="uj_step2")
+        uj_step1.jobs = [job1, job1, job1]  # same job referenced three times in one step
+        uj_step2.jobs = [job1, job2]        # and again in another step
+        for uj_step in [uj_step1, uj_step2]:
+            uj_step.user_time_spent = SourceValue(5 * u.min)
+            uj_step.user_time_spent.set_modeling_obj_container(uj_step, "user_time_spent")
+
+        uj = UsageJourney("test user journey", uj_steps=[uj_step1, uj_step2])
+
+        self.assertEqual([job1, job2], uj.jobs)
+
     def test_update_duration_no_step(self):
         expected_duration = EmptyExplainableObject()
 
