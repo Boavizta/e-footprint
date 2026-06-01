@@ -1,8 +1,8 @@
 # Spec-driven workflow
 
-This file is **canonical in e-footprint**. The version in `e-footprint-interface/specs/workflow.md` is a mirror — keep them identical. A test in each repo asserts content equality.
+This file is **canonical in e-footprint**. The version in `e-footprint-interface/specs/workflow.md` is a mirror — keep them identical.
 
-When updating: edit this file, then run `scripts/sync_workflow.sh` (or copy manually).
+When updating: edit this file, then copy it over the interface mirror.
 
 ---
 
@@ -81,7 +81,7 @@ For each task in `tasks.md`:
 
 Each task ships independently. The feature is complete when all tasks are done.
 
-Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit.
+Skills: `task-implement` picks up a task and executes it. `task-review` reviews the resulting commit. Or run `feature-implement` to orchestrate the whole `tasks.md` end to end — it loops over tasks, spawning the implement and review sub-agents and pausing once per task for your decisions.
 
 ### 5. Archive
 
