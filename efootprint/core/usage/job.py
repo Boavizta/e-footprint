@@ -122,10 +122,11 @@ class JobBase(ModelingObject):
             job_occurrences = EmptyExplainableObject()
             delay_between_uj_start_and_job_evt = EmptyExplainableObject()
             for uj_step in usage_pattern.usage_journey.uj_steps:
-                for uj_step_job in uj_step.jobs:
-                    if uj_step_job == self:
-                        job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
-                            delay_between_uj_start_and_job_evt)
+                nb_of_occurrences_of_self_within_step = uj_step.jobs.count(self)
+                if nb_of_occurrences_of_self_within_step:
+                    job_occurrences += usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
+                        delay_between_uj_start_and_job_evt) * ExplainableQuantity(
+                        nb_of_occurrences_of_self_within_step * u.dimensionless, label="Executions per step")
 
                 delay_between_uj_start_and_job_evt += uj_step.user_time_spent
         else:  # usage_pattern is an EdgeUsagePattern

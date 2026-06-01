@@ -102,6 +102,24 @@ class TestJob(TestCase):
         self.assertEqual(hourly_uj_starts.value_as_float_list, job_occurrences.value_as_float_list)
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
 
+    def test_compute_hourly_job_occurrences_job_referenced_multiple_times_in_step(self):
+        uj1 = MagicMock()
+        uj_step11 = MagicMock()
+        uj1.uj_steps = [uj_step11]
+        uj_step11.jobs = [self.job, self.job, self.job]
+        uj_step11.user_time_spent = SourceValue(90 * u.min)
+        usage_pattern = create_mod_obj_mock(UsagePattern, name="usage pattern", usage_journey=uj1)
+        hourly_uj_starts = create_source_hourly_values_from_list([1, 2, 5, 7])
+        usage_pattern.utc_hourly_usage_journey_starts = hourly_uj_starts
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
+        self.job.update_dict_element_in_hourly_occurrences_per_usage_pattern(usage_pattern)
+        job_occurrences = self.job.hourly_occurrences_per_usage_pattern[usage_pattern]
+        self.assertEqual(hourly_uj_starts.start_date, job_occurrences.start_date)
+        self.assertEqual([3 * value for value in hourly_uj_starts.value_as_float_list],
+                         job_occurrences.value_as_float_list)
+        self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
+
     def test_compute_hourly_job_occurrences_uj_lasting_less_than_an_hour_before(self):
         uj1 = MagicMock()
         uj_step11 = MagicMock()
