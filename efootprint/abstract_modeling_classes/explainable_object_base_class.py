@@ -26,7 +26,7 @@ class Source:
         elif Source._use_name_as_id:
             self.id = css_escape(name)
         else:
-            self.id = str(uuid.uuid4())[:6]
+            self.id = str(uuid.uuid4())[:12]
 
     @classmethod
     def from_json_dict(cls, d):

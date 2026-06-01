@@ -663,7 +663,7 @@ def upgrade_version_20_to_21(system_dict, efootprint_classes_dict=None):
         elif key in sources_id_by_key:
             return sources_id_by_key[key]
         else:
-            source_id = str(uuid.uuid4())[:6]
+            source_id = str(uuid.uuid4())[:12]
         sources_id_by_key[key] = source_id
         sources_block[source_id] = {"id": source_id, "name": name, "link": link}
         return source_id

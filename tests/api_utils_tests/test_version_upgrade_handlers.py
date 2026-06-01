@@ -1017,7 +1017,7 @@ class TestVersionUpgradeHandlers(TestCase):
             "Sources": {
                 "hypothesis": {"id": "hypothesis", "name": "e-footprint hypothesis", "link": None},
                 "user_data": {"id": "user_data", "name": "user data", "link": None},
-                "abc123": {"id": "abc123", "name": "Custom source", "link": "https://example.com"},
+                "abc12300-000": {"id": "abc12300-000", "name": "Custom source", "link": "https://example.com"},
             },
             "Job": {
                 "job_1": {
@@ -1032,7 +1032,7 @@ class TestVersionUpgradeHandlers(TestCase):
                     },
                     "compute_needed": {
                         "value": 1, "unit": "cpu_core", "label": "compute_needed",
-                        "source": "abc123",
+                        "source": "abc12300-000",
                     },
                 }
             },

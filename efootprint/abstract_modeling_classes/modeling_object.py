@@ -305,7 +305,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         self.trigger_modeling_updates = False
         self.name = name
-        self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:6]
+        self.id = css_escape(name) if ModelingObject._use_name_as_id else str(uuid.uuid4())[:12]
         self.contextual_modeling_obj_containers = []
         self.explainable_object_dicts_containers = []
 
