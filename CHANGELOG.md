@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [21.1.3] - 2026-06-01
+
+### Fixed
+- Count-and-multiply job occurrences per step in update_dict_element_in_hourly_occurrences_per_usage_pattern to avoid recursion on highly-referenced jobs.
+- Bump object id length from 6 to 12 hex chars to avoid silent collisions.
+
+### Added
+- Communication files updates.
+
 ## [21.1.2] - 2026-05-26
 
 ### Fixed
