@@ -12,6 +12,9 @@ dist
 *.json
 docs
 !docs_sources/*
+# Keep spec-driven workflow files (spec.html, plan.html, etc.) under specs/
+!specs/**/*.html
+!specs/**/*.json
 .trees
 litellm-config.yaml
 litellm-commands.md

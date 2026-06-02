@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Duration-aware impact attribution — Implementation plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 52rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2rem; }
+  h3 { margin-top: 1.2rem; font-size: 1.05rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .9em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .bad { color: #b00020; font-weight: 600; }
+  .good { color: #0a7a3b; font-weight: 600; }
+  .tldr { background: #f0f6ff; border: 1px solid #c5d9f1; border-radius: 8px; padding: .6rem 1rem; }
+  figure { margin: 1.2rem 0; }
+  figcaption { font-size: .9rem; color: #555; margin-top: .4rem; }
+</style>
+</head>
+<body>
+
+<h1>Duration-aware impact attribution — Implementation plan</h1>
+<p class="status">Status: Plan — under review · 2026-06-02 · Spec: <a href="spec.html">spec.html</a></p>
+
+<p class="tldr"><strong>In one line:</strong> impact-repartition <em>weights</em> belong only where a
+single physical resource is shared among consumers (the source edges). Above that boundary the graph
+is logical containment, so footprints must be <strong>aggregated and routed by occurrence per
+<code>(source, usage_pattern)</code></strong>, not multiplied by normalised shares. Doing so removes
+the truncation entirely and makes conservation hold by construction.</p>
+
+<section>
+  <h2>1. Approach</h2>
+
+  <p>A source&rsquo;s footprint is duration-spread correctly, but it is then rolled up to its journey
+  through a chain of normalised shares whose hourly support is the journey&rsquo;s short activity
+  window. Multiplying a multi-hour footprint by a one-hour share clips the tail at every hop — that
+  is the crash (negative neutral remainder) and the silent under-counting.</p>
+
+  <p>The fix is to apply the weight/share mechanism <strong>only at the apportioning boundary</strong>
+  (one shared resource → its consumers) and replace it with summation + occurrence routing everywhere
+  above. Because occurrences are already tracked per usage pattern
+  (<code>hourly_avg_occurrences_per_usage_pattern</code>), each source&rsquo;s contribution is carried
+  per <code>(source, usage_pattern)</code> all the way up, and per-pattern carbon provenance is
+  preserved by construction.</p>
+
+  <figure>
+    <svg viewBox="0 0 720 250" width="100%" role="img"
+         aria-label="Sources apportion via weights below the boundary; logical containers aggregate above it.">
+      <line x1="20" y1="120" x2="700" y2="120" stroke="#bbb" stroke-dasharray="5 4"/>
+      <text x="24" y="113" font-size="11" fill="#888">apportioning boundary</text>
+
+      <text x="24" y="36" font-size="12" font-weight="600" fill="#0a7a3b">Logical containment — aggregate &amp; route per (source, pattern)</text>
+      <g font-size="12" text-anchor="middle">
+        <rect x="60"  y="50" width="90" height="30" rx="5" fill="#eafaf0" stroke="#54a24b"/><text x="105" y="69">Job</text>
+        <rect x="230" y="50" width="120" height="30" rx="5" fill="#eafaf0" stroke="#54a24b"/><text x="290" y="69">UsageJourneyStep</text>
+        <rect x="430" y="50" width="110" height="30" rx="5" fill="#eafaf0" stroke="#54a24b"/><text x="485" y="69">UsageJourney</text>
+        <rect x="600" y="50" width="100" height="30" rx="5" fill="#eafaf0" stroke="#54a24b"/><text x="650" y="69">UsagePattern</text>
+      </g>
+      <g stroke="#54a24b"><line x1="150" y1="65" x2="228" y2="65"/><line x1="350" y1="65" x2="428" y2="65"/><line x1="540" y1="65" x2="598" y2="65"/></g>
+
+      <text x="24" y="170" font-size="12" font-weight="600" fill="#b00020">Impact sources — apportion one shared resource (weights → shares)</text>
+      <g font-size="11" text-anchor="middle">
+        <rect x="40"  y="185" width="90" height="46" rx="5" fill="#fdeeee" stroke="#e45756"/><text x="85" y="205">Server</text><text x="85" y="220" font-size="9">→ jobs</text>
+        <rect x="150" y="185" width="90" height="46" rx="5" fill="#fdeeee" stroke="#e45756"/><text x="195" y="205">Network</text><text x="195" y="220" font-size="9">→ jobs</text>
+        <rect x="260" y="185" width="90" height="46" rx="5" fill="#fdeeee" stroke="#e45756"/><text x="305" y="205">Storage</text><text x="305" y="220" font-size="9">→ jobs</text>
+        <rect x="370" y="185" width="100" height="46" rx="5" fill="#fdeeee" stroke="#e45756"/><text x="420" y="205">ExternalApi</text><text x="420" y="220" font-size="9">→ jobs</text>
+        <rect x="490" y="185" width="90" height="46" rx="5" fill="#fdeeee" stroke="#e45756"/><text x="535" y="205">Device</text><text x="535" y="220" font-size="9">→ steps</text>
+      </g>
+      <g stroke="#e45756"><line x1="85" y1="185" x2="100" y2="82"/><line x1="535" y1="185" x2="300" y2="82"/></g>
+    </svg>
+  </figure>
+
+  <table>
+    <thead><tr><th>Edge</th><th>Mechanism</th></tr></thead>
+    <tbody>
+      <tr><td>source → consumer (Server/Network/Storage/ExternalApi → job; Device → step)</td>
+          <td><span class="bad">weight → normalised share</span>, keyed per <code>(consumer, usage_pattern)</code></td></tr>
+      <tr><td>job → step → journey (logical containment)</td>
+          <td><span class="good">aggregate per <code>(source, pattern)</code></span>; route by occurrence/provenance</td></tr>
+      <tr><td>journey → pattern</td>
+          <td><span class="good">direct per-pattern aggregation</span> — no lumped total, no re-split</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.9rem;color:#555;">Per-pattern keying is the <em>usage</em> mechanism (carbon
+  depends on country). Fabrication is country-independent, so it aggregates per-source and
+  occurrence-routed without per-pattern tracking — see §3.</p>
+</section>
+
+<section>
+  <h2>2. What stays, what changes</h2>
+
+  <h3>Stays — source apportioning</h3>
+  <p>Impact sources keep their weight builders and the base normalise-and-multiply path that produces
+  <code>attributed_*_footprint_per_source</code> for their direct consumers. <strong>One usage-phase
+  change at the source level:</strong> the neutral shared sources
+  (<code>Server</code>/<code>Storage</code>/<code>ExternalApi</code>) currently lump across patterns
+  (<code>job_repartition_weights</code> uses <code>hourly_avg_occurrences_across_usage_patterns</code>);
+  for <em>usage</em> they must key per <code>(job, usage_pattern)</code>. <code>Network</code>/<code>Device</code>
+  are already per-country objects and are unaffected. <strong>Fabrication keeps per-job keying</strong>
+  (§3) — so <code>ServerBase</code> can no longer share one <code>job_repartition_weights</code> dict
+  across both phases; the usage weight becomes per-pattern while the fabrication weight stays per-job
+  (exact factoring left to tasks).</p>
+
+  <h3>Changes — logical containers aggregate &amp; route</h3>
+  <table>
+    <thead><tr><th>Module</th><th>Change</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>abstract_modeling_classes/modeling_object.py</code></td>
+        <td>delete</td>
+        <td>Remove <code>_compute_default_impact_repartition_weight</code> and the base
+        <code>update_dict_element_in_{fabrication,usage}_impact_repartition_weights</code>. Every
+        caller is a logical container (list below) and gets an aggregation override instead. The base
+        <code>attributed_*_footprint_per_source</code> path stays for the source edges.</td>
+      </tr>
+      <tr>
+        <td><code>core/usage/job.py</code></td>
+        <td>modified</td>
+        <td>Drop the six <code>*_impact_repartition_*</code> calculated attributes. Keep the incoming
+        per-source dict; route it upward <strong>per source, preserving provenance</strong> — a
+        lumped <code>occ_in_step/total_occ</code> ratio would smear a job&rsquo;s per-country network
+        mix across patterns (§3).</td>
+      </tr>
+      <tr>
+        <td><code>core/usage/usage_journey_step.py</code></td>
+        <td>modified</td>
+        <td>Drop the weight attributes. Override <code>attributed_{energy,fabrication}_footprint_per_source</code>
+        to aggregate two per-source streams: device contributions (received via the base path) + its
+        jobs&rsquo; routed footprints — each correct on its own clock, summed, keyed per source.</td>
+      </tr>
+      <tr>
+        <td><code>core/usage/usage_journey.py</code></td>
+        <td>modified</td>
+        <td>Aggregate from steps directly; produce the per-pattern result by direct per-pattern
+        aggregation (§3). <strong>Delete</strong> the country-dependent/neutral re-split entirely:
+        <code>attributed_energy_footprint_per_usage_pattern</code>&rsquo;s subtraction logic,
+        <code>_neutral_activity_share</code>, and the negative-remainder <code>raise</code>.</td>
+      </tr>
+      <tr>
+        <td><code>core/usage/edge/</code>: <code>recurrent_server_need.py</code>,
+        <code>recurrent_edge_device_need.py</code>, <code>recurrent_edge_component_need.py</code>,
+        <code>recurrent_edge_storage_need.py</code>, <code>edge_function.py</code></td>
+        <td>modified</td>
+        <td>Edge has more logical levels, all on the generic default. Chains:
+        <code>Server/Storage → Job → RecurrentServerNeed → EdgeFunction → EdgeUsageJourney</code>;
+        <code>EdgeDevice → RecurrentEdgeComponentNeed → RecurrentEdgeDeviceNeed → EdgeFunction</code>.
+        Same delete-weights / aggregate treatment.</td>
+      </tr>
+      <tr>
+        <td><code>core/usage/edge/edge_usage_journey.py</code>, <code>edge_usage_pattern.py</code></td>
+        <td>modified</td>
+        <td>Mirror of <code>UsageJourney</code>/<code>UsagePattern</code>: same per-pattern split and
+        same retirement of the re-split machinery.</td>
+      </tr>
+      <tr>
+        <td><code>utils/impact_repartition/sankey.py</code>,
+        <code>resolve_attributed_footprint_per_source</code> (in <code>modeling_object.py</code>)</td>
+        <td>audit</td>
+        <td><strong>Highest risk.</strong> Consumers of the per-source dicts. Aggregation must
+        reproduce the identical <code>{source_object: footprint}</code> shape, including the
+        intermediate keys skip/exclude resolution traverses.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Generic-default callers</strong> (each needs an aggregation override): <code>Job</code>,
+  <code>UsageJourneyStep</code>, <code>RecurrentServerNeed</code>, <code>RecurrentEdgeDeviceNeed</code>,
+  <code>RecurrentEdgeComponentNeed</code>, <code>RecurrentEdgeStorageNeed</code>, <code>EdgeFunction</code>.
+  A first task re-confirms this set by grep (classes with neither a weight nor an
+  <code>attributed_*_per_source</code> override).
+  <br><strong>Untouched:</strong> <code>Country</code>/<code>UsagePattern</code>/<code>EdgeUsagePattern</code>/<code>System</code>
+  (trivial scalar <code>1</code> weight — a scalar cannot truncate).</p>
+</section>
+
+<section>
+  <h2>3. The journey → pattern split (the subtle core)</h2>
+  <p>Two facts make this the crux:</p>
+  <ul>
+    <li><strong>Tail.</strong> The current split multiplies a lumped neutral total by
+    <code>usage_activity_weight</code> (journey concurrency, zero past the journey window). Once the
+    journey total carries the job&rsquo;s tail, that share <span class="bad">drops the tail again</span>
+    at hour 12 — conservation broken even though the crash is gone.</li>
+    <li><strong>Provenance.</strong> A footprint&rsquo;s carbon is per-pattern (network impact ∝
+    country grid intensity), and a single <code>Job</code>/<code>UsageJourneyStep</code> can be shared
+    across journeys in different countries (verified — each list membership wraps the object in its own
+    <code>ContextualModelingObjectAttribute</code>, so the same object legitimately has multiple
+    journey containers, and <code>nb_of_occurrences_per_container</code> counts them). Routing a lumped
+    total by occurrence then leaks high-carbon network from one pattern into another, and
+    <code>neutral = total − country_dependent</code> goes wrong.</li>
+  </ul>
+  <p>Both dissolve under <strong>per-<code>(source, usage_pattern)</code> aggregation</strong> for
+  <em>usage</em>: the journey&rsquo;s per-pattern footprint is a direct sum of per-pattern source
+  contributions — no lumped total, no activity-share re-split, no clock mismatch, provenance
+  preserved. The country-dependent/neutral subtraction machinery is <strong>deleted</strong>, not fixed.</p>
+  <p><strong>Fabrication is simpler — it is not carbon-intensity dependent.</strong> Embodied
+  emissions are fixed by where hardware is manufactured, not the usage country&rsquo;s grid, so the
+  provenance argument does not apply and fabrication does <em>not</em> carry per-<code>(source,
+  pattern)</code> information. It still has a run-window tail (server fabrication rides
+  <code>hourly_avg_occurrences</code>), so it needs the same <strong>aggregate-and-route</strong> fix
+  to stop the logical hops truncating it — but its per-pattern breakdown is a plain occurrence/activity
+  split (distinct device objects keep their own value; the shared neutral splits proportionally), with
+  no carbon leak to guard against. Concretely: fabrication aggregation is per-source and
+  occurrence-routed, kept duration-aware so the tail survives; no journey→pattern re-split machinery.</p>
+</section>
+
+<section>
+  <h2>4. Cross-cutting concerns</h2>
+  <ul>
+    <li><strong>Conservation is structural, not snapshotted.</strong> Aggregation by summation cannot
+    create or destroy emissions, so system and category totals are conserved by construction — pinned
+    by the consistency invariant below, the repro total (test a) and the single-pattern no-regression
+    test (test d), plus the existing suite&rsquo;s totals. No battery-wide snapshot-equality guard:
+    per-source dicts and per-pattern splits change <em>by design</em> (tails carried, neutral split
+    re-based), so asserting them unchanged would fight the fix.</li>
+    <li><strong>Tests.</strong> (a) repro: build the impact-repartition diagram, no raise, journey
+    footprint non-zero in the tail hour and matching the network tail; (b) a jobless device-only step
+    still attributes its device footprint up; (c) a &gt;1h job spread across its run window;
+    (d) all-short-jobs / single-pattern no-regression; (e) <strong>a job and a step shared across two
+    journeys in different countries</strong> — each country&rsquo;s intensity stays with its own
+    network/device, neutral server splits by per-pattern occurrence (currently uncovered);
+    (f) edge mirrors of each.</li>
+    <li><strong>Consistency invariant.</strong> A child&rsquo;s routed contributions summed over its
+    parents reproduce its own total, and per-pattern job activity reconciles with
+    <code>hourly_avg_occurrences_per_usage_pattern</code> — a cheap assertion that pins the aggregation.</li>
+    <li><strong>Migration.</strong> All affected attributes are calculated (skipped by
+    <code>to_json(save_calculated_attributes=False)</code>); no input/persisted shape changes →
+    <strong>no schema migration</strong>. Confirm with a repro round-trip.</li>
+    <li><strong>Docs.</strong> Rewrite the &ldquo;Usage attribution boundary&rdquo; section of
+    <code>architecture.md</code> around the apportioning-vs-aggregation principle; one-line
+    <code>conventions.md</code> note; update affected docstrings (SSOT, §1.4).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Risks</h2>
+  <ul>
+    <li><strong>Per-source dict shape drift (highest).</strong> Sankey + skip/exclude resolution
+    depend on the dict <em>structure</em> and intermediate keys (not the values, which change by
+    design). Aggregation must reproduce the same <code>{source_object: footprint}</code> shape.
+    Mitigation: the existing Sankey / <code>resolve_attributed_footprint_per_source</code> tests plus
+    the repro diagram test (a).</li>
+    <li><strong>Blast radius.</strong> ~7 container types + source-level keying + edge mirrors.
+    Mitigation: land one level at a time (demand chain, then edge), each checked against the
+    consistency invariant.</li>
+    <li><strong>Latent pre-existing bug.</strong> The shared-job-across-countries path is untested and
+    may already be wrong. Mitigation: add test (e) early; if it exposes a discrepancy, surface it —
+    don&rsquo;t encode old numbers as &ldquo;expected&rdquo; (§3.1).</li>
+    <li><strong>Cache invalidation.</strong> Removing weight attributes changes the dependency graph;
+    <code>_attributed_footprint_cached_property_names</code> / <code>invalidate_impact_repartition_cache</code>
+    must still flush correctly. Mitigation: existing leaf-mutation test + one for the aggregated path.</li>
+    <li><strong>Sibling-fix ordering.</strong> The EcoLogits-server duration-spread fix
+    (<code>../ecologits-server-duration-spread/task.md</code>) produces the spread source footprints
+    this work aggregates — a practical prerequisite.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Alternatives considered</h2>
+  <ul>
+    <li><strong>Duration-aware weights</strong> (rebuild shares on the duration clock). Rejected:
+    keeps the weight abstraction where it doesn&rsquo;t belong and still re-truncates at the device
+    clock and the journey→pattern split. Aggregation removes the machinery instead (§1.3).</li>
+    <li><strong>Lumped neutral total, split by a duration-aware basis.</strong> Smaller diff, leaves
+    the source level untouched — but only correct if no step/job is shared across distinct journeys,
+    which is false (§3). It mis-attributes carbon and can re-introduce the crash.</li>
+    <li><strong>Defensive clamp on the negative remainder.</strong> Rejected as the fix (§3.1); at
+    most a backstop assertion.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Constitutional notes</h2>
+  <ul>
+    <li><strong>§1.1.</strong> Favourable — <em>removes</em> a generic method from the framework layer
+    and moves aggregation into <code>core/</code>; no new upward import, no domain names added to the base.</li>
+    <li><strong>§1.3 / §3.1.</strong> Net deletion of machinery, reusing existing per-pattern
+    occurrence quantities; root-cause fix, not a clamp or side-refactor.</li>
+    <li><strong>§2 gates.</strong> pytest + <code>mkdocs build --strict</code> + JSON round-trip +
+    <code>CHANGELOG.md</code>. No new class (§2.5 n/a); no amendment required.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>8. Settled decisions</h2>
+  <ul>
+    <li><strong>Mechanism:</strong> per-<code>(source, usage_pattern)</code> aggregation for usage;
+    source-level per-pattern keying in scope. (Forced by cross-journey, cross-country step/job sharing.)</li>
+    <li><strong>Fabrication:</strong> phase-specific and simpler — per-source, occurrence-routed,
+    duration-aware; <em>no</em> per-pattern carbon tracking (not carbon-intensity dependent).</li>
+    <li><strong>Negative-remainder check, <code>_neutral_activity_share</code>, and the
+    country-dependent/neutral re-split:</strong> deleted entirely (dead once aggregation is in).</li>
+  </ul>
+  <p>No open questions remain; ready for <code>spec-tasks</code>.</p>
+</section>
+
+</body>
+</html>
