@@ -6,6 +6,7 @@ stability against its authoring script.
 """
 import importlib
 import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -28,11 +29,34 @@ _introductory_template_params = pytest.mark.parametrize(
     "tpl", INTRODUCTORY_TEMPLATES, ids=lambda t: t.id)
 
 
+def _modeling_object_ids(system_data: dict) -> list[str]:
+    metadata_keys = {"efootprint_version", "Sources"}
+    return [
+        payload["id"]
+        for class_key, objects_by_id in system_data.items()
+        if class_key not in metadata_keys
+        for payload in objects_by_id.values()
+    ]
+
+
 @_template_params
 def test_template_json_exists_and_loads(tpl: HowToTemplate):
     assert tpl.json_path.is_file(), f"{tpl.json_path} does not exist"
     with open(tpl.json_path) as f:
         json.load(f)
+
+
+@_template_params
+def test_template_modeling_object_ids_are_globally_unique(tpl: HowToTemplate):
+    with open(tpl.json_path) as f:
+        system_data = json.load(f)
+    duplicates = [
+        object_id for object_id, count in Counter(_modeling_object_ids(system_data)).items()
+        if count > 1
+    ]
+    assert duplicates == [], (
+        f"Template {tpl.id} has duplicate modeling-object ids: {duplicates}. "
+        "Object ids are global in the interface cache, even across different classes.")
 
 
 @_template_params

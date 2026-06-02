@@ -119,7 +119,7 @@
                 "source": "hypothesis"
             },
             "jobs": [
-                "Inference-call"
+                "Inference-GPU-job"
             ]
         }
     },
@@ -159,9 +159,9 @@
             },
             "server": "Training-GPU-server"
         },
-        "Inference-call": {
-            "name": "Inference call",
-            "id": "Inference-call",
+        "Inference-GPU-job": {
+            "name": "Inference GPU job",
+            "id": "Inference-GPU-job",
             "data_transferred": {
                 "value": 20.0,
                 "unit": "kilobyte",

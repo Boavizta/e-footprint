@@ -40,7 +40,7 @@ def build_system() -> System:
         "Inference GPU server", server_type=ServerTypes.autoscaling(),
         compute=SourceValue(4 * u.gpu), storage=inference_storage)
     inference_job = GPUJob(
-        "Inference call", server=inference_server,
+        "Inference GPU job", server=inference_server,
         request_duration=SourceValue(2 * u.s),
         compute_needed=SourceValue(1 * u.gpu),
         ram_needed=SourceValue(40 * u.GB_ram),
