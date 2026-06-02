@@ -98,7 +98,7 @@ For cross-repo features, the archive lives in the driving repo (same rule as the
 
 ## Skills location
 
-Skills live at `.claude/skills/` in each repo. Canonical versions are in e-footprint; mirrors in e-footprint-interface.
+Skills live at `.agents/skills/` in each repo. `.claude/skills` is a compatibility symlink. Canonical versions are in e-footprint; mirrors in e-footprint-interface.
 
 ## Investigations and ad-hoc work
 
