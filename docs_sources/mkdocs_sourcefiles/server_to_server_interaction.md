@@ -72,5 +72,9 @@ only if the split changes the result meaningfully. e-footprint's
 methodology is iterative ({doc:methodology}) — start coarse, then
 refine the parts that turn out to dominate.
 
+The interactive scenario is the same e-commerce web/database system used
+by the database guide and the interface's introductory e-commerce card;
+this page simply reads it from the server-to-server angle.
+
 > Load this scenario in the e-footprint interface:
-> [Server-to-server interaction]({{ config.extra.interface_base_url }}/server_to_server_interaction)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/ecommerce)

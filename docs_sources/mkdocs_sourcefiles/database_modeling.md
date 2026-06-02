@@ -84,5 +84,9 @@ cite a credible source in a {class:Source}.
 See {doc:server_to_server_interaction} for how to wire these jobs into
 a usage journey alongside an upstream web server.
 
+The interactive scenario uses an e-commerce journey so the same loaded
+model can be read from three angles: the product journey, the database
+server, and the server-to-server calls between them.
+
 > Load this scenario in the e-footprint interface:
-> [Database modeling]({{ config.extra.interface_base_url }}/database_modeling)
+> [E-commerce web/database scenario]({{ config.extra.interface_base_url }}/ecommerce)

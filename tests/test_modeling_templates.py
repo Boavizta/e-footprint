@@ -84,3 +84,9 @@ def test_how_to_page_references_template(tpl: HowToTemplate):
     assert "interface_base_url" in text and f"/{tpl.id}" in text, (
         f"How-to page {tpl.doc_path} does not link to template {tpl.id} via "
         f"the interface_base_url deep link.")
+
+
+def test_web_database_guides_link_to_ecommerce_interface_template():
+    for doc_path in ("database_modeling.md", "server_to_server_interaction.md"):
+        text = (MKDOCS_SOURCEFILES / doc_path).read_text()
+        assert "interface_base_url" in text and "/ecommerce" in text
