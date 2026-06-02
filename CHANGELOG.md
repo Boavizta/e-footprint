@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Fixed
+- `EcoLogitsGenAIExternalAPIServer` now spreads each job's per-request energy,
+  usage GWP, and embodied GWP over its `request_duration` instead of booking the
+  whole amount in the request's start hour. Mirrors the network/storage
+  per-hour-spread idiom (`per_request × (1h / request_duration) ×
+  hourly_avg_occurrences_across_usage_patterns`), so a video-generation job
+  longer than an hour (e.g. a ~62 min Kling job) lands across the hours it runs.
+  Totals are unchanged — redistribution in time only.
+
 ## [21.1.3] - 2026-06-01
 
 ### Fixed

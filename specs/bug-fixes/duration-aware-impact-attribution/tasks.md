@@ -54,7 +54,7 @@ This task re-applies the fix onto that class — it is a port, not a cherry-pick
 
 **Depends on:** none.
 
-**Status:** Not started.
+**Status:** Done.
 
 ---
 

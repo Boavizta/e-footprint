@@ -47,6 +47,17 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
 
     param_descriptions = {}
 
+    @staticmethod
+    def _spread_over_request_duration(job, per_request_value):
+        """Spread a per-request total over the hours the request runs, mirroring the network/storage
+        per-hour-spread idiom: (per_request_value * 1h / request_duration) * avg hourly occurrences.
+        Returns an empty object when the per-request value isn't set yet (e.g. a job with no usage
+        patterns), whose request_duration is still its 0 s default."""
+        if isinstance(per_request_value, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        per_hour_value = per_request_value * ExplainableQuantity(1 * u.hour, "one hour") / job.request_duration
+        return per_hour_value * job.hourly_avg_occurrences_across_usage_patterns
+
     @property
     def external_api(self) -> Optional["EcoLogitsGenAIExternalAPI"]:
         if self.modeling_obj_containers:
@@ -66,51 +77,49 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         return "no external API"
 
     def update_instances_fabrication_footprint(self) -> None:
-        """Hourly fabrication-phase footprint of the model server, equal to per-request embodied GWP times hourly request count, summed over jobs."""
+        """Hourly fabrication-phase footprint of the model server: each job's per-request embodied GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_fabrication_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
-            instances_fabrication_footprint += job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns
+            instances_fabrication_footprint += self._spread_over_request_duration(job, job.request_embodied_gwp)
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
             f"Instances fabrication footprint for {self.external_api_model_name}")
 
     def update_instances_energy(self) -> None:
-        """Hourly energy consumed by the model server, equal to per-request energy times hourly request count, summed over jobs."""
+        """Hourly energy consumed by the model server: each job's per-request energy spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         instances_energy = EmptyExplainableObject()
 
         for job in self.jobs:
-            instances_energy += job.request_energy * job.hourly_occurrences_across_usage_patterns
+            instances_energy += self._spread_over_request_duration(job, job.request_energy)
 
         self.instances_energy = instances_energy.set_label(f"Instances energy for {self.external_api_model_name}")
 
     def update_energy_footprint(self) -> None:
-        """Hourly energy-use footprint of the model server, equal to per-request usage GWP times hourly request count, summed over jobs."""
+        """Hourly energy-use footprint of the model server: each job's per-request usage GWP spread over its request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns), summed over jobs."""
         energy_footprint = EmptyExplainableObject()
 
         for job in self.jobs:
-            energy_footprint += job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns
+            energy_footprint += self._spread_over_request_duration(job, job.request_usage_gwp)
 
         self.energy_footprint = energy_footprint.set_label(f"Energy footprint for {self.external_api_model_name}")
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
-        self.fabrication_impact_repartition_weights[job] = (
-            job.request_embodied_gwp * job.hourly_occurrences_across_usage_patterns
-        ).set_label(f"{job.name} fabrication weight in impact repartition")
+        self.fabrication_impact_repartition_weights[job] = self._spread_over_request_duration(
+            job, job.request_embodied_gwp).set_label(f"{job.name} fabrication weight in impact repartition")
 
     def update_fabrication_impact_repartition_weights(self):
-        """Per-job weights used to attribute the model server's fabrication footprint, proportional to per-request embodied GWP times hourly request volume."""
+        """Per-job weights used to attribute the model server's fabrication footprint, proportional to per-request embodied GWP spread over request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns)."""
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_fabrication_impact_repartition_weights(job)
 
     def update_dict_element_in_usage_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
-        self.usage_impact_repartition_weights[job] = (
-            job.request_usage_gwp * job.hourly_occurrences_across_usage_patterns
-        ).set_label(f"{job.name} usage weight in impact repartition")
+        self.usage_impact_repartition_weights[job] = self._spread_over_request_duration(
+            job, job.request_usage_gwp).set_label(f"{job.name} usage weight in impact repartition")
 
     def update_usage_impact_repartition_weights(self):
-        """Per-job weights used to attribute the model server's energy-use footprint, proportional to per-request usage GWP times hourly request volume."""
+        """Per-job weights used to attribute the model server's energy-use footprint, proportional to per-request usage GWP spread over request_duration (per-request * 1h / request_duration * hourly average occurrences across usage patterns)."""
         self.usage_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_usage_impact_repartition_weights(job)
