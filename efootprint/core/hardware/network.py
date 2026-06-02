@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class Network(ModelingObject):
-    """Telecommunications network carrying traffic between users and the servers — Wi-Fi, fixed broadband, cellular. Modelled by its energy intensity per gigabyte transferred."""
+    """Telecommunications network carrying traffic between users and the servers — Wi-Fi, fixed broadband, cellular. Modeled by its energy intensity per gigabyte transferred."""
 
     param_descriptions = {
         "bandwidth_energy_intensity": (

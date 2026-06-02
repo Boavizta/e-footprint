@@ -49,7 +49,7 @@ class EdgeApplianceComponent(EdgeWorkloadComponent):
 
 
 class EdgeAppliance(EdgeDevice):
-    """An appliance-style {class:EdgeDevice} described by a single power and lifespan, without breaking out individual components. Suitable for sealed devices whose internal hardware is not modelled separately."""
+    """An appliance-style {class:EdgeDevice} described by a single power and lifespan, without breaking out individual components. Suitable for sealed devices whose internal hardware is not modeled separately."""
 
     disambiguation = (
         "Use {class:EdgeAppliance} when only an aggregate power and embodied carbon are known, and the load "

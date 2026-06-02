@@ -29,7 +29,7 @@ from efootprint.utils.display import best_display_unit, human_readable_unit, dis
 
 
 class System(ModelingObject):
-    """Top-level container of an e-footprint model. Aggregates one or more {class:UsagePattern}s and {class:EdgeUsagePattern}s and exposes the total fabrication and energy footprint of the modelled digital service."""
+    """Top-level container of an e-footprint model. Aggregates one or more {class:UsagePattern}s and {class:EdgeUsagePattern}s and exposes the total fabrication and energy footprint of the modeled digital service."""
 
     interactions = (
         "Construct {class:System} last, once all {class:UsagePattern} and {class:EdgeUsagePattern} objects "

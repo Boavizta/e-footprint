@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 
 
 class EdgeWorkloadComponent(EdgeComponent):
-    """A whole-device opaque resource described only by a 0..1 utilisation level (an "appliance-style" component). Used when individual CPU/RAM specs are not modelled or don’t apply, only how loaded the device is."""
+    """A whole-device opaque resource described only by a 0..1 utilisation level (an "appliance-style" component). Used when individual CPU/RAM specs are not modeled or don’t apply, only how loaded the device is."""
 
     disambiguation = (
         "Use {class:EdgeWorkloadComponent} for appliance-style devices where the internal hardware is opaque. "
         "Use {class:EdgeRAMComponent}, {class:EdgeCPUComponent}, and {class:EdgeStorage} when compute and memory "
-        "components need to be modelled separately.")
+        "components need to be modeled separately.")
 
     param_descriptions = {**EdgeComponent.param_descriptions}
 

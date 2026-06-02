@@ -13,7 +13,7 @@ own fabrication and operational impact. The available component types
 are {class:EdgeRAMComponent}, {class:EdgeCPUComponent},
 {class:EdgeStorage}, and {class:EdgeWorkloadComponent}, the last being
 a linear whole-device utilisation curve used when the internal
-hardware is not modelled in detail. For two common construction
+hardware is not modeled in detail. For two common construction
 patterns, e-footprint provides convenience builders that wire the
 components for you: {class:EdgeComputer} (RAM + CPU + storage) and
 {class:EdgeAppliance} (a single linear workload curve).

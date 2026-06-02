@@ -126,7 +126,7 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
 
 
 class EcoLogitsGenAIExternalAPI(ExternalAPI):
-    """An external generative-AI API (OpenAI, Anthropic, Mistral...) modelled through the EcoLogits library. Picks a model and provider; EcoLogits supplies parameter counts, throughput, datacenter location, and grid carbon intensity."""
+    """An external generative-AI API (OpenAI, Anthropic, Mistral...) modeled through the EcoLogits library. Picks a model and provider; EcoLogits supplies parameter counts, throughput, datacenter location, and grid carbon intensity."""
 
     interactions = (
         "Pick {param:EcoLogitsGenAIExternalAPI.provider} and {param:EcoLogitsGenAIExternalAPI.model_name} "

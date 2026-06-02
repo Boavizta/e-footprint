@@ -27,7 +27,7 @@ class EdgeDevice(ModelingObject):
 
     disambiguation = (
         "Use {class:EdgeDevice} to assemble bespoke hardware from individual {class:EdgeComponent}s. For "
-        "appliance-style hardware modelled as a single workload curve, prefer {class:EdgeAppliance}. For "
+        "appliance-style hardware modeled as a single workload curve, prefer {class:EdgeAppliance}. For "
         "computer-like hardware composed of CPU, RAM, and storage, prefer {class:EdgeComputer}.")
 
     pitfalls = (
