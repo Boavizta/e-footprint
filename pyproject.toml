@@ -11,7 +11,8 @@ authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"
 include = ["efootprint/constants/custom_units.txt",
     "efootprint/builders/services/ecobenchmark_analysis/ecobenchmark_data_for_job_defaults.csv",
-    "efootprint/modeling_templates/how_to/*.json"]
+    "efootprint/modeling_templates/how_to/*.json",
+    "efootprint/modeling_templates/introductory/*.json"]
 
 [tool.black]
 line-length = 120

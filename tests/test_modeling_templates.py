@@ -12,14 +12,20 @@ import pytest
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.api_utils.system_to_json import system_to_json
-from efootprint.modeling_templates import load_template_system
+from efootprint.modeling_templates import load_introductory_template_system, load_template_system
 from efootprint.modeling_templates.how_to.registry import HOW_TO_TEMPLATES, HowToTemplate
+from efootprint.modeling_templates.introductory.registry import (
+    INTRODUCTORY_TEMPLATES,
+    IntroductoryTemplate,
+)
 
 MKDOCS_SOURCEFILES = (
     Path(__file__).resolve().parent.parent / "docs_sources" / "mkdocs_sourcefiles")
 
 _template_params = pytest.mark.parametrize(
     "tpl", HOW_TO_TEMPLATES, ids=lambda t: t.id)
+_introductory_template_params = pytest.mark.parametrize(
+    "tpl", INTRODUCTORY_TEMPLATES, ids=lambda t: t.id)
 
 
 @_template_params
@@ -90,3 +96,31 @@ def test_web_database_guides_link_to_ecommerce_interface_template():
     for doc_path in ("database_modeling.md", "server_to_server_interaction.md"):
         text = (MKDOCS_SOURCEFILES / doc_path).read_text()
         assert "interface_base_url" in text and "/ecommerce" in text
+
+
+@_introductory_template_params
+def test_introductory_template_json_exists_and_loads(tpl: IntroductoryTemplate):
+    assert tpl.json_path.is_file(), f"{tpl.json_path} does not exist"
+    with open(tpl.json_path) as f:
+        json.load(f)
+
+
+@_introductory_template_params
+def test_introductory_template_loads_via_json_to_system(tpl: IntroductoryTemplate):
+    system = load_introductory_template_system(tpl.id)
+    assert system is not None
+    assert system.__class__.__name__ == "System"
+
+
+@_introductory_template_params
+def test_introductory_authoring_script_round_trips_to_committed_json(tpl: IntroductoryTemplate):
+    authoring = importlib.import_module(
+        f"efootprint.modeling_templates.introductory._authoring.{tpl.id}")
+    freshly_built = system_to_json(
+        authoring.build_system(), save_calculated_attributes=False)
+    with open(tpl.json_path) as f:
+        committed = json.load(f)
+    assert freshly_built == committed, (
+        f"Introductory template {tpl.id} JSON does not match the output of build_system(); "
+        f"re-run `python -m efootprint.modeling_templates.introductory._authoring.{tpl.id}` "
+        f"and commit the regenerated JSON.")
