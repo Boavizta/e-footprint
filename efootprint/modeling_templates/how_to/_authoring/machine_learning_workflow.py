@@ -4,11 +4,11 @@ Mirrors the Python sketch in ``machine_learning_workflow.md``: two
 {class:UsagePattern} sharing a country and {class:Network}, one driving a
 recurring training {class:GPUJob} and the other driving inference traffic.
 """
-from datetime import datetime
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.builders.time_builders import create_hourly_usage_from_frequency
+from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 from efootprint.constants.countries import Countries
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.gpu_server import GPUServer
@@ -54,16 +54,30 @@ def build_system() -> System:
 
     network = Network.from_defaults("Default network")
     laptop = Device.laptop()
-    start_date = datetime(2025, 1, 1)
+    start_date = "2025-01-01"
 
     training_pattern = UsagePattern(
         "Weekly retraining pattern", training_journey, [], network, Countries.FRANCE(),
-        create_hourly_usage_from_frequency(
-            timespan=4 * u.week, input_volume=1, frequency="weekly", start_date=start_date))
+        ExplainableHourlyQuantitiesFromFormInputs({
+            "start_date": start_date,
+            "modeling_duration_value": 3,
+            "modeling_duration_unit": "year",
+            "initial_volume": 52,
+            "initial_volume_timespan": "year",
+            "net_growth_rate_in_percentage": 10,
+            "net_growth_rate_timespan": "year",
+        }, source=Sources.USER_DATA))
     inference_pattern = UsagePattern(
         "Production inference pattern", inference_journey, [laptop], network, Countries.FRANCE(),
-        create_hourly_usage_from_frequency(
-            timespan=4 * u.week, input_volume=200, frequency="daily", start_date=start_date))
+        ExplainableHourlyQuantitiesFromFormInputs({
+            "start_date": start_date,
+            "modeling_duration_value": 3,
+            "modeling_duration_unit": "year",
+            "initial_volume": 73000,
+            "initial_volume_timespan": "year",
+            "net_growth_rate_in_percentage": 25,
+            "net_growth_rate_timespan": "year",
+        }, source=Sources.USER_DATA))
 
     return System(
         "Machine learning workflow system", [training_pattern, inference_pattern],

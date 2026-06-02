@@ -5,6 +5,7 @@ automatically exercises load, compute, doc cross-references, and round-trip
 stability against its authoring script.
 """
 import importlib
+import inspect
 import json
 from collections import Counter
 from pathlib import Path
@@ -12,7 +13,14 @@ from pathlib import Path
 import pytest
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
+from efootprint.abstract_modeling_classes.contextual_modeling_object_attribute import ContextualModelingObjectAttribute
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_recurrent_quantities import ExplainableRecurrentQuantities
 from efootprint.api_utils.system_to_json import system_to_json
+from efootprint.builders.timeseries import (
+    ExplainableHourlyQuantitiesFromFormInputs,
+    ExplainableRecurrentQuantitiesFromConstant,
+)
 from efootprint.modeling_templates import load_introductory_template_system, load_template_system
 from efootprint.modeling_templates.how_to.registry import HOW_TO_TEMPLATES, HowToTemplate
 from efootprint.modeling_templates.introductory.registry import (
@@ -37,6 +45,30 @@ def _modeling_object_ids(system_data: dict) -> list[str]:
         if class_key not in metadata_keys
         for payload in objects_by_id.values()
     ]
+
+
+def _assert_input_timeseries_are_editable_builders(system, template_id: str) -> None:
+    checked = []
+    for obj in [system, *system.all_linked_objects]:
+        obj = obj._value if isinstance(obj, ContextualModelingObjectAttribute) else obj
+        init_params = inspect.signature(type(obj).__init__).parameters
+        for attr_name in init_params:
+            if attr_name in ("self", "name") or not hasattr(obj, attr_name):
+                continue
+            value = getattr(obj, attr_name)
+            if isinstance(value, ExplainableHourlyQuantities):
+                assert isinstance(value, ExplainableHourlyQuantitiesFromFormInputs), (
+                    f"{template_id}: {type(obj).__name__}.{attr_name} on {obj.name!r} must use "
+                    "ExplainableHourlyQuantitiesFromFormInputs so it is editable in the interface.")
+                assert value.form_inputs["modeling_duration_value"] == 3
+                assert value.form_inputs["modeling_duration_unit"] == "year"
+                checked.append((obj, attr_name))
+            elif isinstance(value, ExplainableRecurrentQuantities):
+                assert isinstance(value, ExplainableRecurrentQuantitiesFromConstant), (
+                    f"{template_id}: {type(obj).__name__}.{attr_name} on {obj.name!r} must use "
+                    "ExplainableRecurrentQuantitiesFromConstant so it is editable in the interface.")
+                checked.append((obj, attr_name))
+    assert checked, f"{template_id}: expected at least one input timeseries to validate."
 
 
 @_template_params
@@ -71,6 +103,11 @@ def test_template_computes_total_footprint(tpl: HowToTemplate):
     system = load_template_system(tpl.id)
     assert not isinstance(system.total_footprint, EmptyExplainableObject), (
         f"Template {tpl.id} produced an empty total_footprint")
+
+
+@_template_params
+def test_template_input_timeseries_are_editable_builders(tpl: HowToTemplate):
+    _assert_input_timeseries_are_editable_builders(load_template_system(tpl.id), tpl.id)
 
 
 @_template_params
@@ -134,6 +171,11 @@ def test_introductory_template_loads_via_json_to_system(tpl: IntroductoryTemplat
     system = load_introductory_template_system(tpl.id)
     assert system is not None
     assert system.__class__.__name__ == "System"
+
+
+@_introductory_template_params
+def test_introductory_template_input_timeseries_are_editable_builders(tpl: IntroductoryTemplate):
+    _assert_input_timeseries_are_editable_builders(load_introductory_template_system(tpl.id), tpl.id)
 
 
 @_introductory_template_params

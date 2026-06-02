@@ -48,12 +48,17 @@
             "name": "Weekly retraining pattern",
             "id": "Weekly-retraining-pattern",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/WCECZ0AACgAAIA/AAMA/40SP9AEqtGtAiw=",
-                "unit": "occurrence",
-                "start_date": "2025-01-01 00:00:00",
-                "timezone": null,
+                "form_inputs": {
+                    "start_date": "2025-01-01",
+                    "modeling_duration_value": 3,
+                    "modeling_duration_unit": "year",
+                    "initial_volume": 52,
+                    "initial_volume_timespan": "year",
+                    "net_growth_rate_in_percentage": 10,
+                    "net_growth_rate_timespan": "year"
+                },
                 "label": "Hourly nb of usage journey starts",
-                "source": "hypothesis"
+                "source": "user_data"
             },
             "usage_journey": "Weekly-retraining-journey",
             "devices": [],
@@ -64,12 +69,17 @@
             "name": "Production inference pattern",
             "id": "Production-inference-pattern",
             "hourly_usage_journey_starts": {
-                "compressed_values": "KLUv/WCECX0AACgAAEhDAAIAHxqDD3QCWg==",
-                "unit": "occurrence",
-                "start_date": "2025-01-01 00:00:00",
-                "timezone": null,
+                "form_inputs": {
+                    "start_date": "2025-01-01",
+                    "modeling_duration_value": 3,
+                    "modeling_duration_unit": "year",
+                    "initial_volume": 73000,
+                    "initial_volume_timespan": "year",
+                    "net_growth_rate_in_percentage": 25,
+                    "net_growth_rate_timespan": "year"
+                },
                 "label": "Hourly nb of usage journey starts",
-                "source": "hypothesis"
+                "source": "user_data"
             },
             "usage_journey": "Inference-journey",
             "devices": [

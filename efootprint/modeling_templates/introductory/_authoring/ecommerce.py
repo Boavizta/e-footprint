@@ -4,11 +4,11 @@ A shopping journey served by a web application server calling a database server.
 This scenario backs the interface's e-commerce starter and the database /
 server-to-server how-to links.
 """
-from datetime import datetime
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.builders.time_builders import create_hourly_usage_from_frequency
+from efootprint.builders.timeseries import ExplainableHourlyQuantitiesFromFormInputs
 from efootprint.constants.countries import Countries
+from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.device import Device
 from efootprint.core.hardware.network import Network
@@ -91,12 +91,18 @@ def build_system() -> System:
         "Check out", jobs=[submit_order, write_order])
     journey = UsageJourney("Shopping journey", uj_steps=[browse_step, cart_step, checkout_step])
 
-    start_date = datetime(2025, 1, 1)
     usage_pattern = UsagePattern(
         "Daily shoppers", journey, [Device.laptop()], Network.from_defaults("Default network"),
         Countries.FRANCE(),
-        create_hourly_usage_from_frequency(
-            timespan=7 * u.day, input_volume=5000, frequency="daily", start_date=start_date))
+        ExplainableHourlyQuantitiesFromFormInputs({
+            "start_date": "2025-01-01",
+            "modeling_duration_value": 3,
+            "modeling_duration_unit": "year",
+            "initial_volume": 1800000,
+            "initial_volume_timespan": "year",
+            "net_growth_rate_in_percentage": 8,
+            "net_growth_rate_timespan": "year",
+        }, source=Sources.USER_DATA))
 
     return System("E-commerce web and database system", [usage_pattern], edge_usage_patterns=[])
 
