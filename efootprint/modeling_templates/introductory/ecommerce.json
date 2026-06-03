@@ -6,6 +6,11 @@
             "name": "Base ADEME_V19",
             "link": "https://data.ademe.fr/datasets/base-carbone(r)"
         },
+        "Boavizta-API-cloud-instances": {
+            "id": "Boavizta-API-cloud-instances",
+            "name": "Boavizta API cloud instances",
+            "link": "https://api.boavizta.org/v1/cloud/instance?provider=scaleway&instance_type=ent1-s"
+        },
         "DATA2eAI---STATE-OF-MOBILE": {
             "id": "DATA2eAI---STATE-OF-MOBILE",
             "name": "DATA.AI - STATE OF MOBILE",
@@ -329,22 +334,10 @@
             "server": "Product-database-server"
         }
     },
-    "Server": {
+    "BoaviztaCloudServer": {
         "Web-application-server": {
             "name": "Web application server",
             "id": "Web-application-server",
-            "carbon_footprint_fabrication": {
-                "value": 600.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 300.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -363,21 +356,9 @@
                 "source": "hypothesis"
             },
             "idle_power": {
-                "value": 50.0,
+                "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": "hypothesis"
-            },
-            "ram": {
-                "value": 128.0,
-                "unit": "gigabyte_ram",
-                "label": "RAM",
-                "source": "hypothesis"
-            },
-            "compute": {
-                "value": 24.0,
-                "unit": "cpu_core",
-                "label": "Nb cpu cores",
                 "source": "hypothesis"
             },
             "power_usage_effectiveness": {
@@ -387,7 +368,7 @@
                 "source": "hypothesis"
             },
             "average_carbon_intensity": {
-                "value": 400.0,
+                "value": 100.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of electricity",
                 "source": "hypothesis"
@@ -414,23 +395,22 @@
                 "value": null,
                 "label": "User defined number of instances"
             },
-            "storage": "Web-app-local-storage"
+            "storage": "Web-app-local-storage",
+            "provider": {
+                "value": "scaleway",
+                "label": "Cloud provider",
+                "source": "hypothesis"
+            },
+            "instance_type": {
+                "value": "ent1-s",
+                "label": "Instance type",
+                "source": "hypothesis"
+            },
+            "impact_url": "https://api.boavizta.org/v1/cloud/instance"
         },
         "Product-database-server": {
             "name": "Product database server",
             "id": "Product-database-server",
-            "carbon_footprint_fabrication": {
-                "value": 600.0,
-                "unit": "kilogram",
-                "label": "Carbon footprint fabrication",
-                "source": "Base-ADEME_V19"
-            },
-            "power": {
-                "value": 300.0,
-                "unit": "watt",
-                "label": "Power",
-                "source": "hypothesis"
-            },
             "lifespan": {
                 "value": 6.0,
                 "unit": "year",
@@ -449,21 +429,9 @@
                 "source": "hypothesis"
             },
             "idle_power": {
-                "value": 50.0,
+                "value": 0.0,
                 "unit": "watt",
                 "label": "Idle power",
-                "source": "hypothesis"
-            },
-            "ram": {
-                "value": 128.0,
-                "unit": "gigabyte_ram",
-                "label": "RAM",
-                "source": "hypothesis"
-            },
-            "compute": {
-                "value": 24.0,
-                "unit": "cpu_core",
-                "label": "Nb cpu cores",
                 "source": "hypothesis"
             },
             "power_usage_effectiveness": {
@@ -473,7 +441,7 @@
                 "source": "hypothesis"
             },
             "average_carbon_intensity": {
-                "value": 400.0,
+                "value": 100.0,
                 "unit": "gram / kilowatt_hour",
                 "label": "Average carbon intensity of electricity",
                 "source": "hypothesis"
@@ -500,7 +468,18 @@
                 "value": null,
                 "label": "User defined number of instances"
             },
-            "storage": "Product-database-storage"
+            "storage": "Product-database-storage",
+            "provider": {
+                "value": "scaleway",
+                "label": "Cloud provider",
+                "source": "hypothesis"
+            },
+            "instance_type": {
+                "value": "ent1-l",
+                "label": "Instance type",
+                "source": "hypothesis"
+            },
+            "impact_url": "https://api.boavizta.org/v1/cloud/instance"
         }
     },
     "Storage": {
