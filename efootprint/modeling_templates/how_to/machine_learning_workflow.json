@@ -52,15 +52,15 @@
                     "start_date": "2025-01-01",
                     "modeling_duration_value": 3,
                     "modeling_duration_unit": "year",
-                    "initial_volume": 52,
+                    "initial_volume": 12,
                     "initial_volume_timespan": "year",
-                    "net_growth_rate_in_percentage": 10,
+                    "net_growth_rate_in_percentage": 0,
                     "net_growth_rate_timespan": "year"
                 },
                 "label": "Hourly nb of usage journey starts",
                 "source": "user_data"
             },
-            "usage_journey": "Weekly-retraining-journey",
+            "usage_journey": "Monthly-retraining-journey",
             "devices": [],
             "network": "Default-network",
             "country": "France"
@@ -90,9 +90,9 @@
         }
     },
     "UsageJourney": {
-        "Weekly-retraining-journey": {
-            "name": "Weekly retraining journey",
-            "id": "Weekly-retraining-journey",
+        "Monthly-retraining-journey": {
+            "name": "Monthly retraining journey",
+            "id": "Monthly-retraining-journey",
             "uj_steps": [
                 "Training-run"
             ]
@@ -222,7 +222,7 @@
                 "source": "hypothesis"
             },
             "server_type": {
-                "value": "on-premise",
+                "value": "autoscaling",
                 "label": "Server type",
                 "source": "hypothesis"
             },

@@ -25,7 +25,7 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 def build_system() -> System:
     training_storage = Storage.from_defaults("Training dataset storage")
     training_server = GPUServer.from_defaults(
-        "Training GPU server", server_type=ServerTypes.on_premise(),
+        "Training GPU server", server_type=ServerTypes.autoscaling(),
         compute=SourceValue(8 * u.gpu), storage=training_storage)
     training_job = GPUJob(
         "Weekly retraining", server=training_server,
@@ -48,7 +48,7 @@ def build_system() -> System:
         data_stored=SourceValue(0 * u.kB_stored))
 
     training_step = UsageJourneyStep.from_defaults("Training run", jobs=[training_job])
-    training_journey = UsageJourney("Weekly retraining journey", uj_steps=[training_step])
+    training_journey = UsageJourney("Monthly retraining journey", uj_steps=[training_step])
     inference_step = UsageJourneyStep.from_defaults("Inference call", jobs=[inference_job])
     inference_journey = UsageJourney("Inference journey", uj_steps=[inference_step])
 
@@ -62,9 +62,9 @@ def build_system() -> System:
             "start_date": start_date,
             "modeling_duration_value": 3,
             "modeling_duration_unit": "year",
-            "initial_volume": 52,
+            "initial_volume": 12,
             "initial_volume_timespan": "year",
-            "net_growth_rate_in_percentage": 10,
+            "net_growth_rate_in_percentage": 0,
             "net_growth_rate_timespan": "year",
         }, source=Sources.USER_DATA))
     inference_pattern = UsagePattern(
