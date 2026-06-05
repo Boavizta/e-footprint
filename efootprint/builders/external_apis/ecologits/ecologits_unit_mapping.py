@@ -24,6 +24,7 @@ ECOLOGITS_UNIT_MAPPING ={
       "output_token_count": u.dimensionless,
       "request_embodied_gwp": u.kg,
       "request_energy": u.kWh,
+      "request_it_energy": u.kWh,
       "request_latency": u.s,
       "request_usage_gwp": u.kg,
       "server_embodied_gwp": u.kg,

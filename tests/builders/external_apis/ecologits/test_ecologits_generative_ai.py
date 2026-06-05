@@ -308,7 +308,8 @@ class TestEcoLogitsGenAIExternalAPIJob(TestCase):
     def test_calculated_attributes(self):
         calculated_attributes = [
             "data_transferred", "impacts", "gpu_energy", "generation_latency", "model_required_memory",
-            "gpu_required_count", "server_energy", "request_energy", "request_usage_gwp", "server_gpu_embodied_gwp",
+            "gpu_required_count", "server_energy", "request_energy", "request_it_energy",
+            "request_usage_gwp", "server_gpu_embodied_gwp",
             "request_embodied_gwp", "request_duration",
             "hourly_occurrences_per_usage_pattern", "hourly_avg_occurrences_per_usage_pattern",
             "hourly_data_transferred_per_usage_pattern", "hourly_data_stored_per_usage_pattern",

@@ -73,7 +73,7 @@
       "explain_nested_tuples": null
     },
     "request_duration": {
-      "value": 25.41562189054726,
+      "value": 22.175021645021644,
       "unit": "second",
       "label": "Ecologits generation_latency for gpt-4o",
       "direct_ancestors_with_id": [
@@ -131,7 +131,7 @@
         "model_quantization_bits": 16,
         "output_token_count": 1000.0,
         "request_latency": Infinity,
-        "if_electricity_mix_gwp": 0.38355,
+        "if_electricity_mix_gwp": 0.3844,
         "if_electricity_mix_adpe": 0,
         "if_electricity_mix_pe": 0,
         "if_electricity_mix_wue": 0,
@@ -154,24 +154,25 @@
         "server_embodied_pe": 70000,
         "server_lifetime": 94608000,
         "batch_size": 64,
-        "tps": 40.2,
-        "ttft": 0.54,
+        "tps": 46.2,
+        "ttft": 0.53,
         "gpu_energy": 9.06377035298003e-05,
-        "generation_latency": 25.41562189054726,
+        "generation_latency": 22.175021645021644,
         "model_required_memory": 1056.0,
         "gpu_required_count": 16,
-        "server_energy": 0.0002647460613598673,
+        "server_energy": 0.00023098980880230878,
         "server_gpu_embodied_gwp": 15768.0,
         "server_gpu_embodied_adpe": 0.8832,
         "server_gpu_embodied_pe": 199536.0,
-        "request_energy": 0.0020579391814040063,
-        "request_embodied_gwp": 6.618651533996682e-05,
-        "request_embodied_adpe": 3.7072507831214295e-09,
-        "request_embodied_pe": 0.0008375566035562924,
-        "request_usage_gwp": 0.0007893225730275066,
+        "request_it_energy": 0.0016811930652791136,
+        "request_embodied_gwp": 5.7747452200577196e-05,
+        "request_embodied_adpe": 3.234560488555922e-09,
+        "request_embodied_pe": 0.0007307645625503787,
+        "request_energy": 0.002017431678334936,
+        "request_usage_wcf": 0.0009565988541438156,
+        "request_usage_gwp": 0.0007755007371519494,
         "request_usage_adpe": 0.0,
-        "request_usage_pe": 0.0,
-        "request_usage_wcf": 0.0011709673942188795
+        "request_usage_pe": 0.0
       },
       "label": "Ecologits impacts",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -190,6 +191,7 @@
         "('Test-Job', 'gpu_required_count', None)",
         "('Test-Job', 'server_energy', None)",
         "('Test-Job', 'request_energy', None)",
+        "('Test-Job', 'request_it_energy', None)",
         "('Test-Job', 'request_usage_gwp', None)",
         "('Test-Job', 'server_gpu_embodied_gwp', None)",
         "('Test-Job', 'request_embodied_gwp', None)"
@@ -241,7 +243,7 @@
       "formula": "\ngpu_energy_per_token = gpu_energy_alpha * math.exp(gpu_energy_beta * batch_size) * model_active_parameter_count + \\\n    gpu_energy_gamma\ngpu_energy_per_token /= 1000    # convert to kWh\ngpu_energy = output_token_count * gpu_energy_per_token\n"
     },
     "generation_latency": {
-      "value": 25.41562189054726,
+      "value": 22.175021645021644,
       "unit": "second",
       "label": "Ecologits generation_latency for gpt-4o",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -264,8 +266,8 @@
         "model_active_parameter_count": 88.0,
         "output_token_count": 1000.0,
         "request_latency": Infinity,
-        "tps": 40.2,
-        "ttft": 0.54
+        "tps": 46.2,
+        "ttft": 0.53
       },
       "formula": "\nif tps is None:\n    latency_per_token = latency_alpha * model_active_parameter_count + latency_beta * batch_size + latency_gamma\nelse:\n    latency_per_token = 1 / tps\nlatency_first_token = ttft or 0\ngpu_latency = output_token_count * latency_per_token + latency_first_token\nif request_latency < gpu_latency:\n    generation_latency = request_latency\ngeneration_latency = gpu_latency\n"
     },
@@ -310,7 +312,7 @@
       "formula": "\ngpu_nb = math.ceil(model_required_memory / gpu_memory)\ngpu_required_count = 2 ** math.ceil(math.log2(gpu_nb))    # Round-up in base two\n"
     },
     "server_energy": {
-      "value": 0.2647460613598673,
+      "value": 0.2309898088023088,
       "unit": "watt_hour",
       "label": "Ecologits server_energy for gpt-4o",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -325,7 +327,7 @@
       ],
       "ancestors": {
         "batch_size": 64,
-        "generation_latency": 25.41562189054726,
+        "generation_latency": 22.175021645021644,
         "gpu_required_count": 16,
         "server_gpu_count": 8,
         "server_power": 1.2
@@ -333,7 +335,7 @@
       "formula": "\nserver_energy = (generation_latency / 3600) * server_power * (gpu_required_count / server_gpu_count) * (1 / batch_size)\n"
     },
     "request_energy": {
-      "value": 2.0579391814040062,
+      "value": 2.017431678334936,
       "unit": "watt_hour",
       "label": "Ecologits request_energy for gpt-4o",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -348,14 +350,33 @@
       ],
       "ancestors": {
         "datacenter_pue": 1.2,
+        "request_it_energy": 0.0016811930652791136
+      },
+      "formula": "\nrequest_energy = datacenter_pue * request_it_energy\n"
+    },
+    "request_it_energy": {
+      "value": 1.6811930652791136,
+      "unit": "watt_hour",
+      "label": "Ecologits request_it_energy for gpt-4o",
+      "source": "Ecologits-compute_llm_impacts_dag-function",
+      "direct_ancestors_with_id": [
+        "('Test-Job', 'impacts', None)"
+      ],
+      "direct_children_with_id": [],
+      "explain_nested_tuples": [
+        "('Test-Job', 'impacts', None)",
+        "extraction",
+        null
+      ],
+      "ancestors": {
         "gpu_energy": 9.06377035298003e-05,
         "gpu_required_count": 16,
-        "server_energy": 0.0002647460613598673
+        "server_energy": 0.00023098980880230878
       },
-      "formula": "\nrequest_energy = datacenter_pue * (server_energy + gpu_required_count * gpu_energy)\n"
+      "formula": "\nrequest_it_energy = server_energy + gpu_required_count * gpu_energy\n"
     },
     "request_usage_gwp": {
-      "value": 0.7893225730275066,
+      "value": 0.7755007371519494,
       "unit": "gram",
       "label": "Ecologits request_usage_gwp for gpt-4o",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -369,8 +390,8 @@
         null
       ],
       "ancestors": {
-        "if_electricity_mix_gwp": 0.38355,
-        "request_energy": 0.0020579391814040063
+        "if_electricity_mix_gwp": 0.3844,
+        "request_energy": 0.002017431678334936
       },
       "formula": "\nrequest_usage_gwp = request_energy * if_electricity_mix_gwp\n"
     },
@@ -397,7 +418,7 @@
       "formula": "\nserver_gpu_embodied_gwp = (gpu_required_count / server_gpu_count) * server_embodied_gwp + gpu_required_count * gpu_embodied_gwp\n"
     },
     "request_embodied_gwp": {
-      "value": 0.06618651533996682,
+      "value": 0.0577474522005772,
       "unit": "gram",
       "label": "Ecologits request_embodied_gwp for gpt-4o",
       "source": "Ecologits-compute_llm_impacts_dag-function",
@@ -412,7 +433,7 @@
       ],
       "ancestors": {
         "batch_size": 64,
-        "generation_latency": 25.41562189054726,
+        "generation_latency": 22.175021645021644,
         "server_gpu_embodied_gwp": 15768.0,
         "server_lifetime": 94608000
       },
@@ -488,7 +509,7 @@
       ]
     },
     "tokens_per_second": {
-      "value": 40.2,
+      "value": 46.2,
       "unit": "dimensionless",
       "label": "gpt-4o token per second",
       "source": "Ecologits-llm_impacts-function",
@@ -506,7 +527,7 @@
       ]
     },
     "time_to_first_token": {
-      "value": 0.54,
+      "value": 0.53,
       "unit": "second",
       "label": "gpt-4o time to first token",
       "source": "Ecologits-llm_impacts-function",
@@ -555,7 +576,7 @@
       ]
     },
     "average_carbon_intensity": {
-      "value": 0.38355,
+      "value": 0.3844,
       "unit": "kilogram / kilowatt_hour",
       "label": "Average carbon intensity of electricity mix for openai",
       "source": "Ecologits-llm_impacts-function",
