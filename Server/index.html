@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -4044,7 +4016,7 @@
 <h3 id="hour_by_hour_ram_need">hour_by_hour_ram_need</h3>
 <p>Hourly RAM demand placed on the server by all of its jobs combined.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB ram:<br />
-    first 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161, 0.192],<br />
+    first 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128, 0.175],<br />
     last 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277, 0.0138, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4087,7 +4059,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bb378e {
+             #mynetwork_8bee02 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4109,7 +4081,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_bb378e" class="card-body"></div>
+            <div id="mynetwork_8bee02" class="card-body"></div>
         </div>
 
 
@@ -4139,12 +4111,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bb378e');
+                  var container = document.getElementById('mynetwork_8bee02');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00\nto 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161,\n0.192],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00444, 0.00333, 0.00333, 0.00111, 0.000556, 0.000556,\n0.005, 0.00444, 0.005],\nlast 10 vals [0.00278, 0.005, 0.00278, 0.00333, 0.00333, 0.000556, 0.000556,\n0.005, 0.00444, 0.00278] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM needed", "label": "RAM needed", "shape": "dot", "size": 15, "title": "RAM needed\n=\nduplicate (RAM buffer size per user)\n=\nduplicate (50 MB ram)\n=\n50 MB ram", "x": 300.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00\nto 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128,\n0.175],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.005, 0.005, 0.00333, 0.005, 0.00111, 0.00278, 0.005, 0.00111,\n0.00333, 0.00444],\nlast 10 vals [0.00444, 0.005, 0.00222, 0.00167, 0.00222, 0.00444, 0.005,\n0.00389, 0.00222, 0.00167] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 0.0, "y": 1050}, {"color": null, "id": "RAM needed", "label": "RAM needed", "shape": "dot", "size": 15, "title": "RAM needed\n=\nduplicate (RAM buffer size per user)\n=\nduplicate (50 MB ram)\n=\n50 MB ram", "x": 300.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed during job processing", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour ram need"}, {"arrows": "to", "from": "RAM needed", "to": "Hour by hour ram need"}]);
 
                   nodeColors = {};
@@ -4214,7 +4186,7 @@
 <h3 id="hour_by_hour_compute_need">hour_by_hour_compute_need</h3>
 <p>Hourly compute demand placed on the server by all of its jobs combined.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:<br />
-    first 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109, 0.0376, 0.0642, 0.0931],<br />
+    first 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983, 0.0299, 0.062, 0.092],<br />
     last 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4257,7 +4229,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_82818f {
+             #mynetwork_f58f64 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4279,7 +4251,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_82818f" class="card-body"></div>
+            <div id="mynetwork_f58f64" class="card-body"></div>
         </div>
 
 
@@ -4309,12 +4281,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_82818f');
+                  var container = document.getElementById('mynetwork_f58f64');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * cpu cores needed on server\nserver during job processing + Hourly average occurrences across usage patterns\n* CPU needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 0.1 cpu core + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 0.00311 cpu\ncore\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109,\n0.0376, 0.0642, 0.0931],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00444, 0.00333, 0.00333, 0.00111, 0.000556, 0.000556,\n0.005, 0.00444, 0.005],\nlast 10 vals [0.00278, 0.005, 0.00278, 0.00333, 0.00333, 0.000556, 0.000556,\n0.005, 0.00444, 0.00278] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "cpu cores needed on server server during job processing", "label": "cpu cores needed on\nserver server during\njob processing", "shape": "dot", "size": 15, "title": "cpu cores needed on server server during job processing = 0.1 cpu core", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needed", "label": "CPU needed", "shape": "dot", "size": 15, "title": "CPU needed\n=\nCPU cost per static stream * Dynamic bitrate\n=\n4 cpu core\u00b7s/GB * 0.778 MB/s\n=\n0.00311 cpu core", "x": 300.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * cpu cores needed on server\nserver during job processing + Hourly average occurrences across usage patterns\n* CPU needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 0.1 cpu core + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 0.00311 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983,\n0.0299, 0.062, 0.092],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.005, 0.005, 0.00333, 0.005, 0.00111, 0.00278, 0.005, 0.00111,\n0.00333, 0.00444],\nlast 10 vals [0.00444, 0.005, 0.00222, 0.00167, 0.00222, 0.00444, 0.005,\n0.00389, 0.00222, 0.00167] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "cpu cores needed on server server during job processing", "label": "cpu cores needed on\nserver server during\njob processing", "shape": "dot", "size": 15, "title": "cpu cores needed on server server during job processing = 0.1 cpu core", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needed", "label": "CPU needed", "shape": "dot", "size": 15, "title": "CPU needed\n=\nCPU cost per static stream * Dynamic bitrate\n=\n4 cpu core\u00b7s/GB * 0.778 MB/s\n=\n0.00311 cpu core", "x": 300.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour compute need"}, {"arrows": "to", "from": "cpu cores needed on server server during job processing", "to": "Hour by hour compute need"}, {"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Hour by hour compute need"}, {"arrows": "to", "from": "CPU needed", "to": "Hour by hour compute need"}]);
 
                   nodeColors = {};
@@ -4423,7 +4395,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7ab7fa {
+             #mynetwork_3537d2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4445,7 +4417,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7ab7fa" class="card-body"></div>
+            <div id="mynetwork_3537d2" class="card-body"></div>
         </div>
 
 
@@ -4475,7 +4447,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7ab7fa');
+                  var container = document.getElementById('mynetwork_3537d2');
 
 
 
@@ -4589,7 +4561,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d8baa2 {
+             #mynetwork_2cfad9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4611,7 +4583,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d8baa2" class="card-body"></div>
+            <div id="mynetwork_2cfad9" class="card-body"></div>
         </div>
 
 
@@ -4641,7 +4613,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d8baa2');
+                  var container = document.getElementById('mynetwork_2cfad9');
 
 
 
@@ -4756,7 +4728,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d18d8c {
+             #mynetwork_ed4cd0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4778,7 +4750,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d18d8c" class="card-body"></div>
+            <div id="mynetwork_ed4cd0" class="card-body"></div>
         </div>
 
 
@@ -4808,7 +4780,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d18d8c');
+                  var container = document.getElementById('mynetwork_ed4cd0');
 
 
 
@@ -4923,7 +4895,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_5087fa {
+             #mynetwork_4b3a06 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4945,7 +4917,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5087fa" class="card-body"></div>
+            <div id="mynetwork_4b3a06" class="card-body"></div>
         </div>
 
 
@@ -4975,7 +4947,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5087fa');
+                  var container = document.getElementById('mynetwork_4b3a06');
 
 
 
@@ -5050,7 +5022,7 @@
 <h3 id="raw_nb_of_instances">raw_nb_of_instances</h3>
 <p>Hourly number of instances strictly required to serve hourly demand, taking the maximum across the RAM and compute dimensions, before rounding to whole instances.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148, 0.000148, 0.00192, 0.00328, 0.00475],<br />
+    first 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133, 0.00153, 0.00317, 0.00469],<br />
     last 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425, 0.00283, 0.00141, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5093,7 +5065,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_51b6d0 {
+             #mynetwork_ad2f2c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5115,7 +5087,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_51b6d0" class="card-body"></div>
+            <div id="mynetwork_ad2f2c" class="card-body"></div>
         </div>
 
 
@@ -5145,12 +5117,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_51b6d0');
+                  var container = document.getElementById('mynetwork_ad2f2c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161,\n0.192],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109,\n0.0376, 0.0642, 0.0931],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00\nto 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161,\n0.192],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0]", "x": -562.5, "y": 1200}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n128 GB ram * 0.9 - 2.3 GB ram\n=\n113 GB ram", "x": -187.5, "y": 1200}, {"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * cpu cores needed on server\nserver during job processing + Hourly average occurrences across usage patterns\n* CPU needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 0.1 cpu core + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 0.00311 cpu\ncore\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109,\n0.0376, 0.0642, 0.0931],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0]", "x": 187.5, "y": 1200}, {"color": null, "id": "Available CPU per instance", "label": "Available CPU per\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per instance\n=\nNb cpu cores * Utilization rate - Occupied CPU per instance including services\n=\n24 cpu core * 0.9 - 2 cpu core\n=\n19.6 cpu core", "x": 562.5, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128,\n0.175],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983,\n0.0299, 0.062, 0.092],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hour by hour ram need", "label": "Hour by hour ram\nneed", "shape": "dot", "size": 15, "title": "Hour by hour ram need\n=\nHourly average occurrences across usage patterns * RAM needed during job\nprocessing + Hourly average occurrences across usage patterns * RAM needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 50 MB ram + 26298 values from 2025-01-01 00:00:00+00:00\nto 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 50 MB ram\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128,\n0.175],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0]", "x": -562.5, "y": 1200}, {"color": null, "id": "Available RAM per instance", "label": "Available RAM per\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per instance\n=\nRAM * Utilization rate - Occupied RAM per instance including services\n=\n128 GB ram * 0.9 - 2.3 GB ram\n=\n113 GB ram", "x": -187.5, "y": 1200}, {"color": null, "id": "Hour by hour compute need", "label": "Hour by hour compute\nneed", "shape": "dot", "size": 15, "title": "Hour by hour compute need\n=\nHourly average occurrences across usage patterns * cpu cores needed on server\nserver during job processing + Hourly average occurrences across usage patterns\n* CPU needed\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * 0.1 cpu core + 26298 values from 2025-01-01\n00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 0.00311 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu\ncore:\nfirst 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983,\n0.0299, 0.062, 0.092],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0]", "x": 187.5, "y": 1200}, {"color": null, "id": "Available CPU per instance", "label": "Available CPU per\ninstance", "shape": "dot", "size": 15, "title": "Available CPU per instance\n=\nNb cpu cores * Utilization rate - Occupied CPU per instance including services\n=\n24 cpu core * 0.9 - 2 cpu core\n=\n19.6 cpu core", "x": 562.5, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hour by hour ram need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Available RAM per instance", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Hour by hour compute need", "to": "Hourly raw number of instances"}, {"arrows": "to", "from": "Available CPU per instance", "to": "Hourly raw number of instances"}]);
 
                   nodeColors = {};
@@ -5261,7 +5233,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_25fdd2 {
+             #mynetwork_817b39 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5283,7 +5255,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_25fdd2" class="card-body"></div>
+            <div id="mynetwork_817b39" class="card-body"></div>
         </div>
 
 
@@ -5313,12 +5285,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_25fdd2');
+                  var container = document.getElementById('mynetwork_817b39');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161,\n0.192],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109,\n0.0376, 0.0642, 0.0931],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -375.0, "y": 1350}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 375.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128,\n0.175],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983,\n0.0299, 0.062, 0.092],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -375.0, "y": 1350}, {"color": "darkred", "id": "Server type", "label": "Server type", "shape": "dot", "size": 15, "title": "Server type = autoscaling", "x": 375.0, "y": 1350}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly number of instances"}, {"arrows": "to", "from": "Server type", "to": "Hourly number of instances"}]);
 
                   nodeColors = {};
@@ -5430,7 +5402,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d167af {
+             #mynetwork_ab1797 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5452,7 +5424,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d167af" class="card-body"></div>
+            <div id="mynetwork_ab1797" class="card-body"></div>
         </div>
 
 
@@ -5482,12 +5454,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d167af');
+                  var container = document.getElementById('mynetwork_ab1797');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint fabrication * one hour / Lifespan\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 600 kg * 1 h / 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4],\nlast 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -500.0, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication = 600 kg", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 500.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly instances fabrication footprint", "label": "Hourly instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly instances fabrication footprint\n=\nHourly number of instances * Carbon footprint fabrication * one hour / Lifespan\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 600 kg * 1 h / 6 yr\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4],\nlast 10 vals [11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 11.4, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -500.0, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication", "label": "Carbon footprint\nfabrication", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication = 600 kg", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan", "label": "Lifespan", "shape": "dot", "size": 15, "title": "Lifespan = 6 yr", "x": 500.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication", "to": "Hourly instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan", "to": "Hourly instances fabrication footprint"}]);
 
                   nodeColors = {};
@@ -5557,7 +5529,7 @@
 <h3 id="instances_energy">instances_energy</h3>
 <p>Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in kWh:<br />
-    first 10 vals [0.0601, 0.0604, 0.0603, 0.0603, 0.0601, 0.06, 0.06, 0.0606, 0.061, 0.0614],<br />
+    first 10 vals [0.0604, 0.0604, 0.0603, 0.0604, 0.0601, 0.0602, 0.0604, 0.0605, 0.0609, 0.0614],<br />
     last 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608, 0.0604, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5601,7 +5573,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7ad5bf {
+             #mynetwork_e3684f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5623,7 +5595,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7ad5bf" class="card-body"></div>
+            <div id="mynetwork_e3684f" class="card-body"></div>
         </div>
 
 
@@ -5653,12 +5625,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7ad5bf');
+                  var container = document.getElementById('mynetwork_e3684f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 50 W * 1.2 * 1 h + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0] * (300 W - 50 W) * 1.2 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0601, 0.0604, 0.0603, 0.0603, 0.0601, 0.06, 0.06, 0.0606,\n0.061, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -1140.0, "y": 1500}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 50 W", "x": -570.0, "y": 1500}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.0501, 0.134, 0.1, 0.1, 0.0334, 0.0167, 0.0167, 0.164, 0.161,\n0.192],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00328, 0.00874, 0.00655, 0.00655, 0.00218, 0.00109, 0.00109,\n0.0376, 0.0642, 0.0931],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -1187.5, "y": 1350}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power = 300 W", "x": 1140.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 50 W * 1.2 * 1 h + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0] * (300 W - 50 W) * 1.2 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0604, 0.0604, 0.0603, 0.0604, 0.0601, 0.0602, 0.0604, 0.0605,\n0.0609, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of instances", "label": "Hourly number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly number of instances\n=\nceil (Hourly raw number of instances) logically dependent on Server type\n=\nceil (105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00\nin :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]) logically dependent on autoscaling\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0]", "x": -1140.0, "y": 1500}, {"color": null, "id": "Idle power", "label": "Idle power", "shape": "dot", "size": 15, "title": "Idle power = 50 W", "x": -570.0, "y": 1500}, {"color": null, "id": "PUE", "label": "PUE", "shape": "dot", "size": 15, "title": "PUE = 1.2", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly raw number of instances", "label": "Hourly raw number of\ninstances", "shape": "dot", "size": 15, "title": "Hourly raw number of instances\n=\nHour by hour ram need / Available RAM per instance max compared with Hour by\nhour compute need / Available CPU per instance\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in GB\nram:\nfirst 10 vals [0.15, 0.15, 0.1, 0.15, 0.0334, 0.0835, 0.15, 0.0473, 0.128,\n0.175],\nlast 10 vals [0.0694, 0.0694, 0.0694, 0.0694, 0.0694, 0.0555, 0.0416, 0.0277,\n0.0138, 0] / 113 GB ram max compared with 105192 values from 2025-01-01\n00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in cpu core:\nfirst 10 vals [0.00983, 0.00983, 0.00655, 0.00983, 0.00218, 0.00546, 0.00983,\n0.0299, 0.062, 0.092],\nlast 10 vals [0.139, 0.139, 0.139, 0.139, 0.139, 0.111, 0.0832, 0.0555, 0.0277,\n0] / 19.6 cpu core\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0]", "x": -1187.5, "y": 1350}, {"color": null, "id": "Power", "label": "Power", "shape": "dot", "size": 15, "title": "Power = 300 W", "x": 1140.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of instances", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Idle power", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "PUE", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Hourly raw number of instances", "to": "Hourly energy consumed by instances"}, {"arrows": "to", "from": "Power", "to": "Hourly energy consumed by instances"}]);
 
                   nodeColors = {};
@@ -5728,7 +5700,7 @@
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>Hourly carbon emissions caused by the electricity consumed by this hardware, equal to its hourly energy use times the local grid carbon intensity.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:<br />
-    first 10 vals [6.01, 6.04, 6.03, 6.03, 6.01, 6, 6, 6.06, 6.1, 6.14],<br />
+    first 10 vals [6.04, 6.04, 6.03, 6.04, 6.01, 6.02, 6.04, 6.05, 6.09, 6.14],<br />
     last 10 vals [6.21, 6.21, 6.21, 6.21, 6.21, 6.17, 6.13, 6.08, 6.04, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5769,7 +5741,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_983160 {
+             #mynetwork_03ff06 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5791,7 +5763,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_983160" class="card-body"></div>
+            <div id="mynetwork_03ff06" class="card-body"></div>
         </div>
 
 
@@ -5821,12 +5793,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_983160');
+                  var container = document.getElementById('mynetwork_03ff06');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly energy consumed by instances * Average carbon intensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0601, 0.0604, 0.0603, 0.0603, 0.0601, 0.06, 0.06, 0.0606,\n0.061, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0] * 100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [6.01, 6.04, 6.03, 6.03, 6.01, 6, 6, 6.06, 6.1, 6.14],\nlast 10 vals [6.21, 6.21, 6.21, 6.21, 6.21, 6.17, 6.13, 6.08, 6.04, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 50 W * 1.2 * 1 h + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.000444, 0.00118, 0.000887, 0.000887, 0.000296, 0.000148,\n0.000148, 0.00192, 0.00328, 0.00475],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0] * (300 W - 50 W) * 1.2 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0601, 0.0604, 0.0603, 0.0603, 0.0601, 0.06, 0.06, 0.0606,\n0.061, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0]", "x": -712.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 712.5, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly energy footprint", "label": "Hourly energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly energy footprint\n=\nHourly energy consumed by instances * Average carbon intensity of electricity\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0604, 0.0604, 0.0603, 0.0604, 0.0601, 0.0602, 0.0604, 0.0605,\n0.0609, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0] * 100 g/kWh\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in g:\nfirst 10 vals [6.04, 6.04, 6.03, 6.04, 6.01, 6.02, 6.04, 6.05, 6.09, 6.14],\nlast 10 vals [6.21, 6.21, 6.21, 6.21, 6.21, 6.17, 6.13, 6.08, 6.04, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly energy consumed by instances", "label": "Hourly energy\nconsumed by\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by instances\n=\nHourly number of instances * Idle power * PUE * one hour + Hourly raw number of\ninstances * (Power - Idle power) * PUE * one hour\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * 50 W * 1.2 * 1 h + 105192 values\nfrom 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00133, 0.00133, 0.000887, 0.00133, 0.000296, 0.000739, 0.00133,\n0.00153, 0.00317, 0.00469],\nlast 10 vals [0.00708, 0.00708, 0.00708, 0.00708, 0.00708, 0.00566, 0.00425,\n0.00283, 0.00141, 0] * (300 W - 50 W) * 1.2 * 1 h\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in\nkWh:\nfirst 10 vals [0.0604, 0.0604, 0.0603, 0.0604, 0.0601, 0.0602, 0.0604, 0.0605,\n0.0609, 0.0614],\nlast 10 vals [0.0621, 0.0621, 0.0621, 0.0621, 0.0621, 0.0617, 0.0613, 0.0608,\n0.0604, 0]", "x": -712.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of electricity", "label": "Average carbon\nintensity of\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity = 100 g/kWh", "x": 712.5, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by instances", "to": "Hourly energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of electricity", "to": "Hourly energy footprint"}]);
 
                   nodeColors = {};
@@ -5896,9 +5868,9 @@
 <h3 id="service_total_job_volumes">service_total_job_volumes</h3>
 <p>Total hourly volume of jobs going through each installed service, used to attribute service-level overhead to individual jobs.  </p>
 <p>Example value: {<br />
-VideoStreaming Video streaming service (71fe4c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67], <br />
+VideoStreaming Video streaming service (9f14281d-3f3): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5938,7 +5910,7 @@ VideoStreaming Video streaming service (71fe4c): 26298 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_c85b55 {
+             #mynetwork_bb4d35 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5960,7 +5932,7 @@ VideoStreaming Video streaming service (71fe4c): 26298 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c85b55" class="card-body"></div>
+            <div id="mynetwork_bb4d35" class="card-body"></div>
         </div>
 
 
@@ -5990,12 +5962,12 @@ VideoStreaming Video streaming service (71fe4c): 26298 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c85b55');
+                  var container = document.getElementById('mynetwork_bb4d35');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Total job volume for Video streaming service", "label": "Total job volume for\nVideo streaming\nservice", "shape": "dot", "size": 15, "title": "Total job volume for Video streaming service\n=\nHourly average occurrences across usage patterns\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Total job volume for Video streaming service", "label": "Total job volume for\nVideo streaming\nservice", "shape": "dot", "size": 15, "title": "Total job volume for Video streaming service\n=\nHourly average occurrences across usage patterns\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Total job volume for Video streaming service"}]);
 
                   nodeColors = {};
@@ -6065,11 +6037,11 @@ VideoStreaming Video streaming service (71fe4c): 26298 values from 2025-01-01 00
 <h3 id="job_repartition_weights">job_repartition_weights</h3>
 <p>Per-job weight used to attribute the server's fabrication and energy footprint back to its jobs, proportional to each job's share of compute and RAM consumption over the modeling period.  </p>
 <p>Example value: {<br />
-Job Manually defined job (3a776b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506, 0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],<br />
+Job Manually defined job (d1149b32-ba7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506, 0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],<br />
     last 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379, 0.00253, 0.00126, 0], <br />
-VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172, 0.017, 0.0172],<br />
+VideoStreamingJob Video streaming job (5171b68c-e99): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016, 0.0167, 0.017],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], <br />
 }  </p>
 <p>Depends directly on:  </p>
@@ -6114,7 +6086,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_79787d {
+             #mynetwork_fbc738 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6136,7 +6108,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_79787d" class="card-body"></div>
+            <div id="mynetwork_fbc738" class="card-body"></div>
         </div>
 
 
@@ -6166,12 +6138,12 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_79787d');
+                  var container = document.getElementById('mynetwork_fbc738');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.00167, 0.00444, 0.00333, 0.00333, 0.00111, 0.000556, 0.000556,\n0.005, 0.00444, 0.005],\nlast 10 vals [0.00278, 0.005, 0.00278, 0.00333, 0.00333, 0.000556, 0.000556,\n0.005, 0.00444, 0.00278] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "cpu cores needed on server server during job processing", "label": "cpu cores needed on\nserver server during\njob processing", "shape": "dot", "size": 15, "title": "cpu cores needed on server server during job processing = 0.1 cpu core", "x": -150.0, "y": 1050}, {"color": null, "id": "Nb cpu cores", "label": "Nb cpu cores", "shape": "dot", "size": 15, "title": "Nb cpu cores = 24 cpu core", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 150.0, "y": 1050}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM = 128 GB ram", "x": 300.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern + Average hourly occurrences in\nDefault edge usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.005, 0.005, 0.00333, 0.005, 0.00111, 0.00278, 0.005, 0.00111,\n0.00333, 0.00444],\nlast 10 vals [0.00444, 0.005, 0.00222, 0.00167, 0.00222, 0.00444, 0.005,\n0.00389, 0.00222, 0.00167] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000277, 0.000555, 0.000833],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0]", "x": -300.0, "y": 1050}, {"color": "darkred", "id": "cpu cores needed on server server during job processing", "label": "cpu cores needed on\nserver server during\njob processing", "shape": "dot", "size": 15, "title": "cpu cores needed on server server during job processing = 0.1 cpu core", "x": -150.0, "y": 1050}, {"color": null, "id": "Nb cpu cores", "label": "Nb cpu cores", "shape": "dot", "size": 15, "title": "Nb cpu cores = 24 cpu core", "x": 0.0, "y": 1050}, {"color": "darkred", "id": "RAM needed during job processing", "label": "RAM needed during\njob processing", "shape": "dot", "size": 15, "title": "RAM needed during job processing = 50 MB ram", "x": 150.0, "y": 1050}, {"color": null, "id": "RAM", "label": "RAM", "shape": "dot", "size": 15, "title": "RAM = 128 GB ram", "x": 300.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly average occurrences across usage patterns", "to": "Manually defined job weight in impact repartition"}, {"arrows": "to", "from": "cpu cores needed on server server during job processing", "to": "Manually defined job weight in impact repartition"}, {"arrows": "to", "from": "Nb cpu cores", "to": "Manually defined job weight in impact repartition"}, {"arrows": "to", "from": "RAM needed during job processing", "to": "Manually defined job weight in impact repartition"}, {"arrows": "to", "from": "RAM", "to": "Manually defined job weight in impact repartition"}]);
 
                   nodeColors = {};
@@ -6241,7 +6213,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of fabrication impact repartition weights, used as the denominator when normalising into per-container shares.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185, 0.0196, 0.021],<br />
+    first 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172, 0.0192, 0.0208],<br />
     last 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379, 0.00253, 0.00126, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6282,7 +6254,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_2786dd {
+             #mynetwork_fbb98c {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6304,7 +6276,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2786dd" class="card-body"></div>
+            <div id="mynetwork_fbb98c" class="card-body"></div>
         </div>
 
 
@@ -6334,12 +6306,12 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2786dd');
+                  var container = document.getElementById('mynetwork_fbb98c');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Video streaming job weight in impact repartition", "label": "Video streaming job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Video streaming job weight in impact repartition\n=\nHourly number of instances * (OS and streaming software base RAM consumption /\nRAM + no value / Nb cpu cores) * (Hourly average occurrences across usage\npatterns / Total job volume for Video streaming service) + Hourly average\noccurrences across usage patterns * (CPU needed / Nb cpu cores + RAM needed /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * (2 GB ram / 128 GB ram + no value\n/ 24 cpu core) * (26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]) + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * (0.00311 cpu\ncore / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 450.0, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Video streaming job weight in impact repartition", "label": "Video streaming job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Video streaming job weight in impact repartition\n=\nHourly number of instances * (OS and streaming software base RAM consumption /\nRAM + no value / Nb cpu cores) * (Hourly average occurrences across usage\npatterns / Total job volume for Video streaming service) + Hourly average\noccurrences across usage patterns * (CPU needed / Nb cpu cores + RAM needed /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * (2 GB ram / 128 GB ram + no value\n/ 24 cpu core) * (26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]) + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * (0.00311 cpu\ncore / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 450.0, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined job weight in impact repartition", "to": "Fabrication impact repartition weights sum"}, {"arrows": "to", "from": "Video streaming job weight in impact repartition", "to": "Fabrication impact repartition weights sum"}]);
 
                   nodeColors = {};
@@ -6409,11 +6381,11 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 <h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Normalised share of fabrication-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-Job Manually defined job (3a776b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.00047, 0.00119, 0.000911, 0.000911, 0.000317, 0.00016, 0.00016, 0.0697, 0.13, 0.182],<br />
+Job Manually defined job (d1149b32-ba7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.00132, 0.00132, 0.000911, 0.00132, 0.000317, 0.000767, 0.00132, 0.0736, 0.132, 0.183],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
-VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [1, 0.999, 0.999, 0.999, 1, 1, 1, 0.93, 0.87, 0.818],<br />
+VideoStreamingJob Video streaming job (5171b68c-e99): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.999, 0.999, 0.999, 0.999, 1, 0.999, 0.999, 0.926, 0.868, 0.817],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
@@ -6455,7 +6427,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_f1167c {
+             #mynetwork_e3967b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6477,7 +6449,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f1167c" class="card-body"></div>
+            <div id="mynetwork_e3967b" class="card-body"></div>
         </div>
 
 
@@ -6507,12 +6479,12 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f1167c');
+                  var container = document.getElementById('mynetwork_e3967b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to Manually defined job", "label": "fabrication impact\nattribution to\nManually defined job", "shape": "dot", "size": 15, "title": "fabrication impact attribution to Manually defined job\n=\nManually defined job weight in impact repartition / Fabrication impact\nrepartition weights sum\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00047, 0.00119, 0.000911, 0.000911, 0.000317, 0.00016, 0.00016,\n0.0697, 0.13, 0.182],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1950}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to Manually defined job", "label": "fabrication impact\nattribution to\nManually defined job", "shape": "dot", "size": 15, "title": "fabrication impact attribution to Manually defined job\n=\nManually defined job weight in impact repartition / Fabrication impact\nrepartition weights sum\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00132, 0.00132, 0.000911, 0.00132, 0.000317, 0.000767, 0.00132,\n0.0736, 0.132, 0.183],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1950}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined job weight in impact repartition", "to": "fabrication impact attribution to Manually defined job"}, {"arrows": "to", "from": "Fabrication impact repartition weights sum", "to": "fabrication impact attribution to Manually defined job"}]);
 
                   nodeColors = {};
@@ -6582,7 +6554,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 <h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
 <p>Sum of usage impact repartition weights, used as the denominator when normalising into per-container shares.  </p>
 <p>Example value: 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185, 0.0196, 0.021],<br />
+    first 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172, 0.0192, 0.0208],<br />
     last 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379, 0.00253, 0.00126, 0]  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6623,7 +6595,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_c62eac {
+             #mynetwork_6fb322 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6645,7 +6617,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c62eac" class="card-body"></div>
+            <div id="mynetwork_6fb322" class="card-body"></div>
         </div>
 
 
@@ -6675,12 +6647,12 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c62eac');
+                  var container = document.getElementById('mynetwork_6fb322');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Video streaming job weight in impact repartition", "label": "Video streaming job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Video streaming job weight in impact repartition\n=\nHourly number of instances * (OS and streaming software base RAM consumption /\nRAM + no value / Nb cpu cores) * (Hourly average occurrences across usage\npatterns / Total job volume for Video streaming service) + Hourly average\noccurrences across usage patterns * (CPU needed / Nb cpu cores + RAM needed /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * (2 GB ram / 128 GB ram + no value\n/ 24 cpu core) * (26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]) + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * (0.00311 cpu\ncore / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 450.0, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Video streaming job weight in impact repartition", "label": "Video streaming job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Video streaming job weight in impact repartition\n=\nHourly number of instances * (OS and streaming software base RAM consumption /\nRAM + no value / Nb cpu cores) * (Hourly average occurrences across usage\npatterns / Total job volume for Video streaming service) + Hourly average\noccurrences across usage patterns * (CPU needed / Nb cpu cores + RAM needed /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 0] * (2 GB ram / 128 GB ram + no value\n/ 24 cpu core) * (26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01\n18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]) + 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * (0.00311 cpu\ncore / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 450.0, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined job weight in impact repartition", "to": "Usage impact repartition weights sum"}, {"arrows": "to", "from": "Video streaming job weight in impact repartition", "to": "Usage impact repartition weights sum"}]);
 
                   nodeColors = {};
@@ -6750,11 +6722,11 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 <h3 id="usage_impact_repartition">usage_impact_repartition</h3>
 <p>Normalised share of usage-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-Job Manually defined job (3a776b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [0.00047, 0.00119, 0.000911, 0.000911, 0.000317, 0.00016, 0.00016, 0.0697, 0.13, 0.182],<br />
+Job Manually defined job (d1149b32-ba7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.00132, 0.00132, 0.000911, 0.00132, 0.000317, 0.000767, 0.00132, 0.0736, 0.132, 0.183],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
-VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
-    first 10 vals [1, 0.999, 0.999, 0.999, 1, 1, 1, 0.93, 0.87, 0.818],<br />
+VideoStreamingJob Video streaming job (5171b68c-e99): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+    first 10 vals [0.999, 0.999, 0.999, 0.999, 1, 0.999, 0.999, 0.926, 0.868, 0.817],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
@@ -6796,7 +6768,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_05c83d {
+             #mynetwork_c90b6e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6818,7 +6790,7 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_05c83d" class="card-body"></div>
+            <div id="mynetwork_c90b6e" class="card-body"></div>
         </div>
 
 
@@ -6848,12 +6820,12 @@ VideoStreamingJob Video streaming job (a74768): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_05c83d');
+                  var container = document.getElementById('mynetwork_c90b6e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage impact attribution to Manually defined job", "label": "usage impact\nattribution to\nManually defined job", "shape": "dot", "size": 15, "title": "usage impact attribution to Manually defined job\n=\nManually defined job weight in impact repartition / Usage impact repartition\nweights sum\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00047, 0.00119, 0.000911, 0.000911, 0.000317, 0.00016, 0.00016,\n0.0697, 0.13, 0.182],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1950}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.00000167, 0.00000444, 0.00000333, 0.00000333, 0.00000111,\n0.000000556, 0.000000556, 0.000282, 0.000559, 0.000838],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000076, 0.0000203, 0.0000152, 0.0000152, 0.00000506,\n0.00000253, 0.00000253, 0.00129, 0.00255, 0.00382],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0161, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0172,\n0.017, 0.0172],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0162, 0.017, 0.0167, 0.0167, 0.016, 0.0158, 0.0158, 0.0185,\n0.0196, 0.021],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage impact attribution to Manually defined job", "label": "usage impact\nattribution to\nManually defined job", "shape": "dot", "size": 15, "title": "usage impact attribution to Manually defined job\n=\nManually defined job weight in impact repartition / Usage impact repartition\nweights sum\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] / 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.00132, 0.00132, 0.000911, 0.00132, 0.000317, 0.000767, 0.00132,\n0.0736, 0.132, 0.183],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1950}, {"color": null, "id": "Manually defined job weight in impact repartition", "label": "Manually defined job\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "Manually defined job weight in impact repartition\n=\nHourly average occurrences across usage patterns * (cpu cores needed on server\nserver during job processing / Nb cpu cores + RAM needed during job processing /\nRAM)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in k:\nfirst 10 vals [0.000005, 0.000005, 0.00000333, 0.000005, 0.00000111, 0.00000278,\n0.000005, 0.000279, 0.000558, 0.000837],\nlast 10 vals [0.00139, 0.00139, 0.00139, 0.00139, 0.00139, 0.00111, 0.000832,\n0.000555, 0.000277, 0] * (0.1 cpu core / 24 cpu core + 50 MB ram / 128 GB ram)\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": -450.0, "y": 1650}, {"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\nManually defined job weight in impact repartition + Video streaming job weight\nin impact repartition\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0000228, 0.0000228, 0.0000152, 0.0000228, 0.00000506,\n0.0000127, 0.0000228, 0.00127, 0.00254, 0.00381],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0] + 105192 values from 2025-01-01 00:00:00+00:00 to\n2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.016,\n0.0167, 0.017],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :\nfirst 10 vals [0.0172, 0.0172, 0.0167, 0.0172, 0.016, 0.0165, 0.0172, 0.0172,\n0.0192, 0.0208],\nlast 10 vals [0.00633, 0.00632, 0.00633, 0.00633, 0.00633, 0.00506, 0.00379,\n0.00253, 0.00126, 0]", "x": 0.0, "y": 1800}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Manually defined job weight in impact repartition", "to": "usage impact attribution to Manually defined job"}, {"arrows": "to", "from": "Usage impact repartition weights sum", "to": "usage impact attribution to Manually defined job"}]);
 
                   nodeColors = {};

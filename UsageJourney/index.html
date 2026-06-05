@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -3436,7 +3408,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_800aa2 {
+             #mynetwork_3f2d36 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3458,7 +3430,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_800aa2" class="card-body"></div>
+            <div id="mynetwork_3f2d36" class="card-body"></div>
         </div>
 
 
@@ -3488,7 +3460,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_800aa2');
+                  var container = document.getElementById('mynetwork_3f2d36');
 
 
 
@@ -3563,9 +3535,9 @@
 <h3 id="nb_usage_journeys_in_parallel_per_usage_pattern">nb_usage_journeys_in_parallel_per_usage_pattern</h3>
 <p>Hourly count of journeys that are concurrently in progress in each usage pattern, derived from journey starts and journey duration. Used to size devices that are occupied for the full journey duration.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67], <br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3606,7 +3578,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_b961e6 {
+             #mynetwork_cdabd6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3628,7 +3600,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_b961e6" class="card-body"></div>
+            <div id="mynetwork_cdabd6" class="card-body"></div>
         </div>
 
 
@@ -3658,12 +3630,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_b961e6');
+                  var container = document.getElementById('mynetwork_cdabd6');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [5, 3, 8, 6, 6, 2, 1, 1, 9, 8],\nlast 10 vals [2, 5, 9, 5, 6, 6, 1, 1, 9, 8] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration", "label": "Duration", "shape": "dot", "size": 15, "title": "Duration\n=\nTime spent by user\n=\n20 min\n=\n20 min", "x": 112.5, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [3, 9, 9, 6, 9, 2, 5, 9, 2, 6],\nlast 10 vals [3, 8, 9, 4, 3, 4, 8, 9, 7, 4] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": -112.5, "y": 300}, {"color": null, "id": "Duration", "label": "Duration", "shape": "dot", "size": 15, "title": "Duration\n=\nTime spent by user\n=\n20 min\n=\n20 min", "x": 112.5, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "usage pattern hourly nb of user journeys in parallel"}, {"arrows": "to", "from": "Duration", "to": "usage pattern hourly nb of user journeys in parallel"}]);
 
                   nodeColors = {};
@@ -3733,9 +3705,9 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>Per-usage-pattern weight used to attribute device-side fabrication emissions back to each pattern, proportional to concurrent journeys times journey occurrences.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67], <br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3775,7 +3747,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_393c52 {
+             #mynetwork_16f6a1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3797,7 +3769,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_393c52" class="card-body"></div>
+            <div id="mynetwork_16f6a1" class="card-body"></div>
         </div>
 
 
@@ -3827,12 +3799,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_393c52');
+                  var container = document.getElementById('mynetwork_16f6a1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nHourly nb of usage journey starts (UTC) hourly occurrences average Duration\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 20 min\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "usage pattern fabrication weight in impact repartition"}]);
 
                   nodeColors = {};
@@ -3902,8 +3874,8 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of fabrication impact repartition weights, used as the denominator when normalising into per-container shares.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]  </p>
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#fabrication_impact_repartition_weights">usage pattern fabrication weight in impact repartition</a>  </li>
@@ -3942,7 +3914,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_59cb4c {
+             #mynetwork_384ecc {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3964,7 +3936,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_59cb4c" class="card-body"></div>
+            <div id="mynetwork_384ecc" class="card-body"></div>
         </div>
 
 
@@ -3994,12 +3966,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_59cb4c');
+                  var container = document.getElementById('mynetwork_384ecc');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nusage pattern fabrication weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nusage pattern fabrication weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern fabrication weight in impact repartition", "to": "Fabrication impact repartition weights sum"}]);
 
                   nodeColors = {};
@@ -4069,7 +4041,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Normalised share of fabrication-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -4112,7 +4084,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_02d636 {
+             #mynetwork_b23d04 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4134,7 +4106,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_02d636" class="card-body"></div>
+            <div id="mynetwork_b23d04" class="card-body"></div>
         </div>
 
 
@@ -4164,12 +4136,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_02d636');
+                  var container = document.getElementById('mynetwork_b23d04');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to usage pattern", "label": "fabrication impact\nattribution to usage\npattern", "shape": "dot", "size": 15, "title": "fabrication impact attribution to usage pattern\n=\nusage pattern fabrication weight in impact repartition / Fabrication impact\nrepartition weights sum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 600}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nusage pattern fabrication weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to usage pattern", "label": "fabrication impact\nattribution to usage\npattern", "shape": "dot", "size": 15, "title": "fabrication impact attribution to usage pattern\n=\nusage pattern fabrication weight in impact repartition / Fabrication impact\nrepartition weights sum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "usage pattern fabrication weight in impact repartition", "label": "usage pattern\nfabrication weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "usage pattern fabrication weight in impact repartition\n=\nusage pattern hourly nb of user journeys in parallel * Number of occurrences of\nuser journey in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 600}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\nusage pattern fabrication weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern fabrication weight in impact repartition", "to": "fabrication impact attribution to usage pattern"}, {"arrows": "to", "from": "Fabrication impact repartition weights sum", "to": "fabrication impact attribution to usage pattern"}]);
 
                   nodeColors = {};

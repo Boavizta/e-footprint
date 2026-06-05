@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a27fc0 {
+             #mynetwork_d6b9be {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a27fc0" class="card-body"></div>
+            <div id="mynetwork_d6b9be" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a27fc0');
+                  var container = document.getElementById('mynetwork_d6b9be');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [300, 800, 600, 600, 200, 100, 100, 900, 800, 900],\nlast 10 vals [500, 900, 500, 600, 600, 100, 100, 900, 800, 500]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [300, 800, 600, 600, 200, 100, 100, 900, 800, 900],\nlast 10 vals [500, 900, 500, 600, 600, 100, 100, 900, 800, 500]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.000833, 0.00222, 0.00167, 0.00167, 0.000556, 0.000278,\n0.000278, 0.0025, 0.00222, 0.0025],\nlast 10 vals [0.00139, 0.0025, 0.00139, 0.00167, 0.00167, 0.000278, 0.000278,\n0.0025, 0.00222, 0.00139] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [300, 800, 600, 600, 200, 100, 100, 900, 800, 900],\nlast 10 vals [500, 900, 500, 600, 600, 100, 100, 900, 800, 500]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [900, 900, 600, 900, 200, 500, 900, 200, 600, 800],\nlast 10 vals [800, 900, 400, 300, 400, 800, 900, 700, 400, 300]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [900, 900, 600, 900, 200, 500, 900, 200, 600, 800],\nlast 10 vals [800, 900, 400, 300, 400, 800, 900, 700, 400, 300]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Request duration)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0025, 0.0025, 0.00167, 0.0025, 0.000556, 0.00139, 0.0025,\n0.000556, 0.00167, 0.00222],\nlast 10 vals [0.00222, 0.0025, 0.00111, 0.000833, 0.00111, 0.00222, 0.0025,\n0.00194, 0.00111, 0.000833] * (100 kB stored * 1 h / 1 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB\nstored:\nfirst 10 vals [900, 900, 600, 900, 200, 500, 900, 200, 600, 800],\nlast 10 vals [800, 900, 400, 300, 400, 800, 900, 700, 400, 300]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored in usage pattern", "to": "Hourly data stored across usage patterns"}]);
 
                   nodeColors = {};

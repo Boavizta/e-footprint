@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -3473,7 +3445,7 @@
 
 
 <h1 id="ecologitsgenaiexternalapi">EcoLogitsGenAIExternalAPI</h1>
-<p>An external generative-AI API (OpenAI, Anthropic, Mistral...) modelled through the EcoLogits library. Picks a model and provider; EcoLogits supplies parameter counts, throughput, datacenter location, and grid carbon intensity.</p>
+<p>An external generative-AI API (OpenAI, Anthropic, Mistral...) modeled through the EcoLogits library. Picks a model and provider; EcoLogits supplies parameter counts, throughput, datacenter location, and grid carbon intensity.</p>
 <h2 id="usage-from-python">Usage from Python</h2>
 <p>Pick <a href="./#provider">EcoLogitsGenAIExternalAPI.provider</a> and <a href="./#model_name">EcoLogitsGenAIExternalAPI.model_name</a> from the EcoLogits catalog, then attach <a href="../EcoLogitsGenAIExternalAPIJob/">EcoLogitsGenAIExternalAPIJob</a>s sized by output token count. EcoLogits queries are cached as calculated attributes so they fire only when the model changes.</p>
 <h2 id="params">Params</h2>
@@ -3532,7 +3504,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_033a31 {
+             #mynetwork_df4125 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3554,7 +3526,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_033a31" class="card-body"></div>
+            <div id="mynetwork_df4125" class="card-body"></div>
         </div>
 
 
@@ -3584,7 +3556,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_033a31');
+                  var container = document.getElementById('mynetwork_df4125');
 
 
 
@@ -3698,7 +3670,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_dfcdb9 {
+             #mynetwork_a60c9b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3720,7 +3692,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dfcdb9" class="card-body"></div>
+            <div id="mynetwork_a60c9b" class="card-body"></div>
         </div>
 
 
@@ -3750,7 +3722,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dfcdb9');
+                  var container = document.getElementById('mynetwork_a60c9b');
 
 
 
@@ -3824,7 +3796,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_model_active_params.html' target='_blank'>link to claude-opus-4-5 active parameter count (in billions)’s full calculation graph</a>.</p>
 <h3 id="tokens_per_second">tokens_per_second</h3>
 <p>Average generation throughput of the model in tokens per second, looked up in the EcoLogits model repository. Empty if the model does not publish a value.  </p>
-<p>Example value: 34.1   </p>
+<p>Example value: 39.6   </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#provider">Provider</a></li>
@@ -3864,7 +3836,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_90a12c {
+             #mynetwork_464546 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3886,7 +3858,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_90a12c" class="card-body"></div>
+            <div id="mynetwork_464546" class="card-body"></div>
         </div>
 
 
@@ -3916,12 +3888,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_90a12c');
+                  var container = document.getElementById('mynetwork_464546');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 token per second", "label": "claude-opus-4-5\ntoken per second", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n34.1", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 token per second", "label": "claude-opus-4-5\ntoken per second", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n39.6", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 token per second"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 token per second"}]);
 
                   nodeColors = {};
@@ -3990,7 +3962,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_tokens_per_second.html' target='_blank'>link to claude-opus-4-5 token per second’s full calculation graph</a>.</p>
 <h3 id="time_to_first_token">time_to_first_token</h3>
 <p>Time between sending the prompt and receiving the first generated token, looked up in the EcoLogits model repository. Empty if the model does not publish a value.  </p>
-<p>Example value: 1.59 s  </p>
+<p>Example value: 1.56 s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#provider">Provider</a></li>
@@ -4030,7 +4002,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_98492d {
+             #mynetwork_c2c281 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4052,7 +4024,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_98492d" class="card-body"></div>
+            <div id="mynetwork_c2c281" class="card-body"></div>
         </div>
 
 
@@ -4082,12 +4054,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_98492d');
+                  var container = document.getElementById('mynetwork_c2c281');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 time to first token", "label": "claude-opus-4-5 time\nto first token", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.59 s", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "claude-opus-4-5 time to first token", "label": "claude-opus-4-5 time\nto first token", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.56 s", "x": 0.0, "y": 300}, {"color": "darkred", "id": "Provider", "label": "Provider", "shape": "dot", "size": 15, "title": "Provider = anthropic", "x": -75.0, "y": 150}, {"color": "darkred", "id": "Model used", "label": "Model used", "shape": "dot", "size": 15, "title": "Model used = claude-opus-4-5", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Provider", "to": "claude-opus-4-5 time to first token"}, {"arrows": "to", "from": "Model used", "to": "claude-opus-4-5 time to first token"}]);
 
                   nodeColors = {};
@@ -4195,7 +4167,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_628e10 {
+             #mynetwork_583131 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4217,7 +4189,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_628e10" class="card-body"></div>
+            <div id="mynetwork_583131" class="card-body"></div>
         </div>
 
 
@@ -4247,7 +4219,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_628e10');
+                  var container = document.getElementById('mynetwork_583131');
 
 
 
@@ -4360,7 +4332,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8c4aa9 {
+             #mynetwork_4de13a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4382,7 +4354,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8c4aa9" class="card-body"></div>
+            <div id="mynetwork_4de13a" class="card-body"></div>
         </div>
 
 
@@ -4412,7 +4384,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8c4aa9');
+                  var container = document.getElementById('mynetwork_4de13a');
 
 
 
@@ -4525,7 +4497,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_001a27 {
+             #mynetwork_c5144a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4547,7 +4519,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_001a27" class="card-body"></div>
+            <div id="mynetwork_c5144a" class="card-body"></div>
         </div>
 
 
@@ -4577,7 +4549,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_001a27');
+                  var container = document.getElementById('mynetwork_c5144a');
 
 
 

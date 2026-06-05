@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -2178,6 +2150,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#request_it_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        request_it_energy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#request_usage_gwp" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3715,6 +3698,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#request_it_energy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        request_it_energy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#request_usage_gwp" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4003,7 +3997,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0eab36 {
+             #mynetwork_4ada95 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4025,7 +4019,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_0eab36" class="card-body"></div>
+            <div id="mynetwork_4ada95" class="card-body"></div>
         </div>
 
 
@@ -4055,7 +4049,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0eab36');
+                  var container = document.getElementById('mynetwork_4ada95');
 
 
 
@@ -4173,7 +4167,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bd5dfc {
+             #mynetwork_ed7c6d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4195,7 +4189,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_bd5dfc" class="card-body"></div>
+            <div id="mynetwork_ed7c6d" class="card-body"></div>
         </div>
 
 
@@ -4225,12 +4219,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bd5dfc');
+                  var container = document.getElementById('mynetwork_ed7c6d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions)", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n134 billion", "x": -375.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions)", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670 billion", "x": -225.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5", "label": "Output token count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 = 1000", "x": -75.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 75.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 token per second", "label": "claude-opus-4-5\ntoken per second", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n34.1", "x": 225.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 time to first token", "label": "claude-opus-4-5 time\nto first token", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.59 s", "x": 375.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}, {"color": null, "id": "claude-opus-4-5 active parameter count (in billions)", "label": "claude-opus-4-5\nactive parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 active parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n134 billion", "x": -375.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 total parameter count (in billions)", "label": "claude-opus-4-5\ntotal parameter\ncount (in billions)", "shape": "dot", "size": 15, "title": "claude-opus-4-5 total parameter count (in billions)\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n670 billion", "x": -225.0, "y": 450}, {"color": "darkred", "id": "Output token count for claude-opus-4-5", "label": "Output token count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Output token count for claude-opus-4-5 = 1000", "x": -75.0, "y": 450}, {"color": null, "id": "Average carbon intensity of electricity mix for anthropic", "label": "Average carbon\nintensity of\nelectricity mix for\nanthropic", "shape": "dot", "size": 15, "title": "Average carbon intensity of electricity mix for anthropic\n=\nquery EcoLogits electricity mix repository with datacenter location (Datacenter\nlocation for anthropic)\n=\nquery EcoLogits electricity mix repository with datacenter location (USA)\n=\n0.384 kg/kWh", "x": 75.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 token per second", "label": "claude-opus-4-5\ntoken per second", "shape": "dot", "size": 15, "title": "claude-opus-4-5 token per second\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n39.6", "x": 225.0, "y": 450}, {"color": null, "id": "claude-opus-4-5 time to first token", "label": "claude-opus-4-5 time\nto first token", "shape": "dot", "size": 15, "title": "claude-opus-4-5 time to first token\n=\nProvider query EcoLogits model repository with Model used\n=\nanthropic query EcoLogits model repository with claude-opus-4-5\n=\n1.56 s", "x": 375.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "claude-opus-4-5 active parameter count (in billions)", "to": "Ecologits impacts"}, {"arrows": "to", "from": "claude-opus-4-5 total parameter count (in billions)", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Output token count for claude-opus-4-5", "to": "Ecologits impacts"}, {"arrows": "to", "from": "Average carbon intensity of electricity mix for anthropic", "to": "Ecologits impacts"}, {"arrows": "to", "from": "claude-opus-4-5 token per second", "to": "Ecologits impacts"}, {"arrows": "to", "from": "claude-opus-4-5 time to first token", "to": "Ecologits impacts"}]);
 
                   nodeColors = {};
@@ -4338,7 +4332,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_f21cd0 {
+             #mynetwork_721c0d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4360,7 +4354,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f21cd0" class="card-body"></div>
+            <div id="mynetwork_721c0d" class="card-body"></div>
         </div>
 
 
@@ -4390,12 +4384,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f21cd0');
+                  var container = document.getElementById('mynetwork_721c0d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_energy for claude-opus-4-5", "label": "Ecologits gpu_energy\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits gpu_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n117 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_energy for claude-opus-4-5", "label": "Ecologits gpu_energy\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits gpu_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n117 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits gpu_energy for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -4464,7 +4458,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_gpu_energy.html' target='_blank'>link to Ecologits gpu_energy for claude-opus-4-5’s full calculation graph</a>.</p>
 <h3 id="generation_latency">generation_latency</h3>
 <p>Extracts the generation_latency field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
-<p>Example value: 30.9 s  </p>
+<p>Example value: 26.8 s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts</a>  </li>
@@ -4503,7 +4497,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ef7072 {
+             #mynetwork_84ab81 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4525,7 +4519,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ef7072" class="card-body"></div>
+            <div id="mynetwork_84ab81" class="card-body"></div>
         </div>
 
 
@@ -4555,12 +4549,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ef7072');
+                  var container = document.getElementById('mynetwork_84ab81');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n30.9 s", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n26.8 s", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits generation_latency for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -4668,7 +4662,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cd15bf {
+             #mynetwork_ea708b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4690,7 +4684,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cd15bf" class="card-body"></div>
+            <div id="mynetwork_ea708b" class="card-body"></div>
         </div>
 
 
@@ -4720,12 +4714,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cd15bf');
+                  var container = document.getElementById('mynetwork_ea708b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits model_required_memory for claude-opus-4-5", "label": "Ecologits\nmodel_required_memory\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits model_required_memory for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1.61 TB ram", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits model_required_memory for claude-opus-4-5", "label": "Ecologits\nmodel_required_memory\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits model_required_memory for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1.61 TB ram", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits model_required_memory for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -4833,7 +4827,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ea17ce {
+             #mynetwork_cc859e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4855,7 +4849,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ea17ce" class="card-body"></div>
+            <div id="mynetwork_cc859e" class="card-body"></div>
         </div>
 
 
@@ -4885,12 +4879,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ea17ce');
+                  var container = document.getElementById('mynetwork_cc859e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_required_count for claude-opus-4-5", "label": "Ecologits\ngpu_required_count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits gpu_required_count for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n32", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits gpu_required_count for claude-opus-4-5", "label": "Ecologits\ngpu_required_count\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits gpu_required_count for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n32", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits gpu_required_count for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -4959,7 +4953,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_gpu_required_count.html' target='_blank'>link to Ecologits gpu_required_count for claude-opus-4-5’s full calculation graph</a>.</p>
 <h3 id="server_energy">server_energy</h3>
 <p>Extracts the server_energy field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
-<p>Example value: 644 mWh  </p>
+<p>Example value: 559 mWh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts</a>  </li>
@@ -4998,7 +4992,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9c31ed {
+             #mynetwork_b4ebb4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5020,7 +5014,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9c31ed" class="card-body"></div>
+            <div id="mynetwork_b4ebb4" class="card-body"></div>
         </div>
 
 
@@ -5050,12 +5044,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9c31ed');
+                  var container = document.getElementById('mynetwork_b4ebb4');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_energy for claude-opus-4-5", "label": "Ecologits\nserver_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits server_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n644 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_energy for claude-opus-4-5", "label": "Ecologits\nserver_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits server_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n559 mWh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits server_energy for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5124,7 +5118,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_server_energy.html' target='_blank'>link to Ecologits server_energy for claude-opus-4-5’s full calculation graph</a>.</p>
 <h3 id="request_energy">request_energy</h3>
 <p>Extracts the request_energy field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
-<p>Example value: 4.88 Wh  </p>
+<p>Example value: 4.78 Wh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts</a>  </li>
@@ -5163,7 +5157,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_182348 {
+             #mynetwork_22582f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5185,7 +5179,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_182348" class="card-body"></div>
+            <div id="mynetwork_22582f" class="card-body"></div>
         </div>
 
 
@@ -5215,12 +5209,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_182348');
+                  var container = document.getElementById('mynetwork_22582f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_energy for claude-opus-4-5", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.88 Wh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_energy for claude-opus-4-5", "label": "Ecologits\nrequest_energy for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.78 Wh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_energy for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5287,9 +5281,9 @@
 </html>
 
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_energy.html' target='_blank'>link to Ecologits request_energy for claude-opus-4-5’s full calculation graph</a>.</p>
-<h3 id="request_usage_gwp">request_usage_gwp</h3>
-<p>Extracts the request_usage_gwp field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
-<p>Example value: 1.87 g  </p>
+<h3 id="request_it_energy">request_it_energy</h3>
+<p>Extracts the request_it_energy field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
+<p>Example value: 4.29 Wh  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts</a>  </li>
@@ -5328,7 +5322,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4913e3 {
+             #mynetwork_f78de7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5350,7 +5344,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_4913e3" class="card-body"></div>
+            <div id="mynetwork_f78de7" class="card-body"></div>
         </div>
 
 
@@ -5380,12 +5374,177 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4913e3');
+                  var container = document.getElementById('mynetwork_f78de7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_usage_gwp for claude-opus-4-5", "label": "Ecologits\nrequest_usage_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1.87 g", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_it_energy for claude-opus-4-5", "label": "Ecologits\nrequest_it_energy\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_it_energy for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n4.29 Wh", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_it_energy for claude-opus-4-5"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_it_energy.html' target='_blank'>link to Ecologits request_it_energy for claude-opus-4-5’s full calculation graph</a>.</p>
+<h3 id="request_usage_gwp">request_usage_gwp</h3>
+<p>Extracts the request_usage_gwp field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
+<p>Example value: 1.84 g  </p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#impacts">Ecologits impacts</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b7be7d {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b7be7d" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b7be7d');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_usage_gwp for claude-opus-4-5", "label": "Ecologits\nrequest_usage_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_usage_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n1.84 g", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_usage_gwp for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5493,7 +5652,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6999e7 {
+             #mynetwork_1166c0 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5515,7 +5674,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6999e7" class="card-body"></div>
+            <div id="mynetwork_1166c0" class="card-body"></div>
         </div>
 
 
@@ -5545,12 +5704,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6999e7');
+                  var container = document.getElementById('mynetwork_1166c0');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5", "label": "Ecologits\nserver_gpu_embodied_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n31.5 t", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5", "label": "Ecologits\nserver_gpu_embodied_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n31.5 t", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits server_gpu_embodied_gwp for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5619,7 +5778,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_server_gpu_embodied_gwp.html' target='_blank'>link to Ecologits server_gpu_embodied_gwp for claude-opus-4-5’s full calculation graph</a>.</p>
 <h3 id="request_embodied_gwp">request_embodied_gwp</h3>
 <p>Extracts the request_embodied_gwp field from the cached EcoLogits impact dictionary on this job, converted into a typed e-footprint quantity.  </p>
-<p>Example value: 161 mg  </p>
+<p>Example value: 140 mg  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#impacts">Ecologits impacts</a>  </li>
@@ -5658,7 +5817,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_be9fe3 {
+             #mynetwork_9c23aa {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5680,7 +5839,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_be9fe3" class="card-body"></div>
+            <div id="mynetwork_9c23aa" class="card-body"></div>
         </div>
 
 
@@ -5710,12 +5869,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_be9fe3');
+                  var container = document.getElementById('mynetwork_9c23aa');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n161 mg", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 34.1 logically dependent on 1.59 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits request_embodied_gwp for claude-opus-4-5", "label": "Ecologits\nrequest_embodied_gwp\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits request_embodied_gwp for claude-opus-4-5\n=\nextraction (Ecologits impacts)\n=\nextraction ({\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...)\n=\n140 mg", "x": 0.0, "y": 750}, {"color": null, "id": "Ecologits impacts", "label": "Ecologits impacts", "shape": "dot", "size": 15, "title": "Ecologits impacts\n=\nclaude-opus-4-5 active parameter count (in billions) compute impacts with\nEcoLogits compute_llm_impacts_dag function claude-opus-4-5 total parameter count\n(in billions) logically dependent on Output token count for claude-opus-4-5\nlogically dependent on Average carbon intensity of electricity mix for anthropic\nlogically dependent on claude-opus-4-5 token per second logically dependent on\nclaude-opus-4-5 time to first token\n=\n134 billion compute impacts with EcoLogits compute_llm_impacts_dag function 670\nbillion logically dependent on 1000 logically dependent on 0.384 kg/kWh\nlogically dependent on 39.6 logically dependent on 1.56 s\n=\n{\u0027model_active_parameter_count\u0027: 133.5, \u0027model_total_paramet...", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits impacts", "to": "Ecologits request_embodied_gwp for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5784,7 +5943,7 @@
 <p>You can also visit the <a href='../calculus_graphs/Generative_AI_model_job_request_embodied_gwp.html' target='_blank'>link to Ecologits request_embodied_gwp for claude-opus-4-5’s full calculation graph</a>.</p>
 <h3 id="request_duration">request_duration</h3>
 <p>Request duration of one call, equal to the generation latency derived from EcoLogits.  </p>
-<p>Example value: 30.9 s  </p>
+<p>Example value: 26.8 s  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#generation_latency">Ecologits generation_latency for claude-opus-4-5</a>  </li>
@@ -5823,7 +5982,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_436e9c {
+             #mynetwork_c2b0c7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5845,7 +6004,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_436e9c" class="card-body"></div>
+            <div id="mynetwork_c2b0c7" class="card-body"></div>
         </div>
 
 
@@ -5875,12 +6034,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_436e9c');
+                  var container = document.getElementById('mynetwork_c2b0c7');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Ecologits generation_latency for claude-opus-4-5"}]);
 
                   nodeColors = {};
@@ -5950,9 +6109,9 @@
 <h3 id="hourly_occurrences_per_usage_pattern">hourly_occurrences_per_usage_pattern</h3>
 <p>Hourly count of job invocations broken down by usage pattern, derived from when each usage pattern's journeys start and at what point in the journey this job is triggered.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],<br />
-    last 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5], <br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],<br />
+    last 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -5992,7 +6151,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_825975 {
+             #mynetwork_5a48c2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6014,7 +6173,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_825975" class="card-body"></div>
+            <div id="mynetwork_5a48c2" class="card-body"></div>
         </div>
 
 
@@ -6044,12 +6203,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_825975');
+                  var container = document.getElementById('mynetwork_5a48c2');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\nHourly nb of usage journey starts (UTC) shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [5, 3, 8, 6, 6, 2, 1, 1, 9, 8],\nlast 10 vals [2, 5, 9, 5, 6, 6, 1, 1, 9, 8] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 300}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Executions per\nstep\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] shifted by no value) * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 450}, {"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [3, 9, 9, 6, 9, 2, 5, 9, 2, 6],\nlast 10 vals [3, 8, 9, 4, 3, 4, 8, 9, 7, 4] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts (UTC)", "to": "Hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -6119,9 +6278,9 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="hourly_avg_occurrences_per_usage_pattern">hourly_avg_occurrences_per_usage_pattern</h3>
 <p>Hourly count of job invocations averaged with respect to job duration, so a job that runs longer than an hour contributes a fractional occurrence to several modeling buckets.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773, 0.0687, 0.0773],<br />
-    last 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773, 0.0687, 0.0429], <br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149, 0.0447, 0.0596],<br />
+    last 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521, 0.0298, 0.0223], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6162,7 +6321,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_5b6fe7 {
+             #mynetwork_58b7b3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6184,7 +6343,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5b6fe7" class="card-body"></div>
+            <div id="mynetwork_58b7b3" class="card-body"></div>
         </div>
 
 
@@ -6214,12 +6373,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5b6fe7');
+                  var container = document.getElementById('mynetwork_58b7b3');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 30.9 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\nHourly nb of usage journey starts (UTC) shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 225.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": 0.0, "y": 1050}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Executions per\nstep\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] shifted by no value) * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 900}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 225.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Average hourly occurrences in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Average hourly occurrences in usage pattern"}]);
 
                   nodeColors = {};
@@ -6289,9 +6448,9 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="hourly_data_transferred_per_usage_pattern">hourly_data_transferred_per_usage_pattern</h3>
 <p>Hourly volume of data transferred over the network by this job, broken down by usage pattern.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:<br />
-    first 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],<br />
-    last 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25], <br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:<br />
+    first 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],<br />
+    last 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6333,7 +6492,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_5d46bd {
+             #mynetwork_6afd0b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6355,7 +6514,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_5d46bd" class="card-body"></div>
+            <div id="mynetwork_6afd0b" class="card-body"></div>
         </div>
 
 
@@ -6385,12 +6544,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_5d46bd');
+                  var container = document.getElementById('mynetwork_6afd0b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429] * (5 kB * 1 h / 30.9 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],\nlast 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 30.9 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]", "x": -337.5, "y": 1050}, {"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5\n=\n5 B * 1000\n=\n5 kB", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": -337.5, "y": 1050}, {"color": null, "id": "Data transferred for claude-opus-4-5", "label": "Data transferred for\nclaude-opus-4-5", "shape": "dot", "size": 15, "title": "Data transferred for claude-opus-4-5\n=\nBytes per token * Output token count for claude-opus-4-5\n=\n5 B * 1000\n=\n5 kB", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Data transferred for claude-opus-4-5", "to": "Hourly data transferred in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Hourly data transferred in usage pattern"}]);
 
                   nodeColors = {};
@@ -6460,7 +6619,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="hourly_data_stored_per_usage_pattern">hourly_data_stored_per_usage_pattern</h3>
 <p>Hourly net change in storage volume caused by this job, broken down by usage pattern.  </p>
 <p>Example value: {<br />
-UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B stored:<br />
+UsagePattern usage pattern (bc78c5bc-918): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B stored:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
     last 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], <br />
 }  </p>
@@ -6504,7 +6663,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_ad7f84 {
+             #mynetwork_335c51 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6526,7 +6685,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ad7f84" class="card-body"></div>
+            <div id="mynetwork_335c51" class="card-body"></div>
         </div>
 
 
@@ -6556,12 +6715,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ad7f84');
+                  var container = document.getElementById('mynetwork_335c51');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429] * (0 B stored * 1 h / 30.9 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 30.9 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]", "x": -337.5, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (30.9 s)\n=\n30.9 s", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (0 B stored * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": -337.5, "y": 1050}, {"color": "darkred", "id": "Data stored by request", "label": "Data stored by\nrequest", "shape": "dot", "size": 15, "title": "Data stored by request = 0 B stored", "x": 337.5, "y": 1050}, {"color": null, "id": "Ecologits generation_latency for claude-opus-4-5", "label": "Ecologits\ngeneration_latency\nfor claude-opus-4-5", "shape": "dot", "size": 15, "title": "Ecologits generation_latency for claude-opus-4-5\n=\nduplicate (Ecologits generation_latency for claude-opus-4-5)\n=\nduplicate (26.8 s)\n=\n26.8 s", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Data stored by request", "to": "Hourly data stored in usage pattern"}, {"arrows": "to", "from": "Ecologits generation_latency for claude-opus-4-5", "to": "Hourly data stored in usage pattern"}]);
 
                   nodeColors = {};
@@ -6631,8 +6790,8 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="hourly_avg_occurrences_across_usage_patterns">hourly_avg_occurrences_across_usage_patterns</h3>
 <p>Total hourly count of duration-averaged job invocations summed over every usage pattern.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773, 0.0687, 0.0773],<br />
-    last 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773, 0.0687, 0.0429]  </p>
+    first 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149, 0.0447, 0.0596],<br />
+    last 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521, 0.0298, 0.0223]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_avg_occurrences_per_usage_pattern">Average hourly occurrences in usage pattern</a>  </li>
@@ -6671,7 +6830,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_38fbda {
+             #mynetwork_7e8955 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6693,7 +6852,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_38fbda" class="card-body"></div>
+            <div id="mynetwork_7e8955" class="card-body"></div>
         </div>
 
 
@@ -6723,12 +6882,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_38fbda');
+                  var container = document.getElementById('mynetwork_7e8955');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] hourly occurrences average 30.9 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly average occurrences across usage patterns", "label": "Hourly average\noccurrences across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly average occurrences across usage patterns\n=\nAverage hourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": 0.0, "y": 1200}, {"color": null, "id": "Average hourly occurrences in usage pattern", "label": "Average hourly\noccurrences in usage\npattern", "shape": "dot", "size": 15, "title": "Average hourly occurrences in usage pattern\n=\nHourly occurrences in usage pattern hourly occurrences average Ecologits\ngeneration_latency for claude-opus-4-5\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] hourly occurrences average 26.8 s\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Average hourly occurrences in usage pattern", "to": "Hourly average occurrences across usage patterns"}]);
 
                   nodeColors = {};
@@ -6798,8 +6957,8 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="hourly_data_transferred_across_usage_patterns">hourly_data_transferred_across_usage_patterns</h3>
 <p>Total hourly volume of data transferred over the network by this job, summed over every usage pattern.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:<br />
-    first 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],<br />
-    last 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25]  </p>
+    first 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],<br />
+    last 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_data_transferred_per_usage_pattern">Hourly data transferred in usage pattern</a>  </li>
@@ -6838,7 +6997,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_e7d93c {
+             #mynetwork_82bbc9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6860,7 +7019,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_e7d93c" class="card-body"></div>
+            <div id="mynetwork_82bbc9" class="card-body"></div>
         </div>
 
 
@@ -6890,12 +7049,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e7d93c');
+                  var container = document.getElementById('mynetwork_82bbc9');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],\nlast 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],\nlast 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429] * (5 kB * 1 h / 30.9 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [15, 40, 30, 30, 10, 5, 5, 45, 40, 45],\nlast 10 vals [25, 45, 25, 30, 30, 5, 5, 45, 40, 25]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data transferred across usage patterns", "label": "Hourly data\ntransferred across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly data transferred across usage patterns\n=\nHourly data transferred in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data transferred in usage pattern", "label": "Hourly data\ntransferred in usage\npattern", "shape": "dot", "size": 15, "title": "Hourly data transferred in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data transferred for\nclaude-opus-4-5 * one hour / Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (5 kB * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in kB:\nfirst 10 vals [45, 45, 30, 45, 10, 25, 45, 10, 30, 40],\nlast 10 vals [40, 45, 20, 15, 20, 40, 45, 35, 20, 15]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data transferred in usage pattern", "to": "Hourly data transferred across usage patterns"}]);
 
                   nodeColors = {};
@@ -7005,7 +7164,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_01d52c {
+             #mynetwork_24960e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7027,7 +7186,7 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_01d52c" class="card-body"></div>
+            <div id="mynetwork_24960e" class="card-body"></div>
         </div>
 
 
@@ -7057,12 +7216,12 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_01d52c');
+                  var container = document.getElementById('mynetwork_24960e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.0258, 0.0687, 0.0515, 0.0515, 0.0172, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0773],\nlast 10 vals [0.0429, 0.0773, 0.0429, 0.0515, 0.0515, 0.00859, 0.00859, 0.0773,\n0.0687, 0.0429] * (0 B stored * 1 h / 30.9 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly data stored across usage patterns", "label": "Hourly data stored\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly data stored across usage patterns\n=\nHourly data stored in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Hourly data stored in usage pattern", "label": "Hourly data stored\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly data stored in usage pattern\n=\nAverage hourly occurrences in usage pattern * (Data stored by request * one hour\n/ Ecologits generation_latency for claude-opus-4-5)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [0.067, 0.067, 0.0447, 0.067, 0.0149, 0.0372, 0.067, 0.0149,\n0.0447, 0.0596],\nlast 10 vals [0.0596, 0.067, 0.0298, 0.0223, 0.0298, 0.0596, 0.067, 0.0521,\n0.0298, 0.0223] * (0 B stored * 1 h / 26.8 s)\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in B\nstored:\nfirst 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],\nlast 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", "x": 0.0, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data stored in usage pattern", "to": "Hourly data stored across usage patterns"}]);
 
                   nodeColors = {};
@@ -7132,9 +7291,9 @@ UsagePattern usage pattern (39480c): 26298 values from 2025-01-01 00:00:00+00:00
 <h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>Weights used to attribute fabrication-phase emissions of upstream impact sources to each container of this object.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67], <br />
+UsageJourneyStep 20 min streaming (7acb9e49-95f): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -7174,7 +7333,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_f44e4d {
+             #mynetwork_a96875 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7196,7 +7355,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f44e4d" class="card-body"></div>
+            <div id="mynetwork_a96875" class="card-body"></div>
         </div>
 
 
@@ -7226,12 +7385,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f44e4d');
+                  var container = document.getElementById('mynetwork_a96875');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in impact repartition", "label": "user journey weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "user journey weight in impact repartition\n=\nusage pattern fabrication weight in impact repartition * Number of occurrences\nof 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in impact repartition", "label": "user journey weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "user journey weight in impact repartition\n=\nusage pattern fabrication weight in impact repartition * Number of occurrences\nof 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in impact repartition", "to": "20 min streaming weight in impact repartition"}]);
 
                   nodeColors = {};
@@ -7301,8 +7460,8 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="fabrication_impact_repartition_weight_sum">fabrication_impact_repartition_weight_sum</h3>
 <p>Sum of fabrication impact repartition weights, used as the denominator when normalising into per-container shares.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]  </p>
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#fabrication_impact_repartition_weights">20 min streaming weight in impact repartition</a>  </li>
@@ -7341,7 +7500,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_6f9906 {
+             #mynetwork_09426b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7363,7 +7522,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6f9906" class="card-body"></div>
+            <div id="mynetwork_09426b" class="card-body"></div>
         </div>
 
 
@@ -7393,12 +7552,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6f9906');
+                  var container = document.getElementById('mynetwork_09426b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in impact repartition", "to": "Fabrication impact repartition weights sum"}]);
 
                   nodeColors = {};
@@ -7468,7 +7627,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Normalised share of fabrication-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+UsageJourneyStep 20 min streaming (7acb9e49-95f): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -7511,7 +7670,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_3ccf9f {
+             #mynetwork_9373b2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7533,7 +7692,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3ccf9f" class="card-body"></div>
+            <div id="mynetwork_9373b2" class="card-body"></div>
         </div>
 
 
@@ -7563,12 +7722,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3ccf9f');
+                  var container = document.getElementById('mynetwork_9373b2');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to 20 min streaming", "label": "fabrication impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in impact repartition / Fabrication impact repartition\nweights sum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "fabrication impact attribution to 20 min streaming", "label": "fabrication impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "fabrication impact attribution to 20 min streaming\n=\n20 min streaming weight in impact repartition / Fabrication impact repartition\nweights sum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "Fabrication impact repartition weights sum", "label": "Fabrication impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Fabrication impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in impact repartition", "to": "fabrication impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Fabrication impact repartition weights sum", "to": "fabrication impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
@@ -7638,9 +7797,9 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="usage_impact_repartition_weights">usage_impact_repartition_weights</h3>
 <p>Weights used to attribute usage-phase emissions of upstream impact sources to each container of this object.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67], <br />
+UsageJourneyStep 20 min streaming (7acb9e49-95f): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1], <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -7680,7 +7839,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_6f1e07 {
+             #mynetwork_4e899a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7702,7 +7861,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6f1e07" class="card-body"></div>
+            <div id="mynetwork_4e899a" class="card-body"></div>
         </div>
 
 
@@ -7732,12 +7891,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6f1e07');
+                  var container = document.getElementById('mynetwork_4e899a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in impact repartition", "label": "user journey weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "user journey weight in impact repartition\n=\nusage pattern fabrication weight in impact repartition * Number of occurrences\nof 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "user journey weight in impact repartition", "label": "user journey weight\nin impact\nrepartition", "shape": "dot", "size": 15, "title": "user journey weight in impact repartition\n=\nusage pattern fabrication weight in impact repartition * Number of occurrences\nof 20 min streaming in user journey\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "user journey weight in impact repartition", "to": "20 min streaming weight in impact repartition"}]);
 
                   nodeColors = {};
@@ -7807,8 +7966,8 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="usage_impact_repartition_weight_sum">usage_impact_repartition_weight_sum</h3>
 <p>Sum of usage impact repartition weights, used as the denominator when normalising into per-container shares.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],<br />
-    last 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]  </p>
+    first 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],<br />
+    last 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#usage_impact_repartition_weights">20 min streaming weight in impact repartition</a>  </li>
@@ -7847,7 +8006,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_3c7a62 {
+             #mynetwork_bb7c6e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -7869,7 +8028,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3c7a62" class="card-body"></div>
+            <div id="mynetwork_bb7c6e" class="card-body"></div>
         </div>
 
 
@@ -7899,12 +8058,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3c7a62');
+                  var container = document.getElementById('mynetwork_bb7c6e');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 1050}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in impact repartition", "to": "Usage impact repartition weights sum"}]);
 
                   nodeColors = {};
@@ -7974,7 +8133,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="usage_impact_repartition">usage_impact_repartition</h3>
 <p>Normalised share of usage-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
+UsageJourneyStep 20 min streaming (7acb9e49-95f): 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],<br />
     last 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], <br />
 }  </p>
@@ -8017,7 +8176,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_891349 {
+             #mynetwork_1e1224 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -8039,7 +8198,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_891349" class="card-body"></div>
+            <div id="mynetwork_1e1224" class="card-body"></div>
         </div>
 
 
@@ -8069,12 +8228,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_891349');
+                  var container = document.getElementById('mynetwork_1e1224');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage impact attribution to 20 min streaming", "label": "usage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "usage impact attribution to 20 min streaming\n=\n20 min streaming weight in impact repartition / Usage impact repartition weights\nsum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 900}, {"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 2.67, 2, 2, 0.667, 0.333, 0.333, 3, 2.67, 3],\nlast 10 vals [1.67, 3, 1.67, 2, 2, 0.333, 0.333, 3, 2.67, 1.67]", "x": 0.0, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage impact attribution to 20 min streaming", "label": "usage impact\nattribution to 20\nmin streaming", "shape": "dot", "size": 15, "title": "usage impact attribution to 20 min streaming\n=\n20 min streaming weight in impact repartition / Usage impact repartition weights\nsum\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] / 26298 values\nfrom 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],\nlast 10 vals [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]", "x": 0.0, "y": 1200}, {"color": null, "id": "20 min streaming weight in impact repartition", "label": "20 min streaming\nweight in impact\nrepartition", "shape": "dot", "size": 15, "title": "20 min streaming weight in impact repartition\n=\nuser journey weight in impact repartition * Number of occurrences of Generative\nAI model job in 20 min streaming\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1] * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 900}, {"color": null, "id": "Usage impact repartition weights sum", "label": "Usage impact\nrepartition weights\nsum", "shape": "dot", "size": 15, "title": "Usage impact repartition weights sum\n=\n20 min streaming weight in impact repartition\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 3, 2, 3, 0.667, 1.67, 3, 0.667, 2, 2.67],\nlast 10 vals [2.67, 3, 1.33, 1, 1.33, 2.67, 3, 2.33, 1.33, 1]", "x": 0.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "20 min streaming weight in impact repartition", "to": "usage impact attribution to 20 min streaming"}, {"arrows": "to", "from": "Usage impact repartition weights sum", "to": "usage impact attribution to 20 min streaming"}]);
 
                   nodeColors = {};
@@ -8144,8 +8303,8 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 <h3 id="hourly_occurrences_across_usage_patterns">hourly_occurrences_across_usage_patterns</h3>
 <p>Hourly count of occurrences of this job summed across all usage patterns that trigger it.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],<br />
-    last 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]  </p>
+    first 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],<br />
+    last 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_occurrences_per_usage_pattern">Hourly occurrences in usage pattern</a>  </li>
@@ -8184,7 +8343,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         </center>
         <style type="text/css">
 
-             #mynetwork_2c6b58 {
+             #mynetwork_bace8a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -8206,7 +8365,7 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2c6b58" class="card-body"></div>
+            <div id="mynetwork_bace8a" class="card-body"></div>
         </div>
 
 
@@ -8236,12 +8395,12 @@ UsageJourneyStep 20 min streaming (811c81): 26298 values from 2025-01-01 00:00:0
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2c6b58');
+                  var container = document.getElementById('mynetwork_bace8a');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences across usage patterns", "label": "Hourly occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly occurrences across usage patterns\n=\nHourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\nHourly nb of usage journey starts (UTC) shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5] shifted by no value\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly occurrences across usage patterns", "label": "Hourly occurrences\nacross usage\npatterns", "shape": "dot", "size": 15, "title": "Hourly occurrences across usage patterns\n=\nHourly occurrences in usage pattern\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 600}, {"color": null, "id": "Hourly occurrences in usage pattern", "label": "Hourly occurrences\nin usage pattern", "shape": "dot", "size": 15, "title": "Hourly occurrences in usage pattern\n=\n(Hourly nb of usage journey starts (UTC) shifted by no value) * Executions per\nstep\n=\n(26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3] shifted by no value) * 1\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly occurrences in usage pattern", "to": "Hourly occurrences across usage patterns"}]);
 
                   nodeColors = {};

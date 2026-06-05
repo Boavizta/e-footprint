@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -3566,8 +3538,8 @@
 <h3 id="utc_hourly_usage_journey_starts">utc_hourly_usage_journey_starts</h3>
 <p>Hourly journey starts converted from the country's local timezone to UTC, so that downstream calculations can be combined across patterns in different timezones.  </p>
 <p>Example value: 26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :<br />
-    first 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],<br />
-    last 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]  </p>
+    first 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],<br />
+    last 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]  </p>
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="./#hourly_usage_journey_starts">Hourly nb of usage journey starts</a></li>
@@ -3607,7 +3579,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_497a13 {
+             #mynetwork_c71e89 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3629,7 +3601,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_497a13" class="card-body"></div>
+            <div id="mynetwork_c71e89" class="card-body"></div>
         </div>
 
 
@@ -3659,12 +3631,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_497a13');
+                  var container = document.getElementById('mynetwork_c71e89');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [5, 3, 8, 6, 6, 2, 1, 1, 9, 8],\nlast 10 vals [2, 5, 9, 5, 6, 6, 1, 1, 9, 8] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [3, 8, 6, 6, 2, 1, 1, 9, 8, 9],\nlast 10 vals [5, 9, 5, 6, 6, 1, 1, 9, 8, 5]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [5, 3, 8, 6, 6, 2, 1, 1, 9, 8],\nlast 10 vals [2, 5, 9, 5, 6, 6, 1, 1, 9, 8]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly nb of usage journey starts (UTC)", "label": "Hourly nb of usage\njourney starts (UTC)", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts (UTC)\n=\nHourly nb of usage journey starts converted to UTC from Timezone\n=\n26298 values from 2025-01-01 00:00:00 to 2028-01-01 18:00:00 in :\nfirst 10 vals [3, 9, 9, 6, 9, 2, 5, 9, 2, 6],\nlast 10 vals [3, 8, 9, 4, 3, 4, 8, 9, 7, 4] converted to UTC from Europe/Paris\n=\n26298 values from 2025-01-01 00:00:00+00:00 to 2028-01-01 18:00:00+00:00 in :\nfirst 10 vals [9, 9, 6, 9, 2, 5, 9, 2, 6, 8],\nlast 10 vals [8, 9, 4, 3, 4, 8, 9, 7, 4, 3]", "x": 0.0, "y": 300}, {"color": null, "id": "Hourly nb of usage journey starts", "label": "Hourly nb of usage\njourney starts", "shape": "dot", "size": 15, "title": "Hourly nb of usage journey starts = 26298 values from 2025-01-01 00:00:00 to\n2028-01-01 18:00:00 in :\nfirst 10 vals [3, 9, 9, 6, 9, 2, 5, 9, 2, 6],\nlast 10 vals [3, 8, 9, 4, 3, 4, 8, 9, 7, 4]", "x": -75.0, "y": 150}, {"color": "gold", "id": "Timezone", "label": "Timezone", "shape": "dot", "size": 15, "title": "Timezone = Europe/Paris", "x": 75.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly nb of usage journey starts", "to": "Hourly nb of usage journey starts (UTC)"}, {"arrows": "to", "from": "Timezone", "to": "Hourly nb of usage journey starts (UTC)"}]);
 
                   nodeColors = {};
@@ -3734,7 +3706,7 @@
 <h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>All of this usage pattern's fabrication-phase impact attributes to its single <a href="../Country/">Country</a>, so the country acts as the geographic bucket for device-side fabrication emissions.  </p>
 <p>Example value: {<br />
-Country devices country (aee763): 1 , <br />
+Country devices country (769e2ffa-d3d): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -3774,7 +3746,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_f6c2d3 {
+             #mynetwork_30f770 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3796,7 +3768,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_f6c2d3" class="card-body"></div>
+            <div id="mynetwork_30f770" class="card-body"></div>
         </div>
 
 
@@ -3826,7 +3798,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_f6c2d3');
+                  var container = document.getElementById('mynetwork_30f770');
 
 
 
@@ -3939,7 +3911,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_3595e3 {
+             #mynetwork_d7387a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3961,7 +3933,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3595e3" class="card-body"></div>
+            <div id="mynetwork_d7387a" class="card-body"></div>
         </div>
 
 
@@ -3991,7 +3963,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3595e3');
+                  var container = document.getElementById('mynetwork_d7387a');
 
 
 
@@ -4066,7 +4038,7 @@ Country devices country (aee763): 1 , <br />
 <h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Normalised share of fabrication-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-Country devices country (aee763): 1 , <br />
+Country devices country (769e2ffa-d3d): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4107,7 +4079,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_3d8137 {
+             #mynetwork_b4436a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4129,7 +4101,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_3d8137" class="card-body"></div>
+            <div id="mynetwork_b4436a" class="card-body"></div>
         </div>
 
 
@@ -4159,7 +4131,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_3d8137');
+                  var container = document.getElementById('mynetwork_b4436a');
 
 
 
@@ -4234,7 +4206,7 @@ Country devices country (aee763): 1 , <br />
 <h3 id="usage_impact_repartition_weights">usage_impact_repartition_weights</h3>
 <p>All of this usage pattern's usage-phase impact attributes to its single <a href="../Country/">Country</a>.  </p>
 <p>Example value: {<br />
-Country devices country (aee763): 1 , <br />
+Country devices country (769e2ffa-d3d): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4274,7 +4246,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_814650 {
+             #mynetwork_424564 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4296,7 +4268,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_814650" class="card-body"></div>
+            <div id="mynetwork_424564" class="card-body"></div>
         </div>
 
 
@@ -4326,7 +4298,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_814650');
+                  var container = document.getElementById('mynetwork_424564');
 
 
 
@@ -4439,7 +4411,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_a12852 {
+             #mynetwork_dd2d81 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4461,7 +4433,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a12852" class="card-body"></div>
+            <div id="mynetwork_dd2d81" class="card-body"></div>
         </div>
 
 
@@ -4491,7 +4463,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a12852');
+                  var container = document.getElementById('mynetwork_dd2d81');
 
 
 
@@ -4566,7 +4538,7 @@ Country devices country (aee763): 1 , <br />
 <h3 id="usage_impact_repartition">usage_impact_repartition</h3>
 <p>Normalised share of usage-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-Country devices country (aee763): 1 , <br />
+Country devices country (769e2ffa-d3d): 1 , <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -4607,7 +4579,7 @@ Country devices country (aee763): 1 , <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_172f96 {
+             #mynetwork_4a7d74 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4629,7 +4601,7 @@ Country devices country (aee763): 1 , <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_172f96" class="card-body"></div>
+            <div id="mynetwork_4a7d74" class="card-body"></div>
         </div>
 
 
@@ -4659,7 +4631,7 @@ Country devices country (aee763): 1 , <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_172f96');
+                  var container = document.getElementById('mynetwork_4a7d74');
 
 
 

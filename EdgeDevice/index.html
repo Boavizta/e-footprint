@@ -381,34 +381,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../ecodesign_strategies/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Best practices, measurement, simulation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../get_started/" class="md-nav__link">
         
   
@@ -3741,7 +3713,7 @@
 <h1 id="edgedevice">EdgeDevice</h1>
 <p>A piece of edge hardware (sensor, gateway, controller, embedded computer) made up of one or more <code>EdgeComponent</code>s plus a structural chassis. Aggregates fabrication and energy footprints of its components, then attributes them to the <a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a>s that load each one.</p>
 <h2 id="when-to-use-this-class">When to use this class</h2>
-<p>Use <a href="./">EdgeDevice</a> to assemble bespoke hardware from individual <code>EdgeComponent</code>s. For appliance-style hardware modelled as a single workload curve, prefer <a href="../EdgeAppliance/">EdgeAppliance</a>. For computer-like hardware composed of CPU, RAM, and storage, prefer <a href="../EdgeComputer/">EdgeComputer</a>.</p>
+<p>Use <a href="./">EdgeDevice</a> to assemble bespoke hardware from individual <code>EdgeComponent</code>s. For appliance-style hardware modeled as a single workload curve, prefer <a href="../EdgeAppliance/">EdgeAppliance</a>. For computer-like hardware composed of CPU, RAM, and storage, prefer <a href="../EdgeComputer/">EdgeComputer</a>.</p>
 <h2 id="common-pitfalls">Common pitfalls</h2>
 <p><a href="./#lifespan">EdgeDevice.lifespan</a> must be longer than every <a href="../EdgeUsageJourney/#usage_span">EdgeUsageJourney.usage_span</a> that uses the device. Otherwise the device cannot last the journey and the model raises an error.</p>
 <h2 id="params">Params</h2>
@@ -3759,10 +3731,10 @@
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li>
-<p><a href="../EdgeDeviceGroup/">EdgeDeviceGroup</a></p>
+<p><a href="../RecurrentEdgeDeviceNeed/">RecurrentEdgeDeviceNeed</a></p>
 </li>
 <li>
-<p><a href="../RecurrentEdgeDeviceNeed/">RecurrentEdgeDeviceNeed</a></p>
+<p><a href="../EdgeDeviceGroup/">EdgeDeviceGroup</a></p>
 </li>
 </ul>
 <h2 id="calculated-attributes">Calculated attributes</h2>
@@ -3808,7 +3780,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bd34cb {
+             #mynetwork_13b72d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3830,7 +3802,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_bd34cb" class="card-body"></div>
+            <div id="mynetwork_13b72d" class="card-body"></div>
         </div>
 
 
@@ -3860,7 +3832,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bd34cb');
+                  var container = document.getElementById('mynetwork_13b72d');
 
 
 
@@ -3973,7 +3945,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_78bbff {
+             #mynetwork_dbe829 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3995,7 +3967,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_78bbff" class="card-body"></div>
+            <div id="mynetwork_dbe829" class="card-body"></div>
         </div>
 
 
@@ -4025,7 +3997,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_78bbff');
+                  var container = document.getElementById('mynetwork_dbe829');
 
 
 
@@ -4139,7 +4111,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_cf2acb {
+             #mynetwork_183cee {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4161,7 +4133,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_cf2acb" class="card-body"></div>
+            <div id="mynetwork_183cee" class="card-body"></div>
         </div>
 
 
@@ -4191,7 +4163,7 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_cf2acb');
+                  var container = document.getElementById('mynetwork_183cee');
 
 
 
@@ -4266,7 +4238,7 @@
 <h3 id="structure_fabrication_footprint_per_usage_pattern">structure_fabrication_footprint_per_usage_pattern</h3>
 <p>Hourly fabrication-phase emissions of the chassis (excluding components), broken down by usage pattern.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeUsagePattern Default edge usage pattern (eee93e5c-418): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0019, 0.0038, 0.0057],<br />
     last 10 vals [0.0095, 0.0095, 0.0095, 0.0095, 0.0095, 0.0076, 0.0057, 0.0038, 0.0019, 0], <br />
 }  </p>
@@ -4311,7 +4283,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_72ddc9 {
+             #mynetwork_267576 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4333,7 +4305,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_72ddc9" class="card-body"></div>
+            <div id="mynetwork_267576" class="card-body"></div>
         </div>
 
 
@@ -4363,7 +4335,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_72ddc9');
+                  var container = document.getElementById('mynetwork_267576');
 
 
 
@@ -4438,7 +4410,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 <h3 id="instances_fabrication_footprint_per_usage_pattern">instances_fabrication_footprint_per_usage_pattern</h3>
 <p>Hourly fabrication-phase emissions of the whole device (chassis plus all components), broken down by usage pattern.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeUsagePattern Default edge usage pattern (eee93e5c-418): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00653, 0.0131, 0.0196],<br />
     last 10 vals [0.0327, 0.0327, 0.0327, 0.0327, 0.0327, 0.0261, 0.0196, 0.0131, 0.00652, 0], <br />
 }  </p>
@@ -4484,7 +4456,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_bb1ca5 {
+             #mynetwork_6c0d0d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4506,7 +4478,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_bb1ca5" class="card-body"></div>
+            <div id="mynetwork_6c0d0d" class="card-body"></div>
         </div>
 
 
@@ -4536,7 +4508,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bb1ca5');
+                  var container = document.getElementById('mynetwork_6c0d0d');
 
 
 
@@ -4611,7 +4583,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 <h3 id="instances_energy_per_usage_pattern">instances_energy_per_usage_pattern</h3>
 <p>Hourly energy consumed by the whole device, broken down by usage pattern. Equal to the sum of component-level energy multiplied by the device count.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
+EdgeUsagePattern Default edge usage pattern (eee93e5c-418): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in MWh:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.0206, 0.0411, 0.0617],<br />
     last 10 vals [0.103, 0.103, 0.103, 0.103, 0.103, 0.0823, 0.0617, 0.0411, 0.0205, 0], <br />
 }  </p>
@@ -4656,7 +4628,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_c5e8d8 {
+             #mynetwork_56dbed {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4678,7 +4650,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_c5e8d8" class="card-body"></div>
+            <div id="mynetwork_56dbed" class="card-body"></div>
         </div>
 
 
@@ -4708,7 +4680,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c5e8d8');
+                  var container = document.getElementById('mynetwork_56dbed');
 
 
 
@@ -4783,7 +4755,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 <h3 id="energy_footprint_per_usage_pattern">energy_footprint_per_usage_pattern</h3>
 <p>Hourly carbon emissions caused by device electricity use, broken down by usage pattern. Equal to component-level energy footprints summed and multiplied by the device count.  </p>
 <p>Example value: {<br />
-EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeUsagePattern Default edge usage pattern (eee93e5c-418): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00175, 0.0035, 0.00525],<br />
     last 10 vals [0.00875, 0.00875, 0.00875, 0.00875, 0.00875, 0.007, 0.00525, 0.0035, 0.00175, 0], <br />
 }  </p>
@@ -4828,7 +4800,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_9bda8b {
+             #mynetwork_10a9e6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -4850,7 +4822,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9bda8b" class="card-body"></div>
+            <div id="mynetwork_10a9e6" class="card-body"></div>
         </div>
 
 
@@ -4880,7 +4852,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9bda8b');
+                  var container = document.getElementById('mynetwork_10a9e6');
 
 
 
@@ -4995,7 +4967,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         </center>
         <style type="text/css">
 
-             #mynetwork_ea3d38 {
+             #mynetwork_f96825 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5017,7 +4989,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_ea3d38" class="card-body"></div>
+            <div id="mynetwork_f96825" class="card-body"></div>
         </div>
 
 
@@ -5047,7 +5019,7 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ea3d38');
+                  var container = document.getElementById('mynetwork_f96825');
 
 
 
@@ -5122,13 +5094,13 @@ EdgeUsagePattern Default edge usage pattern (5eea34): 105192 values from 2025-01
 <h3 id="fabrication_footprint_breakdown_by_source">fabrication_footprint_breakdown_by_source</h3>
 <p>Per-component breakdown of the device's fabrication footprint, attributing each component's own embodied carbon plus an even share of the chassis fabrication.  </p>
 <p>Example value: {<br />
-EdgeRAMComponent edge RAM component (b97afb): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeRAMComponent edge RAM component (25d15e3f-975): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],<br />
     last 10 vals [0.00697, 0.00696, 0.00697, 0.00697, 0.00697, 0.00557, 0.00418, 0.00278, 0.00139, 0], <br />
-EdgeCPUComponent edge CPU component (b8a046): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeCPUComponent edge CPU component (77951ded-87b): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00139, 0.00279, 0.00418],<br />
     last 10 vals [0.00697, 0.00696, 0.00697, 0.00697, 0.00697, 0.00557, 0.00418, 0.00278, 0.00139, 0], <br />
-EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+EdgeStorage edge storage component (31b6c8f1-1fc): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00374, 0.00749, 0.0112],<br />
     last 10 vals [0.0187, 0.0187, 0.0187, 0.0187, 0.0187, 0.015, 0.0112, 0.00748, 0.00374, 0], <br />
 }  </p>
@@ -5172,7 +5144,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_27a38a {
+             #mynetwork_f37932 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5194,7 +5166,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_27a38a" class="card-body"></div>
+            <div id="mynetwork_f37932" class="card-body"></div>
         </div>
 
 
@@ -5224,7 +5196,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_27a38a');
+                  var container = document.getElementById('mynetwork_f37932');
 
 
 
@@ -5339,7 +5311,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_2c8f7e {
+             #mynetwork_ae64a6 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5361,7 +5333,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_2c8f7e" class="card-body"></div>
+            <div id="mynetwork_ae64a6" class="card-body"></div>
         </div>
 
 
@@ -5391,7 +5363,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_2c8f7e');
+                  var container = document.getElementById('mynetwork_ae64a6');
 
 
 
@@ -5506,7 +5478,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         </center>
         <style type="text/css">
 
-             #mynetwork_41ac91 {
+             #mynetwork_9f0292 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5528,7 +5500,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_41ac91" class="card-body"></div>
+            <div id="mynetwork_9f0292" class="card-body"></div>
         </div>
 
 
@@ -5558,7 +5530,7 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_41ac91');
+                  var container = document.getElementById('mynetwork_9f0292');
 
 
 
@@ -5633,13 +5605,13 @@ EdgeStorage edge storage component (e0dbe5): 105192 values from 2025-01-01 00:00
 <h3 id="fabrication_impact_repartition_weights">fabrication_impact_repartition_weights</h3>
 <p>Per-<a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a> weights used to attribute the device's fabrication footprint to the needs that load each component, proportional to each need's share of demand.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (ddb9e7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+RecurrentEdgeComponentNeed RAM need (140359a4-7e2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00101, 0.00203, 0.00304],<br />
     last 10 vals [0.00507, 0.00507, 0.00507, 0.00507, 0.00507, 0.00405, 0.00304, 0.00202, 0.00101, 0], <br />
-RecurrentEdgeComponentNeed CPU need (2e6d6a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+RecurrentEdgeComponentNeed CPU need (c281e20e-72f): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00101, 0.00203, 0.00304],<br />
     last 10 vals [0.00507, 0.00507, 0.00507, 0.00507, 0.00507, 0.00405, 0.00304, 0.00202, 0.00101, 0], <br />
-RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+RecurrentEdgeStorageNeed Storage need (5600b768-76d): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],<br />
     last 10 vals [0.011, 0.0109, 0.0109, 0.011, 0.011, 0.00876, 0.00657, 0.00437, 0.00218, 0], <br />
 }  </p>
@@ -5684,7 +5656,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_9fddeb {
+             #mynetwork_cf898f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5706,7 +5678,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9fddeb" class="card-body"></div>
+            <div id="mynetwork_cf898f" class="card-body"></div>
         </div>
 
 
@@ -5736,7 +5708,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9fddeb');
+                  var container = document.getElementById('mynetwork_cf898f');
 
 
 
@@ -5853,7 +5825,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_6184dd {
+             #mynetwork_659d41 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -5875,7 +5847,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6184dd" class="card-body"></div>
+            <div id="mynetwork_659d41" class="card-body"></div>
         </div>
 
 
@@ -5905,7 +5877,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6184dd');
+                  var container = document.getElementById('mynetwork_659d41');
 
 
 
@@ -5980,13 +5952,13 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
 <h3 id="fabrication_impact_repartition">fabrication_impact_repartition</h3>
 <p>Normalised share of fabrication-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (ddb9e7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeComponentNeed RAM need (140359a4-7e2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5],<br />
     last 10 vals [0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 1], <br />
-RecurrentEdgeComponentNeed CPU need (2e6d6a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeComponentNeed CPU need (c281e20e-72f): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.5, 0.5, 0.5],<br />
     last 10 vals [0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 1], <br />
-RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeStorageNeed Storage need (5600b768-76d): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],<br />
     last 10 vals [0.519, 0.519, 0.519, 0.519, 0.519, 0.519, 0.519, 0.519, 0.519, 1], <br />
 }  </p>
@@ -6029,7 +6001,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         </center>
         <style type="text/css">
 
-             #mynetwork_d7dda3 {
+             #mynetwork_76c0d4 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6051,7 +6023,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d7dda3" class="card-body"></div>
+            <div id="mynetwork_76c0d4" class="card-body"></div>
         </div>
 
 
@@ -6081,7 +6053,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d7dda3');
+                  var container = document.getElementById('mynetwork_76c0d4');
 
 
 
@@ -6156,13 +6128,13 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): 105192 values from 2025-01-01 00
 <h3 id="usage_impact_repartition_weights">usage_impact_repartition_weights</h3>
 <p>Per-<a href="../RecurrentEdgeComponentNeed/">RecurrentEdgeComponentNeed</a> weights used to attribute the device's energy-use footprint to the needs that load each component.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (ddb9e7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+RecurrentEdgeComponentNeed RAM need (140359a4-7e2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.00034, 0.000679, 0.00102],<br />
     last 10 vals [0.0017, 0.0017, 0.0017, 0.0017, 0.0017, 0.00136, 0.00102, 0.000679, 0.000339, 0], <br />
-RecurrentEdgeComponentNeed CPU need (2e6d6a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
+RecurrentEdgeComponentNeed CPU need (c281e20e-72f): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in t:<br />
     first 10 vals [0, 0, 0, 0, 0, 0, 0, 0.000535, 0.00107, 0.00161],<br />
     last 10 vals [0.00268, 0.00267, 0.00268, 0.00268, 0.00268, 0.00214, 0.0016, 0.00107, 0.000534, 0], <br />
-RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
+RecurrentEdgeStorageNeed Storage need (5600b768-76d): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6204,7 +6176,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_dd0a6e {
+             #mynetwork_d45f40 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6226,7 +6198,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_dd0a6e" class="card-body"></div>
+            <div id="mynetwork_d45f40" class="card-body"></div>
         </div>
 
 
@@ -6256,7 +6228,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_dd0a6e');
+                  var container = document.getElementById('mynetwork_d45f40');
 
 
 
@@ -6373,7 +6345,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_d98b17 {
+             #mynetwork_4aa9d9 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6395,7 +6367,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d98b17" class="card-body"></div>
+            <div id="mynetwork_4aa9d9" class="card-body"></div>
         </div>
 
 
@@ -6425,7 +6397,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d98b17');
+                  var container = document.getElementById('mynetwork_4aa9d9');
 
 
 
@@ -6500,13 +6472,13 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
 <h3 id="usage_impact_repartition">usage_impact_repartition</h3>
 <p>Normalised share of usage-phase emissions that this object attributes to each container.  </p>
 <p>Example value: {<br />
-RecurrentEdgeComponentNeed RAM need (ddb9e7): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeComponentNeed RAM need (140359a4-7e2): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.388, 0.388, 0.388],<br />
     last 10 vals [0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 0.388, 1], <br />
-RecurrentEdgeComponentNeed CPU need (2e6d6a): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
+RecurrentEdgeComponentNeed CPU need (c281e20e-72f): 105192 values from 2025-01-01 00:00:00+00:00 to 2037-01-01 00:00:00+00:00 in :<br />
     first 10 vals [1, 1, 1, 1, 1, 1, 1, 0.612, 0.612, 0.612],<br />
     last 10 vals [0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 0.612, 1], <br />
-RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
+RecurrentEdgeStorageNeed Storage need (5600b768-76d): no value, <br />
 }  </p>
 <p>Depends directly on:  </p>
 <ul>
@@ -6547,7 +6519,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         </center>
         <style type="text/css">
 
-             #mynetwork_32d1a7 {
+             #mynetwork_c37ed2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -6569,7 +6541,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_32d1a7" class="card-body"></div>
+            <div id="mynetwork_c37ed2" class="card-body"></div>
         </div>
 
 
@@ -6599,7 +6571,7 @@ RecurrentEdgeStorageNeed Storage need (b6d36e): no value, <br />
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_32d1a7');
+                  var container = document.getElementById('mynetwork_c37ed2');
 
 
 
