@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Attribution-logic revamp — Implementation plan</title>
+<style>
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6;
+         max-width: 54rem; margin: 2rem auto; padding: 0 1.2rem; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #e0e0e0; padding-bottom: .3rem; }
+  h2 { margin-top: 2.2rem; }
+  h3 { margin-top: 1.4rem; font-size: 1.05rem; }
+  .status { color: #666; font-size: .9rem; }
+  table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+  th, td { border: 1px solid #ccc; padding: .4rem .6rem; text-align: left; vertical-align: top; font-size: .93rem; }
+  th { background: #f5f5f5; }
+  code { background: #f4f4f4; padding: .1rem .35rem; border-radius: 3px; font-size: .88em; }
+  details { margin: .6rem 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: .4rem .8rem; }
+  summary { cursor: pointer; font-weight: 600; }
+  .key { background:#fafafa; border-left:3px solid #888; padding:.5rem .9rem; margin:1rem 0; }
+  figure { margin: 1.2rem 0; text-align:center; }
+  figcaption { font-size:.85rem; color:#666; margin-top:.3rem; }
+  svg { max-width:100%; height:auto; }
+</style>
+</head>
+<body>
+
+<h1>Attribution-logic revamp — Implementation plan</h1>
+<p class="status">Status: Plan — under review · 2026-06-09 · Spec:
+<a href="analysis.md">analysis.md</a> + <a href="edge-analysis.md">edge-analysis.md</a> + settled design decisions (below).
+Scope: <strong>end-game structure only</strong>; migration steps deferred. No backward compatibility.</p>
+
+<section>
+  <h2>1. Approach</h2>
+
+  <p>Replace the generic per-object repartition machinery in <code>ModelingObject</code> with an explicit,
+  <strong>source-anchored attribution layer</strong> that lives in the domain. The whole layer is a pure, lazy,
+  read-time projection over the settled calculated-attribute graph. Three roles, one engine:</p>
+
+  <div class="key">
+  <strong>Sources</strong> own physics (one cell-evaluator each) ·
+  <strong>Containers</strong> own dimensionless structural weights ·
+  <strong>One generic engine</strong> climbs the containment chain, folds to any level, and handles
+  skip / exclude / cross-column flows. Every flow is natively <code>{source: value}</code>.
+  </div>
+
+  <figure>
+  <svg viewBox="0 0 720 430" xmlns="http://www.w3.org/2000/svg" font-family="system-ui" font-size="13">
+    <defs>
+      <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+        <path d="M0,0 L7,3 L0,6 Z" fill="#555"/>
+      </marker>
+    </defs>
+    <!-- calc graph -->
+    <rect x="20" y="370" width="680" height="44" rx="6" fill="#eef3ee" stroke="#9bb89b"/>
+    <text x="360" y="397" text-anchor="middle">Model inputs + calculated-attribute graph &nbsp;(eager, recomputed by ModelingUpdate)</text>
+
+    <!-- Tier A -->
+    <rect x="20" y="288" width="330" height="58" rx="6" fill="#eef0f6" stroke="#9aa6c8"/>
+    <text x="185" y="310" text-anchor="middle" font-weight="600">Tier A — container weights</text>
+    <text x="185" y="330" text-anchor="middle" font-size="11.5">Job: occurrence / data / storage splits · Step: occupancy</text>
+
+    <!-- Tier B -->
+    <rect x="370" y="288" width="330" height="58" rx="6" fill="#f6eeef" stroke="#c89a9a"/>
+    <text x="535" y="310" text-anchor="middle" font-weight="600">Tier B — source cell-evaluators</text>
+    <text x="535" y="330" text-anchor="middle" font-size="11.5">Server · Network · Storage · Device · EdgeDevice</text>
+
+    <!-- engine -->
+    <rect x="120" y="200" width="480" height="56" rx="6" fill="#fff6e6" stroke="#d9b873"/>
+    <text x="360" y="222" text-anchor="middle" font-weight="600">Regroup / fold engine (shared)</text>
+    <text x="360" y="241" text-anchor="middle" font-size="11.5">climb chain · per-level dicts · skip · exclude · cross-column flows</text>
+
+    <!-- per-level dicts -->
+    <rect x="120" y="120" width="480" height="48" rx="6" fill="#fdfdfd" stroke="#bbb"/>
+    <text x="360" y="148" text-anchor="middle">Flat per-level dicts <code>{container: hourly}</code>, per source &nbsp;— lazy <tspan font-style="italic">@cached_property</tspan></text>
+
+    <!-- renderer -->
+    <rect x="200" y="40" width="320" height="46" rx="6" fill="#eef3f6" stroke="#8fb0c0"/>
+    <text x="360" y="68" text-anchor="middle" font-weight="600">Sankey renderer — column-walk</text>
+
+    <!-- arrows up -->
+    <line x1="185" y1="370" x2="185" y2="348" stroke="#555" marker-end="url(#a)"/>
+    <line x1="535" y1="370" x2="535" y2="348" stroke="#555" marker-end="url(#a)"/>
+    <line x1="250" y1="288" x2="300" y2="258" stroke="#555" marker-end="url(#a)"/>
+    <line x1="470" y1="288" x2="420" y2="258" stroke="#555" marker-end="url(#a)"/>
+    <line x1="360" y1="200" x2="360" y2="170" stroke="#555" marker-end="url(#a)"/>
+    <line x1="360" y1="120" x2="360" y2="88" stroke="#555" marker-end="url(#a)"/>
+
+    <text x="690" y="172" text-anchor="end" font-size="11" fill="#888" font-style="italic">flushed wholesale, every update</text>
+  </svg>
+  <figcaption>One-way flow. Attribution reads the graph; the graph never reads attribution.</figcaption>
+  </figure>
+
+  <h3>1.1 Ownership</h3>
+  <table>
+    <thead><tr><th>Role</th><th>Owns</th><th>Kind</th></tr></thead>
+    <tbody>
+      <tr><td>Impact source<br><code>Server/Network/Storage/Device/EdgeDevice</code></td>
+          <td>one <strong>cell-evaluator</strong> — its footprint at a <code>(container, up)</code> cell — plus its physics (binding-resource, idle/dynamic, data→carbon, affine power, storage streams)</td>
+          <td>Tier B · kg · cached · source-local</td></tr>
+      <tr><td>Container / need<br><code>Job/Step/UJ/UP/RECN/…</code></td>
+          <td>dimensionless <strong>structural weights</strong> (occurrence / data / storage / occupancy splits + topology counts)</td>
+          <td>Tier A · driver · calc-attr or cached</td></tr>
+      <tr><td>Any container as a node</td>
+          <td>node total, per-source breakdown, flows — all <strong>folds</strong> of source cells</td>
+          <td>engine output</td></tr>
+      <tr><td>Shared engine + helpers</td>
+          <td>chain regroup (per-edge weight), skip/exclude/column folds, reusable physics (cumsum-with-dumps, data→carbon)</td>
+          <td>not on any one class</td></tr>
+    </tbody>
+  </table>
+
+  <details>
+    <summary>The cell-evaluator: why it stays flat, never a nested dict</summary>
+    <p>Each source exposes a single recipe for "my footprint at cell <code>(container, up)</code>". Stored state stays
+    <strong>flat single-key</strong> <code>{container: hourly}</code> — the shape of today's <code>*_per_job</code> dicts:</p>
+    <ul>
+      <li><strong>Neutral-CI sources</strong> (Server energy = server-country CI, constant; Storage fabrication):
+      store the flat leaf-split <code>Server→Job = {job: hourly}</code>; the engine redistributes to any finer/coarser
+      container by <em>dimensionless</em> container weights — no pre-join.</li>
+      <li><strong>Country-dependent sources</strong> (Network, Device): store <em>no</em> joint dict — expose a physics
+      function (<code>energy_footprint_for_data_volume_and_usage_pattern(data, up)</code>); the per-cell data volume is
+      container-owned. The join exists only transiently inside the fold, with <code>CI[up]</code> kept inside.</li>
+    </ul>
+    <p>The only inherently 2-keyed object — a cross-column link value (e.g. <code>Step↔UP</code>) — is computed on demand
+    for the visible adjacent pair and memoized per render, never stored on the model. So no deep nesting ever lands in a
+    source class, and explainability labels stay clean.</p>
+  </details>
+
+  <details>
+    <summary>Per-source cell-evaluators (the irreducible per-source code)</summary>
+    <table>
+      <thead><tr><th>Source</th><th>Leaf</th><th>Cell recipe</th></tr></thead>
+      <tbody>
+        <tr><td>Server (energy+fab, neutral)</td><td>Job</td><td>binding-resource / per-tier <code>Server→Job</code> × job occurrence fraction</td></tr>
+        <tr><td>Storage (fab, neutral)</td><td>Job</td><td>two streams (retention / baseline) × per-cell cumulative-need / occurrence share</td></tr>
+        <tr><td>Network (energy, country-dep)</td><td>Job</td><td>data→carbon physics × container-owned per-cell data volume</td></tr>
+        <tr><td>Device (energy+fab, country-dep)</td><td>Step</td><td>power/fab × step occupancy<code>[up]</code> × CI<code>[up]</code></td></tr>
+        <tr><td>EdgeDevice (energy+fab, country-dep)</td><td>RECN</td><td>affine power (idle equal-share + dynamic demand-share) + chassis <code>1/nb_components</code>; storage held-volume demand</td></tr>
+      </tbody>
+    </table>
+    <p>Each is one method — "one atom function to review per source". Everything above the leaf is the shared engine.</p>
+  </details>
+
+  <h3>1.2 The regroup engine: one chain, one per-edge weight</h3>
+  <p>Every <code>Source→ancestor</code> and container↔container flow is the same operation: <strong>climb the containment
+  chain, carrying one weight per edge.</strong> Web carries occurrence counts wherever jobs or steps repeat — at
+  <code>Job↔Step</code> (a job runs N times in a step) and <code>Step↔UJ</code> (a step recurs within, or is shared
+  across, journeys); only the <code>UP</code> and <code>Country</code> regroups are truly weight-1 (each UP has one
+  journey, one country). Edge carries the occurrence-ratio counts throughout. Same engine, both sides.</p>
+
+  <figure>
+  <svg viewBox="0 0 720 210" xmlns="http://www.w3.org/2000/svg" font-family="system-ui" font-size="12.5">
+    <defs>
+      <marker id="b" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+        <path d="M0,0 L7,3 L0,6 Z" fill="#777"/>
+      </marker>
+    </defs>
+    <!-- web chain -->
+    <text x="14" y="40" font-weight="600" fill="#445">web</text>
+    <g>
+      <rect x="60"  y="22" width="86" height="34" rx="5" fill="#f6eeef" stroke="#c89a9a"/><text x="103" y="44" text-anchor="middle">Job ◀ src</text>
+      <rect x="190" y="22" width="80" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="230" y="44" text-anchor="middle">Step</text>
+      <rect x="314" y="22" width="80" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="354" y="44" text-anchor="middle">UJ</text>
+      <rect x="438" y="22" width="80" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="478" y="44" text-anchor="middle">UP</text>
+      <rect x="562" y="22" width="92" height="34" rx="5" fill="#eef3ee" stroke="#9bb89b"/><text x="608" y="44" text-anchor="middle">Country</text>
+      <line x1="146" y1="39" x2="188" y2="39" stroke="#777" marker-end="url(#b)"/>
+      <line x1="270" y1="39" x2="312" y2="39" stroke="#777" marker-end="url(#b)"/>
+      <line x1="394" y1="39" x2="436" y2="39" stroke="#777" marker-end="url(#b)"/>
+      <line x1="518" y1="39" x2="560" y2="39" stroke="#777" marker-end="url(#b)"/>
+    </g>
+    <!-- edge chain -->
+    <text x="14" y="135" font-weight="600" fill="#445">edge</text>
+    <g>
+      <rect x="46"  y="117" width="70" height="34" rx="5" fill="#f6eeef" stroke="#c89a9a"/><text x="81" y="139" text-anchor="middle" font-size="11">RECN ◀</text>
+      <rect x="140" y="117" width="74" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="177" y="139" text-anchor="middle" font-size="11">REDN</text>
+      <rect x="238" y="117" width="60" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="268" y="139" text-anchor="middle">EF</text>
+      <rect x="322" y="117" width="64" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="354" y="139" text-anchor="middle">EUJ</text>
+      <rect x="410" y="117" width="64" height="34" rx="5" fill="#eef0f6" stroke="#9aa6c8"/><text x="442" y="139" text-anchor="middle">EUP</text>
+      <rect x="498" y="117" width="92" height="34" rx="5" fill="#eef3ee" stroke="#9bb89b"/><text x="544" y="139" text-anchor="middle">Country</text>
+      <line x1="116" y1="134" x2="138" y2="134" stroke="#777" marker-end="url(#b)"/>
+      <line x1="214" y1="134" x2="236" y2="134" stroke="#777" marker-end="url(#b)"/>
+      <line x1="298" y1="134" x2="320" y2="134" stroke="#777" marker-end="url(#b)"/>
+      <line x1="386" y1="134" x2="408" y2="134" stroke="#777" marker-end="url(#b)"/>
+      <line x1="474" y1="134" x2="496" y2="134" stroke="#777" marker-end="url(#b)"/>
+    </g>
+    <text x="360" y="185" text-anchor="middle" fill="#888" font-size="10.5" font-style="italic">edge weight w — web: occurrence counts wherever jobs/steps repeat (Job↔Step, Step↔UJ) · edge: ratio o(n,X,up)/o(n,up)</text>
+    <text x="360" y="202" text-anchor="middle" fill="#888" font-size="10.5">w = 1 only on the clean UP / Country regroups (one journey &amp; country per UP) · ◀ src = source attaches at its leaf</text>
+  </svg>
+  </figure>
+
+  <details>
+    <summary>Reusable physics living in the engine / sources (single source of truth)</summary>
+    <ul>
+      <li><code>energy_footprint_for_data_volume_and_usage_pattern(data, up)</code> on <code>Network</code> — data→carbon, called by every network cell.</li>
+      <li>cumsum-with-dumps — factored out of <code>Storage</code> (now used for per-job, per-step, per-up, per-RSN cumulative needs).</li>
+      <li>binding-resource <code>raw[h]</code> + idle/dynamic energy split — <code>Server</code> (also feeds the eager energy total).</li>
+      <li>occurrence-ratio / topology counts — container-owned, consumed as the per-edge weight.</li>
+    </ul>
+  </details>
+
+  <h3>1.3 Caching &amp; invalidation</h3>
+  <ul>
+    <li>Entire attribution layer = lazy <code>@cached_property</code> → <strong>pay-on-render</strong>; zero cost at build and on un-rendered updates.</li>
+    <li><strong>Auto-flush every cached property</strong> (discover <code>cached_property</code> descriptors via the class MRO, memoized per class). Drops the manual <code>_attributed_footprint_cached_property_names</code> registry and its per-class overrides.</li>
+    <li>Flush is a flat system-wide sweep over <code>all_linked_objects</code>, once at the end of every <code>ModelingUpdate</code> and after the initial build. No traversal-graph dependency.</li>
+    <li><strong>Invariant:</strong> calculated attributes never read attribution cached properties. This one-way rule is what makes wholesale lazy flush correct.</li>
+  </ul>
+
+  <h3>1.4 Skip &amp; exclude = folds, not rescaling</h3>
+  <p>Because flows are absolute, sibling-independent, and additively decomposed, both operations are read-side folds over
+  the cached cells — <strong>no normalization anywhere</strong>:</p>
+  <ul>
+    <li><strong>Skip a column</strong> = read the source's edge to the next visible level directly (the engine already computes every level). No spacer nodes.</li>
+    <li><strong>Exclude a source</strong> (the common case, e.g. <code>Server</code>) = drop its term from each flow's per-source sum. No rescale.</li>
+    <li><strong>Exclude an intermediate / subtree</strong> = additively re-aggregate coarser levels from surviving finer cells.</li>
+  </ul>
+  <p>This deletes the entire <code>resolve_attributed_footprint_per_source</code> / <code>_merge_rescaled</code> apparatus.
+  As a payoff, footprint is <strong>traceable to impact sources at every container level</strong> (not just leaves), and
+  per-source-colored flows become trivial if added later.</p>
+
+  <h3>1.5 Worked example — <code>ServerBase</code></h3>
+  <p>Server is neutral-CI (its own country's CI, constant across patterns), so its leaf is <code>Job</code> and its entire
+  attribution surface is a <strong>flat <code>{job: hourly}</code> leaf-split</strong>; every coarser/edge level is
+  engine-generated. The two streams (provisioned ∝ <code>nb_of_instances</code>, dynamic ∝ <code>raw_nb_of_instances</code>)
+  and the idle/load energy split already exist — only the per-job binding-resource weights are new.</p>
+
+  <p><strong>Full shape: <a href="server_base_sketch.py"><code>server_base_sketch.py</code></a></strong> (illustrative,
+  analysis.md-style bodies). At a glance:</p>
+  <ul>
+    <li><strong>deleted</strong> — <code>job_repartition_weights</code>, the two <code>*_impact_repartition_weights</code> properties, the inherited generic <code>*_impact_repartition*</code>.</li>
+    <li><strong>kept (eager)</strong> — <code>nb_of_instances</code>, <code>raw_nb_of_instances</code>, <code>instances_energy</code> (idle+load), the two footprint totals — unchanged.</li>
+    <li><strong>new physics (cached)</strong> — <code>binding_raw[h]</code>, <code>dynamic_share_per_job</code>, <code>provisioned_share_per_job</code> (per-tier, on-prem vs autoscaling).</li>
+    <li><strong>new atom (cached)</strong> — two flat <code>{job: hourly}</code> leaf-splits + <code>attribution_leaf = JobBase</code> / <code>attribution_neutral_ci = True</code>. That is the entire Tier-B surface.</li>
+  </ul>
+
+  <p>So the reviewable Server-specific code is exactly: two stream weights + two leaf-split dicts. The ~7 per-level / edge
+  flows analysis.md lists for Server are not methods here — they are the same engine fold applied with a different Tier-A
+  weight dict. Storage mirrors this (neutral, leaf = Job, two streams); Network/Device differ only in being country-dependent
+  — a <code>footprint_at(leaf, up)</code> physics fn with <code>CI[up]</code> inside, instead of a flat leaf-split. The
+  country-dependent counterpart is sketched in <a href="device_sketch.py"><code>device_sketch.py</code></a>.</p>
+
+  <h3>1.6 The engine — <code>core/attribution/</code></h3>
+  <p>A single module of pure functions over the source/container contract — the only cross-cutting attribution code, and
+  not a <code>ModelingObject</code>. Sources and containers expose a tiny contract; the engine owns the climb, the folds,
+  and skip/exclude. One primitive (<code>per_level</code>) does the work; the public folds are thin reads over it.</p>
+
+  <p><strong>Full shape: <a href="engine_sketch.py"><code>engine_sketch.py</code></a></strong>. The essentials:</p>
+  <ul>
+    <li><strong>contract</strong> — source declares <code>attribution_leaf</code> + <code>attribution_neutral_ci</code>; neutral sources expose a flat <code>{leaf: hourly}</code> split, country-dependent ones a <code>footprint_at(leaf, up)</code> physics fn; containers expose <code>weight_for(level)</code> + <code>attribution_total</code>; topology exposes <code>level_ancestor</code> / <code>nodes_at</code>.</li>
+    <li><strong>primitive</strong> — <code>per_level(source, level, phase)</code>: neutral = <code>weighted_redistribution</code> (leaf-split × dimensionless occurrence weight); country-dep = <code>group_cells_by_ancestor</code> (sum <code>footprint_at</code> cells, CI inside, by <code>level_ancestor</code>). Both fleshed out in the sketch. Cached, flushed wholesale.</li>
+    <li><strong>folds</strong> — <code>node_total(node, level, phase, exclude)</code> = Σ surviving sources; <code>flow(finer, coarser, phase, exclude)</code> = the cross-column link value: for a <em>clean</em> pair (<code>UP→Country</code>, <code>UJ→UP</code>) it's just the pattern's <code>node_total</code>; for a many-to-many pair (<code>Job↔Step</code>, or <code>Step↔UP</code>/<code>Job↔UP</code> when a column is skipped) it resolves the joint cell per source via a container Tier-A joint weight, on demand. Skip = pick the level; exclude source = drop the term; exclude subtree = additive re-sum. No normalization anywhere.</li>
+  </ul>
+
+  <p>The renderer becomes a column-walk (sketched in <a href="sankey_sketch.py"><code>sankey_sketch.py</code></a>): for
+  each adjacent pair of visible columns it calls <code>flow()</code>, and <code>node_total()</code> for node sizes —
+  passing the excluded-source set straight through. Skipping a column is just leaving its level out of the visible set;
+  the adjacent columns link directly. No recursion, no spacer nodes, no <code>resolve_*</code>. Adding a new source later
+  means implementing the contract on it and nothing else; adding a new level means one entry in the topology + the
+  matching Tier-A weight.</p>
+</section>
+
+<section>
+  <h2>2. Affected modules (target state)</h2>
+  <table>
+    <thead><tr><th>Module / file</th><th>Change</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td><code>abstract_modeling_classes/modeling_object.py</code></td><td>shrink</td>
+          <td>Remove generic <code>*_impact_repartition_weights/_weight_sum/_impact_repartition</code>, <code>attributed_*_per_source</code>, <code>resolve_*</code>. Add auto-flush of all cached properties. Net deletion — and removes the documented framework→core back-edge pressure.</td></tr>
+      <tr><td><code>core/attribution/</code> (new)</td><td>new</td>
+          <td>The regroup/fold engine + cell-evaluator protocol + skip/exclude folds. Not a <code>ModelingObject</code>.</td></tr>
+      <tr><td><code>core/hardware/server_base.py</code>, <code>storage.py</code>, <code>network.py</code>, <code>device.py</code></td><td>modified</td>
+          <td>One cell-evaluator each + physics; drop their repartition-weight methods. Server replaces <code>job_repartition_weights</code> with binding-resource + per-tier.</td></tr>
+      <tr><td><code>core/hardware/edge/edge_device.py</code></td><td>modified</td>
+          <td>Atom (affine power, chassis, demand/equal share, held-volume) as cell-evaluator; drop <code>_compute_component_need_weight</code> chaining.</td></tr>
+      <tr><td><code>core/usage/job.py</code></td><td>modified</td>
+          <td>New Tier-A weights: occurrence/data/storage splits per step / journey / pattern / RSN / edge-journey.</td></tr>
+      <tr><td><code>core/usage/usage_journey_step.py</code></td><td>modified</td>
+          <td>New occupancy primitive <code>hourly_avg_occurrences_per_usage_pattern</code> (its first calculated attribute).</td></tr>
+      <tr><td><code>core/usage/usage_journey.py</code>, <code>usage_pattern.py</code>, <code>country.py</code> (+ edge equivalents)</td><td>simplify</td>
+          <td>Become aggregators: attributed views are engine folds. Drop neutral-remainder / <code>attributed_energy_footprint_per_usage_pattern</code> bespoke logic.</td></tr>
+      <tr><td><code>utils/impact_repartition/sankey.py</code></td><td>rewrite</td>
+          <td>Column-walk over per-level dicts. Delete recursive <code>_traverse</code>, spacer nodes, <code>resolve_*</code> consumption; skip/exclude become folds.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section>
+  <h2>3. Cross-cutting concerns</h2>
+  <ul>
+    <li><strong>Tests:</strong> conservation invariants are the backbone — every "Conserves / Σ = total" claim in the analysis docs becomes a property test (Σ over tiers = per-job; Σ<sub>step</sub> = full cumulative; Σ<sub>uj</sub> = Σ<sub>up</sub>; Σ<sub>country</sub> = source total; Σ over a pattern's needs = device total). Plus per-source-exclusion and column-skip equivalence tests. Existing Sankey/integration tests are re-pointed at the new flows.</li>
+    <li><strong>Serialization:</strong> attribution is lazy cached, not a calculated attribute → not serialized. Removing the repartition-weight calculated attributes is a round-trip simplification (recomputed on load), no schema/version change expected.</li>
+    <li><strong>Docs:</strong> <code>architecture.md</code> (attribution boundary, resolved-attribution, cached-property registry sections) and <code>conventions.md</code> (repartition-weight preferences) need updating to the new model.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>4. Risks</h2>
+  <ul>
+    <li><strong>Server per-tier provisioned stream</strong> — the single subtlest atom (on-prem vs autoscaling, <code>raw[h] &gt; k−1</code>). Isolate as a tested helper.</li>
+    <li><strong>Cell-evaluator ⇄ engine boundary</strong> — risk of leaking source physics into the engine or container weights into sources. Keep the contract minimal: source returns a cell value; engine never knows a source's formula.</li>
+    <li><strong>Auto-flush global invariant</strong> — commits the codebase to "every <code>@cached_property</code> is a flushable read-time projection". True today; must be stated as a rule so it stays true.</li>
+    <li><strong>Renderer rewrite</strong> — column-walk + on-demand cross-column flows must reproduce current totals before old paths are deleted (validated by conservation tests, not by keeping a façade).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>5. Alternatives considered</h2>
+  <ul>
+    <li><strong>Keep generic repartition in <code>ModelingObject</code></strong> — rejected: it's the framework-layer leak and the root cause of column-skip pain (original sin #2).</li>
+    <li><strong>Materialize finest joint atoms <code>(source, step, up)</code> as stored dicts</strong> — rejected: deep nesting, wrecks explainability; factoring into flat leaf-split × container weights is leaner.</li>
+    <li><strong>Bundle each flow's sources into one <code>Step→UP</code> function</strong> — rejected: would import every source's physics into the container and block source exclusion / source-traceability / future coloring.</li>
+    <li><strong>Eager calculated attributes for the fine breakdowns</strong> — rejected: only consumed at render; lazy cached keeps them pay-on-read.</li>
+    <li><strong>Per-edge incremental cache invalidation</strong> — rejected: fragile; wholesale flush is correct and simple (caching overhaul is coming separately).</li>
+  </ul>
+</section>
+
+<section>
+  <h2>6. Constitutional notes</h2>
+  <ul>
+    <li><strong>§1.1 three-layer separation</strong> — net positive: attribution moves out of <code>abstract_modeling_classes/</code> into <code>core/</code>, relieving the documented back-edge. New engine imports only upward.</li>
+    <li><strong>§1.2 no backward compatibility</strong> — explicitly honored: old paths are deleted, not shimmed.</li>
+    <li><strong>§1.3 leanness</strong> — net deletion of generic machinery; per-source code is one evaluator each.</li>
+    <li><strong>§1.4 doc-as-code</strong> — each cell-evaluator / Tier-A weight needs an <code>update_*</code>-style docstring as SSOT.</li>
+    <li><strong>§2.3 round-trip</strong> — preserved (see §3). No §4 rules touched → no amendment required.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>7. Open questions</h2>
+  <ul>
+    <li>Exact home/granularity of the <code>core/attribution/</code> package (single module vs engine + protocol split) — settle when emitting tasks.</li>
+    <li>Atom fineness needed for <em>instance-level</em> exclusion mid-tree vs by-type only — sets whether finer joint cells are ever needed (by-type/by-source needs none).</li>
+    <li>Migration sequencing (deliberately out of scope here) — to be designed next.</li>
+  </ul>
+</section>
+
+</body>
+</html>
