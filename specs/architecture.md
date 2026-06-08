@@ -43,7 +43,7 @@ Avoid gathering context here unless absolutely necessary — most modeling work 
 
 ## API utils (`efootprint/api_utils/`)
 
-- **`json_to_system.py`** / **`system_to_json.py`** — serialization round-trip. Saves systems with or without calculated attributes.
+- **`json_to_system.py`** / **`system_to_json.py`** — serialization round-trip. Saves systems with or without calculated attributes. **Reference resolution heuristic:** in `ModelingObject.from_json_dict`, a scalar string attribute is interpreted as an object reference when it equals an already-built object's `id`. `id` and `name` are exempt (names are plain labels, never references) — otherwise an object whose `name` equals another object's `id` (e.g. a second "France" country alongside the catalog one keyed `"France"`) would have its name silently resolved into that object.
 - **`version_upgrade_handlers.py`** — migration logic for schema changes. Migrations apply to JSON files saved without calculated attributes.
 - **`Source` is a top-level JSON entity (since v21).** Each `Source` carries a deterministic `id` (uuid in production, name-based in tests via `Source._use_name_as_id`). `ExplainableObject.source` serializes as `"source": "<source_id>"`; the system JSON has a top-level `"Sources": {id: {...}}` block with only the sources actually referenced. Sentinel ids `"user_data"` and `"hypothesis"` are pinned so `Sources.USER_DATA` / `Sources.HYPOTHESIS` re-identify with the live Python singletons across reloads. Source application during JSON load is centralized in `_apply_json_source` (in `explainable_object_base_class.py`); per-subclass `from_json_dict` no longer constructs `Source` instances.
 

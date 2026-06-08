@@ -150,6 +150,29 @@ class TestJsonToSystem(IntegrationTestBaseClass):
                 r"Detected invalid data at `GenAIJob` level: \{\}. Only object dictionaries are valid at this level."):
             json_to_system(input_dict)
 
+    def test_name_matching_another_objects_id_is_not_resolved_into_a_reference(self):
+        # A scalar string attribute is treated as a reference when it equals an existing object id. `name` must be
+        # exempt: otherwise an object whose name equals another object's id (e.g. a second "France" country loaded
+        # after the catalog one keyed "France") gets its name silently turned into that Country, which later crashes
+        # consumers that expect a string (e.g. the impact-repartition Sankey calling len(source.name)).
+        full_dict = deepcopy(self.base_system_dict)
+        original_country_id = next(iter(full_dict["Country"]))
+        country_block = full_dict["Country"][original_country_id]
+        # First country keyed "France" so its id collides with the name of the second country.
+        first_country = deepcopy(country_block)
+        first_country.update({"id": "France", "name": "France"})
+        second_country = deepcopy(country_block)
+        second_country.update({"id": "second-france", "name": "France"})
+        full_dict["Country"] = {"France": first_country, "second-france": second_country}
+        for usage_pattern in full_dict["UsagePattern"].values():
+            if usage_pattern.get("country") == original_country_id:
+                usage_pattern["country"] = "France"
+
+        class_obj_dict, flat_obj_dict, _ = json_to_system(full_dict)
+
+        self.assertEqual("France", class_obj_dict["Country"]["second-france"].name)
+        self.assertIsInstance(class_obj_dict["Country"]["second-france"].name, str)
+
     def test_compute_object_generation_order(self):
         efootprint_classes_dict = {modeling_object_class.__name__: modeling_object_class
                                    for modeling_object_class in ALL_EFOOTPRINT_CLASSES}

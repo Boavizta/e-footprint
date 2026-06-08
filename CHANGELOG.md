@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [21.1.5]
+
+### Fixed
+- Don't resolve a name matching another object's id into a reference. ModelingObject.from_json_dict treats a scalar string attribute as an object reference when it equals an existing object's id. The name attribute is always a plain label, never a reference, so excluding it (alongside id) prevents an object whose name equals another object's id from having its name silently resolved into that object.
+
 ## [21.1.4]
 
 ### Fixed
