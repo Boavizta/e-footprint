@@ -1,26 +1,40 @@
 import unittest
+from datetime import datetime
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 
 import numpy as np
+import pytz
+from pint import Quantity
 
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.explainable_timezone import ExplainableTimezone
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceRecurrentValues
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.units import u
+from efootprint.core.attribution import atoms_of
+from efootprint.core.country import Country
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
+from efootprint.core.hardware.edge.edge_cpu_component import EdgeCPUComponent
 from efootprint.core.hardware.edge.edge_device import EdgeDevice
 from efootprint.core.hardware.edge.edge_device_group import EdgeDeviceGroup
+from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+from efootprint.core.hardware.edge.edge_workload_component import EdgeWorkloadComponent
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.hardware.network import Network
 from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.core.system import System
 from efootprint.core.usage.edge.edge_function import EdgeFunction
 from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
 from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
 from efootprint.core.usage.edge.recurrent_edge_component_need import RecurrentEdgeComponentNeed
 from efootprint.core.usage.edge.recurrent_edge_device_need import RecurrentEdgeDeviceNeed
+from efootprint.core.usage.edge.recurrent_edge_storage_need import RecurrentEdgeStorageNeed
 from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+from tests.core.attribution.conservation import (
+    assert_hourly_quantities_equal, assert_source_atoms_conserve, sum_atom_values)
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
@@ -796,6 +810,186 @@ class TestEdgeDeviceSelfDelete(TestCase):
             device.self_delete()
 
         self.assertIn("Group blocking device deletion", str(context.exception))
+
+
+class TestEdgeDeviceAttributionAtoms(TestCase):
+    """EdgeDevice atom builder on a real multi-pattern, multi-country model exercising the three
+    edge-analysis.md fixes (equal-share zero-demand fallback, held-volume storage weight, equal-share idle
+    floor) plus within-journey reuse and chassis consistency with the breakdown-by-source axis."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.cpu = EdgeCPUComponent(
+            "edge atoms cpu", carbon_footprint_fabrication_per_unit=SourceValue(20 * u.kg),
+            power_per_unit=SourceValue(15 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(3 * u.W), compute_per_unit=SourceValue(4 * u.cpu_core),
+            base_compute_consumption=SourceValue(0.4 * u.cpu_core))
+        cls.workload_component = EdgeWorkloadComponent(
+            "edge atoms workload component", carbon_footprint_fabrication_per_unit=SourceValue(100 * u.kg),
+            power_per_unit=SourceValue(50 * u.W), lifespan=SourceValue(6 * u.year),
+            idle_power_per_unit=SourceValue(5 * u.W))
+        cls.storage = EdgeStorage(
+            "edge atoms storage", storage_capacity_per_unit=SourceValue(1 * u.TB_stored),
+            carbon_footprint_fabrication_per_storage_capacity=SourceValue(160 * u.kg / u.TB_stored),
+            base_storage_need=SourceValue(30 * u.GB_stored), lifespan=SourceValue(6 * u.year))
+        cls.device = EdgeDevice(
+            "edge atoms device", structure_carbon_footprint_fabrication=SourceValue(60 * u.kg),
+            components=[cls.cpu, cls.workload_component, cls.storage], lifespan=SourceValue(6 * u.year))
+
+        cls.cpu_active_need = RecurrentEdgeComponentNeed(
+            "edge atoms active cpu need", edge_component=cls.cpu,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1, 0] * 84, dtype=np.float32), u.cpu_core)))
+        cls.cpu_idle_need = RecurrentEdgeComponentNeed(
+            "edge atoms idle cpu need", edge_component=cls.cpu,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0] * 168, dtype=np.float32), u.cpu_core)))
+        cls.workload_need = RecurrentEdgeComponentNeed(
+            "edge atoms workload need", edge_component=cls.workload_component,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([0.3] * 168, dtype=np.float32), u.concurrent)))
+        cls.storage_write_need = RecurrentEdgeStorageNeed(
+            "edge atoms write storage need", edge_component=cls.storage,
+            recurrent_need=SourceRecurrentValues(Quantity(np.array([1] * 168, dtype=np.float32), u.GB_stored)))
+        cls.storage_cycle_need = RecurrentEdgeStorageNeed(
+            "edge atoms cycle storage need", edge_component=cls.storage,
+            recurrent_need=SourceRecurrentValues(
+                Quantity(np.array([2] * 84 + [-2] * 84, dtype=np.float32), u.GB_stored)))
+
+        cls.main_bundle = RecurrentEdgeDeviceNeed(
+            "edge atoms main bundle", edge_device=cls.device,
+            recurrent_edge_component_needs=[
+                cls.cpu_active_need, cls.cpu_idle_need, cls.workload_need, cls.storage_write_need,
+                cls.storage_cycle_need])
+        cls.reuse_bundle = RecurrentEdgeDeviceNeed(
+            "edge atoms reuse bundle", edge_device=cls.device,
+            recurrent_edge_component_needs=[cls.cpu_active_need])
+        cls.edge_function = EdgeFunction(
+            "edge atoms function", recurrent_edge_device_needs=[cls.main_bundle, cls.reuse_bundle],
+            recurrent_server_needs=[])
+        cls.journey = EdgeUsageJourney(
+            "edge atoms journey", edge_functions=[cls.edge_function], usage_span=SourceValue(168 * u.hour))
+
+        network = Network("edge atoms network", SourceValue(0.05 * u.kWh / u.GB))
+        start_date = datetime(2025, 1, 6)  # a Monday, so weekly patterns align with the series grid
+        cls.low_ci_up = EdgeUsagePattern(
+            "edge atoms low ci pattern", cls.journey, network,
+            Country("edge atoms low ci country", "EAL", SourceValue(50 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC timezone")),
+            create_source_hourly_values_from_list([1, 0, 2], start_date))
+        cls.high_ci_up = EdgeUsagePattern(
+            "edge atoms high ci pattern", cls.journey, network,
+            Country("edge atoms high ci country", "EAH", SourceValue(500 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC timezone")),
+            create_source_hourly_values_from_list([2, 1], start_date))
+        cls.system = System("edge atoms system", [], edge_usage_patterns=[cls.low_ci_up, cls.high_ci_up])
+
+    def test_edge_device_atoms_conserve_both_phases(self):
+        """Test that Σ atoms recovers the eager phase totals on a multi-pattern, multi-country model."""
+        assert_source_atoms_conserve(self, self.device)
+
+    def test_edge_device_atoms_conserve_per_usage_pattern(self):
+        """Test that Σ atoms over a pattern recovers dev(up) — the eager per-pattern dicts, both phases."""
+        for usage_pattern in (self.low_ci_up, self.high_ci_up):
+            usage_atoms = [a for a in atoms_of(self.device, LifeCyclePhases.USAGE) if a.up == usage_pattern]
+            assert_hourly_quantities_equal(
+                self, self.device.energy_footprint_per_usage_pattern[usage_pattern], sum_atom_values(usage_atoms))
+            fabrication_atoms = [
+                a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING) if a.up == usage_pattern]
+            assert_hourly_quantities_equal(
+                self, self.device.instances_fabrication_footprint_per_usage_pattern[usage_pattern],
+                sum_atom_values(fabrication_atoms))
+
+    def test_within_journey_reuse_splits_by_occurrence_ratios(self):
+        """Test that a need reused in two bundles of one journey yields one atom per slot, each carrying half
+        of its atom_value (the occurrence ratios sum to 1)."""
+        for phase in LifeCyclePhases:
+            reused_atoms = [
+                a for a in atoms_of(self.device, phase)
+                if a.recn == self.cpu_active_need and a.up == self.low_ci_up]
+            self.assertEqual({self.main_bundle.id, self.reuse_bundle.id}, {a.redn.id for a in reused_atoms})
+            atom_value = self.device.atom_value(self.cpu_active_need, self.low_ci_up, phase)
+            half = ExplainableQuantity(0.5 * u.dimensionless, "half")
+            for atom in reused_atoms:
+                assert_hourly_quantities_equal(self, atom_value * half, atom.value)
+            assert_hourly_quantities_equal(self, atom_value, sum_atom_values(reused_atoms))
+
+    def test_equal_share_idle_floor_at_partial_demand_hours(self):
+        """Test that the idle/base energy floor is split equally between the CPU's two needs at every hour —
+        including the hours where only the active need has demand, which a single demand weight mis-splits."""
+        up = self.low_ci_up
+        nb_journeys = self.journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[up]
+        floor = (nb_journeys * self.cpu.unitary_power_at_zero_recurrent_need
+                 * ExplainableQuantity(1 * u.hour, "one hour") * up.country.average_carbon_intensity).to(u.kg)
+        half = ExplainableQuantity(0.5 * u.dimensionless, "half")
+        idle_atoms = [
+            a for a in atoms_of(self.device, LifeCyclePhases.USAGE)
+            if a.recn == self.cpu_idle_need and a.up == up]
+        self.assertEqual(1, len(idle_atoms))
+        assert_hourly_quantities_equal(self, floor * half, idle_atoms[0].value)
+        # The active need carries the whole dynamic marginal on top of its half floor.
+        cpu_energy = self.cpu.energy_footprint_per_edge_device_per_usage_pattern[up]
+        active_atoms = [
+            a for a in atoms_of(self.device, LifeCyclePhases.USAGE)
+            if a.recn == self.cpu_active_need and a.up == up]
+        assert_hourly_quantities_equal(self, floor * half + (cpu_energy - floor), sum_atom_values(active_atoms))
+
+    def test_zero_demand_hours_fall_back_to_equal_fabrication_share(self):
+        """Test that at hours where no need loads the CPU, its fabrication footprint is split equally between
+        its needs instead of being dropped (the fallback-0 bug) or double-booked (the fallback-1 bug)."""
+        up = self.low_ci_up
+        demand = self.cpu_active_need.unitary_hourly_need_per_usage_pattern[up]
+        zero_demand_mask = demand.magnitude == 0
+        self.assertTrue(zero_demand_mask.any() and (~zero_demand_mask).any())
+        idle_fab = sum_atom_values([
+            a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING)
+            if a.recn == self.cpu_idle_need and a.up == up]).to(u.kg)
+        active_fab = sum_atom_values([
+            a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING)
+            if a.recn == self.cpu_active_need and a.up == up]).to(u.kg)
+        np.testing.assert_allclose(
+            idle_fab.magnitude[zero_demand_mask], active_fab.magnitude[zero_demand_mask], rtol=1e-5)
+        self.assertGreater(idle_fab.magnitude[zero_demand_mask].max(), 0)
+        np.testing.assert_allclose(idle_fab.magnitude[~zero_demand_mask], 0, atol=1e-9)
+
+    def test_held_volume_weight_stays_correct_across_delete_hours(self):
+        """Test that storage fabrication splits by each need's cumulative held volume, staying within [0, 1]
+        across the delete hours where the net write rate goes negative."""
+        up = self.low_ci_up
+        cumulative_write = self.storage_write_need.cumulative_unitary_storage_need_per_usage_pattern[up]
+        cumulative_cycle = self.storage_cycle_need.cumulative_unitary_storage_need_per_usage_pattern[up]
+        expected_cycle_share = (cumulative_cycle / (cumulative_write + cumulative_cycle)).to(u.dimensionless)
+        cycle_fab = sum_atom_values([
+            a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING)
+            if a.recn == self.storage_cycle_need and a.up == up]).to(u.kg)
+        write_fab = sum_atom_values([
+            a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING)
+            if a.recn == self.storage_write_need and a.up == up]).to(u.kg)
+        delete_hours_mask = self.storage_cycle_need.unitary_hourly_need_per_usage_pattern[up].magnitude < 0
+        self.assertTrue(delete_hours_mask.any())
+        self.assertGreaterEqual(cycle_fab.magnitude.min(), -1e-6)  # float32 noise around zero held volume
+        actual_cycle_share = cycle_fab.magnitude / (cycle_fab.magnitude + write_fab.magnitude)
+        np.testing.assert_allclose(
+            expected_cycle_share.magnitude[delete_hours_mask], actual_cycle_share[delete_hours_mask], rtol=1e-4)
+
+    def test_chassis_consistency_between_atom_fold_and_breakdown_axis(self):
+        """Test that folding the fabrication atoms by component recovers fabrication_footprint_breakdown_by_source
+        — the chassis rides with each component as the same equal 1/nb_components share on both axes."""
+        for component in self.device.components:
+            component_atoms = [
+                a for a in atoms_of(self.device, LifeCyclePhases.MANUFACTURING)
+                if a.recn.edge_component == component]
+            assert_hourly_quantities_equal(
+                self, self.device.fabrication_footprint_breakdown_by_source[component],
+                sum_atom_values(component_atoms))
+
+    def test_edge_device_atoms_enumerate_slots_with_edge_coordinates(self):
+        """Test the slot enumeration: edge coordinates set, no web coordinates, single stream."""
+        for atom in atoms_of(self.device, LifeCyclePhases.USAGE):
+            self.assertIsNotNone(atom.recn)
+            self.assertIsNotNone(atom.redn)
+            self.assertIsNotNone(atom.ef)
+            self.assertIsNone(atom.job)
+            self.assertIsNone(atom.step)
+            self.assertIsNone(atom.rsn)
+            self.assertEqual("single", atom.stream)
 
 
 if __name__ == "__main__":

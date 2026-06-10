@@ -1,3 +1,5 @@
+from collections import defaultdict
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 
@@ -7,6 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
+from efootprint.core.attribution import Atom
 from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.core.hardware.edge.edge_component import EdgeComponent
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -319,6 +322,145 @@ class EdgeDevice(ModelingObject):
             LifeCyclePhases.MANUFACTURING: self.fabrication_footprint_breakdown_by_source,
             LifeCyclePhases.USAGE: self.energy_footprint_breakdown_by_source,
         }
+
+    # --- Attribution-only atom physics and builder (lazy cached properties / methods, consumed only by the
+    # attribution layer, never by the eager calculated-attribute graph) ---
+
+    @cached_property
+    def demand_share_per_need_and_pattern(self) -> dict:
+        """Each component need's hourly share of the capacity-occupying demand on its component in a pattern —
+        CPU / RAM / workload by the hourly resource need, EdgeStorage by the need's own cumulative HELD volume
+        (not the net write rate, which goes negative on delete hours). Hours where no need loads the component
+        fall back to an explicit equal share across the component's needs present in the pattern (1/n — NOT
+        divide_or_fallback(fallback=1), which would book the footprint once per need), so the shares always
+        sum to 1."""
+        from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+
+        needs_per_component = defaultdict(list)
+        for need in self.recurrent_edge_component_needs:
+            needs_per_component[need.edge_component].append(need)
+
+        shares = {}
+        for component, needs in needs_per_component.items():
+            is_storage = isinstance(component, EdgeStorage)
+            for usage_pattern in component.edge_usage_patterns:
+                needs_at_up = [need for need in needs if usage_pattern in need.unitary_hourly_need_per_usage_pattern]
+                demand_per_need = {
+                    need: (need.cumulative_unitary_storage_need_per_usage_pattern[usage_pattern] if is_storage
+                           else need.unitary_hourly_need_per_usage_pattern[usage_pattern])
+                    for need in needs_at_up}
+                total_demand = sum(demand_per_need.values(), start=EmptyExplainableObject())
+                equal_share = 1 / len(needs_at_up)
+                for need, demand in demand_per_need.items():
+                    if isinstance(total_demand, EmptyExplainableObject):
+                        share = ExplainableQuantity(
+                            equal_share * u.dimensionless, left_parent=total_demand,
+                            operator="equal share among component needs derived from")
+                    else:
+                        if isinstance(demand, EmptyExplainableObject):
+                            demand = total_demand * ExplainableQuantity(0 * u.dimensionless, "zero demand")
+                        share = divide_or_fallback(demand, total_demand, fallback=equal_share)
+                    shares[(need, usage_pattern)] = share.set_label(
+                        f"{need.name} demand share of {component.name} in {usage_pattern.name}")
+
+        return shares
+
+    @cached_property
+    def fabrication_atom_value_per_need_and_pattern(self) -> dict:
+        """edge-analysis.md fabrication atom: (component fabrication + an equal 1/nb_components chassis share,
+        matching the breakdown-by-source axis) × the need's demand share."""
+        nb_components = ExplainableQuantity(len(self.components) * u.dimensionless, "Number of components")
+        values = {}
+        for (need, usage_pattern), share in self.demand_share_per_need_and_pattern.items():
+            component_fabrication = (
+                self.total_nb_of_units
+                * need.edge_component.fabrication_footprint_per_edge_device_per_usage_pattern[usage_pattern])
+            chassis_share = self.structure_fabrication_footprint_per_usage_pattern[usage_pattern] / nb_components
+            values[(need, usage_pattern)] = ((component_fabrication + chassis_share) * share).to(u.kg).set_label(
+                f"{self.name} fabrication footprint attributed to {need.name} in {usage_pattern.name}")
+
+        return values
+
+    @cached_property
+    def energy_atom_value_per_need_and_pattern(self) -> dict:
+        """edge-analysis.md energy atom: the idle/base floor of the component's affine power curve — which no
+        need's demand changes — split equally across the component's needs at every hour, plus the need's own
+        dynamic marginal (the rest of the component's energy footprint, split by demand share — exact by
+        linearity of the power curve). EdgeStorage draws no power, so its needs carry an empty energy value;
+        the chassis carries no energy."""
+        from efootprint.core.hardware.edge.edge_storage import EdgeStorage
+
+        one_hour = ExplainableQuantity(1 * u.hour, "one hour")
+        nb_needs_per_component_and_pattern = defaultdict(int)
+        for (need, usage_pattern) in self.demand_share_per_need_and_pattern:
+            nb_needs_per_component_and_pattern[(need.edge_component, usage_pattern)] += 1
+
+        values = {}
+        for (need, usage_pattern), share in self.demand_share_per_need_and_pattern.items():
+            component = need.edge_component
+            if isinstance(component, EdgeStorage):
+                values[(need, usage_pattern)] = EmptyExplainableObject(
+                    label=f"{self.name} energy footprint attributed to {need.name} in {usage_pattern.name}")
+                continue
+            nb_journeys_in_parallel = (
+                usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
+                    usage_pattern])
+            idle_and_base_floor = (
+                self.total_nb_of_units * nb_journeys_in_parallel * component.unitary_power_at_zero_recurrent_need
+                * one_hour * usage_pattern.country.average_carbon_intensity).to(u.kg)
+            component_energy_footprint = (
+                self.total_nb_of_units
+                * component.energy_footprint_per_edge_device_per_usage_pattern[usage_pattern]).to(u.kg)
+            equal_share = ExplainableQuantity(
+                1 / nb_needs_per_component_and_pattern[(component, usage_pattern)] * u.dimensionless,
+                f"Equal share among {component.name} needs in {usage_pattern.name}")
+            values[(need, usage_pattern)] = (
+                idle_and_base_floor * equal_share + (component_energy_footprint - idle_and_base_floor) * share
+            ).to(u.kg).set_label(
+                f"{self.name} energy footprint attributed to {need.name} in {usage_pattern.name}")
+
+        return values
+
+    def atom_value(self, need: "RecurrentEdgeComponentNeed", usage_pattern: "EdgeUsagePattern",
+                   phase: LifeCyclePhases):
+        """The per-(need, pattern) atom of edge-analysis.md — the need's footprint at the pattern across every
+        bundle and function it sits in, before the slot-multiplicity split of attribution_atoms."""
+        values = (self.fabrication_atom_value_per_need_and_pattern if phase == LifeCyclePhases.MANUFACTURING
+                  else self.energy_atom_value_per_need_and_pattern)
+        return values[(need, usage_pattern)]
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """Slot enumeration: for each pattern, walk the journey's edge functions (with multiplicity), each
+        function's device-need bundles, each bundle's component needs — one atom per (need, bundle, function)
+        slot, valued atom_value × slot count / total occurrences of the need in the journey, so the slots of a
+        need partition its atom_value exactly: within-journey reuse splits across its bundles and functions by
+        occurrence ratios; the common case is one slot with ratio 1."""
+        for usage_pattern in self.edge_usage_patterns:
+            journey = usage_pattern.edge_usage_journey
+            slot_counts = {}
+            for edge_function in dict.fromkeys(journey.edge_functions):
+                ef_count = journey.edge_functions.count(edge_function)
+                for device_need in dict.fromkeys(edge_function.recurrent_edge_device_needs):
+                    if device_need.edge_device != self:
+                        continue
+                    redn_count = edge_function.recurrent_edge_device_needs.count(device_need)
+                    for component_need in dict.fromkeys(device_need.recurrent_edge_component_needs):
+                        recn_count = device_need.recurrent_edge_component_needs.count(component_need)
+                        slot_counts[(component_need, device_need, edge_function)] = (
+                            ef_count * redn_count * recn_count)
+            occurrences_per_need = defaultdict(int)
+            for (component_need, _, _), count in slot_counts.items():
+                occurrences_per_need[component_need] += count
+            for (component_need, device_need, edge_function), count in slot_counts.items():
+                occurrence_share = ExplainableQuantity(
+                    count / occurrences_per_need[component_need] * u.dimensionless,
+                    f"{component_need.name} occurrence share via {device_need.name} in {edge_function.name}")
+                yield Atom(
+                    source=self, stream="single", up=usage_pattern, recn=component_need, redn=device_need,
+                    ef=edge_function,
+                    value=(self.atom_value(component_need, usage_pattern, phase) * occurrence_share).set_label(
+                        f"{self.name} {phase.value.lower()} footprint via {component_need.name} through "
+                        f"{device_need.name} in {edge_function.name} ({usage_pattern.name})"))
 
     def _compute_component_need_weight(
             self, component_need: "RecurrentEdgeComponentNeed", component_impact_per_usage_pattern):

@@ -263,6 +263,29 @@ only attribution consumes after this task.
 
 ## Task 5 — EdgeDevice atom builder
 
+**Status:** Done
+
+**Implementation notes:**
+- The physics landed as two cached-property dicts keyed `(need, usage_pattern)` —
+  `fabrication_atom_value_per_need_and_pattern` / `energy_atom_value_per_need_and_pattern`, both reading
+  `demand_share_per_need_and_pattern` — with `atom_value(n, up, phase)` a thin dict read; `attribution_atoms`
+  derives the slot counts and `o(n, up)` from one walk of the journey, so the multiplicities partition by
+  construction.
+- The energy floor needs each component's idle/base power, which is subclass knowledge (base/capacity), so a
+  plain `unitary_power_at_zero_recurrent_need` property was added on `EdgeComponent` (NotImplementedError) and
+  its CPU / RAM / workload subclasses — three files beyond the task's list, surfaced and justified by
+  ownership (conventions: parent-level policy stays on the natural owning object). The dynamic marginal is then
+  derived as `(component energy − floor) × demand share` — exact by linearity of the affine power curve — so
+  no per-subclass capacity read is needed in the builder. EdgeStorage (power/idle deleted) carries an Empty
+  energy atom value.
+- Eager-vs-lazy audit: nothing to move — every attribution-flavoured calculated attribute on the touched edge
+  classes (`total_unitary_hourly_need_per_usage_pattern`, the impact-repartition weights) is still consumed by
+  the eager legacy `_compute_component_need_weight` chain until task 7.
+- Conservation caveat for task 6/7 review: a pattern that reaches a device only through a
+  `RecurrentServerNeed` (or a component with no needs at a pattern the device serves) has chassis fabrication
+  in the eager per-pattern total but no component-need slots to carry it; no fixture exhibits this and the
+  integration conservation sweep will fail loudly if one appears.
+
 **Goal:** The slot-enumeration builder of `edge_device_sketch.py`, carrying the three
 edge-analysis.md fixes: (1) zero-demand fallback → explicit equal share (not
 `divide_or_fallback(fallback=1)`); (2) EdgeStorage demand = the need's own cumulative **held

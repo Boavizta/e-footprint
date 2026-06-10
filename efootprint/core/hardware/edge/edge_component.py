@@ -121,6 +121,12 @@ class EdgeComponent(ModelingObject):
     def update_unitary_power_per_usage_pattern(self):
         pass
 
+    @property
+    def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
+        """Power one component draws when recurring demand is zero — the idle/base floor of the affine power
+        curve, consumed only by the attribution layer (EdgeDevice's atom builder)."""
+        raise NotImplementedError
+
     def update_carbon_footprint_fabrication(self):
         """Embodied carbon of one component, equal to the per-unit fabrication footprint times the number of units in the component."""
         self.carbon_footprint_fabrication = (

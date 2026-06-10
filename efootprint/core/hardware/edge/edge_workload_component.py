@@ -61,6 +61,10 @@ class EdgeWorkloadComponent(EdgeComponent):
         for usage_pattern in self.edge_usage_patterns:
             self.update_dict_element_in_unitary_hourly_workload_per_usage_pattern(usage_pattern)
 
+    @property
+    def unitary_power_at_zero_recurrent_need(self) -> ExplainableQuantity:
+        return self.idle_power
+
     def update_dict_element_in_unitary_power_per_usage_pattern(self, usage_pattern: "EdgeUsagePattern"):
         if usage_pattern in self.unitary_hourly_workload_per_usage_pattern:
             workload = self.unitary_hourly_workload_per_usage_pattern[usage_pattern]
