@@ -386,20 +386,18 @@ class JobBase(ModelingObject):
         """Flat enumeration of the job's containment cells — one JobAttributionCell per (step, up) the job runs in
         web-side and per (rsn, ef, up) edge-side, each carrying its hourly and flat occurrence shares of the job's
         total occurrences. hourly_shares sum to 1 at every hour the job runs; flat_shares sum to 1 over the cells;
-        the per-(rsn, up) slot multiplicities sum to 1 over the edge functions reaching the need."""
+        the per-(rsn, up) slot multiplicities sum to 1 over the edge functions reaching the need. A job whose total
+        occurrences are zero (zero-traffic model) still needs sum-to-1 flat shares for the always-on streams, so
+        flat shares fall back to an equal share per cell; hourly shares stay zero (no hour carries demand)."""
         total_occurrences = self.hourly_avg_occurrences_across_usage_patterns
-        total_occurrences_sum = total_occurrences.sum()
-        cells = []
+        cell_builds = []
 
         for uj_step in self.usage_journey_steps:
             for up in uj_step.usage_patterns:
-                cell_occurrences = self.get_hourly_avg_occurrences_per_usage_pattern_per_step(up, uj_step)
-                # Hourly shares stay unlabeled: labeled hourly series may not be dimensionless (aggregation rule).
-                cells.append(JobAttributionCell(
-                    up=up, step=uj_step,
-                    hourly_share=divide_or_fallback(cell_occurrences, total_occurrences, fallback=0),
-                    flat_share=(cell_occurrences.sum() / total_occurrences_sum).to(u.dimensionless).set_label(
-                        f"{self.name} flat occurrence share in {uj_step.name} for {up.name}")))
+                cell_builds.append((
+                    dict(up=up, step=uj_step),
+                    self.get_hourly_avg_occurrences_per_usage_pattern_per_step(up, uj_step),
+                    f"{self.name} flat occurrence share in {uj_step.name} for {up.name}"))
 
         for rsn in self.recurrent_server_needs:
             for edge_up in rsn.edge_usage_patterns:
@@ -414,13 +412,26 @@ class JobBase(ModelingObject):
                         continue
                     slot_multiplicity = (nb_journey_uses_of_ef * ef.recurrent_server_needs.count(rsn)
                                          / rsn_occurrences_in_journey)
-                    cell_occurrences = rsn_occurrences * ExplainableQuantity(
-                        slot_multiplicity * u.dimensionless, label=f"{rsn.name} slot multiplicity via {ef.name}")
-                    cells.append(JobAttributionCell(
-                        up=edge_up, rsn=rsn, ef=ef, slot_multiplicity=slot_multiplicity,
-                        hourly_share=divide_or_fallback(cell_occurrences, total_occurrences, fallback=0),
-                        flat_share=(cell_occurrences.sum() / total_occurrences_sum).to(u.dimensionless).set_label(
-                            f"{self.name} flat occurrence share in {rsn.name} via {ef.name} for {edge_up.name}")))
+                    cell_builds.append((
+                        dict(up=edge_up, rsn=rsn, ef=ef, slot_multiplicity=slot_multiplicity),
+                        rsn_occurrences * ExplainableQuantity(
+                            slot_multiplicity * u.dimensionless, label=f"{rsn.name} slot multiplicity via {ef.name}"),
+                        f"{self.name} flat occurrence share in {rsn.name} via {ef.name} for {edge_up.name}"))
+
+        total_occurrences_sum = total_occurrences.sum()
+        job_never_runs = total_occurrences_sum.magnitude == 0
+        cells = []
+        for cell_coordinates, cell_occurrences, flat_share_label in cell_builds:
+            if job_never_runs:
+                hourly_share = EmptyExplainableObject()
+                flat_share = ExplainableQuantity(
+                    1 / len(cell_builds) * u.dimensionless, label=flat_share_label)
+            else:
+                # Hourly shares stay unlabeled: labeled hourly series may not be dimensionless (aggregation rule).
+                hourly_share = divide_or_fallback(cell_occurrences, total_occurrences, fallback=0)
+                flat_share = (cell_occurrences.sum() / total_occurrences_sum).to(u.dimensionless).set_label(
+                    flat_share_label)
+            cells.append(JobAttributionCell(hourly_share=hourly_share, flat_share=flat_share, **cell_coordinates))
 
         return tuple(cells)
 

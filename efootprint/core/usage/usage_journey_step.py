@@ -75,6 +75,9 @@ class UsageJourneyStep(ModelingObject):
                         compute_nb_avg_hourly_occurrences(journey_starts, delay_at_step_end)
                         - compute_nb_avg_hourly_occurrences(journey_starts, delay_between_uj_start_and_step_start))
                 delay_between_uj_start_and_step_start = delay_at_step_end
+            # The difference of two FFT convolutions can leave ~-1e-6 noise at mathematically-zero hours;
+            # clip to >= 0 like compute_nb_avg_hourly_occurrences does internally for the single-convolution case.
+            occupancy = occupancy.np_compared_with(EmptyExplainableObject(), "max")
             occurrences_per_usage_pattern[up] = occupancy.to(u.concurrent).set_label(
                 f"{self.name} hourly occupancy in {up.name}")
 

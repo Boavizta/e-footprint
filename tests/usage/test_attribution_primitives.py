@@ -145,13 +145,42 @@ class TestAttributionPrimitives(TestCase):
                 self.journey.nb_usage_journeys_in_parallel_per_usage_pattern[up], occupancy_sum)
 
     def test_attribution_cells_shares_partition_to_one(self):
-        """Test that hourly shares sum to 1 at every hour the job runs and flat shares sum to 1 over the cells."""
+        """Test that hourly shares sum to 1 at every hour the job runs and to exactly 0 — the fallback-0 contract,
+        never NaN — at zero-occurrence hours, and that flat shares sum to 1 over the cells."""
         for job in (self.dual_job, self.web_only_job):
             total_occurrences = job.hourly_avg_occurrences_across_usage_patterns
             hourly_share_sum = sum(cell.hourly_share for cell in job.attribution_cells)
-            self.assert_hourly_quantities_equal(total_occurrences, hourly_share_sum * total_occurrences)
+            self.assertEqual(total_occurrences.start_date, hourly_share_sum.start_date)
+            np.testing.assert_allclose(
+                hourly_share_sum.magnitude, np.where(total_occurrences.magnitude > 0, 1, 0), atol=1e-4)
             flat_share_sum = sum(cell.flat_share.magnitude for cell in job.attribution_cells)
             self.assertAlmostEqual(1, flat_share_sum, places=5)
+
+    def test_attribution_cells_equal_share_fallback_when_job_never_runs(self):
+        """Test that a job whose usage patterns carry zero traffic gets equal flat shares summing to 1 and
+        zero-acting hourly shares instead of a division-by-zero crash."""
+        zero_job = Job.from_defaults(
+            "zero traffic job", server=Server.from_defaults(
+                "zero traffic server", server_type=ServerTypes.autoscaling(),
+                storage=Storage.from_defaults("zero traffic storage")),
+            request_duration=SourceValue(10 * u.min),
+            data_transferred=SourceValue(1 * u.MB), data_stored=SourceValue(1 * u.MB_stored))
+        step_one = UsageJourneyStep("zero traffic step one", SourceValue(30 * u.min), [zero_job])
+        step_two = UsageJourneyStep("zero traffic step two", SourceValue(15 * u.min), [zero_job])
+        journey = UsageJourney("zero traffic journey", [step_one, step_two])
+        up = UsagePattern(
+            "zero traffic usage pattern", journey, [Device.from_defaults("zero traffic laptop")],
+            Network("zero traffic network", SourceValue(0.05 * u.kWh / u.GB)),
+            Country("zero traffic country", "ZTC", SourceValue(100 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC timezone")),
+            create_source_hourly_values_from_list([0, 0, 0], datetime(2026, 1, 1)))
+        System("zero traffic system", [up], edge_usage_patterns=[])
+
+        cells = zero_job.attribution_cells
+        self.assertEqual(2, len(cells))
+        for cell in cells:
+            self.assertAlmostEqual(0.5, cell.flat_share.magnitude, places=6)
+            self.assertEqual(0, np.max(np.abs(cell.hourly_share.magnitude)))
 
     def test_attribution_cells_slot_multiplicities_partition_per_rsn(self):
         """Test that the (rsn, ef, up) slot multiplicities of an RSN reached through two edge functions split its
