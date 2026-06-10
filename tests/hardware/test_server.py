@@ -11,7 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_timezone import Explainabl
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.builders.services.service_base_class import Service
 from efootprint.builders.services.service_job_base_class import ServiceJob
-from efootprint.builders.services.video_streaming import VideoStreaming
+from efootprint.builders.services.video_streaming import VideoStreaming, VideoStreamingJob
 from efootprint.builders.time_builders import create_source_hourly_values_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceRecurrentValues, SourceValue, SourceObject
@@ -691,3 +691,34 @@ class TestServerAttributionAtoms(TestCase):
         self.assertAlmostEqual(
             server.idle_energy_footprint.magnitude[idle_hour], provisioned_sum.magnitude[idle_hour], places=6)
         self.assertEqual(0, dynamic_sum.magnitude[idle_hour])
+
+
+class TestJobRepartitionWeightsAfterAttributionQuery(TestCase):
+    def test_modeling_update_recomputes_service_job_weights_after_an_attribution_query(self):
+        """Test the render-then-update sequence on a service model: materializing the lazy attribution caches
+        then changing an input must neither crash the ModelingUpdate nor leave stale service totals in the
+        eager job_repartition_weights."""
+        server = Server.from_defaults(
+            "stale weights server", server_type=ServerTypes.on_premise(),
+            storage=Storage.from_defaults("stale weights storage"))
+        service = VideoStreaming.from_defaults("stale weights service", server=server)
+        job = VideoStreamingJob.from_defaults(
+            "stale weights job", service=service, video_duration=SourceValue(10 * u.min))
+        step = UsageJourneyStep("stale weights step", SourceValue(15 * u.min), [job])
+        journey = UsageJourney("stale weights journey", [step])
+        up = UsagePattern(
+            "stale weights usage pattern", journey, [Device.from_defaults("stale weights laptop")],
+            Network("stale weights network", SourceValue(0.05 * u.kWh / u.GB)),
+            Country("stale weights country", "SWC", SourceValue(100 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC timezone")),
+            create_source_hourly_values_from_list([10, 20], datetime(2026, 1, 1)))
+        System("stale weights system", [up], edge_usage_patterns=[])
+
+        _ = server.binding_demand_per_job  # a render materializes the lazy attribution caches
+
+        up.hourly_usage_journey_starts = create_source_hourly_values_from_list([100, 200], datetime(2026, 1, 1))
+
+        weight_after_update = server.job_repartition_weights[job].magnitude.copy()
+        server.flush_cached_properties()
+        server.update_job_repartition_weights()
+        self.assertTrue(np.allclose(weight_after_update, server.job_repartition_weights[job].magnitude))

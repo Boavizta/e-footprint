@@ -425,12 +425,15 @@ class ServerBase(InfraHardware):
                 service_base_weight = (
                     ((service.base_compute_consumption / self.compute) + (service.base_ram_consumption / self.ram))
                     * self.nb_of_instances)
-                # Zero service-total at a given hour means no jobs run on the service then; the base load
-                # attributed to this job is therefore 0 at those hours.
+                # Summed inline (not via the lazy service_total_job_volumes cached property): this eager update
+                # runs before the ModelingUpdate flush, so a cached value materialized by a prior attribution
+                # query would be stale. Zero service-total at a given hour means no jobs run on the service then;
+                # the base load attributed to this job is therefore 0 at those hours.
+                service_total_job_volume = sum(
+                    (service_job.hourly_avg_occurrences_across_usage_patterns for service_job in service.jobs),
+                    start=EmptyExplainableObject())
                 job_volume_share = divide_or_fallback(
-                    job.hourly_avg_occurrences_across_usage_patterns,
-                    self.service_total_job_volumes[service],
-                    fallback=0)
+                    job.hourly_avg_occurrences_across_usage_patterns, service_total_job_volume, fallback=0)
                 weight = (
                     service_base_weight * job_volume_share
                     + ((job.compute_needed / self.compute) + (job.ram_needed / self.ram))
