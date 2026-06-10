@@ -197,20 +197,19 @@ class JobBase(ModelingObject):
         for up in self.usage_patterns:
             self.update_dict_element_in_hourly_avg_occurrences_per_usage_pattern(up)
 
+    def _hourly_data_exchange_rate(self, data_exchange_type: str):
+        data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
+        return (getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
+                / self.request_duration).set_label(f"{data_exchange_type_no_underscore} per hour by {self.name}")
+
     def compute_hourly_data_exchange_for_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern", data_exchange_type: str):
-        data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
-
-        data_exchange_per_hour = (
-                getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
-                / self.request_duration
-        ).set_label(f"{data_exchange_type_no_underscore} per hour in {usage_pattern.name}")
-
-        hourly_data_exchange = self.hourly_avg_occurrences_per_usage_pattern[usage_pattern] * data_exchange_per_hour
+        hourly_data_exchange = (self.hourly_avg_occurrences_per_usage_pattern[usage_pattern]
+                                * self._hourly_data_exchange_rate(data_exchange_type))
         target_unit = u.MB_stored if data_exchange_type == "data_stored" else u.MB
 
         return hourly_data_exchange.set_label(
-                f"Hourly {data_exchange_type_no_underscore} in {usage_pattern.name}").to(target_unit)
+                f"Hourly {data_exchange_type.replace('_', ' ')} in {usage_pattern.name}").to(target_unit)
 
     def update_dict_element_in_hourly_data_transferred_per_usage_pattern(
             self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
@@ -260,11 +259,6 @@ class JobBase(ModelingObject):
 
     # --- Attribution-only occurrence / data primitives (consumed by the attribution atom builders, never by the
     # eager calculated-attribute graph; get_*/compute_* are plain methods, the rest lazy cached properties) ---
-
-    def _hourly_data_exchange_rate(self, data_exchange_type: str):
-        data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
-        return (getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
-                / self.request_duration).set_label(f"{data_exchange_type_no_underscore} per hour by {self.name}")
 
     def get_hourly_avg_occurrences_per_usage_pattern_per_step(
             self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
