@@ -66,7 +66,7 @@ class Atom:
 
 
 def _hashable(arg):
-    return tuple(arg) if isinstance(arg, (list, set)) else arg
+    return tuple(arg) if isinstance(arg, list) else arg
 
 
 def flushed_memo(func):
@@ -106,7 +106,7 @@ def atoms(system, phase, exclude: tuple = ()):
     """All sources' atoms for a phase, excluded source classes filtered out (exclusion = filter, never
     rescale)."""
     for source in attribution_sources(system):
-        if exclude and isinstance(source, tuple(exclude)):
+        if isinstance(source, exclude):
             continue
         yield from atoms_of(source, phase)
 
@@ -119,7 +119,7 @@ def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple =
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
     Each atom contributes its value to every visible node of its chain and to the link between each
     consecutive pair, so Σ incoming == node total == Σ outgoing holds at every node BY CONSTRUCTION —
-    no normalization, no rescaling, anywhere."""
+    no normalization, no rescaling, anywhere. Returned dicts are memoized — treat them as read-only."""
     node_totals, links = {}, {}
     for atom in atoms(system, phase, exclude):
         chain = [node for node in atom.chain() if isinstance(node, visible_levels)]
@@ -134,7 +134,8 @@ def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple =
 @flushed_memo
 def footprint_per_node(system, level, phase, exclude: tuple = ()):
     """Programmatic per-level read: ``{node: hourly}`` grouping each atom by its chain node at ``level``
-    (a ModelingObject class or tuple of classes). Atoms with no node at that level don't contribute."""
+    (a ModelingObject class or tuple of classes). Atoms with no node at that level don't contribute.
+    The returned dict is memoized — treat it as read-only."""
     totals = {}
     for atom in atoms(system, phase, exclude):
         node = next((node for node in atom.chain() if isinstance(node, level)), None)
@@ -147,7 +148,8 @@ def footprint_per_node(system, level, phase, exclude: tuple = ()):
 @flushed_memo
 def footprint_per_node_per_source(system, level, phase, exclude: tuple = ()):
     """Per-source variant of ``footprint_per_node``: ``{(source, node): hourly}`` — the footprint of any
-    container at ``level`` due to any source, not just leaves."""
+    container at ``level`` due to any source, not just leaves.
+    The returned dict is memoized — treat it as read-only."""
     totals = {}
     for atom in atoms(system, phase, exclude):
         node = next((node for node in atom.chain() if isinstance(node, level)), None)
