@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/)
 
+## [Unreleased]
+
+### Added
+- Attribution-logic revamp, task 1: container-owned, attribution-only occurrence / data primitives — JobBase per-step / per-journey / per-RSN / per-edge-journey occurrence and data splits, `JobBase.attribution_cells` (flat `(step, up)` / `(rsn, ef, up)` cell enumeration with hourly and flat occurrence shares and edge slot multiplicities), and the UsageJourneyStep occupancy primitive `hourly_avg_occurrences_per_usage_pattern`. Lazy cached properties / plain methods only — nothing consumes them yet, no behaviour change.
+
 ## [21.1.5]
 
 ### Fixed

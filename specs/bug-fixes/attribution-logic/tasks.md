@@ -30,6 +30,17 @@ reimplemented in task 7 as delegations to `attribution.footprint_per_node`. The 
 
 ## Task 1 — Container occurrence / data primitives + cell enumeration
 
+**Status:** Done
+
+**Implementation notes:**
+- `attribution_cells` landed as a `@cached_property` (per the eager-vs-lazy rule), not a callable as the
+  illustrative sketches show — builders read `job.attribution_cells` without parens.
+- Step occupancy is built as a telescoping difference of journey-parallel counts at the step's start/end offsets
+  (exact for fractional offsets), so the tiling identity holds structurally; the floored-shift build of the job
+  occurrence primitives is kept as-is since it mirrors the eager per-pattern build (partition identity preserved).
+- The new cached properties are registered in `_attributed_footprint_cached_property_names` so `to_json` /
+  `__str__` skip their materialized values and the legacy flush covers them — superseded by task 2's auto-flush.
+
 **Goal:** Land every container-owned, dimensionless primitive the atom builders consume
 (analysis.md "New JobBase / UsageJourneyStep attributes" lists, web + edge), plus
 `JobBase.attribution_cells()` — the flat enumeration of a job's `(step, up)` / `(rsn, ef, up)`

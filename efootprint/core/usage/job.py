@@ -1,8 +1,11 @@
 import math
 from abc import abstractmethod
 from copy import copy
+from dataclasses import dataclass
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import divide_or_fallback
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -19,8 +22,25 @@ if TYPE_CHECKING:
     from efootprint.core.usage.usage_journey import UsageJourney
     from efootprint.core.usage.usage_journey_step import UsageJourneyStep
     from efootprint.core.hardware.network import Network
+    from efootprint.core.usage.edge.edge_usage_journey import EdgeUsageJourney
     from efootprint.core.usage.edge.edge_usage_pattern import EdgeUsagePattern
     from efootprint.core.usage.edge.recurrent_server_need import RecurrentServerNeed
+
+
+@dataclass(frozen=True, eq=False)
+class JobAttributionCell:
+    """One containment cell of a job — web: (step, up), edge: (rsn, ef, up) — carrying the two share kinds the
+    attribution atom builders relay by: hourly_share (cell occurrences / job total occurrences, fallback 0 so the
+    job's zero-occurrence hours carry no demand footprint) and flat_share (period-total occurrence share, a scalar,
+    for the always-on streams). slot_multiplicity is the o(rsn, ef, up)/o(rsn, up) count ratio for edge cells
+    (1 for web cells); it is already folded into both shares."""
+    up: ModelingObject
+    hourly_share: object
+    flat_share: object
+    step: ModelingObject = None
+    rsn: ModelingObject = None
+    ef: ModelingObject = None
+    slot_multiplicity: float = 1
 
 
 class JobBase(ModelingObject):
@@ -33,6 +53,13 @@ class JobBase(ModelingObject):
     pitfalls = (
         "{param:Job.request_duration} drives concurrency. If the duration exceeds one hour the job is in flight "
         "across multiple modeling buckets at once and consumes a fraction of the server's resources in each.")
+
+    _attributed_footprint_cached_property_names = (
+        *ModelingObject._attributed_footprint_cached_property_names,
+        "hourly_avg_occurrences_per_usage_journey_step", "hourly_avg_occurrences_per_usage_journey",
+        "hourly_avg_occurrences_per_recurrent_server_need", "hourly_avg_occurrences_per_edge_usage_journey",
+        "hourly_data_stored_per_step", "hourly_data_stored_per_recurrent_server_need", "attribution_cells",
+    )
 
     param_descriptions = {
         "data_transferred": (
@@ -98,6 +125,10 @@ class JobBase(ModelingObject):
     @property
     def edge_usage_patterns(self) -> List["EdgeUsagePattern"]:
         return list(dict.fromkeys(sum([rsn.edge_usage_patterns for rsn in self.recurrent_server_needs], start=[])))
+
+    @property
+    def edge_usage_journeys(self) -> List["EdgeUsageJourney"]:
+        return list(dict.fromkeys(sum([rsn.edge_usage_journeys for rsn in self.recurrent_server_needs], start=[])))
 
     @property
     def usage_journeys(self) -> List["UsageJourney"]:
@@ -226,6 +257,178 @@ class JobBase(ModelingObject):
         """Total hourly net change in storage volume caused by this job, summed over every usage pattern."""
         self.hourly_data_stored_across_usage_patterns = self.sum_calculated_attribute_across_usage_patterns(
             "hourly_data_stored_per_usage_pattern", "data stored")
+
+    # --- Attribution-only occurrence / data primitives (consumed by the attribution atom builders, never by the
+    # eager calculated-attribute graph; get_*/compute_* are plain methods, the rest lazy cached properties) ---
+
+    def _hourly_data_exchange_rate(self, data_exchange_type: str):
+        data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
+        return (getattr(self, data_exchange_type) * ExplainableQuantity(1 * u.hour, "one hour")
+                / self.request_duration).set_label(f"{data_exchange_type_no_underscore} per hour by {self.name}")
+
+    def get_hourly_avg_occurrences_per_usage_pattern_per_step(
+            self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
+        """Request_duration-averaged, count-weighted hourly occurrences of this job in (usage_pattern, uj_step):
+        one contribution per position of the step in the pattern's journey, each shifted by its cumulative delay
+        and weighted by the job's executions within the step. Summing over a journey's steps recovers
+        hourly_avg_occurrences_per_usage_pattern[usage_pattern]."""
+        nb_of_occurrences_of_self_within_step = uj_step.jobs.count(self)
+        step_occurrences = EmptyExplainableObject()
+        delay_between_uj_start_and_step_start = EmptyExplainableObject()
+        for journey_step in usage_pattern.usage_journey.uj_steps:
+            if journey_step == uj_step and nb_of_occurrences_of_self_within_step:
+                step_occurrences += (
+                    usage_pattern.utc_hourly_usage_journey_starts.return_shifted_hourly_quantities(
+                        delay_between_uj_start_and_step_start)
+                    * ExplainableQuantity(
+                        nb_of_occurrences_of_self_within_step * u.dimensionless, label="Executions per step"))
+            delay_between_uj_start_and_step_start += journey_step.user_time_spent
+
+        return compute_nb_avg_hourly_occurrences(step_occurrences, self.request_duration).to(u.concurrent).set_label(
+            f"Average hourly occurrences of {self.name} in {uj_step.name} for {usage_pattern.name}")
+
+    def get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(
+            self, edge_usage_pattern: "EdgeUsagePattern", recurrent_server_need: "RecurrentServerNeed"):
+        """Request_duration-averaged, count-weighted hourly occurrences of this job triggered by
+        recurrent_server_need in edge_usage_pattern — the edge analogue of
+        get_hourly_avg_occurrences_per_usage_pattern_per_step. Summing over the job's recurrent server needs
+        recovers hourly_avg_occurrences_per_usage_pattern[edge_usage_pattern]."""
+        raw_occurrences = (
+            recurrent_server_need.unitary_hourly_volume_per_usage_pattern[edge_usage_pattern]
+            * edge_usage_pattern.edge_usage_journey.nb_edge_usage_journeys_in_parallel_per_edge_usage_pattern[
+                edge_usage_pattern]
+            * ExplainableQuantity(
+                recurrent_server_need.jobs.count(self) * u.dimensionless,
+                label=f"Occurrences within {recurrent_server_need.name}"))
+
+        return compute_nb_avg_hourly_occurrences(raw_occurrences, self.request_duration).to(u.concurrent).set_label(
+            f"Average hourly occurrences of {self.name} in {recurrent_server_need.name} "
+            f"for {edge_usage_pattern.name}")
+
+    def compute_hourly_data_transferred_per_usage_pattern_per_step(
+            self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
+        """Hourly volume of data this job transfers over the network in (usage_pattern, uj_step) — the per-cell
+        data volume the Network converts to impact."""
+        return (self.get_hourly_avg_occurrences_per_usage_pattern_per_step(usage_pattern, uj_step)
+                * self._hourly_data_exchange_rate("data_transferred")).to(u.MB).set_label(
+            f"Hourly data transferred by {self.name} in {uj_step.name} for {usage_pattern.name}")
+
+    def compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(
+            self, edge_usage_pattern: "EdgeUsagePattern", recurrent_server_need: "RecurrentServerNeed"):
+        """Hourly volume of data this job transfers over the network in (edge_usage_pattern, recurrent_server_need)
+        — the edge analogue of compute_hourly_data_transferred_per_usage_pattern_per_step."""
+        return (self.get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(
+            edge_usage_pattern, recurrent_server_need)
+                * self._hourly_data_exchange_rate("data_transferred")).to(u.MB).set_label(
+            f"Hourly data transferred by {self.name} in {recurrent_server_need.name} for {edge_usage_pattern.name}")
+
+    @cached_property
+    def hourly_avg_occurrences_per_usage_journey_step(self):
+        """Hourly occurrences of this job keyed by the steps triggering it, each summed over the step's usage
+        patterns. Together with hourly_avg_occurrences_per_recurrent_server_need it partitions
+        hourly_avg_occurrences_across_usage_patterns."""
+        return {
+            uj_step: sum(
+                (self.get_hourly_avg_occurrences_per_usage_pattern_per_step(up, uj_step)
+                 for up in uj_step.usage_patterns), start=EmptyExplainableObject()
+            ).set_label(f"Average hourly occurrences of {self.name} in {uj_step.name}")
+            for uj_step in self.usage_journey_steps}
+
+    @cached_property
+    def hourly_avg_occurrences_per_usage_journey(self):
+        """Hourly occurrences of this job keyed by its usage journeys — the by-journey regroup of
+        hourly_avg_occurrences_per_usage_pattern over the job's web usage patterns."""
+        return {
+            usage_journey: sum(
+                (self.hourly_avg_occurrences_per_usage_pattern[up] for up in self.web_usage_patterns
+                 if up.usage_journey == usage_journey), start=EmptyExplainableObject()
+            ).set_label(f"Average hourly occurrences of {self.name} in {usage_journey.name}")
+            for usage_journey in self.usage_journeys}
+
+    @cached_property
+    def hourly_avg_occurrences_per_recurrent_server_need(self):
+        """Hourly occurrences of this job keyed by the recurrent server needs triggering it, each summed over the
+        need's edge usage patterns — the edge analogue of hourly_avg_occurrences_per_usage_journey_step."""
+        return {
+            rsn: sum(
+                (self.get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(edge_up, rsn)
+                 for edge_up in rsn.edge_usage_patterns), start=EmptyExplainableObject()
+            ).set_label(f"Average hourly occurrences of {self.name} in {rsn.name}")
+            for rsn in self.recurrent_server_needs}
+
+    @cached_property
+    def hourly_avg_occurrences_per_edge_usage_journey(self):
+        """Hourly occurrences of this job keyed by its edge usage journeys — the by-edge-journey regroup of
+        hourly_avg_occurrences_per_usage_pattern over the job's edge usage patterns."""
+        return {
+            edge_usage_journey: sum(
+                (self.hourly_avg_occurrences_per_usage_pattern[edge_up] for edge_up in self.edge_usage_patterns
+                 if edge_up.edge_usage_journey == edge_usage_journey), start=EmptyExplainableObject()
+            ).set_label(f"Average hourly occurrences of {self.name} in {edge_usage_journey.name}")
+            for edge_usage_journey in self.edge_usage_journeys}
+
+    @cached_property
+    def hourly_data_stored_per_step(self):
+        """Hourly net change in storage volume caused by this job keyed by the steps triggering it. Together with
+        hourly_data_stored_per_recurrent_server_need it partitions hourly_data_stored_across_usage_patterns."""
+        data_stored_per_hour = self._hourly_data_exchange_rate("data_stored")
+        return {
+            uj_step: (occurrences * data_stored_per_hour).to(u.MB_stored).set_label(
+                f"Hourly data stored by {self.name} in {uj_step.name}")
+            for uj_step, occurrences in self.hourly_avg_occurrences_per_usage_journey_step.items()}
+
+    @cached_property
+    def hourly_data_stored_per_recurrent_server_need(self):
+        """Hourly net change in storage volume caused by this job keyed by the recurrent server needs triggering it
+        — the edge analogue of hourly_data_stored_per_step."""
+        data_stored_per_hour = self._hourly_data_exchange_rate("data_stored")
+        return {
+            rsn: (occurrences * data_stored_per_hour).to(u.MB_stored).set_label(
+                f"Hourly data stored by {self.name} in {rsn.name}")
+            for rsn, occurrences in self.hourly_avg_occurrences_per_recurrent_server_need.items()}
+
+    @cached_property
+    def attribution_cells(self):
+        """Flat enumeration of the job's containment cells — one JobAttributionCell per (step, up) the job runs in
+        web-side and per (rsn, ef, up) edge-side, each carrying its hourly and flat occurrence shares of the job's
+        total occurrences. hourly_shares sum to 1 at every hour the job runs; flat_shares sum to 1 over the cells;
+        the per-(rsn, up) slot multiplicities sum to 1 over the edge functions reaching the need."""
+        total_occurrences = self.hourly_avg_occurrences_across_usage_patterns
+        total_occurrences_sum = total_occurrences.sum()
+        cells = []
+
+        for uj_step in self.usage_journey_steps:
+            for up in uj_step.usage_patterns:
+                cell_occurrences = self.get_hourly_avg_occurrences_per_usage_pattern_per_step(up, uj_step)
+                # Hourly shares stay unlabeled: labeled hourly series may not be dimensionless (aggregation rule).
+                cells.append(JobAttributionCell(
+                    up=up, step=uj_step,
+                    hourly_share=divide_or_fallback(cell_occurrences, total_occurrences, fallback=0),
+                    flat_share=(cell_occurrences.sum() / total_occurrences_sum).to(u.dimensionless).set_label(
+                        f"{self.name} flat occurrence share in {uj_step.name} for {up.name}")))
+
+        for rsn in self.recurrent_server_needs:
+            for edge_up in rsn.edge_usage_patterns:
+                rsn_occurrences = self.get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(
+                    edge_up, rsn)
+                journey_edge_functions = edge_up.edge_usage_journey.edge_functions
+                rsn_occurrences_in_journey = sum(
+                    ef.recurrent_server_needs.count(rsn) for ef in journey_edge_functions)
+                for ef in rsn.edge_functions:
+                    nb_journey_uses_of_ef = journey_edge_functions.count(ef)
+                    if nb_journey_uses_of_ef == 0:
+                        continue
+                    slot_multiplicity = (nb_journey_uses_of_ef * ef.recurrent_server_needs.count(rsn)
+                                         / rsn_occurrences_in_journey)
+                    cell_occurrences = rsn_occurrences * ExplainableQuantity(
+                        slot_multiplicity * u.dimensionless, label=f"{rsn.name} slot multiplicity via {ef.name}")
+                    cells.append(JobAttributionCell(
+                        up=edge_up, rsn=rsn, ef=ef, slot_multiplicity=slot_multiplicity,
+                        hourly_share=divide_or_fallback(cell_occurrences, total_occurrences, fallback=0),
+                        flat_share=(cell_occurrences.sum() / total_occurrences_sum).to(u.dimensionless).set_label(
+                            f"{self.name} flat occurrence share in {rsn.name} via {ef.name} for {edge_up.name}")))
+
+        return tuple(cells)
 
 
 class DirectServerJob(JobBase):
