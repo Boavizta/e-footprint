@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -7,6 +8,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.sources import Sources
 from efootprint.constants.units import u
+from efootprint.core.attribution import Atom
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -44,7 +47,6 @@ class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: ExplainableQuantity):
         super().__init__(name)
         self.energy_footprint_per_job = ExplainableObjectDict()
-        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint = EmptyExplainableObject()
         self.instances_fabrication_footprint = EmptyExplainableObject()
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
@@ -52,7 +54,6 @@ class Network(ModelingObject):
 
     calculated_attributes = [
         "energy_footprint_per_job",
-        "energy_footprint_per_usage_pattern",
         "instances_fabrication_footprint",
         "energy_footprint",
     ] + [
@@ -71,29 +72,19 @@ class Network(ModelingObject):
     def jobs(self) -> List["JobBase"]:
         return list(dict.fromkeys(sum([up.jobs for up in self.usage_patterns], start=[])))
 
+    def energy_footprint_for_data_volume_and_usage_pattern(
+            self, data_volume, usage_pattern: "UsagePattern | EdgeUsagePattern"):
+        """Data→carbon physics, the single source of truth for converting a data volume routed through this
+        network into emissions: bandwidth_energy_intensity × data_volume × the pattern's grid carbon
+        intensity. Called with per-job, per-pattern or per-cell volumes by the eager footprints and the
+        attribution atoms alike, keeping CI[usage_pattern] inside the conversion (never a CI-blind split)."""
+        return (self.bandwidth_energy_intensity * data_volume).to(u.kWh) \
+            * usage_pattern.country.average_carbon_intensity
+
     def _compute_energy_footprint_for_job_and_usage_pattern(
             self, job: "JobBase", usage_pattern: "UsagePattern | EdgeUsagePattern"):
-        return (
-            self.bandwidth_energy_intensity
-            * job.hourly_data_transferred_per_usage_pattern[usage_pattern]
-        ).to(u.kWh) * usage_pattern.country.average_carbon_intensity
-
-    def update_dict_element_in_energy_footprint_per_usage_pattern(
-            self, usage_pattern: "UsagePattern | EdgeUsagePattern"):
-        energy_footprint = EmptyExplainableObject()
-        for job in usage_pattern.jobs:
-            if usage_pattern not in job.hourly_data_transferred_per_usage_pattern:
-                continue
-            energy_footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
-
-        self.energy_footprint_per_usage_pattern[usage_pattern] = energy_footprint.to(u.kg).set_label(
-            f"{usage_pattern.name} network energy footprint")
-
-    def update_energy_footprint_per_usage_pattern(self):
-        """Hourly carbon emissions caused by network traffic, broken down by usage pattern. Equal to data transferred times bandwidth energy intensity times the country's grid carbon intensity, summed across the pattern's jobs."""
-        self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
-        for usage_pattern in self.usage_patterns:
-            self.update_dict_element_in_energy_footprint_per_usage_pattern(usage_pattern)
+        return self.energy_footprint_for_data_volume_and_usage_pattern(
+            job.hourly_data_transferred_per_usage_pattern[usage_pattern], usage_pattern)
 
     def update_instances_fabrication_footprint(self):
         """Network fabrication footprint, currently always empty: e-footprint does not account for the embodied carbon of network infrastructure since it is shared across countless services."""
@@ -134,3 +125,51 @@ class Network(ModelingObject):
     @property
     def usage_impact_repartition_weights(self):
         return self.energy_footprint_per_job
+
+    # --- Attribution-only per-pattern footprint and atom builder (lazy cached properties / generator,
+    # consumed only by the attribution layer, never by the eager calculated-attribute graph) ---
+
+    @cached_property
+    def energy_footprint_per_usage_pattern(self) -> dict:
+        """Hourly carbon emissions caused by network traffic, broken down by usage pattern — data transferred
+        times bandwidth energy intensity times the pattern country's grid carbon intensity, summed across the
+        pattern's jobs. Attribution-only (the eager energy_footprint total sums the per-job dict), hence a
+        cached property rather than a calculated attribute."""
+        footprints = {}
+        for usage_pattern in self.usage_patterns:
+            footprint = EmptyExplainableObject()
+            for job in usage_pattern.jobs:
+                if usage_pattern not in job.hourly_data_transferred_per_usage_pattern:
+                    continue
+                footprint += self._compute_energy_footprint_for_job_and_usage_pattern(job, usage_pattern)
+            footprints[usage_pattern] = footprint.to(u.kg).set_label(
+                f"{usage_pattern.name} network energy footprint")
+
+        return footprints
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """One single-stream atom per (job, containment cell) routed through this network, computed ground-up
+        from the cell's data volume (the job's per-(pattern, step) / per-(pattern, RSN) transfer, edge cells
+        weighted by their slot multiplicity) converted by the physics fn with CI[up] inside each cell, so
+        patterns with different carbon intensities are never blended. Network fabrication is not modeled, so
+        the manufacturing phase carries no atoms. The conversion is linear in the data volume and the per-cell
+        volumes partition the job's per-pattern transfer, so Σ atoms == energy_footprint."""
+        if phase == LifeCyclePhases.MANUFACTURING:
+            return
+        for job in self.jobs:
+            for cell in job.attribution_cells:
+                if cell.up.network != self:
+                    continue
+                if cell.step is not None:
+                    data_volume = job.compute_hourly_data_transferred_per_usage_pattern_per_step(
+                        cell.up, cell.step)
+                else:
+                    data_volume = job.compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(
+                        cell.up, cell.rsn) * ExplainableQuantity(
+                        cell.slot_multiplicity * u.dimensionless,
+                        f"{cell.rsn.name} slot multiplicity via {cell.ef.name}")
+                yield Atom(
+                    source=self, stream="single", job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                    value=self.energy_footprint_for_data_volume_and_usage_pattern(data_volume, cell.up)
+                    .to(u.kg).set_label(
+                        f"{self.name} energy footprint via {job.name} in {cell.location_label} ({cell.up.name})"))

@@ -207,6 +207,25 @@ the new service-base term.
 
 ## Task 4 — Storage + Network atom builders
 
+**Status:** Done
+
+**Implementation notes:**
+- The cumsum-with-dumps helper landed as the module-level `cumulative_storage_need_with_dumps(rate, duration)`
+  in `storage.py`; the eager `update_dict_element_in_full_cumulative_storage_need_per_job` is now a thin caller.
+- Per-cell retention rates are built as `cell.hourly_share × the job's replicated data-stored rate` (exact —
+  the cell's occurrences are zero wherever the job's total is) rather than re-deriving data_stored_per_hour,
+  so the builder consumes only public job quantities; linearity then gives Σ cells == per-job cumulative
+  exactly (pinned by a unit test on the helper and a real-model test).
+- Baseline job weights (`baseline_flat_share_per_job`) fall back to an equal share across the jobs holding at
+  least one attribution cell when total occurrences are zero, mirroring the task-1/3 zero-traffic fallbacks.
+- Network cells are filtered by `cell.up.network == self` (a job can route through several networks); edge
+  cells reuse the task-1 `compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need`
+  primitive weighted by the cell's slot multiplicity.
+- Eager-vs-lazy audit: `Network.energy_footprint_per_usage_pattern` moved to a cached property (its only
+  consumers are the lazy legacy `country_dependent_usage_footprint` paths; the eager energy total sums the
+  per-job dict). Storage's `shared_storage_per_job` stays eager — the eager legacy
+  `fabrication_impact_repartition_weights` consumes it until task 7.
+
 **Goal:** Storage: the two-stream split (`storage_retention_fabrication_footprint` = F × N /
 provisioned_capacity over the job-written cumulative N; `storage_baseline_fabrication_footprint`
 = F × (unused + base) / provisioned_capacity), cumsum-with-dumps factored into a reusable helper

@@ -1,5 +1,6 @@
 import math
 from copy import copy
+from functools import cached_property
 from typing import List, TYPE_CHECKING, Optional
 
 import numpy as np
@@ -8,17 +9,41 @@ from pint import Quantity
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources
+from efootprint.core.attribution import Atom
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
-from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
+    ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 if TYPE_CHECKING:
     from efootprint.core.usage.job import JobBase
     from efootprint.core.hardware.server_base import ServerBase
+
+
+def cumulative_storage_need_with_dumps(replicated_storage_rate, data_storage_duration: ExplainableQuantity):
+    """Cumulative sum with automatic dumps: data written at hour h is dumped at h + data_storage_duration,
+    so the cumulative tracks the volume currently held. Linear in the rate — per-cell cumulatives sum exactly
+    to per-job cumulatives, which is what makes the retention attribution weights conserve."""
+    if isinstance(replicated_storage_rate, EmptyExplainableObject):
+        return EmptyExplainableObject(left_parent=replicated_storage_rate)
+    storage_rate = replicated_storage_rate.to(u.TB_stored)
+    rate_array = np.copy(storage_rate.value.magnitude)
+    storage_duration_in_hours = math.ceil(copy(data_storage_duration.to(u.hour)).magnitude)
+    auto_dumps_array = -np.pad(
+        storage_rate.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
+    )[:len(rate_array)]
+    delta_array = rate_array + auto_dumps_array.magnitude
+    cumulative_quantity = Quantity(np.cumsum(delta_array, dtype=np.float32), u.TB_stored)
+
+    return ExplainableHourlyQuantities(
+        cumulative_quantity, start_date=storage_rate.start_date,
+        left_parent=replicated_storage_rate, right_parent=data_storage_duration,
+        operator="cumulative sum with automatic dumps")
 
 
 class Storage(InfraHardware):
@@ -166,24 +191,9 @@ class Storage(InfraHardware):
             f"Carbon footprint")
 
     def update_dict_element_in_full_cumulative_storage_need_per_job(self, job: "JobBase"):
-        job_storage_rate = (
-            job.hourly_data_stored_across_usage_patterns * self.data_replication_factor).to(u.TB_stored)
-        if isinstance(job_storage_rate, EmptyExplainableObject):
-            self.full_cumulative_storage_need_per_job[job] = EmptyExplainableObject(
-                left_parent=job_storage_rate, label=f"Cumulative storage need for {job.name}")
-            return
-        rate_array = np.copy(job_storage_rate.value.magnitude)
-        storage_duration_in_hours = math.ceil(copy(self.data_storage_duration.to(u.hour)).magnitude)
-        auto_dumps_array = -np.pad(
-            job_storage_rate.value, (storage_duration_in_hours, 0), constant_values=np.float32(0)
-        )[:len(rate_array)]
-        delta_array = rate_array + auto_dumps_array.magnitude
-        cumulative_quantity = Quantity(np.cumsum(delta_array, dtype=np.float32), u.TB_stored)
-        self.full_cumulative_storage_need_per_job[job] = ExplainableHourlyQuantities(
-            cumulative_quantity, start_date=job_storage_rate.start_date,
-            label=f"Cumulative storage need for {job.name}",
-            left_parent=job_storage_rate, right_parent=self.data_storage_duration,
-            operator="cumulative sum with automatic dumps")
+        job_storage_rate = job.hourly_data_stored_across_usage_patterns * self.data_replication_factor
+        self.full_cumulative_storage_need_per_job[job] = cumulative_storage_need_with_dumps(
+            job_storage_rate, self.data_storage_duration).set_label(f"Cumulative storage need for {job.name}")
 
     def update_full_cumulative_storage_need_per_job(self):
         """Per-job cumulative volume of stored data over time, applying the replication factor and dropping data older than {param:Storage.data_storage_duration}."""
@@ -278,3 +288,126 @@ class Storage(InfraHardware):
         raise NotImplementedError(
             f"Usage impact repartition is not implemented for {self.name} when Storage has a non-empty energy footprint."
         )
+
+    # --- Attribution-only stream split and atom builder (lazy cached properties, consumed only by the
+    # attribution layer, never by the eager calculated-attribute graph) ---
+
+    @cached_property
+    def job_written_cumulative_storage_need(self):
+        """N — the job-written cumulative storage volume held over time, excluding base_storage_need: the sum
+        of full_cumulative_storage_need_per_job over the storage's jobs. The retention stream's driver and the
+        denominator of its per-cell attribution weights."""
+        return sum(
+            self.full_cumulative_storage_need_per_job.values(), start=EmptyExplainableObject()
+        ).set_label(f"Job-written cumulative storage need of {self.name}")
+
+    @cached_property
+    def storage_retention_fabrication_footprint(self):
+        """Retention stream — the share of the fabrication footprint driven by job-written data:
+        F × N / provisioned_capacity, with provisioned_capacity = nb_of_instances × storage_capacity.
+        divide_or_fallback(fallback=0) is exact: zero provisioned capacity at an hour implies N == 0 there."""
+        if (isinstance(self.nb_of_instances, EmptyExplainableObject)
+                or isinstance(self.job_written_cumulative_storage_need, EmptyExplainableObject)):
+            return EmptyExplainableObject(left_parent=self.instances_fabrication_footprint).set_label(
+                f"{self.name} retention fabrication footprint")
+        provisioned_capacity = (self.nb_of_instances * self.storage_capacity).to(u.TB_stored)
+        retention_share = divide_or_fallback(
+            self.job_written_cumulative_storage_need, provisioned_capacity, fallback=0)
+
+        return (self.instances_fabrication_footprint * retention_share).to(u.kg).set_label(
+            f"{self.name} retention fabrication footprint")
+
+    @cached_property
+    def storage_baseline_fabrication_footprint(self):
+        """Baseline stream — the rest of the fabrication footprint: F × (unused_storage + base_storage_need)
+        / provisioned_capacity. Since provisioned_capacity = N + unused + base, the two streams sum to F
+        exactly (nb_of_instances cancels in each)."""
+        if (isinstance(self.nb_of_instances, EmptyExplainableObject)
+                or isinstance(self.full_cumulative_storage_need, EmptyExplainableObject)):
+            return EmptyExplainableObject(left_parent=self.instances_fabrication_footprint).set_label(
+                f"{self.name} baseline fabrication footprint")
+        provisioned_capacity = (self.nb_of_instances * self.storage_capacity).to(u.TB_stored)
+        unused_storage = provisioned_capacity - self.full_cumulative_storage_need
+        baseline_share = divide_or_fallback(
+            (unused_storage + self.base_storage_need).to(u.TB_stored), provisioned_capacity, fallback=0)
+
+        return (self.instances_fabrication_footprint * baseline_share).to(u.kg).set_label(
+            f"{self.name} baseline fabrication footprint")
+
+    @cached_property
+    def retention_cumulative_per_cell(self) -> dict:
+        """Per-cell cumulative storage volume held, over every attribution cell of the storage's jobs — the
+        hourly numerators of the retention weights. A cell's replicated data-stored rate is its hourly
+        occurrence share × the job's replicated rate (exact: the cell's occurrences are zero wherever the
+        job's total is), pushed through the same cumsum-with-dumps as full_cumulative_storage_need_per_job,
+        whose linearity makes the per-cell cumulatives sum exactly to the per-job cumulative and, across
+        jobs, to N."""
+        cumulatives = {}
+        for job in self.jobs:
+            replicated_job_rate = job.hourly_data_stored_across_usage_patterns * self.data_replication_factor
+            for cell in job.attribution_cells:
+                cumulatives[cell] = cumulative_storage_need_with_dumps(
+                    cell.hourly_share * replicated_job_rate, self.data_storage_duration).set_label(
+                    f"Cumulative storage need of {job.name} in {cell.location_label} ({cell.up.name})")
+
+        return cumulatives
+
+    @cached_property
+    def baseline_flat_share_per_job(self) -> dict:
+        """Flat period-total occurrence share of each job in the storage's total job occurrences — the
+        always-on baseline stream's job weights (flat shares carry footprint at idle hours, where hourly
+        ratios are 0/0: fallback 0 drops that footprint and fallback 1 books it once per cell — the bug the
+        flat kind fixes). Falls back to an equal share across the jobs holding at least one attribution cell
+        when total occurrences are zero, so the weights still sum to 1 on a zero-traffic model."""
+        period_occurrences_per_job = {
+            job: job.hourly_avg_occurrences_across_usage_patterns.sum() for job in self.jobs}
+        total_occurrences = sum(period_occurrences_per_job.values(), start=EmptyExplainableObject())
+        if isinstance(total_occurrences, EmptyExplainableObject) or total_occurrences.magnitude == 0:
+            jobs_with_cells = [job for job in self.jobs if job.attribution_cells]
+            return {
+                job: ExplainableQuantity(
+                    (1 / len(jobs_with_cells) if job in jobs_with_cells else 0) * u.dimensionless,
+                    f"{job.name} flat occurrence share of {self.name} jobs")
+                for job in self.jobs}
+
+        return {
+            job: (occurrences / total_occurrences).to(u.dimensionless).set_label(
+                f"{job.name} flat occurrence share of {self.name} jobs")
+            for job, occurrences in period_occurrences_per_job.items()}
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """One atom per (stream, job, containment cell) of the fabrication phase — storage operating energy
+        is folded into the hosting server, so the usage phase carries no atoms. The retention stream relays
+        by hourly per-cell cumulative / N weights (a demand stream: zero held data ⇒ zero footprint); the
+        baseline stream relays by flat period-total occurrence shares (always-on: the instances hold their
+        unused + base capacity at idle hours). Cells span web steps and edge recurrent server needs, so a
+        storage written from both sides splits across both."""
+        if phase == LifeCyclePhases.USAGE or isinstance(self.instances_fabrication_footprint,
+                                                        EmptyExplainableObject):
+            return
+        retention_footprint = self.storage_retention_fabrication_footprint
+        baseline_footprint = self.storage_baseline_fabrication_footprint
+        job_written_need = self.job_written_cumulative_storage_need
+        for job in self.jobs:
+            job_baseline_share = self.baseline_flat_share_per_job[job]
+            for cell in job.attribution_cells:
+                cell_cumulative = self.retention_cumulative_per_cell[cell]
+                if isinstance(cell_cumulative, EmptyExplainableObject):
+                    retention_value = EmptyExplainableObject(
+                        left_parent=retention_footprint, right_parent=cell_cumulative)
+                else:
+                    retention_value = (
+                        retention_footprint * divide_or_fallback(cell_cumulative, job_written_need, fallback=0)
+                    ).to(u.kg)
+                yield Atom(
+                    source=self, stream="retention", job=job, up=cell.up, step=cell.step, rsn=cell.rsn,
+                    ef=cell.ef,
+                    value=retention_value.set_label(
+                        f"{self.name} retention fabrication footprint via {job.name} "
+                        f"in {cell.location_label} ({cell.up.name})"))
+                yield Atom(
+                    source=self, stream="baseline", job=job, up=cell.up, step=cell.step, rsn=cell.rsn,
+                    ef=cell.ef,
+                    value=(baseline_footprint * job_baseline_share * cell.flat_share).to(u.kg).set_label(
+                        f"{self.name} baseline fabrication footprint via {job.name} "
+                        f"in {cell.location_label} ({cell.up.name})"))
