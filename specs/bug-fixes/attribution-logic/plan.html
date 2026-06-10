@@ -404,7 +404,11 @@ Scope: <strong>end-game structure only</strong>; migration steps deferred. No ba
     <em>Σ atoms == each stream's footprint == the eager totals</em>, on a model exercising web + edge + reuse +
     on-premise idle hours. Plus: per-level dicts partition node totals; links-vs-node consistency comes free from the
     fold but gets a regression test; per-source-exclusion and column-skip equivalence tests; the per-tier helper unit-tested
-    in isolation. Existing Sankey/integration totals must be reproduced before old paths are deleted.</li>
+    in isolation. Include the long-job repro inherited from the superseded duration-aware-impact-attribution spec: a job
+    whose <code>request_duration</code> outlives its journey window (e.g. a &gt;1h video-generation job in a 3-minute
+    journey) must have its full run-window footprint attributed to its journey/pattern — the request_duration-averaged
+    occurrence primitives make this hold by construction, and the negative-neutral-remainder machinery that used to
+    crash on it is deleted. Existing Sankey/integration totals must be reproduced before old paths are deleted.</li>
     <li><strong>Serialization:</strong> attribution is lazy memoized, not calculated attributes → not serialized —
     deliberately: persisting render caches would bloat the JSON with hundreds of hourly series to save milliseconds
     per request (see §1.5 cache-lifetime note). Removing the repartition-weight calculated attributes simplifies the

@@ -48,7 +48,7 @@ New JobBase attributes introduced (edge):
 - hourly_avg_occurrences_per_edge_usage_journey: keyed by the job's edge usage journeys; the by-edge-journey regroup of hourly_avg_occurrences_per_usage_pattern — sum over the job's edge patterns whose edge_usage_journey is euj (clean partition, one edge UJ per edge UP). The edge analogue of hourly_avg_occurrences_per_usage_journey.
 
 #### External API servers
-EcoLogits-style external-API servers are leaf = Job neutral sources too: their per-job, duration-aware request footprints (request_usage_gwp / request_embodied_gwp spread over request_duration — see specs/bug-fixes/duration-aware-impact-attribution) are already flat {job: hourly} splits, with no sizing stream to apportion. They reuse the Job relay weights above unchanged — a single demand stream, hourly weights exact (their footprint is occurrence-driven, zero at zero-occurrence hours).
+EcoLogits-style external-API servers are leaf = Job neutral sources too: their per-job, duration-aware request footprints (request_usage_gwp / request_embodied_gwp × (1h / request_duration) × hourly_avg_occurrences — landed 2026-06) are already flat {job: hourly} splits, with no sizing stream to apportion. They reuse the Job relay weights above unchanged — a single demand stream, hourly weights exact (their footprint is occurrence-driven, zero at zero-occurrence hours).
 
 ### Network (only usage impact)
 
