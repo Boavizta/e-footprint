@@ -406,6 +406,37 @@ class TestStorageAttributionAtoms(TestCase):
         self.assertAlmostEqual(
             baseline_footprint.magnitude[idle_hour], baseline_atoms_sum.magnitude[idle_hour], places=6)
 
+    def test_baseline_equal_share_fallback_conserves_on_zero_traffic_model(self):
+        """Test the zero-traffic fallback: with all-zero journey starts and a nonzero base_storage_need the
+        fabrication footprint is nonzero, baseline job weights fall back to equal shares summing to 1 and the
+        baseline atoms (the only nonzero stream) still conserve the fabrication footprint."""
+        storage = Storage.from_defaults("zero traffic storage", base_storage_need=SourceValue(1 * u.TB_stored))
+        server = Server.from_defaults("zero traffic storage server", storage=storage)
+        job_a = Job.from_defaults(
+            "zero traffic storage job a", server=server, data_stored=SourceValue(1 * u.GB_stored))
+        job_b = Job.from_defaults(
+            "zero traffic storage job b", server=server, data_stored=SourceValue(2 * u.GB_stored))
+        step = UsageJourneyStep("zero traffic storage step", SourceValue(30 * u.min), [job_a, job_b])
+        journey = UsageJourney("zero traffic storage journey", [step])
+        up = UsagePattern(
+            "zero traffic storage usage pattern", journey,
+            [Device.from_defaults("zero traffic storage laptop")],
+            Network("zero traffic storage network", SourceValue(0.05 * u.kWh / u.GB)),
+            Country("zero traffic storage country", "ZTS", SourceValue(100 * u.g / u.kWh),
+                    ExplainableTimezone(pytz.utc, "UTC timezone")),
+            create_source_hourly_values_from_list([0, 0, 0], datetime(2026, 1, 1)))
+        System("zero traffic storage system", [up], edge_usage_patterns=[])
+
+        self.assertGreater(storage.instances_fabrication_footprint.sum().magnitude, 0)
+        shares = storage.baseline_flat_share_per_job
+        self.assertEqual([0.5, 0.5], [shares[job].magnitude for job in (job_a, job_b)])
+        assert_source_atoms_conserve(
+            self, storage,
+            stream_footprints_by_phase={
+                LifeCyclePhases.MANUFACTURING: {
+                    "retention": storage.storage_retention_fabrication_footprint,
+                    "baseline": storage.storage_baseline_fabrication_footprint}})
+
     def test_edge_storage_is_not_an_attribution_source(self):
         """Test the EdgeStorage-on-device distinction stays untouched: EdgeStorage is an EdgeComponent, not a
         Storage, and does not implement the atom contract (RecurrentEdgeStorageNeed is the EdgeDevice

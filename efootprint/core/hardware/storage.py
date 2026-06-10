@@ -357,16 +357,16 @@ class Storage(InfraHardware):
         """Flat period-total occurrence share of each job in the storage's total job occurrences — the
         always-on baseline stream's job weights (flat shares carry footprint at idle hours, where hourly
         ratios are 0/0: fallback 0 drops that footprint and fallback 1 books it once per cell — the bug the
-        flat kind fixes). Falls back to an equal share across the jobs holding at least one attribution cell
-        when total occurrences are zero, so the weights still sum to 1 on a zero-traffic model."""
+        flat kind fixes). Falls back to an equal share per job when total occurrences are zero, so the
+        weights still sum to 1 on a zero-traffic model (every job reaches a Storage through a usage
+        pattern, so each holds at least one attribution cell)."""
         period_occurrences_per_job = {
             job: job.hourly_avg_occurrences_across_usage_patterns.sum() for job in self.jobs}
         total_occurrences = sum(period_occurrences_per_job.values(), start=EmptyExplainableObject())
         if isinstance(total_occurrences, EmptyExplainableObject) or total_occurrences.magnitude == 0:
-            jobs_with_cells = [job for job in self.jobs if job.attribution_cells]
             return {
                 job: ExplainableQuantity(
-                    (1 / len(jobs_with_cells) if job in jobs_with_cells else 0) * u.dimensionless,
+                    1 / len(self.jobs) * u.dimensionless,
                     f"{job.name} flat occurrence share of {self.name} jobs")
                 for job in self.jobs}
 
