@@ -4,6 +4,9 @@ from typing import List
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.constants.units import u
+from efootprint.core.attribution import Atom
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 
 class ExternalAPIServer(ModelingObject):
@@ -54,6 +57,26 @@ class ExternalAPIServer(ModelingObject):
     @abstractmethod
     def update_usage_impact_repartition_weights(self):
         pass
+
+    @abstractmethod
+    def job_request_footprint(self, job: "ModelingObject", phase: LifeCyclePhases):
+        """The job's duration-aware hourly request footprint for a life-cycle phase — the per-job summand the
+        server's eager phase total sums over its jobs. Atom values are built from it, so Σ atoms == the total."""
+        pass
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """One atom per containment cell of each job calling the API — a single demand stream relaying each
+        job's duration-aware request footprint by its hourly cell occurrence shares (exact for a pure demand
+        stream: the footprint is occurrence-driven, zero at zero-occurrence hours)."""
+        for job in self.jobs:
+            job_footprint = self.job_request_footprint(job, phase)
+            for cell in job.attribution_cells:
+                location = cell.step.name if cell.step is not None else f"{cell.rsn.name} via {cell.ef.name}"
+                yield Atom(
+                    source=self, stream="single", job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                    value=(job_footprint * cell.hourly_share).to(u.kg).set_label(
+                        f"{self.name} {phase.value.lower()} footprint via {job.name} "
+                        f"in {location} ({cell.up.name})"))
 
 
 class ExternalAPI(ModelingObject):

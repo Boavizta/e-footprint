@@ -3,6 +3,7 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.all_classes_in_order import SANKEY_COLUMNS
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.constants.units import u
@@ -96,6 +97,9 @@ class CanonicalChildBObject(CanonicalParentObject):
 
 
 class _DummyExternalAPIServer(ExternalAPIServer):
+    def job_request_footprint(self, job, phase):
+        return EmptyExplainableObject()
+
     def update_instances_fabrication_footprint(self) -> None:
         return None
 

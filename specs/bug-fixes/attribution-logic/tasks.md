@@ -142,6 +142,25 @@ attribution-only follow the cached-property rule).
 
 ## Task 3 — ServerBase + external-API atom builders
 
+**Status:** Done
+
+**Implementation notes:**
+- The idle/load energy split landed as two eager calculated attributes (`idle_energy_footprint`,
+  `load_energy_footprint`) with `update_energy_footprint` overridden on ServerBase to sum them — the eager
+  energy total is re-derived from them, per the eager-vs-lazy rule's exception.
+- The per-tier helper `on_premise_provisioned_tier_shares` is a module-level pure function on numpy arrays
+  (unit-tested in isolation); a tier no hour needs (fixed_nb_of_instances above peak) falls back to
+  period-total demand shares, and zero total demand falls back to equal shares so weights always sum to 1.
+- The external-API builder lives on `ExternalAPIServer` (base class) over a new
+  `job_request_footprint(job, phase)` abstract method; EcoLogits implements it from
+  `_spread_over_request_duration`. Stream name is `"single"`.
+- The plan §1.2 `J2 | B·US` row is pinned by
+  `test_flat_provisioned_share_carries_footprint_at_a_cell_zero_occurrence_hour` (zero dynamic atom, nonzero
+  flat provisioned atom at a cell's zero-occurrence hour, on a real web + edge on-premise model).
+- Eager-vs-lazy audit: `service_total_job_volumes` moved to a cached property (only consumed by the new
+  service-base term and legacy `job_repartition_weights`, which was repointed); no other attribution-only
+  calculated attribute found on the touched classes.
+
 **Goal:** The subtlest physics. ServerBase: expose the idle/load energy split as separate
 footprints, build `binding_demand_per_job` (binding resource picked by the `raw[h]` max, same
 denominators as `update_raw_nb_of_instances`; ServiceJob carries its volume share of its

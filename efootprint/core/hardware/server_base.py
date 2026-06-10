@@ -1,3 +1,4 @@
+from functools import cached_property
 from typing import List, TYPE_CHECKING
 from abc import abstractmethod
 
@@ -6,13 +7,15 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
-    ExplainableHourlyQuantities, divide_or_fallback)
+    ExplainableHourlyQuantities, align_temporally_quantity_arrays, divide_or_fallback)
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.core.attribution import Atom
 from efootprint.core.hardware.infra_hardware import InfraHardware
 from efootprint.core.hardware.hardware_base import InsufficientCapacityError
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 from efootprint.abstract_modeling_classes.source_objects import SOURCE_VALUE_DEFAULT_NAME, SourceObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.storage import Storage
@@ -38,6 +41,35 @@ class ServerTypes:
     @classmethod
     def all(cls):
         return [cls.autoscaling(), cls.on_premise(), cls.serverless()]
+
+
+def on_premise_provisioned_tier_shares(
+        demand_per_job: dict, raw_nb_of_instances: np.ndarray, nb_of_tiers: int) -> dict:
+    """Flat per-job weights for the on-premise provisioned stream (each instance is paid for by the jobs that
+    need it, in the hours they need it). Instance tier k (k = 1..nb_of_tiers) is needed in the hours
+    {h: raw[h] > k - 1}; within those hours, jobs split the tier's equal 1/nb_of_tiers slice of the provisioned
+    footprint by their share of the binding demand summed over the tier's hours — so a job present only off-peak
+    still pays the lower tiers it requires. A tier no hour needs (fixed_nb_of_instances above peak) falls back
+    to the period-total demand shares; at zero total demand, shares are equal per job. ``demand_per_job`` values
+    are plain numpy arrays aligned with ``raw_nb_of_instances``; the returned per-job floats sum to 1."""
+    period_total_per_job = {job: demand.sum() for job, demand in demand_per_job.items()}
+    period_total = sum(period_total_per_job.values())
+    if period_total == 0:
+        period_share_per_job = {job: 1 / len(demand_per_job) for job in demand_per_job}
+    else:
+        period_share_per_job = {job: total / period_total for job, total in period_total_per_job.items()}
+
+    shares = {job: 0.0 for job in demand_per_job}
+    for tier in range(1, nb_of_tiers + 1):
+        tier_hours = raw_nb_of_instances > tier - 1
+        tier_demand_per_job = {job: demand[tier_hours].sum() for job, demand in demand_per_job.items()}
+        tier_demand = sum(tier_demand_per_job.values())
+        for job in shares:
+            tier_share = (tier_demand_per_job[job] / tier_demand if tier_demand > 0
+                          else period_share_per_job[job])
+            shares[job] += tier_share / nb_of_tiers
+
+    return shares
 
 
 class ServerBase(InfraHardware):
@@ -155,7 +187,8 @@ class ServerBase(InfraHardware):
         self.nb_of_instances = EmptyExplainableObject()
         self.occupied_ram_per_instance = EmptyExplainableObject()
         self.occupied_compute_per_instance = EmptyExplainableObject()
-        self.service_total_job_volumes = ExplainableObjectDict()
+        self.idle_energy_footprint = EmptyExplainableObject()
+        self.load_energy_footprint = EmptyExplainableObject()
         self.job_repartition_weights = ExplainableObjectDict()
 
     @property
@@ -173,8 +206,12 @@ class ServerBase(InfraHardware):
         "occupied_compute_per_instance",
         "available_ram_per_instance",
         "available_compute_per_instance",
-    ] + InfraHardware.calculated_attributes + [
-        "service_total_job_volumes",
+    ] + [
+        attr for attr in InfraHardware.calculated_attributes if attr != "energy_footprint"
+    ] + [
+        "idle_energy_footprint",
+        "load_energy_footprint",
+        "energy_footprint",
         "job_repartition_weights",
     ] + [
         attr
@@ -272,19 +309,43 @@ class ServerBase(InfraHardware):
 
         self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
 
-    def update_instances_energy(self):
-        """Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied."""
-        energy_spent_by_one_idle_instance_over_one_hour = (
-                self.idle_power * self.power_usage_effectiveness * ExplainableQuantity(1 * u.hour, "one hour"))
-        extra_energy_spent_by_one_fully_active_instance_over_one_hour = (
-                (self.power - self.idle_power) * self.power_usage_effectiveness
+    @property
+    def energy_spent_by_one_idle_instance_over_one_hour(self):
+        return self.idle_power * self.power_usage_effectiveness * ExplainableQuantity(1 * u.hour, "one hour")
+
+    @property
+    def extra_energy_spent_by_one_fully_active_instance_over_one_hour(self):
+        return ((self.power - self.idle_power) * self.power_usage_effectiveness
                 * ExplainableQuantity(1 * u.hour, "one hour"))
 
+    def update_instances_energy(self):
+        """Hourly energy consumed by all running instances, decomposed into idle baseline energy plus the extra energy drawn while serving load, with PUE applied."""
         server_energy = (
-                energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
-                + extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances)
+                self.energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
+                + self.extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances)
 
         self.instances_energy = server_energy.to(u.kWh).set_label(f"Hourly energy consumed by instances")
+
+    def update_idle_energy_footprint(self):
+        """Hourly carbon emissions of the idle baseline energy drawn by all provisioned instances (idle power times PUE times number of instances times grid carbon intensity) — the usage-phase component that rides the provisioned attribution stream."""
+        idle_energy_footprint = (
+                self.energy_spent_by_one_idle_instance_over_one_hour * self.nb_of_instances
+                * self.average_carbon_intensity)
+
+        self.idle_energy_footprint = idle_energy_footprint.to(u.kg).set_label(f"Hourly idle energy footprint")
+
+    def update_load_energy_footprint(self):
+        """Hourly carbon emissions of the extra energy drawn while serving load (power above idle times PUE times raw number of instances times grid carbon intensity) — the usage-phase component that rides the dynamic attribution stream."""
+        load_energy_footprint = (
+                self.extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances
+                * self.average_carbon_intensity)
+
+        self.load_energy_footprint = load_energy_footprint.to(u.kg).set_label(f"Hourly load energy footprint")
+
+    def update_energy_footprint(self):
+        """Hourly carbon emissions caused by the electricity consumed by the server, equal to the sum of its idle and load energy footprints."""
+        self.energy_footprint = (self.idle_energy_footprint + self.load_energy_footprint).to(u.kg).set_label(
+            f"Hourly energy footprint")
 
     def autoscaling_update_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.ceil()
@@ -337,18 +398,16 @@ class ServerBase(InfraHardware):
         }
         logic_mapping[self.server_type]()
 
-    def update_dict_element_in_service_total_job_volumes(self, service):
-        total_volume = EmptyExplainableObject()
-        for job in service.jobs:
-            total_volume += job.hourly_avg_occurrences_across_usage_patterns
-        self.service_total_job_volumes[service] = total_volume.set_label(
-            f"Total job volume for {service.name}")
-
-    def update_service_total_job_volumes(self):
-        """Total hourly volume of jobs going through each installed service, used to attribute service-level overhead to individual jobs."""
-        self.service_total_job_volumes = ExplainableObjectDict()
-        for service in self.installed_services:
-            self.update_dict_element_in_service_total_job_volumes(service)
+    @cached_property
+    def service_total_job_volumes(self) -> dict:
+        """Total hourly volume of jobs going through each installed service, used to attribute each service's
+        standing base consumption to its own jobs proportionally to their volumes (attribution-only, lazy)."""
+        return {
+            service: sum(
+                (job.hourly_avg_occurrences_across_usage_patterns for job in service.jobs),
+                start=EmptyExplainableObject()
+            ).set_label(f"Total job volume for {service.name}")
+            for service in self.installed_services}
 
     def update_dict_element_in_job_repartition_weights(self, job: "JobBase"):
         from efootprint.core.usage.job import DirectServerJob
@@ -394,3 +453,122 @@ class ServerBase(InfraHardware):
     @property
     def usage_impact_repartition_weights(self):
         return self.job_repartition_weights
+
+    # --- Attribution-only binding-resource physics and atom builder (lazy cached properties, consumed only by
+    # the attribution layer, never by the eager calculated-attribute graph) ---
+
+    @property
+    def is_on_premise(self) -> bool:
+        return self.server_type == ServerTypes.on_premise()
+
+    @cached_property
+    def binding_demand_per_job(self) -> dict:
+        """Each job's hourly demand on the server's binding resource, the resource picked per hour by
+        raw[h] = max(compute_need[h] / available_compute_per_instance, ram_need[h] / available_ram_per_instance)
+        — the same denominators as update_raw_nb_of_instances, so attribution charges the resource that actually
+        drives the instance count. A ServiceJob additionally carries its volume share of its service's standing
+        base consumption (a service's reservation is paid by that service's own jobs)."""
+        from efootprint.builders.services.service_job_base_class import ServiceJob
+
+        compute_pressure = self.hour_by_hour_compute_need / self.available_compute_per_instance
+        ram_pressure = self.hour_by_hour_ram_need / self.available_ram_per_instance
+        if isinstance(compute_pressure, EmptyExplainableObject) or isinstance(ram_pressure, EmptyExplainableObject):
+            return {job: EmptyExplainableObject() for job in self.jobs}
+
+        compute_binds_np = (
+                compute_pressure.to(u.concurrent).magnitude >= ram_pressure.to(u.concurrent).magnitude
+        ).astype(np.float32)
+        compute_binds = ExplainableHourlyQuantities(
+            Quantity(compute_binds_np, u.dimensionless), compute_pressure.start_date,
+            left_parent=compute_pressure, right_parent=ram_pressure, operator="binding-resource selection between")
+        ram_binds = ExplainableHourlyQuantities(
+            Quantity(1 - compute_binds_np, u.dimensionless), compute_pressure.start_date,
+            left_parent=compute_pressure, right_parent=ram_pressure, operator="binding-resource selection between")
+
+        binding_demand_per_job = {}
+        for job in self.jobs:
+            occurrences = job.hourly_avg_occurrences_across_usage_patterns
+            demand = (
+                (job.compute_needed / self.available_compute_per_instance).to(u.dimensionless) * compute_binds
+                + (job.ram_needed / self.available_ram_per_instance).to(u.dimensionless) * ram_binds
+            ) * occurrences
+            if isinstance(job, ServiceJob) and not isinstance(occurrences, EmptyExplainableObject):
+                service = job.service
+                service_base_pressure = (
+                    (service.base_compute_consumption / self.available_compute_per_instance).to(u.dimensionless)
+                    * compute_binds
+                    + (service.base_ram_consumption / self.available_ram_per_instance).to(u.dimensionless)
+                    * ram_binds)
+                job_volume_share = divide_or_fallback(
+                    occurrences, self.service_total_job_volumes[service], fallback=0)
+                demand = demand + service_base_pressure * self.nb_of_instances * job_volume_share
+            binding_demand_per_job[job] = demand.to(u.concurrent).set_label(
+                f"{job.name} binding-resource demand on {self.name}")
+
+        return binding_demand_per_job
+
+    @cached_property
+    def dynamic_share_per_job(self) -> dict:
+        """Each job's hourly share of the total binding-resource demand, divide_or_fallback(fallback=0) —
+        exact for the demand streams: zero demand at an hour means zero dynamic footprint at that hour."""
+        total_demand = sum(self.binding_demand_per_job.values(), start=EmptyExplainableObject())
+        return {
+            job: (EmptyExplainableObject()
+                  if isinstance(demand, EmptyExplainableObject) or isinstance(total_demand, EmptyExplainableObject)
+                  else divide_or_fallback(demand, total_demand, fallback=0))
+            for job, demand in self.binding_demand_per_job.items()}
+
+    @cached_property
+    def provisioned_share_per_job(self) -> dict:
+        """Per-job weights for the provisioned stream (fabrication + idle energy, both proportional to
+        nb_of_instances). On-premise provisions once for the whole period, so the weights are flat scalars from
+        the per-tier helper on_premise_provisioned_tier_shares; autoscaling and serverless re-provision hourly,
+        so the weights collapse to dynamic_share_per_job."""
+        if not self.is_on_premise or isinstance(self.nb_of_instances, EmptyExplainableObject):
+            return self.dynamic_share_per_job
+        nb_of_tiers = int(round(self.nb_of_instances.max().magnitude))
+        if nb_of_tiers == 0 or not self.jobs:
+            return self.dynamic_share_per_job
+
+        raw_nb_of_instances_np = self.raw_nb_of_instances.magnitude
+        demand_per_job_np = {}
+        for job, demand in self.binding_demand_per_job.items():
+            if isinstance(demand, EmptyExplainableObject):
+                demand_per_job_np[job] = np.zeros_like(raw_nb_of_instances_np)
+            else:
+                aligned_demand, _, _ = align_temporally_quantity_arrays(
+                    demand.value, demand.start_date,
+                    self.raw_nb_of_instances.value, self.raw_nb_of_instances.start_date)
+                demand_per_job_np[job] = aligned_demand
+        tier_shares = on_premise_provisioned_tier_shares(demand_per_job_np, raw_nb_of_instances_np, nb_of_tiers)
+
+        return {
+            job: ExplainableQuantity(
+                share * u.dimensionless, f"{job.name} flat share of {self.name} provisioned footprint",
+                left_parent=self.raw_nb_of_instances, operator="per-tier provisioned weight derived from")
+            for job, share in tier_shares.items()}
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """One atom per (stream, job, containment cell): the fabrication phase carries the provisioned stream
+        over instances_fabrication_footprint; the usage phase carries the provisioned stream over
+        idle_energy_footprint plus the dynamic stream over load_energy_footprint. The job weight is the
+        stream's share (provisioned_share_per_job / dynamic_share_per_job) and the cell share is flat for the
+        on-premise provisioned stream (always-on: it carries footprint at idle hours) and hourly otherwise."""
+        if phase == LifeCyclePhases.MANUFACTURING:
+            streams = [("provisioned", self.instances_fabrication_footprint)]
+        else:
+            streams = [("provisioned", self.idle_energy_footprint), ("dynamic", self.load_energy_footprint)]
+
+        for stream, stream_footprint in streams:
+            job_weights = self.provisioned_share_per_job if stream == "provisioned" else self.dynamic_share_per_job
+            for job in self.jobs:
+                job_weight = job_weights[job]
+                for cell in job.attribution_cells:
+                    cell_share = (cell.flat_share if stream == "provisioned" and self.is_on_premise
+                                  else cell.hourly_share)
+                    location = cell.step.name if cell.step is not None else f"{cell.rsn.name} via {cell.ef.name}"
+                    yield Atom(
+                        source=self, stream=stream, job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
+                        value=(stream_footprint * job_weight * cell_share).to(u.kg).set_label(
+                            f"{self.name} {stream} {phase.value.lower()} footprint via {job.name} "
+                            f"in {location} ({cell.up.name})"))

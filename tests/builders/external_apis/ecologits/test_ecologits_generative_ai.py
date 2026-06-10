@@ -16,6 +16,11 @@ from efootprint.builders.external_apis.ecologits.ecologits_explainable_quantity 
 from efootprint.builders.external_apis.ecologits.ecologits_external_api import (
     EcoLogitsGenAIExternalAPI, EcoLogitsGenAIExternalAPIJob, ecologits_calculated_attributes)
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
+from efootprint.core.usage.job import JobAttributionCell
+from efootprint.core.usage.usage_journey_step import UsageJourneyStep
+from efootprint.core.usage.usage_pattern import UsagePattern
+from tests.core.attribution.conservation import assert_source_atoms_conserve
 from tests.utils import create_mod_obj_mock, set_modeling_obj_containers
 
 
@@ -223,6 +228,44 @@ class TestEcoLogitsGenAIExternalAPI(TestCase):
 
         self.assertTrue(np.allclose(
             [100 * 0.5 * 4] * 24, self.external_api.server.instances_energy.magnitude))
+
+    def test_attribution_atoms_conserve_eager_phase_totals(self):
+        """Test that Σ of the API server's atoms over each job's cells recovers the eager fabrication and
+        energy footprints (single demand stream, hourly cell shares)."""
+        def cell(up_name, hourly_share, flat_share):
+            flat_share_quantity = ExplainableQuantity(flat_share * u.dimensionless, f"flat share in {up_name}")
+            return JobAttributionCell(
+                up=create_mod_obj_mock(UsagePattern, up_name),
+                hourly_share=ExplainableHourlyQuantities(
+                    Quantity(np.full(24, hourly_share, dtype=np.float32), u.dimensionless), self.start_date,
+                    left_parent=flat_share_quantity, operator="hourly share matching"),
+                flat_share=flat_share_quantity,
+                step=create_mod_obj_mock(UsageJourneyStep, f"step of {up_name}"))
+
+        mock_job_1 = self._spread_job(
+            "Conserving job 1",
+            request_embodied_gwp=ExplainableQuantity(2 * u.kg, "embodied gwp 1"),
+            request_usage_gwp=ExplainableQuantity(3 * u.kg, "usage gwp 1"),
+            hourly_avg_occurrences_across_usage_patterns=self._avg_occ(4, "occurrences 1"),
+            attribution_cells=(cell("conserving up 1", 0.25, 0.25), cell("conserving up 2", 0.75, 0.75)))
+        mock_job_2 = self._spread_job(
+            "Conserving job 2",
+            request_embodied_gwp=ExplainableQuantity(1 * u.kg, "embodied gwp 2"),
+            request_usage_gwp=ExplainableQuantity(1 * u.kg, "usage gwp 2"),
+            hourly_avg_occurrences_across_usage_patterns=self._avg_occ(10, "occurrences 2"),
+            attribution_cells=(cell("conserving up 3", 1, 1),))
+        set_modeling_obj_containers(self.external_api, [mock_job_1, mock_job_2])
+        server = self.external_api.server
+        server.update_instances_fabrication_footprint()
+        server.update_energy_footprint()
+
+        assert_source_atoms_conserve(self, server)
+        fabrication_atoms = list(server.attribution_atoms(LifeCyclePhases.MANUFACTURING))
+        self.assertEqual(3, len(fabrication_atoms))
+        self.assertEqual({"single"}, {atom.stream for atom in fabrication_atoms})
+        job_1_up_1_atom = next(
+            atom for atom in fabrication_atoms if atom.job == mock_job_1 and atom.up.name == "conserving up 1")
+        self.assertTrue(np.allclose([2 * 4 * 0.25] * 24, job_1_up_1_atom.value.magnitude))
 
     def test_usage_impact_repartition_property_returns_server_usage_impact_repartition(self):
         """Test ExternalAPI exposes the server-level usage impact repartition without copying it."""

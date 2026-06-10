@@ -20,6 +20,7 @@ from efootprint.builders.external_apis.ecologits.ecologits_unit_mapping import E
 from efootprint.builders.external_apis.external_api_base_class import ExternalAPI, ExternalAPIServer
 from efootprint.builders.external_apis.external_api_job_base_class import ExternalAPIJob
 from efootprint.constants.units import u
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 models = ModelRepository.from_json()
 
@@ -113,6 +114,14 @@ class EcoLogitsGenAIExternalAPIServer(ExternalAPIServer):
         self.fabrication_impact_repartition_weights = ExplainableObjectDict()
         for job in self.jobs:
             self.update_dict_element_in_fabrication_impact_repartition_weights(job)
+
+    def job_request_footprint(self, job: "EcoLogitsGenAIExternalAPIJob", phase: LifeCyclePhases):
+        """The job's duration-aware request footprint for a life-cycle phase: per-request embodied (fabrication)
+        or usage (energy) GWP spread over request_duration times hourly average occurrences — the per-job
+        summand of the matching eager footprint total."""
+        per_request_gwp = (job.request_embodied_gwp if phase == LifeCyclePhases.MANUFACTURING
+                           else job.request_usage_gwp)
+        return self._spread_over_request_duration(job, per_request_gwp)
 
     def update_dict_element_in_usage_impact_repartition_weights(self, job: "EcoLogitsGenAIExternalAPIJob"):
         self.usage_impact_repartition_weights[job] = self._spread_over_request_duration(
