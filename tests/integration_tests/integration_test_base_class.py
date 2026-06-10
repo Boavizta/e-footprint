@@ -520,3 +520,16 @@ class IntegrationTestBaseClass(TestCase):
                             f"raised {type(e).__name__}: {e}")
         if failures:
             self.fail("Cached property materialization failures:\n" + "\n".join(failures))
+
+    def run_test_attribution_atoms_conserve(self):
+        """Test that every attribution source's atoms conserve its eager phase totals (Σ atoms == footprint).
+
+        Sweeps every linked object implementing the atom contract, so each builder landed during the
+        attribution revamp is automatically exercised on this fixture — the atom-model counterpart of the
+        cached-property materialization walk.
+        """
+        from efootprint.core.attribution import attribution_sources
+        from tests.core.attribution.conservation import assert_source_atoms_conserve
+
+        for source in attribution_sources(self.system):
+            assert_source_atoms_conserve(self, source)
