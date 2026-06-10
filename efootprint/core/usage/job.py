@@ -42,6 +42,12 @@ class JobAttributionCell:
     ef: ModelingObject = None
     slot_multiplicity: float = 1
 
+    @property
+    def location_label(self) -> str:
+        """Human-readable containment location for atom labels — the step name web-side, the (rsn, ef) pair
+        edge-side."""
+        return self.step.name if self.step is not None else f"{self.rsn.name} via {self.ef.name}"
+
 
 class JobBase(ModelingObject):
     # Mark the class as abstract but not its children when they define a default_values class attribute

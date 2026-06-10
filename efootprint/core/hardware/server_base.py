@@ -7,7 +7,7 @@ from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import (
-    ExplainableHourlyQuantities, align_temporally_quantity_arrays, divide_or_fallback)
+    ExplainableHourlyQuantities, divide_or_fallback)
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
@@ -539,10 +539,12 @@ class ServerBase(InfraHardware):
             if isinstance(demand, EmptyExplainableObject):
                 demand_per_job_np[job] = np.zeros_like(raw_nb_of_instances_np)
             else:
-                aligned_demand, _, _ = align_temporally_quantity_arrays(
-                    demand.value, demand.start_date,
-                    self.raw_nb_of_instances.value, self.raw_nb_of_instances.start_date)
-                demand_per_job_np[job] = aligned_demand
+                assert (demand.start_date == self.raw_nb_of_instances.start_date
+                        and len(demand.magnitude) == len(raw_nb_of_instances_np)), \
+                    (f"Binding demand of {job.name} diverges from {self.name}'s raw_nb_of_instances grid — "
+                     f"binding_demand_per_job is built on the raw grid, so an upstream alignment change broke "
+                     f"this invariant")
+                demand_per_job_np[job] = demand.magnitude
         tier_shares = on_premise_provisioned_tier_shares(demand_per_job_np, raw_nb_of_instances_np, nb_of_tiers)
 
         return {
@@ -569,9 +571,8 @@ class ServerBase(InfraHardware):
                 for cell in job.attribution_cells:
                     cell_share = (cell.flat_share if stream == "provisioned" and self.is_on_premise
                                   else cell.hourly_share)
-                    location = cell.step.name if cell.step is not None else f"{cell.rsn.name} via {cell.ef.name}"
                     yield Atom(
                         source=self, stream=stream, job=job, up=cell.up, step=cell.step, rsn=cell.rsn, ef=cell.ef,
                         value=(stream_footprint * job_weight * cell_share).to(u.kg).set_label(
                             f"{self.name} {stream} {phase.value.lower()} footprint via {job.name} "
-                            f"in {location} ({cell.up.name})"))
+                            f"in {cell.location_label} ({cell.up.name})"))

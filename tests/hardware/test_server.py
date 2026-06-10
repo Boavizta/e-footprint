@@ -557,6 +557,18 @@ class TestOnPremiseProvisionedTierShares(TestCase):
         self.assertAlmostEqual((0.2 + 0 + 0.2) / 3, shares["small_job"], places=6)
         self.assertAlmostEqual(1, sum(shares.values()), places=6)
 
+    def test_fractional_raw_pins_the_tier_hours_predicate(self):
+        """Test the tier-hours set {h: raw[h] > k - 1} on fractional raw values: at raw = 2.5 the top tier
+        (k = 3) is needed at that hour (a `raw >= k` off-by-one would wrongly drop it to the period fallback)."""
+        shares = on_premise_provisioned_tier_shares(
+            {"big_job": np.array([2.0, 0.0]), "small_job": np.array([0.5, 1.0])},
+            raw_nb_of_instances=np.array([2.5, 1.0]), nb_of_tiers=3)
+
+        # tier 1: both hours -> 2/3.5, 1.5/3.5; tiers 2 & 3: hour 0 only (2.5 > 1 and 2.5 > 2) -> 0.8, 0.2
+        self.assertAlmostEqual((2 / 3.5 + 0.8 + 0.8) / 3, shares["big_job"], places=6)
+        self.assertAlmostEqual((1.5 / 3.5 + 0.2 + 0.2) / 3, shares["small_job"], places=6)
+        self.assertAlmostEqual(1, sum(shares.values()), places=6)
+
     def test_zero_total_demand_falls_back_to_equal_shares(self):
         """Test that a zero-traffic model still gets sum-to-1 equal flat weights for the always-on stream."""
         shares = on_premise_provisioned_tier_shares(
