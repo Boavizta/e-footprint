@@ -16,7 +16,7 @@ This separation is constitutional (`specs/constitution.md` §1.1). `core/` is bu
 
 **Known back-edge.** `abstract_modeling_classes/modeling_object.py` imports `LifeCyclePhases` from `efootprint/core/` (runtime) and `System` (TYPE_CHECKING). This is a leak of the layering and should be paid down opportunistically; new code must not introduce additional upward imports from `abstract_modeling_classes/` into `core/`.
 
-**No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), the base exposes an extension point (typically a class-level tuple) and the domain subclass extends it. Example: `ModelingObject._attributed_footprint_cached_property_names` lists only generic entries; `UsageJourney` and `EdgeUsageJourney` extend it with `attributed_energy_footprint_per_usage_pattern`, which is consumed by `invalidate_impact_repartition_cache` and the setattr guard via normal MRO lookup.
+**No domain names in the framework layer.** The dependency rule applies to *names*, not just imports: `abstract_modeling_classes/` may not mention `core/` concepts (`UsagePattern`, `Job`, `Server`, …) by name — not in class attributes, not in strings, not in comments load-bearing for behaviour. When the framework needs to be polymorphic over a domain-specific extension (e.g., a cached property that only some subclasses define), it discovers the extension structurally rather than naming it. Example: `class_cached_property_names` auto-discovers every `functools.cached_property` through the class MRO; the flush machinery (`flush_cached_properties`, the system-wide sweep, `to_json` / `__setattr__` skip lists) consumes that discovery, so domain subclasses add cached properties without registering them anywhere. Corollary invariant: every `cached_property` on a `ModelingObject` is a flushable read-time projection (lazy attribution layer), never model state.
 
 `efootprint/builders/` provides convenience subclasses of core objects with sensible defaults and external-data integrations (EcoLogits, Boavizta).
 
@@ -104,9 +104,10 @@ The corrected per-pattern usage total is held on the journey side as a `@cached_
 (`UsageJourney.attributed_energy_footprint_per_usage_pattern` and its edge counterpart): device/edge-device and
 network usage stays on the country where it occurs, while the remaining neutral journey usage (servers,
 storage/service overhead, external APIs) is split by neutral activity volume. `UsagePattern` and
-`EdgeUsagePattern` look up their own entry from that dict. The dict is registered in
-`ModelingObject._attributed_footprint_cached_property_names`, so it is flushed by the standard
-`invalidate_impact_repartition_cache` walk along with the other attributed-footprint caches.
+`EdgeUsagePattern` look up their own entry from that dict. Like every cached property, it is auto-discovered
+by `class_cached_property_names` and flushed by `flush_cached_properties` — both by the legacy
+`invalidate_impact_repartition_cache` walk and by the system-wide sweep that runs after every
+`ModelingUpdate` and after the initial build.
 
 ## Resolved attribution (skip / exclude semantics)
 

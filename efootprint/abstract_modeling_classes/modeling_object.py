@@ -1,7 +1,7 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 from copy import copy
-from functools import cached_property
+from functools import cache, cached_property
 from typing import List, Type, get_origin, get_args, TYPE_CHECKING
 import os
 import time
@@ -31,6 +31,28 @@ if TYPE_CHECKING:
     from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
 compute_times = defaultdict(float)
+
+
+@cache
+def class_cached_property_names(cls: type) -> tuple:
+    """Names of every functools.cached_property in the class MRO, memoized per class.
+
+    Codebase invariant: every cached property on a ModelingObject is a flushable read-time projection
+    (the lazy attribution layer) — never model state — so the wholesale flush may pop them all.
+    """
+    return tuple(dict.fromkeys(
+        name for klass in cls.__mro__ for name, attr in vars(klass).items() if isinstance(attr, cached_property)))
+
+
+def flush_cached_properties_system_wide(mod_objs: list):
+    """Flat, system-wide flush of every cached property: the given objects plus every object linked to their
+    systems. Runs after every ModelingUpdate and after the initial build, keeping lazy read-time projections
+    (attribution memos and the like) consistent with the recomputed calculated-attribute graph."""
+    objs_to_flush = list(mod_objs)
+    for system in dict.fromkeys(sum([mod_obj.systems for mod_obj in mod_objs], start=[])):
+        objs_to_flush += system.all_linked_objects + [system]
+    for mod_obj in dict.fromkeys(objs_to_flush):
+        mod_obj.flush_cached_properties()
 
 
 def get_instance_attributes(obj, target_class):
@@ -136,12 +158,6 @@ def optimize_mod_objs_computation_chain(mod_objs_computation_chain):
 class ModelingObject(metaclass=ABCAfterInitMeta):
     classes_outside_init_params_needed_for_generating_from_json = []
     _use_name_as_id: bool = False
-    _attributed_footprint_cached_property_names = (
-        "attributed_fabrication_footprint_per_source",
-        "attributed_fabrication_footprint",
-        "attributed_energy_footprint_per_source",
-        "attributed_energy_footprint",
-    )
     _impact_repartition_phases = ("fabrication", "usage")
 
     @classmethod
@@ -499,6 +515,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def launch_mod_objs_computation_chain(mod_objs_computation_chain):
         for mod_obj in mod_objs_computation_chain:
             mod_obj.compute_calculated_attributes()
+        flush_cached_properties_system_wide(mod_objs_computation_chain)
+
+    def flush_cached_properties(self):
+        """Pop every materialized cached property (auto-discovered from the class MRO) so the next read
+        recomputes from the fresh calculated-attribute graph."""
+        for cached_property_name in class_cached_property_names(type(self)):
+            self.__dict__.pop(cached_property_name, None)
+
+    @cached_property
+    def render_cache(self) -> dict:
+        """Scratch store for lazy, query-time memos (e.g. the attribution layer's atom lists and fold
+        results). Being itself a cached property, it is wiped wholesale by flush_cached_properties and is
+        never serialized."""
+        return {}
 
     def after_init(self):
         from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -525,7 +555,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def attributes_that_shouldnt_trigger_update_logic(self):
         return ["name", "id", "trigger_modeling_updates", "contextual_modeling_obj_containers",
-                "explainable_object_dicts_containers"] + list(self._attributed_footprint_cached_property_names)
+                "explainable_object_dicts_containers"] + list(class_cached_property_names(type(self)))
 
     def __setattr__(self, name, input_value, check_input_validity=True):
         current_attr = getattr(self, name, None)
@@ -890,8 +920,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return
         visited.add(self.id)
 
-        for cached_property_name in self._attributed_footprint_cached_property_names:
-            self.__dict__.pop(cached_property_name, None)
+        self.flush_cached_properties()
 
         if recursive:
             for phase in self._impact_repartition_phases:

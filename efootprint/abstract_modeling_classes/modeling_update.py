@@ -11,7 +11,8 @@ from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import (
     ObjectLinkedToModelingObj, ObjectLinkedToModelingObjBase)
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
+from efootprint.abstract_modeling_classes.modeling_object import (
+    ModelingObject, flush_cached_properties_system_wide, optimize_mod_objs_computation_chain)
 from efootprint.logger import logger
 
 
@@ -94,6 +95,8 @@ class ModelingUpdate:
 
         if simulation_date is not None:
             self.reset_values()
+        flush_cached_properties_system_wide(
+            self.mod_objs_computation_chain + ([self.system] if self.system is not None else []))
         compute_time_ms = round(1000 * (perf_counter() - start), 1)
         avg_compute_time_per_value = round(compute_time_ms / len(self.values_to_recompute), 2)\
             if self.values_to_recompute else 0

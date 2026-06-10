@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 ## [Unreleased]
 
 ### Added
+- Attribution-logic revamp, task 2: the attribution core (`efootprint/core/attribution/` — `Atom` value object with derived chains, two-tier flushed memos, the `node_totals_and_links` fold, `footprint_per_node` and its per-source variant, exclusion = filter), MRO-based auto-flush of every `cached_property` (`class_cached_property_names`, `ModelingObject.flush_cached_properties`, `render_cache`, system-wide sweep after every ModelingUpdate and after the initial build) replacing the manual `_attributed_footprint_cached_property_names` registry and its per-class overrides, and the first atom builder: `Device.attribution_atoms(phase)` over ground-up `(step, up)` occupancy cells with CI[up] inside, plus the eager `instances_fabrication_footprint_per_usage_pattern` calculated attribute the fabrication total is now re-derived from. Calculated-attribute-only serialization change, no schema bump.
 - Attribution-logic revamp, task 1: container-owned, attribution-only occurrence / data primitives — JobBase per-step / per-journey / per-RSN / per-edge-journey occurrence and data splits, `JobBase.attribution_cells` (flat `(step, up)` / `(rsn, ef, up)` cell enumeration with hourly and flat occurrence shares and edge slot multiplicities), and the UsageJourneyStep occupancy primitive `hourly_avg_occurrences_per_usage_pattern`. Lazy cached properties / plain methods only — nothing consumes them yet, no behaviour change.
 
 ## [21.1.5]

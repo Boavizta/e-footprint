@@ -6,7 +6,9 @@ from efootprint.abstract_modeling_classes.explainable_quantity import Explainabl
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.attribution import Atom
 from efootprint.core.hardware.hardware_base import HardwareBase
+from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 if TYPE_CHECKING:
     from efootprint.core.usage.usage_pattern import UsagePattern
@@ -102,6 +104,7 @@ class Device(HardwareBase):
 
         self.energy_footprint_per_usage_pattern = ExplainableObjectDict()
         self.energy_footprint = EmptyExplainableObject()
+        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         self.instances_fabrication_footprint = EmptyExplainableObject()
 
     @property
@@ -115,6 +118,7 @@ class Device(HardwareBase):
     calculated_attributes: List[str] = [
         "energy_footprint_per_usage_pattern",
         "energy_footprint",
+        "instances_fabrication_footprint_per_usage_pattern",
         "instances_fabrication_footprint",
     ] + HardwareBase.calculated_attributes
 
@@ -140,21 +144,58 @@ class Device(HardwareBase):
             self.energy_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
         ).set_label(f"Devices energy footprint")
 
-    def update_instances_fabrication_footprint(self):
-        """Hourly fabrication-phase emissions of all devices in use, equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
-        instances_fabrication_footprint = EmptyExplainableObject()
-        device_fabrication_footprint_over_one_hour = (
-                self.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
-                / (self.lifespan * self.fraction_of_usage_time)
-        ).to(u.g).set_label("Fabrication footprint over one hour")
+    @property
+    def device_fabrication_footprint_over_one_hour(self):
+        return (self.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
+                / (self.lifespan * self.fraction_of_usage_time)).to(u.g).set_label(
+            "Fabrication footprint over one hour")
 
+    def update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(self, usage_pattern: "UsagePattern"):
+        self.instances_fabrication_footprint_per_usage_pattern[usage_pattern] = (
+            usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
+            * self.device_fabrication_footprint_over_one_hour).to(u.kg).set_label(
+            f"Fabrication footprint for {usage_pattern.name}")
+
+    def update_instances_fabrication_footprint_per_usage_pattern(self):
+        """Hourly fabrication-phase emissions of all devices in use, broken down by usage pattern. Equal to one device's hourly amortised embodied carbon (lifespan and usage-time-adjusted) multiplied by the number of journeys concurrently in progress."""
+        self.instances_fabrication_footprint_per_usage_pattern = ExplainableObjectDict()
         for usage_pattern in self.usage_patterns:
-            instances_fabrication_footprint += (
-                usage_pattern.usage_journey.nb_usage_journeys_in_parallel_per_usage_pattern[usage_pattern]
-                * device_fabrication_footprint_over_one_hour).to(u.kg)
+            self.update_dict_element_in_instances_fabrication_footprint_per_usage_pattern(usage_pattern)
 
-        self.instances_fabrication_footprint = instances_fabrication_footprint.set_label(
-            f"Devices fabrication footprint")
+    def update_instances_fabrication_footprint(self):
+        """Total hourly fabrication-phase emissions of all devices in use, summed across all usage patterns that run on this device."""
+        self.instances_fabrication_footprint = sum(
+            self.instances_fabrication_footprint_per_usage_pattern.values(), start=EmptyExplainableObject()
+        ).set_label(f"Devices fabrication footprint")
+
+    def attribution_atoms(self, phase: LifeCyclePhases):
+        """One atom per (step, up) cell of the device's patterns — no shares: each cell is computed ground-up
+        from the step's occupancy primitive (hourly_avg_occurrences_per_usage_pattern, which sums over the
+        step's positions in the journey, so iterating distinct steps covers repeated ones exactly once).
+
+        USAGE        atom = (power × 1h) × occupancy(step, up) × up.country.average_carbon_intensity
+        FABRICATION  atom = device_fabrication_footprint_over_one_hour × occupancy(step, up)
+
+        Since occupancies summed over a journey's steps tile nb_usage_journeys_in_parallel, Σ over a
+        pattern's steps recovers energy_footprint_per_usage_pattern[up] /
+        instances_fabrication_footprint_per_usage_pattern[up], and Σ over all atoms the eager phase totals.
+        """
+        energy_over_one_occupied_hour = (
+            self.power * ExplainableQuantity(1 * u.hour, "one full hour")).to(u.kWh)
+        fabrication_over_one_occupied_hour = self.device_fabrication_footprint_over_one_hour
+        for usage_pattern in self.usage_patterns:
+            for uj_step in dict.fromkeys(usage_pattern.usage_journey.uj_steps):
+                occupancy = uj_step.hourly_avg_occurrences_per_usage_pattern[usage_pattern]
+                if phase == LifeCyclePhases.USAGE:
+                    value = (energy_over_one_occupied_hour * occupancy
+                             * usage_pattern.country.average_carbon_intensity)
+                else:
+                    value = fabrication_over_one_occupied_hour * occupancy
+                yield Atom(
+                    source=self, stream="single", up=usage_pattern, step=uj_step,
+                    value=value.to(u.kg).set_label(
+                        f"{self.name} {phase.value.lower()} footprint in {uj_step.name} "
+                        f"({usage_pattern.name})"))
 
     def update_dict_element_in_fabrication_impact_repartition_weights(self, uj_step: "UsageJourneyStep"):
         weight = EmptyExplainableObject()

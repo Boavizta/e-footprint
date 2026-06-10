@@ -18,11 +18,6 @@ if TYPE_CHECKING:
 class UsageJourneyStep(ModelingObject):
     """One step within a {class:UsageJourney}, characterised by how long the user spends on it and which {class:Job}s it triggers on the server side."""
 
-    _attributed_footprint_cached_property_names = (
-        *ModelingObject._attributed_footprint_cached_property_names,
-        "hourly_avg_occurrences_per_usage_pattern",
-    )
-
     param_descriptions = {
         "user_time_spent": (
             "Wall-clock time the user spends on this step (during which her device is powered on)."),

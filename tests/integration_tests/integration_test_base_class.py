@@ -12,7 +12,8 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_hourly_quantities import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, get_instance_attributes
+from efootprint.abstract_modeling_classes.modeling_object import (
+    ModelingObject, class_cached_property_names, get_instance_attributes)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.api_utils.system_to_json import system_to_json
@@ -342,7 +343,7 @@ class IntegrationTestBaseClass(TestCase):
             "fabrication_impact_repartition", "usage_impact_repartition_weights",
             "usage_impact_repartition_weight_sum", "usage_impact_repartition",
         ]
-        attrs_to_skip += list(getattr(input_object, "_attributed_footprint_cached_property_names", ()))
+        attrs_to_skip += list(class_cached_property_names(type(input_object)))
         logger.warning(f"Testing input variations on {input_object.name}")
         for expl_attr_name, expl_attr in get_instance_attributes(input_object, ExplainableObject).items():
             if expl_attr_name not in attrs_to_skip and expl_attr_name not in input_object.calculated_attributes:

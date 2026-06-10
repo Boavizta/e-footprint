@@ -54,13 +54,6 @@ class JobBase(ModelingObject):
         "{param:Job.request_duration} drives concurrency. If the duration exceeds one hour the job is in flight "
         "across multiple modeling buckets at once and consumes a fraction of the server's resources in each.")
 
-    _attributed_footprint_cached_property_names = (
-        *ModelingObject._attributed_footprint_cached_property_names,
-        "hourly_avg_occurrences_per_usage_journey_step", "hourly_avg_occurrences_per_usage_journey",
-        "hourly_avg_occurrences_per_recurrent_server_need", "hourly_avg_occurrences_per_edge_usage_journey",
-        "hourly_data_stored_per_step", "hourly_data_stored_per_recurrent_server_need", "attribution_cells",
-    )
-
     param_descriptions = {
         "data_transferred": (
             "Total bytes uploaded plus downloaded over the network for one invocation of the job."),

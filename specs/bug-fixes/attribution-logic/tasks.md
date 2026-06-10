@@ -83,6 +83,22 @@ them yet.
 
 ## Task 2 — Attribution core (`core/attribution/`), auto-flush, first builder (Device)
 
+**Status:** Done
+
+**Implementation notes:**
+- Levels are plain ModelingObject classes, not SANKEY_COLUMNS indices: `visible_levels` is a tuple of classes
+  and chain filtering is `isinstance`-based, so the core has no SANKEY_COLUMNS dependency (task 6 aligns the
+  renderer's columns to class tuples when it cuts over).
+- The flushed-memo tiers live in `ModelingObject.render_cache` — a generic cached_property dict on the
+  framework base — so the auto-flush sweep wipes fold memos and atom lists with the same mechanism as every
+  other cached property, with no framework→attribution back-edge.
+- The system-wide sweep is `flush_cached_properties_system_wide` (modeling_object.py): called at the end of
+  every `ModelingUpdate.__init__` and from `launch_mod_objs_computation_chain` (which covers the initial
+  build via `System.after_init` and `self_delete`). All four registry overrides were dropped (the two
+  journey ones named here plus the temporary task-1 ones in job.py / usage_journey_step.py); the legacy
+  `invalidate_impact_repartition_cache` walk now delegates to `flush_cached_properties` (strict superset).
+- Device's atom stream is named `"single"` (one stream per phase, per the plan's source/stream table).
+
 **Goal:** The whole shared layer, with its simplest real consumer so it is exercised end to end:
 the `Atom` value object + `chain()` + level keys, the tier-1 `(source, phase)` atom-list memo,
 the tier-2 fold memo (`node_totals_and_links`, `footprint_per_node` + per-source variant,

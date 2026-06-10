@@ -1,4 +1,5 @@
 import unittest
+from functools import cached_property
 from unittest.mock import patch, MagicMock, PropertyMock, call
 
 import numpy as np
@@ -8,7 +9,9 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.explainable_quantity import ExplainableQuantity
 from efootprint.abstract_modeling_classes.list_linked_to_modeling_obj import ListLinkedToModelingObj
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject, optimize_mod_objs_computation_chain
+from efootprint.abstract_modeling_classes.modeling_object import (
+    ModelingObject, class_cached_property_names, flush_cached_properties_system_wide,
+    optimize_mod_objs_computation_chain)
 from efootprint.abstract_modeling_classes.modeling_update import ModelingUpdate
 from efootprint.abstract_modeling_classes.object_linked_to_modeling_obj import ObjectLinkedToModelingObjBase
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -51,6 +54,22 @@ class ModelingObjectForTesting(ModelingObject):
 
     def compute_calculated_attributes(self):
         pass
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+    @property
+    def systems(self):
+        return []
+
+
+class CachedPropertyModelingObject(ModelingObject):
+    default_values = {}
+
+    @cached_property
+    def custom_lazy_projection(self):
+        return ExplainableQuantity(7 * u.kg, label="custom lazy projection")
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -548,6 +567,62 @@ class TestModelingObject(unittest.TestCase):
 
         self.assertNotIn("attributed_energy_footprint", json_output)
         self.assertNotIn("attributed_energy_footprint_per_source", json_output)
+
+    def test_class_cached_property_names_discovers_cached_properties_across_mro(self):
+        """Test that auto-discovery finds cached properties declared on the base class and on subclasses."""
+        names = class_cached_property_names(CachedPropertyModelingObject)
+
+        self.assertIn("custom_lazy_projection", names)
+        for inherited_name in ("render_cache", "attributed_energy_footprint", "attributed_fabrication_footprint",
+                               "attributed_energy_footprint_per_source",
+                               "attributed_fabrication_footprint_per_source"):
+            self.assertIn(inherited_name, names)
+
+    def test_flush_cached_properties_pops_every_materialized_cached_property(self):
+        """Test that flush_cached_properties clears subclass-declared cached properties and the render cache,
+        without needing any manual registry."""
+        obj = CachedPropertyModelingObject("flush_target")
+        self.assertEqual(7, obj.custom_lazy_projection.magnitude)
+        obj.render_cache["memo_key"] = "memo_value"
+
+        obj.flush_cached_properties()
+
+        self.assertNotIn("custom_lazy_projection", obj.__dict__)
+        self.assertNotIn("render_cache", obj.__dict__)
+
+    def test_to_json_and_setattr_skip_auto_discovered_cached_properties(self):
+        """Test that a materialized subclass cached property is excluded from to_json and from update logic."""
+        obj = CachedPropertyModelingObject("json_target")
+        _ = obj.custom_lazy_projection
+        _ = obj.render_cache
+
+        self.assertIn("custom_lazy_projection", obj.attributes_that_shouldnt_trigger_update_logic)
+        json_output = obj.to_json()
+
+        self.assertNotIn("custom_lazy_projection", json_output)
+        self.assertNotIn("render_cache", json_output)
+
+    def test_flush_cached_properties_system_wide_sweeps_all_linked_objects(self):
+        """Test that the system-wide flush reaches every object linked to the systems of the given objects."""
+        linked_member = CachedPropertyModelingObject("linked_member")
+        _ = linked_member.custom_lazy_projection
+
+        class FakeSystem(CachedPropertyModelingObject):
+            @property
+            def all_linked_objects(self):
+                return [linked_member]
+
+            @property
+            def systems(self):
+                return [self]
+
+        fake_system = FakeSystem("fake_system")
+        _ = fake_system.custom_lazy_projection
+
+        flush_cached_properties_system_wide([fake_system])
+
+        self.assertNotIn("custom_lazy_projection", linked_member.__dict__)
+        self.assertNotIn("custom_lazy_projection", fake_system.__dict__)
 
     def test_modeling_update_replacement_preserves_structural_dict_parent_recovery(self):
         old_child = ModelingObjectForTesting("old_dict_child")

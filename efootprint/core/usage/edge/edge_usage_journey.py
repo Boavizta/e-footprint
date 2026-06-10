@@ -24,11 +24,6 @@ if TYPE_CHECKING:
 class EdgeUsageJourney(ModelingObject):
     """A long-running activity of an edge fleet, composed of {class:EdgeFunction}s that run for the {param:EdgeUsageJourney.usage_span} of the deployment and can span several device types."""
 
-    _attributed_footprint_cached_property_names = (
-        *ModelingObject._attributed_footprint_cached_property_names,
-        "attributed_energy_footprint_per_usage_pattern",
-    )
-
     disambiguation = (
         "Use {class:EdgeUsageJourney} for hardware that runs continuously, like a sensor that captures data "
         "every minute or an industrial controller. Use {class:UsageJourney} for user-driven, request-style "
