@@ -10,10 +10,10 @@ Unlike the server, edge `nb_of_units` is a **fixed input** (only validated again
 
 `s_dem(need, up)` — each need's share of the **capacity-occupying demand** on its component C in that pattern:
 - CPU / RAM / workload: the resource need `unitary_hourly_need_per_usage_pattern[up]` (≥ 0).
-- EdgeStorage: the **held volume** `cumulative_unitary_storage_need_per_usage_pattern[up]` — **not** the write rate `unitary_hourly_need`, which goes negative on delete hours.
+- EdgeStorage: the **held volume** — the need's own `RecurrentEdgeStorageNeed.cumulative_unitary_storage_need_per_usage_pattern[up]` (not the `EdgeStorage` component aggregate of the same name, which adds `base_storage_need`) — **not** the write rate `unitary_hourly_need`, which goes negative on delete hours.
 - **Zero-demand fallback:** at hours where no need loads C, fall back to the equal share below.
 
-**Equal share** — `1 / (number of C's needs present in the pattern)`. Used for the idle/base energy at every hour, and as the `s_dem` fallback.
+**Equal share** — `1 / (number of C's needs present in the pattern)`. Used for the idle/base energy at every hour, and as the `s_dem` fallback. Implement it as an explicit `1/n`: `divide_or_fallback(..., fallback=1)` does NOT produce it — it fills each sibling's 0/0 hours with a full share of 1, counting the footprint once per need.
 
 `s_dem` is today's `_compute_component_need_weight`, with two fixes: the storage metric (held volume, not rate) and the fallback (equal share, not `fallback=0`, which silently drops the footprint).
 
@@ -62,7 +62,7 @@ The occurrence share `o(n, X, up)/o(n, up)` is the **only** non-trivial factor; 
 14. `-> EUP up` = `Σ over n ∈ needs(r) of a(n, r, up)`.
 15. `-> Country c` = `Σ over up with Co(up)=c, Σ over n ∈ needs(r), of a(n, r, up)`.
 
-**From `EF e`** (every edge below also receives e's parallel `RecurrentServerNeed` footprint from `analysis.md`, added in):
+**From `EF e`** (every edge below also receives e's parallel `RecurrentServerNeed` footprint — the `Server/Network/Storage/Job -> EdgeFunction` flows in `analysis.md`, split across EFs by the same `o(rsn, e, up)/o(rsn, up)` ratio as pairs 8/12 here — added in):
 16. `-> EUJ j` = `Σ over up with J(up)=j, Σ over n ∈ needs(e), of a(n, e, up)`.
 17. `-> EUP up` = `Σ over n ∈ needs(e) of a(n, e, up)`.
 18. `-> Country c` = `Σ over up with Co(up)=c, Σ over n ∈ needs(e), of a(n, e, up)`.
