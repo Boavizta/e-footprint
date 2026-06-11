@@ -201,7 +201,7 @@ class Storage(InfraHardware):
         all_cumulatives = sum([val for val in self.full_cumulative_storage_need_per_job.values()],
                               start=EmptyExplainableObject())
         if isinstance(all_cumulatives, EmptyExplainableObject):
-            # This means that the storage isn’t used by any job linked to a usage pattern, so it doesn’ make sense to
+            # This means that the storage isn’t used by any job linked to a usage pattern, so it doesn’t make sense to
             # compute its impact at all. Adding the base storage need would turn the full_cumulative_storage_need into
             # an ExplainableQuantity, which would cause bugs down the line, for computations that don’t make sense
             # anyways (we don’t even know how long the Storage object will be used for).
