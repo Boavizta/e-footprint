@@ -162,7 +162,11 @@ class JobBase(ModelingObject):
                 delay_between_uj_start_and_job_evt += uj_step.user_time_spent
         else:  # usage_pattern is an EdgeUsagePattern
             job_occurrences = EmptyExplainableObject()
-            for recurrent_server_need in self.recurrent_server_needs:
+            # Only the server needs in THIS pattern's own edge journey contribute to its occurrences: a job
+            # shared across edge journeys is triggered separately in each, and a server need only carries a
+            # per-pattern volume for the patterns of its own journey (mirrors the web branch's scoping to
+            # usage_pattern.usage_journey.uj_steps).
+            for recurrent_server_need in usage_pattern.edge_usage_journey.recurrent_server_needs:
                 nb_of_occurrences_of_self_within_server_need = recurrent_server_need.jobs.count(self)
                 if nb_of_occurrences_of_self_within_server_need == 0:
                     continue

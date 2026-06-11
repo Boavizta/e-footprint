@@ -301,6 +301,8 @@ class TestJob(TestCase):
         mock_server_need = create_mod_obj_mock(RecurrentServerNeed, name="Mock recurrent server need")
         mock_server_need.jobs = [self.job, self.job] # Same job appears twice so volume is doubled
         mock_server_need.unitary_hourly_volume_per_usage_pattern = {edge_usage_pattern: unitary_volume}
+        # Only the pattern's own edge journey's server needs contribute to its occurrences.
+        mock_edge_usage_journey.recurrent_server_needs = [mock_server_need]
 
         set_modeling_obj_containers(self.job, [mock_server_need])
         self.job.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
