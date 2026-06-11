@@ -12,6 +12,7 @@ from efootprint.abstract_modeling_classes.empty_explainable_object import EmptyE
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
+from efootprint.core.attribution import flushed_memo
 from efootprint.core.hardware.gpu_server import GPUServer
 from efootprint.core.hardware.server import Server
 from efootprint.core.hardware.server_base import ServerBase
@@ -259,6 +260,7 @@ class JobBase(ModelingObject):
     # --- Attribution-only occurrence / data primitives (consumed by the attribution atom builders, never by the
     # eager calculated-attribute graph; get_*/compute_* are plain methods, the rest lazy cached properties) ---
 
+    @flushed_memo
     def get_hourly_avg_occurrences_per_usage_pattern_per_step(
             self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
         """Request_duration-averaged, count-weighted hourly occurrences of this job in (usage_pattern, uj_step):
@@ -280,6 +282,7 @@ class JobBase(ModelingObject):
         return compute_nb_avg_hourly_occurrences(step_occurrences, self.request_duration).to(u.concurrent).set_label(
             f"Average hourly occurrences of {self.name} in {uj_step.name} for {usage_pattern.name}")
 
+    @flushed_memo
     def get_hourly_avg_occurrences_per_usage_pattern_per_recurrent_server_need(
             self, edge_usage_pattern: "EdgeUsagePattern", recurrent_server_need: "RecurrentServerNeed"):
         """Request_duration-averaged, count-weighted hourly occurrences of this job triggered by
@@ -298,6 +301,7 @@ class JobBase(ModelingObject):
             f"Average hourly occurrences of {self.name} in {recurrent_server_need.name} "
             f"for {edge_usage_pattern.name}")
 
+    @flushed_memo
     def compute_hourly_data_transferred_per_usage_pattern_per_step(
             self, usage_pattern: "UsagePattern", uj_step: "UsageJourneyStep"):
         """Hourly volume of data this job transfers over the network in (usage_pattern, uj_step) — the per-cell
@@ -306,6 +310,7 @@ class JobBase(ModelingObject):
                 * self._hourly_data_exchange_rate("data_transferred")).to(u.MB).set_label(
             f"Hourly data transferred by {self.name} in {uj_step.name} for {usage_pattern.name}")
 
+    @flushed_memo
     def compute_hourly_data_transferred_per_usage_pattern_per_recurrent_server_need(
             self, edge_usage_pattern: "EdgeUsagePattern", recurrent_server_need: "RecurrentServerNeed"):
         """Hourly volume of data this job transfers over the network in (edge_usage_pattern, recurrent_server_need)
