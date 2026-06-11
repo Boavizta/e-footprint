@@ -111,7 +111,9 @@ a key and sum.
   streams (on-premise provisioned, storage baseline, edge idle floor) relay by *flat period-total* shares
   (a scalar), so footprint at idle hours is conserved instead of dropped or double-counted
 - renderers are presentation-only: `ImpactRepartitionSankey` makes one `node_totals_and_links` call per
-  life-cycle phase and owns nothing but layout, colors and aggregation
+  life-cycle phase and owns nothing but layout, colors and aggregation. That fold returns *period-total
+  scalars* (each atom is `.sum()`-ed once before accumulation — the Sankey renders sums only, and folds run
+  cold on every render); `footprint_per_node[_per_source]` remain the hourly reads
 
 Caching is two-tier in each owner's `render_cache` (itself a cached property): atom lists per
 `(source, phase)`, fold results per query. Both are wiped by the system-wide cached-property flush after

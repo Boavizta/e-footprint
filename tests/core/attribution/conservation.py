@@ -11,15 +11,21 @@ from efootprint.core.lifecycle_phases import LifeCyclePhases
 
 
 def assert_hourly_quantities_equal(test_case, expected, actual, msg=None):
+    """Relative-tolerance equality for explainable values — hourly series (compared via the max absolute
+    point-wise difference) or period-total scalars (e.g. node_totals_and_links values)."""
     if isinstance(expected, EmptyExplainableObject) and isinstance(actual, EmptyExplainableObject):
         return
     diff = expected - actual
     if isinstance(diff, EmptyExplainableObject):
         return
-    max_abs_diff = diff.abs().max()
+
+    def max_abs_magnitude(explainable):
+        abs_value = explainable.abs()
+        return (abs_value.max() if hasattr(abs_value, "max") else abs_value).magnitude
+
     reference = expected if not isinstance(expected, EmptyExplainableObject) else actual
-    scale = max(reference.abs().max().magnitude, 1e-9)
-    test_case.assertAlmostEqual(0, max_abs_diff.magnitude / scale, places=4, msg=msg)
+    scale = max(max_abs_magnitude(reference), 1e-9)
+    test_case.assertAlmostEqual(0, max_abs_magnitude(diff) / scale, places=4, msg=msg)
 
 
 def eager_phase_footprint(source, phase: LifeCyclePhases):

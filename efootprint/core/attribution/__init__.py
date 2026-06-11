@@ -98,9 +98,7 @@ def atoms_of(source: ModelingObject, phase) -> tuple:
 
 
 def attribution_sources(system) -> list:
-    """The system's impact sources that implement the atom contract. By the end of the attribution revamp
-    every impact source does; during the strangler migration, sources without a builder simply don't
-    contribute atoms yet."""
+    """The system's impact sources that implement the atom contract."""
     return [obj for obj in system.all_linked_objects if hasattr(obj, "attribution_atoms")]
 
 
@@ -115,7 +113,10 @@ def atoms(system, phase, exclude: tuple = ()):
 
 @flushed_memo
 def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple = ()):
-    """TIER 2 — the Sankey feed: ``({node: hourly}, {(finer, coarser): hourly})`` for one life-cycle phase.
+    """TIER 2 — the Sankey feed: ``({node: total kg}, {(finer, coarser): total kg})`` for one life-cycle
+    phase. Values are period-total scalars, not hourly series: the Sankey renders sums only, so each atom
+    is reduced once here instead of carrying hourly arrays through every node and link of its chain (the
+    folds run cold on every render — see ``footprint_per_node`` for the hourly read).
 
     ``visible_levels`` is a tuple of ModelingObject classes; a chain node is visible iff it is an instance
     of one of them — skipping a column = leaving its classes out (adjacent visible nodes link directly).
@@ -125,10 +126,11 @@ def node_totals_and_links(system, phase, visible_levels: tuple, exclude: tuple =
     node_totals, links = {}, {}
     for atom in atoms(system, phase, exclude):
         chain = [node for node in atom.chain() if isinstance(node, visible_levels)]
+        value = atom.value.sum()
         for node in chain:
-            node_totals[node] = node_totals.get(node, EmptyExplainableObject()) + atom.value
+            node_totals[node] = node_totals.get(node, EmptyExplainableObject()) + value
         for finer, coarser in pairwise(chain):
-            links[(finer, coarser)] = links.get((finer, coarser), EmptyExplainableObject()) + atom.value
+            links[(finer, coarser)] = links.get((finer, coarser), EmptyExplainableObject()) + value
 
     return node_totals, links
 

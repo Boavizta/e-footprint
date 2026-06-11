@@ -101,7 +101,7 @@ class TestAttributionFold(TestCase):
                     (total for node, total in node_totals.items() if isinstance(node, level)),
                     start=EmptyExplainableObject())
                 assert_hourly_quantities_equal(
-                    self, full_atom_sum, level_sum,
+                    self, full_atom_sum.sum(), level_sum,
                     msg=f"{level.__name__} column doesn't conserve the {phase.value} total")
 
     def test_column_skip_equals_regrouping_the_full_fold(self):
@@ -130,7 +130,7 @@ class TestAttributionFold(TestCase):
             {(finer.id, coarser.id) for finer, coarser in expected_step_to_up},
             {(finer.id, coarser.id) for finer, coarser in step_to_up_links})
         for key, expected_value in expected_step_to_up.items():
-            assert_hourly_quantities_equal(self, expected_value, step_to_up_links[key])
+            assert_hourly_quantities_equal(self, expected_value.sum(), step_to_up_links[key])
 
     def test_exclusion_filters_atoms_without_rescaling(self):
         """Test that excluding a source class removes its atoms and leaves every other contribution
@@ -147,7 +147,7 @@ class TestAttributionFold(TestCase):
         tracked_up1_contribution = sum_atom_values(
             atom for atom in atoms_of(self.tracked_device, phase) if atom.up == self.up1)
         assert_hourly_quantities_equal(
-            self, full_node_totals[self.up1] - tracked_up1_contribution, excluded_node_totals[self.up1])
+            self, full_node_totals[self.up1] - tracked_up1_contribution.sum(), excluded_node_totals[self.up1])
 
     def test_footprint_per_node_matches_eager_per_usage_pattern_dicts(self):
         """Test that the per-UsagePattern programmatic read recovers the devices' eager per-pattern dicts."""
