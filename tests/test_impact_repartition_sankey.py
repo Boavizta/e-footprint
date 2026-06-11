@@ -192,6 +192,62 @@ class TestImpactRepartitionSankeyConservation(TestCase):
                 baseline_totals[key], excluded_totals[key],
                 msg=f"Leaf {key} was rescaled by the exclusion")
 
+    def test_aggressive_skip_routes_bare_chain_remainders_to_leaves(self):
+        """Test that with only the recurrent-need column visible on the complex (dual-side) fixture, leaf
+        totals still conserve the system total: a dual-side server's web atoms have no visible container, so
+        their value reaches the leaf as a remainder routed from the phase parent."""
+        system = fixture_system("complex")
+        skipped = [
+            "Country", "UsagePattern", "EdgeUsagePattern", "UsageJourney", "EdgeUsageJourney",
+            "EdgeFunction", "UsageJourneyStep", "JobBase", "RecurrentEdgeComponentNeed"]
+        sankey = build_sankey(system, skipped_impact_repartition_classes=skipped)
+
+        self.assert_kg_equal(eager_system_total(system), sankey.total_system_value)
+        leaf_total = sum((sankey.node_total_values[idx] for idx in sankey._leaf_node_indices), start=0 * u.kg)
+        self.assert_kg_equal(sankey.total_system_value, leaf_total,
+                             msg="Leaf nodes don't conserve the system total under aggressive column skipping")
+
+    def test_exclude_external_api_drops_exactly_its_server_footprint(self):
+        """Test that excluding the ExternalAPI display class filters the paired server class's atoms: the
+        total shrinks by exactly the API server's footprint and the API leaf disappears."""
+        system = fixture_system("services")
+        api_server = next(
+            obj for obj in attribution_sources(system)
+            if obj.class_as_simple_str == "EcoLogitsGenAIExternalAPIServer")
+        baseline = build_sankey(system)
+        excluded = build_sankey(system, excluded_object_types=["ExternalAPI"])
+
+        api_total = (api_server.instances_fabrication_footprint.sum() + api_server.energy_footprint.sum()).value
+        self.assert_kg_equal(baseline.total_system_value - api_total, excluded.total_system_value)
+        self.assertIn((api_server.external_api.id, "Usage"), node_totals_by_key(baseline))
+        self.assertNotIn((api_server.external_api.id, "Usage"), node_totals_by_key(excluded))
+
+    def test_exclude_edge_storage_removes_only_breakdown_children(self):
+        """Test that excluding EdgeStorage (a breakdown-only component, not an atom source) keeps the system
+        total and every surviving node identical and drops only the storage breakdown children."""
+        system = fixture_system("simple_edge")
+        edge_storage = next(
+            obj for obj in system.all_linked_objects if obj.class_as_simple_str == "EdgeStorage")
+        baseline = build_sankey(system)
+        excluded = build_sankey(system, excluded_object_types=["EdgeStorage"])
+
+        self.assert_kg_equal(baseline.total_system_value, excluded.total_system_value)
+        baseline_totals = node_totals_by_key(baseline)
+        excluded_totals = node_totals_by_key(excluded)
+        self.assertIn((edge_storage.id, "Manufacturing"), baseline_totals)
+        self.assertNotIn((edge_storage.id, "Manufacturing"), excluded_totals)
+        for key, value in excluded_totals.items():
+            self.assert_kg_equal(baseline_totals[key], value, msg=f"Node {key} changed when excluding EdgeStorage")
+
+    def test_unknown_class_name_in_skip_or_exclude_raises(self):
+        """Test that a misspelled class name in skipped or excluded classes raises instead of silently
+        rendering the full unfiltered Sankey."""
+        system = fixture_system("simple")
+        for kwargs in ({"skipped_impact_repartition_classes": ["Sever"]}, {"excluded_object_types": ["Devcie"]}):
+            with self.subTest(**kwargs), self.assertRaises(ValueError) as context:
+                build_sankey(system, **kwargs)
+            self.assertIn("Unknown e-footprint class name(s)", str(context.exception))
+
     def test_external_api_server_sources_are_normalized_to_external_api(self):
         """Test that ExternalAPIServer atoms display as their ExternalAPI with its category node."""
         system = fixture_system("services")

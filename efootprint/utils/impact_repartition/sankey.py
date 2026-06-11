@@ -137,9 +137,15 @@ class ImpactRepartitionSankey:
 
     @staticmethod
     def _resolved_class_objects(configured_classes: Sequence[ConfiguredClass]) -> tuple[type, ...]:
-        def _resolve(cc):
-            return class_registry.ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
-        return tuple(cls for cls in map(_resolve, configured_classes) if isinstance(cls, type))
+        resolved = [
+            class_registry.ALL_EFOOTPRINT_CLASSES_DICT.get(cc) if isinstance(cc, str) else cc
+            for cc in configured_classes]
+        unknown = [cc for cc, cls in zip(configured_classes, resolved) if not isinstance(cls, type)]
+        if unknown:
+            raise ValueError(
+                f"Unknown e-footprint class name(s) in Sankey skip/exclude configuration: {unknown}. "
+                f"Valid names are the keys of ALL_EFOOTPRINT_CLASSES_DICT.")
+        return tuple(resolved)
 
     @staticmethod
     def _get_canonical_class_name(obj: ModelingObject) -> str:
@@ -327,8 +333,10 @@ class ImpactRepartitionSankey:
     def _render_phase(
             self, phase: LifeCyclePhases, parent_idx: int | None, fold_node_totals: dict, fold_links: dict) -> None:
         """Turn one phase's fold output into display nodes and links. Fold links run source-ward → System-ward;
-        display links run the other way (root → … → source). Chain heads (the coarsest visible nodes) receive
-        their full total from the phase/root parent."""
+        display links run the other way (root → … → source). Whatever part of a node's total its own fold links
+        don't carry (its whole total for the coarsest visible nodes; the bare-chain share of a source whose
+        other atoms do have visible containers) is routed from the phase/root parent, so totals conserve under
+        every skip combination."""
         phase_context = self._get_phase_context(phase)
         source_classes = self._source_level_classes()
         container_indices = {}
@@ -336,14 +344,20 @@ class ImpactRepartitionSankey:
             if not isinstance(node, source_classes) and self._is_positive(total):
                 container_indices[node] = self._add_node(node.name, (node.id, phase_context), color_key=node.id, obj=node)
 
-        nodes_with_outgoing_links = {finer for finer, _ in fold_links}
+        routed_by_own_links = {}
+        for (finer, _), value in fold_links.items():
+            routed_by_own_links[finer] = routed_by_own_links.get(finer, 0 * u.kg) + value
         for node, total in fold_node_totals.items():
-            if node in nodes_with_outgoing_links or not self._is_positive(total):
+            remainder = total - routed_by_own_links.get(node, 0 * u.kg)
+            # Atom values are float32-backed, so a node's total and the sum of its own links carry independent
+            # rounding noise (observed up to ~4e-8 relative): only a materially positive remainder is a real
+            # bare-chain share.
+            if not self._is_positive(remainder) or remainder.magnitude <= total.magnitude * 1e-6:
                 continue
             if isinstance(node, source_classes):
-                self._render_source_flow(node, total, phase, phase_context, parent_idx)
+                self._render_source_flow(node, remainder, phase, phase_context, parent_idx)
             else:
-                self._add_flow_to_node(parent_idx, container_indices[node], total)
+                self._add_flow_to_node(parent_idx, container_indices[node], remainder)
 
         for (finer, coarser), value in fold_links.items():
             if not self._is_positive(value):
