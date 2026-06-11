@@ -226,9 +226,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         for parent in (self.left_parent, self.right_parent):
             if parent is not None:
+                existing_ancestor_ids = set(self.direct_ancestor_ids)
                 self.direct_ancestors_with_id += [
                     ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
-                    if ancestor_with_id.id not in self.direct_ancestor_ids]
+                    if ancestor_with_id.id not in existing_ancestor_ids]
 
 
     @property
